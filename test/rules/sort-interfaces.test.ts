@@ -618,24 +618,24 @@ describe(ruleName, () => {
                 messageId: 'unexpectedInterfacePropertiesGroupOrder',
               },
             ],
+            output: dedent`
+              interface Interface {
+                method(): void
+                property: string
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                property: string
+                method(): void
+              }
+            `,
             options: [
               {
                 ...options,
                 groups: ['method', 'required-property'],
               },
             ],
-            output: dedent`
-            interface Interface {
-              method(): void
-              property: string
-            }
-          `,
-            code: dedent`
-            interface Interface {
-              property: string
-              method(): void
-            }
-          `,
           },
         ],
         valid: [],
@@ -1183,7 +1183,7 @@ describe(ruleName, () => {
                   anotherMethod(): void
                   yetAnotherMethod(): void
                 }
-            `,
+              `,
             },
           ],
           valid: [],
@@ -1238,7 +1238,7 @@ describe(ruleName, () => {
                   method(): void
                   c
                 }
-            `,
+              `,
             },
           ],
           valid: [],
@@ -1333,13 +1333,13 @@ describe(ruleName, () => {
                 },
               ],
               code: dedent`
-              interface Interface {
-                iHaveFooInMyName: string
-                meTooIHaveFoo: string
-                a: string
-                b: string
-              }
-            `,
+                interface Interface {
+                  iHaveFooInMyName: string
+                  meTooIHaveFoo: string
+                  a: string
+                  b: string
+                }
+              `,
             },
           ],
           invalid: [],
@@ -1556,24 +1556,6 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): sorts interface properties`, rule, {
       invalid: [
         {
-          output: dedent`
-              interface Interface {
-                a?: string
-                c?: string
-                d?: string
-                e?(): void
-                b: string
-              }
-            `,
-          code: dedent`
-              interface Interface {
-                a?: string
-                b: string
-                c?: string
-                d?: string
-                e?(): void
-              }
-            `,
           errors: [
             {
               data: {
@@ -1583,6 +1565,24 @@ describe(ruleName, () => {
               messageId: 'unexpectedInterfacePropertiesOrder',
             },
           ],
+          output: dedent`
+            interface Interface {
+              a?: string
+              c?: string
+              d?: string
+              e?(): void
+              b: string
+            }
+          `,
+          code: dedent`
+            interface Interface {
+              a?: string
+              b: string
+              c?: string
+              d?: string
+              e?(): void
+            }
+          `,
           options: [
             {
               ...options,
@@ -1594,11 +1594,11 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              interface Interface {
-                a?: string
-                [index: number]: string
-              }
-            `,
+            interface Interface {
+              a?: string
+              [index: number]: string
+            }
+          `,
           options: [
             {
               ...options,
@@ -1877,20 +1877,6 @@ describe(ruleName, () => {
                 messageId: 'unexpectedInterfacePropertiesOrder',
               },
             ],
-            output: dedent`
-                interface Interface {
-                  /* Comment */
-                  a: string
-                  b: string
-                }
-              `,
-            code: dedent`
-                interface Interface {
-                  b: string
-                  /* Comment */
-                  a: string
-                }
-              `,
             options: [
               {
                 ...options,
@@ -1899,6 +1885,20 @@ describe(ruleName, () => {
                 },
               },
             ],
+            output: dedent`
+              interface Interface {
+                /* Comment */
+                a: string
+                b: string
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                b: string
+                /* Comment */
+                a: string
+              }
+            `,
           },
         ],
         valid: [],
@@ -1919,12 +1919,12 @@ describe(ruleName, () => {
                 },
               ],
               code: dedent`
-                  interface Interface {
-                    b: string
-                    // Comment
-                    a: string
-                  }
-                `,
+                interface Interface {
+                  b: string
+                  // Comment
+                  a: string
+                }
+              `,
             },
           ],
           invalid: [],
@@ -1938,14 +1938,14 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-                  interface Interface {
-                    c: string
-                    // b
-                    b: string
-                    // a
-                    a: string
-                  }
-                  `,
+                interface Interface {
+                  c: string
+                  // b
+                  b: string
+                  // a
+                  a: string
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -1967,12 +1967,12 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-                  interface Interface {
-                    b: string
-                    // I am a partition comment because I don't have f o o
-                    a: string
-                  }
-                `,
+                interface Interface {
+                  b: string
+                  // I am a partition comment because I don't have f o o
+                  a: string
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -2010,18 +2010,18 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-                interface Interface {
-                  // Comment
-                  a: string
-                  b: string
-                }
+              interface Interface {
+                // Comment
+                a: string
+                b: string
+              }
             `,
             code: dedent`
-                interface Interface {
-                  b: string
-                  // Comment
-                  a: string
-                }
+              interface Interface {
+                b: string
+                // Comment
+                a: string
+              }
             `,
           },
         ],
@@ -2043,12 +2043,12 @@ describe(ruleName, () => {
                 },
               ],
               code: dedent`
-                  interface Interface {
-                    b: string
-                    /* Comment */
-                    a: string
-                  }
-                `,
+                interface Interface {
+                  b: string
+                  /* Comment */
+                  a: string
+                }
+              `,
             },
           ],
           invalid: [],
@@ -2062,14 +2062,14 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-                  interface Interface {
-                    c: string
-                    /* b */
-                    b: string
-                    /* a */
-                    a: string
-                  }
-                `,
+                interface Interface {
+                  c: string
+                  /* b */
+                  b: string
+                  /* a */
+                  a: string
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -2091,12 +2091,12 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-                  interface Interface {
-                    b: string
-                    /* I am a partition comment because I don't have f o o */
-                    a: string
-                  }
-                `,
+                interface Interface {
+                  b: string
+                  /* I am a partition comment because I don't have f o o */
+                  a: string
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -2140,15 +2140,15 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              interface MyInterface {
-                你好: string
-                世界: string
-                a: string
-                A: string
-                b: string
-                B: string
-              }
-            `,
+            interface MyInterface {
+              你好: string
+              世界: string
+              a: string
+              A: string
+              b: string
+              B: string
+            }
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -2159,13 +2159,13 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              interface Interface {
-                b(): void
-                c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
-                a: string
-                d: string
-              }
-            `,
+            interface Interface {
+              b(): void
+              c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
+              a: string
+              d: string
+            }
+          `,
           options: [
             {
               ...options,
@@ -2279,7 +2279,7 @@ describe(ruleName, () => {
                       // Newline stuff
                     },
                 }
-                `,
+              `,
               code: dedent`
                 interface Interface {
                   a: () => null,
@@ -3213,24 +3213,6 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): sorts interface properties`, rule, {
       invalid: [
         {
-          output: dedent`
-              interface Interface {
-                a?: string
-                c?: string
-                d?: string
-                e?(): void
-                b: string
-              }
-            `,
-          code: dedent`
-              interface Interface {
-                a?: string
-                b: string
-                c?: string
-                d?: string
-                e?(): void
-              }
-            `,
           errors: [
             {
               data: {
@@ -3240,6 +3222,24 @@ describe(ruleName, () => {
               messageId: 'unexpectedInterfacePropertiesOrder',
             },
           ],
+          output: dedent`
+            interface Interface {
+              a?: string
+              c?: string
+              d?: string
+              e?(): void
+              b: string
+            }
+          `,
+          code: dedent`
+            interface Interface {
+              a?: string
+              b: string
+              c?: string
+              d?: string
+              e?(): void
+            }
+          `,
           options: [
             {
               ...options,
@@ -3251,11 +3251,11 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              interface Interface {
-                a?: string
-                [index: number]: string
-              }
-            `,
+            interface Interface {
+              a?: string
+              [index: number]: string
+            }
+          `,
           options: [
             {
               ...options,
@@ -3415,13 +3415,13 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              interface Interface {
-                b(): void
-                c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
-                a: string
-                d: string
-              }
-            `,
+            interface Interface {
+              b(): void
+              c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
+              a: string
+              d: string
+            }
+          `,
           options: [
             {
               ...options,
@@ -4079,24 +4079,6 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): sorts interface properties`, rule, {
       invalid: [
         {
-          output: dedent`
-              interface Interface {
-                a?: string
-                c?: string
-                d?: string
-                e?(): void
-                b: string
-              }
-            `,
-          code: dedent`
-              interface Interface {
-                a?: string
-                b: string
-                c?: string
-                d?: string
-                e?(): void
-              }
-            `,
           errors: [
             {
               data: {
@@ -4106,6 +4088,24 @@ describe(ruleName, () => {
               messageId: 'unexpectedInterfacePropertiesOrder',
             },
           ],
+          output: dedent`
+            interface Interface {
+              a?: string
+              c?: string
+              d?: string
+              e?(): void
+              b: string
+            }
+          `,
+          code: dedent`
+            interface Interface {
+              a?: string
+              b: string
+              c?: string
+              d?: string
+              e?(): void
+            }
+          `,
           options: [
             {
               ...options,
@@ -4117,11 +4117,11 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              interface Interface {
-                a?: string
-                [index: number]: string
-              }
-            `,
+            interface Interface {
+              a?: string
+              [index: number]: string
+            }
+          `,
           options: [
             {
               ...options,
@@ -4152,23 +4152,23 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              interface ButtonProps {
-                label: string
-                size?: 'large' | 'medium' | 'small'
-                backgroundColor?: string
-                primary?: boolean
-                onClick?(): void
-              }
-            `,
+            interface ButtonProps {
+              label: string
+              size?: 'large' | 'medium' | 'small'
+              backgroundColor?: string
+              primary?: boolean
+              onClick?(): void
+            }
+          `,
           code: dedent`
-              interface ButtonProps {
-                backgroundColor?: string
-                label: string
-                primary?: boolean
-                size?: 'large' | 'medium' | 'small'
-                onClick?(): void
-              }
-            `,
+            interface ButtonProps {
+              backgroundColor?: string
+              label: string
+              primary?: boolean
+              size?: 'large' | 'medium' | 'small'
+              onClick?(): void
+            }
+          `,
           options: [
             {
               ...options,
@@ -4180,11 +4180,11 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              interface X {
-                [index: number]: string
-                a?: string
-              }
-            `,
+            interface X {
+              [index: number]: string
+              a?: string
+            }
+          `,
           options: [
             {
               ...options,
@@ -4465,13 +4465,13 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              interface Interface {
-                c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
-                b(): void
-                a: string
-                d: string
-              }
-            `,
+            interface Interface {
+              c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
+              b(): void
+              a: string
+              d: string
+            }
+          `,
           options: [
             {
               ...options,
@@ -4500,12 +4500,12 @@ describe(ruleName, () => {
               },
             ],
             code: dedent`
-            interface Interface {
-              a: string
-              b: 'b1' | 'b2',
-              c: string
-            }
-          `,
+              interface Interface {
+                a: string
+                b: 'b1' | 'b2',
+                c: string
+              }
+            `,
           },
         ],
         invalid: [],

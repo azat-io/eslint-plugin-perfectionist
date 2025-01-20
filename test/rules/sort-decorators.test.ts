@@ -386,7 +386,7 @@ describe(ruleName, () => {
                   @B()
                   foo: number;
               }
-           `,
+            `,
             code: dedent`
                 class Class {
                   // Should not move
@@ -398,7 +398,7 @@ describe(ruleName, () => {
                   @A()
                   foo: number;
               }
-           `,
+            `,
             errors: [
               {
                 messageId: 'unexpectedDecoratorsOrder',
@@ -420,7 +420,7 @@ describe(ruleName, () => {
                   @B()
                   foo: number;
               }
-           `,
+            `,
             code: dedent`
                 class Class {
                   // Should not move
@@ -434,7 +434,7 @@ describe(ruleName, () => {
                   @A()
                   foo: number;
               }
-           `,
+            `,
             errors: [
               {
                 messageId: 'unexpectedDecoratorsOrder',
@@ -451,7 +451,7 @@ describe(ruleName, () => {
                   @B()
                   foo: number;
               }
-           `,
+            `,
             code: dedent`
                 class Class {
                   // Shouldn't move
@@ -460,7 +460,7 @@ describe(ruleName, () => {
                   @A()
                   foo: number;
               }
-           `,
+            `,
             errors: [
               {
                 messageId: 'unexpectedDecoratorsOrder',
@@ -476,7 +476,7 @@ describe(ruleName, () => {
                   @B()
                   foo: number;
               }
-           `,
+            `,
             code: dedent`
                 class Class {
                   @B()
@@ -484,7 +484,7 @@ describe(ruleName, () => {
                   @A()
                   foo: number;
               }
-           `,
+            `,
             errors: [
               {
                 messageId: 'unexpectedDecoratorsOrder',
@@ -3890,15 +3890,15 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-              class Class {
+                class Class {
 
-                method(
-                  @B
-                  @A
-                  parameter) {}
+                  method(
+                    @B
+                    @A
+                    parameter) {}
 
-              }
-            `,
+                }
+              `,
               options: [
                 {
                   sortOnParameters: false,

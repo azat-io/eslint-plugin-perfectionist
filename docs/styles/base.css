@@ -75,8 +75,8 @@ a {
   color: var(--color-content-brand);
   text-decoration: underline;
   text-underline-offset: 0.25em;
-  border-radius: var(--border-radius);
   outline: none;
+  border-radius: var(--border-radius);
   transition: box-shadow 200ms;
 
   @media (hover: hover) {
@@ -124,9 +124,9 @@ pre {
   margin-block: 0;
   /* stylelint-disable-next-line plugin/use-logical-properties-and-values */
   overflow-y: scroll;
+  outline: none;
   scrollbar-width: thin;
   border-radius: var(--border-radius);
-  outline: none;
 
   &:focus-visible {
     z-index: 1;
@@ -200,8 +200,8 @@ kbd {
   padding-inline: 0;
   text-decoration: none;
   opacity: 0%;
-  transition: opacity 250ms ease-in-out 100ms;
   transform: translateY(-50%);
+  transition: opacity 250ms ease-in-out 100ms;
 
   &:focus-visible {
     border-radius: 8px;

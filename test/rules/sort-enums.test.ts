@@ -501,13 +501,13 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-               enum Enum {
-                  C = "C",
-                  // B
-                  B = "B",
-                  // A
-                  A = "A",
-                }
+                enum Enum {
+                   C = "C",
+                   // B
+                   B = "B",
+                   // A
+                   A = "A",
+                 }
               `,
               options: [
                 {
@@ -529,6 +529,13 @@ describe(ruleName, () => {
         {
           valid: [
             {
+              code: dedent`
+                enum Enum {
+                  B = 'B',
+                  // I am a partition comment because I don't have f o o
+                  A = 'A',
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -537,13 +544,6 @@ describe(ruleName, () => {
                   },
                 },
               ],
-              code: dedent`
-              enum Enum {
-                B = 'B',
-                // I am a partition comment because I don't have f o o
-                A = 'A',
-              }
-            `,
             },
           ],
           invalid: [],
@@ -625,13 +625,13 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-               enum Enum {
-                  C = "C",
-                  /* B */
-                  B = "B",
-                  /* A */
-                  A = "A",
-                }
+                enum Enum {
+                   C = "C",
+                   /* B */
+                   B = "B",
+                   /* A */
+                   A = "A",
+                 }
               `,
               options: [
                 {
@@ -837,15 +837,15 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              enum Enum {
-                你好 = '你好',
-                世界 = '世界',
-                a = 'a',
-                A = 'A',
-                b = 'b',
-                B = 'B',
-              }
-            `,
+            enum Enum {
+              你好 = '你好',
+              世界 = '世界',
+              a = 'a',
+              A = 'A',
+              b = 'b',
+              B = 'B',
+            }
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -1929,12 +1929,12 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              enum Enum {
-                'a' = '1',
-                'b' = 2,
-                'c' = 0,
-              }
-            `,
+            enum Enum {
+              'a' = '1',
+              'b' = 2,
+              'c' = 0,
+            }
+          `,
           options: [
             {
               forceNumericSort: true,
@@ -1949,7 +1949,7 @@ describe(ruleName, () => {
                 'c' = 0,
                 d,
               }
-            `,
+          `,
           options: [
             {
               forceNumericSort: true,
@@ -1964,7 +1964,7 @@ describe(ruleName, () => {
                 'c' = 0,
                 d = undefined,
               }
-            `,
+          `,
           options: [
             {
               forceNumericSort: true,
@@ -1979,7 +1979,7 @@ describe(ruleName, () => {
                 'c' = 0,
                 d = null,
               }
-            `,
+          `,
           options: [
             {
               forceNumericSort: true,
@@ -2004,7 +2004,7 @@ describe(ruleName, () => {
                 'c' = 5 | 6, // 7
                 'd' = 2 << 2, // 8
               }
-            `,
+          `,
           options: [
             {
               forceNumericSort: true,
@@ -2044,19 +2044,19 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-              enum Enum {
-                'c' = 0,
-                'a' = 1,
-                'b' = 2,
-              }
+                enum Enum {
+                  'c' = 0,
+                  'a' = 1,
+                  'b' = 2,
+                }
               `,
               code: dedent`
-              enum Enum {
-                'b' = 2,
-                'a' = 1,
-                'c' = 0,
-              }
-            `,
+                enum Enum {
+                  'b' = 2,
+                  'a' = 1,
+                  'c' = 0,
+                }
+              `,
               options: [
                 {
                   sortByValue: true,
@@ -2092,19 +2092,19 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-              enum Enum {
-                'c' = 0,
-                'a' = 1,
-                'b' = 2,
-              }
+                enum Enum {
+                  'c' = 0,
+                  'a' = 1,
+                  'b' = 2,
+                }
               `,
               code: dedent`
-              enum Enum {
-                'b' = 2,
-                'a' = 1,
-                'c' = 0,
-              }
-            `,
+                enum Enum {
+                  'b' = 2,
+                  'a' = 1,
+                  'c' = 0,
+                }
+              `,
               options: [
                 {
                   forceNumericSort: true,
@@ -2342,7 +2342,7 @@ describe(ruleName, () => {
                   B = \`\${Enum.D}\`,
                   C = \`\${D}\`,
                 }
-            `,
+              `,
               options: [
                 {
                   type: 'alphabetical',
@@ -2418,26 +2418,26 @@ describe(ruleName, () => {
                   messageId: 'unexpectedEnumsDependencyOrder',
                 },
               ],
+              output: dedent`
+                enum Enum {
+                  A = 'A',
+                  // Part: 1
+                  B = A,
+                }
+              `,
+              code: dedent`
+                enum Enum {
+                  B = A,
+                  // Part: 1
+                  A = 'A',
+                }
+              `,
               options: [
                 {
                   partitionByComment: '^Part*',
                   type: 'alphabetical',
                 },
               ],
-              output: dedent`
-              enum Enum {
-                A = 'A',
-                // Part: 1
-                B = A,
-              }
-            `,
-              code: dedent`
-              enum Enum {
-                B = A,
-                // Part: 1
-                A = 'A',
-              }
-            `,
             },
           ],
           valid: [],
@@ -2453,45 +2453,45 @@ describe(ruleName, () => {
           invalid: [
             {
               output: dedent`
-              enum Enum {
-                // Ignore this comment
+                enum Enum {
+                  // Ignore this comment
 
-                // A3
-                /**
-                  * A2
-                  */
-                // A1
-                A = 'A',
+                  // A3
+                  /**
+                    * A2
+                    */
+                  // A1
+                  A = 'A',
 
-                // Ignore this comment
+                  // Ignore this comment
 
-                // B2
-                /**
-                  * B1
-                  */
-                B = 'B',
-              }
-            `,
+                  // B2
+                  /**
+                    * B1
+                    */
+                  B = 'B',
+                }
+              `,
               code: dedent`
-              enum Enum {
-                // Ignore this comment
+                enum Enum {
+                  // Ignore this comment
 
-                // B2
-                /**
-                  * B1
-                  */
-                B = 'B',
+                  // B2
+                  /**
+                    * B1
+                    */
+                  B = 'B',
 
-                // Ignore this comment
+                  // Ignore this comment
 
-                // A3
-                /**
-                  * A2
-                  */
-                // A1
-                A = 'A',
-              }
-            `,
+                  // A3
+                  /**
+                    * A2
+                    */
+                  // A1
+                  A = 'A',
+                }
+              `,
               errors: [
                 {
                   data: {

@@ -324,163 +324,187 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           let modifiers: Modifier[] = []
           let selectors: Selector[] = []
           let addSafetySemicolonWhenInline: boolean = true
-          if (
-            member.type === 'MethodDefinition' ||
-            member.type === 'TSAbstractMethodDefinition'
-          ) {
-            /**
-             * By putting the static modifier before accessibility modifiers, we
-             * prioritize 'static' over those in cases like:
-             * config: ['static-method', 'public-method']
-             * element: public static method();
-             * Element will be classified as 'static-method' before
-             * 'public-method'.
-             */
-            if (member.static) {
-              modifiers.push('static')
-            }
-            if (member.type === 'TSAbstractMethodDefinition') {
-              modifiers.push('abstract')
-            } else if (!node.parent.declare) {
-              addSafetySemicolonWhenInline = false
-            }
+          switch (member.type) {
+            case 'TSAbstractMethodDefinition':
+            case 'MethodDefinition': {
+              /**
+               * By putting the static modifier before accessibility modifiers, we
+               * prioritize 'static' over those in cases like:
+               * config: ['static-method', 'public-method']
+               * element: public static method();
+               * Element will be classified as 'static-method' before
+               * 'public-method'.
+               */
+              if (member.static) {
+                modifiers.push('static')
+              }
+              if (member.type === 'TSAbstractMethodDefinition') {
+                modifiers.push('abstract')
+              } else if (!node.parent.declare) {
+                addSafetySemicolonWhenInline = false
+              }
 
-            if (decorated) {
-              modifiers.push('decorated')
-            }
+              if (decorated) {
+                modifiers.push('decorated')
+              }
 
-            if (member.override) {
-              modifiers.push('override')
-            }
+              if (member.override) {
+                modifiers.push('override')
+              }
 
-            if (member.accessibility === 'protected') {
-              modifiers.push('protected')
-            } else if (member.accessibility === 'private' || isPrivateHash) {
-              modifiers.push('private')
-            } else {
-              modifiers.push('public')
-            }
+              if (member.accessibility === 'protected') {
+                modifiers.push('protected')
+              } else if (member.accessibility === 'private' || isPrivateHash) {
+                modifiers.push('private')
+              } else {
+                modifiers.push('public')
+              }
 
-            if (member.optional) {
-              modifiers.push('optional')
-            }
+              if (member.optional) {
+                modifiers.push('optional')
+              }
 
-            if (member.value.async) {
-              modifiers.push('async')
-            }
-
-            if (member.kind === 'constructor') {
-              selectors.push('constructor')
-            }
-
-            if (member.kind === 'get') {
-              selectors.push('get-method')
-            }
-
-            if (member.kind === 'set') {
-              selectors.push('set-method')
-            }
-            selectors.push('method')
-          } else if (member.type === 'TSIndexSignature') {
-            if (member.static) {
-              modifiers.push('static')
-            }
-
-            if (member.readonly) {
-              modifiers.push('readonly')
-            }
-
-            selectors.push('index-signature')
-          } else if (member.type === 'StaticBlock') {
-            addSafetySemicolonWhenInline = false
-
-            selectors.push('static-block')
-
-            dependencies = extractDependencies(member, true)
-          } else if (
-            member.type === 'AccessorProperty' ||
-            member.type === 'TSAbstractAccessorProperty'
-          ) {
-            if (member.static) {
-              modifiers.push('static')
-            }
-
-            if (member.type === 'TSAbstractAccessorProperty') {
-              modifiers.push('abstract')
-            }
-
-            if (decorated) {
-              modifiers.push('decorated')
-            }
-
-            if (member.override) {
-              modifiers.push('override')
-            }
-
-            if (member.accessibility === 'protected') {
-              modifiers.push('protected')
-            } else if (member.accessibility === 'private' || isPrivateHash) {
-              modifiers.push('private')
-            } else {
-              modifiers.push('public')
-            }
-            selectors.push('accessor-property')
-          } else {
-            /**
-             * Member is necessarily a property similarly to above for methods,
-             * prioritize 'static', 'declare', 'decorated', 'abstract',
-             * 'override' and 'readonly' over accessibility modifiers.
-             */
-            if (member.static) {
-              modifiers.push('static')
-            }
-
-            if (member.declare) {
-              modifiers.push('declare')
-            }
-
-            if (member.type === 'TSAbstractPropertyDefinition') {
-              modifiers.push('abstract')
-            }
-
-            if (decorated) {
-              modifiers.push('decorated')
-            }
-
-            if (member.override) {
-              modifiers.push('override')
-            }
-
-            if (member.readonly) {
-              modifiers.push('readonly')
-            }
-
-            if (member.accessibility === 'protected') {
-              modifiers.push('protected')
-            } else if (member.accessibility === 'private' || isPrivateHash) {
-              modifiers.push('private')
-            } else {
-              modifiers.push('public')
-            }
-
-            if (member.optional) {
-              modifiers.push('optional')
-            }
-
-            if (
-              member.value?.type === 'ArrowFunctionExpression' ||
-              member.value?.type === 'FunctionExpression'
-            ) {
               if (member.value.async) {
                 modifiers.push('async')
               }
-              selectors.push('function-property')
-            } else if (member.value) {
-              memberValue = sourceCode.getText(member.value)
-              dependencies = extractDependencies(member.value, member.static)
-            }
 
-            selectors.push('property')
+              if (member.kind === 'constructor') {
+                selectors.push('constructor')
+              }
+
+              if (member.kind === 'get') {
+                selectors.push('get-method')
+              }
+
+              if (member.kind === 'set') {
+                selectors.push('set-method')
+              }
+              selectors.push('method')
+
+              break
+            }
+            case 'TSAbstractAccessorProperty':
+            case 'AccessorProperty': {
+              if (member.static) {
+                modifiers.push('static')
+              }
+
+              if (member.type === 'TSAbstractAccessorProperty') {
+                modifiers.push('abstract')
+              }
+
+              if (decorated) {
+                modifiers.push('decorated')
+              }
+
+              if (member.override) {
+                modifiers.push('override')
+              }
+
+              if (member.accessibility === 'protected') {
+                modifiers.push('protected')
+              } else if (member.accessibility === 'private' || isPrivateHash) {
+                modifiers.push('private')
+              } else {
+                modifiers.push('public')
+              }
+              selectors.push('accessor-property')
+
+              break
+            }
+            case 'TSIndexSignature': {
+              if (member.static) {
+                modifiers.push('static')
+              }
+
+              if (member.readonly) {
+                modifiers.push('readonly')
+              }
+
+              selectors.push('index-signature')
+
+              break
+            }
+            case 'StaticBlock': {
+              addSafetySemicolonWhenInline = false
+
+              selectors.push('static-block')
+
+              dependencies = extractDependencies(member, true)
+
+              break
+            }
+            default: {
+              /**
+               * Member is necessarily a property similarly to above for methods,
+               * prioritize 'static', 'declare', 'decorated', 'abstract',
+               * 'override' and 'readonly' over accessibility modifiers.
+               */
+              if ('static' in member && member.static) {
+                modifiers.push('static')
+              }
+
+              if ('declare' in member && member.declare) {
+                modifiers.push('declare')
+              }
+
+              if (member.type === 'TSAbstractPropertyDefinition') {
+                modifiers.push('abstract')
+              }
+
+              if (decorated) {
+                modifiers.push('decorated')
+              }
+
+              if ('override' in member && member.override) {
+                modifiers.push('override')
+              }
+
+              if ('readonly' in member && member.readonly) {
+                modifiers.push('readonly')
+              }
+
+              if (
+                'accessibility' in member &&
+                member.accessibility === 'protected'
+              ) {
+                modifiers.push('protected')
+              } else if (
+                ('accessibility' in member &&
+                  member.accessibility === 'private') ||
+                isPrivateHash
+              ) {
+                modifiers.push('private')
+              } else {
+                modifiers.push('public')
+              }
+
+              if ('optional' in member && member.optional) {
+                modifiers.push('optional')
+              }
+
+              if ('value' in member && member.value) {
+                if (
+                  member.value.type === 'ArrowFunctionExpression' ||
+                  member.value.type === 'FunctionExpression'
+                ) {
+                  if (member.value.async) {
+                    modifiers.push('async')
+                  }
+                  selectors.push('function-property')
+                } else {
+                  memberValue = sourceCode.getText(member.value)
+                }
+                if (member.value.type !== 'TSEmptyBodyFunctionExpression') {
+                  dependencies = extractDependencies(
+                    member.value,
+                    member.static,
+                  )
+                }
+              }
+
+              selectors.push('property')
+            }
           }
 
           let predefinedGroups = generatePredefinedGroups({

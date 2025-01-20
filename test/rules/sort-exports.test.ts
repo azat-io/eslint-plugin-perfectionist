@@ -401,7 +401,7 @@ describe(ruleName, () => {
               /* Comment */
               export * from './a'
               export * from './b'
-              `,
+            `,
             code: dedent`
               export * from './b'
               /* Comment */
@@ -430,7 +430,7 @@ describe(ruleName, () => {
                 export * from './b'
                 // Comment
                 export * from './a'
-            `,
+              `,
             },
           ],
           invalid: [],
@@ -753,13 +753,13 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              export { 你好 } from '你好'
-              export { 世界 } from '世界'
-              export { a } from 'a'
-              export { A } from 'A'
-              export { b } from 'b'
-              export { B } from 'B'
-            `,
+            export { 你好 } from '你好'
+            export { 世界 } from '世界'
+            export { a } from 'a'
+            export { A } from 'A'
+            export { b } from 'b'
+            export { B } from 'B'
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],

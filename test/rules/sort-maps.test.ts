@@ -128,28 +128,28 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              new Map([
-                [aa, aa],
-                [b, b],
-              ])
-            `,
+            new Map([
+              [aa, aa],
+              [b, b],
+            ])
+          `,
           code: dedent`
-              new Map([
-                [b, b],
-                [aa, aa],
-              ])
-            `,
+            new Map([
+              [b, b],
+              [aa, aa],
+            ])
+          `,
           options: [options],
         },
       ],
       valid: [
         {
           code: dedent`
-              new Map([
-                [aa, aa],
-                [b, b],
-              ])
-            `,
+            new Map([
+              [aa, aa],
+              [b, b],
+            ])
+          `,
           options: [options],
         },
       ],
@@ -168,31 +168,31 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              new Map([
-                [1, 'one'],
-                [2, 'two'],
-                [3, 'three'],
-              ])
-            `,
+            new Map([
+              [1, 'one'],
+              [2, 'two'],
+              [3, 'three'],
+            ])
+          `,
           code: dedent`
-              new Map([
-                [2, 'two'],
-                [1, 'one'],
-                [3, 'three'],
-              ])
-            `,
+            new Map([
+              [2, 'two'],
+              [1, 'one'],
+              [3, 'three'],
+            ])
+          `,
           options: [options],
         },
       ],
       valid: [
         {
           code: dedent`
-              new Map([
-                [1, 'one'],
-                [2, 'two'],
-                [3, 'three'],
-              ])
-            `,
+            new Map([
+              [1, 'one'],
+              [2, 'two'],
+              [3, 'three'],
+            ])
+          `,
           options: [options],
         },
       ],
@@ -557,7 +557,7 @@ describe(ruleName, () => {
                     // a
                     ['a', 'a'],
                   ])
-                  `,
+                `,
                 options: [
                   {
                     ...options,
@@ -778,15 +778,15 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              new Map([
-                [你好, '你好'],
-                [世界, '世界'],
-                [a, 'a'],
-                [A, 'A'],
-                [b, 'b'],
-                [B, 'B'],
-              ])
-            `,
+            new Map([
+              [你好, '你好'],
+              [世界, '世界'],
+              [a, 'a'],
+              [A, 'A'],
+              [b, 'b'],
+              [B, 'B'],
+            ])
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -918,7 +918,7 @@ describe(ruleName, () => {
                   [o, null],
                   [p, null]
                 ])
-            `,
+              `,
             },
           ],
           valid: [],
@@ -973,7 +973,7 @@ describe(ruleName, () => {
                   ['m', null],
                   ['_c', null]
                 ])
-            `,
+              `,
             },
           ],
           valid: [],
@@ -1187,7 +1187,7 @@ describe(ruleName, () => {
 
                     [b, null],
                 ])
-                `,
+              `,
               code: dedent`
                 new Map([
                   [a, null],
@@ -1529,28 +1529,28 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              new Map([
-                [aa, aa],
-                [b, b],
-              ])
-            `,
+            new Map([
+              [aa, aa],
+              [b, b],
+            ])
+          `,
           code: dedent`
-              new Map([
-                [b, b],
-                [aa, aa],
-              ])
-            `,
+            new Map([
+              [b, b],
+              [aa, aa],
+            ])
+          `,
           options: [options],
         },
       ],
       valid: [
         {
           code: dedent`
-              new Map([
-                [aa, aa],
-                [b, b],
-              ])
-            `,
+            new Map([
+              [aa, aa],
+              [b, b],
+            ])
+          `,
           options: [options],
         },
       ],
@@ -1678,28 +1678,28 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              new Map([
-                [aa, aa],
-                [b, b],
-              ])
-            `,
+            new Map([
+              [aa, aa],
+              [b, b],
+            ])
+          `,
           code: dedent`
-              new Map([
-                [b, b],
-                [aa, aa],
-              ])
-            `,
+            new Map([
+              [b, b],
+              [aa, aa],
+            ])
+          `,
           options: [options],
         },
       ],
       valid: [
         {
           code: dedent`
-              new Map([
-                [aa, aa],
-                [b, b],
-              ])
-            `,
+            new Map([
+              [aa, aa],
+              [b, b],
+            ])
+          `,
           options: [options],
         },
       ],
@@ -1875,28 +1875,28 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              new Map([
-                [aa, aa],
-                [b, b],
-              ])
-            `,
+            new Map([
+              [aa, aa],
+              [b, b],
+            ])
+          `,
           code: dedent`
-              new Map([
-                [b, b],
-                [aa, aa],
-              ])
-            `,
+            new Map([
+              [b, b],
+              [aa, aa],
+            ])
+          `,
           options: [options],
         },
       ],
       valid: [
         {
           code: dedent`
-              new Map([
-                [aa, aa],
-                [b, b],
-              ])
-            `,
+            new Map([
+              [aa, aa],
+              [b, b],
+            ])
+          `,
           options: [options],
         },
       ],

@@ -112,7 +112,7 @@ describe(ruleName, () => {
             function assertInputIsCorrect(input: FindUserInput | FindAllUsersInput): void {
               // Some logic
             }
-            `,
+          `,
           code: dedent`
             export interface FindUserInput {
               id: string
@@ -618,6 +618,19 @@ describe(ruleName, () => {
                   messageId: 'unexpectedModulesGroupOrder',
                 },
               ],
+              output: dedent`
+                function b() {}
+
+                function a() {}
+
+                function d() {}
+
+                function e() {}
+
+                function c() {}
+
+                interface Interface {}
+              `,
               code: dedent`
                 function b() {}
 
@@ -631,19 +644,6 @@ describe(ruleName, () => {
 
                 function c() {}
               `,
-              output: dedent`
-                function b() {}
-
-                function a() {}
-
-                function d() {}
-
-                function e() {}
-
-                function c() {}
-
-                interface Interface {}
-            `,
             },
           ],
           valid: [],
@@ -763,7 +763,7 @@ describe(ruleName, () => {
                 function meTooIHaveFoo() {}
                 function a() {}
                 function b() {}
-            `,
+              `,
             },
           ],
           invalid: [],
@@ -834,7 +834,7 @@ describe(ruleName, () => {
                   type A = {}
 
                   type B = {}
-              `,
+                `,
                 code: dedent`
                   type A = {}
                   type B = {}
@@ -1594,14 +1594,14 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-                type A = {
-                  a: Enum.V
-                }
+              type A = {
+                a: Enum.V
+              }
 
-                enum Enum {
-                  V = 'V'
-                }
-              `,
+              enum Enum {
+                V = 'V'
+              }
+            `,
             options: [
               {
                 ...options,
@@ -1617,14 +1617,14 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-                enum B {
-                  V = 'V'
-                }
+              enum B {
+                V = 'V'
+              }
 
-                enum A {
-                  V = B.V
-                }
-              `,
+              enum A {
+                V = B.V
+              }
+            `,
             options: [
               {
                 ...options,
@@ -1906,21 +1906,21 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              function a() {}
-              class SomeClass {}
-              function b() {}
-            `,
-          code: dedent`
-              function b() {}
-              class SomeClass {}
-              function a() {}
-            `,
+            function a() {}
+            class SomeClass {}
+            function b() {}
+          `,
           options: [
             {
               ...options,
               groups: ['function'],
             },
           ],
+          code: dedent`
+            function b() {}
+            class SomeClass {}
+            function a() {}
+          `,
         },
       ],
       valid: [],
@@ -2028,19 +2028,19 @@ describe(ruleName, () => {
                 },
               ],
               code: dedent`
-                interface A {}
+                  interface A {}
 
 
-               function y() {}
-              function z() {}
+                 function y() {}
+                function z() {}
 
-                  function b() {}
+                    function b() {}
               `,
               output: dedent`
-                function b() {}
-               function y() {}
-              function z() {}
-                  interface A {}
+                  function b() {}
+                 function y() {}
+                function z() {}
+                    interface A {}
               `,
             },
           ],
@@ -2091,14 +2091,14 @@ describe(ruleName, () => {
                 function z() {}
 
                     class B {}
-                `,
+              `,
               code: dedent`
-                interface A {}
+                  interface A {}
 
 
-               function z() {}
-              function y() {}
-                  class B {}
+                 function z() {}
+                function y() {}
+                    class B {}
               `,
             },
           ],
@@ -2257,11 +2257,11 @@ describe(ruleName, () => {
                     },
                   ],
                   output: dedent`
-                  function a() {} function b() {}
-                `,
+                    function a() {} function b() {}
+                  `,
                   code: dedent`
-                  function b() {} function a() {}
-                `,
+                    function b() {} function a() {}
+                  `,
                   options: [options],
                 },
                 {
@@ -2275,11 +2275,11 @@ describe(ruleName, () => {
                     },
                   ],
                   output: dedent`
-                  function a() {} function b() {};
-                `,
+                    function a() {} function b() {};
+                  `,
                   code: dedent`
-                  function b() {} function a() {};
-                `,
+                    function b() {} function a() {};
+                  `,
                   options: [options],
                 },
                 {
@@ -2293,11 +2293,11 @@ describe(ruleName, () => {
                     },
                   ],
                   output: dedent`
-                  function a() {}; function b() {}
-                `,
+                    function a() {}; function b() {}
+                  `,
                   code: dedent`
-                  function b() {}; function a() {}
-                `,
+                    function b() {}; function a() {}
+                  `,
                   options: [options],
                 },
               ],
@@ -2323,11 +2323,11 @@ describe(ruleName, () => {
                     },
                   ],
                   output: dedent`
-                  declare function a(); declare function b();
-                `,
+                    declare function a(); declare function b();
+                  `,
                   code: dedent`
-                  declare function b(); declare function a()
-                `,
+                    declare function b(); declare function a()
+                  `,
                   options: [options],
                 },
                 {
@@ -2341,11 +2341,11 @@ describe(ruleName, () => {
                     },
                   ],
                   output: dedent`
-                  declare function a(); declare function b();
-                `,
+                    declare function a(); declare function b();
+                  `,
                   code: dedent`
-                  declare function b(); declare function a();
-                `,
+                    declare function b(); declare function a();
+                  `,
                   options: [options],
                 },
               ],
@@ -2435,11 +2435,11 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-                  type a = {}; type b = {};
-                `,
+                type a = {}; type b = {};
+              `,
               code: dedent`
-                  type b = {}; type a = {}
-                `,
+                type b = {}; type a = {}
+              `,
               options: [options],
             },
             {
@@ -2453,11 +2453,11 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-                  type a = {}; type b = {};
-                `,
+                type a = {}; type b = {};
+              `,
               code: dedent`
-                  type b = {}; type a = {};
-                `,
+                type b = {}; type a = {};
+              `,
               options: [options],
             },
           ],
@@ -2610,25 +2610,25 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-                @B
-                class B {}
+              @B
+              class B {}
 
-                @A
-                export class A {}
+              @A
+              export class A {}
 
-                @C
-                class C {}
-              `,
+              @C
+              class C {}
+            `,
             code: dedent`
-                @C
-                class C {}
+              @C
+              class C {}
 
-                @A
-                export class A {}
+              @A
+              export class A {}
 
-                @B
-                class B {}
-              `,
+              @B
+              class B {}
+            `,
             options: [
               {
                 ...options,
@@ -2733,7 +2733,7 @@ describe(ruleName, () => {
             function assertInputIsCorrect(input: FindUserInput | FindAllUsersInput): void {
               // Some logic
             }
-            `,
+          `,
           code: dedent`
             export interface FindUserInput {
               id: string
@@ -2877,7 +2877,7 @@ describe(ruleName, () => {
             function assertInputIsCorrect(input: FindUserInput | FindAllUsersInput): void {
               // Some logic
             }
-            `,
+          `,
           code: dedent`
             export interface FindUserInput {
               id: string
@@ -3206,51 +3206,51 @@ describe(ruleName, () => {
           invalid: [
             {
               output: dedent`
-              // Ignore this comment
+                // Ignore this comment
 
-              // B2
-              /**
-                * B1
-                */
-              function b() {}
+                // B2
+                /**
+                  * B1
+                  */
+                function b() {}
 
-              // C2
-              // C1
-              function c() {}
+                // C2
+                // C1
+                function c() {}
 
-              // Above a partition comment ignore me
-              // PartitionComment: 1
-              function a() {}
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                function a() {}
 
-              /**
-                * D2
-                */
-              // D1
-              function d() {}
-            `,
+                /**
+                  * D2
+                  */
+                // D1
+                function d() {}
+              `,
               code: dedent`
-              // Ignore this comment
+                // Ignore this comment
 
-              // C2
-              // C1
-              function c() {}
+                // C2
+                // C1
+                function c() {}
 
-              // B2
-              /**
-                * B1
-                */
-              function b() {}
+                // B2
+                /**
+                  * B1
+                  */
+                function b() {}
 
-              // Above a partition comment ignore me
-              // PartitionComment: 1
-              /**
-                * D2
-                */
-              // D1
-              function d() {}
+                // Above a partition comment ignore me
+                // PartitionComment: 1
+                /**
+                  * D2
+                  */
+                // D1
+                function d() {}
 
-              function a() {}
-            `,
+                function a() {}
+              `,
               errors: [
                 {
                   data: {

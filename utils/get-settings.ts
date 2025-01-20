@@ -50,7 +50,7 @@ export let getSettings = (
   >
 
   let invalidOptions = getInvalidOptions(perfectionistSettings)
-  if (invalidOptions.length) {
+  if (invalidOptions.length > 0) {
     throw new Error(
       `Invalid Perfectionist setting(s): ${invalidOptions.join(', ')}`,
     )

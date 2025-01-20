@@ -631,29 +631,29 @@ describe(ruleName, () => {
           invalid: [
             {
               output: dedent`
-                  type T =
-                    /* Partition Comment */
-                    // Part: A
-                    D |
-                    // Part: B
-                    AAA |
-                    BB |
-                    C |
-                    /* Other */
-                    E
-                `,
+                type T =
+                  /* Partition Comment */
+                  // Part: A
+                  D |
+                  // Part: B
+                  AAA |
+                  BB |
+                  C |
+                  /* Other */
+                  E
+              `,
               code: dedent`
-                  type T =
-                    /* Partition Comment */
-                    // Part: A
-                    D |
-                    // Part: B
-                    AAA |
-                    C |
-                    BB |
-                    /* Other */
-                    E
-                `,
+                type T =
+                  /* Partition Comment */
+                  // Part: A
+                  D |
+                  // Part: B
+                  AAA |
+                  C |
+                  BB |
+                  /* Other */
+                  E
+              `,
               errors: [
                 {
                   data: {
@@ -682,13 +682,13 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-              type T =
-                E |
-                F |
-                // I am a partition comment because I don't have f o o
-                A |
-                B
-            `,
+                type T =
+                  E |
+                  F |
+                  // I am a partition comment because I don't have f o o
+                  A |
+                  B
+              `,
               options: [
                 {
                   ...options,
@@ -786,7 +786,7 @@ describe(ruleName, () => {
                     B |
                     // A
                     A
-                  `,
+                `,
               },
             ],
             invalid: [],
@@ -852,7 +852,7 @@ describe(ruleName, () => {
                   B |
                   // Comment
                   A
-             `,
+              `,
             },
           ],
           valid: [],
@@ -991,14 +991,14 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              type T =
-                你好 |
-                世界 |
-                a |
-                A |
-                b |
-                B
-            `,
+            type T =
+              你好 |
+              世界 |
+              a |
+              A |
+              b |
+              B
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -1109,7 +1109,7 @@ describe(ruleName, () => {
                 | Z
 
                     | "A"
-                `,
+              `,
               code: dedent`
                 type T =
                   (() => null)
@@ -2234,19 +2234,19 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-          type T =
-            B
-            | C
-            // eslint-disable-next-line
-            | A
+            type T =
+              B
+              | C
+              // eslint-disable-next-line
+              | A
           `,
           code: dedent`
-          type T =
-            C
-            | B
-            // eslint-disable-next-line
-            | A
-        `,
+            type T =
+              C
+              | B
+              // eslint-disable-next-line
+              | A
+          `,
           options: [{}],
         },
         {
@@ -2299,17 +2299,17 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-          type T =
-            B
-            | C
-            | A // eslint-disable-line
+            type T =
+              B
+              | C
+              | A // eslint-disable-line
           `,
           code: dedent`
-          type T =
-            C
-            | B
-            | A // eslint-disable-line
-        `,
+            type T =
+              C
+              | B
+              | A // eslint-disable-line
+          `,
           options: [{}],
         },
         {
@@ -2323,19 +2323,19 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-          type T =
-            B
-            | C
-            /* eslint-disable-next-line */
-            | A
+            type T =
+              B
+              | C
+              /* eslint-disable-next-line */
+              | A
           `,
           code: dedent`
-          type T =
-            C
-            | B
-            /* eslint-disable-next-line */
-            | A
-        `,
+            type T =
+              C
+              | B
+              /* eslint-disable-next-line */
+              | A
+          `,
           options: [{}],
         },
         {
@@ -2349,17 +2349,17 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-          type T =
-            B
-            | C
-            | A /* eslint-disable-line */
+            type T =
+              B
+              | C
+              | A /* eslint-disable-line */
           `,
           code: dedent`
-          type T =
-            C
-            | B
-            | A /* eslint-disable-line */
-        `,
+            type T =
+              C
+              | B
+              | A /* eslint-disable-line */
+          `,
           options: [{}],
         },
         {
@@ -2407,19 +2407,19 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-          type T =
-            B
-            | C
-            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-            | A
+            type T =
+              B
+              | C
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              | A
           `,
           code: dedent`
-          type T =
-            C
-            | B
-            // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
-            | A
-        `,
+            type T =
+              C
+              | B
+              // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
+              | A
+          `,
           options: [{}],
         },
         {
@@ -2433,17 +2433,17 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-          type T =
-            B
-            | C
-            | A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+            type T =
+              B
+              | C
+              | A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
           `,
           code: dedent`
-          type T =
-            C
-            | B
-            | A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
-        `,
+            type T =
+              C
+              | B
+              | A // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
+          `,
           options: [{}],
         },
         {
@@ -2457,19 +2457,19 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-          type T =
-            B
-            | C
-            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-            | A
+            type T =
+              B
+              | C
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              | A
           `,
           code: dedent`
-          type T =
-            C
-            | B
-            /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
-            | A
-        `,
+            type T =
+              C
+              | B
+              /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
+              | A
+          `,
           options: [{}],
         },
         {
@@ -2483,17 +2483,17 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-          type T =
-            B
-            | C
-            | A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            type T =
+              B
+              | C
+              | A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
           `,
           code: dedent`
-          type T =
-            C
-            | B
-            | A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-        `,
+            type T =
+              C
+              | B
+              | A /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+          `,
           options: [{}],
         },
         {

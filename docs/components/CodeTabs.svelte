@@ -112,11 +112,11 @@
     padding: var(--space-2xs) var(--space-xs);
     font: var(--font-s);
     color: var(--color-content-secondary);
+    outline: none;
     background: var(--color-background-secondary);
     border: none;
     border-block-start: 1px solid var(--color-border-primary);
     border-block-end: 1px solid var(--color-border-primary);
-    outline: none;
     transition: all 300ms;
 
     &:hover {
@@ -169,10 +169,10 @@
       block-size: 42px;
       color: var(--color-content-secondary);
       cursor: pointer;
+      outline: none;
       background: var(--color-background-secondary);
       border: none;
       border-radius: var(--border-radius);
-      outline: none;
       opacity: 0%;
       transition: all 300ms;
 

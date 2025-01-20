@@ -25,7 +25,7 @@ export let getCommentsBefore = ({
   let commentsBefore = getCommentsBeforeNodeOrToken(sourceCode, node)
   let tokenBeforeNode = sourceCode.getTokenBefore(node)
   if (
-    commentsBefore.length ||
+    commentsBefore.length > 0 ||
     !tokenValueToIgnoreBefore ||
     tokenBeforeNode?.value !== tokenValueToIgnoreBefore
   ) {

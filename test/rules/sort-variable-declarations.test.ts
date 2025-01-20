@@ -40,19 +40,19 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              const aaa, bb, c
-            `,
+            const aaa, bb, c
+          `,
           code: dedent`
-              const bb, aaa, c
-            `,
+            const bb, aaa, c
+          `,
           options: [options],
         },
       ],
       valid: [
         {
           code: dedent`
-              const aaa, bb, c
-            `,
+            const aaa, bb, c
+          `,
           options: [options],
         },
       ],
@@ -390,21 +390,21 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}) detects chained dependencies`, rule, {
       valid: [
         {
-          code: dedent`
-              let b = {x: 1},
-              a = b.x;
-            `,
           options: [
             {
               ...options,
             },
           ],
+          code: dedent`
+            let b = {x: 1},
+            a = b.x;
+          `,
         },
         {
           code: dedent`
-              let b = new Subject(),
-              a = b.asObservable();
-            `,
+            let b = new Subject(),
+            a = b.asObservable();
+          `,
           options: [
             {
               ...options,
@@ -460,15 +460,15 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}) detects unary dependencies`, rule, {
       valid: [
         {
-          code: dedent`
-              let b = true,
-              a = !b;
-            `,
           options: [
             {
               ...options,
             },
           ],
+          code: dedent`
+            let b = true,
+            a = !b;
+          `,
         },
       ],
       invalid: [],
@@ -626,13 +626,13 @@ describe(ruleName, () => {
             code: dedent`
               let a = () => b,
               b = 1;
-              `,
+            `,
           },
           {
             code: dedent`
               let a = function() { return b },
               b = 1;
-              `,
+            `,
             options: [
               {
                 ...options,
@@ -643,7 +643,7 @@ describe(ruleName, () => {
             code: dedent`
               let a = () => {return b},
               b = 1;
-              `,
+            `,
             options: [
               {
                 ...options,
@@ -806,29 +806,29 @@ describe(ruleName, () => {
           invalid: [
             {
               output: dedent`
-                  const
-                    /* Partition Comment */
-                    // Part: A
-                    d = 'D',
-                    // Part: B
-                    aaa = 'AAA',
-                    bb = 'BB',
-                    c = 'C',
-                    /* Other */
-                    e = 'E'
-                `,
+                const
+                  /* Partition Comment */
+                  // Part: A
+                  d = 'D',
+                  // Part: B
+                  aaa = 'AAA',
+                  bb = 'BB',
+                  c = 'C',
+                  /* Other */
+                  e = 'E'
+              `,
               code: dedent`
-                  const
-                    /* Partition Comment */
-                    // Part: A
-                    d = 'D',
-                    // Part: B
-                    aaa = 'AAA',
-                    c = 'C',
-                    bb = 'BB',
-                    /* Other */
-                    e = 'E'
-                `,
+                const
+                  /* Partition Comment */
+                  // Part: A
+                  d = 'D',
+                  // Part: B
+                  aaa = 'AAA',
+                  c = 'C',
+                  bb = 'BB',
+                  /* Other */
+                  e = 'E'
+              `,
               errors: [
                 {
                   data: {
@@ -1162,14 +1162,14 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              const
-                你好 = '你好',
-                世界 = '世界',
-                a = 'a',
-                A = 'A',
-                b = 'b',
-                B = 'B'
-            `,
+            const
+              你好 = '你好',
+              世界 = '世界',
+              a = 'a',
+              A = 'A',
+              b = 'b',
+              B = 'B'
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -1246,19 +1246,19 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              const aaa, bb, c
-            `,
+            const aaa, bb, c
+          `,
           code: dedent`
-              const bb, aaa, c
-            `,
+            const bb, aaa, c
+          `,
           options: [options],
         },
       ],
       valid: [
         {
           code: dedent`
-              const aaa, bb, c
-            `,
+            const aaa, bb, c
+          `,
           options: [options],
         },
       ],
@@ -1548,19 +1548,19 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              const aaa, bb, c
-            `,
+            const aaa, bb, c
+          `,
           code: dedent`
-              const bb, aaa, c
-            `,
+            const bb, aaa, c
+          `,
           options: [options],
         },
       ],
       valid: [
         {
           code: dedent`
-              const aaa, bb, c
-            `,
+            const aaa, bb, c
+          `,
           options: [options],
         },
       ],
@@ -1585,19 +1585,19 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              const aaa, bb, c
-            `,
+            const aaa, bb, c
+          `,
           code: dedent`
-              const bb, aaa, c
-            `,
+            const bb, aaa, c
+          `,
           options: [options],
         },
       ],
       valid: [
         {
           code: dedent`
-              const aaa, bb, c
-            `,
+            const aaa, bb, c
+          `,
           options: [options],
         },
       ],

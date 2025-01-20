@@ -45,7 +45,7 @@ export let validateGroupsConfiguration = (
       }
     }
   }
-  if (invalidGroups.length) {
+  if (invalidGroups.length > 0) {
     throw new Error(`Invalid group(s): ${invalidGroups.join(', ')}`)
   }
   validateNoDuplicatedGroups(groups)

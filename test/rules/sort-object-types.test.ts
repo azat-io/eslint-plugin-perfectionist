@@ -366,17 +366,17 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-            type Type = {
-              method(): void
-              property: string
-            }
-          `,
+              type Type = {
+                method(): void
+                property: string
+              }
+            `,
             code: dedent`
-            type Type = {
-              property: string
-              method(): void
-            }
-          `,
+              type Type = {
+                property: string
+                method(): void
+              }
+            `,
           },
         ],
         valid: [],
@@ -924,7 +924,7 @@ describe(ruleName, () => {
                   anotherMethod(): void
                   yetAnotherMethod(): void
                 }
-            `,
+              `,
             },
           ],
           valid: [],
@@ -979,7 +979,7 @@ describe(ruleName, () => {
                   method(): void
                   c
                 }
-            `,
+              `,
             },
           ],
           valid: [],
@@ -1074,13 +1074,13 @@ describe(ruleName, () => {
                 },
               ],
               code: dedent`
-              type Type = {
-                iHaveFooInMyName: string
-                meTooIHaveFoo: string
-                a: string
-                b: string
-              }
-            `,
+                type Type = {
+                  iHaveFooInMyName: string
+                  meTooIHaveFoo: string
+                  a: string
+                  b: string
+                }
+              `,
             },
           ],
           invalid: [],
@@ -1335,6 +1335,38 @@ describe(ruleName, () => {
         {
           invalid: [
             {
+              output: dedent`
+                type Type = {
+                  // Part: A
+                  // Not partition comment
+                  bbb: string
+                  cc: string
+                  d: string
+                  // Part: B
+                  aaaa: string
+                  e: string
+                  // Part: C
+                  // Not partition comment
+                  fff: string
+                  'gg': string
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  // Part: A
+                  cc: string
+                  d: string
+                  // Not partition comment
+                  bbb: string
+                  // Part: B
+                  aaaa: string
+                  e: string
+                  // Part: C
+                  'gg': string
+                  // Not partition comment
+                  fff: string
+                }
+              `,
               errors: [
                 {
                   data: {
@@ -1351,38 +1383,6 @@ describe(ruleName, () => {
                   messageId: 'unexpectedObjectTypesOrder',
                 },
               ],
-              output: dedent`
-              type Type = {
-                // Part: A
-                // Not partition comment
-                bbb: string
-                cc: string
-                d: string
-                // Part: B
-                aaaa: string
-                e: string
-                // Part: C
-                // Not partition comment
-                fff: string
-                'gg': string
-              }
-            `,
-              code: dedent`
-              type Type = {
-                // Part: A
-                cc: string
-                d: string
-                // Not partition comment
-                bbb: string
-                // Part: B
-                aaaa: string
-                e: string
-                // Part: C
-                'gg': string
-                // Not partition comment
-                fff: string
-              }
-            `,
               options: [
                 {
                   ...options,
@@ -1402,13 +1402,13 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-              type Type = {
-                // Comment
-                bb: string
-                // Other comment
-                a: string
-              }
-            `,
+                type Type = {
+                  // Comment
+                  bb: string
+                  // Other comment
+                  a: string
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -1428,31 +1428,31 @@ describe(ruleName, () => {
           invalid: [
             {
               output: dedent`
-              type Type = {
-                /* Partition Comment */
-                // Part: A
-                d: string
-                // Part: B
-                aaa: string
-                bb: string
-                c: string
-                /* Other */
-                e: string
-              }
-            `,
+                type Type = {
+                  /* Partition Comment */
+                  // Part: A
+                  d: string
+                  // Part: B
+                  aaa: string
+                  bb: string
+                  c: string
+                  /* Other */
+                  e: string
+                }
+              `,
               code: dedent`
-              type Type = {
-                /* Partition Comment */
-                // Part: A
-                d: string
-                // Part: B
-                aaa: string
-                c: string
-                bb: string
-                /* Other */
-                e: string
-              }
-            `,
+                type Type = {
+                  /* Partition Comment */
+                  // Part: A
+                  d: string
+                  // Part: B
+                  aaa: string
+                  c: string
+                  bb: string
+                  /* Other */
+                  e: string
+                }
+              `,
               errors: [
                 {
                   data: {
@@ -1481,14 +1481,14 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-              type Type = {
-                e: string
-                f: string
-                // I am a partition comment because I don't have f o o
-                a: string
-                b: string
-              }
-            `,
+                type Type = {
+                  e: string
+                  f: string
+                  // I am a partition comment because I don't have f o o
+                  a: string
+                  b: string
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -1582,7 +1582,7 @@ describe(ruleName, () => {
                     // a
                     a: string
                   }
-                  `,
+                `,
                 options: [
                   {
                     ...options,
@@ -1652,14 +1652,14 @@ describe(ruleName, () => {
                   a: string
                   b: string
                 }
-            `,
+              `,
               code: dedent`
                 type Type = {
                   b: string
                   // Comment
                   a: string
                 }
-            `,
+              `,
             },
           ],
           valid: [],
@@ -1936,15 +1936,15 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              type Type = {
-                你好: string
-                世界: string
-                a: string
-                A: string
-                b: string
-                B: string
-              }
-            `,
+            type Type = {
+              你好: string
+              世界: string
+              a: string
+              A: string
+              b: string
+              B: string
+            }
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -1955,13 +1955,13 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              type Type = {
-                b(): void
-                c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
-                a: string
-                d: string
-              }
-            `,
+            type Type = {
+              b(): void
+              c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
+              a: string
+              d: string
+            }
+          `,
           options: [
             {
               ...options,
@@ -2075,7 +2075,7 @@ describe(ruleName, () => {
                       // Newline stuff
                     },
                 }
-                `,
+              `,
               code: dedent`
                 type Type = {
                   a: () => null,
@@ -3106,13 +3106,13 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              type Type = {
-                b(): void
-                c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
-                a: string
-                d: string
-              }
-            `,
+            type Type = {
+              b(): void
+              c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
+              a: string
+              d: string
+            }
+          `,
           options: [
             {
               ...options,
@@ -3745,13 +3745,13 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              type Type = {
-                c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
-                b(): void
-                a: string
-                d: string
-              }
-            `,
+            type Type = {
+              c: (((v: false) => 'false') | ((v: true) => 'true')) & ((v: any) => any)
+              b(): void
+              a: string
+              d: string
+            }
+          `,
           options: [
             {
               ...options,
@@ -3780,12 +3780,12 @@ describe(ruleName, () => {
               },
             ],
             code: dedent`
-            type Type = {
-              a: 'aaa'
-              b: 'bb'
-              c: 'c'
-            }
-          `,
+              type Type = {
+                a: 'aaa'
+                b: 'bb'
+                c: 'c'
+              }
+            `,
           },
         ],
         invalid: [],

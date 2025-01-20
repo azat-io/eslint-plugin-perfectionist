@@ -335,27 +335,27 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-              [
-                'a',
-                'd',
+                [
+                  'a',
+                  'd',
 
-                'c',
+                  'c',
 
-                'b',
-                'e',
-              ].includes(value)
-            `,
+                  'b',
+                  'e',
+                ].includes(value)
+              `,
               code: dedent`
-              [
-                'd',
-                'a',
+                [
+                  'd',
+                  'a',
 
-                'c',
+                  'c',
 
-                'e',
-                'b',
-              ].includes(value)
-            `,
+                  'e',
+                  'b',
+                ].includes(value)
+              `,
               options: [
                 {
                   ...options,
@@ -446,37 +446,37 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-              [
-                // Part: A
-                // Not partition comment
-                'bbb',
-                'cc',
-                'd',
-                // Part: B
-                'aaaa',
-                'e',
-                // Part: C
-                // Not partition comment
-                'fff',
-                'gg',
-              ].includes(value)
-            `,
+                [
+                  // Part: A
+                  // Not partition comment
+                  'bbb',
+                  'cc',
+                  'd',
+                  // Part: B
+                  'aaaa',
+                  'e',
+                  // Part: C
+                  // Not partition comment
+                  'fff',
+                  'gg',
+                ].includes(value)
+              `,
               code: dedent`
-              [
-                // Part: A
-                'cc',
-                'd',
-                // Not partition comment
-                'bbb',
-                // Part: B
-                'aaaa',
-                'e',
-                // Part: C
-                'gg',
-                // Not partition comment
-                'fff',
-              ].includes(value)
-            `,
+                [
+                  // Part: A
+                  'cc',
+                  'd',
+                  // Not partition comment
+                  'bbb',
+                  // Part: B
+                  'aaaa',
+                  'e',
+                  // Part: C
+                  'gg',
+                  // Not partition comment
+                  'fff',
+                ].includes(value)
+              `,
               options: [
                 {
                   ...options,
@@ -496,13 +496,13 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-              [
-                // Comment
-                'bb',
-                // Other comment
-                'a',
-              ].includes(value)
-            `,
+                [
+                  // Comment
+                  'bb',
+                  // Other comment
+                  'a',
+                ].includes(value)
+              `,
               options: [
                 {
                   ...options,
@@ -522,31 +522,31 @@ describe(ruleName, () => {
           invalid: [
             {
               output: dedent`
-              [
-                /* Partition Comment */
-                // Part: A
-                'd',
-                // Part: B
-                'aaa',
-                'bb',
-                'c',
-                /* Other */
-                'e',
-              ].includes(value)
-            `,
+                [
+                  /* Partition Comment */
+                  // Part: A
+                  'd',
+                  // Part: B
+                  'aaa',
+                  'bb',
+                  'c',
+                  /* Other */
+                  'e',
+                ].includes(value)
+              `,
               code: dedent`
-              [
-                /* Partition Comment */
-                // Part: A
-                'd',
-                // Part: B
-                'aaa',
-                'c',
-                'bb',
-                /* Other */
-                'e',
-              ].includes(value)
-            `,
+                [
+                  /* Partition Comment */
+                  // Part: A
+                  'd',
+                  // Part: B
+                  'aaa',
+                  'c',
+                  'bb',
+                  /* Other */
+                  'e',
+                ].includes(value)
+              `,
               errors: [
                 {
                   data: {
@@ -702,7 +702,7 @@ describe(ruleName, () => {
                     // a
                     'a'
                   ].includes(value)
-                  `,
+                `,
                 options: [
                   {
                     ...options,
@@ -767,19 +767,19 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-              [
-                // Comment
-                'a',
-                'b'
-              ].includes(value)
-            `,
+                [
+                  // Comment
+                  'a',
+                  'b'
+                ].includes(value)
+              `,
               code: dedent`
-              [
-                'b',
-                // Comment
-                'a'
-              ].includes(value)
-            `,
+                [
+                  'b',
+                  // Comment
+                  'a'
+                ].includes(value)
+              `,
             },
           ],
           valid: [],
@@ -856,12 +856,12 @@ describe(ruleName, () => {
                   },
                 ],
                 code: dedent`
-                [
-                  'b',
-                  /* I am a partition comment because I don't have f o o */
-                  'a'
-                ].includes(value)
-              `,
+                  [
+                    'b',
+                    /* I am a partition comment because I don't have f o o */
+                    'a'
+                  ].includes(value)
+                `,
               },
             ],
             invalid: [],
@@ -874,14 +874,14 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              [
-                'e',
-                'f',
-                // I am a partition comment because I don't have f o o
-                'a',
-                'b',
-              ].includes(value)
-            `,
+            [
+              'e',
+              'f',
+              // I am a partition comment because I don't have f o o
+              'a',
+              'b',
+            ].includes(value)
+          `,
           options: [
             {
               ...options,
@@ -1230,7 +1230,7 @@ describe(ruleName, () => {
                   ...o,
                   ...p,
                 ].includes(value)
-            `,
+              `,
             },
           ],
           valid: [],
@@ -1286,7 +1286,7 @@ describe(ruleName, () => {
                   ...m,
                   'c',
                 ].includes(value)
-            `,
+              `,
             },
           ],
           valid: [],
@@ -1365,13 +1365,13 @@ describe(ruleName, () => {
                 },
               ],
               code: dedent`
-              [
-                'iHaveFooInMyName',
-                'meTooIHaveFoo',
-                'a',
-                'b',
-              ].includes(value)
-            `,
+                [
+                  'iHaveFooInMyName',
+                  'meTooIHaveFoo',
+                  'a',
+                  'b',
+                ].includes(value)
+              `,
             },
           ],
           invalid: [],
@@ -1579,7 +1579,7 @@ describe(ruleName, () => {
 
                     'b',
                 ].includes(value)
-                `,
+              `,
               code: dedent`
                 [
                   'a',

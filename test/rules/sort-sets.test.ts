@@ -335,27 +335,27 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-              new Set([
-                'a',
-                'd',
+                new Set([
+                  'a',
+                  'd',
 
-                'c',
+                  'c',
 
-                'b',
-                'e',
-              ])
-            `,
+                  'b',
+                  'e',
+                ])
+              `,
               code: dedent`
-              new Set([
-                'd',
-                'a',
+                new Set([
+                  'd',
+                  'a',
 
-                'c',
+                  'c',
 
-                'e',
-                'b',
-              ])
-            `,
+                  'e',
+                  'b',
+                ])
+              `,
               options: [
                 {
                   ...options,
@@ -446,37 +446,37 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-              new Set([
-                // Part: A
-                // Not partition comment
-                'bbb',
-                'cc',
-                'd',
-                // Part: B
-                'aaaa',
-                'e',
-                // Part: C
-                // Not partition comment
-                'fff',
-                'gg',
-              ])
-            `,
+                new Set([
+                  // Part: A
+                  // Not partition comment
+                  'bbb',
+                  'cc',
+                  'd',
+                  // Part: B
+                  'aaaa',
+                  'e',
+                  // Part: C
+                  // Not partition comment
+                  'fff',
+                  'gg',
+                ])
+              `,
               code: dedent`
-              new Set([
-                // Part: A
-                'cc',
-                'd',
-                // Not partition comment
-                'bbb',
-                // Part: B
-                'aaaa',
-                'e',
-                // Part: C
-                'gg',
-                // Not partition comment
-                'fff',
-              ])
-            `,
+                new Set([
+                  // Part: A
+                  'cc',
+                  'd',
+                  // Not partition comment
+                  'bbb',
+                  // Part: B
+                  'aaaa',
+                  'e',
+                  // Part: C
+                  'gg',
+                  // Not partition comment
+                  'fff',
+                ])
+              `,
               options: [
                 {
                   ...options,
@@ -496,13 +496,13 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-              new Set([
-                // Comment
-                'bb',
-                // Other comment
-                'a',
-              ])
-            `,
+                new Set([
+                  // Comment
+                  'bb',
+                  // Other comment
+                  'a',
+                ])
+              `,
               options: [
                 {
                   ...options,
@@ -522,31 +522,31 @@ describe(ruleName, () => {
           invalid: [
             {
               output: dedent`
-              new Set([
-                /* Partition Comment */
-                // Part: A
-                'd',
-                // Part: B
-                'aaa',
-                'bb',
-                'c',
-                /* Other */
-                'e',
-              ])
-            `,
+                new Set([
+                  /* Partition Comment */
+                  // Part: A
+                  'd',
+                  // Part: B
+                  'aaa',
+                  'bb',
+                  'c',
+                  /* Other */
+                  'e',
+                ])
+              `,
               code: dedent`
-              new Set([
-                /* Partition Comment */
-                // Part: A
-                'd',
-                // Part: B
-                'aaa',
-                'c',
-                'bb',
-                /* Other */
-                'e',
-              ])
-            `,
+                new Set([
+                  /* Partition Comment */
+                  // Part: A
+                  'd',
+                  // Part: B
+                  'aaa',
+                  'c',
+                  'bb',
+                  /* Other */
+                  'e',
+                ])
+              `,
               errors: [
                 {
                   data: {
@@ -664,15 +664,6 @@ describe(ruleName, () => {
           {
             valid: [
               {
-                code: dedent`
-                  new Set([
-                    'c',
-                    // b
-                    'b',
-                    // a
-                    'a'
-                  ])
-                  `,
                 options: [
                   {
                     ...options,
@@ -681,6 +672,15 @@ describe(ruleName, () => {
                     },
                   },
                 ],
+                code: dedent`
+                  new Set([
+                    'c',
+                    // b
+                    'b',
+                    // a
+                    'a'
+                  ])
+                `,
               },
             ],
             invalid: [],
@@ -742,14 +742,14 @@ describe(ruleName, () => {
                   'a',
                   'b'
                 ])
-            `,
+              `,
               code: dedent`
                 new Set([
                   'b',
                   // Comment
                   'a'
                 ])
-            `,
+              `,
             },
           ],
           valid: [],
@@ -826,12 +826,12 @@ describe(ruleName, () => {
                   },
                 ],
                 code: dedent`
-                new Set([
-                  'b',
-                  /* I am a partition comment because I don't have f o o */
-                  'a'
-                ])
-              `,
+                  new Set([
+                    'b',
+                    /* I am a partition comment because I don't have f o o */
+                    'a'
+                  ])
+                `,
               },
             ],
             invalid: [],
@@ -893,15 +893,15 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              new Set([
-                '你好',
-                '世界',
-                'a',
-                'A',
-                'b',
-                'B',
-              ])
-            `,
+            new Set([
+              '你好',
+              '世界',
+              'a',
+              'A',
+              'b',
+              'B',
+            ])
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -1177,7 +1177,7 @@ describe(ruleName, () => {
                   ...o,
                   ...p,
                 ])
-            `,
+              `,
             },
           ],
           valid: [],
@@ -1233,7 +1233,7 @@ describe(ruleName, () => {
                   ...m,
                   'c',
                 ])
-            `,
+              `,
             },
           ],
           valid: [],
@@ -1312,13 +1312,13 @@ describe(ruleName, () => {
                 },
               ],
               code: dedent`
-              new Set([
-                'iHaveFooInMyName',
-                'meTooIHaveFoo',
-                'a',
-                'b',
-              ])
-            `,
+                new Set([
+                  'iHaveFooInMyName',
+                  'meTooIHaveFoo',
+                  'a',
+                  'b',
+                ])
+              `,
             },
           ],
           invalid: [],
@@ -1526,7 +1526,7 @@ describe(ruleName, () => {
 
                     'b',
                 ])
-                `,
+              `,
               code: dedent`
                 new Set([
                   'a',
@@ -2489,6 +2489,15 @@ describe(ruleName, () => {
               messageId: 'unexpectedSetsOrder',
             },
           ],
+          output: dedent`
+            new Set([
+              ...anotherArray,
+              'b',
+              // eslint-disable-next-line
+              'a',
+              'c'
+            ])
+          `,
           code: dedent`
             new Set([
               'c',
@@ -2497,15 +2506,6 @@ describe(ruleName, () => {
               'a',
               ...anotherArray
             ])
-          `,
-          output: dedent`
-          new Set([
-            ...anotherArray,
-            'b',
-            // eslint-disable-next-line
-            'a',
-            'c'
-          ])
           `,
           options: [
             {
@@ -2529,7 +2529,7 @@ describe(ruleName, () => {
               'c',
               'a', // eslint-disable-line
             ])
-            `,
+          `,
           code: dedent`
             new Set([
               'c',
@@ -2556,15 +2556,15 @@ describe(ruleName, () => {
               /* eslint-disable-next-line */
               'a',
             ])
-            `,
+          `,
           code: dedent`
-          new Set([
-            'c',
-            'b',
-            /* eslint-disable-next-line */
-            'a',
-          ])
-        `,
+            new Set([
+              'c',
+              'b',
+              /* eslint-disable-next-line */
+              'a',
+            ])
+          `,
           options: [{}],
         },
         {
@@ -2583,7 +2583,7 @@ describe(ruleName, () => {
               'c',
               'a', /* eslint-disable-line */
             ])
-            `,
+          `,
           code: dedent`
             new Set([
               'c',
@@ -2637,7 +2637,7 @@ describe(ruleName, () => {
               // eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName}
               'a',
             ])
-            `,
+          `,
           code: dedent`
             new Set([
               'c',
@@ -2673,7 +2673,7 @@ describe(ruleName, () => {
               'c',
               'a', // eslint-disable-line @rule-tester/${eslintDisableRuleTesterName}
             ])
-            `,
+          `,
           code: dedent`
             new Set([
               'c',
@@ -2691,7 +2691,7 @@ describe(ruleName, () => {
               /* eslint-disable-next-line @rule-tester/${eslintDisableRuleTesterName} */
               'a',
             ])
-            `,
+          `,
           code: dedent`
             new Set([
               'c',
@@ -2712,13 +2712,6 @@ describe(ruleName, () => {
           options: [{}],
         },
         {
-          output: dedent`
-            new Set([
-              'b',
-              'c',
-              'a', /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
-            ])
-            `,
           errors: [
             {
               data: {
@@ -2728,6 +2721,13 @@ describe(ruleName, () => {
               messageId: 'unexpectedSetsOrder',
             },
           ],
+          output: dedent`
+            new Set([
+              'b',
+              'c',
+              'a', /* eslint-disable-line @rule-tester/${eslintDisableRuleTesterName} */
+            ])
+          `,
           code: dedent`
             new Set([
               'c',

@@ -447,23 +447,23 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              <Element
-                d="ddd"
-                e="ee"
-                a="aaaa"
-                b="bbb"
-                c="cc"
-              />
-            `,
+            <Element
+              d="ddd"
+              e="ee"
+              a="aaaa"
+              b="bbb"
+              c="cc"
+            />
+          `,
           code: dedent`
-              <Element
-                a="aaaa"
-                b="bbb"
-                c="cc"
-                d="ddd"
-                e="ee"
-              />
-            `,
+            <Element
+              a="aaaa"
+              b="bbb"
+              c="cc"
+              d="ddd"
+              e="ee"
+            />
+          `,
           options: [
             {
               ...options,
@@ -476,14 +476,14 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              <Element
-                d="ddd"
-                e="ee"
-                a="aaaa"
-                b="bbb"
-                c="cc"
-              />
-            `,
+            <Element
+              d="ddd"
+              e="ee"
+              a="aaaa"
+              b="bbb"
+              c="cc"
+            />
+          `,
           options: [
             {
               ...options,
@@ -511,12 +511,12 @@ describe(ruleName, () => {
               },
             ],
             code: dedent`
-            <Element
-              iHaveFooInMyName="iHaveFooInMyName"
-              meTooIHaveFoo="meTooIHaveFoo"
-              a="a"
-              b="b"
-            />
+              <Element
+                iHaveFooInMyName="iHaveFooInMyName"
+                meTooIHaveFoo="meTooIHaveFoo"
+                a="a"
+                b="b"
+              />
             `,
           },
         ],
@@ -577,15 +577,15 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              <Component
-                你好
-                世界
-                a
-                A
-                b
-                B
-              />
-            `,
+            <Component
+              你好
+              世界
+              a
+              A
+              b
+              B
+            />
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -615,27 +615,27 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-                <Component
-                  a
-                  d
+              <Component
+                a
+                d
 
-                  c
+                c
 
-                  b
-                  e
-                />
-              `,
+                b
+                e
+              />
+            `,
             code: dedent`
-                <Component
-                  d
-                  a
+              <Component
+                d
+                a
 
-                  c
+                c
 
-                  e
-                  b
-                />
-              `,
+                e
+                b
+              />
+            `,
             options: [
               {
                 ...options,
@@ -760,7 +760,7 @@ describe(ruleName, () => {
 
                     b
                 />
-                `,
+              `,
               code: dedent`
                 <Component
                   a
@@ -1339,23 +1339,23 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              <Element
-                d="ddd"
-                e="ee"
-                a="aaaa"
-                b="bbb"
-                c="cc"
-              />
-            `,
+            <Element
+              d="ddd"
+              e="ee"
+              a="aaaa"
+              b="bbb"
+              c="cc"
+            />
+          `,
           code: dedent`
-              <Element
-                a="aaaa"
-                b="bbb"
-                c="cc"
-                d="ddd"
-                e="ee"
-              />
-            `,
+            <Element
+              a="aaaa"
+              b="bbb"
+              c="cc"
+              d="ddd"
+              e="ee"
+            />
+          `,
           options: [
             {
               ...options,
@@ -1368,14 +1368,14 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              <Element
-                d="ddd"
-                e="ee"
-                a="aaaa"
-                b="bbb"
-                c="cc"
-              />
-            `,
+            <Element
+              d="ddd"
+              e="ee"
+              a="aaaa"
+              b="bbb"
+              c="cc"
+            />
+          `,
           options: [
             {
               ...options,
@@ -1878,23 +1878,23 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              <Element
-                d="ddd"
-                e="ee"
-                a="aaaa"
-                b="bbb"
-                c="cc"
-              />
-            `,
+            <Element
+              d="ddd"
+              e="ee"
+              a="aaaa"
+              b="bbb"
+              c="cc"
+            />
+          `,
           code: dedent`
-              <Element
-                a="aaaa"
-                b="bbb"
-                c="cc"
-                d="ddd"
-                e="ee"
-              />
-            `,
+            <Element
+              a="aaaa"
+              b="bbb"
+              c="cc"
+              d="ddd"
+              e="ee"
+            />
+          `,
           options: [
             {
               ...options,
@@ -1915,14 +1915,14 @@ describe(ruleName, () => {
             },
           ],
           code: dedent`
-              <Element
-                d="ddd"
-                e="ee"
-                a="aaaa"
-                b="bbb"
-                c="cc"
-              />
-            `,
+            <Element
+              d="ddd"
+              e="ee"
+              a="aaaa"
+              b="bbb"
+              c="cc"
+            />
+          `,
         },
       ],
     })
@@ -1936,16 +1936,16 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-            let Component = () => (
-              <Element
-                a="aaa"
-                b="bb"
-                c="c"
-              >
-                Value
-              </Element>
-            )
-          `,
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  b="bb"
+                  c="c"
+                >
+                  Value
+                </Element>
+              )
+            `,
             options: [
               {
                 customGroups: {

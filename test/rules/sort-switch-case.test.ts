@@ -533,29 +533,29 @@ describe(ruleName, () => {
         invalid: [
           {
             output: dedent`
-            switch (operationMode) {
-              case wwww:
-                return null
-              case yy:
-              case z:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
+              switch (operationMode) {
+                case wwww:
+                  return null
+                case yy:
+                case z:
+                  return null
+                case xxx:
+                default:
+                  return null
+              }
+            `,
             code: dedent`
-            switch (operationMode) {
-              case yy:
-              case z:
-                return null
-              case wwww:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
+              switch (operationMode) {
+                case yy:
+                case z:
+                  return null
+                case wwww:
+                  return null
+                case xxx:
+                default:
+                  return null
+              }
+            `,
             errors: [
               {
                 data: {
@@ -571,17 +571,17 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-            switch (operationMode) {
-              case wwww:
-                return null
-              case yy:
-              case z:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
+              switch (operationMode) {
+                case wwww:
+                  return null
+                case yy:
+                case z:
+                  return null
+                case xxx:
+                default:
+                  return null
+              }
+            `,
             options: [options],
           },
         ],
@@ -771,21 +771,21 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-            switch (x) {
-              case 'AA':
-              case 'B':
-              default:
-                break;
-            }
-          `,
+              switch (x) {
+                case 'AA':
+                case 'B':
+                default:
+                  break;
+              }
+            `,
             code: dedent`
-            switch (x) {
-              case 'AA':
-              default:
-              case 'B':
-                break;
-            }
-          `,
+              switch (x) {
+                case 'AA':
+                default:
+                case 'B':
+                  break;
+              }
+            `,
             options: [options],
           },
           {
@@ -826,27 +826,27 @@ describe(ruleName, () => {
               },
             ],
             code: dedent`
-            switch (x) {
-              default:
-              case 'default':
-                break;
-              case 'somethingElse':
-                break;
-            }
-          `,
+              switch (x) {
+                default:
+                case 'default':
+                  break;
+                case 'somethingElse':
+                  break;
+              }
+            `,
             options: [options],
           },
         ],
         valid: [
           {
             code: dedent`
-            switch (x) {
-              case 'AA':
-              case 'B':
-              default:
-                const c = 3
-            }
-          `,
+              switch (x) {
+                case 'AA':
+                case 'B':
+                default:
+                  const c = 3
+              }
+            `,
             options: [options],
           },
         ],
@@ -908,16 +908,16 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              switch (x) {
-                case '你好':
-                case '世界':
-                case 'a':
-                case 'A':
-                case 'b':
-                case 'B':
-                  break;
-              }
-            `,
+            switch (x) {
+              case '你好':
+              case '世界':
+              case 'a':
+              case 'A':
+              case 'b':
+              case 'B':
+                break;
+            }
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -1032,7 +1032,7 @@ describe(ruleName, () => {
                 case "b": // b
                   break;
               }
-              `,
+            `,
           ],
           code: dedent`
             switch (value) {
@@ -1040,7 +1040,7 @@ describe(ruleName, () => {
               case "a": // a
                 break;
             }
-            `,
+          `,
           errors: [
             {
               messageId: 'unexpectedSwitchCaseOrder',
@@ -1056,7 +1056,7 @@ describe(ruleName, () => {
                 default: // default
                   break;
               }
-              `,
+            `,
           ],
           code: dedent`
             switch (value) {
@@ -1064,7 +1064,7 @@ describe(ruleName, () => {
               case "a": // a
                 break;
             }
-            `,
+          `,
           errors: [
             {
               messageId: 'unexpectedSwitchCaseOrder',
@@ -1087,7 +1087,7 @@ describe(ruleName, () => {
                 case "a": // A
                   break;
               }
-              `,
+            `,
             dedent`
               switch (value) {
                 case "a": // A
@@ -1139,7 +1139,7 @@ describe(ruleName, () => {
               case "a": // A
                 break;
             }
-            `,
+          `,
           options: [{}],
         },
       ],
@@ -1150,50 +1150,50 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              switch(x) {
-                case "b": {
-                  break
-                }
-                case "a": {
-                  let a
-                }
+            switch(x) {
+              case "b": {
+                break
               }
-            `,
+              case "a": {
+                let a
+              }
+            }
+          `,
           options: [{}],
         },
         {
           code: dedent`
-              switch(x) {
-                default: {
-                  break
-                }
-                case "a": {
-                  let a
-                }
+            switch(x) {
+              default: {
+                break
               }
-            `,
+              case "a": {
+                let a
+              }
+            }
+          `,
           options: [{}],
         },
         {
           code: dedent`
-              switch(x) {
-                case "b":
-                  break
-                case "a":
-                  let a
-              }
-            `,
+            switch(x) {
+              case "b":
+                break
+              case "a":
+                let a
+            }
+          `,
           options: [{}],
         },
         {
           code: dedent`
-              switch(x) {
-                default:
-                  break;
-                case "a":
-                  let a
-              }
-            `,
+            switch(x) {
+              default:
+                break;
+              case "a":
+                let a
+            }
+          `,
           options: [{}],
         },
       ],
@@ -1585,29 +1585,29 @@ describe(ruleName, () => {
         invalid: [
           {
             output: dedent`
-            switch (operationMode) {
-              case wwww:
-                return null
-              case yy:
-              case z:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
+              switch (operationMode) {
+                case wwww:
+                  return null
+                case yy:
+                case z:
+                  return null
+                case xxx:
+                default:
+                  return null
+              }
+            `,
             code: dedent`
-            switch (operationMode) {
-              case yy:
-              case z:
-                return null
-              case wwww:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
+              switch (operationMode) {
+                case yy:
+                case z:
+                  return null
+                case wwww:
+                  return null
+                case xxx:
+                default:
+                  return null
+              }
+            `,
             errors: [
               {
                 data: {
@@ -1623,17 +1623,17 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-            switch (operationMode) {
-              case wwww:
-                return null
-              case yy:
-              case z:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
+              switch (operationMode) {
+                case wwww:
+                  return null
+                case yy:
+                case z:
+                  return null
+                case xxx:
+                default:
+                  return null
+              }
+            `,
             options: [options],
           },
         ],
@@ -1823,34 +1823,34 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-            switch (x) {
-              case 'AA':
-              case 'B':
-              default:
-                break;
-            }
-          `,
+              switch (x) {
+                case 'AA':
+                case 'B':
+                default:
+                  break;
+              }
+            `,
             code: dedent`
-            switch (x) {
-              case 'AA':
-              default:
-              case 'B':
-                break;
-            }
-          `,
+              switch (x) {
+                case 'AA':
+                default:
+                case 'B':
+                  break;
+              }
+            `,
             options: [options],
           },
         ],
         valid: [
           {
             code: dedent`
-            switch (x) {
-              case 'AA':
-              case 'B':
-              default:
-                const c = 3
-            }
-          `,
+              switch (x) {
+                case 'AA':
+                case 'B':
+                default:
+                  const c = 3
+              }
+            `,
             options: [options],
           },
         ],
@@ -2318,29 +2318,29 @@ describe(ruleName, () => {
         invalid: [
           {
             output: dedent`
-            switch (operationMode) {
-              case wwww:
-                return null
-              case yy:
-              case z:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
+              switch (operationMode) {
+                case wwww:
+                  return null
+                case yy:
+                case z:
+                  return null
+                case xxx:
+                default:
+                  return null
+              }
+            `,
             code: dedent`
-            switch (operationMode) {
-              case yy:
-              case z:
-                return null
-              case wwww:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
+              switch (operationMode) {
+                case yy:
+                case z:
+                  return null
+                case wwww:
+                  return null
+                case xxx:
+                default:
+                  return null
+              }
+            `,
             errors: [
               {
                 data: {
@@ -2356,17 +2356,17 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-            switch (operationMode) {
-              case wwww:
-                return null
-              case yy:
-              case z:
-                return null
-              case xxx:
-              default:
-                return null
-            }
-          `,
+              switch (operationMode) {
+                case wwww:
+                  return null
+                case yy:
+                case z:
+                  return null
+                case xxx:
+                default:
+                  return null
+              }
+            `,
             options: [options],
           },
         ],
@@ -2556,34 +2556,34 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-            switch (x) {
-              case 'AA':
-              case 'B':
-              default:
-                break;
-            }
-          `,
+              switch (x) {
+                case 'AA':
+                case 'B':
+                default:
+                  break;
+              }
+            `,
             code: dedent`
-            switch (x) {
-              case 'AA':
-              default:
-              case 'B':
-                break;
-            }
-          `,
+              switch (x) {
+                case 'AA':
+                default:
+                case 'B':
+                  break;
+              }
+            `,
             options: [options],
           },
         ],
         valid: [
           {
             code: dedent`
-            switch (x) {
-              case 'AA':
-              case 'B':
-              default:
-                const c = 3
-            }
-          `,
+              switch (x) {
+                case 'AA':
+                case 'B':
+                default:
+                  const c = 3
+              }
+            `,
             options: [options],
           },
         ],
@@ -2595,17 +2595,17 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}: not works if discriminant is true`, rule, {
       valid: [
         dedent`
-            switch (true) {
-              case name === 'bb':
-                return 'b'
-              case name === 'aaa':
-                return 'a'
-              case name === 'c':
-                return 'c'
-              default:
-                return 'x'
-            }
-          `,
+          switch (true) {
+            case name === 'bb':
+              return 'b'
+            case name === 'aaa':
+              return 'a'
+            case name === 'c':
+              return 'c'
+            default:
+              return 'x'
+          }
+        `,
       ],
       invalid: [],
     })
@@ -2664,7 +2664,7 @@ describe(ruleName, () => {
                 default:
                   break
                 }
-              `,
+            `,
             code: dedent`
               switch (variable) {
                 case 'default':
@@ -2676,7 +2676,7 @@ describe(ruleName, () => {
                 default:
                   break
                 }
-              `,
+            `,
             errors: [
               {
                 data: {
@@ -2700,7 +2700,7 @@ describe(ruleName, () => {
               default:
                 break
               }
-            `,
+          `,
         ],
       },
     )

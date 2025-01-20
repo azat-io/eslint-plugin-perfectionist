@@ -15,7 +15,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (
         node.callee.type === 'Identifier' &&
         node.callee.name === 'Set' &&
-        node.arguments.length &&
+        node.arguments.length > 0 &&
         (node.arguments[0]?.type === 'ArrayExpression' ||
           (node.arguments[0]?.type === 'NewExpression' &&
             'name' in node.arguments[0].callee &&

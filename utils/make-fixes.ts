@@ -53,7 +53,7 @@ export let makeFixes = ({
     fixer,
   })
   if (
-    commentAfterFixes.length ||
+    commentAfterFixes.length > 0 ||
     !options?.groups ||
     !options.newlinesBetween
   ) {

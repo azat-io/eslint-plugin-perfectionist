@@ -88,7 +88,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let dependencies: string[] = []
         let stack: TSESTree.Node[] = [expression]
 
-        while (stack.length) {
+        while (stack.length > 0) {
           let node = stack.pop()!
           if (
             node.type === 'MemberExpression' &&

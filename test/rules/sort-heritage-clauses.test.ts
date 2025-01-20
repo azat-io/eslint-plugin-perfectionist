@@ -127,37 +127,37 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              interface Interface extends
-                /**
-                 * Comment A
-                 */
-                a,
-                /**
-                 * Comment B
-                 */
-                b,
-                /* Comment C */
-                c,
-                // Comment D
-                d {
-              }
-            `,
+            interface Interface extends
+              /**
+               * Comment A
+               */
+              a,
+              /**
+               * Comment B
+               */
+              b,
+              /* Comment C */
+              c,
+              // Comment D
+              d {
+            }
+          `,
           code: dedent`
-              interface Interface extends
-                /**
-                 * Comment B
-                 */
-                b,
-                /**
-                 * Comment A
-                 */
-                a,
-                // Comment D
-                d,
-                /* Comment C */
-                c {
-              }
-            `,
+            interface Interface extends
+              /**
+               * Comment B
+               */
+              b,
+              /**
+               * Comment A
+               */
+              a,
+              // Comment D
+              d,
+              /* Comment C */
+              c {
+            }
+          `,
           options: [options],
         },
       ],
@@ -344,15 +344,15 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              interface MyInterface extends
-                你好,
-                世界,
-                a,
-                A,
-                b,
-                B {
-              }
-            `,
+            interface MyInterface extends
+              你好,
+              世界,
+              a,
+              A,
+              b,
+              B {
+            }
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -486,37 +486,37 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              interface Interface extends
-                /**
-                 * Comment A
-                 */
-                a,
-                /**
-                 * Comment B
-                 */
-                b,
-                /* Comment C */
-                c,
-                // Comment D
-                d {
-              }
-            `,
+            interface Interface extends
+              /**
+               * Comment A
+               */
+              a,
+              /**
+               * Comment B
+               */
+              b,
+              /* Comment C */
+              c,
+              // Comment D
+              d {
+            }
+          `,
           code: dedent`
-              interface Interface extends
-                /**
-                 * Comment B
-                 */
-                b,
-                /**
-                 * Comment A
-                 */
-                a,
-                // Comment D
-                d,
-                /* Comment C */
-                c {
-              }
-            `,
+            interface Interface extends
+              /**
+               * Comment B
+               */
+              b,
+              /**
+               * Comment A
+               */
+              a,
+              // Comment D
+              d,
+              /* Comment C */
+              c {
+            }
+          `,
           options: [options],
         },
       ],
@@ -898,37 +898,37 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              interface Interface extends
-                /**
-                 * Comment A
-                 */
-                aaaa,
-                /**
-                 * Comment B
-                 */
-                bbb,
-                /* Comment C */
-                cc,
-                // Comment D
-                d {
-              }
-            `,
+            interface Interface extends
+              /**
+               * Comment A
+               */
+              aaaa,
+              /**
+               * Comment B
+               */
+              bbb,
+              /* Comment C */
+              cc,
+              // Comment D
+              d {
+            }
+          `,
           code: dedent`
-              interface Interface extends
-                /**
-                 * Comment B
-                 */
-                bbb,
-                /**
-                 * Comment A
-                 */
-                aaaa,
-                // Comment D
-                d,
-                /* Comment C */
-                cc {
-              }
-            `,
+            interface Interface extends
+              /**
+               * Comment B
+               */
+              bbb,
+              /**
+               * Comment A
+               */
+              aaaa,
+              // Comment D
+              d,
+              /* Comment C */
+              cc {
+            }
+          `,
           options: [options],
         },
       ],

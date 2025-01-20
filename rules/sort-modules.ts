@@ -182,7 +182,7 @@ let analyzeModule = ({
     let decorators: string[] = []
     let addSafetySemicolonWhenInline: boolean = false
 
-    /* eslint-disable @typescript-eslint/no-loop-func */
+    /* eslint-disable typescript/no-loop-func */
     let parseNode = (
       nodeToParse:
         | TSESTree.DefaultExportDeclarations
@@ -276,7 +276,7 @@ let analyzeModule = ({
         default:
       }
     }
-    /* eslint-enable @typescript-eslint/no-loop-func */
+    /* eslint-enable typescript/no-loop-func */
     parseNode(node)
 
     if (!selector || !name) {

@@ -13,7 +13,7 @@ let { path } = Astro.props
 ---
 
 {
-  path.length ? (
+  path.length > 0 ? (
     <div class="breadcrumbs">
       <a aria-label="Homepage" class="link" href="/">
         <IconHome class="home" />

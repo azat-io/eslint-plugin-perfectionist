@@ -273,7 +273,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
 
       let matchesInternalPattern = (value: string): boolean | number =>
-        options.internalPattern.length &&
         options.internalPattern.some(pattern => matches(value, pattern))
 
       let isCoreModule = (value: string): boolean => {
@@ -459,9 +458,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           left: SortImportsSortingNode,
           right: SortImportsSortingNode,
         ): boolean =>
-          !!sourceCode.getTokensBetween(left.node, right.node, {
+          sourceCode.getTokensBetween(left.node, right.node, {
             includeComments: false,
-          }).length
+          }).length > 0
 
         let formattedMembers: SortImportsSortingNode[][] = [[]]
         for (let sortingNode of sortingNodes) {

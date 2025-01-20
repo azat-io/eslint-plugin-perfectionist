@@ -25,9 +25,9 @@
     font: var(--font-xs);
     font-weight: 500;
     text-decoration: none;
+    outline: none;
     border: none;
     border-radius: var(--border-radius);
-    outline: none;
     transition: all 200ms ease-in-out;
 
     &:focus-visible {

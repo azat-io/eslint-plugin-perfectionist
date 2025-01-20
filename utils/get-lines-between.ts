@@ -12,5 +12,5 @@ export let getLinesBetween = (
     right.node.loc.start.line - 1,
   )
 
-  return linesBetween.filter(line => !line.trim().length).length
+  return linesBetween.filter(line => line.trim().length === 0).length
 }

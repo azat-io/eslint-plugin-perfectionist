@@ -372,89 +372,89 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-            abstract class Class {
+              abstract class Class {
 
-              @Decorator
-              abstract override readonly a;
+                @Decorator
+                abstract override readonly a;
 
-              @Decorator
-              protected abstract override readonly b;
+                @Decorator
+                protected abstract override readonly b;
 
-              static override readonly c = 'c';
+                static override readonly c = 'c';
 
-              protected static override readonly d = 'd';
+                protected static override readonly d = 'd';
 
-              private static override readonly e = 'e';
+                private static override readonly e = 'e';
 
-              public readonly f = 'f';
+                public readonly f = 'f';
 
-              protected readonly g = 'g';
+                protected readonly g = 'g';
 
-              private readonly h = 'h';
+                private readonly h = 'h';
 
-              public i = 'i';
+                public i = 'i';
 
-              protected j = 'j';
+                protected j = 'j';
 
-              private k = 'k';
+                private k = 'k';
 
-              declare private static readonly l;
+                declare private static readonly l;
 
-              private m = async () => {};
+                private m = async () => {};
 
-              private n = async function() {};
+                private n = async function() {};
 
-              static readonly [key: string]: string;
+                static readonly [key: string]: string;
 
-              static {}
+                static {}
 
-              o?;
+                o?;
 
-              async p?(): Promise<void>;
-            }
-          `,
+                async p?(): Promise<void>;
+              }
+            `,
             code: dedent`
-            abstract class Class {
+              abstract class Class {
 
-              async p?(): Promise<void>;
+                async p?(): Promise<void>;
 
-              o?;
+                o?;
 
-              static {}
+                static {}
 
-              static readonly [key: string]: string;
+                static readonly [key: string]: string;
 
-              private n = async function() {};
+                private n = async function() {};
 
-              private m = async () => {};
+                private m = async () => {};
 
-              declare private static readonly l;
+                declare private static readonly l;
 
-              private k = 'k';
+                private k = 'k';
 
-              protected j = 'j';
+                protected j = 'j';
 
-              public i = 'i';
+                public i = 'i';
 
-              private readonly h = 'h';
+                private readonly h = 'h';
 
-              protected readonly g = 'g';
+                protected readonly g = 'g';
 
-              public readonly f = 'f';
+                public readonly f = 'f';
 
-              private static override readonly e = 'e';
+                private static override readonly e = 'e';
 
-              protected static override readonly d = 'd';
+                protected static override readonly d = 'd';
 
-              static override readonly c = 'c';
+                static override readonly c = 'c';
 
-              @Decorator
-              protected abstract override readonly b;
+                @Decorator
+                protected abstract override readonly b;
 
-              @Decorator
-              abstract override readonly a;
-            }
-          `,
+                @Decorator
+                abstract override readonly a;
+              }
+            `,
           },
         ],
         valid: [],
@@ -479,21 +479,21 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-            export abstract class Class extends Class2 {
+              export abstract class Class extends Class2 {
 
-              public abstract override get fields(): string;
+                public abstract override get fields(): string;
 
-              public abstract override method(): string;
-            }
-          `,
+                public abstract override method(): string;
+              }
+            `,
             code: dedent`
-            export abstract class Class extends Class2 {
+              export abstract class Class extends Class2 {
 
-              public abstract override method(): string;
+                public abstract override method(): string;
 
-              public abstract override get fields(): string;
-            }
-          `,
+                public abstract override get fields(): string;
+              }
+            `,
             options: [
               {
                 ...options,
@@ -535,21 +535,21 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-            export class Class {
+                export class Class {
 
-              static readonly [key: string]: string;
+                  static readonly [key: string]: string;
 
-              a: string;
-            }
-          `,
+                  a: string;
+                }
+              `,
               code: dedent`
-            export class Class {
+                export class Class {
 
-              a: string;
+                  a: string;
 
-              static readonly [key: string]: string;
-            }
-          `,
+                  static readonly [key: string]: string;
+                }
+              `,
             },
           ],
           valid: [],
@@ -575,28 +575,28 @@ describe(ruleName, () => {
                   messageId: 'unexpectedClassesGroupOrder',
                 },
               ],
+              output: dedent`
+                export class Class {
+
+                  constructor() {}
+
+                  a(): void;
+                }
+              `,
+              code: dedent`
+                export class Class {
+
+                  a(): void;
+
+                  constructor() {}
+                }
+              `,
               options: [
                 {
                   ...options,
                   groups: ['constructor', 'method'],
                 },
               ],
-              output: dedent`
-            export class Class {
-
-              constructor() {}
-
-              a(): void;
-            }
-          `,
-              code: dedent`
-            export class Class {
-
-              a(): void;
-
-              constructor() {}
-            }
-          `,
             },
           ],
           valid: [],
@@ -620,28 +620,28 @@ describe(ruleName, () => {
                   messageId: 'unexpectedClassesGroupOrder',
                 },
               ],
+              output: dedent`
+                export class Class {
+
+                  get z() {}
+
+                  a(): void;
+                }
+              `,
               options: [
                 {
                   ...options,
                   groups: ['get-method', 'method'],
                 },
               ],
-              output: dedent`
-            export class Class {
-
-              get z() {}
-
-              a(): void;
-            }
-          `,
               code: dedent`
-            export class Class {
+                export class Class {
 
-              a(): void;
+                  a(): void;
 
-              get z() {}
-            }
-          `,
+                  get z() {}
+                }
+              `,
             },
           ],
           valid: [],
@@ -665,28 +665,28 @@ describe(ruleName, () => {
                   messageId: 'unexpectedClassesGroupOrder',
                 },
               ],
+              output: dedent`
+                export class Class {
+
+                  set z() {}
+
+                  a(): void;
+                }
+              `,
               options: [
                 {
                   ...options,
                   groups: ['set-method', 'method'],
                 },
               ],
-              output: dedent`
-            export class Class {
-
-              set z() {}
-
-              a(): void;
-            }
-          `,
               code: dedent`
-            export class Class {
+                export class Class {
 
-              a(): void;
+                  a(): void;
 
-              set z() {}
-            }
-          `,
+                  set z() {}
+                }
+              `,
             },
           ],
           valid: [],
@@ -712,28 +712,28 @@ describe(ruleName, () => {
                   messageId: 'unexpectedClassesGroupOrder',
                 },
               ],
+              output: dedent`
+                export class Class extends Class2 {
+
+                  static override z(): string;
+
+                  a: string;
+                }
+              `,
+              code: dedent`
+                export class Class extends Class2 {
+
+                  a: string;
+
+                  static override z(): string;
+                }
+              `,
               options: [
                 {
                   ...options,
                   groups: ['static-method', 'property', 'override-method'],
                 },
               ],
-              output: dedent`
-            export class Class extends Class2 {
-
-              static override z(): string;
-
-              a: string;
-            }
-          `,
-              code: dedent`
-            export class Class extends Class2 {
-
-              a: string;
-
-              static override z(): string;
-            }
-          `,
             },
           ],
           valid: [],
@@ -757,28 +757,28 @@ describe(ruleName, () => {
                   messageId: 'unexpectedClassesGroupOrder',
                 },
               ],
+              output: dedent`
+                export abstract class Class extends Class2 {
+
+                  abstract override z(): string;
+
+                  a: string;
+                }
+              `,
+              code: dedent`
+                export abstract class Class extends Class2 {
+
+                  a: string;
+
+                  abstract override z(): string;
+                }
+              `,
               options: [
                 {
                   ...options,
                   groups: ['abstract-method', 'property', 'override-method'],
                 },
               ],
-              output: dedent`
-            export abstract class Class extends Class2 {
-
-              abstract override z(): string;
-
-              a: string;
-            }
-          `,
-              code: dedent`
-            export abstract class Class extends Class2 {
-
-              a: string;
-
-              abstract override z(): string;
-            }
-          `,
             },
           ],
           valid: [],
@@ -803,23 +803,23 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-            export abstract class Class extends Class2 {
+                export abstract class Class extends Class2 {
 
-              @Decorator
-              override z(): void {}
+                  @Decorator
+                  override z(): void {}
 
-              a: string;
-            }
-          `,
+                  a: string;
+                }
+              `,
               code: dedent`
-            export abstract class Class extends Class2 {
+                export abstract class Class extends Class2 {
 
-              a: string;
+                  a: string;
 
-              @Decorator
-              override z(): void {}
-            }
-          `,
+                  @Decorator
+                  override z(): void {}
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -861,21 +861,21 @@ describe(ruleName, () => {
                   },
                 ],
                 output: dedent`
-              export class Class {
+                  export class Class {
 
-                ${accessibilityModifier} override z(): string;
+                    ${accessibilityModifier} override z(): string;
 
-                a: string;
-              }
-            `,
+                    a: string;
+                  }
+                `,
                 code: dedent`
-              export class Class {
+                  export class Class {
 
-                a: string;
+                    a: string;
 
-                ${accessibilityModifier} override z(): string;
-              }
-            `,
+                    ${accessibilityModifier} override z(): string;
+                  }
+                `,
               },
             ],
             valid: [],
@@ -910,21 +910,21 @@ describe(ruleName, () => {
                   },
                 ],
                 output: dedent`
-              export class Class {
+                  export class Class {
 
-                ${accessibilityModifier} z?(): string;
+                    ${accessibilityModifier} z?(): string;
 
-                a: string;
-              }
-            `,
+                    a: string;
+                  }
+                `,
                 code: dedent`
-              export class Class {
+                  export class Class {
 
-                a: string;
+                    a: string;
 
-                ${accessibilityModifier} z?(): string;
-              }
-            `,
+                    ${accessibilityModifier} z?(): string;
+                  }
+                `,
               },
             ],
             valid: [],
@@ -956,21 +956,21 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-              export class Class {
+                export class Class {
 
-                async z?(): Promise<string>;
+                  async z?(): Promise<string>;
 
-                a: string;
-              }
-            `,
+                  a: string;
+                }
+              `,
               code: dedent`
-              export class Class {
+                export class Class {
 
-                a: string;
+                  a: string;
 
-                async z?(): Promise<string>;
-              }
-            `,
+                  async z?(): Promise<string>;
+                }
+              `,
             },
           ],
           valid: [],
@@ -1007,21 +1007,21 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-            export class Class extends Class2 {
+                export class Class extends Class2 {
 
-              static override accessor z: string;
+                  static override accessor z: string;
 
-              a: string;
-            }
-          `,
+                  a: string;
+                }
+              `,
               code: dedent`
-            export class Class extends Class2 {
+                export class Class extends Class2 {
 
-              a: string;
+                  a: string;
 
-              static override accessor z: string;
-            }
-          `,
+                  static override accessor z: string;
+                }
+              `,
             },
           ],
           valid: [],
@@ -1056,21 +1056,21 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-            export abstract class Class extends Class2 {
+                export abstract class Class extends Class2 {
 
-              abstract override accessor z: string;
+                  abstract override accessor z: string;
 
-              a: string;
-            }
-          `,
+                  a: string;
+                }
+              `,
               code: dedent`
-            export abstract class Class extends Class2 {
+                export abstract class Class extends Class2 {
 
-              a: string;
+                  a: string;
 
-              abstract override accessor z: string;
-            }
-          `,
+                  abstract override accessor z: string;
+                }
+              `,
             },
           ],
           valid: [],
@@ -1105,23 +1105,23 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-            export abstract class Class extends Class2 {
+                export abstract class Class extends Class2 {
 
-              @Decorator
-              override accessor z: string;
+                  @Decorator
+                  override accessor z: string;
 
-              a: string;
-            }
-          `,
+                  a: string;
+                }
+              `,
               code: dedent`
-            export abstract class Class extends Class2 {
+                export abstract class Class extends Class2 {
 
-              a: string;
+                  a: string;
 
-              @Decorator
-              override accessor z: string;
-            }
-          `,
+                  @Decorator
+                  override accessor z: string;
+                }
+              `,
             },
           ],
           valid: [],
@@ -1157,21 +1157,21 @@ describe(ruleName, () => {
                   },
                 ],
                 output: dedent`
-              export class Class {
+                  export class Class {
 
-                ${accessibilityModifier} override accessor z: string;
+                    ${accessibilityModifier} override accessor z: string;
 
-                a: string;
-              }
-            `,
+                    a: string;
+                  }
+                `,
                 code: dedent`
-              export class Class {
+                  export class Class {
 
-                a: string;
+                    a: string;
 
-                ${accessibilityModifier} override accessor z: string;
-              }
-            `,
+                    ${accessibilityModifier} override accessor z: string;
+                  }
+                `,
               },
             ],
             valid: [],
@@ -1205,21 +1205,21 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-            export class Class {
+                export class Class {
 
-              z: string;
+                  z: string;
 
-              a = function() {}
-            }
-          `,
+                  a = function() {}
+                }
+              `,
               code: dedent`
-            export class Class {
+                export class Class {
 
-              a = function() {}
+                  a = function() {}
 
-              z: string;
-            }
-          `,
+                  z: string;
+                }
+              `,
             },
           ],
           valid: [],
@@ -1250,21 +1250,21 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-            export class Class {
+                export class Class {
 
-              z: string;
+                  z: string;
 
-              a = () => {}
-            }
-          `,
+                  a = () => {}
+                }
+              `,
               code: dedent`
-            export class Class {
+                export class Class {
 
-              a = () => {}
+                  a = () => {}
 
-              z: string;
-            }
-          `,
+                  z: string;
+                }
+              `,
             },
           ],
           valid: [],
@@ -1290,28 +1290,28 @@ describe(ruleName, () => {
                   messageId: 'unexpectedClassesGroupOrder',
                 },
               ],
+              output: dedent`
+                export class Class extends Class2 {
+
+                  declare static z: string;
+
+                  a(): void {}
+                }
+              `,
+              code: dedent`
+                export class Class extends Class2 {
+
+                  a(): void {}
+
+                  declare static z: string;
+                }
+              `,
               options: [
                 {
                   ...options,
                   groups: ['static-property', 'method', 'declare-property'],
                 },
               ],
-              output: dedent`
-            export class Class extends Class2 {
-
-              declare static z: string;
-
-              a(): void {}
-            }
-          `,
-              code: dedent`
-            export class Class extends Class2 {
-
-              a(): void {}
-
-              declare static z: string;
-            }
-          `,
             },
           ],
           valid: [],
@@ -1335,28 +1335,28 @@ describe(ruleName, () => {
                   messageId: 'unexpectedClassesGroupOrder',
                 },
               ],
+              output: dedent`
+                export class Class extends Class2 {
+
+                  declare abstract z: string;
+
+                  a(): void {}
+                }
+              `,
+              code: dedent`
+                export class Class extends Class2 {
+
+                  a(): void {}
+
+                  declare abstract z: string;
+                }
+              `,
               options: [
                 {
                   ...options,
                   groups: ['declare-property', 'method', 'abstract-property'],
                 },
               ],
-              output: dedent`
-            export class Class extends Class2 {
-
-              declare abstract z: string;
-
-              a(): void {}
-            }
-          `,
-              code: dedent`
-            export class Class extends Class2 {
-
-              a(): void {}
-
-              declare abstract z: string;
-            }
-          `,
             },
           ],
           valid: [],
@@ -1380,28 +1380,28 @@ describe(ruleName, () => {
                   messageId: 'unexpectedClassesGroupOrder',
                 },
               ],
+              output: dedent`
+                export abstract class Class extends Class2 {
+
+                  abstract override z: string;
+
+                  a(): void {}
+                }
+              `,
+              code: dedent`
+                export abstract class Class extends Class2 {
+
+                  a(): void {}
+
+                  abstract override z: string;
+                }
+              `,
               options: [
                 {
                   ...options,
                   groups: ['abstract-property', 'method', 'override-property'],
                 },
               ],
-              output: dedent`
-            export abstract class Class extends Class2 {
-
-              abstract override z: string;
-
-              a(): void {}
-            }
-          `,
-              code: dedent`
-            export abstract class Class extends Class2 {
-
-              a(): void {}
-
-              abstract override z: string;
-            }
-          `,
             },
           ],
           valid: [],
@@ -1426,23 +1426,23 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-            export abstract class Class extends Class2 {
+                export abstract class Class extends Class2 {
 
-              @Decorator
-              override z: string;
+                  @Decorator
+                  override z: string;
 
-              a(): void {}
-            }
-          `,
+                  a(): void {}
+                }
+              `,
               code: dedent`
-            export abstract class Class extends Class2 {
+                export abstract class Class extends Class2 {
 
-              a(): void {}
+                  a(): void {}
 
-              @Decorator
-              override z: string;
-            }
-          `,
+                  @Decorator
+                  override z: string;
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -1473,23 +1473,23 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-            export abstract class Class extends Class2 {
+                export abstract class Class extends Class2 {
 
-              @Decorator
-              override z: string;
+                  @Decorator
+                  override z: string;
 
-              a(): void {}
-            }
-          `,
+                  a(): void {}
+                }
+              `,
               code: dedent`
-            export abstract class Class extends Class2 {
+                export abstract class Class extends Class2 {
 
-              a(): void {}
+                  a(): void {}
 
-              @Decorator
-              override z: string;
-            }
-          `,
+                  @Decorator
+                  override z: string;
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -1519,28 +1519,28 @@ describe(ruleName, () => {
                   messageId: 'unexpectedClassesGroupOrder',
                 },
               ],
+              output: dedent`
+                export abstract class Class extends Class2 {
+
+                  override readonly z: string;
+
+                  a(): void {}
+                }
+              `,
+              code: dedent`
+                export abstract class Class extends Class2 {
+
+                  a(): void {}
+
+                  override readonly z: string;
+                }
+              `,
               options: [
                 {
                   ...options,
                   groups: ['override-property', 'method', 'readonly-property'],
                 },
               ],
-              output: dedent`
-            export abstract class Class extends Class2 {
-
-              override readonly z: string;
-
-              a(): void {}
-            }
-          `,
-              code: dedent`
-            export abstract class Class extends Class2 {
-
-              a(): void {}
-
-              override readonly z: string;
-            }
-          `,
             },
           ],
           valid: [],
@@ -1576,21 +1576,21 @@ describe(ruleName, () => {
                   },
                 ],
                 output: dedent`
-              export class Class {
+                  export class Class {
 
-                ${accessibilityModifier} readonly z: string;
+                    ${accessibilityModifier} readonly z: string;
 
-                a(): void {}
-              }
-            `,
+                    a(): void {}
+                  }
+                `,
                 code: dedent`
-              export class Class {
+                  export class Class {
 
-                a(): void {}
+                    a(): void {}
 
-                ${accessibilityModifier} readonly z: string;
-              }
-            `,
+                    ${accessibilityModifier} readonly z: string;
+                  }
+                `,
               },
             ],
             valid: [],
@@ -1625,21 +1625,21 @@ describe(ruleName, () => {
                   },
                 ],
                 output: dedent`
-              export class Class {
+                  export class Class {
 
-                ${accessibilityModifier} z?: string;
+                    ${accessibilityModifier} z?: string;
 
-                a(): void {}
-              }
-            `,
+                    a(): void {}
+                  }
+                `,
                 code: dedent`
-              export class Class {
+                  export class Class {
 
-                a(): void {}
+                    a(): void {}
 
-                ${accessibilityModifier} z?: string;
-              }
-            `,
+                    ${accessibilityModifier} z?: string;
+                  }
+                `,
               },
             ],
             valid: [],
@@ -1664,28 +1664,28 @@ describe(ruleName, () => {
                   messageId: 'unexpectedClassesGroupOrder',
                 },
               ],
+              output: dedent`
+                export class Class {
+
+                  z?: Promise<string> = async () => {};
+
+                  a(): void {}
+                }
+              `,
+              code: dedent`
+                export class Class {
+
+                  a(): void {}
+
+                  z?: Promise<string> = async () => {};
+                }
+              `,
               options: [
                 {
                   ...options,
                   groups: ['optional-property', 'method', `async-property`],
                 },
               ],
-              output: dedent`
-              export class Class {
-
-                z?: Promise<string> = async () => {};
-
-                a(): void {}
-              }
-            `,
-              code: dedent`
-              export class Class {
-
-                a(): void {}
-
-                z?: Promise<string> = async () => {};
-              }
-            `,
             },
           ],
           valid: [],
@@ -2131,7 +2131,8 @@ describe(ruleName, () => {
               @Property()
               @Unique()
               email: string
-            }`,
+            }
+          `,
           code: dedent`
             class User {
               firstName: string
@@ -2147,7 +2148,8 @@ describe(ruleName, () => {
               email: string
 
               lastName: string
-            }`,
+            }
+          `,
           errors: [
             {
               data: {
@@ -2206,7 +2208,8 @@ describe(ruleName, () => {
               }
 
               render() {}
-            }`,
+            }
+          `,
           code: dedent`
             class MyElement {
               @property({ attribute: false })
@@ -2246,7 +2249,8 @@ describe(ruleName, () => {
               }
 
               render() {}
-            }`,
+            }
+          `,
           options: [
             {
               ...options,
@@ -2322,7 +2326,8 @@ describe(ruleName, () => {
 
               @action
               toggle() {}
-            }`,
+            }
+          `,
           code: dedent`
             class Todo {
               id = Math.random()
@@ -2343,7 +2348,8 @@ describe(ruleName, () => {
 
               @observable
               protected accessor type = ''
-            }`,
+            }
+          `,
           options: [
             {
               ...options,
@@ -3116,16 +3122,16 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-               class Class {
-                 b = 1
-                 a = {
-                   b: this.b
-                 }
-                 static b = 1
-                 static a = {
-                   b: this.b
-                 }
-               }
+                class Class {
+                  b = 1
+                  a = {
+                    b: this.b
+                  }
+                  static b = 1
+                  static a = {
+                    b: this.b
+                  }
+                }
               `,
               options: [
                 {
@@ -3136,16 +3142,16 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                 b = 1
-                 a = {
-                   b: this.b
-                 }
-                 static b = 1
-                 static a = {
-                   b: Class.b
-                 }
-               }
+                class Class {
+                  b = 1
+                  a = {
+                    b: this.b
+                  }
+                  static b = 1
+                  static a = {
+                    b: Class.b
+                  }
+                }
               `,
               options: [
                 {
@@ -3156,16 +3162,16 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                 b = 1
-                 a = {
-                   [this.b]: 1
-                 }
-                 static b = 1
-                 static a = {
-                   [this.b]: A
-                 }
-               }
+                class Class {
+                  b = 1
+                  a = {
+                    [this.b]: 1
+                  }
+                  static b = 1
+                  static a = {
+                    [this.b]: A
+                  }
+                }
               `,
               options: [
                 {
@@ -3176,16 +3182,16 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                 b = 1
-                 a = {
-                   [this.b]: 1
-                 }
-                 static b = 1
-                 static a = {
-                   [Class.b]: 1
-                 }
-               }
+                class Class {
+                  b = 1
+                  a = {
+                    [this.b]: 1
+                  }
+                  static b = 1
+                  static a = {
+                    [Class.b]: 1
+                  }
+                }
               `,
               options: [
                 {
@@ -3206,12 +3212,12 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-               class Class {
-                  b = new Subject()
-                  a = this.b.asObservable()
-                  static b = new Subject()
-                  static a = this.b.asObservable()
-               }
+                class Class {
+                   b = new Subject()
+                   a = this.b.asObservable()
+                   static b = new Subject()
+                   static a = this.b.asObservable()
+                }
               `,
               options: [
                 {
@@ -3222,12 +3228,12 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                  b = new Subject()
-                  a = this.b.asObservable()
-                  static b = new Subject()
-                  static a = Class.b.asObservable()
-               }
+                class Class {
+                   b = new Subject()
+                   a = this.b.asObservable()
+                   static b = new Subject()
+                   static a = Class.b.asObservable()
+                }
               `,
               options: [
                 {
@@ -3238,12 +3244,12 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                  b = new WhateverObject()
-                  a = this.b.bProperty
-                  static b = new WhateverObject()
-                  static a = this.b.bProperty
-               }
+                class Class {
+                   b = new WhateverObject()
+                   a = this.b.bProperty
+                   static b = new WhateverObject()
+                   static a = this.b.bProperty
+                }
               `,
               options: [
                 {
@@ -3254,12 +3260,12 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                  b = new WhateverObject()
-                  a = this.b.bProperty
-                  static b = new WhateverObject()
-                  static a = Class.b.bProperty
-               }
+                class Class {
+                   b = new WhateverObject()
+                   a = this.b.bProperty
+                   static b = new WhateverObject()
+                   static a = Class.b.bProperty
+                }
               `,
               options: [
                 {
@@ -3270,11 +3276,11 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                  static c = 1
-                  static b = new WhateverObject(this.c)
-                  static a = Class.b.bMethod().anotherNestedMethod(this.c).finalMethod()
-               }
+                class Class {
+                   static c = 1
+                   static b = new WhateverObject(this.c)
+                   static a = Class.b.bMethod().anotherNestedMethod(this.c).finalMethod()
+                }
               `,
               options: [
                 {
@@ -3294,12 +3300,12 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-               class Class {
-                  b = new Subject()
-                  a = this.b?.asObservable()
-                  static b = new Subject()
-                  static a = this.b?.asObservable()
-               }
+                class Class {
+                   b = new Subject()
+                   a = this.b?.asObservable()
+                   static b = new Subject()
+                   static a = this.b?.asObservable()
+                }
               `,
               options: [
                 {
@@ -3310,12 +3316,12 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                  b = new Subject()
-                  a = this.b?.asObservable()
-                  static b = new Subject()
-                  static a = Class.b?.asObservable()
-               }
+                class Class {
+                   b = new Subject()
+                   a = this.b?.asObservable()
+                   static b = new Subject()
+                   static a = Class.b?.asObservable()
+                }
               `,
               options: [
                 {
@@ -3336,12 +3342,12 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-               class Class {
-                  b = new Subject()
-                  a = this.b!.asObservable()
-                  static b = new Subject()
-                  static a = this.b!.asObservable()
-               }
+                class Class {
+                   b = new Subject()
+                   a = this.b!.asObservable()
+                   static b = new Subject()
+                   static a = this.b!.asObservable()
+                }
               `,
               options: [
                 {
@@ -3352,12 +3358,12 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                  b = new Subject()
-                  a = this.b!.asObservable()
-                  static b = new Subject()
-                  static a = Class.b!.asObservable()
-               }
+                class Class {
+                   b = new Subject()
+                   a = this.b!.asObservable()
+                   static b = new Subject()
+                   static a = Class.b!.asObservable()
+                }
               `,
               options: [
                 {
@@ -3375,13 +3381,13 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-               class Class {
-                  b = true
-                  a = !this.b
-                  static b = true
-                  static a = !this.b
-               }
-              `,
+              class Class {
+                 b = true
+                 a = !this.b
+                 static b = true
+                 static a = !this.b
+              }
+            `,
             options: [
               {
                 ...options,
@@ -3391,13 +3397,13 @@ describe(ruleName, () => {
           },
           {
             code: dedent`
-               class Class {
-                  b = true
-                  a = !this.b
-                  static b = true
-                  static a = !Class.b
-               }
-              `,
+              class Class {
+                 b = true
+                 a = !this.b
+                 static b = true
+                 static a = !Class.b
+              }
+            `,
             options: [
               {
                 ...options,
@@ -3416,12 +3422,12 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-               class Class {
-                  b = {}
-                  a = {...this.b}
-                  static b = {}
-                  static a = {...this.b}
-               }
+                class Class {
+                   b = {}
+                   a = {...this.b}
+                   static b = {}
+                   static a = {...this.b}
+                }
               `,
               options: [
                 {
@@ -3432,12 +3438,12 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                  b = {}
-                  a = {...this.b}
-                  static b = {}
-                  static a = {...Class.b}
-               }
+                class Class {
+                   b = {}
+                   a = {...this.b}
+                   static b = {}
+                   static a = {...Class.b}
+                }
               `,
               options: [
                 {
@@ -3448,12 +3454,12 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                  b = []
-                  a = [...this.b]
-                  static b = []
-                  static a = [...this.b]
-               }
+                class Class {
+                   b = []
+                   a = [...this.b]
+                   static b = []
+                   static a = [...this.b]
+                }
               `,
               options: [
                 {
@@ -3464,12 +3470,12 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                  b = []
-                  a = [...this.b]
-                  static b = []
-                  static a = [...Class.b]
-               }
+                class Class {
+                   b = []
+                   a = [...this.b]
+                   static b = []
+                   static a = [...Class.b]
+                }
               `,
               options: [
                 {
@@ -3490,13 +3496,13 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-            class Class {
-              b = 1;
-              a = this.b ? 1 : 0;
-              static b = 1;
-              static a = this.b ? 1 : 0;
-            }
-          `,
+                class Class {
+                  b = 1;
+                  a = this.b ? 1 : 0;
+                  static b = 1;
+                  static a = this.b ? 1 : 0;
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -3506,13 +3512,13 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-            class Class {
-              b = 1;
-              a = this.b ? 1 : 0;
-              static b = 1;
-              static a = Class.b ? 1 : 0;
-            }
-          `,
+                class Class {
+                  b = 1;
+                  a = this.b ? 1 : 0;
+                  static b = 1;
+                  static a = Class.b ? 1 : 0;
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -3522,13 +3528,13 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-            class Class {
-              b = 1;
-              a = someCondition ? this.b : 0;
-              static b = 1;
-              static a = someCondition ? this.b : 0;
-            }
-          `,
+                class Class {
+                  b = 1;
+                  a = someCondition ? this.b : 0;
+                  static b = 1;
+                  static a = someCondition ? this.b : 0;
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -3538,13 +3544,13 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-            class Class {
-              b = 1;
-              a = someCondition ? this.b : 0;
-              static b = 1;
-              static a = someCondition ? Class.b : 0;
-            }
-          `,
+                class Class {
+                  b = 1;
+                  a = someCondition ? this.b : 0;
+                  static b = 1;
+                  static a = someCondition ? Class.b : 0;
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -3554,13 +3560,13 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-            class Class {
-              b = 1;
-              a = someCondition ? 0 : this.b;
-              static b = 1;
-              static a = someCondition ? 0 : this.b;
-            }
-          `,
+                class Class {
+                  b = 1;
+                  a = someCondition ? 0 : this.b;
+                  static b = 1;
+                  static a = someCondition ? 0 : this.b;
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -3570,13 +3576,13 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-            class Class {
-              b = 1;
-              a = someCondition ? 0 : this.b;
-              static b = 1;
-              static a = someCondition ? 0 : Class.b;
-            }
-          `,
+                class Class {
+                  b = 1;
+                  a = someCondition ? 0 : this.b;
+                  static b = 1;
+                  static a = someCondition ? 0 : Class.b;
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -3680,12 +3686,12 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-               class Class {
-                b = 1
-                a = \`\${this.b}\`
-                static b = 1
-                static a = \`\${this.b}\`
-               }
+                class Class {
+                 b = 1
+                 a = \`\${this.b}\`
+                 static b = 1
+                 static a = \`\${this.b}\`
+                }
               `,
               options: [
                 {
@@ -3696,12 +3702,12 @@ describe(ruleName, () => {
             },
             {
               code: dedent`
-               class Class {
-                b = 1
-                a = \`\${this.b}\`
-                static b = 1
-                static a = \`\${Class.b}\`
-               }
+                class Class {
+                 b = 1
+                 a = \`\${this.b}\`
+                 static b = 1
+                 static a = \`\${Class.b}\`
+                }
               `,
               options: [
                 {
@@ -3814,12 +3820,12 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-              export class Class{
-                b = 1;
-                a = this.b;
-                static b = 1;
-              }
-            `,
+                export class Class{
+                  b = 1;
+                  a = this.b;
+                  static b = 1;
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -4050,36 +4056,36 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-              class Class {
-                left = 'left'
+                class Class {
+                  left = 'left'
 
-                right = 'right'
+                  right = 'right'
 
-                aaa = this.left + this.right
-              }
-            `,
+                  aaa = this.left + this.right
+                }
+              `,
               code: dedent`
-              class Class {
-                aaa = this.left + this.right
+                class Class {
+                  aaa = this.left + this.right
 
-                left = 'left'
+                  left = 'left'
 
-                right = 'right'
-              }
-            `,
+                  right = 'right'
+                }
+              `,
               options: [options],
             },
           ],
           valid: [
             {
               code: dedent`
-              class Class {
-                left = 'left'
-                right = 'right'
+                class Class {
+                  left = 'left'
+                  right = 'right'
 
-                aaa = this.left + this.right
-              }
-            `,
+                  aaa = this.left + this.right
+                }
+              `,
               options: [options],
             },
           ],
@@ -4153,29 +4159,29 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              class Class {
+            class Class {
 
-                private x() {}
-                private y() {}
-                public method3() {}
-                private z() {}
-                public method4() {}
-                public method1() {}
-                public i = 'i';
-              }
-            `,
+              private x() {}
+              private y() {}
+              public method3() {}
+              private z() {}
+              public method4() {}
+              public method1() {}
+              public i = 'i';
+            }
+          `,
           code: dedent`
-              class Class {
+            class Class {
 
-                public i = 'i';
-                private z() {}
-                public method3() {}
-                private y() {}
-                public method4() {}
-                public method1() {}
-                private x() {}
-              }
-            `,
+              public i = 'i';
+              private z() {}
+              public method3() {}
+              private y() {}
+              public method4() {}
+              public method1() {}
+              private x() {}
+            }
+          `,
           options: [
             {
               ...options,
@@ -4205,21 +4211,21 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              class Class {
-                a
-                someMethod() {
-                }
-                b
+            class Class {
+              a
+              someMethod() {
               }
-            `,
+              b
+            }
+          `,
           code: dedent`
-              class Class {
-                b
-                someMethod() {
-                }
-                a
+            class Class {
+              b
+              someMethod() {
               }
-            `,
+              a
+            }
+          `,
           options: [
             {
               ...options,
@@ -4411,7 +4417,7 @@ describe(ruleName, () => {
 
                     b() {}
                 }
-                `,
+              `,
               code: dedent`
                 class Class {
                   a = () => null
@@ -4589,15 +4595,15 @@ describe(ruleName, () => {
                     },
                   ],
                   output: dedent`
-                  class Class {
-                    a(){} b(){}
-                  }
-                `,
+                    class Class {
+                      a(){} b(){}
+                    }
+                  `,
                   code: dedent`
-                  class Class {
-                    b(){} a(){}
-                  }
-                `,
+                    class Class {
+                      b(){} a(){}
+                    }
+                  `,
                   options: [options],
                 },
                 {
@@ -4611,15 +4617,15 @@ describe(ruleName, () => {
                     },
                   ],
                   output: dedent`
-                  class Class {
-                    a(){} b(){};
-                  }
-                `,
+                    class Class {
+                      a(){} b(){};
+                    }
+                  `,
                   code: dedent`
-                  class Class {
-                    b(){} a(){};
-                  }
-                `,
+                    class Class {
+                      b(){} a(){};
+                    }
+                  `,
                   options: [options],
                 },
                 {
@@ -4633,15 +4639,15 @@ describe(ruleName, () => {
                     },
                   ],
                   output: dedent`
-                  class Class {
-                    a(){}; b(){}
-                  }
-                `,
+                    class Class {
+                      a(){}; b(){}
+                    }
+                  `,
                   code: dedent`
-                  class Class {
-                    b(){}; a(){}
-                  }
-                `,
+                    class Class {
+                      b(){}; a(){}
+                    }
+                  `,
                   options: [options],
                 },
               ],
@@ -4667,15 +4673,15 @@ describe(ruleName, () => {
                     },
                   ],
                   output: dedent`
-                  abstract class Class {
-                    abstract a(); abstract b();
-                  }
-                `,
+                    abstract class Class {
+                      abstract a(); abstract b();
+                    }
+                  `,
                   code: dedent`
-                  abstract class Class {
-                    abstract b(); abstract a()
-                  }
-                `,
+                    abstract class Class {
+                      abstract b(); abstract a()
+                    }
+                  `,
                   options: [options],
                 },
                 {
@@ -4689,15 +4695,15 @@ describe(ruleName, () => {
                     },
                   ],
                   output: dedent`
-                  abstract class Class {
-                    abstract a(); abstract b();
-                  }
-                `,
+                    abstract class Class {
+                      abstract a(); abstract b();
+                    }
+                  `,
                   code: dedent`
-                  abstract class Class {
-                    abstract b(); abstract a();
-                  }
-                `,
+                    abstract class Class {
+                      abstract b(); abstract a();
+                    }
+                  `,
                   options: [options],
                 },
               ],
@@ -4723,15 +4729,15 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-                  declare class Class {
-                    a(); b();
-                  }
-                `,
+                declare class Class {
+                  a(); b();
+                }
+              `,
               code: dedent`
-                  declare class Class {
-                    b(); a()
-                  }
-                `,
+                declare class Class {
+                  b(); a()
+                }
+              `,
               options: [options],
             },
             {
@@ -4745,15 +4751,15 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-                  abstract class Class {
-                    abstract a(); abstract b();
-                  }
-                `,
+                abstract class Class {
+                  abstract a(); abstract b();
+                }
+              `,
               code: dedent`
-                  abstract class Class {
-                    abstract b(); abstract a();
-                  }
-                `,
+                abstract class Class {
+                  abstract b(); abstract a();
+                }
+              `,
               options: [options],
             },
           ],
@@ -4777,15 +4783,15 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-                  class Class {
-                    a; b;
-                  }
-                `,
+                class Class {
+                  a; b;
+                }
+              `,
               code: dedent`
-                  class Class {
-                    b; a
-                  }
-                `,
+                class Class {
+                  b; a
+                }
+              `,
               options: [options],
             },
             {
@@ -4799,15 +4805,15 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-                  class Class {
-                    a; b;
-                  }
-                `,
+                class Class {
+                  a; b;
+                }
+              `,
               code: dedent`
-                  class Class {
-                    b; a;
-                  }
-                `,
+                class Class {
+                  b; a;
+                }
+              `,
               options: [options],
             },
           ],
@@ -4831,15 +4837,15 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-                  class Class {
-                    accessor a; accessor b;
-                  }
-                `,
+                class Class {
+                  accessor a; accessor b;
+                }
+              `,
               code: dedent`
-                  class Class {
-                    accessor b; accessor a
-                  }
-                `,
+                class Class {
+                  accessor b; accessor a
+                }
+              `,
               options: [options],
             },
             {
@@ -4853,15 +4859,15 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-                  class Class {
-                    accessor a; accessor b;
-                  }
-                `,
+                class Class {
+                  accessor a; accessor b;
+                }
+              `,
               code: dedent`
-                  class Class {
-                    accessor b; accessor a;
-                  }
-                `,
+                class Class {
+                  accessor b; accessor a;
+                }
+              `,
               options: [options],
             },
           ],
@@ -4885,15 +4891,15 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-                  class Class {
-                    [key: number]: string; [key: string]: string;
-                  }
-                `,
+                class Class {
+                  [key: number]: string; [key: string]: string;
+                }
+              `,
               code: dedent`
-                  class Class {
-                    [key: string]: string; [key: number]: string
-                  }
-                `,
+                class Class {
+                  [key: string]: string; [key: number]: string
+                }
+              `,
               options: [options],
             },
             {
@@ -4907,15 +4913,15 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-                  class Class {
-                    [key: number]: string; [key: string]: string;
-                  }
-                `,
+                class Class {
+                  [key: number]: string; [key: string]: string;
+                }
+              `,
               code: dedent`
-                  class Class {
-                    [key: string]: string; [key: number]: string;
-                  }
-                `,
+                class Class {
+                  [key: string]: string; [key: number]: string;
+                }
+              `,
               options: [options],
             },
           ],
@@ -4941,15 +4947,15 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-                  class Class {
-                    static {} a;
-                  }
-                `,
+                class Class {
+                  static {} a;
+                }
+              `,
               code: dedent`
-                  class Class {
-                    a; static {}
-                  }
-                `,
+                class Class {
+                  a; static {}
+                }
+              `,
               options: [options],
             },
           ],
@@ -5501,7 +5507,8 @@ describe(ruleName, () => {
               @Property()
               @Unique()
               email: string
-            }`,
+            }
+          `,
           code: dedent`
             class User {
               firstName: string
@@ -5517,7 +5524,8 @@ describe(ruleName, () => {
               email: string
 
               lastName: string
-            }`,
+            }
+          `,
           errors: [
             {
               data: {
@@ -5576,7 +5584,8 @@ describe(ruleName, () => {
               }
 
               render() {}
-            }`,
+            }
+          `,
           code: dedent`
             class MyElement {
               @property({ attribute: false })
@@ -5616,7 +5625,8 @@ describe(ruleName, () => {
               }
 
               render() {}
-            }`,
+            }
+          `,
           options: [
             {
               ...options,
@@ -5692,7 +5702,8 @@ describe(ruleName, () => {
 
               @action
               toggle() {}
-            }`,
+            }
+          `,
           code: dedent`
             class Todo {
               id = Math.random()
@@ -5713,7 +5724,8 @@ describe(ruleName, () => {
 
               @observable
               protected accessor type = ''
-            }`,
+            }
+          `,
           options: [
             {
               ...options,
@@ -6163,29 +6175,29 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              class Class {
+            class Class {
 
-                private x() {}
-                private y() {}
-                public method3() {}
-                private z() {}
-                public method4() {}
-                public method1() {}
-                public i = 'i';
-              }
-            `,
+              private x() {}
+              private y() {}
+              public method3() {}
+              private z() {}
+              public method4() {}
+              public method1() {}
+              public i = 'i';
+            }
+          `,
           code: dedent`
-              class Class {
+            class Class {
 
-                public i = 'i';
-                private z() {}
-                public method3() {}
-                private y() {}
-                public method4() {}
-                public method1() {}
-                private x() {}
-              }
-            `,
+              public i = 'i';
+              private z() {}
+              public method3() {}
+              private y() {}
+              public method4() {}
+              public method1() {}
+              private x() {}
+            }
+          `,
           options: [
             {
               ...options,
@@ -6215,21 +6227,21 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              class Class {
-                a
-                someMethod() {
-                }
-                b
+            class Class {
+              a
+              someMethod() {
               }
-            `,
+              b
+            }
+          `,
           code: dedent`
-              class Class {
-                b
-                someMethod() {
-                }
-                a
+            class Class {
+              b
+              someMethod() {
               }
-            `,
+              a
+            }
+          `,
           options: [
             {
               ...options,
@@ -6925,7 +6937,8 @@ describe(ruleName, () => {
               @Property()
               @Unique()
               email: string
-            }`,
+            }
+          `,
           code: dedent`
             class User {
               firstName: string
@@ -6941,7 +6954,8 @@ describe(ruleName, () => {
               email: string
 
               lastName: string
-            }`,
+            }
+          `,
           errors: [
             {
               data: {
@@ -7000,7 +7014,8 @@ describe(ruleName, () => {
               }
 
               render() {}
-            }`,
+            }
+          `,
           code: dedent`
             class MyElement {
               @property({ attribute: false })
@@ -7040,7 +7055,8 @@ describe(ruleName, () => {
               }
 
               render() {}
-            }`,
+            }
+          `,
           options: [
             {
               ...options,
@@ -7166,7 +7182,8 @@ describe(ruleName, () => {
               @observable
               customLastGroupProperty = 1
 
-            }`,
+            }
+          `,
           code: dedent`
             class Todo {
               @observable
@@ -7194,7 +7211,8 @@ describe(ruleName, () => {
               @observable
               protected accessor type = ''
 
-            }`,
+            }
+          `,
         },
       ],
       valid: [],
@@ -7233,29 +7251,29 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              class Class {
+            class Class {
 
-                private z() {}
-                private y() {}
-                public method3() {}
-                private x() {}
-                public method4() {}
-                public method1() {}
-                public i = 'i';
-              }
-            `,
+              private z() {}
+              private y() {}
+              public method3() {}
+              private x() {}
+              public method4() {}
+              public method1() {}
+              public i = 'i';
+            }
+          `,
           code: dedent`
-              class Class {
+            class Class {
 
-                public i = 'i';
-                private z() {}
-                public method3() {}
-                private y() {}
-                public method4() {}
-                public method1() {}
-                private x() {}
-              }
-            `,
+              public i = 'i';
+              private z() {}
+              public method3() {}
+              private y() {}
+              public method4() {}
+              public method1() {}
+              private x() {}
+            }
+          `,
           options: [
             {
               ...options,
@@ -7304,14 +7322,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedClassesGroupOrder',
             },
           ],
-          code: dedent`
-              class Class {
-                private a;
-                private b;
-                c;
-                constructor() {}
-              }
-            `,
           output: dedent`
             class Class {
               c;
@@ -7319,7 +7329,15 @@ describe(ruleName, () => {
               private a;
               private b;
             }
-            `,
+          `,
+          code: dedent`
+            class Class {
+              private a;
+              private b;
+              c;
+              constructor() {}
+            }
+          `,
         },
       ],
       valid: [],
@@ -7361,31 +7379,31 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              class Class {
-                helloProperty;
+            class Class {
+              helloProperty;
 
-                constructor() {}
+              constructor() {}
 
-                a;
+              a;
 
-                b;
+              b;
 
-                method() {}
-              }
-            `,
+              method() {}
+            }
+          `,
           code: dedent`
-              class Class {
-                a;
+            class Class {
+              a;
 
-                b;
+              b;
 
-                constructor() {}
+              constructor() {}
 
-                method() {}
+              method() {}
 
-                helloProperty;
-              }
-            `,
+              helloProperty;
+            }
+          `,
         },
       ],
       valid: [],
@@ -7421,23 +7439,23 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              class Class {
-                a = computed(A)
-                z = computed(Z)
-                b = inject(B)
-                y = inject(Y)
-                c() {}
-              }
-            `,
+            class Class {
+              a = computed(A)
+              z = computed(Z)
+              b = inject(B)
+              y = inject(Y)
+              c() {}
+            }
+          `,
           code: dedent`
-              class Class {
-                a = computed(A)
-                b = inject(B)
-                y = inject(Y)
-                z = computed(Z)
-                c() {}
-              }
-            `,
+            class Class {
+              a = computed(A)
+              b = inject(B)
+              y = inject(Y)
+              z = computed(Z)
+              c() {}
+            }
+          `,
         },
       ],
       valid: [],
@@ -7489,24 +7507,6 @@ describe(ruleName, () => {
               ],
             },
           ],
-          code: dedent`
-              class Class {
-                @Decorator
-                a;
-
-                b;
-
-                constructor() {}
-
-                method() {}
-
-                @HelloDecorator
-                property;
-
-                @HelloDecorator()
-                anotherProperty;
-              }
-            `,
           output: dedent`
             class Class {
               @HelloDecorator()
@@ -7524,7 +7524,25 @@ describe(ruleName, () => {
 
               method() {}
             }
-            `,
+          `,
+          code: dedent`
+            class Class {
+              @Decorator
+              a;
+
+              b;
+
+              constructor() {}
+
+              method() {}
+
+              @HelloDecorator
+              property;
+
+              @HelloDecorator()
+              anotherProperty;
+            }
+          `,
         },
       ],
       valid: [],
@@ -7588,56 +7606,56 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-            class Class {
+              class Class {
 
-              dddd;
+                dddd;
 
-              ccc;
+                ccc;
 
-              eee;
+                eee;
 
-              bb;
+                bb;
 
-              ff;
+                ff;
 
-              a;
+                a;
 
-              g;
+                g;
 
-              constructor() {}
+                constructor() {}
 
-              anotherMethod() {}
+                anotherMethod() {}
 
-              method() {}
+                method() {}
 
-              yetAnotherMethod() {}
-            }
+                yetAnotherMethod() {}
+              }
             `,
             code: dedent`
-            class Class {
+              class Class {
 
-              a;
+                a;
 
-              bb;
+                bb;
 
-              ccc;
+                ccc;
 
-              dddd;
+                dddd;
 
-              method() {}
+                method() {}
 
-              eee;
+                eee;
 
-              ff;
+                ff;
 
-              g;
+                g;
 
-              constructor() {}
+                constructor() {}
 
-              anotherMethod() {}
+                anotherMethod() {}
 
-              yetAnotherMethod() {}
-            }
+                yetAnotherMethod() {}
+              }
             `,
           },
         ],
@@ -7684,38 +7702,38 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-            class Class {
-              b;
+              class Class {
+                b;
 
-              a;
+                a;
 
-              d
+                d
 
-              e
+                e
 
-              c
+                c
 
-              constructor() {}
+                constructor() {}
 
-              method() {}
-            }
+                method() {}
+              }
             `,
             code: dedent`
-            class Class {
-              b;
+              class Class {
+                b;
 
-              a;
+                a;
 
-              constructor() {}
+                constructor() {}
 
-              d
+                d
 
-              e
+                e
 
-              method() {}
+                method() {}
 
-              c
-            }
+                c
+              }
             `,
           },
         ],
@@ -7803,7 +7821,7 @@ describe(ruleName, () => {
 
               method() {}
             }
-            `,
+          `,
           code: dedent`
             class Class {
               constructor() {}
@@ -7825,7 +7843,7 @@ describe(ruleName, () => {
 
               protected anotherProtectedMethod() {}
             }
-            `,
+          `,
         },
       ],
       valid: [],
@@ -7964,6 +7982,16 @@ describe(ruleName, () => {
                   groups: ['unknown', 'methodsWithNewlinesInside'],
                 },
               ],
+              output: dedent`
+                class Class {
+                  a
+                  b() {}
+
+                  c() {}
+
+                  d() {}
+                }
+              `,
               code: dedent`
                 class Class {
                   a
@@ -7974,16 +8002,6 @@ describe(ruleName, () => {
                   d() {}
                 }
               `,
-              output: dedent`
-                class Class {
-                  a
-                  b() {}
-
-                  c() {}
-
-                  d() {}
-                }
-            `,
             },
           ],
           valid: [],
@@ -8274,91 +8292,91 @@ describe(ruleName, () => {
             },
           ],
           output: dedent`
-              class Class {
-                [key: string]: string
+            class Class {
+              [key: string]: string
 
-                public static publicStaticProperty
+              public static publicStaticProperty
 
-                protected static protectedStaticProperty
+              protected static protectedStaticProperty
 
-                private static privateStaticProperty
+              private static privateStaticProperty
 
-                static {}
+              static {}
 
-                public accessor publicAccessorProperty
+              public accessor publicAccessorProperty
 
-                public publicProperty
+              public publicProperty
 
-                public get publicGetMethod() {}
+              public get publicGetMethod() {}
 
-                public set publicSetMethod() {}
+              public set publicSetMethod() {}
 
-                protected accessor protectedAccessorProperty
+              protected accessor protectedAccessorProperty
 
-                protected protectedProperty
+              protected protectedProperty
 
-                private accessor privateAccessorProperty
+              private accessor privateAccessorProperty
 
-                private privateProperty
+              private privateProperty
 
-                constructor() {}
+              constructor() {}
 
-                public static publicStaticMethod() {}
+              public static publicStaticMethod() {}
 
-                protected static protectedStaticMethod() {}
+              protected static protectedStaticMethod() {}
 
-                private static privateStaticMethod() {}
+              private static privateStaticMethod() {}
 
-                public publicMethod() {}
+              public publicMethod() {}
 
-                protected protectedMethod() {}
+              protected protectedMethod() {}
 
-                private privateMethod() {}
-              }
-            `,
+              private privateMethod() {}
+            }
+          `,
           code: dedent`
-              class Class {
-                private privateMethod() {}
+            class Class {
+              private privateMethod() {}
 
-                protected protectedMethod() {}
+              protected protectedMethod() {}
 
-                public publicMethod() {}
+              public publicMethod() {}
 
-                private static privateStaticMethod() {}
+              private static privateStaticMethod() {}
 
-                protected static protectedStaticMethod() {}
+              protected static protectedStaticMethod() {}
 
-                public static publicStaticMethod() {}
+              public static publicStaticMethod() {}
 
-                constructor() {}
+              constructor() {}
 
-                private privateProperty
+              private privateProperty
 
-                private accessor privateAccessorProperty
+              private accessor privateAccessorProperty
 
-                protected protectedProperty
+              protected protectedProperty
 
-                public publicProperty
+              public publicProperty
 
-                public accessor publicAccessorProperty
+              public accessor publicAccessorProperty
 
-                public set publicSetMethod() {}
+              public set publicSetMethod() {}
 
-                public get publicGetMethod() {}
+              public get publicGetMethod() {}
 
-                protected accessor protectedAccessorProperty
+              protected accessor protectedAccessorProperty
 
-                static {}
+              static {}
 
-                private static privateStaticProperty
+              private static privateStaticProperty
 
-                protected static protectedStaticProperty
+              protected static protectedStaticProperty
 
-                public static publicStaticProperty
+              public static publicStaticProperty
 
-                [key: string]: string
-              }
-            `,
+              [key: string]: string
+            }
+          `,
         },
       ],
       valid: [],
@@ -8432,55 +8450,55 @@ describe(ruleName, () => {
           invalid: [
             {
               output: dedent`
-              class Class {
-                // Ignore this comment
+                class Class {
+                  // Ignore this comment
 
-                // B2
-                /**
-                  * B1
-                  */
-                b
+                  // B2
+                  /**
+                    * B1
+                    */
+                  b
 
-                // C2
-                // C1
-                c
+                  // C2
+                  // C1
+                  c
 
-                // Above a partition comment ignore me
-                // PartitionComment: 1
-                a
+                  // Above a partition comment ignore me
+                  // PartitionComment: 1
+                  a
 
-                /**
-                  * D2
-                  */
-                // D1
-                d
-              }
-            `,
+                  /**
+                    * D2
+                    */
+                  // D1
+                  d
+                }
+              `,
               code: dedent`
-              class Class {
-                // Ignore this comment
+                class Class {
+                  // Ignore this comment
 
-                // C2
-                // C1
-                c
+                  // C2
+                  // C1
+                  c
 
-                // B2
-                /**
-                  * B1
-                  */
-                b
+                  // B2
+                  /**
+                    * B1
+                    */
+                  b
 
-                // Above a partition comment ignore me
-                // PartitionComment: 1
-                /**
-                  * D2
-                  */
-                // D1
-                d
+                  // Above a partition comment ignore me
+                  // PartitionComment: 1
+                  /**
+                    * D2
+                    */
+                  // D1
+                  d
 
-                a
-              }
-            `,
+                  a
+                }
+              `,
               errors: [
                 {
                   data: {

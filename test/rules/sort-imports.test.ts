@@ -318,23 +318,23 @@ describe(ruleName, () => {
             },
           ],
           code: dedent`
-              import d from '.'
-              import { a1, a2, a3 } from 'a'
-              import { c1, c2, c3 } from '~/c'
+            import d from '.'
+            import { a1, a2, a3 } from 'a'
+            import { c1, c2, c3 } from '~/c'
 
-              import type { T } from 't'
-              import { e1, e2, e3 } from '../../e'
+            import type { T } from 't'
+            import { e1, e2, e3 } from '../../e'
 
-              import { b1, b2 } from '~/b'
-            `,
+            import { b1, b2 } from '~/b'
+          `,
           output: dedent`
-              import type { T } from 't'
-              import { a1, a2, a3 } from 'a'
-              import { b1, b2 } from '~/b'
-              import { c1, c2, c3 } from '~/c'
-              import d from '.'
-              import { e1, e2, e3 } from '../../e'
-            `,
+            import type { T } from 't'
+            import { a1, a2, a3 } from 'a'
+            import { b1, b2 } from '~/b'
+            import { c1, c2, c3 } from '~/c'
+            import d from '.'
+            import { e1, e2, e3 } from '../../e'
+          `,
         },
       ],
       valid: [
@@ -357,13 +357,13 @@ describe(ruleName, () => {
             },
           ],
           code: dedent`
-              import type { T } from 't'
-              import { a1, a2, a3 } from 'a'
-              import { b1, b2 } from '~/b'
-              import { c1, c2, c3 } from '~/c'
-              import d from '.'
-              import { e1, e2, e3 } from '../../e'
-            `,
+            import type { T } from 't'
+            import { a1, a2, a3 } from 'a'
+            import { b1, b2 } from '~/b'
+            import { c1, c2, c3 } from '~/c'
+            import d from '.'
+            import { e1, e2, e3 } from '../../e'
+          `,
         },
       ],
     })
@@ -442,12 +442,12 @@ describe(ruleName, () => {
             },
           ],
           code: dedent`
-              import { A } from 'a'
+            import { A } from 'a'
 
-              import b from '~/b'
-              import c from '~/c'
-              import d from '~/d'
-            `,
+            import b from '~/b'
+            import c from '~/c'
+            import d from '~/d'
+          `,
         },
       ],
     })
@@ -1336,21 +1336,21 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-            const { c1, c2, c3, c4 } = require('c')
-            const { e1 } = require('e/a')
-            const { e2 } = require('e/b')
-            const fs = require('fs')
-            const path = require('path')
+              const { c1, c2, c3, c4 } = require('c')
+              const { e1 } = require('e/a')
+              const { e2 } = require('e/b')
+              const fs = require('fs')
+              const path = require('path')
 
-            const { b1, b2 } = require('~/b')
-            const { c1 } = require('~/c')
-            const { i1, i2, i3 } = require('~/i')
+              const { b1, b2 } = require('~/b')
+              const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
 
-            const a = require('.')
-            const h = require('../../h')
-            const { j } = require('../j')
-            const { K, L, M } = require('../k')
-          `,
+              const a = require('.')
+              const h = require('../../h')
+              const { j } = require('../j')
+              const { K, L, M } = require('../k')
+            `,
             options: [
               {
                 ...options,
@@ -1880,13 +1880,13 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              import '你好'
-              import '世界'
-              import 'a'
-              import 'A'
-              import 'b'
-              import 'B'
-            `,
+            import '你好'
+            import '世界'
+            import 'a'
+            import 'A'
+            import 'b'
+            import 'B'
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -1931,13 +1931,13 @@ describe(ruleName, () => {
                 import z from '~/z'
 
                     import b from '~/b'
-                `,
+              `,
               output: dedent`
                   import { A } from 'a'
                  import b from '~/b'
                 import y from '~/y'
                     import z from '~/z'
-                `,
+              `,
               options: [
                 {
                   ...options,
@@ -1972,13 +1972,13 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-                  import c from 'c';    
+                import c from 'c';    
 
-                  import a from '~/a'
-                `,
+                import a from '~/a'
+              `,
               code: dedent`
-                  import c from 'c';    import a from '~/a'
-                `,
+                import c from 'c';    import a from '~/a'
+              `,
             },
             {
               errors: [
@@ -2012,14 +2012,14 @@ describe(ruleName, () => {
                 import b from '~/b'
 
                     import d from '~/d'
-                `,
+              `,
               output: dedent`
                   import { A } from 'a'
 
                  import b from '~/b'
                 import c from '~/c'
                     import d from '~/d'
-                `,
+              `,
               options: [
                 {
                   ...options,
@@ -2148,10 +2148,10 @@ describe(ruleName, () => {
                 },
               ],
               code: dedent`
-                  import { b } from 'b'
-                  import { a } from './a' // Comment after
+                import { b } from 'b'
+                import { a } from './a' // Comment after
 
-                  import { c } from 'c'
+                import { c } from 'c'
               `,
               options: [
                 {
@@ -2450,7 +2450,7 @@ describe(ruleName, () => {
               /* Comment */
               import a from './a'
               import b from './b'
-              `,
+            `,
             code: dedent`
               import b from './b'
               /* Comment */
@@ -2479,7 +2479,7 @@ describe(ruleName, () => {
                 import b from './b'
                 // Comment
                 import a from './a'
-            `,
+              `,
             },
           ],
           invalid: [],
@@ -2998,23 +2998,23 @@ describe(ruleName, () => {
             },
           ],
           code: dedent`
-              import d from '.'
-              import { a1, a2, a3 } from 'a'
-              import { c1, c2, c3 } from '~/c'
+            import d from '.'
+            import { a1, a2, a3 } from 'a'
+            import { c1, c2, c3 } from '~/c'
 
-              import type { T } from 't'
-              import { e1, e2, e3 } from '../../e'
+            import type { T } from 't'
+            import { e1, e2, e3 } from '../../e'
 
-              import { b1, b2 } from '~/b'
-            `,
+            import { b1, b2 } from '~/b'
+          `,
           output: dedent`
-              import type { T } from 't'
-              import { a1, a2, a3 } from 'a'
-              import { b1, b2 } from '~/b'
-              import { c1, c2, c3 } from '~/c'
-              import d from '.'
-              import { e1, e2, e3 } from '../../e'
-            `,
+            import type { T } from 't'
+            import { a1, a2, a3 } from 'a'
+            import { b1, b2 } from '~/b'
+            import { c1, c2, c3 } from '~/c'
+            import d from '.'
+            import { e1, e2, e3 } from '../../e'
+          `,
         },
       ],
       valid: [
@@ -3037,13 +3037,13 @@ describe(ruleName, () => {
             },
           ],
           code: dedent`
-              import type { T } from 't'
-              import { a1, a2, a3 } from 'a'
-              import { b1, b2 } from '~/b'
-              import { c1, c2, c3 } from '~/c'
-              import d from '.'
-              import { e1, e2, e3 } from '../../e'
-            `,
+            import type { T } from 't'
+            import { a1, a2, a3 } from 'a'
+            import { b1, b2 } from '~/b'
+            import { c1, c2, c3 } from '~/c'
+            import d from '.'
+            import { e1, e2, e3 } from '../../e'
+          `,
         },
       ],
     })
@@ -3122,12 +3122,12 @@ describe(ruleName, () => {
             },
           ],
           code: dedent`
-              import { A } from 'a'
+            import { A } from 'a'
 
-              import b from '~/b'
-              import c from '~/c'
-              import d from '~/d'
-            `,
+            import b from '~/b'
+            import c from '~/c'
+            import d from '~/d'
+          `,
         },
       ],
     })
@@ -4016,21 +4016,21 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-            const { c1, c2, c3, c4 } = require('c')
-            const { e1 } = require('e/a')
-            const { e2 } = require('e/b')
-            const fs = require('fs')
-            const path = require('path')
+              const { c1, c2, c3, c4 } = require('c')
+              const { e1 } = require('e/a')
+              const { e2 } = require('e/b')
+              const fs = require('fs')
+              const path = require('path')
 
-            const { b1, b2 } = require('~/b')
-            const { c1 } = require('~/c')
-            const { i1, i2, i3 } = require('~/i')
+              const { b1, b2 } = require('~/b')
+              const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
 
-            const a = require('.')
-            const h = require('../../h')
-            const { j } = require('../j')
-            const { K, L, M } = require('../k')
-          `,
+              const a = require('.')
+              const h = require('../../h')
+              const { j } = require('../j')
+              const { K, L, M } = require('../k')
+            `,
             options: [
               {
                 ...options,
@@ -4598,23 +4598,23 @@ describe(ruleName, () => {
             },
           ],
           code: dedent`
-              import d from '.'
-              import { a1, a2, a3 } from 'a'
-              import { c1, c2, c3 } from '~/c'
+            import d from '.'
+            import { a1, a2, a3 } from 'a'
+            import { c1, c2, c3 } from '~/c'
 
-              import type { T } from 't'
-              import { e1, e2, e3 } from '../../e'
+            import type { T } from 't'
+            import { e1, e2, e3 } from '../../e'
 
-              import { b1, b2 } from '~/b'
-            `,
+            import { b1, b2 } from '~/b'
+          `,
           output: dedent`
-              import type { T } from 't'
-              import { a1, a2, a3 } from 'a'
-              import { c1, c2, c3 } from '~/c'
-              import { b1, b2 } from '~/b'
-              import { e1, e2, e3 } from '../../e'
-              import d from '.'
-            `,
+            import type { T } from 't'
+            import { a1, a2, a3 } from 'a'
+            import { c1, c2, c3 } from '~/c'
+            import { b1, b2 } from '~/b'
+            import { e1, e2, e3 } from '../../e'
+            import d from '.'
+          `,
         },
       ],
       valid: [
@@ -4637,13 +4637,13 @@ describe(ruleName, () => {
             },
           ],
           code: dedent`
-              import type { T } from 't'
-              import { a1, a2, a3 } from 'a'
-              import { c1, c2, c3 } from '~/c'
-              import { b1, b2 } from '~/b'
-              import { e1, e2, e3 } from '../../e'
-              import d from '.'
-            `,
+            import type { T } from 't'
+            import { a1, a2, a3 } from 'a'
+            import { c1, c2, c3 } from '~/c'
+            import { b1, b2 } from '~/b'
+            import { e1, e2, e3 } from '../../e'
+            import d from '.'
+          `,
         },
       ],
     })
@@ -4722,12 +4722,12 @@ describe(ruleName, () => {
             },
           ],
           code: dedent`
-              import { A } from 'a'
+            import { A } from 'a'
 
-              import b from '~/b'
-              import c from '~/c'
-              import d from '~/d'
-            `,
+            import b from '~/b'
+            import c from '~/c'
+            import d from '~/d'
+          `,
         },
       ],
     })
@@ -5399,39 +5399,39 @@ describe(ruleName, () => {
       invalid: [
         {
           output: dedent`
-              import {
-                ICantBelieveHowLong,
-                ICantHandleHowLong,
-                KindaLong,
-                Long,
-                ThisIsTheLongestEver,
-                WowSoLong,
-              } from 'app/components/Short';
-              import ThereIsTwoOfMe, {
-                SoWeShouldSplitUpSinceWeAreInDifferentSections
-              } from 'IWillDefinitelyBeSplitUp';
-              import Short from 'app/components/LongName';
-              import { ThisIsApprox, SeventyNine } from '~CharactersLongAndShouldNotBeSplit';
-              import { EvenThoughThisIsLongItShouldNotGetSplitUpAsItThereIsOnlyOne } from 'IWillNotBeSplitUp';
-              import EvenThoughThisIsLongItShouldNotBePutOntoAnyNewLinesAsThereIsOnlyOne from 'IWillNotBePutOntoNewLines';
-            `,
+            import {
+              ICantBelieveHowLong,
+              ICantHandleHowLong,
+              KindaLong,
+              Long,
+              ThisIsTheLongestEver,
+              WowSoLong,
+            } from 'app/components/Short';
+            import ThereIsTwoOfMe, {
+              SoWeShouldSplitUpSinceWeAreInDifferentSections
+            } from 'IWillDefinitelyBeSplitUp';
+            import Short from 'app/components/LongName';
+            import { ThisIsApprox, SeventyNine } from '~CharactersLongAndShouldNotBeSplit';
+            import { EvenThoughThisIsLongItShouldNotGetSplitUpAsItThereIsOnlyOne } from 'IWillNotBeSplitUp';
+            import EvenThoughThisIsLongItShouldNotBePutOntoAnyNewLinesAsThereIsOnlyOne from 'IWillNotBePutOntoNewLines';
+          `,
           code: dedent`
-              import { ThisIsApprox, SeventyNine } from '~CharactersLongAndShouldNotBeSplit';
-              import { EvenThoughThisIsLongItShouldNotGetSplitUpAsItThereIsOnlyOne } from 'IWillNotBeSplitUp';
-              import Short from 'app/components/LongName';
-              import {
-                ICantBelieveHowLong,
-                ICantHandleHowLong,
-                KindaLong,
-                Long,
-                ThisIsTheLongestEver,
-                WowSoLong,
-              } from 'app/components/Short';
-              import EvenThoughThisIsLongItShouldNotBePutOntoAnyNewLinesAsThereIsOnlyOne from 'IWillNotBePutOntoNewLines';
-              import ThereIsTwoOfMe, {
-                SoWeShouldSplitUpSinceWeAreInDifferentSections
-              } from 'IWillDefinitelyBeSplitUp';
-            `,
+            import { ThisIsApprox, SeventyNine } from '~CharactersLongAndShouldNotBeSplit';
+            import { EvenThoughThisIsLongItShouldNotGetSplitUpAsItThereIsOnlyOne } from 'IWillNotBeSplitUp';
+            import Short from 'app/components/LongName';
+            import {
+              ICantBelieveHowLong,
+              ICantHandleHowLong,
+              KindaLong,
+              Long,
+              ThisIsTheLongestEver,
+              WowSoLong,
+            } from 'app/components/Short';
+            import EvenThoughThisIsLongItShouldNotBePutOntoAnyNewLinesAsThereIsOnlyOne from 'IWillNotBePutOntoNewLines';
+            import ThereIsTwoOfMe, {
+              SoWeShouldSplitUpSinceWeAreInDifferentSections
+            } from 'IWillDefinitelyBeSplitUp';
+          `,
           errors: [
             {
               data: {
@@ -5668,21 +5668,21 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-            const { c1, c2, c3, c4 } = require('c')
-            const { e1 } = require('e/a')
-            const { e2 } = require('e/b')
-            const path = require('path')
-            const fs = require('fs')
+              const { c1, c2, c3, c4 } = require('c')
+              const { e1 } = require('e/a')
+              const { e2 } = require('e/b')
+              const path = require('path')
+              const fs = require('fs')
 
-            const { i1, i2, i3 } = require('~/i')
-            const { b1, b2 } = require('~/b')
-            const { c1 } = require('~/c')
+              const { i1, i2, i3 } = require('~/i')
+              const { b1, b2 } = require('~/b')
+              const { c1 } = require('~/c')
 
-            const { K, L, M } = require('../k')
-            const { j } = require('../j')
-            const h = require('../../h')
-            const a = require('.')
-          `,
+              const { K, L, M } = require('../k')
+              const { j } = require('../j')
+              const h = require('../../h')
+              const a = require('.')
+            `,
             options: [
               {
                 ...options,
@@ -5934,11 +5934,11 @@ describe(ruleName, () => {
               },
             ],
             code: dedent`
-            import type { T } from 't'
+              import type { T } from 't'
 
-            // @ts-expect-error missing types
-            import { t } from 't'
-          `,
+              // @ts-expect-error missing types
+              import { t } from 't'
+            `,
           },
         ],
         invalid: [],

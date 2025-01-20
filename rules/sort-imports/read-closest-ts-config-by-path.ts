@@ -89,11 +89,11 @@ let getCompilerOptions = (
   )
   let compilerOptionsConverted =
     typescriptImport.convertCompilerOptionsFromJson(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      // eslint-disable-next-line typescript/no-unsafe-member-access
       parsedContent.raw.config.compilerOptions,
       path.dirname(filePath),
     )
-  if (compilerOptionsConverted.errors.length) {
+  if (compilerOptionsConverted.errors.length > 0) {
     throw new Error(
       `Error getting compiler options: ${JSON.stringify(
         compilerOptionsConverted.errors,

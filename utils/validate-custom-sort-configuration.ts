@@ -10,7 +10,7 @@ export let validateCustomSortConfiguration = ({
   if (type !== 'custom') {
     return
   }
-  if (!alphabet.length) {
+  if (alphabet.length === 0) {
     throw new Error('`alphabet` option must not be empty')
   }
 }

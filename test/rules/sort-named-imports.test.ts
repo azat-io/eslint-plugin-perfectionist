@@ -259,11 +259,11 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-          import {
-              x as a,
-              y as b,
-              c,
-            } from 'module'
+            import {
+                x as a,
+                y as b,
+                c,
+              } from 'module'
           `,
           options: [
             {
@@ -562,6 +562,19 @@ describe(ruleName, () => {
         {
           invalid: [
             {
+              output: dedent`
+                import {
+                  /* Partition Comment */
+                  // Part: A
+                  D,
+                  // Part: B
+                  AAA,
+                  BB,
+                  C,
+                  /* Other */
+                  E,
+                } from 'module'
+              `,
               code: dedent`
                 import {
                   /* Partition Comment */
@@ -575,19 +588,6 @@ describe(ruleName, () => {
                   E,
                 } from 'module'
               `,
-              output: dedent`
-                import {
-                  /* Partition Comment */
-                  // Part: A
-                  D,
-                  // Part: B
-                  AAA,
-                  BB,
-                  C,
-                  /* Other */
-                  E,
-                } from 'module'
-            `,
               errors: [
                 {
                   data: {
@@ -638,12 +638,12 @@ describe(ruleName, () => {
                 } from 'module'
               `,
               code: dedent`
-              import {
-                B,
-                /* Comment */
-                A,
-              } from 'module'
-            `,
+                import {
+                  B,
+                  /* Comment */
+                  A,
+                } from 'module'
+              `,
             },
           ],
           valid: [],
@@ -664,12 +664,12 @@ describe(ruleName, () => {
                   },
                 ],
                 code: dedent`
-                import {
-                  B,
-                  // Comment
-                  A,
-                } from 'module'
-              `,
+                  import {
+                    B,
+                    // Comment
+                    A,
+                  } from 'module'
+                `,
               },
             ],
             invalid: [],
@@ -682,6 +682,15 @@ describe(ruleName, () => {
           {
             valid: [
               {
+                code: dedent`
+                  import {
+                    C,
+                    // B
+                    B,
+                    // A
+                    A,
+                  } from 'module'
+                `,
                 options: [
                   {
                     ...options,
@@ -690,15 +699,6 @@ describe(ruleName, () => {
                     },
                   },
                 ],
-                code: dedent`
-                import {
-                  C,
-                  // B
-                  B,
-                  // A
-                  A,
-                } from 'module'
-              `,
               },
             ],
             invalid: [],
@@ -720,12 +720,12 @@ describe(ruleName, () => {
                   },
                 ],
                 code: dedent`
-                import {
-                  B,
-                  // I am a partition comment because I don't have f o o
-                  A,
-                } from 'module'
-              `,
+                  import {
+                    B,
+                    // I am a partition comment because I don't have f o o
+                    A,
+                  } from 'module'
+                `,
               },
             ],
             invalid: [],
@@ -755,19 +755,19 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-              import {
-                // Comment
-                A,
-                B,
-              } from 'module'
-            `,
+                import {
+                  // Comment
+                  A,
+                  B,
+                } from 'module'
+              `,
               code: dedent`
-              import {
-                B,
-                // Comment
-                A,
-              } from 'module'
-            `,
+                import {
+                  B,
+                  // Comment
+                  A,
+                } from 'module'
+              `,
             },
           ],
           valid: [],
@@ -788,12 +788,12 @@ describe(ruleName, () => {
                   },
                 ],
                 code: dedent`
-                import {
-                  B,
-                  /* Comment */
-                  A,
-                } from 'module'
-              `,
+                  import {
+                    B,
+                    /* Comment */
+                    A,
+                  } from 'module'
+                `,
               },
             ],
             invalid: [],
@@ -806,6 +806,15 @@ describe(ruleName, () => {
           {
             valid: [
               {
+                code: dedent`
+                  import {
+                    C,
+                    /* B */
+                    B,
+                    /* A */
+                    A,
+                  } from 'module'
+                `,
                 options: [
                   {
                     ...options,
@@ -814,15 +823,6 @@ describe(ruleName, () => {
                     },
                   },
                 ],
-                code: dedent`
-                import {
-                  C,
-                  /* B */
-                  B,
-                  /* A */
-                  A,
-                } from 'module'
-              `,
               },
             ],
             invalid: [],
@@ -835,6 +835,13 @@ describe(ruleName, () => {
           {
             valid: [
               {
+                code: dedent`
+                  import {
+                    B,
+                    /* I am a partition comment because I don't have f o o */
+                    A,
+                  } from 'module'
+                `,
                 options: [
                   {
                     ...options,
@@ -843,13 +850,6 @@ describe(ruleName, () => {
                     },
                   },
                 ],
-                code: dedent`
-                import {
-                  B,
-                  /* I am a partition comment because I don't have f o o */
-                  A,
-                } from 'module'
-              `,
               },
             ],
             invalid: [],
@@ -904,8 +904,8 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              import { 你好, 世界, a, A, b, B } from 'module'
-            `,
+            import { 你好, 世界, a, A, b, B } from 'module'
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -1246,11 +1246,11 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-          import {
-              x as a,
-              y as b,
-              c,
-            } from 'module'
+            import {
+                x as a,
+                y as b,
+                c,
+              } from 'module'
           `,
           options: [
             {

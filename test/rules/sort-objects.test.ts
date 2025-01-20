@@ -342,12 +342,12 @@ describe(ruleName, () => {
               },
             ],
             code: dedent`
-            let Obj = {
-              iHaveFooInMyName: string,
-              meTooIHaveFoo: string,
-              a: string,
-              b: "b",
-            }
+              let Obj = {
+                iHaveFooInMyName: string,
+                meTooIHaveFoo: string,
+                a: string,
+                b: "b",
+              }
             `,
           },
         ],
@@ -1123,7 +1123,7 @@ describe(ruleName, () => {
                 }) => {
                   // ...
                 }
-                `,
+              `,
               options: [
                 {
                   ...options,
@@ -1138,7 +1138,7 @@ describe(ruleName, () => {
                 }) => {
                   // ...
                 }
-                `,
+              `,
               options: [
                 {
                   ...options,
@@ -1153,7 +1153,7 @@ describe(ruleName, () => {
                 }) => {
                   // ...
                 }
-                `,
+              `,
               options: [
                 {
                   ...options,
@@ -1188,29 +1188,29 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-              let Func = ({
-                a,
-                d = b + 1,
-                f = d + 1,
-                b = f + 1,
-                c,
-                e
-              }) => {
-                // ...
-              }
-            `,
+                let Func = ({
+                  a,
+                  d = b + 1,
+                  f = d + 1,
+                  b = f + 1,
+                  c,
+                  e
+                }) => {
+                  // ...
+                }
+              `,
               code: dedent`
-              let Func = ({
-                a,
-                b = f + 1,
-                c,
-                d = b + 1,
-                e,
-                f = d + 1
-              }) => {
-                // ...
-              }
-            `,
+                let Func = ({
+                  a,
+                  b = f + 1,
+                  c,
+                  d = b + 1,
+                  e,
+                  f = d + 1
+                }) => {
+                  // ...
+                }
+              `,
               options: [options],
             },
           ],
@@ -1274,16 +1274,16 @@ describe(ruleName, () => {
                 }) => {
                   // ...
                 }
-            `,
+              `,
               code: dedent`
-              let Func = ({
-                b = a,
-                // Part: 1
-                a = 0,
-              }) => {
-                // ...
-              }
-            `,
+                let Func = ({
+                  b = a,
+                  // Part: 1
+                  a = 0,
+                }) => {
+                  // ...
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -1319,16 +1319,16 @@ describe(ruleName, () => {
                 }) => {
                   // ...
                 }
-            `,
+              `,
               code: dedent`
-              let Func = ({
-                b = a,
+                let Func = ({
+                  b = a,
 
-                a = 0,
-              }) => {
-                // ...
-              }
-            `,
+                  a = 0,
+                }) => {
+                  // ...
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -1887,15 +1887,15 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              let obj = {
-                你好 = '你好',
-                世界 = '世界',
-                a = 'a',
-                A = 'A',
-                b = 'b',
-                B = 'B',
-              }
-            `,
+            let obj = {
+              你好 = '你好',
+              世界 = '世界',
+              a = 'a',
+              A = 'A',
+              b = 'b',
+              B = 'B',
+            }
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
@@ -2166,7 +2166,7 @@ describe(ruleName, () => {
                       // Newline stuff
                     },
                 }
-                `,
+              `,
               code: dedent`
                 let Obj = {
                   a: () => null,
@@ -2806,7 +2806,7 @@ describe(ruleName, () => {
                   anotherMethod() {},
                   yetAnotherMethod() {},
                 }
-            `,
+              `,
             },
           ],
           valid: [],
@@ -2861,7 +2861,7 @@ describe(ruleName, () => {
                   method() {},
                   c,
                 }
-            `,
+              `,
             },
           ],
           valid: [],
@@ -2952,13 +2952,13 @@ describe(ruleName, () => {
                 },
               ],
               code: dedent`
-              let obj = {
-                iHaveFooInMyName,
-                meTooIHaveFoo,
-                a,
-                b,
-              }
-            `,
+                let obj = {
+                  iHaveFooInMyName,
+                  meTooIHaveFoo,
+                  a,
+                  b,
+                }
+              `,
             },
           ],
           invalid: [],
@@ -4935,38 +4935,38 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-                let Obj = {
-                  a: 'a',
-                  b: 'b',
-                  c: 'c',
-                }
-              `,
-            code: dedent`
-                let Obj = {
-                  a: 'a',
-                  c: 'c',
-                  b: 'b',
-                }
-              `,
-          },
-        ],
-        valid: [
-          dedent`
               let Obj = {
                 a: 'a',
                 b: 'b',
                 c: 'c',
               }
             `,
+            code: dedent`
+              let Obj = {
+                a: 'a',
+                c: 'c',
+                b: 'b',
+              }
+            `,
+          },
+        ],
+        valid: [
+          dedent`
+            let Obj = {
+              a: 'a',
+              b: 'b',
+              c: 'c',
+            }
+          `,
           {
             code: dedent`
-                const calculator = {
-                  log: () => undefined,
-                  log10: () => undefined,
-                  log1p: () => undefined,
-                  log2: () => undefined,
-                }
-              `,
+              const calculator = {
+                log: () => undefined,
+                log10: () => undefined,
+                log1p: () => undefined,
+                log2: () => undefined,
+              }
+            `,
             options: [{}],
           },
         ],
@@ -4980,12 +4980,12 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-                const Box = styled.div({
-                  background: "red",
-                  width: "50px",
-                  height: "50px",
-                })
-              `,
+              const Box = styled.div({
+                background: "red",
+                width: "50px",
+                height: "50px",
+              })
+            `,
             options: [
               {
                 styledComponents: false,
@@ -4994,12 +4994,12 @@ describe(ruleName, () => {
           },
           {
             code: dedent`
-                const PropsBox = styled.div((props) => ({
-                  background: props.background,
-                  height: "50px",
-                  width: "50px",
-                }))
-              `,
+              const PropsBox = styled.div((props) => ({
+                background: props.background,
+                height: "50px",
+                width: "50px",
+              }))
+            `,
             options: [
               {
                 styledComponents: false,
@@ -5008,13 +5008,13 @@ describe(ruleName, () => {
           },
           {
             code: dedent`
-                export default styled('div')(() => ({
-                  borderRadius: 0,
-                  borderWidth: 0,
-                  border: 0,
-                  borderBottom: hasBorder && \`1px solid \${theme.palette.divider}\`,
-                }))
-              `,
+              export default styled('div')(() => ({
+                borderRadius: 0,
+                borderWidth: 0,
+                border: 0,
+                borderBottom: hasBorder && \`1px solid \${theme.palette.divider}\`,
+              }))
+            `,
             options: [
               {
                 styledComponents: false,
@@ -5632,17 +5632,17 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-            let Element = () => (
-              <div
-                style={{
-                  display: 'block',
-                  margin: 0,
-                  padding: 20,
-                  background: 'orange',
-                }}
-              />
-            )
-          `,
+              let Element = () => (
+                <div
+                  style={{
+                    display: 'block',
+                    margin: 0,
+                    padding: 20,
+                    background: 'orange',
+                  }}
+                />
+              )
+            `,
             options: [
               {
                 styledComponents: false,
@@ -6025,12 +6025,12 @@ describe(ruleName, () => {
         valid: [
           {
             code: dedent`
-                let Func = ({
-                  b = () => 1,
-                  a = b(),
-                }) => {
-                  // ...
-                }
+              let Func = ({
+                b = () => 1,
+                a = b(),
+              }) => {
+                // ...
+              }
             `,
             options: [{}],
           },

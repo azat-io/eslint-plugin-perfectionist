@@ -81,7 +81,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             })
           }
           if (
-            caseNode.consequent.length &&
+            caseNode.consequent.length > 0 &&
             index !== switchNode.cases.length - 1
           ) {
             accumulator.push([])
@@ -140,7 +140,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       // Ensure default is at the end.
       let sortingNodeGroupsForDefaultSort = reduceCaseSortingNodes(
         sortingNodes,
-        caseNode => !!caseNode.node.consequent.length,
+        caseNode => caseNode.node.consequent.length > 0,
       )
       let sortingNodesGroupWithDefault = sortingNodeGroupsForDefaultSort.find(
         caseNodeGroup => caseNodeGroup.some(node => node.isDefaultClause),

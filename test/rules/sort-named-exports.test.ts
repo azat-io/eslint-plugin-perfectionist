@@ -371,14 +371,14 @@ describe(ruleName, () => {
           valid: [
             {
               code: dedent`
-              export {
-                E,
-                F,
-                // I am a partition comment because I don't have f o o
-                A,
-                B,
-              }
-            `,
+                export {
+                  E,
+                  F,
+                  // I am a partition comment because I don't have f o o
+                  A,
+                  B,
+                }
+              `,
               options: [
                 {
                   ...options,
@@ -420,12 +420,12 @@ describe(ruleName, () => {
                 }
               `,
               code: dedent`
-              export {
-                B,
-                /* Comment */
-                A,
-              }
-            `,
+                export {
+                  B,
+                  /* Comment */
+                  A,
+                }
+              `,
             },
           ],
           valid: [],
@@ -446,12 +446,12 @@ describe(ruleName, () => {
                   },
                 ],
                 code: dedent`
-                export {
-                  B,
-                  // Comment
-                  A,
-                }
-              `,
+                  export {
+                    B,
+                    // Comment
+                    A,
+                  }
+                `,
               },
             ],
             invalid: [],
@@ -473,14 +473,14 @@ describe(ruleName, () => {
                   },
                 ],
                 code: dedent`
-                export {
-                  C,
-                  // B
-                  B,
-                  // A
-                  A,
-                }
-              `,
+                  export {
+                    C,
+                    // B
+                    B,
+                    // A
+                    A,
+                  }
+                `,
               },
             ],
             invalid: [],
@@ -502,12 +502,12 @@ describe(ruleName, () => {
                   },
                 ],
                 code: dedent`
-                export {
-                  B,
-                  // I am a partition comment because I don't have f o o
-                  A,
-                }
-              `,
+                  export {
+                    B,
+                    // I am a partition comment because I don't have f o o
+                    A,
+                  }
+                `,
               },
             ],
             invalid: [],
@@ -537,19 +537,19 @@ describe(ruleName, () => {
                 },
               ],
               output: dedent`
-              export {
-                // Comment
-                A,
-                B,
-              }
-            `,
+                export {
+                  // Comment
+                  A,
+                  B,
+                }
+              `,
               code: dedent`
-              export {
-                B,
-                // Comment
-                A,
-              }
-            `,
+                export {
+                  B,
+                  // Comment
+                  A,
+                }
+              `,
             },
           ],
           valid: [],
@@ -570,12 +570,12 @@ describe(ruleName, () => {
                   },
                 ],
                 code: dedent`
-                export {
-                  B,
-                  /* Comment */
-                  A,
-                }
-              `,
+                  export {
+                    B,
+                    /* Comment */
+                    A,
+                  }
+                `,
               },
             ],
             invalid: [],
@@ -597,14 +597,14 @@ describe(ruleName, () => {
                   },
                 ],
                 code: dedent`
-                export {
-                  C,
-                  /* B */
-                  B,
-                  /* A */
-                  A,
-                }
-              `,
+                  export {
+                    C,
+                    /* B */
+                    B,
+                    /* A */
+                    A,
+                  }
+                `,
               },
             ],
             invalid: [],
@@ -626,12 +626,12 @@ describe(ruleName, () => {
                   },
                 ],
                 code: dedent`
-                export {
-                  B,
-                  /* I am a partition comment because I don't have f o o */
-                  A,
-                }
-              `,
+                  export {
+                    B,
+                    /* I am a partition comment because I don't have f o o */
+                    A,
+                  }
+                `,
               },
             ],
             invalid: [],
@@ -686,8 +686,8 @@ describe(ruleName, () => {
       valid: [
         {
           code: dedent`
-              export { 你好, 世界, a, A, b, B }
-            `,
+            export { 你好, 世界, a, A, b, B }
+          `,
           options: [{ ...options, locales: 'zh-CN' }],
         },
       ],
