@@ -2,7 +2,7 @@ import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, it } from 'vitest'
 import dedent from 'dedent'
 
-import type { Options } from '../../rules/sort-enums'
+import type { Options } from '../../rules/sort-enums/types'
 
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-enums'

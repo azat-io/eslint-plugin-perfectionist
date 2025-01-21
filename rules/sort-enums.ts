@@ -1,11 +1,8 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  PartitionByCommentOption,
-  CommonOptions,
-} from '../types/common-options'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { CompareOptions } from '../utils/compare'
+import type { Options } from './sort-enums/types'
 
 import {
   partitionByCommentJsonSchema,
@@ -27,18 +24,6 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
-
-export type Options = [
-  Partial<
-    {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-      partitionByComment: PartitionByCommentOption
-      partitionByNewLine: boolean
-      forceNumericSort: boolean
-      sortByValue: boolean
-    } & CommonOptions
-  >,
-]
 
 interface SortEnumsSortingNode
   extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
