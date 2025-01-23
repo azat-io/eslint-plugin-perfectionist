@@ -1,5 +1,11 @@
 import type { Options as SortObjectTypesOptions } from './sort-object-types/types'
 
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { sortObjectTypeElements, jsonSchema } from './sort-object-types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
@@ -29,26 +35,6 @@ let defaultOptions: Required<Options[0]> = {
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  meta: {
-    messages: {
-      unexpectedInterfacePropertiesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      missedSpacingBetweenInterfaceMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" properties.',
-      extraSpacingBetweenInterfaceMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" properties.',
-      unexpectedInterfacePropertiesOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
-    docs: {
-      url: 'https://perfectionist.dev/rules/sort-interfaces',
-      description: 'Enforce sorted interface properties.',
-      recommended: true,
-    },
-    schema: jsonSchema,
-    type: 'suggestion',
-    fixable: 'code',
-  },
   create: context => ({
     TSInterfaceDeclaration: node =>
       sortObjectTypeElements<MESSAGE_ID>({
@@ -63,6 +49,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
         context,
       }),
   }),
+  meta: {
+    messages: {
+      unexpectedInterfacePropertiesGroupOrder: GROUP_ORDER_ERROR,
+      missedSpacingBetweenInterfaceMembers: MISSED_SPACING_ERROR,
+      extraSpacingBetweenInterfaceMembers: EXTRA_SPACING_ERROR,
+      unexpectedInterfacePropertiesOrder: ORDER_ERROR,
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-interfaces',
+      description: 'Enforce sorted interface properties.',
+      recommended: true,
+    },
+    schema: jsonSchema,
+    type: 'suggestion',
+    fixable: 'code',
+  },
   defaultOptions: [defaultOptions],
   name: 'sort-interfaces',
 })

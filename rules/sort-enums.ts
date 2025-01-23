@@ -14,6 +14,13 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  DEPENDENCY_ORDER_ERROR,
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -289,15 +296,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedEnumsGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedEnumsDependencyOrder:
-        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
-      missedSpacingBetweenEnumsMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" members.',
-      extraSpacingBetweenEnumsMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" members.',
-      unexpectedEnumsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedEnumsDependencyOrder: DEPENDENCY_ORDER_ERROR,
+      missedSpacingBetweenEnumsMembers: MISSED_SPACING_ERROR,
+      extraSpacingBetweenEnumsMembers: EXTRA_SPACING_ERROR,
+      unexpectedEnumsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedEnumsOrder: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-enums',

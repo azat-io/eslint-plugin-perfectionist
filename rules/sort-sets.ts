@@ -1,5 +1,11 @@
 import type { Options } from './sort-array-includes/types'
 
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { defaultOptions, jsonSchema, sortArray } from './sort-array-includes'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
@@ -40,13 +46,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
   }),
   meta: {
     messages: {
-      unexpectedSetsGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      missedSpacingBetweenSetsMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" members.',
-      extraSpacingBetweenSetsMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" members.',
-      unexpectedSetsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      missedSpacingBetweenSetsMembers: MISSED_SPACING_ERROR,
+      extraSpacingBetweenSetsMembers: EXTRA_SPACING_ERROR,
+      unexpectedSetsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedSetsOrder: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-sets',

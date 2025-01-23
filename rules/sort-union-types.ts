@@ -17,6 +17,12 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -92,26 +98,6 @@ export let jsonSchema: JSONSchema4 = {
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  meta: {
-    messages: {
-      unexpectedUnionTypesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      missedSpacingBetweenUnionTypes:
-        'Missed spacing between "{{left}}" and "{{right}}" types.',
-      extraSpacingBetweenUnionTypes:
-        'Extra spacing between "{{left}}" and "{{right}}" types.',
-      unexpectedUnionTypesOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
-    docs: {
-      url: 'https://perfectionist.dev/rules/sort-union-types',
-      description: 'Enforce sorted union types.',
-      recommended: true,
-    },
-    schema: [jsonSchema],
-    type: 'suggestion',
-    fixable: 'code',
-  },
   create: context => ({
     TSUnionType: node => {
       sortUnionOrIntersectionTypes({
@@ -127,6 +113,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
       })
     },
   }),
+  meta: {
+    messages: {
+      missedSpacingBetweenUnionTypes: MISSED_SPACING_ERROR,
+      extraSpacingBetweenUnionTypes: EXTRA_SPACING_ERROR,
+      unexpectedUnionTypesGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedUnionTypesOrder: ORDER_ERROR,
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-union-types',
+      description: 'Enforce sorted union types.',
+      recommended: true,
+    },
+    schema: [jsonSchema],
+    type: 'suggestion',
+    fixable: 'code',
+  },
   defaultOptions: [defaultOptions],
   name: 'sort-union-types',
 })

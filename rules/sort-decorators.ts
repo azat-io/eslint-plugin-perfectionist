@@ -19,6 +19,7 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { getDecoratorName } from './sort-decorators/get-decorator-name'
+import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -71,59 +72,6 @@ let defaultOptions: Required<Options[0]> = {
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  meta: {
-    schema: [
-      {
-        properties: {
-          ...commonJsonSchemas,
-          sortOnParameters: {
-            description:
-              'Controls whether sorting should be enabled for method parameter decorators.',
-            type: 'boolean',
-          },
-          sortOnProperties: {
-            description:
-              'Controls whether sorting should be enabled for class property decorators.',
-            type: 'boolean',
-          },
-          sortOnAccessors: {
-            description:
-              'Controls whether sorting should be enabled for class accessor decorators.',
-            type: 'boolean',
-          },
-          sortOnMethods: {
-            description:
-              'Controls whether sorting should be enabled for class method decorators.',
-            type: 'boolean',
-          },
-          sortOnClasses: {
-            description:
-              'Controls whether sorting should be enabled for class decorators.',
-            type: 'boolean',
-          },
-          partitionByComment: partitionByCommentJsonSchema,
-          customGroups: customGroupsJsonSchema,
-          type: buildTypeJsonSchema(),
-          groups: groupsJsonSchema,
-        },
-        additionalProperties: false,
-        type: 'object',
-      },
-    ],
-    messages: {
-      unexpectedDecoratorsGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedDecoratorsOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
-    docs: {
-      url: 'https://perfectionist.dev/rules/sort-decorators',
-      description: 'Enforce sorted decorators.',
-      recommended: true,
-    },
-    type: 'suggestion',
-    fixable: 'code',
-  },
   create: context => {
     let settings = getSettings(context.settings)
 
@@ -181,6 +129,57 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ? sortDecorators(context, options, getNodeDecorators(declaration))
           : null,
     }
+  },
+  meta: {
+    schema: [
+      {
+        properties: {
+          ...commonJsonSchemas,
+          sortOnParameters: {
+            description:
+              'Controls whether sorting should be enabled for method parameter decorators.',
+            type: 'boolean',
+          },
+          sortOnProperties: {
+            description:
+              'Controls whether sorting should be enabled for class property decorators.',
+            type: 'boolean',
+          },
+          sortOnAccessors: {
+            description:
+              'Controls whether sorting should be enabled for class accessor decorators.',
+            type: 'boolean',
+          },
+          sortOnMethods: {
+            description:
+              'Controls whether sorting should be enabled for class method decorators.',
+            type: 'boolean',
+          },
+          sortOnClasses: {
+            description:
+              'Controls whether sorting should be enabled for class decorators.',
+            type: 'boolean',
+          },
+          partitionByComment: partitionByCommentJsonSchema,
+          customGroups: customGroupsJsonSchema,
+          type: buildTypeJsonSchema(),
+          groups: groupsJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-decorators',
+      description: 'Enforce sorted decorators.',
+      recommended: true,
+    },
+    messages: {
+      unexpectedDecoratorsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedDecoratorsOrder: ORDER_ERROR,
+    },
+    type: 'suggestion',
+    fixable: 'code',
   },
   defaultOptions: [defaultOptions],
   name: 'sort-decorators',

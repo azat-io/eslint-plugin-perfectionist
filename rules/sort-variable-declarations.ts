@@ -14,6 +14,7 @@ import {
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
+import { DEPENDENCY_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -251,16 +252,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
       },
     ],
-    messages: {
-      unexpectedVariableDeclarationsDependencyOrder:
-        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
-      unexpectedVariableDeclarationsOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-variable-declarations',
       description: 'Enforce sorted variable declarations.',
       recommended: true,
+    },
+    messages: {
+      unexpectedVariableDeclarationsDependencyOrder: DEPENDENCY_ORDER_ERROR,
+      unexpectedVariableDeclarationsOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',

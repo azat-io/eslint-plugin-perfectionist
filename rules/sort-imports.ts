@@ -16,6 +16,12 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
@@ -623,13 +629,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedImportsGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      missedSpacingBetweenImports:
-        'Missed spacing between "{{left}}" and "{{right}}" imports.',
-      extraSpacingBetweenImports:
-        'Extra spacing between "{{left}}" and "{{right}}" imports.',
-      unexpectedImportsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      missedSpacingBetweenImports: MISSED_SPACING_ERROR,
+      extraSpacingBetweenImports: EXTRA_SPACING_ERROR,
+      unexpectedImportsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedImportsOrder: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-imports',

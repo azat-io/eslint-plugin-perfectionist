@@ -11,9 +11,9 @@ import {
   commonJsonSchemas,
 } from '../utils/common-json-schemas'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
+import { reportErrors, ORDER_ERROR } from '../utils/report-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
-import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -276,8 +276,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       recommended: true,
     },
     messages: {
-      unexpectedSwitchCaseOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedSwitchCaseOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',

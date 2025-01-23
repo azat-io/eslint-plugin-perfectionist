@@ -20,6 +20,7 @@ import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { ORDER_ERROR } from '../utils/report-errors'
 import { getSettings } from '../utils/get-settings'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
@@ -171,7 +172,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       recommended: true,
     },
     messages: {
-      unexpectedExportsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedExportsOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',

@@ -11,6 +11,12 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -200,14 +206,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedJSXPropsGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      missedSpacingBetweenJSXPropsMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" props.',
-      extraSpacingBetweenJSXPropsMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" props.',
-      unexpectedJSXPropsOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
+      missedSpacingBetweenJSXPropsMembers: MISSED_SPACING_ERROR,
+      extraSpacingBetweenJSXPropsMembers: EXTRA_SPACING_ERROR,
+      unexpectedJSXPropsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedJSXPropsOrder: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-jsx-props',

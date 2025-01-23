@@ -15,6 +15,12 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
@@ -218,14 +224,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'array',
     },
     messages: {
-      unexpectedMapElementsGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      missedSpacingBetweenMapElementsMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" members.',
-      extraSpacingBetweenMapElementsMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" members.',
-      unexpectedMapElementsOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
+      missedSpacingBetweenMapElementsMembers: MISSED_SPACING_ERROR,
+      extraSpacingBetweenMapElementsMembers: EXTRA_SPACING_ERROR,
+      unexpectedMapElementsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedMapElementsOrder: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-maps',

@@ -14,6 +14,7 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -65,16 +66,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
       },
     ],
-    messages: {
-      unexpectedHeritageClausesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedHeritageClausesOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-heritage-clauses',
       description: 'Enforce sorted heritage clauses.',
       recommended: true,
+    },
+    messages: {
+      unexpectedHeritageClausesGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedHeritageClausesOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',

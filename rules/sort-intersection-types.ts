@@ -1,5 +1,11 @@
 import type { Options as SortUnionTypesOptions } from './sort-union-types'
 
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { sortUnionOrIntersectionTypes } from './sort-union-types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { jsonSchema } from './sort-union-types'
@@ -28,14 +34,10 @@ let defaultOptions: Required<Options[0]> = {
 export default createEslintRule<Options, MESSAGE_ID>({
   meta: {
     messages: {
-      unexpectedIntersectionTypesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      missedSpacingBetweenIntersectionTypes:
-        'Missed spacing between "{{left}}" and "{{right}}" types.',
-      extraSpacingBetweenIntersectionTypes:
-        'Extra spacing between "{{left}}" and "{{right}}" types.',
-      unexpectedIntersectionTypesOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
+      missedSpacingBetweenIntersectionTypes: MISSED_SPACING_ERROR,
+      extraSpacingBetweenIntersectionTypes: EXTRA_SPACING_ERROR,
+      unexpectedIntersectionTypesGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedIntersectionTypesOrder: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-intersection-types',

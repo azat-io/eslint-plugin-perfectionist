@@ -17,6 +17,12 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -121,26 +127,6 @@ export let jsonSchema: JSONSchema4 = {
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
-  meta: {
-    messages: {
-      unexpectedObjectTypesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      missedSpacingBetweenObjectTypeMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" properties.',
-      extraSpacingBetweenObjectTypeMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" properties.',
-      unexpectedObjectTypesOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
-    docs: {
-      url: 'https://perfectionist.dev/rules/sort-object-types',
-      description: 'Enforce sorted object types.',
-      recommended: true,
-    },
-    schema: jsonSchema,
-    type: 'suggestion',
-    fixable: 'code',
-  },
   create: context => ({
     TSTypeLiteral: node =>
       sortObjectTypeElements<MESSAGE_ID>({
@@ -158,6 +144,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
         context,
       }),
   }),
+  meta: {
+    messages: {
+      missedSpacingBetweenObjectTypeMembers: MISSED_SPACING_ERROR,
+      extraSpacingBetweenObjectTypeMembers: EXTRA_SPACING_ERROR,
+      unexpectedObjectTypesGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedObjectTypesOrder: ORDER_ERROR,
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-object-types',
+      description: 'Enforce sorted object types.',
+      recommended: true,
+    },
+    schema: jsonSchema,
+    type: 'suggestion',
+    fixable: 'code',
+  },
   defaultOptions: [defaultOptions],
   name: 'sort-object-types',
 })

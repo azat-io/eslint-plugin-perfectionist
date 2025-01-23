@@ -15,6 +15,13 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  DEPENDENCY_ORDER_ERROR,
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -515,15 +522,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'array',
     },
     messages: {
-      unexpectedObjectsGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedObjectsDependencyOrder:
-        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
-      missedSpacingBetweenObjectMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" objects.',
-      extraSpacingBetweenObjectMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" objects.',
-      unexpectedObjectsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedObjectsDependencyOrder: DEPENDENCY_ORDER_ERROR,
+      missedSpacingBetweenObjectMembers: MISSED_SPACING_ERROR,
+      extraSpacingBetweenObjectMembers: EXTRA_SPACING_ERROR,
+      unexpectedObjectsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedObjectsOrder: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-objects',
