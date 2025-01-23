@@ -5,15 +5,25 @@ import type { CompareOptions } from '../utils/compare'
 import type { Options } from './sort-enums/types'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
+  newlinesBetweenJsonSchema,
+  customGroupsJsonSchema,
   buildTypeJsonSchema,
   commonJsonSchemas,
+  groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { doesCustomGroupMatch } from './sort-enums/does-custom-group-match'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
+import { singleCustomGroupJsonSchema } from './sort-enums/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
@@ -22,27 +32,35 @@ import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { sortNodes } from '../utils/sort-nodes'
+import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
+
+type MESSAGE_ID =
+  | 'missedSpacingBetweenEnumsMembers'
+  | 'extraSpacingBetweenEnumsMembers'
+  | 'unexpectedEnumsDependencyOrder'
+  | 'unexpectedEnumsGroupOrder'
+  | 'unexpectedEnumsOrder'
 
 interface SortEnumsSortingNode
   extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
   numericValue: number | null
 }
 
-type MESSAGE_ID = 'unexpectedEnumsDependencyOrder' | 'unexpectedEnumsOrder'
-
 let defaultOptions: Required<Options[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
   specialCharacters: 'keep',
+  newlinesBetween: 'ignore',
   forceNumericSort: false,
   type: 'alphabetical',
   sortByValue: false,
   ignoreCase: true,
   locales: 'en-US',
+  customGroups: [],
   alphabet: '',
   order: 'asc',
+  groups: [],
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
@@ -59,6 +77,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
+      validateGeneratedGroupsConfiguration({
+        customGroups: options.customGroups,
+        groups: options.groups,
+        selectors: [],
+        modifiers: [],
+      })
+      validateNewlinesAndPartitionConfiguration(options)
 
       let sourceCode = getSourceCode(context)
       let eslintDisabledLines = getEslintDisabledLines({
@@ -109,6 +134,32 @@ export default createEslintRule<Options, MESSAGE_ID>({
               enumDeclaration.id.name,
             )
           }
+
+          let name =
+            member.id.type === 'Literal'
+              ? `${member.id.value}`
+              : sourceCode.getText(member.id)
+
+          let { defineGroup, getGroup } = useGroups(options)
+          for (let customGroup of options.customGroups) {
+            if (
+              doesCustomGroupMatch({
+                elementValue: sourceCode.getText(member.initializer),
+                elementName: name,
+                customGroup,
+              })
+            ) {
+              defineGroup(customGroup.groupName, true)
+              /**
+               * If the custom group is not referenced in the `groups` option, it
+               * will be ignored
+               */
+              if (getGroup() === customGroup.groupName) {
+                break
+              }
+            }
+          }
+
           let lastSortingNode = accumulator.at(-1)?.at(-1)
           let sortingNode: SortEnumsSortingNode = {
             numericValue: member.initializer
@@ -116,14 +167,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   member.initializer,
                 ) /* v8 ignore next - Unsure how we can reach that case */
               : null,
-            name:
-              member.id.type === 'Literal'
-                ? `${member.id.value}`
-                : sourceCode.getText(member.id),
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
             size: rangeToDiff(member, sourceCode),
+            group: getGroup(),
             node: member,
             dependencies,
+            name,
           }
 
           if (
@@ -151,7 +200,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           !Number.isNaN(sortingNode.numericValue),
       )
 
-      let compareOptions: CompareOptions<SortEnumsSortingNode> = {
+      let compareOptions: CompareOptions<SortEnumsSortingNode> &
+        Required<Options[0]> = {
+        ...options,
         // Get the enum value rather than the name if needed.
         nodeValueGetter:
           options.sortByValue || (isNumericEnum && options.forceNumericSort)
@@ -173,11 +224,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           isNumericEnum && (options.forceNumericSort || options.sortByValue)
             ? 'natural'
             : options.type,
-        specialCharacters: options.specialCharacters,
-        ignoreCase: options.ignoreCase,
-        alphabet: options.alphabet,
-        locales: options.locales,
-        order: options.order,
       }
 
       let sortNodesExcludingEslintDisabled = (
@@ -185,7 +231,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ): SortEnumsSortingNode[] =>
         sortNodesByDependencies(
           formattedMembers.flatMap(sortingNodes =>
-            sortNodes(sortingNodes, compareOptions, {
+            sortNodesByGroups(sortingNodes, compareOptions, {
+              getGroupCompareOptions: groupNumber =>
+                getCustomGroupsCompareOptions(compareOptions, groupNumber),
               ignoreEslintDisabledNodes,
             }),
           ),
@@ -196,7 +244,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       reportAllErrors<MESSAGE_ID>({
         availableMessageIds: {
+          missedSpacingBetweenMembers: 'missedSpacingBetweenEnumsMembers',
+          extraSpacingBetweenMembers: 'extraSpacingBetweenEnumsMembers',
           unexpectedDependencyOrder: 'unexpectedEnumsDependencyOrder',
+          unexpectedGroupOrder: 'unexpectedEnumsGroupOrder',
           unexpectedOrder: 'unexpectedEnumsOrder',
         },
         sortNodesExcludingEslintDisabled,
@@ -217,21 +268,35 @@ export default createEslintRule<Options, MESSAGE_ID>({
               'Will always sort numeric enums by their value regardless of the sort type specified.',
             type: 'boolean',
           },
+          customGroups: {
+            oneOf: [
+              customGroupsJsonSchema,
+              buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
+            ],
+          },
           sortByValue: {
             description: 'Compare enum values instead of names.',
             type: 'boolean',
           },
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
           type: buildTypeJsonSchema(),
+          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
       },
     ],
     messages: {
+      unexpectedEnumsGroupOrder:
+        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
       unexpectedEnumsDependencyOrder:
         'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
+      missedSpacingBetweenEnumsMembers:
+        'Missed spacing between "{{left}}" and "{{right}}" members.',
+      extraSpacingBetweenEnumsMembers:
+        'Extra spacing between "{{left}}" and "{{right}}" members.',
       unexpectedEnumsOrder: 'Expected "{{right}}" to come before "{{left}}".',
     },
     docs: {

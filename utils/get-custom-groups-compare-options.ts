@@ -54,14 +54,11 @@ export let getCustomGroupsCompareOptions = <T extends SortingNode>(
     return null
   }
   return {
+    ...options,
     order:
       customGroup && 'order' in customGroup && customGroup.order
         ? customGroup.order
         : options.order,
-    specialCharacters: options.specialCharacters,
     type: customGroup?.type ?? options.type,
-    ignoreCase: options.ignoreCase,
-    alphabet: options.alphabet,
-    locales: options.locales,
   }
 }

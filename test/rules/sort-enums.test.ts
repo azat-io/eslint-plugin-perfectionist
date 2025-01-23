@@ -905,6 +905,609 @@ describe(ruleName, () => {
         valid: [],
       },
     )
+
+    describe(`${ruleName}: custom groups`, () => {
+      ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'keysStartingWithHello',
+                  leftGroup: 'unknown',
+                  right: 'HELLO_KEY',
+                  left: 'B',
+                },
+                messageId: 'unexpectedEnumsGroupOrder',
+              },
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'keysStartingWithHello',
+                    elementNamePattern: 'HELLO*',
+                  },
+                ],
+                groups: ['keysStartingWithHello', 'unknown'],
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                HELLO_KEY = 3,
+                A = 1,
+                B = 2,
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                A = 1,
+                B = 2,
+                HELLO_KEY = 3,
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'valuesStartingWithHello',
+                    elementValuePattern: 'HELLO*',
+                  },
+                ],
+                groups: ['valuesStartingWithHello', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'valuesStartingWithHello',
+                  leftGroup: 'unknown',
+                  right: 'Z',
+                  left: 'B',
+                },
+                messageId: 'unexpectedEnumsGroupOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                Z = 'HELLO_KEY',
+                A = 'A',
+                B = 'B',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                A = 'A',
+                B = 'B',
+                Z = 'HELLO_KEY',
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: '_BB',
+                    left: '_A',
+                  },
+                  messageId: 'unexpectedEnumsOrder',
+                },
+                {
+                  data: {
+                    right: '_CCC',
+                    left: '_BB',
+                  },
+                  messageId: 'unexpectedEnumsOrder',
+                },
+                {
+                  data: {
+                    right: '_DDDD',
+                    left: '_CCC',
+                  },
+                  messageId: 'unexpectedEnumsOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'reversedStartingWith_ByLineLength',
+                    leftGroup: 'unknown',
+                    right: '_EEE',
+                    left: 'M',
+                  },
+                  messageId: 'unexpectedEnumsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'reversedStartingWith_ByLineLength',
+                      elementNamePattern: '_',
+                      type: 'line-length',
+                      order: 'desc',
+                    },
+                  ],
+                  groups: ['reversedStartingWith_ByLineLength', 'unknown'],
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                enum Enum {
+                  _DDDD = null,
+                  _CCC = null,
+                  _EEE = null,
+                  _BB = null,
+                  _FF = null,
+                  _A = null,
+                  _G = null,
+                  M = null,
+                  O = null,
+                  P = null,
+                }
+              `,
+              code: dedent`
+                enum Enum {
+                  _A = null,
+                  _BB = null,
+                  _CCC = null,
+                  _DDDD = null,
+                  M = null,
+                  _EEE = null,
+                  _FF = null,
+                  _G = null,
+                  O = null,
+                  P = null,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: does not sort custom groups with 'unsorted' type`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'unsortedStartingWith_',
+                      elementNamePattern: '_',
+                      type: 'unsorted',
+                    },
+                  ],
+                  groups: ['unsortedStartingWith_', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unsortedStartingWith_',
+                    leftGroup: 'unknown',
+                    right: '_C',
+                    left: 'M',
+                  },
+                  messageId: 'unexpectedEnumsGroupOrder',
+                },
+              ],
+              output: dedent`
+                enum Enum {
+                  _B = null,
+                  _A = null,
+                  _D = null,
+                  _E = null,
+                  _C = null,
+                  M = null,
+                }
+              `,
+              code: dedent`
+                enum Enum {
+                  _B = null,
+                  _A = null,
+                  _D = null,
+                  _E = null,
+                  M = null,
+                  _C = null,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    anyOf: [
+                      {
+                        elementNamePattern: 'FOO',
+                      },
+                      {
+                        elementNamePattern: 'Foo',
+                      },
+                    ],
+                    groupName: 'elementsIncludingFoo',
+                  },
+                ],
+                groups: ['elementsIncludingFoo', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'elementsIncludingFoo',
+                  leftGroup: 'unknown',
+                  right: 'C_FOO',
+                  left: 'A',
+                },
+                messageId: 'unexpectedEnumsGroupOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                C_FOO = null,
+                FOO = null,
+                A = null,
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                A = null,
+                C_FOO = null,
+                FOO = null,
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: allows to use regex for element names in custom groups`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: '^(?!.*FOO).*$',
+                      groupName: 'elementsWithoutFoo',
+                    },
+                  ],
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                  type: 'alphabetical',
+                },
+              ],
+              code: dedent`
+                enum Enum {
+                  I_HAVE_FOO_IN_MY_NAME = null,
+                  ME_TOO_I_HAVE_FOO = null,
+                  A = null,
+                  B = null,
+                }
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'Y',
+                    left: 'A',
+                  },
+                  messageId: 'extraSpacingBetweenEnumsMembers',
+                },
+                {
+                  data: {
+                    right: 'B',
+                    left: 'Z',
+                  },
+                  messageId: 'unexpectedEnumsOrder',
+                },
+                {
+                  data: {
+                    right: 'B',
+                    left: 'Z',
+                  },
+                  messageId: 'extraSpacingBetweenEnumsMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'A',
+                      groupName: 'a',
+                    },
+                  ],
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                },
+              ],
+              code: dedent`
+                enum Enum {
+                  A = null,
+
+
+                 Y = null,
+                Z = null,
+
+                    B = null,
+                }
+              `,
+              output: dedent`
+                enum Enum {
+                  A = null,
+                 B = null,
+                Y = null,
+                    Z = null,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'Z',
+                    left: 'A',
+                  },
+                  messageId: 'extraSpacingBetweenEnumsMembers',
+                },
+                {
+                  data: {
+                    right: 'Y',
+                    left: 'Z',
+                  },
+                  messageId: 'unexpectedEnumsOrder',
+                },
+                {
+                  data: {
+                    right: 'B',
+                    left: 'Y',
+                  },
+                  messageId: 'missedSpacingBetweenEnumsMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'A',
+                      groupName: 'a',
+                    },
+                    {
+                      elementNamePattern: 'B',
+                      groupName: 'b',
+                    },
+                  ],
+                  groups: ['a', 'unknown', 'b'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              output: dedent`
+                enum Enum {
+                  A = null,
+
+                 Y = null,
+                Z = null,
+
+                    B = null,
+                }
+              `,
+              code: dedent`
+                enum Enum {
+                  A = null,
+
+
+                 Z = null,
+                Y = null,
+                    B = null,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    { elementNamePattern: 'A', groupName: 'a' },
+                    { elementNamePattern: 'B', groupName: 'b' },
+                    { elementNamePattern: 'C', groupName: 'c' },
+                    { elementNamePattern: 'D', groupName: 'd' },
+                    { elementNamePattern: 'E', groupName: 'e' },
+                  ],
+                  groups: [
+                    'a',
+                    { newlinesBetween: 'always' },
+                    'b',
+                    { newlinesBetween: 'always' },
+                    'c',
+                    { newlinesBetween: 'never' },
+                    'd',
+                    { newlinesBetween: 'ignore' },
+                    'e',
+                  ],
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'B',
+                    left: 'A',
+                  },
+                  messageId: 'missedSpacingBetweenEnumsMembers',
+                },
+                {
+                  data: {
+                    right: 'C',
+                    left: 'B',
+                  },
+                  messageId: 'extraSpacingBetweenEnumsMembers',
+                },
+                {
+                  data: {
+                    right: 'D',
+                    left: 'C',
+                  },
+                  messageId: 'extraSpacingBetweenEnumsMembers',
+                },
+              ],
+              output: dedent`
+                enum Enum {
+                  A = null,
+
+                  B = null,
+
+                  C = null,
+                  D = null,
+
+
+                  E = null,
+                }
+              `,
+              code: dedent`
+                enum Enum {
+                  A = null,
+                  B = null,
+
+
+                  C = null,
+
+                  D = null,
+
+
+                  E = null,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): handles newlines and comment after fixes`,
+        rule,
+        {
+          invalid: [
+            {
+              output: [
+                dedent`
+                  enum Enum {
+                    A = null, // Comment after
+                    B = null,
+
+                    C = null,
+                  }
+                `,
+                dedent`
+                  enum Enum {
+                    A = null, // Comment after
+
+                    B = null,
+                    C = null,
+                  }
+                `,
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: 'B|C',
+                      groupName: 'b|c',
+                    },
+                  ],
+                  groups: ['unknown', 'b|c'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unknown',
+                    leftGroup: 'b|c',
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedEnumsGroupOrder',
+                },
+              ],
+              code: dedent`
+                enum Enum {
+                  B = null,
+                  A = null, // Comment after
+
+                  C = null,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -2020,6 +2623,7 @@ describe(ruleName, () => {
       'line-length',
       'natural',
     ]
+
     for (let type of sortTypes) {
       ruleTester.run(
         `${ruleName}: sortByValue = true => sorts numerical enums numerically for type ${type}`,
@@ -2441,6 +3045,42 @@ describe(ruleName, () => {
             },
           ],
           valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: prioritizes dependencies over group configuration`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'attributesStartingWithA',
+                      elementNamePattern: 'A',
+                    },
+                    {
+                      groupName: 'attributesStartingWithB',
+                      elementNamePattern: 'B',
+                    },
+                  ],
+                  groups: [
+                    'attributesStartingWithA',
+                    'attributesStartingWithB',
+                  ],
+                },
+              ],
+              code: dedent`
+                enum Enum {
+                  B = 'B',
+                  A = B,
+                }
+              `,
+            },
+          ],
+          invalid: [],
         },
       )
     })
