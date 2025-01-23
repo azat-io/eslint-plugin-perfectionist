@@ -10,8 +10,8 @@ import {
   buildTypeJsonSchema,
   commonJsonSchemas,
 } from '../utils/common-json-schemas'
+import { reportErrors, ORDER_ERROR, RIGHT, LEFT } from '../utils/report-errors'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
-import { reportErrors, ORDER_ERROR } from '../utils/report-errors'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -186,8 +186,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ]
           },
           data: {
-            left: defaultCase.name,
-            right: lastCase.name,
+            [LEFT]: defaultCase.name,
+            [RIGHT]: lastCase.name,
           },
           messageId: 'unexpectedSwitchCaseOrder',
           node: defaultCase.node,
@@ -250,8 +250,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   fixer,
                 }),
           data: {
-            right: right.name,
-            left: left.name,
+            [RIGHT]: right.name,
+            [LEFT]: left.name,
           },
           messageId: 'unexpectedSwitchCaseOrder',
           node: right.node,

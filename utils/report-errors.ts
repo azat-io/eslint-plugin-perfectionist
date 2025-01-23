@@ -7,9 +7,9 @@ import { toSingleLine } from './to-single-line'
 import { makeFixes } from './make-fixes'
 
 const NODE_DEPENDENT_ON_RIGHT = 'nodeDependentOnRight'
-const RIGHT = 'right'
+export const RIGHT = 'right'
 const RIGHT_GROUP = 'rightGroup'
-const LEFT = 'left'
+export const LEFT = 'left'
 const LEFT_GROUP = 'leftGroup'
 
 export const ORDER_ERROR =
