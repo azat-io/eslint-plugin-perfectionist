@@ -7,6 +7,7 @@ import type {
   SpecialCharactersOption,
   NewlinesBetweenOption,
   GroupsOptions,
+  TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -50,7 +51,6 @@ export type Options<T extends string = string> = [
       value?: Record<T, string[] | string>
       type?: Record<T, string[] | string>
     }
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     partitionByComment: PartitionByCommentOption
     specialCharacters: SpecialCharactersOption
     locales: NonNullable<Intl.LocalesArgument>
@@ -64,6 +64,7 @@ export type Options<T extends string = string> = [
     maxLineLength?: number
     order: 'desc' | 'asc'
     ignoreCase: boolean
+    type: TypeOption
     alphabet: string
   }>,
 ]

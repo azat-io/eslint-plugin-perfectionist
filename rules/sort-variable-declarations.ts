@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type {
   PartitionByCommentOption,
   CommonOptions,
+  TypeOption,
 } from '../types/common-options'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
@@ -30,9 +31,9 @@ import { complete } from '../utils/complete'
 type Options = [
   Partial<
     {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
       partitionByComment: PartitionByCommentOption
       partitionByNewLine: boolean
+      type: TypeOption
     } & CommonOptions
   >,
 ]

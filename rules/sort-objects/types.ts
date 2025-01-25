@@ -5,6 +5,7 @@ import type {
   NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
+  TypeOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
@@ -21,11 +22,11 @@ export type Options = Partial<
       callingFunctionNamePattern?: string
       allNamesMatchPattern?: string
     }
-    type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
     customGroups: Record<string, string[] | string> | CustomGroup[]
     destructuredObjects: { groups: boolean } | boolean
     partitionByComment: PartitionByCommentOption
     newlinesBetween: NewlinesBetweenOption
+    type: TypeOption | 'unsorted'
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
     objectDeclarations: boolean

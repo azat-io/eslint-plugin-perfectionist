@@ -5,6 +5,7 @@ import type {
   NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
+  TypeOption,
 } from '../../types/common-options'
 
 import { elementNamePatternJsonSchema } from '../../utils/common-json-schemas'
@@ -14,12 +15,12 @@ export type Options = Partial<
     useConfigurationIf: {
       allNamesMatchPattern?: string
     }
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     partitionByComment: PartitionByCommentOption
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
     customGroups: CustomGroup[]
+    type: TypeOption
   } & CommonOptions
 >[]
 

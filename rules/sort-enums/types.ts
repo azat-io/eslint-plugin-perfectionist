@@ -5,6 +5,7 @@ import type {
   NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
+  TypeOption,
 } from '../../types/common-options'
 
 import {
@@ -14,7 +15,6 @@ import {
 
 export type Options = Partial<
   {
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
     partitionByComment: PartitionByCommentOption
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
@@ -22,6 +22,7 @@ export type Options = Partial<
     customGroups: CustomGroup[]
     forceNumericSort: boolean
     sortByValue: boolean
+    type: TypeOption
   } & CommonOptions
 >[]
 

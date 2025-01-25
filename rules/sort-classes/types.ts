@@ -5,6 +5,7 @@ import type {
   NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
+  TypeOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
@@ -29,13 +30,13 @@ export type SingleCustomGroup =
 export type SortClassesOptions = [
   Partial<
     {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
       partitionByComment: PartitionByCommentOption
       ignoreCallbackDependenciesPatterns: string[]
       newlinesBetween: NewlinesBetweenOption
       groups: GroupsOptions<Group>
       partitionByNewLine: boolean
       customGroups: CustomGroup[]
+      type: TypeOption
     } & CommonOptions
   >,
 ]

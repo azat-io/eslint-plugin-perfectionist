@@ -4,6 +4,7 @@ import type {
   NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
+  TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -41,12 +42,12 @@ import { matches } from '../utils/matches'
 type Options<T extends string = string> = [
   Partial<
     {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
       customGroups: Record<T, string[] | string>
       newlinesBetween: NewlinesBetweenOption
       groups: GroupsOptions<Group<T>>
       partitionByNewLine: boolean
       ignorePattern: string[]
+      type: TypeOption
     } & CommonOptions
   >,
 ]

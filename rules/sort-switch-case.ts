@@ -1,7 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { CommonOptions } from '../types/common-options'
+import type { CommonOptions, TypeOption } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
@@ -23,17 +23,17 @@ import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
 import { compare } from '../utils/compare'
 
-type Options = [
-  Partial<
-    {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    } & CommonOptions
-  >,
-]
-
 interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
 }
+
+type Options = [
+  Partial<
+    {
+      type: TypeOption
+    } & CommonOptions
+  >,
+]
 
 type MESSAGE_ID = 'unexpectedSwitchCaseOrder'
 

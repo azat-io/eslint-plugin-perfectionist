@@ -7,6 +7,7 @@ import type {
   NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
+  TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -42,11 +43,11 @@ import { complete } from '../utils/complete'
 export type Options = [
   Partial<
     {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
       partitionByComment: PartitionByCommentOption
       newlinesBetween: NewlinesBetweenOption
       groups: GroupsOptions<Group>
       partitionByNewLine: boolean
+      type: TypeOption
     } & CommonOptions
   >,
 ]

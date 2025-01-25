@@ -5,6 +5,7 @@ import type {
   NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
+  TypeOption,
 } from '../../types/common-options'
 
 import {
@@ -14,7 +15,6 @@ import {
 
 export type Options = Partial<
   {
-    type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
     useConfigurationIf: {
       allNamesMatchPattern?: string
     }
@@ -24,6 +24,7 @@ export type Options = Partial<
     groupKind: 'literals-first' | 'spreads-first' | 'mixed'
     partitionByComment: PartitionByCommentOption
     newlinesBetween: NewlinesBetweenOption
+    type: TypeOption | 'unsorted'
     groups: GroupsOptions<Group>
     customGroups: CustomGroup[]
     partitionByNewLine: boolean

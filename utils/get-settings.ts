@@ -1,6 +1,9 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { SpecialCharactersOption } from '../types/common-options'
+import type {
+  SpecialCharactersOption,
+  TypeOption,
+} from '../types/common-options'
 
 export type Settings = Partial<{
   partitionByComment:
@@ -11,13 +14,13 @@ export type Settings = Partial<{
     | string[]
     | boolean
     | string
-  type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
   specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   partitionByNewLine: boolean
   ignorePattern: string[]
   order: 'desc' | 'asc'
   ignoreCase: boolean
+  type: TypeOption
   alphabet: string
 }>
 

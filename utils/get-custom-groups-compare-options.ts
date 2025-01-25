@@ -1,25 +1,26 @@
 import type {
   SpecialCharactersOption,
   GroupsOptions,
+  TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { CompareOptions } from './compare'
 
 interface Options {
   customGroups: Record<string, string[] | string> | CustomGroup[]
-  type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
   specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   groups: GroupsOptions<string>
   order: 'desc' | 'asc'
   ignoreCase: boolean
+  type: TypeOption
   alphabet: string
 }
 
 type CustomGroup = (
   | {
-      type?: 'alphabetical' | 'line-length' | 'natural' | 'custom'
       order?: 'desc' | 'asc'
+      type?: TypeOption
     }
   | {
       type?: 'unsorted'

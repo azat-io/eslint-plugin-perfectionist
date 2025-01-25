@@ -1,5 +1,7 @@
+import type { TypeOption } from '../types/common-options'
+
 interface Options {
-  type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
+  type: TypeOption
   alphabet: string
 }
 

@@ -5,6 +5,7 @@ import type {
   NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
+  TypeOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
@@ -13,19 +14,6 @@ import {
   buildCustomGroupSelectorJsonSchema,
   elementNamePatternJsonSchema,
 } from '../../utils/common-json-schemas'
-
-export type SortModulesOptions = [
-  Partial<
-    {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-      partitionByComment: PartitionByCommentOption
-      newlinesBetween: NewlinesBetweenOption
-      groups: GroupsOptions<Group>
-      customGroups: CustomGroup[]
-      partitionByNewLine: boolean
-    } & CommonOptions
-  >,
-]
 
 export type SingleCustomGroup = (
   | (DecoratorNamePatternFilterCustomGroup &
@@ -36,6 +24,19 @@ export type SingleCustomGroup = (
   | BaseSingleCustomGroup<TypeSelector>
 ) &
   ElementNamePatternFilterCustomGroup
+
+export type SortModulesOptions = [
+  Partial<
+    {
+      partitionByComment: PartitionByCommentOption
+      newlinesBetween: NewlinesBetweenOption
+      groups: GroupsOptions<Group>
+      customGroups: CustomGroup[]
+      partitionByNewLine: boolean
+      type: TypeOption
+    } & CommonOptions
+  >,
+]
 
 export type Selector =
   // | NamespaceSelector

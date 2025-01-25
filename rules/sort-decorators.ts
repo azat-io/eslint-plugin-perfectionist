@@ -4,6 +4,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type {
   PartitionByCommentOption,
   CommonOptions,
+  TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -35,7 +36,6 @@ import { complete } from '../utils/complete'
 export type Options<T extends string = string> = [
   Partial<
     {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
       partitionByComment: PartitionByCommentOption
       customGroups: Record<T, string[] | string>
       groups: (Group<T>[] | Group<T>)[]
@@ -44,6 +44,7 @@ export type Options<T extends string = string> = [
       sortOnAccessors: boolean
       sortOnMethods: boolean
       sortOnClasses: boolean
+      type: TypeOption
     } & CommonOptions
   >,
 ]
