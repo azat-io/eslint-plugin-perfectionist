@@ -11,7 +11,7 @@ interface ExtraOptions<T extends SortingNode> {
    * will not be sorted within the group.
    */
   getGroupCompareOptions?(groupNumber: number): CompareOptions<T> | null
-  ignoreEslintDisabledNodes?: boolean
+  ignoreEslintDisabledNodes: boolean
   isNodeIgnored?(node: T): boolean
 }
 
