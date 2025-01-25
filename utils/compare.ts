@@ -1,5 +1,6 @@
 import { compare as createNaturalCompare } from 'natural-orderby'
 
+import type { SpecialCharactersOption } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { convertBooleanToSign } from './convert-boolean-to-sign'
@@ -21,7 +22,7 @@ interface BaseCompareOptions<T extends SortingNode> {
 
 interface AlphabeticalCompareOptions<T extends SortingNode>
   extends BaseCompareOptions<T> {
-  specialCharacters: 'remove' | 'trim' | 'keep'
+  specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   type: 'alphabetical'
   ignoreCase: boolean
@@ -29,7 +30,7 @@ interface AlphabeticalCompareOptions<T extends SortingNode>
 
 interface NaturalCompareOptions<T extends SortingNode>
   extends BaseCompareOptions<T> {
-  specialCharacters: 'remove' | 'trim' | 'keep'
+  specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   ignoreCase: boolean
   type: 'natural'
@@ -37,7 +38,7 @@ interface NaturalCompareOptions<T extends SortingNode>
 
 interface CustomCompareOptions<T extends SortingNode>
   extends BaseCompareOptions<T> {
-  specialCharacters: 'remove' | 'trim' | 'keep'
+  specialCharacters: SpecialCharactersOption
   ignoreCase: boolean
   alphabet: string
   type: 'custom'
@@ -168,7 +169,7 @@ let getLineLengthSortingFunction =
   }
 
 let getFormatStringFunction =
-  (ignoreCase: boolean, specialCharacters: 'remove' | 'trim' | 'keep') =>
+  (ignoreCase: boolean, specialCharacters: SpecialCharactersOption) =>
   (value: string) => {
     let valueToCompare = value
     if (ignoreCase) {

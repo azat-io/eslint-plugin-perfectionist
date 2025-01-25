@@ -4,6 +4,7 @@ import { builtinModules } from 'node:module'
 
 import type {
   PartitionByCommentOption,
+  SpecialCharactersOption,
   NewlinesBetweenOption,
   GroupsOptions,
 } from '../types/common-options'
@@ -50,8 +51,8 @@ export type Options<T extends string = string> = [
       type?: Record<T, string[] | string>
     }
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    specialCharacters: 'remove' | 'trim' | 'keep'
     partitionByComment: PartitionByCommentOption
+    specialCharacters: SpecialCharactersOption
     locales: NonNullable<Intl.LocalesArgument>
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group<T>>

@@ -1,11 +1,14 @@
-import type { GroupsOptions } from '../types/common-options'
+import type {
+  SpecialCharactersOption,
+  GroupsOptions,
+} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { CompareOptions } from './compare'
 
 interface Options {
   customGroups: Record<string, string[] | string> | CustomGroup[]
   type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-  specialCharacters: 'remove' | 'trim' | 'keep'
+  specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   groups: GroupsOptions<string>
   order: 'desc' | 'asc'

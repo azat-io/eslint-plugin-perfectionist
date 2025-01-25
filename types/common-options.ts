@@ -1,5 +1,5 @@
 export interface CommonOptions {
-  specialCharacters: 'remove' | 'trim' | 'keep'
+  specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   order: 'desc' | 'asc'
   ignoreCase: boolean
@@ -22,3 +22,5 @@ export type GroupsOptions<T> = (
 )[]
 
 export type NewlinesBetweenOption = 'ignore' | 'always' | 'never'
+
+export type SpecialCharactersOption = 'remove' | 'trim' | 'keep'
