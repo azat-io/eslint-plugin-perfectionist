@@ -1,10 +1,13 @@
-import type { NewlinesBetweenOption } from '../types/common-options'
+import type {
+  DeprecatedCustomGroupsOption,
+  NewlinesBetweenOption,
+} from '../types/common-options'
 
 import { matches } from './matches'
 
 interface UseGroupsValue {
   setCustomGroups(
-    customGroups: Record<string, string[] | string> | undefined,
+    customGroups: DeprecatedCustomGroupsOption | undefined,
     name: string,
     parameters?: {
       override?: boolean
@@ -30,7 +33,7 @@ export let useGroups = ({ groups }: UseGroupParameters): UseGroupsValue => {
   }
 
   let setCustomGroups = (
-    customGroups: Record<string, string[] | string> | undefined,
+    customGroups: DeprecatedCustomGroupsOption | undefined,
     name: string,
     parameters: { override?: boolean } = {},
   ): void => {

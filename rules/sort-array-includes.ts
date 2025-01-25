@@ -195,10 +195,9 @@ export let sortArray = <MessageIds extends string>({
   }
   validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
-    customGroups: options.customGroups,
     selectors: allSelectors,
-    groups: options.groups,
     modifiers: [],
+    options,
   })
   validateNewlinesAndPartitionConfiguration(options)
 

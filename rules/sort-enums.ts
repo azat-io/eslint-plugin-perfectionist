@@ -85,10 +85,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGeneratedGroupsConfiguration({
-        customGroups: options.customGroups,
-        groups: options.groups,
         selectors: [],
         modifiers: [],
+        options,
       })
       validateNewlinesAndPartitionConfiguration(options)
 

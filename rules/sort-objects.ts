@@ -136,10 +136,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       }
       validateCustomSortConfiguration(options)
       validateGeneratedGroupsConfiguration({
-        customGroups: options.customGroups,
         selectors: allSelectors,
         modifiers: allModifiers,
-        groups: options.groups,
+        options,
       })
       validateNewlinesAndPartitionConfiguration(options)
 

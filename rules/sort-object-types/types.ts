@@ -1,8 +1,10 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
+  DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
   NewlinesBetweenOption,
+  CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
   TypeOption,
@@ -21,7 +23,9 @@ export type Options = Partial<
       declarationMatchesPattern?: string
       allNamesMatchPattern?: string
     }
-    customGroups: Record<string, string[] | string> | CustomGroup[]
+    customGroups:
+      | CustomGroupsOption<SingleCustomGroup>
+      | DeprecatedCustomGroupsOption
     /**
      * @deprecated for {@link `groups`}
      */
@@ -56,10 +60,6 @@ export type Selector =
 
 export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
 
-export interface AnyOfCustomGroup {
-  anyOf: SingleCustomGroup[]
-}
-
 /**
  * Only used in code as well
  */
@@ -70,19 +70,6 @@ interface AllowedModifiersPerSelector {
   multiline: OptionalModifier | RequiredModifier
   'index-signature': never
 }
-
-type CustomGroup = (
-  | {
-      order?: Options[0]['order']
-      type?: Options[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) & {
-  newlinesInside?: 'always' | 'never'
-  groupName: string
-} & (SingleCustomGroup | AnyOfCustomGroup)
 
 type IndexSignatureGroup = JoinWithDash<
   [

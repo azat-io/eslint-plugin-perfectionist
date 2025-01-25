@@ -3,6 +3,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type {
   PartitionByCommentOption,
   NewlinesBetweenOption,
+  CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
   TypeOption,
@@ -28,10 +29,10 @@ export type SingleCustomGroup = (
 export type SortModulesOptions = [
   Partial<
     {
+      customGroups: CustomGroupsOption<SingleCustomGroup>
       partitionByComment: PartitionByCommentOption
       newlinesBetween: NewlinesBetweenOption
       groups: GroupsOptions<Group>
-      customGroups: CustomGroup[]
       partitionByNewLine: boolean
       type: TypeOption
     } & CommonOptions
@@ -54,10 +55,6 @@ export type Modifier =
   | ExportModifier
   | AsyncModifier
 
-export interface AnyOfCustomGroup {
-  anyOf: SingleCustomGroup[]
-}
-
 /**
  * Only used in code as well
  */
@@ -71,18 +68,6 @@ interface AllowedModifiersPerSelector {
   type: DeclareModifier | ExportModifier
 }
 
-type CustomGroup = (
-  | {
-      order?: SortModulesOptions[0]['order']
-      type?: SortModulesOptions[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) & {
-  newlinesInside?: 'always' | 'never'
-  groupName: string
-} & (SingleCustomGroup | AnyOfCustomGroup)
 /**
  * Only used in code, so I don't know if it's worth maintaining this.
  */

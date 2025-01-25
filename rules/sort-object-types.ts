@@ -218,10 +218,9 @@ export let sortObjectTypeElements = <MessageIds extends string>({
   }
   validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
-    customGroups: options.customGroups,
     selectors: allSelectors,
     modifiers: allModifiers,
-    groups: options.groups,
+    options,
   })
   validateNewlinesAndPartitionConfiguration(options)
 

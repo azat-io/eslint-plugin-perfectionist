@@ -1,5 +1,7 @@
 import type {
+  DeprecatedCustomGroupsOption,
   NewlinesBetweenOption,
+  CustomGroupsOption,
   GroupsOptions,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
@@ -7,20 +9,13 @@ import type { SortingNode } from '../types/sorting-node'
 import { getGroupNumber } from './get-group-number'
 
 export interface GetNewlinesBetweenOptionParameters {
+  options: {
+    customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
+    newlinesBetween: NewlinesBetweenOption
+    groups: GroupsOptions<string>
+  }
   nextSortingNode: SortingNode
   sortingNode: SortingNode
-  options: Options
-}
-
-interface Options {
-  customGroups?: Record<string, string[] | string> | CustomGroup[]
-  newlinesBetween: NewlinesBetweenOption
-  groups: GroupsOptions<string>
-}
-
-interface CustomGroup {
-  newlinesInside?: 'always' | 'never'
-  groupName: string
 }
 
 /**
@@ -32,7 +27,7 @@ interface CustomGroup {
  * @param {GetNewlinesBetweenOptionParameters} props - The function arguments
  * @param {SortingNode} props.nextSortingNode - The next node to sort
  * @param {SortingNode} props.sortingNode - The current node to sort
- * @param {Options} props.options - Newlines between related options
+ * @param {GetNewlinesBetweenOptionParameters['options']} props.options - Newlines between related options
  * @returns {NewlinesBetweenOption} - The `newlinesBetween` option to
  * use
  */

@@ -1,5 +1,7 @@
 import type {
+  DeprecatedCustomGroupsOption,
   SpecialCharactersOption,
+  CustomGroupsOption,
   GroupsOptions,
   OrderOption,
   TypeOption,
@@ -8,7 +10,7 @@ import type { SortingNode } from '../types/sorting-node'
 import type { CompareOptions } from './compare'
 
 interface Options {
-  customGroups: Record<string, string[] | string> | CustomGroup[]
+  customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption
   specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   groups: GroupsOptions<string>
@@ -16,18 +18,6 @@ interface Options {
   order: OrderOption
   type: TypeOption
   alphabet: string
-}
-
-type CustomGroup = (
-  | {
-      order?: OrderOption
-      type?: TypeOption
-    }
-  | {
-      type?: 'unsorted'
-    }
-) & {
-  groupName: string
 }
 
 /**

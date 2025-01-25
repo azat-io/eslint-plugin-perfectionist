@@ -1,32 +1,31 @@
-import type { NewlinesBetweenOption } from '../types/common-options'
+import type {
+  DeprecatedCustomGroupsOption,
+  CustomGroupsOption,
+  GroupsOptions,
+} from '../types/common-options'
 
 import { validateNoDuplicatedGroups } from './validate-groups-configuration'
 
 interface ValidateGenerateGroupsConfigurationParameters {
-  customGroups: Record<string, string[] | string> | BaseCustomGroup[]
+  options: {
+    customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption
+    groups: GroupsOptions<string>
+  }
   selectors: string[]
   modifiers: string[]
-  groups: Group[]
-}
-
-type Group = { newlinesBetween: NewlinesBetweenOption } | string[] | string
-
-interface BaseCustomGroup {
-  groupName: string
 }
 
 export let validateGeneratedGroupsConfiguration = ({
-  customGroups,
   selectors,
   modifiers,
-  groups,
+  options,
 }: ValidateGenerateGroupsConfigurationParameters): void => {
   let availableCustomGroupNames = new Set(
-    Array.isArray(customGroups)
-      ? customGroups.map(customGroup => customGroup.groupName)
-      : Object.keys(customGroups),
+    Array.isArray(options.customGroups)
+      ? options.customGroups.map(customGroup => customGroup.groupName)
+      : Object.keys(options.customGroups),
   )
-  let invalidGroups = groups
+  let invalidGroups = options.groups
     .flat()
     .filter(group => typeof group === 'string')
     .filter(
@@ -37,7 +36,7 @@ export let validateGeneratedGroupsConfiguration = ({
   if (invalidGroups.length > 0) {
     throw new Error(`Invalid group(s): ${invalidGroups.join(', ')}`)
   }
-  validateNoDuplicatedGroups(groups)
+  validateNoDuplicatedGroups(options.groups)
 }
 
 let isPredefinedGroup = (

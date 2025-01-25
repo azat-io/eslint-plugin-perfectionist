@@ -3,6 +3,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type {
   PartitionByCommentOption,
   NewlinesBetweenOption,
+  CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
   TypeOption,
@@ -22,11 +23,11 @@ export type Options = Partial<
      * @deprecated for {@link `groups`}
      */
     groupKind: 'literals-first' | 'spreads-first' | 'mixed'
+    customGroups: CustomGroupsOption<SingleCustomGroup>
     partitionByComment: PartitionByCommentOption
     newlinesBetween: NewlinesBetweenOption
     type: TypeOption | 'unsorted'
     groups: GroupsOptions<Group>
-    customGroups: CustomGroup[]
     partitionByNewLine: boolean
   } & CommonOptions
 >[]
@@ -36,24 +37,7 @@ export interface SingleCustomGroup {
   selector?: Selector
 }
 
-export interface AnyOfCustomGroup {
-  anyOf: SingleCustomGroup[]
-}
-
 export type Selector = LiteralSelector | SpreadSelector
-
-type CustomGroup = (
-  | {
-      order?: Options[0]['order']
-      type?: Options[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) &
-  (SingleCustomGroup | AnyOfCustomGroup) & {
-    groupName: string
-  }
 
 type LiteralSelector = 'literal'
 

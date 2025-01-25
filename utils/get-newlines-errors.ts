@@ -1,7 +1,9 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type {
+  DeprecatedCustomGroupsOption,
   NewlinesBetweenOption,
+  CustomGroupsOption,
   GroupsOptions,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
@@ -11,7 +13,7 @@ import { getLinesBetween } from './get-lines-between'
 
 interface GetNewlinesErrorsParameters<T extends string> {
   options: {
-    customGroups?: Record<string, string[] | string> | CustomGroup[]
+    customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<string>
   }
@@ -22,11 +24,6 @@ interface GetNewlinesErrorsParameters<T extends string> {
   left: SortingNode
   rightNum: number
   leftNum: number
-}
-
-interface CustomGroup {
-  newlinesInside?: 'always' | 'never'
-  groupName: string
 }
 
 export let getNewlinesErrors = <T extends string>({

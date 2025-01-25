@@ -94,10 +94,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(matchedContextOptions[0], settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGeneratedGroupsConfiguration({
-        customGroups: options.customGroups,
-        groups: options.groups,
         selectors: [],
         modifiers: [],
+        options,
       })
 
       let eslintDisabledLines = getEslintDisabledLines({

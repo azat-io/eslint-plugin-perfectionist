@@ -1,3 +1,16 @@
+export type CustomGroupsOption<SingleCustomGroup = object> = ((
+  | {
+      type?: TypeOption | 'unsorted'
+      order?: OrderOption
+    }
+  | {
+      type?: 'unsorted'
+    }
+) & {
+  newlinesInside?: 'always' | 'never'
+  groupName: string
+} & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup))[]
+
 export interface CommonOptions {
   specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
@@ -21,7 +34,13 @@ export type GroupsOptions<T> = (
   | T
 )[]
 
+export interface AnyOfCustomGroup<SingleCustomGroup> {
+  anyOf: SingleCustomGroup[]
+}
+
 export type TypeOption = 'alphabetical' | 'line-length' | 'natural' | 'custom'
+
+export type DeprecatedCustomGroupsOption = Record<string, string[] | string>
 
 export type NewlinesBetweenOption = 'ignore' | 'always' | 'never'
 
