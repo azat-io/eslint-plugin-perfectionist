@@ -1,7 +1,10 @@
-import type { GroupsOptions } from '../types/common-options'
+import type {
+  NewlinesBetweenOption,
+  GroupsOptions,
+} from '../types/common-options'
 
 interface Options {
-  newlinesBetween: 'ignore' | 'always' | 'never'
+  newlinesBetween: NewlinesBetweenOption
   groups: GroupsOptions<string>
   partitionByNewLine: boolean
 }

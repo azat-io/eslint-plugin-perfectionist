@@ -2,6 +2,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
   PartitionByCommentOption,
+  NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
 } from '../../types/common-options'
@@ -23,8 +24,8 @@ export type Options = Partial<
     type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
     customGroups: Record<string, string[] | string> | CustomGroup[]
     destructuredObjects: { groups: boolean } | boolean
-    newlinesBetween: 'ignore' | 'always' | 'never'
     partitionByComment: PartitionByCommentOption
+    newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
     objectDeclarations: boolean

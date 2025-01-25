@@ -1,3 +1,5 @@
+import type { NewlinesBetweenOption } from '../types/common-options'
+
 import { validateNoDuplicatedGroups } from './validate-groups-configuration'
 
 interface ValidateGenerateGroupsConfigurationParameters {
@@ -7,10 +9,7 @@ interface ValidateGenerateGroupsConfigurationParameters {
   groups: Group[]
 }
 
-type Group =
-  | { newlinesBetween: 'ignore' | 'always' | 'never' }
-  | string[]
-  | string
+type Group = { newlinesBetween: NewlinesBetweenOption } | string[] | string
 
 interface BaseCustomGroup {
   groupName: string

@@ -4,6 +4,7 @@ import { builtinModules } from 'node:module'
 
 import type {
   PartitionByCommentOption,
+  NewlinesBetweenOption,
   GroupsOptions,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
@@ -49,10 +50,10 @@ export type Options<T extends string = string> = [
       type?: Record<T, string[] | string>
     }
     type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    newlinesBetween: 'ignore' | 'always' | 'never'
     specialCharacters: 'remove' | 'trim' | 'keep'
     partitionByComment: PartitionByCommentOption
     locales: NonNullable<Intl.LocalesArgument>
+    newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group<T>>
     environment: 'node' | 'bun'
     partitionByNewLine: boolean
@@ -170,7 +171,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
     let isSideEffectOnlyGroup = (
       group:
-        | { newlinesBetween: 'ignore' | 'always' | 'never' }
+        | { newlinesBetween: NewlinesBetweenOption }
         | undefined
         | string[]
         | string,

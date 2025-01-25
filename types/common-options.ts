@@ -16,7 +16,9 @@ export type PartitionByCommentOption =
   | string
 
 export type GroupsOptions<T> = (
-  | { newlinesBetween: 'ignore' | 'always' | 'never' }
+  | { newlinesBetween: NewlinesBetweenOption }
   | T[]
   | T
 )[]
+
+export type NewlinesBetweenOption = 'ignore' | 'always' | 'never'

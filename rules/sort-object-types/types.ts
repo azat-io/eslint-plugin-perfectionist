@@ -2,6 +2,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
   PartitionByCommentOption,
+  NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
 } from '../../types/common-options'
@@ -25,8 +26,8 @@ export type Options = Partial<
      * @deprecated for {@link `groups`}
      */
     groupKind: 'required-first' | 'optional-first' | 'mixed'
-    newlinesBetween: 'ignore' | 'always' | 'never'
     partitionByComment: PartitionByCommentOption
+    newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
     /**

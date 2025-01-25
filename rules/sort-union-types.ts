@@ -4,6 +4,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
   PartitionByCommentOption,
+  NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
 } from '../types/common-options'
@@ -42,8 +43,8 @@ export type Options = [
   Partial<
     {
       type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-      newlinesBetween: 'ignore' | 'always' | 'never'
       partitionByComment: PartitionByCommentOption
+      newlinesBetween: NewlinesBetweenOption
       groups: GroupsOptions<Group>
       partitionByNewLine: boolean
     } & CommonOptions

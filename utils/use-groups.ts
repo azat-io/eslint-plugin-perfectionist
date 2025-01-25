@@ -1,3 +1,5 @@
+import type { NewlinesBetweenOption } from '../types/common-options'
+
 import { matches } from './matches'
 
 interface UseGroupsValue {
@@ -13,11 +15,7 @@ interface UseGroupsValue {
 }
 
 interface UseGroupProps {
-  groups: (
-    | { newlinesBetween: 'ignore' | 'always' | 'never' }
-    | string[]
-    | string
-  )[]
+  groups: ({ newlinesBetween: NewlinesBetweenOption } | string[] | string)[]
 }
 
 export let useGroups = ({ groups }: UseGroupProps): UseGroupsValue => {

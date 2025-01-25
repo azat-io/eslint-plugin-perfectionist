@@ -1,7 +1,6 @@
-type Group =
-  | { newlinesBetween: 'ignore' | 'always' | 'never' }
-  | string[]
-  | string
+import type { NewlinesBetweenOption } from '../types/common-options'
+
+type Group = { newlinesBetween: NewlinesBetweenOption } | string[] | string
 
 /**
  * Throws an error if one of the following conditions is met:
