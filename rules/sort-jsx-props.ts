@@ -1,6 +1,11 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { CommonOptions, GroupsOptions } from '../types/common-options'
+import type {
+  NewlinesBetweenOption,
+  CommonOptions,
+  GroupsOptions,
+  TypeOption,
+} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
@@ -11,6 +16,12 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -31,12 +42,12 @@ import { matches } from '../utils/matches'
 type Options<T extends string = string> = [
   Partial<
     {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-      newlinesBetween: 'ignore' | 'always' | 'never'
       customGroups: Record<T, string[] | string>
+      newlinesBetween: NewlinesBetweenOption
       groups: GroupsOptions<Group<T>>
       partitionByNewLine: boolean
       ignorePattern: string[]
+      type: TypeOption
     } & CommonOptions
   >,
 ]
@@ -200,14 +211,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedJSXPropsGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      missedSpacingBetweenJSXPropsMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" props.',
-      extraSpacingBetweenJSXPropsMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" props.',
-      unexpectedJSXPropsOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
+      missedSpacingBetweenJSXPropsMembers: MISSED_SPACING_ERROR,
+      extraSpacingBetweenJSXPropsMembers: EXTRA_SPACING_ERROR,
+      unexpectedJSXPropsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedJSXPropsOrder: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-jsx-props',

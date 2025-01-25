@@ -16,6 +16,12 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -128,14 +134,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
   }),
   meta: {
     messages: {
-      unexpectedArrayIncludesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      missedSpacingBetweenArrayIncludesMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" members.',
-      extraSpacingBetweenArrayIncludesMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" members.',
-      unexpectedArrayIncludesOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
+      missedSpacingBetweenArrayIncludesMembers: MISSED_SPACING_ERROR,
+      extraSpacingBetweenArrayIncludesMembers: EXTRA_SPACING_ERROR,
+      unexpectedArrayIncludesGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedArrayIncludesOrder: ORDER_ERROR,
     },
     docs: {
       description: 'Enforce sorted arrays before include method.',
@@ -193,10 +195,9 @@ export let sortArray = <MessageIds extends string>({
   }
   validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
-    customGroups: options.customGroups,
     selectors: allSelectors,
-    groups: options.groups,
     modifiers: [],
+    options,
   })
   validateNewlinesAndPartitionConfiguration(options)
 

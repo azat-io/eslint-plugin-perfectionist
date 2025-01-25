@@ -1,7 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { CommonOptions } from '../types/common-options'
+import type { CommonOptions, TypeOption } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
@@ -10,10 +10,10 @@ import {
   buildTypeJsonSchema,
   commonJsonSchemas,
 } from '../utils/common-json-schemas'
+import { reportErrors, ORDER_ERROR, RIGHT, LEFT } from '../utils/report-errors'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
-import { reportErrors } from '../utils/report-errors'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -23,17 +23,17 @@ import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
 import { compare } from '../utils/compare'
 
-type Options = [
-  Partial<
-    {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    } & CommonOptions
-  >,
-]
-
 interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
 }
+
+type Options = [
+  Partial<
+    {
+      type: TypeOption
+    } & CommonOptions
+  >,
+]
 
 type MESSAGE_ID = 'unexpectedSwitchCaseOrder'
 
@@ -186,8 +186,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ]
           },
           data: {
-            left: defaultCase.name,
-            right: lastCase.name,
+            [LEFT]: defaultCase.name,
+            [RIGHT]: lastCase.name,
           },
           messageId: 'unexpectedSwitchCaseOrder',
           node: defaultCase.node,
@@ -250,8 +250,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   fixer,
                 }),
           data: {
-            right: right.name,
-            left: left.name,
+            [RIGHT]: right.name,
+            [LEFT]: left.name,
           },
           messageId: 'unexpectedSwitchCaseOrder',
           node: right.node,
@@ -276,8 +276,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       recommended: true,
     },
     messages: {
-      unexpectedSwitchCaseOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedSwitchCaseOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',

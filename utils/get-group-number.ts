@@ -1,9 +1,7 @@
+import type { NewlinesBetweenOption } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
-type Group =
-  | { newlinesBetween: 'ignore' | 'always' | 'never' }
-  | string[]
-  | string
+type Group = { newlinesBetween: NewlinesBetweenOption } | string[] | string
 
 export let getGroupNumber = (groups: Group[], node: SortingNode): number => {
   for (let max = groups.length, i = 0; i < max; i++) {

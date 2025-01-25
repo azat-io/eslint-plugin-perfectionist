@@ -1,9 +1,13 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
+  DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
+  NewlinesBetweenOption,
+  CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
+  TypeOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
@@ -19,14 +23,16 @@ export type Options = Partial<
       declarationMatchesPattern?: string
       allNamesMatchPattern?: string
     }
-    type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
-    customGroups: Record<string, string[] | string> | CustomGroup[]
+    customGroups:
+      | CustomGroupsOption<SingleCustomGroup>
+      | DeprecatedCustomGroupsOption
     /**
      * @deprecated for {@link `groups`}
      */
     groupKind: 'required-first' | 'optional-first' | 'mixed'
-    newlinesBetween: 'ignore' | 'always' | 'never'
     partitionByComment: PartitionByCommentOption
+    newlinesBetween: NewlinesBetweenOption
+    type: TypeOption | 'unsorted'
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
     /**
@@ -54,10 +60,6 @@ export type Selector =
 
 export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
 
-export interface AnyOfCustomGroup {
-  anyOf: SingleCustomGroup[]
-}
-
 /**
  * Only used in code as well
  */
@@ -68,19 +70,6 @@ interface AllowedModifiersPerSelector {
   multiline: OptionalModifier | RequiredModifier
   'index-signature': never
 }
-
-type CustomGroup = (
-  | {
-      order?: Options[0]['order']
-      type?: Options[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) & {
-  newlinesInside?: 'always' | 'never'
-  groupName: string
-} & (SingleCustomGroup | AnyOfCustomGroup)
 
 type IndexSignatureGroup = JoinWithDash<
   [

@@ -1,9 +1,10 @@
-import type { SingleCustomGroup, AnyOfCustomGroup } from './types'
+import type { AnyOfCustomGroup } from '../../types/common-options'
+import type { SingleCustomGroup } from './types'
 
 import { matches } from '../../utils/matches'
 
 interface DoesCustomGroupMatchProps {
-  customGroup: SingleCustomGroup | AnyOfCustomGroup
+  customGroup: AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup
   elementValue: string
   elementName: string
 }

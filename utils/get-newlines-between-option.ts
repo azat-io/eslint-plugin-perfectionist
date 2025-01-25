@@ -1,23 +1,21 @@
-import type { GroupsOptions } from '../types/common-options'
+import type {
+  DeprecatedCustomGroupsOption,
+  NewlinesBetweenOption,
+  CustomGroupsOption,
+  GroupsOptions,
+} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getGroupNumber } from './get-group-number'
 
 export interface GetNewlinesBetweenOptionParameters {
+  options: {
+    customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
+    newlinesBetween: NewlinesBetweenOption
+    groups: GroupsOptions<string>
+  }
   nextSortingNode: SortingNode
   sortingNode: SortingNode
-  options: Options
-}
-
-interface Options {
-  customGroups?: Record<string, string[] | string> | CustomGroup[]
-  newlinesBetween: 'ignore' | 'always' | 'never'
-  groups: GroupsOptions<string>
-}
-
-interface CustomGroup {
-  newlinesInside?: 'always' | 'never'
-  groupName: string
 }
 
 /**
@@ -29,15 +27,15 @@ interface CustomGroup {
  * @param {GetNewlinesBetweenOptionParameters} props - The function arguments
  * @param {SortingNode} props.nextSortingNode - The next node to sort
  * @param {SortingNode} props.sortingNode - The current node to sort
- * @param {Options} props.options - Newlines between related options
- * @returns {'ignore' | 'always' | 'never'} - The `newlinesBetween` option to
+ * @param {GetNewlinesBetweenOptionParameters['options']} props.options - Newlines between related options
+ * @returns {NewlinesBetweenOption} - The `newlinesBetween` option to
  * use
  */
 export let getNewlinesBetweenOption = ({
   nextSortingNode,
   sortingNode,
   options,
-}: GetNewlinesBetweenOptionParameters): 'ignore' | 'always' | 'never' => {
+}: GetNewlinesBetweenOptionParameters): NewlinesBetweenOption => {
   let nodeGroupNumber = getGroupNumber(options.groups, sortingNode)
   let nextNodeGroupNumber = getGroupNumber(options.groups, nextSortingNode)
   let globalNewlinesBetweenOption = getGlobalNewlinesBetweenOption({
@@ -88,7 +86,7 @@ let getGlobalNewlinesBetweenOption = ({
   newlinesBetween,
   nodeGroupNumber,
 }: {
-  newlinesBetween: 'ignore' | 'always' | 'never'
+  newlinesBetween: NewlinesBetweenOption
   nextNodeGroupNumber: number
   nodeGroupNumber: number
 }): 'always' | 'ignore' | 'never' => {

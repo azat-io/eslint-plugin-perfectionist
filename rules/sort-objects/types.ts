@@ -1,9 +1,13 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
+  DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
+  NewlinesBetweenOption,
+  CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
+  TypeOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
@@ -20,11 +24,13 @@ export type Options = Partial<
       callingFunctionNamePattern?: string
       allNamesMatchPattern?: string
     }
-    type: 'alphabetical' | 'line-length' | 'unsorted' | 'natural' | 'custom'
-    customGroups: Record<string, string[] | string> | CustomGroup[]
+    customGroups:
+      | CustomGroupsOption<SingleCustomGroup>
+      | DeprecatedCustomGroupsOption
     destructuredObjects: { groups: boolean } | boolean
-    newlinesBetween: 'ignore' | 'always' | 'never'
     partitionByComment: PartitionByCommentOption
+    newlinesBetween: NewlinesBetweenOption
+    type: TypeOption | 'unsorted'
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
     objectDeclarations: boolean
@@ -55,10 +61,6 @@ export type Selector =
 
 export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
 
-export interface AnyOfCustomGroup {
-  anyOf: SingleCustomGroup[]
-}
-
 /**
  * Only used in code as well
  */
@@ -69,19 +71,6 @@ interface AllowedModifiersPerSelector {
   multiline: OptionalModifier | RequiredModifier
   'index-signature': never
 }
-
-type CustomGroup = (
-  | {
-      order?: Options[0]['order']
-      type?: Options[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) & {
-  newlinesInside?: 'always' | 'never'
-  groupName: string
-} & (SingleCustomGroup | AnyOfCustomGroup)
 
 interface BaseSingleCustomGroup<T extends Selector> {
   modifiers?: AllowedModifiersPerSelector[T][]

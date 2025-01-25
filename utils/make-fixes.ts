@@ -1,7 +1,10 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type {
+  DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
+  NewlinesBetweenOption,
+  CustomGroupsOption,
   GroupsOptions,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
@@ -12,9 +15,9 @@ import { makeOrderFixes } from './make-order-fixes'
 
 export interface MakeFixesParameters {
   options?: {
-    customGroups?: Record<string, string[] | string> | CustomGroup[]
-    newlinesBetween?: 'ignore' | 'always' | 'never'
+    customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
     partitionByComment?: PartitionByCommentOption
+    newlinesBetween?: NewlinesBetweenOption
     groups?: GroupsOptions<string>
   }
   ignoreFirstNodeHighestBlockComment?: boolean
@@ -22,11 +25,6 @@ export interface MakeFixesParameters {
   sortedNodes: SortingNode[]
   fixer: TSESLint.RuleFixer
   nodes: SortingNode[]
-}
-
-interface CustomGroup {
-  newlinesInside?: 'always' | 'never'
-  groupName: string
 }
 
 export let makeFixes = ({

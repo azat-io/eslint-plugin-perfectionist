@@ -4,7 +4,7 @@ import type { CompareOptions } from './compare'
 import { compare } from './compare'
 
 interface ExtraOptions {
-  ignoreEslintDisabledNodes?: boolean
+  ignoreEslintDisabledNodes: boolean
 }
 
 export let sortNodes = <T extends SortingNode>(

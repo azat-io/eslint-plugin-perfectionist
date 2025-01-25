@@ -16,6 +16,13 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  DEPENDENCY_ORDER_ERROR,
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
@@ -105,10 +112,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGeneratedGroupsConfiguration({
-        customGroups: options.customGroups,
         modifiers: allModifiers,
         selectors: allSelectors,
-        groups: options.groups,
+        options,
       })
       validateNewlinesAndPartitionConfiguration(options)
 
@@ -655,15 +661,11 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedClassesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedClassesDependencyOrder:
-        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
-      missedSpacingBetweenClassMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" objects.',
-      extraSpacingBetweenClassMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" objects.',
-      unexpectedClassesOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedClassesDependencyOrder: DEPENDENCY_ORDER_ERROR,
+      missedSpacingBetweenClassMembers: MISSED_SPACING_ERROR,
+      extraSpacingBetweenClassMembers: EXTRA_SPACING_ERROR,
+      unexpectedClassesGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedClassesOrder: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-classes',

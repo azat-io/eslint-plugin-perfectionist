@@ -15,7 +15,7 @@ export interface SortingNodeWithDependencies<
 }
 
 interface ExtraOptions {
-  ignoreEslintDisabledNodes?: boolean
+  ignoreEslintDisabledNodes: boolean
 }
 
 /**
@@ -27,7 +27,7 @@ interface ExtraOptions {
  */
 export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
   nodes: T[],
-  extraOptions?: ExtraOptions,
+  extraOptions: ExtraOptions,
 ): T[] => {
   let result: T[] = []
   let visitedNodes = new Set<T>()
@@ -48,7 +48,7 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
     )
     for (let dependentNode of dependentNodes) {
       if (
-        !extraOptions?.ignoreEslintDisabledNodes ||
+        !extraOptions.ignoreEslintDisabledNodes ||
         !dependentNode.isEslintDisabled
       ) {
         visitNode(dependentNode)

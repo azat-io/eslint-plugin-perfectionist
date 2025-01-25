@@ -1,28 +1,23 @@
-import type { GroupsOptions } from '../types/common-options'
+import type {
+  DeprecatedCustomGroupsOption,
+  SpecialCharactersOption,
+  CustomGroupsOption,
+  GroupsOptions,
+  OrderOption,
+  TypeOption,
+} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { CompareOptions } from './compare'
 
 interface Options {
-  customGroups: Record<string, string[] | string> | CustomGroup[]
-  type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-  specialCharacters: 'remove' | 'trim' | 'keep'
+  customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption
+  specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   groups: GroupsOptions<string>
-  order: 'desc' | 'asc'
   ignoreCase: boolean
+  order: OrderOption
+  type: TypeOption
   alphabet: string
-}
-
-type CustomGroup = (
-  | {
-      type?: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-      order?: 'desc' | 'asc'
-    }
-  | {
-      type?: 'unsorted'
-    }
-) & {
-  groupName: string
 }
 
 /**

@@ -1,7 +1,7 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { CommonOptions } from '../types/common-options'
+import type { CommonOptions, TypeOption } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
@@ -14,6 +14,7 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -27,9 +28,9 @@ import { complete } from '../utils/complete'
 export type Options<T extends string = string> = [
   Partial<
     {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
       customGroups: Record<T, string[] | string>
       groups: (Group<T>[] | Group<T>)[]
+      type: TypeOption
     } & CommonOptions
   >,
 ]
@@ -65,16 +66,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
       },
     ],
-    messages: {
-      unexpectedHeritageClausesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedHeritageClausesOrder:
-        'Expected "{{right}}" to come before "{{left}}".',
-    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-heritage-clauses',
       description: 'Enforce sorted heritage clauses.',
       recommended: true,
+    },
+    messages: {
+      unexpectedHeritageClausesGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedHeritageClausesOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',

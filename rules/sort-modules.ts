@@ -19,6 +19,13 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  DEPENDENCY_ORDER_ERROR,
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
@@ -88,17 +95,6 @@ let defaultOptions: Required<SortModulesOptions[0]> = {
 
 export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
   meta: {
-    messages: {
-      unexpectedModulesGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      unexpectedModulesDependencyOrder:
-        'Expected dependency "{{right}}" to come before "{{nodeDependentOnRight}}".',
-      missedSpacingBetweenModulesMembers:
-        'Missed spacing between "{{left}}" and "{{right}}" objects.',
-      extraSpacingBetweenModulesMembers:
-        'Extra spacing between "{{left}}" and "{{right}}" objects.',
-      unexpectedModulesOrder: 'Expected "{{right}}" to come before "{{left}}".',
-    },
     schema: [
       {
         properties: {
@@ -116,6 +112,13 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
         type: 'object',
       },
     ],
+    messages: {
+      unexpectedModulesDependencyOrder: DEPENDENCY_ORDER_ERROR,
+      missedSpacingBetweenModulesMembers: MISSED_SPACING_ERROR,
+      extraSpacingBetweenModulesMembers: EXTRA_SPACING_ERROR,
+      unexpectedModulesGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedModulesOrder: ORDER_ERROR,
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-modules',
       description: 'Enforce sorted modules.',
@@ -129,10 +132,9 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
     let options = complete(context.options.at(0), settings, defaultOptions)
     validateCustomSortConfiguration(options)
     validateGeneratedGroupsConfiguration({
-      customGroups: options.customGroups,
       modifiers: allModifiers,
       selectors: allSelectors,
-      groups: options.groups,
+      options,
     })
     validateNewlinesAndPartitionConfiguration(options)
 

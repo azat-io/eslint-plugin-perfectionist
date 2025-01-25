@@ -18,10 +18,12 @@ describe('validate-generated-groups-configuration', () => {
     ]
     expect(() =>
       validateGeneratedGroupsConfiguration({
-        groups: allPredefinedGroups,
+        options: {
+          groups: allPredefinedGroups,
+          customGroups: [],
+        },
         selectors: allSelectors,
         modifiers: allModifiers,
-        customGroups: [],
       }),
     ).not.toThrow()
   })
@@ -29,12 +31,14 @@ describe('validate-generated-groups-configuration', () => {
   it('allows custom groups', () => {
     expect(() =>
       validateGeneratedGroupsConfiguration({
-        customGroups: [
-          {
-            groupName: 'myCustomGroup',
-          },
-        ],
-        groups: ['static-property', 'myCustomGroup'],
+        options: {
+          customGroups: [
+            {
+              groupName: 'myCustomGroup',
+            },
+          ],
+          groups: ['static-property', 'myCustomGroup'],
+        },
         selectors: allSelectors,
         modifiers: allModifiers,
       }),
@@ -44,10 +48,12 @@ describe('validate-generated-groups-configuration', () => {
   it('throws an error with predefined groups with duplicate modifiers', () => {
     expect(() =>
       validateGeneratedGroupsConfiguration({
-        groups: ['static-static-property'],
+        options: {
+          groups: ['static-static-property'],
+          customGroups: [],
+        },
         selectors: allSelectors,
         modifiers: allModifiers,
-        customGroups: [],
       }),
     ).toThrow('Invalid group(s): static-static-property')
   })
@@ -55,10 +61,12 @@ describe('validate-generated-groups-configuration', () => {
   it('throws an error if a duplicate group is provided', () => {
     expect(() =>
       validateGeneratedGroupsConfiguration({
-        groups: ['static-property', 'static-property'],
+        options: {
+          groups: ['static-property', 'static-property'],
+          customGroups: [],
+        },
         selectors: allSelectors,
         modifiers: allModifiers,
-        customGroups: [],
       }),
     ).toThrow('Duplicated group(s): static-property')
   })
@@ -66,12 +74,14 @@ describe('validate-generated-groups-configuration', () => {
   it('throws an error if invalid groups are provided', () => {
     expect(() =>
       validateGeneratedGroupsConfiguration({
-        customGroups: [
-          {
-            groupName: 'myCustomGroupNotReferenced',
-          },
-        ],
-        groups: ['static-property', 'myCustomGroup', ''],
+        options: {
+          customGroups: [
+            {
+              groupName: 'myCustomGroupNotReferenced',
+            },
+          ],
+          groups: ['static-property', 'myCustomGroup', ''],
+        },
         selectors: allSelectors,
         modifiers: allModifiers,
       }),

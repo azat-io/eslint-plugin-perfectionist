@@ -4,7 +4,11 @@ import { builtinModules } from 'node:module'
 
 import type {
   PartitionByCommentOption,
+  SpecialCharactersOption,
+  NewlinesBetweenOption,
   GroupsOptions,
+  OrderOption,
+  TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -16,6 +20,12 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
@@ -42,11 +52,10 @@ export type Options<T extends string = string> = [
       value?: Record<T, string[] | string>
       type?: Record<T, string[] | string>
     }
-    type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-    newlinesBetween: 'ignore' | 'always' | 'never'
-    specialCharacters: 'remove' | 'trim' | 'keep'
     partitionByComment: PartitionByCommentOption
+    specialCharacters: SpecialCharactersOption
     locales: NonNullable<Intl.LocalesArgument>
+    newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group<T>>
     environment: 'node' | 'bun'
     partitionByNewLine: boolean
@@ -54,8 +63,9 @@ export type Options<T extends string = string> = [
     sortSideEffects: boolean
     tsconfigRootDir?: string
     maxLineLength?: number
-    order: 'desc' | 'asc'
     ignoreCase: boolean
+    order: OrderOption
+    type: TypeOption
     alphabet: string
   }>,
 ]
@@ -164,7 +174,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
     let isSideEffectOnlyGroup = (
       group:
-        | { newlinesBetween: 'ignore' | 'always' | 'never' }
+        | { newlinesBetween: NewlinesBetweenOption }
         | undefined
         | string[]
         | string,
@@ -623,13 +633,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       },
     ],
     messages: {
-      unexpectedImportsGroupOrder:
-        'Expected "{{right}}" ({{rightGroup}}) to come before "{{left}}" ({{leftGroup}}).',
-      missedSpacingBetweenImports:
-        'Missed spacing between "{{left}}" and "{{right}}" imports.',
-      extraSpacingBetweenImports:
-        'Extra spacing between "{{left}}" and "{{right}}" imports.',
-      unexpectedImportsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      missedSpacingBetweenImports: MISSED_SPACING_ERROR,
+      extraSpacingBetweenImports: EXTRA_SPACING_ERROR,
+      unexpectedImportsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedImportsOrder: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-imports',

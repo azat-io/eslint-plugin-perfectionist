@@ -23,7 +23,7 @@ interface ReportAllErrorsParameters<MessageIds extends string> {
   sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
   ): SortingNode[]
-  options?: {
+  options: {
     groups?: GroupsOptions<string>
   } & MakeFixesParameters['options']
   context: TSESLint.RuleContext<MessageIds, unknown[]>
@@ -47,10 +47,8 @@ export let reportAllErrors = <MessageIds extends string>({
   let nodeIndexMap = createNodeIndexMap(sortedNodes)
 
   pairwise(nodes, (left, right) => {
-    let leftNumber = options?.groups ? getGroupNumber(options.groups, left) : 0
-    let rightNumber = options?.groups
-      ? getGroupNumber(options.groups, right)
-      : 0
+    let leftNumber = options.groups ? getGroupNumber(options.groups, left) : 0
+    let rightNumber = options.groups ? getGroupNumber(options.groups, right) : 0
 
     let leftIndex = nodeIndexMap.get(left)!
     let rightIndex = nodeIndexMap.get(right)!
@@ -88,7 +86,7 @@ export let reportAllErrors = <MessageIds extends string>({
     }
 
     if (
-      options?.newlinesBetween &&
+      options.newlinesBetween &&
       options.groups &&
       availableMessageIds.missedSpacingBetweenMembers &&
       availableMessageIds.extraSpacingBetweenMembers

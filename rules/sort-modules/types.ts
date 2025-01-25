@@ -2,8 +2,11 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
   PartitionByCommentOption,
+  NewlinesBetweenOption,
+  CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
+  TypeOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
@@ -12,19 +15,6 @@ import {
   buildCustomGroupSelectorJsonSchema,
   elementNamePatternJsonSchema,
 } from '../../utils/common-json-schemas'
-
-export type SortModulesOptions = [
-  Partial<
-    {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-      newlinesBetween: 'ignore' | 'always' | 'never'
-      partitionByComment: PartitionByCommentOption
-      groups: GroupsOptions<Group>
-      customGroups: CustomGroup[]
-      partitionByNewLine: boolean
-    } & CommonOptions
-  >,
-]
 
 export type SingleCustomGroup = (
   | (DecoratorNamePatternFilterCustomGroup &
@@ -35,6 +25,19 @@ export type SingleCustomGroup = (
   | BaseSingleCustomGroup<TypeSelector>
 ) &
   ElementNamePatternFilterCustomGroup
+
+export type SortModulesOptions = [
+  Partial<
+    {
+      customGroups: CustomGroupsOption<SingleCustomGroup>
+      partitionByComment: PartitionByCommentOption
+      newlinesBetween: NewlinesBetweenOption
+      groups: GroupsOptions<Group>
+      partitionByNewLine: boolean
+      type: TypeOption
+    } & CommonOptions
+  >,
+]
 
 export type Selector =
   // | NamespaceSelector
@@ -52,10 +55,6 @@ export type Modifier =
   | ExportModifier
   | AsyncModifier
 
-export interface AnyOfCustomGroup {
-  anyOf: SingleCustomGroup[]
-}
-
 /**
  * Only used in code as well
  */
@@ -69,18 +68,6 @@ interface AllowedModifiersPerSelector {
   type: DeclareModifier | ExportModifier
 }
 
-type CustomGroup = (
-  | {
-      order?: SortModulesOptions[0]['order']
-      type?: SortModulesOptions[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) & {
-  newlinesInside?: 'always' | 'never'
-  groupName: string
-} & (SingleCustomGroup | AnyOfCustomGroup)
 /**
  * Only used in code, so I don't know if it's worth maintaining this.
  */

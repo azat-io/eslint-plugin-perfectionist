@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type {
   PartitionByCommentOption,
   CommonOptions,
+  TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -20,6 +21,7 @@ import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
+import { ORDER_ERROR } from '../utils/report-errors'
 import { getSettings } from '../utils/get-settings'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
@@ -27,10 +29,10 @@ import { complete } from '../utils/complete'
 type Options = [
   Partial<
     {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
       groupKind: 'values-first' | 'types-first' | 'mixed'
       partitionByComment: PartitionByCommentOption
       partitionByNewLine: boolean
+      type: TypeOption
     } & CommonOptions
   >,
 ]
@@ -171,7 +173,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       recommended: true,
     },
     messages: {
-      unexpectedExportsOrder: 'Expected "{{right}}" to come before "{{left}}".',
+      unexpectedExportsOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',

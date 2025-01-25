@@ -1,32 +1,27 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import type {
+  DeprecatedCustomGroupsOption,
+  NewlinesBetweenOption,
+  CustomGroupsOption,
+  GroupsOptions,
+} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getNewlinesBetweenOption } from './get-newlines-between-option'
 import { getLinesBetween } from './get-lines-between'
 import { getNodeRange } from './get-node-range'
 
-interface Options {
-  groups: (
-    | { newlinesBetween: 'ignore' | 'always' | 'never' }
-    | string[]
-    | string
-  )[]
-  customGroups?: Record<string, string[] | string> | CustomGroup[]
-  newlinesBetween: 'ignore' | 'always' | 'never'
-}
-
 interface MakeNewlinesFixesParameters {
+  options: {
+    customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
+    newlinesBetween: NewlinesBetweenOption
+    groups: GroupsOptions<string>
+  }
   sourceCode: TSESLint.SourceCode
   sortedNodes: SortingNode[]
   fixer: TSESLint.RuleFixer
   nodes: SortingNode[]
-  options: Options
-}
-
-interface CustomGroup {
-  newlinesInside?: 'always' | 'never'
-  groupName: string
 }
 
 export let makeNewlinesFixes = ({

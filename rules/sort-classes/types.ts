@@ -2,8 +2,11 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
   PartitionByCommentOption,
+  NewlinesBetweenOption,
+  CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
+  TypeOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
@@ -28,29 +31,16 @@ export type SingleCustomGroup =
 export type SortClassesOptions = [
   Partial<
     {
-      type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
-      newlinesBetween: 'ignore' | 'always' | 'never'
+      customGroups: CustomGroupsOption<SingleCustomGroup>
       partitionByComment: PartitionByCommentOption
       ignoreCallbackDependenciesPatterns: string[]
+      newlinesBetween: NewlinesBetweenOption
       groups: GroupsOptions<Group>
       partitionByNewLine: boolean
-      customGroups: CustomGroup[]
+      type: TypeOption
     } & CommonOptions
   >,
 ]
-
-export type CustomGroup = (
-  | {
-      order?: SortClassesOptions[0]['order']
-      type?: SortClassesOptions[0]['type']
-    }
-  | {
-      type?: 'unsorted'
-    }
-) & {
-  newlinesInside?: 'always' | 'never'
-  groupName: string
-} & (SingleCustomGroup | AnyOfCustomGroup)
 
 export type NonDeclarePropertyGroup = JoinWithDash<
   [
@@ -148,10 +138,6 @@ export type IndexSignatureGroup = JoinWithDash<
 export type ConstructorGroup = JoinWithDash<
   [PublicOrProtectedOrPrivateModifier, ConstructorSelector]
 >
-
-export interface AnyOfCustomGroup {
-  anyOf: SingleCustomGroup[]
-}
 
 /**
  * Only used in code as well
