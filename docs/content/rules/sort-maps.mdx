@@ -188,6 +188,10 @@ Specifies how new lines should be handled between map members.
 - `always` — Enforce one new line between each group, and forbid new lines inside a group.
 - `never` — No new lines are allowed in maps.
 
+You can also enforce the newline behavior between two specific groups through the `groups` options.
+
+See the [`groups`](#newlines-between-groups) option.
+
 This option is only applicable when `partitionByNewLine` is `false`.
 
 ### useConfigurationIf
@@ -252,6 +256,25 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
 
+#### Newlines between groups
+
+You may place `newlinesBetween` objects between your groups to enforce the newline behavior between two specific groups.
+
+See the [`newlinesBetween`](#newlinesbetween) option.
+
+This feature is only applicable when `partitionByNewLine` is false.
+
+```ts
+{
+  newlinesBetween: 'always',
+  groups: [
+    'a',
+    { newlinesBetween: 'never' }, // Overrides the global newlinesBetween option
+    'b',
+  ]
+}
+```
+
 ### customGroups
 
 <sub>
@@ -272,7 +295,7 @@ interface CustomGroupDefinition {
 }
 
 ```
-An array element will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+A map element will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
 
 or:
 
@@ -287,7 +310,7 @@ interface CustomGroupAnyOfDefinition {
 }
 ```
 
-An array element will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+A map element will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
 
 #### Attributes
 

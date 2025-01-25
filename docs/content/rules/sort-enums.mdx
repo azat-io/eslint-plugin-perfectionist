@@ -197,6 +197,110 @@ enum Enum {
 
 Each group of enum members (separated by empty lines) is treated independently, and the order within each group is preserved.
 
+### newlinesBetween
+
+<sub>default: `'ignore'`</sub>
+
+Specifies how new lines should be handled between enum members.
+
+- `ignore` — Do not report errors related to new lines between enum members.
+- `always` — Enforce one new line between each group, and forbid new lines inside a group.
+- `never` — No new lines are allowed in enums.
+
+You can also enforce the newline behavior between two specific groups through the `groups` options.
+
+See the [`groups`](#newlines-between-groups) option.
+
+This option is only applicable when `partitionByNewLine` is `false`.
+
+### groups
+
+<sub>
+  type: `Array<string | string[]>`
+</sub>
+<sub>default: `[]`</sub>
+
+Allows you to specify a list of groups for sorting. Groups help organize elements into categories.
+
+Each element will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
+The order of items in the `groups` option determines how groups are ordered.
+
+Within a given group, members will be sorted according to the `type`, `order`, `ignoreCase`, etc. options.
+
+Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
+All members of the groups in the array will be sorted together as if they were part of a single group.
+
+#### Newlines between groups
+
+You may place `newlinesBetween` objects between your groups to enforce the newline behavior between two specific groups.
+
+See the [`newlinesBetween`](#newlinesbetween) option.
+
+This feature is only applicable when `partitionByNewLine` is false.
+
+```ts
+{
+  newlinesBetween: 'always',
+  groups: [
+    'a',
+    { newlinesBetween: 'never' }, // Overrides the global newlinesBetween option
+    'b',
+  ]
+}
+```
+
+### customGroups
+
+<sub>
+  type: `Array<CustomGroupDefinition | CustomGroupAnyOfDefinition>`
+</sub>
+<sub>default: `{}`</sub>
+
+You can define your own groups and use regexp patterns to match specific elements.
+
+A custom group definition may follow one of the two following interfaces:
+
+```ts
+interface CustomGroupDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  elementNamePattern?: string
+}
+
+```
+An enum member will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+
+or:
+
+```ts
+interface CustomGroupAnyOfDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  anyOf: Array<{
+      elementNamePattern?: string
+  }>
+}
+```
+
+An enum member will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+
+#### Attributes
+
+- `groupName`: The group's name, which needs to be put in the `groups` option.
+- `elementNamePattern`: If entered, will check that the name of the element matches the pattern entered.
+- `elementValuePattern`: If entered, will check that the value of the element matches the pattern entered.
+- `type`: Overrides the sort type for that custom group. `unsorted` will not sort the group.
+- `order`: Overrides the sort order for that custom group
+
+#### Match importance
+
+The `customGroups` list is ordered:
+The first custom group definition that matches an element will be used.
+
+Custom groups have a higher priority than any predefined group.
+
 ## Usage
 
 <CodeTabs
@@ -221,8 +325,11 @@ Each group of enum members (separated by empty lines) is treated independently, 
                   specialCharacters: 'keep',
                   partitionByComment: false,
                   partitionByNewLine: false,
+                  newlinesBetween: 'ignore',
                   sortByValue: false,
-                  forceNumericSort: false
+                  forceNumericSort: false,
+                  groups: [],
+                  customGroups: [],
                 },
               ],
             },
@@ -249,8 +356,11 @@ Each group of enum members (separated by empty lines) is treated independently, 
                 specialCharacters: 'keep',
                 partitionByComment: false,
                 partitionByNewLine: false,
+                newlinesBetween: 'ignore',
                 sortByValue: false,
                 forceNumericSort: false,
+                groups: [],
+                customGroups: [],
               },
             ],
           },
