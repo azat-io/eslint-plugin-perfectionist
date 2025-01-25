@@ -2,13 +2,13 @@ import type { SingleCustomGroup, AnyOfCustomGroup } from './types'
 
 import { matches } from '../../utils/matches'
 
-interface DoesCustomGroupMatchProps {
+interface DoesCustomGroupMatchParameters {
   customGroup: SingleCustomGroup | AnyOfCustomGroup
   elementName: string
 }
 
 export let doesCustomGroupMatch = (
-  props: DoesCustomGroupMatchProps,
+  props: DoesCustomGroupMatchParameters,
 ): boolean => {
   if ('anyOf' in props.customGroup) {
     // At least one subgroup must match

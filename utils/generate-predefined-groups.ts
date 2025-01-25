@@ -1,6 +1,6 @@
 import { getArrayCombinations } from './get-array-combinations'
 
-interface Props {
+interface GeneratePredefinedGroupsParameters {
   cache: Map<string, string[]>
   modifiers: string[]
   selectors: string[]
@@ -13,7 +13,7 @@ interface Props {
  * prioritized over the quantity of modifiers. For example,
  * `protected abstract override get fields();` should prioritize the
  * `'get-method'` group over the `'protected-abstract-override-method'` group.
- * @param {Props} props - The properties including selectors, modifiers, and
+ * @param {GeneratePredefinedGroupsParameters} props - The properties including selectors, modifiers, and
  * cache.
  * @param {string[]} props.selectors - The list of selectors.
  * @param {string[]} props.modifiers - The list of modifiers.
@@ -24,7 +24,7 @@ export let generatePredefinedGroups = ({
   selectors,
   modifiers,
   cache,
-}: Props): string[] => {
+}: GeneratePredefinedGroupsParameters): string[] => {
   let modifiersAndSelectorsKey = `${modifiers.join('&')}/${selectors.join('&')}`
   let cachedValue = cache.get(modifiersAndSelectorsKey)
   if (cachedValue) {

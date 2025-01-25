@@ -14,11 +14,11 @@ interface UseGroupsValue {
   getGroup(): string
 }
 
-interface UseGroupProps {
+interface UseGroupParameters {
   groups: ({ newlinesBetween: NewlinesBetweenOption } | string[] | string)[]
 }
 
-export let useGroups = ({ groups }: UseGroupProps): UseGroupsValue => {
+export let useGroups = ({ groups }: UseGroupParameters): UseGroupsValue => {
   let group: undefined | string
   // For lookup performance.
   let groupsSet = new Set(groups.flat())

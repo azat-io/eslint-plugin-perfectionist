@@ -10,23 +10,26 @@ import { getTypescriptImport } from './get-typescript-import'
  * https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/src/parseSettings/getProjectConfigFiles.ts
  */
 
-interface OutputProps {
+interface ReadClosestTsConfigByPathValue {
   compilerOptions: ts.CompilerOptions
   cache: ts.ModuleResolutionCache
 }
 
-interface InputProps {
+interface ReadClosestTsConfigByPathParameters {
   tsconfigRootDir: string
   contextCwd: string
   filePath: string
 }
 
 export let directoryCacheByPath = new Map<string, string>()
-export let contentCacheByPath = new Map<string, OutputProps>()
+export let contentCacheByPath = new Map<
+  string,
+  ReadClosestTsConfigByPathValue
+>()
 
 export let readClosestTsConfigByPath = (
-  input: InputProps,
-): OutputProps | null => {
+  input: ReadClosestTsConfigByPathParameters,
+): ReadClosestTsConfigByPathValue | null => {
   let typescriptImport = getTypescriptImport()
   if (!typescriptImport) {
     return null
@@ -69,7 +72,7 @@ let getCompilerOptions = (
   typescriptImport: typeof ts,
   contextCwd: string,
   filePath: string,
-): OutputProps => {
+): ReadClosestTsConfigByPathValue => {
   if (contentCacheByPath.has(filePath)) {
     return contentCacheByPath.get(filePath)!
   }
@@ -105,7 +108,7 @@ let getCompilerOptions = (
     fileName => typescriptImport.sys.resolvePath(fileName),
     compilerOptionsConverted.options,
   )
-  let output: OutputProps = {
+  let output: ReadClosestTsConfigByPathValue = {
     compilerOptions: compilerOptionsConverted.options,
     cache,
   }

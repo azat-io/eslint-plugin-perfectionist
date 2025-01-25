@@ -7,7 +7,7 @@ import type {
 
 import { matches } from '../../utils/matches'
 
-interface DoesCustomGroupMatchProps {
+interface DoesCustomGroupMatchParameters {
   customGroup: SingleCustomGroup | AnyOfCustomGroup
   elementValue: undefined | string
   selectors: Selector[]
@@ -18,14 +18,14 @@ interface DoesCustomGroupMatchProps {
 
 /**
  * Determines whether a custom group matches the given properties.
- * @param {DoesCustomGroupMatchProps} props - The properties to match against
- * the custom group, including selectors, modifiers, decorators, and element
- * names.
+ * @param {DoesCustomGroupMatchParameters} props - The properties to match
+ * against the custom group, including selectors, modifiers, decorators, and
+ * element names.
  * @returns {boolean} `true` if the custom group matches the properties;
  * otherwise, `false`.
  */
 export let doesCustomGroupMatch = (
-  props: DoesCustomGroupMatchProps,
+  props: DoesCustomGroupMatchParameters,
 ): boolean => {
   if ('anyOf' in props.customGroup) {
     // At least one subgroup must match.
