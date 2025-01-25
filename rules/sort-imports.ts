@@ -7,6 +7,7 @@ import type {
   SpecialCharactersOption,
   NewlinesBetweenOption,
   GroupsOptions,
+  OrderOption,
   TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
@@ -62,8 +63,8 @@ export type Options<T extends string = string> = [
     sortSideEffects: boolean
     tsconfigRootDir?: string
     maxLineLength?: number
-    order: 'desc' | 'asc'
     ignoreCase: boolean
+    order: OrderOption
     type: TypeOption
     alphabet: string
   }>,

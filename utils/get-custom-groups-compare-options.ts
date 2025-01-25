@@ -1,6 +1,7 @@
 import type {
   SpecialCharactersOption,
   GroupsOptions,
+  OrderOption,
   TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
@@ -11,15 +12,15 @@ interface Options {
   specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   groups: GroupsOptions<string>
-  order: 'desc' | 'asc'
   ignoreCase: boolean
+  order: OrderOption
   type: TypeOption
   alphabet: string
 }
 
 type CustomGroup = (
   | {
-      order?: 'desc' | 'asc'
+      order?: OrderOption
       type?: TypeOption
     }
   | {

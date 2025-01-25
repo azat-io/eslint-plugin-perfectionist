@@ -1,6 +1,9 @@
 import { compare as createNaturalCompare } from 'natural-orderby'
 
-import type { SpecialCharactersOption } from '../types/common-options'
+import type {
+  SpecialCharactersOption,
+  OrderOption,
+} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { convertBooleanToSign } from './convert-boolean-to-sign'
@@ -17,7 +20,7 @@ interface BaseCompareOptions<T extends SortingNode> {
    * node's name.
    */
   nodeValueGetter?: ((node: T) => string) | null
-  order: 'desc' | 'asc'
+  order: OrderOption
 }
 
 interface AlphabeticalCompareOptions<T extends SortingNode>

@@ -2,6 +2,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type {
   SpecialCharactersOption,
+  OrderOption,
   TypeOption,
 } from '../types/common-options'
 
@@ -18,8 +19,8 @@ export type Settings = Partial<{
   locales: NonNullable<Intl.LocalesArgument>
   partitionByNewLine: boolean
   ignorePattern: string[]
-  order: 'desc' | 'asc'
   ignoreCase: boolean
+  order: OrderOption
   type: TypeOption
   alphabet: string
 }>

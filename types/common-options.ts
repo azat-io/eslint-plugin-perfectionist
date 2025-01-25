@@ -1,8 +1,8 @@
 export interface CommonOptions {
   specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
-  order: 'desc' | 'asc'
   ignoreCase: boolean
+  order: OrderOption
   alphabet: string
 }
 
@@ -26,3 +26,5 @@ export type TypeOption = 'alphabetical' | 'line-length' | 'natural' | 'custom'
 export type NewlinesBetweenOption = 'ignore' | 'always' | 'never'
 
 export type SpecialCharactersOption = 'remove' | 'trim' | 'keep'
+
+export type OrderOption = 'desc' | 'asc'
