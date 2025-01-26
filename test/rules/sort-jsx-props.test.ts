@@ -777,91 +777,93 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  groups: [
-                    'a',
-                    { newlinesBetween: 'always' },
-                    'b',
-                    { newlinesBetween: 'always' },
-                    'c',
-                    { newlinesBetween: 'never' },
-                    'd',
-                    { newlinesBetween: 'ignore' },
-                    'e',
-                  ],
-                  customGroups: {
-                    a: 'a',
-                    b: 'b',
-                    c: 'c',
-                    d: 'd',
-                    e: 'e',
+      describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): handles "newlinesBetween" between consecutive groups`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'a',
+                      { newlinesBetween: 'always' },
+                      'b',
+                      { newlinesBetween: 'always' },
+                      'c',
+                      { newlinesBetween: 'never' },
+                      'd',
+                      { newlinesBetween: 'ignore' },
+                      'e',
+                    ],
+                    customGroups: {
+                      a: 'a',
+                      b: 'b',
+                      c: 'c',
+                      d: 'd',
+                      e: 'e',
+                    },
+                    newlinesBetween: 'always',
                   },
-                  newlinesBetween: 'always',
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'a',
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'missedSpacingBetweenJSXPropsMembers',
                   },
-                  messageId: 'missedSpacingBetweenJSXPropsMembers',
-                },
-                {
-                  data: {
-                    right: 'c',
-                    left: 'b',
+                  {
+                    data: {
+                      right: 'c',
+                      left: 'b',
+                    },
+                    messageId: 'extraSpacingBetweenJSXPropsMembers',
                   },
-                  messageId: 'extraSpacingBetweenJSXPropsMembers',
-                },
-                {
-                  data: {
-                    right: 'd',
-                    left: 'c',
+                  {
+                    data: {
+                      right: 'd',
+                      left: 'c',
+                    },
+                    messageId: 'extraSpacingBetweenJSXPropsMembers',
                   },
-                  messageId: 'extraSpacingBetweenJSXPropsMembers',
-                },
-              ],
-              output: dedent`
-                <Component
-                  a
+                ],
+                output: dedent`
+                  <Component
+                    a
 
-                  b
+                    b
 
-                  c
-                  d
+                    c
+                    d
 
 
-                  e
-                />
-              `,
-              code: dedent`
-                <Component
-                  a
-                  b
+                    e
+                  />
+                `,
+                code: dedent`
+                  <Component
+                    a
+                    b
 
 
-                  c
+                    c
 
-                  d
+                    d
 
 
-                  e
-                />
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                    e
+                  />
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
 
       ruleTester.run(
         `${ruleName}(${type}): handles newlines and comment after fixes`,

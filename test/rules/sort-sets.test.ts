@@ -1543,91 +1543,93 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    { elementNamePattern: 'a', groupName: 'a' },
-                    { elementNamePattern: 'b', groupName: 'b' },
-                    { elementNamePattern: 'c', groupName: 'c' },
-                    { elementNamePattern: 'd', groupName: 'd' },
-                    { elementNamePattern: 'e', groupName: 'e' },
-                  ],
-                  groups: [
+      describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): handles "newlinesBetween" between consecutive groups`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'a',
+                      { newlinesBetween: 'always' },
+                      'b',
+                      { newlinesBetween: 'always' },
+                      'c',
+                      { newlinesBetween: 'never' },
+                      'd',
+                      { newlinesBetween: 'ignore' },
+                      'e',
+                    ],
+                    customGroups: [
+                      { elementNamePattern: 'a', groupName: 'a' },
+                      { elementNamePattern: 'b', groupName: 'b' },
+                      { elementNamePattern: 'c', groupName: 'c' },
+                      { elementNamePattern: 'd', groupName: 'd' },
+                      { elementNamePattern: 'e', groupName: 'e' },
+                    ],
+                    newlinesBetween: 'always',
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'missedSpacingBetweenSetsMembers',
+                  },
+                  {
+                    data: {
+                      right: 'c',
+                      left: 'b',
+                    },
+                    messageId: 'extraSpacingBetweenSetsMembers',
+                  },
+                  {
+                    data: {
+                      right: 'd',
+                      left: 'c',
+                    },
+                    messageId: 'extraSpacingBetweenSetsMembers',
+                  },
+                ],
+                output: dedent`
+                  new Set([
                     'a',
-                    { newlinesBetween: 'always' },
+
                     'b',
-                    { newlinesBetween: 'always' },
+
                     'c',
-                    { newlinesBetween: 'never' },
                     'd',
-                    { newlinesBetween: 'ignore' },
-                    'e',
-                  ],
-                  newlinesBetween: 'always',
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'a',
-                  },
-                  messageId: 'missedSpacingBetweenSetsMembers',
-                },
-                {
-                  data: {
-                    right: 'c',
-                    left: 'b',
-                  },
-                  messageId: 'extraSpacingBetweenSetsMembers',
-                },
-                {
-                  data: {
-                    right: 'd',
-                    left: 'c',
-                  },
-                  messageId: 'extraSpacingBetweenSetsMembers',
-                },
-              ],
-              output: dedent`
-                new Set([
-                  'a',
-
-                  'b',
-
-                  'c',
-                  'd',
 
 
-                  'e'
-                ])
-              `,
-              code: dedent`
-                new Set([
-                  'a',
-                  'b',
+                    'e'
+                  ])
+                `,
+                code: dedent`
+                  new Set([
+                    'a',
+                    'b',
 
 
-                  'c',
+                    'c',
 
-                  'd',
+                    'd',
 
 
-                  'e'
-                ])
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                    'e'
+                  ])
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
 
       ruleTester.run(
         `${ruleName}(${type}): handles newlines and comment after fixes`,

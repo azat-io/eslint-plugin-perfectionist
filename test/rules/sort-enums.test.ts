@@ -1361,91 +1361,93 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    { elementNamePattern: 'A', groupName: 'a' },
-                    { elementNamePattern: 'B', groupName: 'b' },
-                    { elementNamePattern: 'C', groupName: 'c' },
-                    { elementNamePattern: 'D', groupName: 'd' },
-                    { elementNamePattern: 'E', groupName: 'e' },
-                  ],
-                  groups: [
-                    'a',
-                    { newlinesBetween: 'always' },
-                    'b',
-                    { newlinesBetween: 'always' },
-                    'c',
-                    { newlinesBetween: 'never' },
-                    'd',
-                    { newlinesBetween: 'ignore' },
-                    'e',
-                  ],
-                  newlinesBetween: 'always',
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'B',
-                    left: 'A',
+      describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): handles "newlinesBetween" between consecutive groups`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'a',
+                      { newlinesBetween: 'always' },
+                      'b',
+                      { newlinesBetween: 'always' },
+                      'c',
+                      { newlinesBetween: 'never' },
+                      'd',
+                      { newlinesBetween: 'ignore' },
+                      'e',
+                    ],
+                    customGroups: [
+                      { elementNamePattern: 'A', groupName: 'a' },
+                      { elementNamePattern: 'B', groupName: 'b' },
+                      { elementNamePattern: 'C', groupName: 'c' },
+                      { elementNamePattern: 'D', groupName: 'd' },
+                      { elementNamePattern: 'E', groupName: 'e' },
+                    ],
+                    newlinesBetween: 'always',
                   },
-                  messageId: 'missedSpacingBetweenEnumsMembers',
-                },
-                {
-                  data: {
-                    right: 'C',
-                    left: 'B',
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'B',
+                      left: 'A',
+                    },
+                    messageId: 'missedSpacingBetweenEnumsMembers',
                   },
-                  messageId: 'extraSpacingBetweenEnumsMembers',
-                },
-                {
-                  data: {
-                    right: 'D',
-                    left: 'C',
+                  {
+                    data: {
+                      right: 'C',
+                      left: 'B',
+                    },
+                    messageId: 'extraSpacingBetweenEnumsMembers',
                   },
-                  messageId: 'extraSpacingBetweenEnumsMembers',
-                },
-              ],
-              output: dedent`
-                enum Enum {
-                  A = null,
+                  {
+                    data: {
+                      right: 'D',
+                      left: 'C',
+                    },
+                    messageId: 'extraSpacingBetweenEnumsMembers',
+                  },
+                ],
+                output: dedent`
+                  enum Enum {
+                    A = null,
 
-                  B = null,
+                    B = null,
 
-                  C = null,
-                  D = null,
-
-
-                  E = null,
-                }
-              `,
-              code: dedent`
-                enum Enum {
-                  A = null,
-                  B = null,
+                    C = null,
+                    D = null,
 
 
-                  C = null,
+                    E = null,
+                  }
+                `,
+                code: dedent`
+                  enum Enum {
+                    A = null,
+                    B = null,
 
-                  D = null,
+
+                    C = null,
+
+                    D = null,
 
 
-                  E = null,
-                }
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                    E = null,
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
 
       ruleTester.run(
         `${ruleName}(${type}): handles newlines and comment after fixes`,

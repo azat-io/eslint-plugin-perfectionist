@@ -2192,91 +2192,93 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  groups: [
-                    'a',
-                    { newlinesBetween: 'always' },
-                    'b',
-                    { newlinesBetween: 'always' },
-                    'c',
-                    { newlinesBetween: 'never' },
-                    'd',
-                    { newlinesBetween: 'ignore' },
-                    'e',
-                  ],
-                  customGroups: {
+      describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): handles "newlinesBetween" between consecutive groups`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'a',
+                      { newlinesBetween: 'always' },
+                      'b',
+                      { newlinesBetween: 'always' },
+                      'c',
+                      { newlinesBetween: 'never' },
+                      'd',
+                      { newlinesBetween: 'ignore' },
+                      'e',
+                    ],
+                    customGroups: {
+                      a: 'a',
+                      b: 'b',
+                      c: 'c',
+                      d: 'd',
+                      e: 'e',
+                    },
+                    newlinesBetween: 'always',
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'missedSpacingBetweenObjectMembers',
+                  },
+                  {
+                    data: {
+                      right: 'c',
+                      left: 'b',
+                    },
+                    messageId: 'extraSpacingBetweenObjectMembers',
+                  },
+                  {
+                    data: {
+                      right: 'd',
+                      left: 'c',
+                    },
+                    messageId: 'extraSpacingBetweenObjectMembers',
+                  },
+                ],
+                output: dedent`
+                  let obj = {
                     a: 'a',
+
                     b: 'b',
+
                     c: 'c',
                     d: 'd',
+
+
                     e: 'e',
-                  },
-                  newlinesBetween: 'always',
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'a',
-                  },
-                  messageId: 'missedSpacingBetweenObjectMembers',
-                },
-                {
-                  data: {
-                    right: 'c',
-                    left: 'b',
-                  },
-                  messageId: 'extraSpacingBetweenObjectMembers',
-                },
-                {
-                  data: {
-                    right: 'd',
-                    left: 'c',
-                  },
-                  messageId: 'extraSpacingBetweenObjectMembers',
-                },
-              ],
-              output: dedent`
-                let obj = {
-                  a: 'a',
-
-                  b: 'b',
-
-                  c: 'c',
-                  d: 'd',
+                  }
+                `,
+                code: dedent`
+                  let obj = {
+                    a: 'a',
+                    b: 'b',
 
 
-                  e: 'e',
-                }
-              `,
-              code: dedent`
-                let obj = {
-                  a: 'a',
-                  b: 'b',
+                    c: 'c',
+
+                    d: 'd',
 
 
-                  c: 'c',
-
-                  d: 'd',
-
-
-                  e: 'e',
-                }
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                    e: 'e',
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
 
       ruleTester.run(
         `${ruleName}(${type}): handles newlines and comment after fixes`,

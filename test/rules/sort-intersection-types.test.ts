@@ -1122,82 +1122,84 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
-        rule,
-        {
-          invalid: [
-            {
-              errors: [
-                {
-                  data: {
-                    right: '{ a: string }',
-                    left: '() => void',
+      describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): handles "newlinesBetween" between consecutive groups`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: '{ a: string }',
+                      left: '() => void',
+                    },
+                    messageId: 'missedSpacingBetweenIntersectionTypes',
                   },
-                  messageId: 'missedSpacingBetweenIntersectionTypes',
-                },
-                {
-                  data: {
-                    left: '{ a: string }',
-                    right: 'A',
+                  {
+                    data: {
+                      left: '{ a: string }',
+                      right: 'A',
+                    },
+                    messageId: 'extraSpacingBetweenIntersectionTypes',
                   },
-                  messageId: 'extraSpacingBetweenIntersectionTypes',
-                },
-                {
-                  data: {
-                    right: '[A]',
-                    left: 'A',
+                  {
+                    data: {
+                      right: '[A]',
+                      left: 'A',
+                    },
+                    messageId: 'extraSpacingBetweenIntersectionTypes',
                   },
-                  messageId: 'extraSpacingBetweenIntersectionTypes',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  groups: [
-                    'function',
-                    { newlinesBetween: 'always' },
-                    'object',
-                    { newlinesBetween: 'always' },
-                    'named',
-                    { newlinesBetween: 'never' },
-                    'tuple',
-                    { newlinesBetween: 'ignore' },
-                    'nullish',
-                  ],
-                  newlinesBetween: 'always',
-                },
-              ],
-              output: dedent`
-                type Type =
-                  (() => void) &
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'function',
+                      { newlinesBetween: 'always' },
+                      'object',
+                      { newlinesBetween: 'always' },
+                      'named',
+                      { newlinesBetween: 'never' },
+                      'tuple',
+                      { newlinesBetween: 'ignore' },
+                      'nullish',
+                    ],
+                    newlinesBetween: 'always',
+                  },
+                ],
+                output: dedent`
+                  type Type =
+                    (() => void) &
 
-                  { a: string } &
+                    { a: string } &
 
-                  A &
-                  [A] &
+                    A &
+                    [A] &
 
 
-                  null
-              `,
-              code: dedent`
-                type Type =
-                  (() => void) &
-                  { a: string } &
+                    null
+                `,
+                code: dedent`
+                  type Type =
+                    (() => void) &
+                    { a: string } &
 
 
-                  A &
+                    A &
 
-                  [A] &
+                    [A] &
 
 
-                  null
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                    null
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
 
       ruleTester.run(
         `${ruleName}(${type}): handles newlines and comment after fixes`,

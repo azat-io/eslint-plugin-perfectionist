@@ -1204,91 +1204,93 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    { elementNamePattern: 'a', groupName: 'a' },
-                    { elementNamePattern: 'b', groupName: 'b' },
-                    { elementNamePattern: 'c', groupName: 'c' },
-                    { elementNamePattern: 'd', groupName: 'd' },
-                    { elementNamePattern: 'e', groupName: 'e' },
-                  ],
-                  groups: [
-                    'a',
-                    { newlinesBetween: 'always' },
-                    'b',
-                    { newlinesBetween: 'always' },
-                    'c',
-                    { newlinesBetween: 'never' },
-                    'd',
-                    { newlinesBetween: 'ignore' },
-                    'e',
-                  ],
-                  newlinesBetween: 'always',
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'a',
+      describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): handles "newlinesBetween" between consecutive groups`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'a',
+                      { newlinesBetween: 'always' },
+                      'b',
+                      { newlinesBetween: 'always' },
+                      'c',
+                      { newlinesBetween: 'never' },
+                      'd',
+                      { newlinesBetween: 'ignore' },
+                      'e',
+                    ],
+                    customGroups: [
+                      { elementNamePattern: 'a', groupName: 'a' },
+                      { elementNamePattern: 'b', groupName: 'b' },
+                      { elementNamePattern: 'c', groupName: 'c' },
+                      { elementNamePattern: 'd', groupName: 'd' },
+                      { elementNamePattern: 'e', groupName: 'e' },
+                    ],
+                    newlinesBetween: 'always',
                   },
-                  messageId: 'missedSpacingBetweenMapElementsMembers',
-                },
-                {
-                  data: {
-                    right: 'c',
-                    left: 'b',
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'missedSpacingBetweenMapElementsMembers',
                   },
-                  messageId: 'extraSpacingBetweenMapElementsMembers',
-                },
-                {
-                  data: {
-                    right: 'd',
-                    left: 'c',
+                  {
+                    data: {
+                      right: 'c',
+                      left: 'b',
+                    },
+                    messageId: 'extraSpacingBetweenMapElementsMembers',
                   },
-                  messageId: 'extraSpacingBetweenMapElementsMembers',
-                },
-              ],
-              output: dedent`
-                new Map([
-                  [a, null],
+                  {
+                    data: {
+                      right: 'd',
+                      left: 'c',
+                    },
+                    messageId: 'extraSpacingBetweenMapElementsMembers',
+                  },
+                ],
+                output: dedent`
+                  new Map([
+                    [a, null],
 
-                  [b, null],
+                    [b, null],
 
-                  [c, null],
-                  [d, null],
-
-
-                  [e, null]
-                ])
-              `,
-              code: dedent`
-                new Map([
-                  [a, null],
-                  [b, null],
+                    [c, null],
+                    [d, null],
 
 
-                  [c, null],
+                    [e, null]
+                  ])
+                `,
+                code: dedent`
+                  new Map([
+                    [a, null],
+                    [b, null],
 
-                  [d, null],
+
+                    [c, null],
+
+                    [d, null],
 
 
-                  [e, null]
-                ])
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                    [e, null]
+                  ])
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
 
       ruleTester.run(
         `${ruleName}(${type}): handles newlines and comment after fixes`,
