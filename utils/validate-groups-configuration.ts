@@ -1,5 +1,7 @@
 import type { NewlinesBetweenOption } from '../types/common-options'
 
+import { isNewlinesBetweenOption } from './is-newlines-between-option'
+
 type Group = { newlinesBetween: NewlinesBetweenOption } | string[] | string
 
 /**
@@ -26,7 +28,7 @@ export let validateGroupsConfiguration = (
   let invalidGroups: string[] = []
   let isPreviousElementNewlinesBetween = false
   for (let groupElement of groups) {
-    if (typeof groupElement === 'object' && 'newlinesBetween' in groupElement) {
+    if (isNewlinesBetweenOption(groupElement)) {
       // There should not be two consecutive `newlinesBetween` objects
       if (isPreviousElementNewlinesBetween) {
         throw new Error("Consecutive 'newlinesBetween' objects are not allowed")
@@ -61,7 +63,7 @@ export let validateNoDuplicatedGroups = (groups: Group[]): void => {
   let duplicatedGroups = new Set<string>()
 
   for (let group of flattenGroups) {
-    if (typeof group === 'object' && 'newlinesBetween' in group) {
+    if (isNewlinesBetweenOption(group)) {
       continue
     }
     if (seenGroups.has(group)) {
