@@ -13,15 +13,15 @@ export const LEFT = 'left'
 const LEFT_GROUP = 'leftGroup'
 
 export const ORDER_ERROR =
-  `Expected "{{${RIGHT}}" to come before "{{${LEFT}}".` as const
+  `Expected "{{${RIGHT}}}" to come before "{{${LEFT}}}".` as const
 export const DEPENDENCY_ORDER_ERROR =
-  `Expected dependency "{{${RIGHT}}" to come before "{{${NODE_DEPENDENT_ON_RIGHT}}}".` as const
+  `Expected dependency "{{${RIGHT}}}" to come before "{{${NODE_DEPENDENT_ON_RIGHT}}}".` as const
 export const GROUP_ORDER_ERROR =
-  `Expected "{{${RIGHT}}" ({{${RIGHT_GROUP}}) to come before "{{${LEFT}}" ({{${LEFT_GROUP}}).` as const
+  `Expected "{{${RIGHT}}}" ({{${RIGHT_GROUP}}}) to come before "{{${LEFT}}}" ({{${LEFT_GROUP}}}).` as const
 export const EXTRA_SPACING_ERROR =
-  `Extra spacing between "{{${LEFT}}" and "{{${RIGHT}}" objects.` as const
+  `Extra spacing between "{{${LEFT}}}" and "{{${RIGHT}}}" objects.` as const
 export const MISSED_SPACING_ERROR =
-  `Missed spacing between "{{${LEFT}}" and "{{${RIGHT}}".` as const
+  `Missed spacing between "{{${LEFT}}}" and "{{${RIGHT}}}".` as const
 
 interface ReportErrorsParameters<MessageIds extends string> {
   context: TSESLint.RuleContext<MessageIds, unknown[]>
