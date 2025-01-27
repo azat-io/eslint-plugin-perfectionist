@@ -1202,6 +1202,113 @@ describe(ruleName, () => {
             valid: [],
           },
         )
+
+        describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
+          for (let [globalNewlinesBetween, groupNewlinesBetween] of [
+            ['always', 'never'] as const,
+            ['always', 'ignore'] as const,
+            ['never', 'always'] as const,
+            ['ignore', 'always'] as const,
+          ]) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'named',
+                          'tuple',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'nullish',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'null',
+                          left: 'A',
+                        },
+                        messageId: 'missedSpacingBetweenUnionTypes',
+                      },
+                    ],
+                    output: dedent`
+                      type T =
+                        A |
+
+                        null
+                    `,
+                    code: dedent`
+                      type T =
+                        A |
+                        null
+                    `,
+                  },
+                ],
+                valid: [],
+              },
+            )
+          }
+
+          for (let [globalNewlinesBetween, groupNewlinesBetween] of [
+            ['ignore', 'never'] as const,
+            ['never', 'ignore'] as const,
+          ]) {
+            ruleTester.run(
+              `${ruleName}(${type}): does not enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              rule,
+              {
+                valid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'named',
+                          'tuple',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'nullish',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    code: dedent`
+                      type T =
+                        A |
+
+                        null
+                    `,
+                  },
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'named',
+                          'tuple',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'nullish',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    code: dedent`
+                      type T =
+                        A |
+                        null
+                    `,
+                  },
+                ],
+                invalid: [],
+              },
+            )
+          }
+        })
       })
 
       ruleTester.run(

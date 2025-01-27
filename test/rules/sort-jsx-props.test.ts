@@ -863,6 +863,132 @@ describe(ruleName, () => {
             valid: [],
           },
         )
+
+        describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
+          for (let [globalNewlinesBetween, groupNewlinesBetween] of [
+            ['always', 'never'] as const,
+            ['always', 'ignore'] as const,
+            ['never', 'always'] as const,
+            ['ignore', 'always'] as const,
+          ]) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'a',
+                          'unusedGroup',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'b',
+                        ],
+                        customGroups: {
+                          unusedGroup: 'X',
+                          a: 'a',
+                          b: 'b',
+                        },
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'b',
+                          left: 'a',
+                        },
+                        messageId: 'missedSpacingBetweenJSXPropsMembers',
+                      },
+                    ],
+                    output: dedent`
+                      <Component
+                        a
+
+                        b
+                      />
+                    `,
+                    code: dedent`
+                      <Component
+                        a
+                        b
+                      />
+                    `,
+                  },
+                ],
+                valid: [],
+              },
+            )
+          }
+
+          for (let [globalNewlinesBetween, groupNewlinesBetween] of [
+            ['ignore', 'never'] as const,
+            ['never', 'ignore'] as const,
+          ]) {
+            ruleTester.run(
+              `${ruleName}(${type}): does not enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              rule,
+              {
+                valid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'a',
+                          'unusedGroup',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'b',
+                        ],
+                        customGroups: {
+                          unusedGroup: 'X',
+                          a: 'a',
+                          b: 'b',
+                        },
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    code: dedent`
+                      <Component
+                        a
+
+                        b
+                      />
+                    `,
+                  },
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'a',
+                          'unusedGroup',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'b',
+                        ],
+                        customGroups: {
+                          unusedGroup: 'X',
+                          a: 'a',
+                          b: 'b',
+                        },
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    code: dedent`
+                      <Component
+                        a
+                        b
+                      />
+                    `,
+                  },
+                ],
+                invalid: [],
+              },
+            )
+          }
+        })
       })
 
       ruleTester.run(
