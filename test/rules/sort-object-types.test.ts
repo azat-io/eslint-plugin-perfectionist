@@ -2252,7 +2252,7 @@ describe(ruleName, () => {
             ['never', 'ignore'] as const,
           ]) {
             ruleTester.run(
-              `${ruleName}(${type}): does not enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              `${ruleName}(${type}): does not enforce a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
               rule,
               {
                 valid: [
