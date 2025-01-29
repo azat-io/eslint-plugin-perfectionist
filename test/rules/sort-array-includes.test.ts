@@ -1596,91 +1596,219 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    { elementNamePattern: 'a', groupName: 'a' },
-                    { elementNamePattern: 'b', groupName: 'b' },
-                    { elementNamePattern: 'c', groupName: 'c' },
-                    { elementNamePattern: 'd', groupName: 'd' },
-                    { elementNamePattern: 'e', groupName: 'e' },
-                  ],
-                  groups: [
+      describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): handles "newlinesBetween" between consecutive groups`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'a',
+                      { newlinesBetween: 'always' },
+                      'b',
+                      { newlinesBetween: 'always' },
+                      'c',
+                      { newlinesBetween: 'never' },
+                      'd',
+                      { newlinesBetween: 'ignore' },
+                      'e',
+                    ],
+                    customGroups: [
+                      { elementNamePattern: 'a', groupName: 'a' },
+                      { elementNamePattern: 'b', groupName: 'b' },
+                      { elementNamePattern: 'c', groupName: 'c' },
+                      { elementNamePattern: 'd', groupName: 'd' },
+                      { elementNamePattern: 'e', groupName: 'e' },
+                    ],
+                    newlinesBetween: 'always',
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'missedSpacingBetweenArrayIncludesMembers',
+                  },
+                  {
+                    data: {
+                      right: 'c',
+                      left: 'b',
+                    },
+                    messageId: 'extraSpacingBetweenArrayIncludesMembers',
+                  },
+                  {
+                    data: {
+                      right: 'd',
+                      left: 'c',
+                    },
+                    messageId: 'extraSpacingBetweenArrayIncludesMembers',
+                  },
+                ],
+                output: dedent`
+                  [
                     'a',
-                    { newlinesBetween: 'always' },
+
                     'b',
-                    { newlinesBetween: 'always' },
+
                     'c',
-                    { newlinesBetween: 'never' },
                     'd',
-                    { newlinesBetween: 'ignore' },
-                    'e',
-                  ],
-                  newlinesBetween: 'always',
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'a',
+
+
+                    'e'
+                  ].includes(value)
+                `,
+                code: dedent`
+                  [
+                    'a',
+                    'b',
+
+
+                    'c',
+
+                    'd',
+
+
+                    'e'
+                  ].includes(value)
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
+          for (let [globalNewlinesBetween, groupNewlinesBetween] of [
+            ['always', 'never'] as const,
+            ['always', 'ignore'] as const,
+            ['never', 'always'] as const,
+            ['ignore', 'always'] as const,
+          ]) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        groups: [
+                          'a',
+                          'unusedGroup',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'b',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'b',
+                          left: 'a',
+                        },
+                        messageId: 'missedSpacingBetweenArrayIncludesMembers',
+                      },
+                    ],
+                    output: dedent`
+                      [
+                        a,
+
+                        b,
+                      ].includes(value)
+                    `,
+                    code: dedent`
+                      [
+                        a,
+                        b,
+                      ].includes(value)
+                    `,
                   },
-                  messageId: 'missedSpacingBetweenArrayIncludesMembers',
-                },
-                {
-                  data: {
-                    right: 'c',
-                    left: 'b',
+                ],
+                valid: [],
+              },
+            )
+          }
+
+          for (let [globalNewlinesBetween, groupNewlinesBetween] of [
+            ['ignore', 'never'] as const,
+            ['never', 'ignore'] as const,
+          ]) {
+            ruleTester.run(
+              `${ruleName}(${type}): does not enforce a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              rule,
+              {
+                valid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        groups: [
+                          'a',
+                          'unusedGroup',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'b',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    code: dedent`
+                      [
+                        a,
+
+                        b,
+                      ].includes(value)
+                    `,
                   },
-                  messageId: 'extraSpacingBetweenArrayIncludesMembers',
-                },
-                {
-                  data: {
-                    right: 'd',
-                    left: 'c',
+                  {
+                    options: [
+                      {
+                        ...options,
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        groups: [
+                          'a',
+                          'unusedGroup',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'b',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    code: dedent`
+                      [
+                        a,
+                        b,
+                      ].includes(value)
+                    `,
                   },
-                  messageId: 'extraSpacingBetweenArrayIncludesMembers',
-                },
-              ],
-              output: dedent`
-                [
-                  'a',
-
-                  'b',
-
-                  'c',
-                  'd',
-
-
-                  'e'
-                ].includes(value)
-              `,
-              code: dedent`
-                [
-                  'a',
-                  'b',
-
-
-                  'c',
-
-                  'd',
-
-
-                  'e'
-                ].includes(value)
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                ],
+                invalid: [],
+              },
+            )
+          }
+        })
+      })
 
       ruleTester.run(
         `${ruleName}(${type}): handles newlines and comment after fixes`,

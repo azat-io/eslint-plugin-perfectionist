@@ -1125,82 +1125,191 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use "newlinesBetween" inside groups`,
-        rule,
-        {
-          invalid: [
-            {
-              errors: [
-                {
-                  data: {
-                    right: '{ a: string }',
-                    left: '() => void',
+      describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): handles "newlinesBetween" between consecutive groups`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: '{ a: string }',
+                      left: '() => void',
+                    },
+                    messageId: 'missedSpacingBetweenUnionTypes',
                   },
-                  messageId: 'missedSpacingBetweenUnionTypes',
-                },
-                {
-                  data: {
-                    left: '{ a: string }',
-                    right: 'A',
+                  {
+                    data: {
+                      left: '{ a: string }',
+                      right: 'A',
+                    },
+                    messageId: 'extraSpacingBetweenUnionTypes',
                   },
-                  messageId: 'extraSpacingBetweenUnionTypes',
-                },
-                {
-                  data: {
-                    right: '[A]',
-                    left: 'A',
+                  {
+                    data: {
+                      right: '[A]',
+                      left: 'A',
+                    },
+                    messageId: 'extraSpacingBetweenUnionTypes',
                   },
-                  messageId: 'extraSpacingBetweenUnionTypes',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  groups: [
-                    'function',
-                    { newlinesBetween: 'always' },
-                    'object',
-                    { newlinesBetween: 'always' },
-                    'named',
-                    { newlinesBetween: 'never' },
-                    'tuple',
-                    { newlinesBetween: 'ignore' },
-                    'nullish',
-                  ],
-                  newlinesBetween: 'always',
-                },
-              ],
-              output: dedent`
-                type Type =
-                  (() => void) |
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'function',
+                      { newlinesBetween: 'always' },
+                      'object',
+                      { newlinesBetween: 'always' },
+                      'named',
+                      { newlinesBetween: 'never' },
+                      'tuple',
+                      { newlinesBetween: 'ignore' },
+                      'nullish',
+                    ],
+                    newlinesBetween: 'always',
+                  },
+                ],
+                output: dedent`
+                  type Type =
+                    (() => void) |
 
-                  { a: string } |
+                    { a: string } |
 
-                  A |
-                  [A] |
+                    A |
+                    [A] |
 
 
-                  null
-              `,
-              code: dedent`
-                type Type =
-                  (() => void) |
-                  { a: string } |
+                    null
+                `,
+                code: dedent`
+                  type Type =
+                    (() => void) |
+                    { a: string } |
 
 
-                  A |
+                    A |
 
-                  [A] |
+                    [A] |
 
 
-                  null
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                    null
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
+          for (let [globalNewlinesBetween, groupNewlinesBetween] of [
+            ['always', 'never'] as const,
+            ['always', 'ignore'] as const,
+            ['never', 'always'] as const,
+            ['ignore', 'always'] as const,
+          ]) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'named',
+                          'tuple',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'nullish',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'null',
+                          left: 'A',
+                        },
+                        messageId: 'missedSpacingBetweenUnionTypes',
+                      },
+                    ],
+                    output: dedent`
+                      type T =
+                        A |
+
+                        null
+                    `,
+                    code: dedent`
+                      type T =
+                        A |
+                        null
+                    `,
+                  },
+                ],
+                valid: [],
+              },
+            )
+          }
+
+          for (let [globalNewlinesBetween, groupNewlinesBetween] of [
+            ['ignore', 'never'] as const,
+            ['never', 'ignore'] as const,
+          ]) {
+            ruleTester.run(
+              `${ruleName}(${type}): does not enforce a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              rule,
+              {
+                valid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'named',
+                          'tuple',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'nullish',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    code: dedent`
+                      type T =
+                        A |
+
+                        null
+                    `,
+                  },
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'named',
+                          'tuple',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'nullish',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    code: dedent`
+                      type T =
+                        A |
+                        null
+                    `,
+                  },
+                ],
+                invalid: [],
+              },
+            )
+          }
+        })
+      })
 
       ruleTester.run(
         `${ruleName}(${type}): handles newlines and comment after fixes`,

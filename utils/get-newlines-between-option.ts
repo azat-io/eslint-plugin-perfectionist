@@ -6,6 +6,7 @@ import type {
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
+import { isNewlinesBetweenOption } from './is-newlines-between-option'
 import { getGroupNumber } from './get-group-number'
 
 export interface GetNewlinesBetweenOptionParameters {
@@ -71,10 +72,25 @@ export let getNewlinesBetweenOption = ({
   }
 
   // Check if a specific newlinesBetween is defined between the two groups
-  if (nextNodeGroupNumber === nodeGroupNumber + 2) {
-    let groupBetween = options.groups[nodeGroupNumber + 1]
-    if (typeof groupBetween === 'object' && 'newlinesBetween' in groupBetween) {
-      return groupBetween.newlinesBetween
+  if (nextNodeGroupNumber >= nodeGroupNumber + 2) {
+    if (nextNodeGroupNumber === nodeGroupNumber + 2) {
+      let groupBetween = options.groups[nodeGroupNumber + 1]!
+      if (isNewlinesBetweenOption(groupBetween)) {
+        return groupBetween.newlinesBetween
+      }
+    } else {
+      if (globalNewlinesBetweenOption === 'always') {
+        return 'always'
+      }
+      for (let i = nodeGroupNumber + 2; i < nextNodeGroupNumber; i++) {
+        let groupBetween = options.groups[i]!
+        if (
+          isNewlinesBetweenOption(groupBetween) &&
+          groupBetween.newlinesBetween !== 'never'
+        ) {
+          return groupBetween.newlinesBetween
+        }
+      }
     }
   }
 

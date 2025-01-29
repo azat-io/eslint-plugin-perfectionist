@@ -3,6 +3,8 @@ import type {
   GroupsOptions,
 } from '../types/common-options'
 
+import { isNewlinesBetweenOption } from './is-newlines-between-option'
+
 interface Options {
   newlinesBetween: NewlinesBetweenOption
   groups: GroupsOptions<string>
@@ -22,8 +24,8 @@ export let validateNewlinesAndPartitionConfiguration = ({
       "The 'partitionByNewLine' and 'newlinesBetween' options cannot be used together",
     )
   }
-  let hasNewlinesBetweenGroup = groups.some(
-    group => typeof group === 'object' && 'newlinesBetween' in group,
+  let hasNewlinesBetweenGroup = groups.some(group =>
+    isNewlinesBetweenOption(group),
   )
   if (hasNewlinesBetweenGroup) {
     throw new Error(

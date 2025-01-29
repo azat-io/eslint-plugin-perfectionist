@@ -31,6 +31,7 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
+import { isNewlinesBetweenOption } from '../utils/is-newlines-between-option'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { getTypescriptImport } from './sort-imports/get-typescript-import'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -179,7 +180,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         | string[]
         | string,
     ): boolean => {
-      if (!group || (typeof group === 'object' && 'newlinesBetween' in group)) {
+      if (!group || isNewlinesBetweenOption(group)) {
         return false
       }
       if (typeof group === 'string') {

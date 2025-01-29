@@ -172,6 +172,93 @@ describe('get-newlines-between-option', () => {
         ).toBe('never')
       })
     })
+
+    describe('newlinesBetween option between two groups', () => {
+      it('should return the newlinesBetween option between two adjacent groups', () => {
+        expect(
+          getNewlinesBetweenOption(
+            buildParameters({
+              groups: ['group1', { newlinesBetween: 'always' }, 'group2'],
+              newlinesBetween: 'never',
+            }),
+          ),
+        ).toBe('always')
+      })
+
+      describe('non-adjacent groups', () => {
+        it('should return `always` if the global option is `always`', () => {
+          for (let newlinesBetween of ['always', 'ignore', 'never'] as const) {
+            expect(
+              getNewlinesBetweenOption(
+                buildParameters({
+                  groups: [
+                    'group1',
+                    'someOtherGroup',
+                    { newlinesBetween },
+                    'group2',
+                  ],
+                  newlinesBetween: 'always',
+                }),
+              ),
+            ).toBe('always')
+          }
+        })
+
+        it('should return `always` if `always` exists between the groups', () => {
+          expect(
+            getNewlinesBetweenOption(
+              buildParameters({
+                groups: [
+                  'group1',
+                  'someOtherGroup',
+                  { newlinesBetween: 'always' },
+                  'group2',
+                ],
+                newlinesBetween: 'never',
+              }),
+            ),
+          ).toBe('always')
+        })
+
+        it('should return `ignore` if `ignore` exists between the groups', () => {
+          expect(
+            getNewlinesBetweenOption(
+              buildParameters({
+                groups: [
+                  'group1',
+                  'someOtherGroup',
+                  { newlinesBetween: 'ignore' },
+                  'group2',
+                  { newlinesBetween: 'always' },
+                  'someOtherGroup2',
+                ],
+                newlinesBetween: 'never',
+              }),
+            ),
+          ).toBe('ignore')
+        })
+
+        it('should return the global option if no `ignore` or `always` exist', () => {
+          for (let newlinesBetween of ['always', 'ignore', 'never'] as const) {
+            expect(
+              getNewlinesBetweenOption(
+                buildParameters({
+                  groups: [
+                    'group1',
+                    'someOtherGroup',
+                    { newlinesBetween: 'never' },
+                    'group2',
+                    { newlinesBetween: 'always' },
+                    'someOtherGroup2',
+                  ],
+                  newlinesBetween,
+                }),
+              ),
+            ).toBe(newlinesBetween)
+          }
+        })
+      })
+    })
   })
 
   let buildParameters = ({
