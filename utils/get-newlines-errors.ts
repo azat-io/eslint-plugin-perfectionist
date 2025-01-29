@@ -12,21 +12,28 @@ import { getNewlinesBetweenOption } from './get-newlines-between-option'
 import { getLinesBetween } from './get-lines-between'
 
 interface GetNewlinesErrorsParameters<T extends string> {
+interface GetNewlinesErrorsParameters<
+  MessageIds extends string,
+  T extends SortingNode,
+> {
   options: {
     customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<string>
   }
   sourceCode: TSESLint.SourceCode
-  missedSpacingError: T
-  extraSpacingError: T
-  right: SortingNode
-  left: SortingNode
+  missedSpacingError: MessageIds
+  extraSpacingError: MessageIds
   rightNum: number
   leftNum: number
+  right: T
+  left: T
 }
 
-export let getNewlinesErrors = <T extends string>({
+export let getNewlinesErrors = <
+  MessageIds extends string,
+  T extends SortingNode,
+>({
   missedSpacingError,
   extraSpacingError,
   sourceCode,
@@ -35,7 +42,7 @@ export let getNewlinesErrors = <T extends string>({
   options,
   right,
   left,
-}: GetNewlinesErrorsParameters<T>): T[] => {
+}: GetNewlinesErrorsParameters<MessageIds, T>): MessageIds[] => {
   let newlinesBetween = getNewlinesBetweenOption({
     nextSortingNode: right,
     sortingNode: left,

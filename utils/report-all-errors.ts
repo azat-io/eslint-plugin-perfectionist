@@ -12,7 +12,10 @@ import { getGroupNumber } from './get-group-number'
 import { reportErrors } from './report-errors'
 import { pairwise } from './pairwise'
 
-interface ReportAllErrorsParameters<MessageIds extends string> {
+interface ReportAllErrorsParameters<
+  MessageIds extends string,
+  T extends SortingNode,
+> {
   availableMessageIds: {
     missedSpacingBetweenMembers?: MessageIds
     extraSpacingBetweenMembers?: MessageIds
@@ -20,19 +23,20 @@ interface ReportAllErrorsParameters<MessageIds extends string> {
     unexpectedGroupOrder?: MessageIds
     unexpectedOrder: MessageIds
   }
-  sortNodesExcludingEslintDisabled(
-    ignoreEslintDisabledNodes: boolean,
-  ): SortingNode[]
   options: {
     groups?: GroupsOptions<string>
-  } & MakeFixesParameters['options']
+  } & MakeFixesParameters<T>['options']
+  sortNodesExcludingEslintDisabled(ignoreEslintDisabledNodes: boolean): T[]
   context: TSESLint.RuleContext<MessageIds, unknown[]>
   ignoreFirstNodeHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode
-  nodes: SortingNode[]
+  nodes: T[]
 }
 
-export let reportAllErrors = <MessageIds extends string>({
+export let reportAllErrors = <
+  MessageIds extends string,
+  T extends SortingNode = SortingNode,
+>({
   ignoreFirstNodeHighestBlockComment,
   sortNodesExcludingEslintDisabled,
   availableMessageIds,
@@ -40,7 +44,7 @@ export let reportAllErrors = <MessageIds extends string>({
   context,
   options,
   nodes,
-}: ReportAllErrorsParameters<MessageIds>): void => {
+}: ReportAllErrorsParameters<MessageIds, T>): void => {
   let sortedNodes = sortNodesExcludingEslintDisabled(false)
   let sortedNodesExcludingEslintDisabled =
     sortNodesExcludingEslintDisabled(true)
@@ -58,14 +62,12 @@ export let reportAllErrors = <MessageIds extends string>({
 
     let messageIds: MessageIds[] = []
 
-    let firstUnorderedNodeDependentOnRight:
-      | SortingNodeWithDependencies
-      | undefined
+    let firstUnorderedNodeDependentOnRight: undefined | T
     if (availableMessageIds.unexpectedDependencyOrder) {
       firstUnorderedNodeDependentOnRight = getFirstUnorderedNodeDependentOn(
-        right as SortingNodeWithDependencies,
-        nodes as SortingNodeWithDependencies[],
-      )
+        right as unknown as SortingNodeWithDependencies,
+        nodes as unknown as SortingNodeWithDependencies[],
+      ) as unknown as T
     }
 
     if (

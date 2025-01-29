@@ -13,7 +13,7 @@ import { makeCommentAfterFixes } from './make-comment-after-fixes'
 import { makeNewlinesFixes } from './make-newlines-fixes'
 import { makeOrderFixes } from './make-order-fixes'
 
-export interface MakeFixesParameters {
+export interface MakeFixesParameters<T extends SortingNode> {
   options?: {
     customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
     partitionByComment?: PartitionByCommentOption
@@ -22,19 +22,19 @@ export interface MakeFixesParameters {
   }
   ignoreFirstNodeHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode
-  sortedNodes: SortingNode[]
   fixer: TSESLint.RuleFixer
-  nodes: SortingNode[]
+  sortedNodes: T[]
+  nodes: T[]
 }
 
-export let makeFixes = ({
+export let makeFixes = <T extends SortingNode>({
   ignoreFirstNodeHighestBlockComment,
   sortedNodes,
   sourceCode,
   options,
   fixer,
   nodes,
-}: MakeFixesParameters): TSESLint.RuleFix[] => {
+}: MakeFixesParameters<T>): TSESLint.RuleFix[] => {
   let orderFixes = makeOrderFixes({
     ignoreFirstNodeHighestBlockComment,
     sortedNodes,
