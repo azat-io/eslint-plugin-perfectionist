@@ -1,5 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import type { NewlinesBetweenValueGetter } from './get-newlines-errors'
 import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
@@ -27,6 +28,7 @@ interface ReportErrorsParameters<
   MessageIds extends string,
   T extends SortingNode,
 > {
+  newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
   context: TSESLint.RuleContext<MessageIds, unknown[]>
   ignoreFirstNodeHighestBlockComment?: boolean
   options?: MakeFixesParameters<T>['options']
@@ -42,6 +44,7 @@ interface ReportErrorsParameters<
 export let reportErrors = <MessageIds extends string, T extends SortingNode>({
   firstUnorderedNodeDependentOnRight,
   ignoreFirstNodeHighestBlockComment,
+  newlinesBetweenValueGetter,
   sortedNodes,
   messageIds,
   sourceCode,
@@ -56,6 +59,7 @@ export let reportErrors = <MessageIds extends string, T extends SortingNode>({
       fix: (fixer: TSESLint.RuleFixer) =>
         makeFixes({
           ignoreFirstNodeHighestBlockComment,
+          newlinesBetweenValueGetter,
           sortedNodes,
           sourceCode,
           options,

@@ -11,7 +11,12 @@ import type { SortingNode } from '../types/sorting-node'
 import { getNewlinesBetweenOption } from './get-newlines-between-option'
 import { getLinesBetween } from './get-lines-between'
 
-interface GetNewlinesErrorsParameters<T extends string> {
+export type NewlinesBetweenValueGetter<T extends SortingNode> = (props: {
+  computedNewlinesBetween: NewlinesBetweenOption
+  right: T
+  left: T
+}) => NewlinesBetweenOption
+
 interface GetNewlinesErrorsParameters<
   MessageIds extends string,
   T extends SortingNode,
@@ -21,6 +26,7 @@ interface GetNewlinesErrorsParameters<
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<string>
   }
+  newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
   sourceCode: TSESLint.SourceCode
   missedSpacingError: MessageIds
   extraSpacingError: MessageIds
@@ -34,6 +40,7 @@ export let getNewlinesErrors = <
   MessageIds extends string,
   T extends SortingNode,
 >({
+  newlinesBetweenValueGetter,
   missedSpacingError,
   extraSpacingError,
   sourceCode,
@@ -48,6 +55,12 @@ export let getNewlinesErrors = <
     sortingNode: left,
     options,
   })
+  newlinesBetween =
+    newlinesBetweenValueGetter?.({
+      computedNewlinesBetween: newlinesBetween,
+      right,
+      left,
+    }) ?? newlinesBetween
   if (leftNum > rightNum) {
     return []
   }

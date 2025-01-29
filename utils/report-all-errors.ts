@@ -1,6 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
+import type { NewlinesBetweenValueGetter } from './get-newlines-errors'
 import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
@@ -27,6 +28,7 @@ interface ReportAllErrorsParameters<
     groups?: GroupsOptions<string>
   } & MakeFixesParameters<T>['options']
   sortNodesExcludingEslintDisabled(ignoreEslintDisabledNodes: boolean): T[]
+  newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
   context: TSESLint.RuleContext<MessageIds, unknown[]>
   ignoreFirstNodeHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode
@@ -39,6 +41,7 @@ export let reportAllErrors = <
 >({
   ignoreFirstNodeHighestBlockComment,
   sortNodesExcludingEslintDisabled,
+  newlinesBetweenValueGetter,
   availableMessageIds,
   sourceCode,
   context,
@@ -103,6 +106,7 @@ export let reportAllErrors = <
           },
           missedSpacingError: availableMessageIds.missedSpacingBetweenMembers,
           extraSpacingError: availableMessageIds.extraSpacingBetweenMembers,
+          newlinesBetweenValueGetter,
           rightNum: rightNumber,
           leftNum: leftNumber,
           sourceCode,
@@ -116,6 +120,7 @@ export let reportAllErrors = <
       sortedNodes: sortedNodesExcludingEslintDisabled,
       ignoreFirstNodeHighestBlockComment,
       firstUnorderedNodeDependentOnRight,
+      newlinesBetweenValueGetter,
       messageIds,
       sourceCode,
       options,

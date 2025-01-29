@@ -7,6 +7,7 @@ import type {
   CustomGroupsOption,
   GroupsOptions,
 } from '../types/common-options'
+import type { NewlinesBetweenValueGetter } from './get-newlines-errors'
 import type { SortingNode } from '../types/sorting-node'
 
 import { makeCommentAfterFixes } from './make-comment-after-fixes'
@@ -20,6 +21,7 @@ export interface MakeFixesParameters<T extends SortingNode> {
     newlinesBetween?: NewlinesBetweenOption
     groups?: GroupsOptions<string>
   }
+  newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
   ignoreFirstNodeHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode
   fixer: TSESLint.RuleFixer
@@ -29,6 +31,7 @@ export interface MakeFixesParameters<T extends SortingNode> {
 
 export let makeFixes = <T extends SortingNode>({
   ignoreFirstNodeHighestBlockComment,
+  newlinesBetweenValueGetter,
   sortedNodes,
   sourceCode,
   options,
@@ -64,6 +67,7 @@ export let makeFixes = <T extends SortingNode>({
       newlinesBetween: options.newlinesBetween,
       groups: options.groups,
     },
+    newlinesBetweenValueGetter,
     sortedNodes,
     sourceCode,
     fixer,
