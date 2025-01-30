@@ -810,6 +810,35 @@ describe(ruleName, () => {
             }
           `,
         },
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export {
+              'a' as b,
+              'b' as a,
+            } from './module'
+          `,
+          code: dedent`
+            export {
+              'b' as a,
+              'a' as b,
+            } from './module'
+          `,
+          options: [
+            {
+              ...options,
+              ignoreAlias: true,
+            },
+          ],
+        },
       ],
       valid: [],
     })

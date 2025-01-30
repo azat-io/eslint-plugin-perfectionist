@@ -84,8 +84,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           if (specifier.local.type === 'Identifier') {
             ;({ name } = specifier.local)
           } else {
-            // Should never happen
-            throw new Error("Can't handle non-Identifier local")
+            // Should not be allowed in typescript, but is possible according to
+            // The AST
+            // Ex: `export { 'literal' as local } from './import'`
+            name = specifier.local.value
           }
         } else {
           if (specifier.exported.type === 'Identifier') {
