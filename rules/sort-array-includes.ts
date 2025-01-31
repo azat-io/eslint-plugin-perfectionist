@@ -72,6 +72,7 @@ export let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',
+  fallbackSort: [],
   customGroups: [],
   alphabet: '',
   order: 'asc',

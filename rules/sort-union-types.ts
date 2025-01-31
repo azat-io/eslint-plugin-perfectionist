@@ -80,6 +80,7 @@ let defaultOptions: Required<Options[0]> = {
   partitionByComment: false,
   type: 'alphabetical',
   ignoreCase: true,
+  fallbackSort: [],
   locales: 'en-US',
   alphabet: '',
   order: 'asc',

@@ -72,6 +72,7 @@ let defaultOptions: Required<Options[0]> = {
   useConfigurationIf: {},
   type: 'alphabetical',
   ignorePattern: [],
+  fallbackSort: [],
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',

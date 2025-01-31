@@ -99,6 +99,7 @@ let defaultOptions: Required<SortClassesOptions[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   customGroups: [],
+  fallbackSort: [],
   locales: 'en-US',
   alphabet: '',
   order: 'asc',

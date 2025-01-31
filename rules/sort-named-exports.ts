@@ -55,6 +55,7 @@ let defaultOptions: Required<Options[0]> = {
   groupKind: 'mixed',
   ignoreCase: true,
   locales: 'en-US',
+  fallbackSort: [],
   alphabet: '',
   order: 'asc',
 }

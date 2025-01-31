@@ -14,6 +14,7 @@ export type CustomGroupsOption<SingleCustomGroup = object> = ((
 export interface CommonOptions {
   specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
+  fallbackSort: FallbackSortOption
   ignoreCase: boolean
   order: OrderOption
   alphabet: string
@@ -37,6 +38,11 @@ export type GroupsOptions<T> = (
 export interface AnyOfCustomGroup<SingleCustomGroup> {
   anyOf: SingleCustomGroup[]
 }
+
+export type FallbackSortOption = {
+  order?: OrderOption
+  type: TypeOption
+}[]
 
 export type TypeOption = 'alphabetical' | 'line-length' | 'natural' | 'custom'
 

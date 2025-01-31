@@ -53,8 +53,21 @@ let specialCharactersJsonSchema: JSONSchema4 = {
   type: 'string',
 }
 
+let fallbackSortJsonSchema: JSONSchema4 = {
+  items: {
+    properties: {
+      type: buildTypeJsonSchema(),
+      order: orderJsonSchema,
+    },
+    type: 'object',
+  },
+  description: 'Fallback sort order.',
+  type: 'array',
+}
+
 export let commonJsonSchemas: Record<string, JSONSchema4> = {
   specialCharacters: specialCharactersJsonSchema,
+  fallbackSort: fallbackSortJsonSchema,
   ignoreCase: ignoreCaseJsonSchema,
   alphabet: alphabetJsonSchema,
   locales: localesJsonSchema,

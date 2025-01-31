@@ -27,6 +27,7 @@ let defaultOptions: Required<Options[0]> = {
   groupKind: 'mixed',
   ignorePattern: [],
   ignoreCase: true,
+  fallbackSort: [],
   customGroups: {},
   locales: 'en-US',
   alphabet: '',

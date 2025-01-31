@@ -64,6 +64,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   sortOnClasses: true,
   sortOnMethods: true,
+  fallbackSort: [],
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',

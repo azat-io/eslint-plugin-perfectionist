@@ -75,6 +75,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   groupKind: 'mixed',
   ignorePattern: [],
+  fallbackSort: [],
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',

@@ -53,6 +53,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreAlias: false,
   groupKind: 'mixed',
+  fallbackSort: [],
   ignoreCase: true,
   locales: 'en-US',
   alphabet: '',
