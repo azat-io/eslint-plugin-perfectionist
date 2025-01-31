@@ -33,6 +33,7 @@ type Options = [
       groupKind: 'values-first' | 'types-first' | 'mixed'
       partitionByComment: PartitionByCommentOption
       partitionByNewLine: boolean
+      ignoreAlias: boolean
       type: TypeOption
     } & CommonOptions
   >,
@@ -50,6 +51,7 @@ let defaultOptions: Required<Options[0]> = {
   partitionByNewLine: false,
   partitionByComment: false,
   type: 'alphabetical',
+  ignoreAlias: false,
   groupKind: 'mixed',
   ignoreCase: true,
   locales: 'en-US',
@@ -76,15 +78,23 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let formattedMembers: SortNamedExportsSortingNode[][] = [[]]
       for (let specifier of node.specifiers) {
-        let groupKind: 'value' | 'type' =
-          specifier.exportKind === 'type' ? 'type' : ('value' as const)
-
         let name: string
 
-        if (specifier.exported.type === 'Identifier') {
-          ;({ name } = specifier.exported)
+        if (options.ignoreAlias) {
+          if (specifier.local.type === 'Identifier') {
+            ;({ name } = specifier.local)
+          } else {
+            // Should not be allowed in typescript, but is possible according to
+            // The AST
+            // Ex: `export { 'literal' as local } from './import'`
+            name = specifier.local.value
+          }
         } else {
-          name = specifier.exported.value
+          if (specifier.exported.type === 'Identifier') {
+            ;({ name } = specifier.exported)
+          } else {
+            name = specifier.exported.value
+          }
         }
 
         let lastSortingNode = formattedMembers.at(-1)?.at(-1)
@@ -93,9 +103,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             specifier,
             eslintDisabledLines,
           ),
+          groupKind: specifier.exportKind === 'type' ? 'type' : 'value',
           size: rangeToDiff(specifier, sourceCode),
           node: specifier,
-          groupKind,
           name,
         }
 
@@ -160,6 +170,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             enum: ['mixed', 'values-first', 'types-first'],
             description: 'Specifies top-level groups.',
             type: 'string',
+          },
+          ignoreAlias: {
+            description: 'Controls whether to ignore alias names.',
+            type: 'boolean',
           },
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
