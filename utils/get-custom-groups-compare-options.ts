@@ -1,24 +1,18 @@
 import type {
   DeprecatedCustomGroupsOption,
-  SpecialCharactersOption,
   CustomGroupsOption,
   GroupsOptions,
-  OrderOption,
+  CommonOptions,
   TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { CompareOptions } from './compare'
 
-interface Options {
+type Options = {
   customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption
-  specialCharacters: SpecialCharactersOption
-  locales: NonNullable<Intl.LocalesArgument>
   groups: GroupsOptions<string>
-  ignoreCase: boolean
-  order: OrderOption
   type: TypeOption
-  alphabet: string
-}
+} & CommonOptions
 
 /**
  * Retrieves the compare options used to sort a given group. If the group is a
