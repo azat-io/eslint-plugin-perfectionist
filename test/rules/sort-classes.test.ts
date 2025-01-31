@@ -4434,6 +4434,57 @@ describe(ruleName, () => {
         },
       )
 
+      for (let newlinesBetween of ['always', 'ignore', 'never'] as const) {
+        ruleTester.run(
+          `${ruleName}: enforces no newline between overload signatures when newlinesBetween is "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'method',
+                      left: 'method',
+                    },
+                    messageId: 'extraSpacingBetweenClassMembers',
+                  },
+                  {
+                    data: {
+                      right: 'method',
+                      left: 'method',
+                    },
+                    messageId: 'extraSpacingBetweenClassMembers',
+                  },
+                ],
+                output: dedent`
+                  class Class {
+                    method(a: string): void {}
+                    method(a: number): void {}
+                    method(a: string | number): void {}
+                  }
+                `,
+                code: dedent`
+                  class Class {
+                    method(a: string): void {}
+
+                    method(a: number): void {}
+
+                    method(a: string | number): void {}
+                  }
+                `,
+                options: [
+                  {
+                    newlinesBetween,
+                  },
+                ],
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
+
       describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
         ruleTester.run(
           `${ruleName}(${type}): handles "newlinesBetween" between consecutive groups`,
@@ -6841,14 +6892,12 @@ describe(ruleName, () => {
                 static setBackground(r: number, g: number, b: number, a?: number): this
                 static setBackground(color: number, hexFlag: boolean): this
                 static setBackground(color: Color | string | CSSColor): this
-
                 static setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
                   /* ... */
                 }
                 setBackground(r: number, g: number, b: number, a?: number): this
                 setBackground(color: number, hexFlag: boolean): this
                 setBackground(color: Color | string | CSSColor): this
-
                 setBackground(color: ColorArgument, arg1?: boolean | number, arg2?: number, arg3?: number): this {
                   /* ... */
                 }
@@ -8181,6 +8230,64 @@ describe(ruleName, () => {
         ],
         valid: [],
       })
+
+      for (let newlinesInside of ['always', 'never'] as const) {
+        ruleTester.run(
+          `${ruleName}: enforces no newline between overload signatures when newlinesBetween is "${newlinesInside}"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'method',
+                      left: 'method',
+                    },
+                    messageId: 'extraSpacingBetweenClassMembers',
+                  },
+                  {
+                    data: {
+                      right: 'method',
+                      left: 'method',
+                    },
+                    messageId: 'extraSpacingBetweenClassMembers',
+                  },
+                ],
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        groupName: 'methods',
+                        selector: 'method',
+                        newlinesInside,
+                      },
+                    ],
+                    groups: ['methods'],
+                  },
+                ],
+                output: dedent`
+                  class Class {
+                    method(a: string): void {}
+                    method(a: number): void {}
+                    method(a: string | number): void {}
+                  }
+                `,
+                code: dedent`
+                  class Class {
+                    method(a: string): void {}
+
+                    method(a: number): void {}
+
+                    method(a: string | number): void {}
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
     })
   })
 

@@ -6,6 +6,7 @@ import type {
   Selector,
 } from './sort-classes/types'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
+import type { NewlinesBetweenOption } from '../types/common-options'
 
 import {
   buildCustomGroupsArrayJsonSchema,
@@ -99,6 +100,11 @@ let defaultOptions: Required<SortClassesOptions[0]> = {
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
+}
+
+interface SortClassSortingNodes
+  extends SortingNodeWithDependencies<TSESTree.ClassElement> {
+  overloadSignaturesGroupId: number | null
 }
 
 export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
@@ -287,8 +293,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         return dependencies
       }
       let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
-      let formattedNodes: SortingNodeWithDependencies[][] = node.body.reduce(
-        (accumulator: SortingNodeWithDependencies[][], member) => {
+      let formattedNodes: SortClassSortingNodes[][] = node.body.reduce(
+        (accumulator: SortClassSortingNodes[][], member) => {
           let name: string
           let dependencies: string[] = []
           let { defineGroup, getGroup } = useGroups(options)
@@ -553,11 +559,14 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
            * It is unclear what should be considered the size of an overload
            * signature group. Take the size of the implementation by default.
            */
-          let overloadSignatureGroupMember = overloadSignatureGroups
-            .find(overloadSignatures => overloadSignatures.includes(member))
-            ?.at(-1)
+          let overloadSignatureGroupMemberIndex =
+            overloadSignatureGroups.findIndex(overloadSignatures =>
+              overloadSignatures.includes(member),
+            )
+          let overloadSignatureGroupMember =
+            overloadSignatureGroups[overloadSignatureGroupMemberIndex]?.at(-1)
 
-          let sortingNode: SortingNodeWithDependencies = {
+          let sortingNode: SortClassSortingNodes = {
             dependencyName: getDependencyName({
               nodeNameWithoutStartingHash: name.startsWith('#')
                 ? name.slice(1)
@@ -565,6 +574,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               isStatic: modifiers.includes('static'),
               isPrivateHash,
             }),
+            overloadSignaturesGroupId:
+              overloadSignatureGroupMemberIndex === -1
+                ? null
+                : overloadSignatureGroupMemberIndex,
             size: overloadSignatureGroupMember
               ? rangeToDiff(overloadSignatureGroupMember, sourceCode)
               : rangeToDiff(member, sourceCode),
@@ -572,7 +585,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             addSafetySemicolonWhenInline,
             group: getGroup(),
             node: member,
-
             dependencies,
             name,
           }
@@ -599,7 +611,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
       let sortNodesExcludingEslintDisabled = (
         ignoreEslintDisabledNodes: boolean,
-      ): SortingNodeWithDependencies[] =>
+      ): SortClassSortingNodes[] =>
         sortNodesByDependencies(
           formattedNodes.flatMap(nodes =>
             sortNodesByGroups(nodes, options, {
@@ -618,7 +630,20 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
       let nodes = formattedNodes.flat()
 
-      reportAllErrors<MESSAGE_ID>({
+      reportAllErrors<MESSAGE_ID, SortClassSortingNodes>({
+        newlinesBetweenValueGetter: ({
+          computedNewlinesBetween,
+          right,
+          left,
+        }): NewlinesBetweenOption => {
+          if (
+            left.overloadSignaturesGroupId !== null &&
+            left.overloadSignaturesGroupId === right.overloadSignaturesGroupId
+          ) {
+            return 'never'
+          }
+          return computedNewlinesBetween
+        },
         availableMessageIds: {
           missedSpacingBetweenMembers: 'missedSpacingBetweenClassMembers',
           extraSpacingBetweenMembers: 'extraSpacingBetweenClassMembers',

@@ -1,5 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import type { NewlinesBetweenValueGetter } from './get-newlines-errors'
 import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
@@ -23,22 +24,27 @@ export const EXTRA_SPACING_ERROR =
 export const MISSED_SPACING_ERROR =
   `Missed spacing between "{{${LEFT}}}" and "{{${RIGHT}}}".` as const
 
-interface ReportErrorsParameters<MessageIds extends string> {
+interface ReportErrorsParameters<
+  MessageIds extends string,
+  T extends SortingNode,
+> {
+  newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
   context: TSESLint.RuleContext<MessageIds, unknown[]>
-  firstUnorderedNodeDependentOnRight?: SortingNode
   ignoreFirstNodeHighestBlockComment?: boolean
-  options?: MakeFixesParameters['options']
+  options?: MakeFixesParameters<T>['options']
+  firstUnorderedNodeDependentOnRight?: T
   sourceCode: TSESLint.SourceCode
-  sortedNodes: SortingNode[]
   messageIds: MessageIds[]
-  nodes: SortingNode[]
-  right: SortingNode
-  left: SortingNode
+  sortedNodes: T[]
+  nodes: T[]
+  right: T
+  left: T
 }
 
-export let reportErrors = <MessageIds extends string>({
+export let reportErrors = <MessageIds extends string, T extends SortingNode>({
   firstUnorderedNodeDependentOnRight,
   ignoreFirstNodeHighestBlockComment,
+  newlinesBetweenValueGetter,
   sortedNodes,
   messageIds,
   sourceCode,
@@ -47,9 +53,19 @@ export let reportErrors = <MessageIds extends string>({
   nodes,
   right,
   left,
-}: ReportErrorsParameters<MessageIds>): void => {
+}: ReportErrorsParameters<MessageIds, T>): void => {
   for (let messageId of messageIds) {
     context.report({
+      fix: (fixer: TSESLint.RuleFixer) =>
+        makeFixes({
+          ignoreFirstNodeHighestBlockComment,
+          newlinesBetweenValueGetter,
+          sortedNodes,
+          sourceCode,
+          options,
+          fixer,
+          nodes,
+        }),
       data: {
         [NODE_DEPENDENT_ON_RIGHT]: firstUnorderedNodeDependentOnRight?.name,
         [RIGHT]: toSingleLine(right.name),
@@ -57,15 +73,6 @@ export let reportErrors = <MessageIds extends string>({
         [RIGHT_GROUP]: right.group,
         [LEFT_GROUP]: left.group,
       },
-      fix: (fixer: TSESLint.RuleFixer) =>
-        makeFixes({
-          ignoreFirstNodeHighestBlockComment,
-          sortedNodes,
-          sourceCode,
-          options,
-          fixer,
-          nodes,
-        }),
       node: right.node,
       messageId,
     })
