@@ -1,5 +1,24 @@
 # Changelog
 
+## v4.8.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.7.0...v4.8.0)
+
+### 🚀 Features
+
+- **sort-enums:** Adds groups, custom groups and newlines between ([fe134a9](https://github.com/azat-io/eslint-plugin-perfectionist/commit/fe134a9))
+- Improve new lines between inside groups option behavior ([a682297](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a682297))
+- **sort-named-exports:** Add ignore alias option ([266910b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/266910b))
+
+### 🐞 Bug Fixes
+
+- Add missing closing curly bracket ([0ec132a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/0ec132a))
+- **sort-classes:** Fix new lines inside always for signature overloads ([f581714](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f581714))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v4.7.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.6.0...v4.7.0)
