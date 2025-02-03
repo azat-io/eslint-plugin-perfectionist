@@ -228,9 +228,9 @@ type FunctionPropertySelector = 'function-property'
 
 type AccessorPropertySelector = 'accessor-property'
 
-type StaticBlockGroup = `${StaticBlockSelector}`
-
 type IndexSignatureSelector = 'index-signature'
+
+type StaticBlockGroup = StaticBlockSelector
 
 type StaticBlockSelector = 'static-block'
 
