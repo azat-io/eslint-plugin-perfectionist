@@ -7721,6 +7721,54 @@ describe(ruleName, () => {
             }
           `,
         },
+        {
+          options: [
+            {
+              customGroups: [
+                {
+                  decoratorNamePattern: 'B',
+                  groupName: 'B',
+                },
+                {
+                  decoratorNamePattern: 'A',
+                  groupName: 'A',
+                },
+              ],
+              type: 'alphabetical',
+              groups: ['B', 'A'],
+              order: 'asc',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'B',
+                leftGroup: 'A',
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              @B.B()
+              b() {}
+
+              @A.A.A(() => A)
+              a() {}
+            }
+          `,
+          code: dedent`
+            class Class {
+              @A.A.A(() => A)
+              a() {}
+
+              @B.B()
+              b() {}
+            }
+          `,
+        },
       ],
       valid: [],
     })

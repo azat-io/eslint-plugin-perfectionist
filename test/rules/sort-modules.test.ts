@@ -489,6 +489,50 @@ describe(ruleName, () => {
               class AnotherClass {}
             `,
           },
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    decoratorNamePattern: 'B',
+                    groupName: 'B',
+                  },
+                  {
+                    decoratorNamePattern: 'A',
+                    groupName: 'A',
+                  },
+                ],
+                type: 'alphabetical',
+                groups: ['B', 'A'],
+                order: 'asc',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'B',
+                  leftGroup: 'A',
+                  right: 'B',
+                  left: 'A',
+                },
+                messageId: 'unexpectedModulesGroupOrder',
+              },
+            ],
+            output: dedent`
+              @B.B()
+              class B {}
+
+              @A.A.A(() => A)
+              class A {}
+            `,
+            code: dedent`
+              @A.A.A(() => A)
+              class A {}
+
+              @B.B()
+              class B {}
+            `,
+          },
         ],
         valid: [],
       })

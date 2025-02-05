@@ -204,6 +204,7 @@ let sortDecorators = (
     (accumulator: SortDecoratorsSortingNode[][], decorator) => {
       let { setCustomGroups, getGroup } = useGroups(options)
       let name = getDecoratorName({
+        sourceCode,
         decorator,
       })
 

@@ -40,7 +40,9 @@ import { doesCustomGroupMatch } from './sort-classes/does-custom-group-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
+import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getDecoratorName } from '../utils/get-decorator-name'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -319,17 +321,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           let decorators: string[] = []
 
           if ('decorators' in member) {
-            decorated = member.decorators.length > 0
-            for (let decorator of member.decorators) {
-              if (decorator.expression.type === 'Identifier') {
-                decorators.push(decorator.expression.name)
-              } else if (
-                decorator.expression.type === 'CallExpression' &&
-                decorator.expression.callee.type === 'Identifier'
-              ) {
-                decorators.push(decorator.expression.callee.name)
-              }
-            }
+            decorators = getNodeDecorators(member).map(decorator =>
+              getDecoratorName({ sourceCode, decorator }),
+            )
+            decorated = decorators.length > 0
           }
 
           let memberValue: undefined | string
