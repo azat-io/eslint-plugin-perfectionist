@@ -1176,6 +1176,87 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export {
+                aa,
+                c,
+                b,
+              }
+            `,
+            code: dedent`
+              export {
+                aa,
+                b,
+                c,
+              }
+            `,
+          },
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                    order: 'asc',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedNamedExportsOrder',
+              },
+            ],
+            output: dedent`
+              export {
+                aa,
+                b,
+                c,
+              }
+            `,
+            code: dedent`
+              export {
+                aa,
+                c,
+                b,
+              }
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {
