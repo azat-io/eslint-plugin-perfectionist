@@ -2125,6 +2125,87 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedMapElementsOrder',
+              },
+            ],
+            output: dedent`
+              new Map([
+                [aa, aa],
+                [c, c],
+                [b, b],
+              ])
+            `,
+            code: dedent`
+              new Map([
+                [aa, aa],
+                [b, b],
+                [c, c],
+              ])
+            `,
+          },
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                    order: 'asc',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedMapElementsOrder',
+              },
+            ],
+            output: dedent`
+              new Map([
+                [aa, aa],
+                [b, b],
+                [c, c],
+              ])
+            `,
+            code: dedent`
+              new Map([
+                [aa, aa],
+                [c, c],
+                [b, b],
+              ])
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {
