@@ -2211,6 +2211,84 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'C',
+                  left: 'B',
+                },
+                messageId: 'unexpectedIntersectionTypesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                  },
+                ],
+              },
+            ],
+            output: dedent`
+              type T =
+                & AA
+                & C
+                & B
+            `,
+            code: dedent`
+              type T =
+                & AA
+                & B
+                & C
+            `,
+          },
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                    order: 'asc',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'B',
+                  left: 'C',
+                },
+                messageId: 'unexpectedIntersectionTypesOrder',
+              },
+            ],
+            output: dedent`
+              type T =
+                & AA
+                & B
+                & C
+
+            `,
+            code: dedent`
+              type T =
+                & AA
+                & C
+                & B
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: validating group configuration`, () => {
