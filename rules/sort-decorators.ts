@@ -19,10 +19,10 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { getDecoratorName } from './sort-decorators/get-decorator-name'
 import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
+import { getDecoratorName } from '../utils/get-decorator-name'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
@@ -203,7 +203,9 @@ let sortDecorators = (
   let formattedMembers: SortDecoratorsSortingNode[][] = decorators.reduce(
     (accumulator: SortDecoratorsSortingNode[][], decorator) => {
       let { setCustomGroups, getGroup } = useGroups(options)
-      let name = getDecoratorName(decorator)
+      let name = getDecoratorName({
+        decorator,
+      })
 
       setCustomGroups(options.customGroups, name)
 
