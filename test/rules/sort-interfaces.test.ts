@@ -4610,6 +4610,87 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedInterfacePropertiesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                  },
+                ],
+              },
+            ],
+            output: dedent`
+              interface Interface {
+                aa: string;
+                c: string;
+                b: string;
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                aa: string;
+                b: string;
+                c: string;
+              }
+            `,
+          },
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                    order: 'asc',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedInterfacePropertiesOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface {
+                aa: string;
+                b: string;
+                c: string;
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                aa: string;
+                c: string;
+                b: string;
+              }
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: validating group configuration`, () => {
