@@ -2589,6 +2589,99 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            output: dedent`
+              switch (x) {
+                case 'aa':
+                  break;
+                case 'c':
+                  break;
+                case 'b':
+                  break;
+              }
+            `,
+            code: dedent`
+              switch (x) {
+                case 'aa':
+                  break;
+                case 'b':
+                  break;
+                case 'c':
+                  break;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+          },
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                    order: 'asc',
+                  },
+                ],
+              },
+            ],
+            output: dedent`
+              switch (x) {
+                case 'aa':
+                  break;
+                case 'b':
+                  break;
+                case 'c':
+                  break;
+              }
+            `,
+            code: dedent`
+              switch (x) {
+                case 'aa':
+                  break;
+                case 'c':
+                  break;
+                case 'b':
+                  break;
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {
