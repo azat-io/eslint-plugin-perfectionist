@@ -1110,6 +1110,87 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface extends
+                aa,
+                c,
+                b
+              {}
+            `,
+            code: dedent`
+              interface Interface extends
+                aa,
+                b,
+                c
+              {}
+            `,
+          },
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                    order: 'asc',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface extends
+                aa,
+                b,
+                c,
+              {}
+            `,
+            code: dedent`
+              interface Interface extends
+                aa,
+                c,
+                b,
+              {}
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {
