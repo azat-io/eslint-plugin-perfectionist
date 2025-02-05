@@ -2653,6 +2653,87 @@ describe(ruleName, () => {
       ],
       valid: [],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                aa = 'aa',
+                c = 'c',
+                b = 'b',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                aa = 'aa',
+                b = 'b',
+                c = 'c',
+              }
+            `,
+          },
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                    order: 'asc',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedEnumsOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                aa = 'aa',
+                b = 'b',
+                c = 'c'
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                aa = 'aa',
+                c = 'c',
+                b = 'b'
+              }
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {
