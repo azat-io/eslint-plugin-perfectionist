@@ -2439,6 +2439,87 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedSetsOrder',
+              },
+            ],
+            output: dedent`
+              new Set([
+                'aa',
+                'c',
+                'b',
+              ])
+            `,
+            code: dedent`
+              new Set([
+                'aa',
+                'b',
+                'c',
+              ])
+            `,
+          },
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                    order: 'asc',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedSetsOrder',
+              },
+            ],
+            output: dedent`
+              new Set([
+                'aa',
+                'b',
+                'c',
+              ])
+            `,
+            code: dedent`
+              new Set([
+                'aa',
+                'c',
+                'b',
+              ])
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {
