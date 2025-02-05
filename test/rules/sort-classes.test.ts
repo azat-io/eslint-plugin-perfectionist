@@ -7461,6 +7461,87 @@ describe(ruleName, () => {
       ],
       valid: [],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                aa: string;
+                c: string;
+                b: string;
+              }
+            `,
+            code: dedent`
+              class Class {
+                aa: string;
+                b: string;
+                c: string;
+              }
+            `,
+          },
+          {
+            options: [
+              {
+                ...options,
+                fallbackSort: [
+                  {
+                    type: 'alphabetical',
+                    order: 'asc',
+                  },
+                ],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                aa: string;
+                b: string;
+                c: string;
+              }
+            `,
+            code: dedent`
+              class Class {
+                aa: string;
+                c: string;
+                b: string;
+              }
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: custom groups`, () => {
