@@ -43,6 +43,7 @@ import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getDecoratorName } from '../utils/get-decorator-name'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { getGroupNumber } from '../utils/get-group-number'
@@ -257,16 +258,12 @@ let analyzeModule = ({
           if (nodeDecorators.length > 0) {
             modifiers.push('decorated')
           }
-          for (let decorator of nodeDecorators) {
-            if (decorator.expression.type === 'Identifier') {
-              decorators.push(decorator.expression.name)
-            } else if (
-              decorator.expression.type === 'CallExpression' &&
-              decorator.expression.callee.type === 'Identifier'
-            ) {
-              decorators.push(decorator.expression.callee.name)
-            }
-          }
+          decorators = nodeDecorators.map(decorator =>
+            getDecoratorName({
+              sourceCode,
+              decorator,
+            }),
+          )
           dependencies = [
             ...dependencies,
             ...(nodeToParse.superClass && 'name' in nodeToParse.superClass

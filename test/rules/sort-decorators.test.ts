@@ -578,6 +578,74 @@ describe(ruleName, () => {
               },
             ],
           },
+          {
+            output: dedent`
+              @B.B()
+              @A.A.A(() => A)
+              class Class {
+
+                @B.B()
+                @A.A.A(() => A)
+                property
+
+                @B.B()
+                @A.A.A(() => A)
+                accessor field
+
+                @B.B()
+                @A.A.A(() => A)
+                method(
+                  @B.B()
+                  @A.A.A(() => A)
+                  parameter) {}
+
+              }
+            `,
+            code: dedent`
+              @A.A.A(() => A)
+              @B.B()
+              class Class {
+
+                @A.A.A(() => A)
+                @B.B()
+                property
+
+                @A.A.A(() => A)
+                @B.B()
+                accessor field
+
+                @A.A.A(() => A)
+                @B.B()
+                method(
+                  @A.A.A(() => A)
+                  @B.B()
+                  parameter) {}
+
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  rightGroup: 'B',
+                  leftGroup: 'A',
+                  left: 'A.A.A',
+                  right: 'B.B',
+                },
+                messageId: 'unexpectedDecoratorsGroupOrder',
+              },
+            ]),
+            options: [
+              {
+                customGroups: {
+                  A: 'A',
+                  B: 'B',
+                },
+                type: 'alphabetical',
+                groups: ['B', 'A'],
+                order: 'asc',
+              },
+            ],
+          },
         ],
         valid: [],
       },
