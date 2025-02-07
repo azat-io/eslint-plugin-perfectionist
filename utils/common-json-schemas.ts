@@ -83,6 +83,7 @@ export let groupsJsonSchema: JSONSchema4 = {
         properties: {
           newlinesBetween: newlinesBetweenJsonSchema,
         },
+        additionalProperties: false,
         type: 'object',
       },
     ],
@@ -159,6 +160,7 @@ export let partitionByCommentJsonSchema: JSONSchema4 = {
           oneOf: allowedPartitionByCommentJsonSchemas,
         },
       },
+      additionalProperties: false,
       type: 'object',
     },
   ],
