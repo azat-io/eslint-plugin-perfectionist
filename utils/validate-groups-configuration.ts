@@ -1,5 +1,6 @@
 import type { GroupsOptions } from '../types/common-options'
 
+import { validateNewlinesBetweenInsideGroups } from './validate-newlines-between-inside-groups'
 import { validateNoDuplicatedGroups } from './validate-no-duplicated-groups'
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
 
@@ -34,28 +35,24 @@ export let validateGroupsConfiguration = ({
     ...allowedCustomGroups,
   ])
   let invalidGroups: string[] = []
-  let isPreviousElementNewlinesBetween = false
+
   for (let groupElement of options.groups) {
     if (isNewlinesBetweenOption(groupElement)) {
-      // There should not be two consecutive `newlinesBetween` objects
-      if (isPreviousElementNewlinesBetween) {
-        throw new Error("Consecutive 'newlinesBetween' objects are not allowed")
-      }
-      isPreviousElementNewlinesBetween = true
-    } else {
-      isPreviousElementNewlinesBetween = false
-      let groupElements = Array.isArray(groupElement)
-        ? groupElement
-        : [groupElement]
-      for (let group of groupElements) {
-        if (!allowedGroupsSet.has(group)) {
-          invalidGroups.push(group)
-        }
+      continue
+    }
+    let groupElements = Array.isArray(groupElement)
+      ? groupElement
+      : [groupElement]
+    for (let group of groupElements) {
+      if (!allowedGroupsSet.has(group)) {
+        invalidGroups.push(group)
       }
     }
   }
   if (invalidGroups.length > 0) {
     throw new Error(`Invalid group(s): ${invalidGroups.join(', ')}`)
   }
+
   validateNoDuplicatedGroups(options)
+  validateNewlinesBetweenInsideGroups(options)
 }
