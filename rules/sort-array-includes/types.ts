@@ -6,18 +6,19 @@ import type {
   CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
+  RegexOption,
   TypeOption,
 } from '../../types/common-options'
 
 import {
   buildCustomGroupSelectorJsonSchema,
-  elementNamePatternJsonSchema,
+  regexJsonSchema,
 } from '../../utils/common-json-schemas'
 
 export type Options = Partial<
   {
     useConfigurationIf: {
-      allNamesMatchPattern?: string
+      allNamesMatchPattern?: RegexOption
     }
     /**
      * @deprecated for {@link `groups`}
@@ -33,7 +34,7 @@ export type Options = Partial<
 >[]
 
 export interface SingleCustomGroup {
-  elementNamePattern?: string
+  elementNamePattern?: RegexOption
   selector?: Selector
 }
 
@@ -49,5 +50,5 @@ export let allSelectors: Selector[] = ['literal', 'spread']
 
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementNamePattern: elementNamePatternJsonSchema,
+  elementNamePattern: regexJsonSchema,
 }
