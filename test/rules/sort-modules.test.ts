@@ -384,158 +384,182 @@ describe(ruleName, () => {
         valid: [],
       })
 
-      ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
-        invalid: [
-          {
-            options: [
-              {
-                customGroups: [
-                  {
-                    groupName: 'functionsStartingWithHello',
-                    elementNamePattern: 'hello*',
-                    selector: 'function',
-                  },
-                ],
-                groups: ['functionsStartingWithHello', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                data: {
-                  rightGroup: 'functionsStartingWithHello',
-                  right: 'helloFunction',
-                  leftGroup: 'unknown',
-                  left: 'func',
+      for (let elementNamePattern of [
+        'hello',
+        ['noMatch', 'hello'],
+        { pattern: 'HELLO', flags: 'i' },
+        ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'functionsStartingWithHello',
+                      selector: 'function',
+                      elementNamePattern,
+                    },
+                  ],
+                  groups: ['functionsStartingWithHello', 'unknown'],
                 },
-                messageId: 'unexpectedModulesGroupOrder',
-              },
-            ],
-            output: dedent`
-              function helloFunction() {}
-              interface A {}
-              interface B {}
-              function func() {}
-            `,
-            code: dedent`
-              interface A {}
-              interface B {}
-              function func() {}
-              function helloFunction() {}
-            `,
-          },
-        ],
-        valid: [],
-      })
-
-      ruleTester.run(`${ruleName}: filters on decoratorNamePattern`, rule, {
-        invalid: [
-          {
-            errors: [
-              {
-                data: {
-                  rightGroup: 'classesWithDecoratorStartingWithHello',
-                  leftGroup: 'unknown',
-                  left: 'func',
-                  right: 'C',
-                },
-                messageId: 'unexpectedModulesGroupOrder',
-              },
-              {
-                data: {
-                  right: 'AnotherClass',
-                  left: 'C',
-                },
-                messageId: 'unexpectedModulesOrder',
-              },
-            ],
-            options: [
-              {
-                customGroups: [
-                  {
-                    groupName: 'classesWithDecoratorStartingWithHello',
-                    decoratorNamePattern: 'Hello*',
-                    selector: 'class',
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'functionsStartingWithHello',
+                    right: 'helloFunction',
+                    leftGroup: 'unknown',
+                    left: 'func',
                   },
-                ],
-                groups: ['classesWithDecoratorStartingWithHello', 'unknown'],
-              },
-            ],
-            output: dedent`
-              @HelloDecorator()
-              class AnotherClass {}
-
-              @HelloDecorator
-              class C {}
-
-              @Decorator
-              class A {}
-
-              class B {}
-
-              function func() {}
-            `,
-            code: dedent`
-              @Decorator
-              class A {}
-
-              class B {}
-
-              function func() {}
-
-              @HelloDecorator
-              class C {}
-
-              @HelloDecorator()
-              class AnotherClass {}
-            `,
-          },
-          {
-            options: [
-              {
-                customGroups: [
-                  {
-                    decoratorNamePattern: 'B',
-                    groupName: 'B',
-                  },
-                  {
-                    decoratorNamePattern: 'A',
-                    groupName: 'A',
-                  },
-                ],
-                type: 'alphabetical',
-                groups: ['B', 'A'],
-                order: 'asc',
-              },
-            ],
-            errors: [
-              {
-                data: {
-                  rightGroup: 'B',
-                  leftGroup: 'A',
-                  right: 'B',
-                  left: 'A',
+                  messageId: 'unexpectedModulesGroupOrder',
                 },
-                messageId: 'unexpectedModulesGroupOrder',
-              },
-            ],
-            output: dedent`
-              @B.B()
-              class B {}
+              ],
+              output: dedent`
+                function helloFunction() {}
+                interface A {}
+                interface B {}
+                function func() {}
+              `,
+              code: dedent`
+                interface A {}
+                interface B {}
+                function func() {}
+                function helloFunction() {}
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
 
-              @A.A.A(() => A)
-              class A {}
-            `,
-            code: dedent`
-              @A.A.A(() => A)
-              class A {}
+      for (let decoratorNamePattern of [
+        'Hello',
+        ['noMatch', 'Hello'],
+        { pattern: 'HELLO', flags: 'i' },
+        ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on decoratorNamePattern`, rule, {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'classesWithDecoratorStartingWithHello',
+                    leftGroup: 'unknown',
+                    left: 'func',
+                    right: 'C',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+                {
+                  data: {
+                    right: 'AnotherClass',
+                    left: 'C',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'classesWithDecoratorStartingWithHello',
+                      decoratorNamePattern,
+                      selector: 'class',
+                    },
+                  ],
+                  groups: ['classesWithDecoratorStartingWithHello', 'unknown'],
+                },
+              ],
+              output: dedent`
+                @HelloDecorator()
+                class AnotherClass {}
 
-              @B.B()
-              class B {}
-            `,
-          },
-        ],
-        valid: [],
-      })
+                @HelloDecorator
+                class C {}
+
+                @Decorator
+                class A {}
+
+                class B {}
+
+                function func() {}
+              `,
+              code: dedent`
+                @Decorator
+                class A {}
+
+                class B {}
+
+                function func() {}
+
+                @HelloDecorator
+                class C {}
+
+                @HelloDecorator()
+                class AnotherClass {}
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
+
+      ruleTester.run(
+        `${ruleName}: filters on complex decoratorNamePattern`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      decoratorNamePattern: 'B',
+                      groupName: 'B',
+                    },
+                    {
+                      decoratorNamePattern: 'A',
+                      groupName: 'A',
+                    },
+                  ],
+                  type: 'alphabetical',
+                  groups: ['B', 'A'],
+                  order: 'asc',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'B',
+                    leftGroup: 'A',
+                    right: 'B',
+                    left: 'A',
+                  },
+                  messageId: 'unexpectedModulesGroupOrder',
+                },
+              ],
+              output: dedent`
+                @B.B()
+                class B {}
+
+                @A.A.A(() => A)
+                class A {}
+              `,
+              code: dedent`
+                @A.A.A(() => A)
+                class A {}
+
+                @B.B()
+                class B {}
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
 
       ruleTester.run(
         `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
