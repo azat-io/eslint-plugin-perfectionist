@@ -16,6 +16,7 @@ import {
   buildTypeJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
+  regexJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   MISSED_SPACING_ERROR,
@@ -87,27 +88,17 @@ export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
       ...commonJsonSchemas,
-      ignorePattern: {
-        description:
-          'Specifies names or patterns for nodes that should be ignored by rule.',
-        items: {
-          type: 'string',
-        },
-        type: 'array',
-      },
-      useConfigurationIf: buildUseConfigurationIfJsonSchema({
-        additionalProperties: {
-          declarationMatchesPattern: {
-            type: 'string',
-          },
-        },
-      }),
       customGroups: {
         oneOf: [
           customGroupsJsonSchema,
           buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
         ],
       },
+      useConfigurationIf: buildUseConfigurationIfJsonSchema({
+        additionalProperties: {
+          declarationMatchesPattern: regexJsonSchema,
+        },
+      }),
       groupKind: {
         enum: ['mixed', 'required-first', 'optional-first'],
         description: 'Specifies top-level groups.',
@@ -117,6 +108,7 @@ export let jsonSchema: JSONSchema4 = {
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,
+      ignorePattern: regexJsonSchema,
       groups: groupsJsonSchema,
     },
     additionalProperties: false,
@@ -224,11 +216,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
   })
   validateNewlinesAndPartitionConfiguration(options)
 
-  if (
-    options.ignorePattern.some(
-      pattern => parentNodeName && matches(parentNodeName, pattern),
-    )
-  ) {
+  if (parentNodeName && matches(parentNodeName, options.ignorePattern)) {
     return
   }
 
