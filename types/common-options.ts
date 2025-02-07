@@ -21,12 +21,11 @@ export interface CommonOptions {
 
 export type PartitionByCommentOption =
   | {
-      block?: string[] | boolean | string
-      line?: string[] | boolean | string
+      block?: RegexOption | boolean
+      line?: RegexOption | boolean
     }
-  | string[]
+  | RegexOption
   | boolean
-  | string
 
 export type GroupsOptions<T> = (
   | { newlinesBetween: NewlinesBetweenOption }

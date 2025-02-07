@@ -109,45 +109,6 @@ export let customGroupsJsonSchema: JSONSchema4 = {
   type: 'object',
 }
 
-let allowedPartitionByCommentJsonSchemas: JSONSchema4[] = [
-  {
-    items: {
-      type: 'string',
-    },
-    type: 'array',
-  },
-  {
-    type: 'boolean',
-  },
-  {
-    type: 'string',
-  },
-]
-export let partitionByCommentJsonSchema: JSONSchema4 = {
-  oneOf: [
-    ...allowedPartitionByCommentJsonSchemas,
-    {
-      properties: {
-        block: {
-          oneOf: allowedPartitionByCommentJsonSchemas,
-        },
-        line: {
-          oneOf: allowedPartitionByCommentJsonSchemas,
-        },
-      },
-      type: 'object',
-    },
-  ],
-  description:
-    'Allows to use comments to separate members into logical groups.',
-}
-
-export let partitionByNewLineJsonSchema: JSONSchema4 = {
-  description:
-    'Allows to use newlines to separate the nodes into logical groups.',
-  type: 'boolean',
-}
-
 let singleRegexJsonSchema: JSONSchema4 = {
   oneOf: [
     {
@@ -178,6 +139,37 @@ export let regexJsonSchema: JSONSchema4 = {
     singleRegexJsonSchema,
   ],
   description: 'Regular expression.',
+}
+
+let allowedPartitionByCommentJsonSchemas: JSONSchema4[] = [
+  {
+    type: 'boolean',
+  },
+  regexJsonSchema,
+]
+export let partitionByCommentJsonSchema: JSONSchema4 = {
+  oneOf: [
+    ...allowedPartitionByCommentJsonSchemas,
+    {
+      properties: {
+        block: {
+          oneOf: allowedPartitionByCommentJsonSchemas,
+        },
+        line: {
+          oneOf: allowedPartitionByCommentJsonSchemas,
+        },
+      },
+      type: 'object',
+    },
+  ],
+  description:
+    'Allows to use comments to separate members into logical groups.',
+}
+
+export let partitionByNewLineJsonSchema: JSONSchema4 = {
+  description:
+    'Allows to use newlines to separate the nodes into logical groups.',
+  type: 'boolean',
 }
 
 export let buildUseConfigurationIfJsonSchema = ({
