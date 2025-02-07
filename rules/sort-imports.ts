@@ -8,6 +8,7 @@ import type {
   NewlinesBetweenOption,
   GroupsOptions,
   OrderOption,
+  RegexOption,
   TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
@@ -19,6 +20,7 @@ import {
   buildTypeJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
+  regexJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   MISSED_SPACING_ERROR,
@@ -58,9 +60,9 @@ export type Options<T extends string = string> = [
     locales: NonNullable<Intl.LocalesArgument>
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group<T>>
+    internalPattern: RegexOption[]
     environment: 'node' | 'bun'
     partitionByNewLine: boolean
-    internalPattern: string[]
     sortSideEffects: boolean
     tsconfigRootDir?: string
     maxLineLength?: number
@@ -564,13 +566,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
             additionalProperties: false,
             type: 'object',
           },
-          internalPattern: {
-            description: 'Specifies the pattern for internal modules.',
-            items: {
-              type: 'string',
-            },
-            type: 'array',
-          },
           maxLineLength: {
             description: 'Specifies the maximum line length.',
             exclusiveMinimum: true,
@@ -594,6 +589,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
+          internalPattern: regexJsonSchema,
           type: buildTypeJsonSchema(),
           groups: groupsJsonSchema,
         },
