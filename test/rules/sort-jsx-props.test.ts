@@ -2143,31 +2143,38 @@ describe(ruleName, () => {
       invalid: [],
     })
 
-    ruleTester.run(
-      `${ruleName}: allow to disable rule for some JSX elements`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let Component = () => (
-                <Element
-                  c="c"
-                  b="bb"
-                  a="aaa"
-                />
-              )
-            `,
-            options: [
-              {
-                ignorePattern: ['Element'],
-              },
-            ],
-          },
-        ],
-        invalid: [],
-      },
-    )
+    for (let ignorePattern of [
+      'Element',
+      ['noMatch', 'Element'],
+      { pattern: 'ELEMENT', flags: 'i' },
+      ['noMatch', { pattern: 'ELEMENT', flags: 'i' }],
+    ]) {
+      ruleTester.run(
+        `${ruleName}: allow to disable rule for some JSX elements`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let Component = () => (
+                  <Element
+                    c="c"
+                    b="bb"
+                    a="aaa"
+                  />
+                )
+              `,
+              options: [
+                {
+                  ignorePattern,
+                },
+              ],
+            },
+          ],
+          invalid: [],
+        },
+      )
+    }
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {
