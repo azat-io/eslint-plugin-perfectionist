@@ -4,6 +4,7 @@ import type {
   GroupsOptions,
 } from '../types/common-options'
 
+import { validateNewlinesBetweenInsideGroups } from './validate-newlines-between-inside-groups'
 import { validateNoDuplicatedGroups } from './validate-no-duplicated-groups'
 
 interface ValidateGenerateGroupsConfigurationParameters {
@@ -37,6 +38,7 @@ export let validateGeneratedGroupsConfiguration = ({
     throw new Error(`Invalid group(s): ${invalidGroups.join(', ')}`)
   }
   validateNoDuplicatedGroups(options)
+  validateNewlinesBetweenInsideGroups(options)
 }
 
 let isPredefinedGroup = (
