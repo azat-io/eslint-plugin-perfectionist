@@ -148,15 +148,45 @@ export let partitionByNewLineJsonSchema: JSONSchema4 = {
   type: 'boolean',
 }
 
+let singleRegexJsonSchema: JSONSchema4 = {
+  oneOf: [
+    {
+      properties: {
+        pattern: {
+          type: 'string',
+        },
+        flags: {
+          type: 'string',
+        },
+      },
+      additionalProperties: false,
+      type: 'object',
+    },
+    {
+      type: 'string',
+    },
+  ],
+  description: 'Regular expression.',
+}
+
+export let regexJsonSchema: JSONSchema4 = {
+  oneOf: [
+    {
+      items: singleRegexJsonSchema,
+      type: 'array',
+    },
+    singleRegexJsonSchema,
+  ],
+  description: 'Regular expression.',
+}
+
 export let buildUseConfigurationIfJsonSchema = ({
   additionalProperties,
 }: {
   additionalProperties?: Record<string, JSONSchema4>
 } = {}): JSONSchema4 => ({
   properties: {
-    allNamesMatchPattern: {
-      type: 'string',
-    },
+    allNamesMatchPattern: regexJsonSchema,
     ...additionalProperties,
   },
   additionalProperties: false,
@@ -255,13 +285,3 @@ export let buildCustomGroupSelectorJsonSchema = (
   enum: selectors,
   type: 'string',
 })
-
-export let elementNamePatternJsonSchema: JSONSchema4 = {
-  description: 'Element name pattern filter.',
-  type: 'string',
-}
-
-export let elementValuePatternJsonSchema: JSONSchema4 = {
-  description: 'Element value pattern filter.',
-  type: 'string',
-}
