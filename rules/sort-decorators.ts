@@ -78,11 +78,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
     let options = complete(context.options.at(0), settings, defaultOptions)
     validateCustomSortConfiguration(options)
-    validateGroupsConfiguration(
-      options.groups,
-      ['unknown'],
-      Object.keys(options.customGroups),
-    )
+    validateGroupsConfiguration({
+      allowedCustomGroups: Object.keys(options.customGroups),
+      allowedPredefinedGroups: ['unknown'],
+      options,
+    })
 
     return {
       Decorator: decorator => {

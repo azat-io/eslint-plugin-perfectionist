@@ -84,11 +84,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
-      validateGroupsConfiguration(
-        options.groups,
-        ['multiline', 'shorthand', 'unknown'],
-        Object.keys(options.customGroups),
-      )
+      validateGroupsConfiguration({
+        allowedPredefinedGroups: ['multiline', 'shorthand', 'unknown'],
+        allowedCustomGroups: Object.keys(options.customGroups),
+        options,
+      })
       validateNewlinesAndPartitionConfiguration(options)
 
       let sourceCode = getSourceCode(context)
