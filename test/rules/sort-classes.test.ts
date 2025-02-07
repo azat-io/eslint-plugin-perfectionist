@@ -7520,258 +7520,293 @@ describe(ruleName, () => {
       valid: [],
     })
 
-    ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
-      invalid: [
-        {
-          errors: [
-            {
-              data: {
-                rightGroup: 'constructor',
-                leftGroup: 'unknown',
-                right: 'constructor',
-                left: 'b',
-              },
-              messageId: 'unexpectedClassesGroupOrder',
-            },
-            {
-              data: {
-                rightGroup: 'propertiesStartingWithHello',
-                right: 'helloProperty',
-                leftGroup: 'unknown',
-                left: 'method',
-              },
-              messageId: 'unexpectedClassesGroupOrder',
-            },
-          ],
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'propertiesStartingWithHello',
-                  elementNamePattern: 'hello*',
-                  selector: 'property',
+    for (let elementNamePattern of [
+      'hello',
+      ['noMatch', 'hello'],
+      { pattern: 'HELLO', flags: 'i' },
+      ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+    ]) {
+      ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'constructor',
+                  leftGroup: 'unknown',
+                  right: 'constructor',
+                  left: 'b',
                 },
-              ],
-              groups: ['propertiesStartingWithHello', 'constructor', 'unknown'],
-            },
-          ],
-          output: dedent`
-            class Class {
-              helloProperty;
-
-              constructor() {}
-
-              a;
-
-              b;
-
-              method() {}
-            }
-          `,
-          code: dedent`
-            class Class {
-              a;
-
-              b;
-
-              constructor() {}
-
-              method() {}
-
-              helloProperty;
-            }
-          `,
-        },
-      ],
-      valid: [],
-    })
-
-    ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
-      invalid: [
-        {
-          options: [
-            {
-              customGroups: [
-                {
-                  elementValuePattern: 'inject*',
-                  groupName: 'inject',
-                },
-                {
-                  elementValuePattern: 'computed*',
-                  groupName: 'computed',
-                },
-              ],
-              groups: ['computed', 'inject', 'unknown'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                rightGroup: 'computed',
-                leftGroup: 'inject',
-                right: 'z',
-                left: 'y',
+                messageId: 'unexpectedClassesGroupOrder',
               },
-              messageId: 'unexpectedClassesGroupOrder',
-            },
-          ],
-          output: dedent`
-            class Class {
-              a = computed(A)
-              z = computed(Z)
-              b = inject(B)
-              y = inject(Y)
-              c() {}
-            }
-          `,
-          code: dedent`
-            class Class {
-              a = computed(A)
-              b = inject(B)
-              y = inject(Y)
-              z = computed(Z)
-              c() {}
-            }
-          `,
-        },
-      ],
-      valid: [],
-    })
-
-    ruleTester.run(`${ruleName}: filters on decoratorNamePattern`, rule, {
-      invalid: [
-        {
-          errors: [
-            {
-              data: {
-                rightGroup: 'constructor',
-                leftGroup: 'unknown',
-                right: 'constructor',
-                left: 'b',
-              },
-              messageId: 'unexpectedClassesGroupOrder',
-            },
-            {
-              data: {
-                rightGroup: 'propertiesWithDecoratorStartingWithHello',
-                leftGroup: 'unknown',
-                right: 'property',
-                left: 'method',
-              },
-              messageId: 'unexpectedClassesGroupOrder',
-            },
-            {
-              data: {
-                right: 'anotherProperty',
-                left: 'property',
-              },
-              messageId: 'unexpectedClassesOrder',
-            },
-          ],
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'propertiesWithDecoratorStartingWithHello',
-                  decoratorNamePattern: 'Hello*',
-                  selector: 'property',
+              {
+                data: {
+                  rightGroup: 'propertiesStartingWithHello',
+                  right: 'helloProperty',
+                  leftGroup: 'unknown',
+                  left: 'method',
                 },
-              ],
-              groups: [
-                'propertiesWithDecoratorStartingWithHello',
-                'constructor',
-                'unknown',
-              ],
-            },
-          ],
-          output: dedent`
-            class Class {
-              @HelloDecorator()
-              anotherProperty;
-
-              @HelloDecorator
-              property;
-
-              constructor() {}
-
-              @Decorator
-              a;
-
-              b;
-
-              method() {}
-            }
-          `,
-          code: dedent`
-            class Class {
-              @Decorator
-              a;
-
-              b;
-
-              constructor() {}
-
-              method() {}
-
-              @HelloDecorator
-              property;
-
-              @HelloDecorator()
-              anotherProperty;
-            }
-          `,
-        },
-        {
-          options: [
-            {
-              customGroups: [
-                {
-                  decoratorNamePattern: 'B',
-                  groupName: 'B',
-                },
-                {
-                  decoratorNamePattern: 'A',
-                  groupName: 'A',
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['B', 'A'],
-              order: 'asc',
-            },
-          ],
-          errors: [
-            {
-              data: {
-                rightGroup: 'B',
-                leftGroup: 'A',
-                right: 'b',
-                left: 'a',
+                messageId: 'unexpectedClassesGroupOrder',
               },
-              messageId: 'unexpectedClassesGroupOrder',
-            },
-          ],
-          output: dedent`
-            class Class {
-              @B.B()
-              b() {}
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'propertiesStartingWithHello',
+                    selector: 'property',
+                    elementNamePattern,
+                  },
+                ],
+                groups: [
+                  'propertiesStartingWithHello',
+                  'constructor',
+                  'unknown',
+                ],
+              },
+            ],
+            output: dedent`
+              class Class {
+                helloProperty;
 
-              @A.A.A(() => A)
-              a() {}
-            }
-          `,
-          code: dedent`
-            class Class {
-              @A.A.A(() => A)
-              a() {}
+                constructor() {}
 
-              @B.B()
-              b() {}
-            }
-          `,
-        },
-      ],
-      valid: [],
-    })
+                a;
+
+                b;
+
+                method() {}
+              }
+            `,
+            code: dedent`
+              class Class {
+                a;
+
+                b;
+
+                constructor() {}
+
+                method() {}
+
+                helloProperty;
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+    }
+
+    for (let injectElementValuePattern of [
+      'inject',
+      ['noMatch', 'inject'],
+      { pattern: 'INJECT', flags: 'i' },
+      ['noMatch', { pattern: 'INJECT', flags: 'i' }],
+    ]) {
+      ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    elementValuePattern: injectElementValuePattern,
+                    groupName: 'inject',
+                  },
+                  {
+                    elementValuePattern: 'computed',
+                    groupName: 'computed',
+                  },
+                ],
+                groups: ['computed', 'inject', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'computed',
+                  leftGroup: 'inject',
+                  right: 'z',
+                  left: 'y',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                a = computed(A)
+                z = computed(Z)
+                b = inject(B)
+                y = inject(Y)
+                c() {}
+              }
+            `,
+            code: dedent`
+              class Class {
+                a = computed(A)
+                b = inject(B)
+                y = inject(Y)
+                z = computed(Z)
+                c() {}
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+    }
+
+    for (let decoratorNamePattern of [
+      'Hello',
+      ['noMatch', 'Hello'],
+      { pattern: 'HELLO', flags: 'i' },
+      ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+    ]) {
+      ruleTester.run(`${ruleName}: filters on decoratorNamePattern`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'constructor',
+                  leftGroup: 'unknown',
+                  right: 'constructor',
+                  left: 'b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'propertiesWithDecoratorStartingWithHello',
+                  leftGroup: 'unknown',
+                  right: 'property',
+                  left: 'method',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+              {
+                data: {
+                  right: 'anotherProperty',
+                  left: 'property',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'propertiesWithDecoratorStartingWithHello',
+                    decoratorNamePattern,
+                    selector: 'property',
+                  },
+                ],
+                groups: [
+                  'propertiesWithDecoratorStartingWithHello',
+                  'constructor',
+                  'unknown',
+                ],
+              },
+            ],
+            output: dedent`
+              class Class {
+                @HelloDecorator()
+                anotherProperty;
+
+                @HelloDecorator
+                property;
+
+                constructor() {}
+
+                @Decorator
+                a;
+
+                b;
+
+                method() {}
+              }
+            `,
+            code: dedent`
+              class Class {
+                @Decorator
+                a;
+
+                b;
+
+                constructor() {}
+
+                method() {}
+
+                @HelloDecorator
+                property;
+
+                @HelloDecorator()
+                anotherProperty;
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+    }
+
+    ruleTester.run(
+      `${ruleName}: filters on complex decoratorNamePattern`,
+      rule,
+      {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    decoratorNamePattern: 'B',
+                    groupName: 'B',
+                  },
+                  {
+                    decoratorNamePattern: 'A',
+                    groupName: 'A',
+                  },
+                ],
+                type: 'alphabetical',
+                groups: ['B', 'A'],
+                order: 'asc',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'B',
+                  leftGroup: 'A',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                @B.B()
+                b() {}
+
+                @A.A.A(() => A)
+                a() {}
+              }
+            `,
+            code: dedent`
+              class Class {
+                @A.A.A(() => A)
+                a() {}
+
+                @B.B()
+                b() {}
+              }
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
 
     ruleTester.run(
       `${ruleName}: sort custom groups by overriding 'type' and 'order'`,

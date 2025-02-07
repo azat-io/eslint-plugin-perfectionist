@@ -6,6 +6,7 @@ import type {
   CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
+  RegexOption,
   TypeOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
@@ -13,8 +14,7 @@ import type { JoinWithDash } from '../../types/join-with-dash'
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-  elementValuePatternJsonSchema,
-  elementNamePatternJsonSchema,
+  regexJsonSchema,
 } from '../../utils/common-json-schemas'
 
 export type SingleCustomGroup =
@@ -205,9 +205,9 @@ type Group =
   | string
 
 type AdvancedSingleCustomGroup<T extends Selector> = {
-  decoratorNamePattern?: string
-  elementValuePattern?: string
-  elementNamePattern?: string
+  decoratorNamePattern?: RegexOption
+  elementValuePattern?: RegexOption
+  elementNamePattern?: RegexOption
 } & BaseSingleCustomGroup<T>
 
 interface BaseSingleCustomGroup<T extends Selector> {
@@ -297,12 +297,9 @@ export let allModifiers: Modifier[] = [
  * that users do not enter invalid modifiers for a given selector
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
-  decoratorNamePattern: {
-    description: 'Decorator name pattern filter.',
-    type: 'string',
-  },
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementValuePattern: elementValuePatternJsonSchema,
-  elementNamePattern: elementNamePatternJsonSchema,
+  decoratorNamePattern: regexJsonSchema,
+  elementValuePattern: regexJsonSchema,
+  elementNamePattern: regexJsonSchema,
 }
