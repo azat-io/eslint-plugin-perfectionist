@@ -907,93 +907,107 @@ describe(ruleName, () => {
     )
 
     describe(`${ruleName}: custom groups`, () => {
-      ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
-        invalid: [
-          {
-            errors: [
-              {
-                data: {
-                  rightGroup: 'keysStartingWithHello',
-                  leftGroup: 'unknown',
-                  right: 'HELLO_KEY',
-                  left: 'B',
-                },
-                messageId: 'unexpectedEnumsGroupOrder',
-              },
-            ],
-            options: [
-              {
-                customGroups: [
-                  {
-                    groupName: 'keysStartingWithHello',
-                    elementNamePattern: 'HELLO*',
+      for (let elementNamePattern of [
+        'HELLO',
+        ['noMatch', 'HELLO'],
+        { pattern: 'hello', flags: 'i' },
+        ['noMatch', { pattern: 'hello', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'keysStartingWithHello',
+                    leftGroup: 'unknown',
+                    right: 'HELLO_KEY',
+                    left: 'B',
                   },
-                ],
-                groups: ['keysStartingWithHello', 'unknown'],
-              },
-            ],
-            output: dedent`
-              enum Enum {
-                HELLO_KEY = 3,
-                A = 1,
-                B = 2,
-              }
-            `,
-            code: dedent`
-              enum Enum {
-                A = 1,
-                B = 2,
-                HELLO_KEY = 3,
-              }
-            `,
-          },
-        ],
-        valid: [],
-      })
+                  messageId: 'unexpectedEnumsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'keysStartingWithHello',
+                      elementNamePattern,
+                    },
+                  ],
+                  groups: ['keysStartingWithHello', 'unknown'],
+                },
+              ],
+              output: dedent`
+                enum Enum {
+                  HELLO_KEY = 3,
+                  A = 1,
+                  B = 2,
+                }
+              `,
+              code: dedent`
+                enum Enum {
+                  A = 1,
+                  B = 2,
+                  HELLO_KEY = 3,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
 
-      ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
-        invalid: [
-          {
-            options: [
-              {
-                customGroups: [
-                  {
-                    groupName: 'valuesStartingWithHello',
-                    elementValuePattern: 'HELLO*',
-                  },
-                ],
-                groups: ['valuesStartingWithHello', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                data: {
-                  rightGroup: 'valuesStartingWithHello',
-                  leftGroup: 'unknown',
-                  right: 'Z',
-                  left: 'B',
+      for (let elementValuePattern of [
+        'HELLO',
+        ['noMatch', 'HELLO'],
+        { pattern: 'hello', flags: 'i' },
+        ['noMatch', { pattern: 'hello', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'valuesStartingWithHello',
+                      elementValuePattern,
+                    },
+                  ],
+                  groups: ['valuesStartingWithHello', 'unknown'],
                 },
-                messageId: 'unexpectedEnumsGroupOrder',
-              },
-            ],
-            output: dedent`
-              enum Enum {
-                Z = 'HELLO_KEY',
-                A = 'A',
-                B = 'B',
-              }
-            `,
-            code: dedent`
-              enum Enum {
-                A = 'A',
-                B = 'B',
-                Z = 'HELLO_KEY',
-              }
-            `,
-          },
-        ],
-        valid: [],
-      })
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'valuesStartingWithHello',
+                    leftGroup: 'unknown',
+                    right: 'Z',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedEnumsGroupOrder',
+                },
+              ],
+              output: dedent`
+                enum Enum {
+                  Z = 'HELLO_KEY',
+                  A = 'A',
+                  B = 'B',
+                }
+              `,
+              code: dedent`
+                enum Enum {
+                  A = 'A',
+                  B = 'B',
+                  Z = 'HELLO_KEY',
+                }
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
 
       ruleTester.run(
         `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
