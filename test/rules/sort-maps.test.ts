@@ -813,7 +813,7 @@ describe(ruleName, () => {
                 customGroups: [
                   {
                     groupName: 'keysStartingWithHello',
-                    elementNamePattern: 'hello*',
+                    elementNamePattern: 'hello',
                   },
                 ],
                 groups: ['keysStartingWithHello', 'unknown'],
@@ -1481,80 +1481,87 @@ describe(ruleName, () => {
     })
 
     describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  useConfigurationIf: {
-                    allNamesMatchPattern: 'foo',
-                  },
-                },
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: '^r$',
-                      groupName: 'r',
+      for (let allNamesMatchPattern of [
+        'foo',
+        ['noMatch', 'foo'],
+        { pattern: 'FOO', flags: 'i' },
+        ['noMatch', { pattern: 'FOO', flags: 'i' }],
+      ]) {
+        ruleTester.run(
+          `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    useConfigurationIf: {
+                      allNamesMatchPattern,
                     },
-                    {
-                      elementNamePattern: '^g$',
-                      groupName: 'g',
+                  },
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: '^r$',
+                        groupName: 'r',
+                      },
+                      {
+                        elementNamePattern: '^g$',
+                        groupName: 'g',
+                      },
+                      {
+                        elementNamePattern: '^b$',
+                        groupName: 'b',
+                      },
+                    ],
+                    useConfigurationIf: {
+                      allNamesMatchPattern: '^r|g|b$',
                     },
-                    {
-                      elementNamePattern: '^b$',
-                      groupName: 'b',
+                    groups: ['r', 'g', 'b'],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'g',
+                      leftGroup: 'b',
+                      right: 'g',
+                      left: 'b',
                     },
-                  ],
-                  useConfigurationIf: {
-                    allNamesMatchPattern: '^r|g|b$',
+                    messageId: 'unexpectedMapElementsGroupOrder',
                   },
-                  groups: ['r', 'g', 'b'],
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    rightGroup: 'g',
-                    leftGroup: 'b',
-                    right: 'g',
-                    left: 'b',
+                  {
+                    data: {
+                      rightGroup: 'r',
+                      leftGroup: 'g',
+                      right: 'r',
+                      left: 'g',
+                    },
+                    messageId: 'unexpectedMapElementsGroupOrder',
                   },
-                  messageId: 'unexpectedMapElementsGroupOrder',
-                },
-                {
-                  data: {
-                    rightGroup: 'r',
-                    leftGroup: 'g',
-                    right: 'r',
-                    left: 'g',
-                  },
-                  messageId: 'unexpectedMapElementsGroupOrder',
-                },
-              ],
-              output: dedent`
-                new Map([
-                  [r, null],
-                  [g, null],
-                  [b, null]
-                ])
-              `,
-              code: dedent`
-                new Map([
-                  [b, null],
-                  [g, null],
-                  [r, null]
-                ])
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                ],
+                output: dedent`
+                  new Map([
+                    [r, null],
+                    [g, null],
+                    [b, null]
+                  ])
+                `,
+                code: dedent`
+                  new Map([
+                    [b, null],
+                    [g, null],
+                    [r, null]
+                  ])
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
     })
   })
 

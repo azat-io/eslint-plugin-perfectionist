@@ -6,15 +6,16 @@ import type {
   CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
+  RegexOption,
   TypeOption,
 } from '../../types/common-options'
 
-import { elementNamePatternJsonSchema } from '../../utils/common-json-schemas'
+import { regexJsonSchema } from '../../utils/common-json-schemas'
 
 export type Options = Partial<
   {
     useConfigurationIf: {
-      allNamesMatchPattern?: string
+      allNamesMatchPattern?: RegexOption
     }
     customGroups: CustomGroupsOption<SingleCustomGroup>
     partitionByComment: PartitionByCommentOption
@@ -26,11 +27,11 @@ export type Options = Partial<
 >[]
 
 export interface SingleCustomGroup {
-  elementNamePattern?: string
+  elementNamePattern?: RegexOption
 }
 
 type Group = 'unknown' | string
 
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
-  elementNamePattern: elementNamePatternJsonSchema,
+  elementNamePattern: regexJsonSchema,
 }
