@@ -1287,7 +1287,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: '^Part*',
+                  partitionByComment: '^Part',
                 },
               ],
             },
@@ -1395,7 +1395,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: '^Part*',
+                partitionByComment: '^Part',
               },
             ],
           },
@@ -1474,7 +1474,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: ['Partition Comment', 'Part: *'],
+                partitionByComment: ['Partition Comment', 'Part:'],
               },
             ],
           },
@@ -3946,7 +3946,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: '^Part*',
+                partitionByComment: '^Part',
               },
             ],
           },
@@ -4025,7 +4025,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: ['Partition Comment', 'Part: *'],
+                partitionByComment: ['Partition Comment', 'Part:'],
               },
             ],
           },
@@ -4826,7 +4826,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: '^Part*',
+                partitionByComment: '^Part',
               },
             ],
           },
@@ -4905,7 +4905,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: ['Partition Comment', 'Part: *'],
+                partitionByComment: ['Partition Comment', 'Part:'],
               },
             ],
           },
@@ -4941,7 +4941,7 @@ describe(ruleName, () => {
                 ...options,
                 partitionByComment: [
                   'Public Safety Bureau',
-                  'Crime Coefficient: *',
+                  'Crime Coefficient:',
                   'Victims',
                 ],
               },
@@ -5767,7 +5767,7 @@ describe(ruleName, () => {
             ],
             options: [
               {
-                partitionByComment: 'PartitionComment:*',
+                partitionByComment: 'PartitionComment:',
                 type: 'alphabetical',
               },
             ],

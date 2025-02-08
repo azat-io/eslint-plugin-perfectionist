@@ -1893,7 +1893,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part*',
+                  partitionByComment: 'Part',
                 },
               ],
               output: dedent`
@@ -3457,7 +3457,7 @@ describe(ruleName, () => {
               ],
               options: [
                 {
-                  partitionByComment: 'PartitionComment:*',
+                  partitionByComment: 'PartitionComment:',
                   type: 'alphabetical',
                 },
               ],

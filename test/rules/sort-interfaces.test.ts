@@ -1731,7 +1731,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: '^Part*',
+                partitionByComment: '^Part',
               },
             ],
           },
@@ -1810,7 +1810,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                partitionByComment: ['Partition Comment', 'Part:', 'Other'],
               },
             ],
           },
@@ -3465,7 +3465,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: '^Part*',
+                partitionByComment: '^Part',
               },
             ],
           },
@@ -3544,7 +3544,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                partitionByComment: ['Partition Comment', 'Part:', 'Other'],
               },
             ],
           },
@@ -4515,7 +4515,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: '^Part*',
+                partitionByComment: '^Part',
               },
             ],
           },
@@ -4594,7 +4594,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                partitionByComment: ['Partition Comment', 'Part:', 'Other'],
               },
             ],
           },
@@ -4732,7 +4732,7 @@ describe(ruleName, () => {
         {
           options: [
             {
-              ignorePattern: ['Ignore*'],
+              ignorePattern: ['Ignore'],
               type: 'line-length',
               order: 'desc',
             },

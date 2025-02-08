@@ -520,7 +520,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: '^Part*',
+                  partitionByComment: '^Part',
                   groupKind: 'types-first',
                 },
               ],
@@ -600,7 +600,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                  partitionByComment: ['Partition Comment', 'Part:', 'Other'],
                 },
               ],
             },

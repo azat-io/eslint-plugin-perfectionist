@@ -311,7 +311,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                customGroups: { callback: 'on*' },
+                customGroups: { callback: 'on' },
                 groups: ['unknown', 'callback'],
               },
             ],
@@ -336,7 +336,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                customGroups: { callback: 'on*' },
+                customGroups: { callback: 'on' },
                 groups: ['unknown', 'callback'],
               },
             ],
@@ -1331,7 +1331,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                customGroups: { callback: 'on*' },
+                customGroups: { callback: 'on' },
                 groups: ['unknown', 'callback'],
               },
             ],
@@ -1356,7 +1356,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                customGroups: { callback: 'on*' },
+                customGroups: { callback: 'on' },
                 groups: ['unknown', 'callback'],
               },
             ],
@@ -1863,7 +1863,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                customGroups: { callback: 'on*' },
+                customGroups: { callback: 'on' },
                 groups: ['unknown', 'callback'],
               },
             ],
@@ -1888,7 +1888,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                customGroups: { callback: 'on*' },
+                customGroups: { callback: 'on' },
                 groups: ['unknown', 'callback'],
               },
             ],

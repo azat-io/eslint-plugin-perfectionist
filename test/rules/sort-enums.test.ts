@@ -312,7 +312,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: '^Part*',
+                partitionByComment: '^Part',
               },
             ],
           },
@@ -391,7 +391,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                partitionByComment: ['Partition Comment', 'Part:', 'Other'],
               },
             ],
           },
@@ -1945,7 +1945,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: '^Part*',
+                partitionByComment: '^Part',
               },
             ],
           },
@@ -2024,7 +2024,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                partitionByComment: ['Partition Comment', 'Part:', 'Other'],
               },
             ],
           },
@@ -2480,7 +2480,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: '^Part*',
+                partitionByComment: '^Part',
               },
             ],
           },
@@ -2559,7 +2559,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                partitionByComment: ['Partition Comment', 'Part:', 'Other'],
               },
             ],
           },
@@ -3180,7 +3180,7 @@ describe(ruleName, () => {
               `,
               options: [
                 {
-                  partitionByComment: '^Part*',
+                  partitionByComment: '^Part',
                   type: 'alphabetical',
                 },
               ],
@@ -3365,7 +3365,7 @@ describe(ruleName, () => {
             ],
             options: [
               {
-                partitionByComment: 'PartitionComment:*',
+                partitionByComment: 'PartitionComment:',
                 type: 'alphabetical',
               },
             ],

@@ -2442,7 +2442,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              partitionByComment: 'Region:*',
+              partitionByComment: 'Region:',
             },
           ],
         },
@@ -2474,7 +2474,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              partitionByComment: 'Region:*',
+              partitionByComment: 'Region:',
             },
           ],
         },
@@ -3983,7 +3983,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: 'Part*',
+                  partitionByComment: 'Part',
                 },
               ],
             },
@@ -5997,7 +5997,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              partitionByComment: 'Region:*',
+              partitionByComment: 'Region:',
             },
           ],
         },
@@ -6029,7 +6029,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              partitionByComment: 'Region:*',
+              partitionByComment: 'Region:',
             },
           ],
         },
@@ -7322,11 +7322,11 @@ describe(ruleName, () => {
               ],
               customGroups: [
                 {
-                  elementNamePattern: 'customFirst*',
+                  elementNamePattern: 'customFirst',
                   groupName: 'my-first-group',
                 },
                 {
-                  elementNamePattern: 'customLast*',
+                  elementNamePattern: 'customLast',
                   groupName: 'my-last-group',
                 },
               ],
@@ -8835,7 +8835,7 @@ describe(ruleName, () => {
               ],
               options: [
                 {
-                  partitionByComment: 'PartitionComment:*',
+                  partitionByComment: 'PartitionComment:',
                   type: 'alphabetical',
                 },
               ],
