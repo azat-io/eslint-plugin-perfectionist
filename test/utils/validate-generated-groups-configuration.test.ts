@@ -87,6 +87,22 @@ describe('validate-generated-groups-configuration', () => {
       }),
     ).toThrow('Invalid group(s): myCustomGroup')
   })
+
+  it('throws an error with consecutive newlines objects', () => {
+    expect(() => {
+      validateGeneratedGroupsConfiguration({
+        options: {
+          groups: [
+            { newlinesBetween: 'always' },
+            { newlinesBetween: 'always' },
+          ],
+          customGroups: [],
+        },
+        selectors: [],
+        modifiers: [],
+      })
+    }).toThrow("Consecutive 'newlinesBetween' objects are not allowed")
+  })
 })
 
 let getAllNonEmptyCombinations = (array: string[]): string[][] => {

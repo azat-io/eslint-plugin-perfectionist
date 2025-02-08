@@ -14,36 +14,46 @@ import { validateGroupsConfiguration } from '../../utils/validate-groups-configu
 describe('validate-groups-configuration', () => {
   it('throws an error when an invalid group is provided', () => {
     expect(() => {
-      validateGroupsConfiguration(
-        ['predefinedGroup', ['customGroup', 'invalidGroup1'], 'invalidGroup2'],
-        ['predefinedGroup'],
-        ['customGroup'],
-      )
+      validateGroupsConfiguration({
+        options: {
+          groups: [
+            'predefinedGroup',
+            ['customGroup', 'invalidGroup1'],
+            'invalidGroup2',
+          ],
+        },
+        allowedPredefinedGroups: ['predefinedGroup'],
+        allowedCustomGroups: ['customGroup'],
+      })
     }).toThrow('Invalid group(s): invalidGroup1, invalidGroup2')
   })
 
   it('throws an error when a duplicate group is provided', () => {
     expect(() => {
-      validateGroupsConfiguration(
-        ['predefinedGroup', 'predefinedGroup'],
-        ['predefinedGroup'],
-        [],
-      )
+      validateGroupsConfiguration({
+        options: {
+          groups: ['predefinedGroup', 'predefinedGroup'],
+        },
+        allowedPredefinedGroups: ['predefinedGroup'],
+        allowedCustomGroups: [],
+      })
     }).toThrow('Duplicated group(s): predefinedGroup')
   })
 
   it('throws an error with consecutive newlines objects', () => {
     expect(() => {
-      validateGroupsConfiguration(
-        [
-          'a',
-          { newlinesBetween: 'always' },
-          { newlinesBetween: 'always' },
-          'b',
-        ],
-        ['a', 'b'],
-        [],
-      )
+      validateGroupsConfiguration({
+        options: {
+          groups: [
+            'a',
+            { newlinesBetween: 'always' },
+            { newlinesBetween: 'always' },
+            'b',
+          ],
+        },
+        allowedPredefinedGroups: ['a', 'b'],
+        allowedCustomGroups: [],
+      })
     }).toThrow("Consecutive 'newlinesBetween' objects are not allowed")
   })
 })

@@ -155,9 +155,8 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
 
   let options = complete(context.options.at(0), settings, defaultOptions)
   validateCustomSortConfiguration(options)
-  validateGroupsConfiguration(
-    options.groups,
-    [
+  validateGroupsConfiguration({
+    allowedPredefinedGroups: [
       'intersection',
       'conditional',
       'function',
@@ -172,8 +171,9 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
       'tuple',
       'union',
     ],
-    [],
-  )
+    allowedCustomGroups: [],
+    options,
+  })
   validateNewlinesAndPartitionConfiguration(options)
 
   let sourceCode = getSourceCode(context)

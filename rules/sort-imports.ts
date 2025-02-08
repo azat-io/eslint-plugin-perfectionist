@@ -135,9 +135,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       } as const),
     )
 
-    validateGroupsConfiguration(
-      options.groups,
-      [
+    validateGroupsConfiguration({
+      allowedPredefinedGroups: [
         'side-effect-style',
         'external-type',
         'internal-type',
@@ -157,11 +156,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'style',
         'type',
       ],
-      [
+      allowedCustomGroups: [
         ...Object.keys(options.customGroups.type ?? {}),
         ...Object.keys(options.customGroups.value ?? {}),
       ],
-    )
+      options,
+    })
     validateCustomSortConfiguration(options)
     validateNewlinesAndPartitionConfiguration(options)
 
