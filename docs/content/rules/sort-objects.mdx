@@ -292,7 +292,7 @@ Determines whether this rule should be applied to styled-components like librari
 - `true` — Apply the rule to styled-components.
 - `false` — Disable the rule for styled-components.
 
-### ignorePattern
+### [DEPRECATED] ignorePattern
 
 <sub>
   type:
@@ -304,7 +304,9 @@ Determines whether this rule should be applied to styled-components like librari
 </sub>
 <sub>default: `[]`</sub>
 
-Allows you to specify names or patterns for object that should be ignored by this rule. This can be useful if you have specific objects that you do not want to sort.
+Use the [useConfigurationIf.declarationMatchesPattern](#useconfigurationif) option alongside [type: unsorted](#type) instead.
+
+Allows you to specify names or patterns for objects that should be ignored by this rule. This can be useful if you have specific objects that you do not want to sort.
 
 You can specify their names or a regexp pattern to ignore, for example: `'^User.+'` to ignore all object whose names begin with the word “User”.
 
