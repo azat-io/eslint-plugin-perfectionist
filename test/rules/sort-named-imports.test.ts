@@ -1727,16 +1727,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-                fallbackSort: [
-                  {
-                    type: 'alphabetical',
-                  },
-                ],
-              },
-            ],
             errors: [
               {
                 data: {
@@ -1744,6 +1734,14 @@ describe(ruleName, () => {
                   left: 'b',
                 },
                 messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
               },
             ],
             output: dedent`
@@ -1762,17 +1760,6 @@ describe(ruleName, () => {
             `,
           },
           {
-            options: [
-              {
-                ...options,
-                fallbackSort: [
-                  {
-                    type: 'alphabetical',
-                    order: 'asc',
-                  },
-                ],
-              },
-            ],
             errors: [
               {
                 data: {
@@ -1780,6 +1767,15 @@ describe(ruleName, () => {
                   left: 'c',
                 },
                 messageId: 'unexpectedNamedImportsOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
               },
             ],
             output: dedent`

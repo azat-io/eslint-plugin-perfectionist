@@ -47,6 +47,7 @@ type MESSAGE_ID =
   | 'unexpectedMapElementsOrder'
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByComment: false,
   partitionByNewLine: false,
@@ -56,7 +57,6 @@ let defaultOptions: Required<Options[0]> = {
   ignoreCase: true,
   customGroups: [],
   locales: 'en-US',
-  fallbackSort: [],
   alphabet: '',
   order: 'asc',
   groups: [],

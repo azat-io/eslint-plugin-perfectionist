@@ -47,6 +47,7 @@ interface SortExportsSortingNode
 type MESSAGE_ID = 'unexpectedExportsOrder'
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByComment: false,
   partitionByNewLine: false,
@@ -54,7 +55,6 @@ let defaultOptions: Required<Options[0]> = {
   groupKind: 'mixed',
   ignoreCase: true,
   locales: 'en-US',
-  fallbackSort: [],
   alphabet: '',
   order: 'asc',
 }

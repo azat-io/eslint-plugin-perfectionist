@@ -67,6 +67,7 @@ interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeElement> {
 }
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
@@ -75,7 +76,6 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   groupKind: 'mixed',
   ignorePattern: [],
-  fallbackSort: [],
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',

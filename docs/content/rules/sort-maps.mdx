@@ -103,9 +103,9 @@ Determines whether the sorted items should be in ascending or descending order.
 ### fallbackSort
 
 <sub>
-  type: `{ type: string; order?: 'asc' | 'desc' }[]`
+  type: `{ type: string; order?: 'asc' | 'desc' }`
 </sub>
-<sub>default: `[]`</sub>
+<sub>default: `{ type: 'unsorted' }`</sub>
 
 Defines a list of fallback sort options to use when comparing two elements that are equal according to the primary sort
 [`type`](#type).

@@ -36,14 +36,14 @@ export type GroupsOptions<T> = (
   | T
 )[]
 
+export interface FallbackSortOption {
+  type: TypeOption | 'unsorted'
+  order?: OrderOption
+}
+
 export interface AnyOfCustomGroup<SingleCustomGroup> {
   anyOf: SingleCustomGroup[]
 }
-
-export type FallbackSortOption = {
-  order?: OrderOption
-  type: TypeOption
-}[]
 
 export type TypeOption = 'alphabetical' | 'line-length' | 'natural' | 'custom'
 

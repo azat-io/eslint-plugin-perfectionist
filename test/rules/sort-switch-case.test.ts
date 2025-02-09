@@ -2616,16 +2616,6 @@ describe(ruleName, () => {
                   break;
               }
             `,
-            options: [
-              {
-                ...options,
-                fallbackSort: [
-                  {
-                    type: 'alphabetical',
-                  },
-                ],
-              },
-            ],
             errors: [
               {
                 data: {
@@ -2635,19 +2625,16 @@ describe(ruleName, () => {
                 messageId: 'unexpectedSwitchCaseOrder',
               },
             ],
-          },
-          {
             options: [
               {
                 ...options,
-                fallbackSort: [
-                  {
-                    type: 'alphabetical',
-                    order: 'asc',
-                  },
-                ],
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
               },
             ],
+          },
+          {
             output: dedent`
               switch (x) {
                 case 'aa':
@@ -2675,6 +2662,15 @@ describe(ruleName, () => {
                   left: 'c',
                 },
                 messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
               },
             ],
           },

@@ -74,13 +74,13 @@ type MESSAGE_ID =
   | 'unexpectedUnionTypesOrder'
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
   partitionByNewLine: false,
   partitionByComment: false,
   type: 'alphabetical',
   ignoreCase: true,
-  fallbackSort: [],
   locales: 'en-US',
   alphabet: '',
   order: 'asc',

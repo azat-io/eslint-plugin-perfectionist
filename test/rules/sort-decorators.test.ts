@@ -3888,17 +3888,6 @@ describe(ruleName, () => {
                   parameter) {}
               }
             `,
-            options: [
-              {
-                ...options,
-                fallbackSort: [
-                  {
-                    type: 'alphabetical',
-                  },
-                ],
-                order: 'desc',
-              },
-            ],
             errors: duplicate5Times([
               {
                 data: {
@@ -3908,6 +3897,16 @@ describe(ruleName, () => {
                 messageId: 'unexpectedDecoratorsOrder',
               },
             ]),
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
+
+                order: 'desc',
+              },
+            ],
           },
           {
             output: dedent`
@@ -3965,12 +3964,11 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                fallbackSort: [
-                  {
-                    type: 'alphabetical',
-                    order: 'asc',
-                  },
-                ],
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+
                 order: 'desc',
               },
             ],

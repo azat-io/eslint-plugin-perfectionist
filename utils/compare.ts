@@ -90,17 +90,16 @@ export let compare = <T extends SortingNode>(
     return compareValue
   }
 
-  let fallbackSortWithoutFirstElement = [...options.fallbackSort]
-  let firstFallbackSort = fallbackSortWithoutFirstElement.shift()
-  if (!firstFallbackSort) {
+  let { fallbackSort, order } = options
+  if (fallbackSort.type === 'unsorted') {
     return 0
   }
 
   return compare(a, b, {
     ...options,
-    order: firstFallbackSort.order ?? options.order,
-    fallbackSort: fallbackSortWithoutFirstElement,
-    type: firstFallbackSort.type,
+    order: fallbackSort.order ?? order,
+    type: fallbackSort.type,
+    fallbackSort,
   } as CompareOptions<T>)
 }
 

@@ -4629,11 +4629,9 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                fallbackSort: [
-                  {
-                    type: 'alphabetical',
-                  },
-                ],
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
               },
             ],
             output: dedent`
@@ -4652,17 +4650,6 @@ describe(ruleName, () => {
             `,
           },
           {
-            options: [
-              {
-                ...options,
-                fallbackSort: [
-                  {
-                    type: 'alphabetical',
-                    order: 'asc',
-                  },
-                ],
-              },
-            ],
             errors: [
               {
                 data: {
@@ -4670,6 +4657,15 @@ describe(ruleName, () => {
                   left: 'c',
                 },
                 messageId: 'unexpectedInterfacePropertiesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
               },
             ],
             output: dedent`

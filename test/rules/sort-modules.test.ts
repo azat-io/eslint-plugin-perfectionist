@@ -3236,16 +3236,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-                fallbackSort: [
-                  {
-                    type: 'alphabetical',
-                  },
-                ],
-              },
-            ],
             errors: [
               {
                 data: {
@@ -3253,6 +3243,14 @@ describe(ruleName, () => {
                   left: 'b',
                 },
                 messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
               },
             ],
             output: dedent`
@@ -3267,17 +3265,6 @@ describe(ruleName, () => {
             `,
           },
           {
-            options: [
-              {
-                ...options,
-                fallbackSort: [
-                  {
-                    type: 'alphabetical',
-                    order: 'asc',
-                  },
-                ],
-              },
-            ],
             errors: [
               {
                 data: {
@@ -3285,6 +3272,15 @@ describe(ruleName, () => {
                   left: 'c',
                 },
                 messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
               },
             ],
             output: dedent`

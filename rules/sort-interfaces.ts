@@ -18,6 +18,7 @@ type MESSAGE_ID =
   | 'unexpectedInterfacePropertiesOrder'
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
@@ -27,7 +28,6 @@ let defaultOptions: Required<Options[0]> = {
   groupKind: 'mixed',
   ignorePattern: [],
   ignoreCase: true,
-  fallbackSort: [],
   customGroups: {},
   locales: 'en-US',
   alphabet: '',

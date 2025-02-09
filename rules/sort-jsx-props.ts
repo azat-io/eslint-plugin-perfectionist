@@ -61,6 +61,7 @@ type MESSAGE_ID =
 type Group<T extends string> = 'multiline' | 'shorthand' | 'unknown' | T
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
   partitionByNewLine: false,
@@ -69,7 +70,6 @@ let defaultOptions: Required<Options[0]> = {
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',
-  fallbackSort: [],
   alphabet: '',
   order: 'asc',
   groups: [],

@@ -8,12 +8,12 @@ import { compare } from '../../utils/compare'
 describe('compare', () => {
   describe('alphabetical', () => {
     let compareOptions = {
+      fallbackSort: { type: 'unsorted' } as const,
       specialCharacters: 'keep' as const,
       type: 'alphabetical' as const,
       locales: 'en-US' as const,
       order: 'asc' as const,
       ignoreCase: false,
-      fallbackSort: [],
     }
 
     it('sorts by order asc', () => {
@@ -73,12 +73,12 @@ describe('compare', () => {
 
   describe('natural', () => {
     let compareOptions = {
+      fallbackSort: { type: 'unsorted' } as const,
       specialCharacters: 'keep' as const,
       locales: 'en-US' as const,
       type: 'natural' as const,
       order: 'asc' as const,
       ignoreCase: false,
-      fallbackSort: [],
     }
 
     it('sorts by order asc', () => {
@@ -138,12 +138,12 @@ describe('compare', () => {
 
   describe('line-length', () => {
     let compareOptions = {
+      fallbackSort: { type: 'unsorted' } as const,
       specialCharacters: 'keep' as const,
       type: 'line-length' as const,
       locales: 'en-US' as const,
       order: 'desc' as const,
       ignoreCase: false,
-      fallbackSort: [],
     }
 
     it('sorts by order asc', () => {
@@ -171,12 +171,12 @@ describe('compare', () => {
       alphabet: Alphabet.generateRecommendedAlphabet()
         .sortByLocaleCompare('en-US')
         .getCharacters(),
+      fallbackSort: { type: 'unsorted' } as const,
       specialCharacters: 'keep' as const,
       locales: 'en-US' as const,
       type: 'custom' as const,
       order: 'asc' as const,
       ignoreCase: false,
-      fallbackSort: [],
     }
 
     it('sorts by order asc', () => {
@@ -285,35 +285,29 @@ describe('compare', () => {
       expect(
         compare(nodeBbb, nodeAaa, {
           ...compareOptions,
-          fallbackSort: [
-            {
-              type: 'alphabetical',
-              order: 'asc',
-            } as const,
-          ],
+          fallbackSort: {
+            type: 'alphabetical',
+            order: 'asc',
+          } as const,
         }),
       ).toBe(1)
 
       expect(
         compare(nodeBbb, nodeAaa, {
           ...compareOptions,
-          fallbackSort: [
-            {
-              type: 'alphabetical',
-              order: 'desc',
-            } as const,
-          ],
+          fallbackSort: {
+            type: 'alphabetical',
+            order: 'desc',
+          } as const,
         }),
       ).toBe(-1)
 
       expect(
         compare(nodeBbb, nodeAaa, {
           ...compareOptions,
-          fallbackSort: [
-            {
-              type: 'alphabetical',
-            } as const,
-          ],
+          fallbackSort: {
+            type: 'alphabetical',
+          } as const,
         }),
       ).toBe(-1)
     })
