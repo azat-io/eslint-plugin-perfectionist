@@ -2,8 +2,10 @@ import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
+  DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
   CommonOptions,
+  GroupsOptions,
   TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
@@ -33,12 +35,12 @@ import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 
-export type Options<T extends string = string> = [
+export type Options = [
   Partial<
     {
       partitionByComment: PartitionByCommentOption
-      customGroups: Record<T, string[] | string>
-      groups: (Group<T>[] | Group<T>)[]
+      customGroups: DeprecatedCustomGroupsOption
+      groups: GroupsOptions<Group>
       sortOnParameters: boolean
       sortOnProperties: boolean
       sortOnAccessors: boolean
@@ -53,7 +55,7 @@ type MESSAGE_ID = 'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
 
 type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
-type Group<T extends string> = 'unknown' | T
+type Group = 'unknown' | string
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },

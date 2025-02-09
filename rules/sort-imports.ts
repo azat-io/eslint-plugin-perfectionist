@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import { builtinModules } from 'node:module'
 
 import type {
+  DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
   SpecialCharactersOption,
   NewlinesBetweenOption,
@@ -50,19 +51,19 @@ import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
-export type Options<T extends string = string> = [
+export type Options = [
   Partial<{
     customGroups: {
-      value?: Record<T, string[] | string>
-      type?: Record<T, string[] | string>
+      value?: DeprecatedCustomGroupsOption
+      type?: DeprecatedCustomGroupsOption
     }
     partitionByComment: PartitionByCommentOption
     specialCharacters: SpecialCharactersOption
     locales: NonNullable<Intl.LocalesArgument>
     newlinesBetween: NewlinesBetweenOption
     fallbackSort: FallbackSortOption
-    groups: GroupsOptions<Group<T>>
     internalPattern: RegexOption[]
+    groups: GroupsOptions<Group>
     environment: 'node' | 'bun'
     partitionByNewLine: boolean
     sortSideEffects: boolean
@@ -81,7 +82,7 @@ export type MESSAGE_ID =
   | 'extraSpacingBetweenImports'
   | 'unexpectedImportsOrder'
 
-type Group<T extends string> =
+type Group =
   | 'side-effect-style'
   | 'external-type'
   | 'internal-type'
@@ -100,7 +101,7 @@ type Group<T extends string> =
   | 'index'
   | 'style'
   | 'type'
-  | T
+  | string
 
 interface SortImportsSortingNode extends SortingNode {
   isIgnored: boolean
