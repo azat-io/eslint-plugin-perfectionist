@@ -492,24 +492,17 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 modifiers.push('optional')
               }
 
-              if ('value' in member && member.value) {
-                if (
-                  member.value.type === 'ArrowFunctionExpression' ||
-                  member.value.type === 'FunctionExpression'
-                ) {
-                  if (member.value.async) {
-                    modifiers.push('async')
-                  }
-                  selectors.push('function-property')
-                } else {
-                  memberValue = sourceCode.getText(member.value)
+              if (
+                member.value?.type === 'ArrowFunctionExpression' ||
+                member.value?.type === 'FunctionExpression'
+              ) {
+                if (member.value.async) {
+                  modifiers.push('async')
                 }
-                if (member.value.type !== 'TSEmptyBodyFunctionExpression') {
-                  dependencies = extractDependencies(
-                    member.value,
-                    member.static,
-                  )
-                }
+                selectors.push('function-property')
+              } else if (member.value) {
+                memberValue = sourceCode.getText(member.value)
+                dependencies = extractDependencies(member.value, member.static)
               }
 
               selectors.push('property')

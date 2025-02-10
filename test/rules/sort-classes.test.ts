@@ -2784,6 +2784,19 @@ describe(ruleName, () => {
                 },
               ],
             },
+            {
+              code: dedent`
+                class MyClass {
+                  a = () => this.b()
+                  b = () => null
+                }
+              `,
+              options: [
+                {
+                  ...options,
+                },
+              ],
+            },
           ],
           invalid: [],
         },
