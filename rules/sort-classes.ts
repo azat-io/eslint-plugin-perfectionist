@@ -1,4 +1,4 @@
-import { TSESTree } from '@typescript-eslint/types'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
   SortClassesOptions,
@@ -39,7 +39,6 @@ import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { doesCustomGroupMatch } from './sort-classes/does-custom-group-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -333,8 +332,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           let selectors: Selector[] = []
           let addSafetySemicolonWhenInline: boolean = true
           switch (member.type) {
-            case TSESTree.AST_NODE_TYPES.TSAbstractPropertyDefinition:
-            case TSESTree.AST_NODE_TYPES.PropertyDefinition:
+            case 'TSAbstractPropertyDefinition':
+            case 'PropertyDefinition':
               /**
                * Member is necessarily a property similarly to above for methods,
                * prioritize 'static', 'declare', 'decorated', 'abstract',
@@ -399,8 +398,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               selectors.push('property')
               break
 
-            case TSESTree.AST_NODE_TYPES.TSAbstractMethodDefinition:
-            case TSESTree.AST_NODE_TYPES.MethodDefinition:
+            case 'TSAbstractMethodDefinition':
+            case 'MethodDefinition':
               /**
                * By putting the static modifier before accessibility modifiers, we
                * prioritize 'static' over those in cases like:
@@ -457,8 +456,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
               break
 
-            case TSESTree.AST_NODE_TYPES.TSAbstractAccessorProperty:
-            case TSESTree.AST_NODE_TYPES.AccessorProperty:
+            case 'TSAbstractAccessorProperty':
+            case 'AccessorProperty':
               if (member.static) {
                 modifiers.push('static')
               }
@@ -486,7 +485,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
               break
 
-            case TSESTree.AST_NODE_TYPES.TSIndexSignature:
+            case 'TSIndexSignature':
               if (member.static) {
                 modifiers.push('static')
               }
@@ -499,7 +498,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
               break
 
-            case TSESTree.AST_NODE_TYPES.StaticBlock:
+            case 'StaticBlock':
               addSafetySemicolonWhenInline = false
 
               selectors.push('static-block')
@@ -507,10 +506,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               dependencies = extractDependencies(member, true)
 
               break
-
-            /* v8 ignore next 2 - Can't reach this by definition */
-            default:
-              throw new UnreachableCaseError(member)
           }
 
           let predefinedGroups = generatePredefinedGroups({
