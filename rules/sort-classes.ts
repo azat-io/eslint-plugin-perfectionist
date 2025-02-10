@@ -333,117 +333,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           let selectors: Selector[] = []
           let addSafetySemicolonWhenInline: boolean = true
           switch (member.type) {
-            case TSESTree.AST_NODE_TYPES.TSAbstractMethodDefinition:
-            case TSESTree.AST_NODE_TYPES.MethodDefinition: {
-              /**
-               * By putting the static modifier before accessibility modifiers, we
-               * prioritize 'static' over those in cases like:
-               * config: ['static-method', 'public-method']
-               * element: public static method();
-               * Element will be classified as 'static-method' before
-               * 'public-method'.
-               */
-              if (member.static) {
-                modifiers.push('static')
-              }
-              if (member.type === 'TSAbstractMethodDefinition') {
-                modifiers.push('abstract')
-              } else if (!node.parent.declare) {
-                addSafetySemicolonWhenInline = false
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if (member.override) {
-                modifiers.push('override')
-              }
-
-              if (member.accessibility === 'protected') {
-                modifiers.push('protected')
-              } else if (member.accessibility === 'private' || isPrivateHash) {
-                modifiers.push('private')
-              } else {
-                modifiers.push('public')
-              }
-
-              if (member.optional) {
-                modifiers.push('optional')
-              }
-
-              if (member.value.async) {
-                modifiers.push('async')
-              }
-
-              if (member.kind === 'constructor') {
-                selectors.push('constructor')
-              }
-
-              if (member.kind === 'get') {
-                selectors.push('get-method')
-              }
-
-              if (member.kind === 'set') {
-                selectors.push('set-method')
-              }
-              selectors.push('method')
-
-              break
-            }
-            case TSESTree.AST_NODE_TYPES.TSAbstractAccessorProperty:
-            case TSESTree.AST_NODE_TYPES.AccessorProperty: {
-              if (member.static) {
-                modifiers.push('static')
-              }
-
-              if (member.type === 'TSAbstractAccessorProperty') {
-                modifiers.push('abstract')
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if (member.override) {
-                modifiers.push('override')
-              }
-
-              if (member.accessibility === 'protected') {
-                modifiers.push('protected')
-              } else if (member.accessibility === 'private' || isPrivateHash) {
-                modifiers.push('private')
-              } else {
-                modifiers.push('public')
-              }
-              selectors.push('accessor-property')
-
-              break
-            }
-            case TSESTree.AST_NODE_TYPES.TSIndexSignature: {
-              if (member.static) {
-                modifiers.push('static')
-              }
-
-              if (member.readonly) {
-                modifiers.push('readonly')
-              }
-
-              selectors.push('index-signature')
-
-              break
-            }
-            case TSESTree.AST_NODE_TYPES.StaticBlock: {
-              addSafetySemicolonWhenInline = false
-
-              selectors.push('static-block')
-
-              dependencies = extractDependencies(member, true)
-
-              break
-            }
             case TSESTree.AST_NODE_TYPES.TSAbstractPropertyDefinition:
-            case TSESTree.AST_NODE_TYPES.PropertyDefinition: {
+            case TSESTree.AST_NODE_TYPES.PropertyDefinition:
               /**
                * Member is necessarily a property similarly to above for methods,
                * prioritize 'static', 'declare', 'decorated', 'abstract',
@@ -507,7 +398,117 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
               selectors.push('property')
               break
-            }
+
+            case TSESTree.AST_NODE_TYPES.TSAbstractMethodDefinition:
+            case TSESTree.AST_NODE_TYPES.MethodDefinition:
+              /**
+               * By putting the static modifier before accessibility modifiers, we
+               * prioritize 'static' over those in cases like:
+               * config: ['static-method', 'public-method']
+               * element: public static method();
+               * Element will be classified as 'static-method' before
+               * 'public-method'.
+               */
+              if (member.static) {
+                modifiers.push('static')
+              }
+              if (member.type === 'TSAbstractMethodDefinition') {
+                modifiers.push('abstract')
+              } else if (!node.parent.declare) {
+                addSafetySemicolonWhenInline = false
+              }
+
+              if (decorated) {
+                modifiers.push('decorated')
+              }
+
+              if (member.override) {
+                modifiers.push('override')
+              }
+
+              if (member.accessibility === 'protected') {
+                modifiers.push('protected')
+              } else if (member.accessibility === 'private' || isPrivateHash) {
+                modifiers.push('private')
+              } else {
+                modifiers.push('public')
+              }
+
+              if (member.optional) {
+                modifiers.push('optional')
+              }
+
+              if (member.value.async) {
+                modifiers.push('async')
+              }
+
+              if (member.kind === 'constructor') {
+                selectors.push('constructor')
+              }
+
+              if (member.kind === 'get') {
+                selectors.push('get-method')
+              }
+
+              if (member.kind === 'set') {
+                selectors.push('set-method')
+              }
+              selectors.push('method')
+
+              break
+
+            case TSESTree.AST_NODE_TYPES.TSAbstractAccessorProperty:
+            case TSESTree.AST_NODE_TYPES.AccessorProperty:
+              if (member.static) {
+                modifiers.push('static')
+              }
+
+              if (member.type === 'TSAbstractAccessorProperty') {
+                modifiers.push('abstract')
+              }
+
+              if (decorated) {
+                modifiers.push('decorated')
+              }
+
+              if (member.override) {
+                modifiers.push('override')
+              }
+
+              if (member.accessibility === 'protected') {
+                modifiers.push('protected')
+              } else if (member.accessibility === 'private' || isPrivateHash) {
+                modifiers.push('private')
+              } else {
+                modifiers.push('public')
+              }
+              selectors.push('accessor-property')
+
+              break
+
+            case TSESTree.AST_NODE_TYPES.TSIndexSignature:
+              if (member.static) {
+                modifiers.push('static')
+              }
+
+              if (member.readonly) {
+                modifiers.push('readonly')
+              }
+
+              selectors.push('index-signature')
+
+              break
+
+            case TSESTree.AST_NODE_TYPES.StaticBlock:
+              addSafetySemicolonWhenInline = false
+
+              selectors.push('static-block')
+
+              dependencies = extractDependencies(member, true)
+
+              break
+
+            /* v8 ignore next 2 - Can't reach this by definition */
             default:
               throw new UnreachableCaseError(member)
           }
