@@ -332,8 +332,74 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           let selectors: Selector[] = []
           let addSafetySemicolonWhenInline: boolean = true
           switch (member.type) {
+            case 'TSAbstractPropertyDefinition':
+            case 'PropertyDefinition':
+              /**
+               * Member is necessarily a property similarly to above for methods,
+               * prioritize 'static', 'declare', 'decorated', 'abstract',
+               * 'override' and 'readonly' over accessibility modifiers.
+               */
+              if ('static' in member && member.static) {
+                modifiers.push('static')
+              }
+
+              if ('declare' in member && member.declare) {
+                modifiers.push('declare')
+              }
+
+              if (member.type === 'TSAbstractPropertyDefinition') {
+                modifiers.push('abstract')
+              }
+
+              if (decorated) {
+                modifiers.push('decorated')
+              }
+
+              if ('override' in member && member.override) {
+                modifiers.push('override')
+              }
+
+              if ('readonly' in member && member.readonly) {
+                modifiers.push('readonly')
+              }
+
+              if (
+                'accessibility' in member &&
+                member.accessibility === 'protected'
+              ) {
+                modifiers.push('protected')
+              } else if (
+                ('accessibility' in member &&
+                  member.accessibility === 'private') ||
+                isPrivateHash
+              ) {
+                modifiers.push('private')
+              } else {
+                modifiers.push('public')
+              }
+
+              if ('optional' in member && member.optional) {
+                modifiers.push('optional')
+              }
+
+              if (
+                member.value?.type === 'ArrowFunctionExpression' ||
+                member.value?.type === 'FunctionExpression'
+              ) {
+                if (member.value.async) {
+                  modifiers.push('async')
+                }
+                selectors.push('function-property')
+              } else if (member.value) {
+                memberValue = sourceCode.getText(member.value)
+                dependencies = extractDependencies(member.value, member.static)
+              }
+
+              selectors.push('property')
+              break
+
             case 'TSAbstractMethodDefinition':
-            case 'MethodDefinition': {
+            case 'MethodDefinition':
               /**
                * By putting the static modifier before accessibility modifiers, we
                * prioritize 'static' over those in cases like:
@@ -389,9 +455,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               selectors.push('method')
 
               break
-            }
+
             case 'TSAbstractAccessorProperty':
-            case 'AccessorProperty': {
+            case 'AccessorProperty':
               if (member.static) {
                 modifiers.push('static')
               }
@@ -418,8 +484,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               selectors.push('accessor-property')
 
               break
-            }
-            case 'TSIndexSignature': {
+
+            case 'TSIndexSignature':
               if (member.static) {
                 modifiers.push('static')
               }
@@ -431,8 +497,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               selectors.push('index-signature')
 
               break
-            }
-            case 'StaticBlock': {
+
+            case 'StaticBlock':
               addSafetySemicolonWhenInline = false
 
               selectors.push('static-block')
@@ -440,78 +506,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               dependencies = extractDependencies(member, true)
 
               break
-            }
-            default: {
-              /**
-               * Member is necessarily a property similarly to above for methods,
-               * prioritize 'static', 'declare', 'decorated', 'abstract',
-               * 'override' and 'readonly' over accessibility modifiers.
-               */
-              if ('static' in member && member.static) {
-                modifiers.push('static')
-              }
-
-              if ('declare' in member && member.declare) {
-                modifiers.push('declare')
-              }
-
-              if (member.type === 'TSAbstractPropertyDefinition') {
-                modifiers.push('abstract')
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if ('override' in member && member.override) {
-                modifiers.push('override')
-              }
-
-              if ('readonly' in member && member.readonly) {
-                modifiers.push('readonly')
-              }
-
-              if (
-                'accessibility' in member &&
-                member.accessibility === 'protected'
-              ) {
-                modifiers.push('protected')
-              } else if (
-                ('accessibility' in member &&
-                  member.accessibility === 'private') ||
-                isPrivateHash
-              ) {
-                modifiers.push('private')
-              } else {
-                modifiers.push('public')
-              }
-
-              if ('optional' in member && member.optional) {
-                modifiers.push('optional')
-              }
-
-              if ('value' in member && member.value) {
-                if (
-                  member.value.type === 'ArrowFunctionExpression' ||
-                  member.value.type === 'FunctionExpression'
-                ) {
-                  if (member.value.async) {
-                    modifiers.push('async')
-                  }
-                  selectors.push('function-property')
-                } else {
-                  memberValue = sourceCode.getText(member.value)
-                }
-                if (member.value.type !== 'TSEmptyBodyFunctionExpression') {
-                  dependencies = extractDependencies(
-                    member.value,
-                    member.static,
-                  )
-                }
-              }
-
-              selectors.push('property')
-            }
           }
 
           let predefinedGroups = generatePredefinedGroups({
