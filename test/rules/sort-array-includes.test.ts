@@ -2585,8 +2585,15 @@ describe(ruleName, () => {
     })
   })
 
-  describe(`${ruleName}: misc`, () => {
-    ruleTester.run(`${ruleName}: allows to use "unsorted" as type`, rule, {
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
       valid: [
         {
           code: dedent`
@@ -2596,16 +2603,14 @@ describe(ruleName, () => {
               'a'
             ].includes(value)
           `,
-          options: [
-            {
-              type: 'unsorted',
-            },
-          ],
+          options: [options],
         },
       ],
       invalid: [],
     })
+  })
 
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,

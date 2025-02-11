@@ -4703,6 +4703,31 @@ describe(ruleName, () => {
     )
   })
 
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            interface Interface {
+              b: string;
+              c: string;
+              a: string;
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
+    })
+  })
+
   describe(`${ruleName}: validating group configuration`, () => {
     ruleTester.run(
       `${ruleName}: allows predefined groups and defined custom groups`,
@@ -4733,26 +4758,6 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
-    ruleTester.run(`${ruleName}: allows to use "unsorted" as type`, rule, {
-      valid: [
-        {
-          code: dedent`
-            interface Interface {
-              b: string;
-              c: string;
-              a: string;
-            }
-          `,
-          options: [
-            {
-              type: 'unsorted',
-            },
-          ],
-        },
-      ],
-      invalid: [],
-    })
-
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
