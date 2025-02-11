@@ -99,10 +99,6 @@ export let compare = <T extends SortingNode>(
   }
 
   let { fallbackSort, order } = options
-  if (fallbackSort.type === 'unsorted') {
-    return 0
-  }
-
   return compare(a, b, {
     ...options,
     order: fallbackSort.order ?? order,

@@ -30,7 +30,6 @@ export type Options = Partial<
     destructuredObjects: { groups: boolean } | boolean
     partitionByComment: PartitionByCommentOption
     newlinesBetween: NewlinesBetweenOption
-    type: TypeOption | 'unsorted'
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
     objectDeclarations: boolean
@@ -40,6 +39,7 @@ export type Options = Partial<
      * @deprecated for {@link `destructuredObjects`} and {@link `objectDeclarations`}
      */
     destructureOnly: boolean
+    type: TypeOption
   } & CommonOptions
 >[]
 

@@ -1,16 +1,11 @@
-export type CustomGroupsOption<SingleCustomGroup = object> = ((
-  | {
-      type?: TypeOption | 'unsorted'
-      order?: OrderOption
-    }
-  | {
-      type?: 'unsorted'
-    }
-) & {
+export type CustomGroupsOption<SingleCustomGroup = object> = ({
   newlinesInside?: 'always' | 'never'
   fallbackSort?: FallbackSortOption
   groupName: string
-} & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup))[]
+} & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) & {
+    order?: OrderOption
+    type?: TypeOption
+  })[]
 
 export interface CommonOptions {
   specialCharacters: SpecialCharactersOption
@@ -29,22 +24,27 @@ export type PartitionByCommentOption =
   | RegexOption
   | boolean
 
+export type TypeOption =
+  | 'alphabetical'
+  | 'line-length'
+  | 'unsorted'
+  | 'natural'
+  | 'custom'
+
 export type GroupsOptions<T> = (
   | { newlinesBetween: NewlinesBetweenOption }
   | T[]
   | T
 )[]
 
-export interface FallbackSortOption {
-  type: TypeOption | 'unsorted'
-  order?: OrderOption
-}
-
 export interface AnyOfCustomGroup<SingleCustomGroup> {
   anyOf: SingleCustomGroup[]
 }
 
-export type TypeOption = 'alphabetical' | 'line-length' | 'natural' | 'custom'
+export interface FallbackSortOption {
+  order?: OrderOption
+  type: TypeOption
+}
 
 export type DeprecatedCustomGroupsOption = Record<string, string[] | string>
 

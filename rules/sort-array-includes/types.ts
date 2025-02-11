@@ -27,9 +27,9 @@ export type Options = Partial<
     customGroups: CustomGroupsOption<SingleCustomGroup>
     partitionByComment: PartitionByCommentOption
     newlinesBetween: NewlinesBetweenOption
-    type: TypeOption | 'unsorted'
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
+    type: TypeOption
   } & CommonOptions
 >[]
 

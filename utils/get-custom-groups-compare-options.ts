@@ -11,7 +11,7 @@ import type { CompareOptions } from './compare'
 type Options = {
   customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption
   groups: GroupsOptions<string>
-  type: TypeOption | 'unsorted'
+  type: TypeOption
 } & CommonOptions
 
 /**
@@ -39,9 +39,7 @@ export let getCustomGroupsCompareOptions = <T extends SortingNode>(
           currentGroup => group === currentGroup.groupName,
         )
       : null
-  if (customGroup?.type === 'unsorted') {
-    return null
-  }
+
   return {
     ...options,
     order:

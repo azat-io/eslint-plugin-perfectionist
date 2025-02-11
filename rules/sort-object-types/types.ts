@@ -33,13 +33,13 @@ export type Options = Partial<
     groupKind: 'required-first' | 'optional-first' | 'mixed'
     partitionByComment: PartitionByCommentOption
     newlinesBetween: NewlinesBetweenOption
-    type: TypeOption | 'unsorted'
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
     /**
      * @deprecated for {@link `useConfigurationIf.declarationMatchesPattern`}
      */
     ignorePattern: RegexOption
+    type: TypeOption
   } & CommonOptions
 >[]
 
