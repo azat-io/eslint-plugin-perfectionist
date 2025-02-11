@@ -4006,6 +4006,104 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    ruleTester.run(`${ruleName}(${type}): enforces grouping`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: '^b',
+                  groupName: 'b',
+                },
+              ],
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'b',
+                leftGroup: 'a',
+                right: 'ba',
+                left: 'aa',
+              },
+              messageId: 'unexpectedObjectTypesGroupOrder',
+            },
+          ],
+          output: dedent`
+            type Type = {
+              ba: string
+              bb: string
+              ab: string
+              aa: string
+            }
+          `,
+          code: dedent`
+            type Type = {
+              ab: string
+              aa: string
+              ba: string
+              bb: string
+            }
+          `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces newlines between`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              newlinesBetween: 'always',
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'missedSpacingBetweenObjectTypeMembers',
+            },
+          ],
+          output: dedent`
+            type Type = {
+              b: string
+
+              a: string
+            }
+          `,
+          code: dedent`
+            type Type = {
+              b: string
+              a: string
+            }
+          `,
+        },
+      ],
+      valid: [],
+    })
   })
 
   describe(`${ruleName}: validating group configuration`, () => {

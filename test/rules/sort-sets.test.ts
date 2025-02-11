@@ -2555,6 +2555,104 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    ruleTester.run(`${ruleName}(${type}): enforces grouping`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: '^b',
+                  groupName: 'b',
+                },
+              ],
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'b',
+                leftGroup: 'a',
+                right: 'ba',
+                left: 'aa',
+              },
+              messageId: 'unexpectedSetsGroupOrder',
+            },
+          ],
+          output: dedent`
+            new Set([
+              'ba',
+              'bb',
+              'ab',
+              'aa',
+            ])
+          `,
+          code: dedent`
+            new Set([
+              'ab',
+              'aa',
+              'ba',
+              'bb',
+            ])
+          `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces newlines between`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              newlinesBetween: 'always',
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'missedSpacingBetweenSetsMembers',
+            },
+          ],
+          output: dedent`
+            new Set([
+              'b',
+
+              'a',
+            ])
+          `,
+          code: dedent`
+            new Set([
+              'b',
+              'a',
+            ])
+          `,
+        },
+      ],
+      valid: [],
+    })
   })
 
   describe(`${ruleName}: misc`, () => {
