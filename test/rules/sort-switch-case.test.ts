@@ -2680,6 +2680,45 @@ describe(ruleName, () => {
     )
   })
 
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            switch (x) {
+              case 'b':
+                break;
+              case 'c':
+                break;
+              case 'a':
+                break;
+            }
+          `,
+          options: [options],
+        },
+        {
+          code: dedent`
+            switch (x) {
+              case 'b':
+              case 'c':
+              case 'a':
+                break;
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
+    })
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(`${ruleName}: not works if discriminant is true`, rule, {
       valid: [

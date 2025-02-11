@@ -6,12 +6,9 @@ import type { SortingNode } from '../types/sorting-node'
 
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import {
-  buildTypeJsonSchema,
-  commonJsonSchemas,
-} from '../utils/common-json-schemas'
 import { reportErrors, ORDER_ERROR, RIGHT, LEFT } from '../utils/report-errors'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
+import { commonJsonSchemas } from '../utils/common-json-schemas'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -265,7 +262,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         properties: {
           ...commonJsonSchemas,
-          type: buildTypeJsonSchema(),
         },
         additionalProperties: false,
         type: 'object',
