@@ -1,8 +1,10 @@
+import type { RegexOption } from '../types/common-options'
+
 import { matches } from './matches'
 
 interface Options {
   useConfigurationIf?: {
-    allNamesMatchPattern?: string
+    allNamesMatchPattern?: RegexOption
   }
 }
 

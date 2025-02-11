@@ -7,6 +7,7 @@ import type {
   CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
+  RegexOption,
   TypeOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
@@ -14,14 +15,14 @@ import type { JoinWithDash } from '../../types/join-with-dash'
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-  elementNamePatternJsonSchema,
+  regexJsonSchema,
 } from '../../utils/common-json-schemas'
 
 export type Options = Partial<
   {
     useConfigurationIf: {
-      declarationMatchesPattern?: string
-      allNamesMatchPattern?: string
+      declarationMatchesPattern?: RegexOption
+      allNamesMatchPattern?: RegexOption
     }
     customGroups:
       | CustomGroupsOption<SingleCustomGroup>
@@ -38,7 +39,7 @@ export type Options = Partial<
     /**
      * @deprecated for {@link `useConfigurationIf.declarationMatchesPattern`}
      */
-    ignorePattern: string[]
+    ignorePattern: RegexOption
   } & CommonOptions
 >[]
 
@@ -117,7 +118,7 @@ type MultilineGroup = JoinWithDash<
 >
 
 interface ElementNamePatternFilterCustomGroup {
-  elementNamePattern?: string
+  elementNamePattern?: RegexOption
 }
 
 type IndexSignatureSelector = 'index-signature'
@@ -156,5 +157,5 @@ export let allModifiers: Modifier[] = ['optional', 'required', 'multiline']
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementNamePattern: elementNamePatternJsonSchema,
+  elementNamePattern: regexJsonSchema,
 }

@@ -797,52 +797,59 @@ describe(ruleName, () => {
         valid: [],
       })
 
-      ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
-        invalid: [
-          {
-            options: [
-              {
-                customGroups: [
-                  {
-                    groupName: 'propertiesStartingWithHello',
-                    elementNamePattern: 'hello*',
-                    selector: 'property',
-                  },
-                ],
-                groups: ['propertiesStartingWithHello', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                data: {
-                  rightGroup: 'propertiesStartingWithHello',
-                  right: 'helloProperty',
-                  leftGroup: 'unknown',
-                  left: 'method',
+      for (let elementNamePattern of [
+        'hello',
+        ['noMatch', 'hello'],
+        { pattern: 'HELLO', flags: 'i' },
+        ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'propertiesStartingWithHello',
+                      selector: 'property',
+                      elementNamePattern,
+                    },
+                  ],
+                  groups: ['propertiesStartingWithHello', 'unknown'],
                 },
-                messageId: 'unexpectedObjectTypesGroupOrder',
-              },
-            ],
-            output: dedent`
-              type Type = {
-                helloProperty: string
-                a: string
-                b: string
-                method(): void
-              }
-            `,
-            code: dedent`
-              type Type = {
-                a: string
-                b: string
-                method(): void
-                helloProperty: string
-              }
-            `,
-          },
-        ],
-        valid: [],
-      })
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'propertiesStartingWithHello',
+                    right: 'helloProperty',
+                    leftGroup: 'unknown',
+                    left: 'method',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  helloProperty: string
+                  a: string
+                  b: string
+                  method(): void
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  a: string
+                  b: string
+                  method(): void
+                  helloProperty: string
+                }
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
 
       ruleTester.run(
         `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
@@ -1386,7 +1393,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: '^Part*',
+                  partitionByComment: '^Part',
                 },
               ],
             },
@@ -1465,7 +1472,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                  partitionByComment: ['Partition Comment', 'Part:', 'Other'],
                 },
               ],
             },
@@ -2499,71 +2506,78 @@ describe(ruleName, () => {
     )
 
     describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
-        rule,
-        {
-          invalid: [
-            {
-              errors: [
-                {
-                  data: {
-                    rightGroup: 'g',
-                    leftGroup: 'b',
-                    right: 'g',
-                    left: 'b',
+      for (let rgbAllNamesMatchPattern of [
+        '^r|g|b$',
+        ['noMatch', '^r|g|b$'],
+        { pattern: '^R|G|B$', flags: 'i' },
+        ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+      ]) {
+        ruleTester.run(
+          `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'g',
+                      leftGroup: 'b',
+                      right: 'g',
+                      left: 'b',
+                    },
+                    messageId: 'unexpectedObjectTypesGroupOrder',
                   },
-                  messageId: 'unexpectedObjectTypesGroupOrder',
-                },
-                {
-                  data: {
-                    rightGroup: 'r',
-                    leftGroup: 'g',
-                    right: 'r',
-                    left: 'g',
+                  {
+                    data: {
+                      rightGroup: 'r',
+                      leftGroup: 'g',
+                      right: 'r',
+                      left: 'g',
+                    },
+                    messageId: 'unexpectedObjectTypesGroupOrder',
                   },
-                  messageId: 'unexpectedObjectTypesGroupOrder',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  useConfigurationIf: {
-                    allNamesMatchPattern: 'foo',
+                ],
+                options: [
+                  {
+                    ...options,
+                    useConfigurationIf: {
+                      allNamesMatchPattern: 'foo',
+                    },
                   },
-                },
-                {
-                  ...options,
-                  customGroups: {
-                    r: 'r',
-                    g: 'g',
-                    b: 'b',
+                  {
+                    ...options,
+                    customGroups: {
+                      r: 'r',
+                      g: 'g',
+                      b: 'b',
+                    },
+                    useConfigurationIf: {
+                      allNamesMatchPattern: rgbAllNamesMatchPattern,
+                    },
+                    groups: ['r', 'g', 'b'],
                   },
-                  useConfigurationIf: {
-                    allNamesMatchPattern: '^r|g|b$',
-                  },
-                  groups: ['r', 'g', 'b'],
-                },
-              ],
-              output: dedent`
-                type Type = {
-                  r: string
-                  g: string
-                  b: string
-                }
-              `,
-              code: dedent`
-                type Type = {
-                  b: string
-                  g: string
-                  r: string
-                }
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                ],
+                output: dedent`
+                  type Type = {
+                    r: string
+                    g: string
+                    b: string
+                  }
+                `,
+                code: dedent`
+                  type Type = {
+                    b: string
+                    g: string
+                    r: string
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
 
       describe(`${ruleName}(${type}): allows to use 'declarationMatchesPattern'`, () => {
         ruleTester.run(

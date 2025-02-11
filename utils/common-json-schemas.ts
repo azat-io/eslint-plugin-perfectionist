@@ -93,6 +93,7 @@ export let groupsJsonSchema: JSONSchema4 = {
         properties: {
           newlinesBetween: newlinesBetweenJsonSchema,
         },
+        additionalProperties: false,
         type: 'object',
       },
     ],
@@ -119,19 +120,43 @@ export let customGroupsJsonSchema: JSONSchema4 = {
   type: 'object',
 }
 
-let allowedPartitionByCommentJsonSchemas: JSONSchema4[] = [
-  {
-    items: {
+let singleRegexJsonSchema: JSONSchema4 = {
+  oneOf: [
+    {
+      properties: {
+        pattern: {
+          type: 'string',
+        },
+        flags: {
+          type: 'string',
+        },
+      },
+      additionalProperties: false,
+      type: 'object',
+    },
+    {
       type: 'string',
     },
-    type: 'array',
-  },
+  ],
+  description: 'Regular expression.',
+}
+
+export let regexJsonSchema: JSONSchema4 = {
+  oneOf: [
+    {
+      items: singleRegexJsonSchema,
+      type: 'array',
+    },
+    singleRegexJsonSchema,
+  ],
+  description: 'Regular expression.',
+}
+
+let allowedPartitionByCommentJsonSchemas: JSONSchema4[] = [
   {
     type: 'boolean',
   },
-  {
-    type: 'string',
-  },
+  regexJsonSchema,
 ]
 export let partitionByCommentJsonSchema: JSONSchema4 = {
   oneOf: [
@@ -145,6 +170,7 @@ export let partitionByCommentJsonSchema: JSONSchema4 = {
           oneOf: allowedPartitionByCommentJsonSchemas,
         },
       },
+      additionalProperties: false,
       type: 'object',
     },
   ],
@@ -164,9 +190,7 @@ export let buildUseConfigurationIfJsonSchema = ({
   additionalProperties?: Record<string, JSONSchema4>
 } = {}): JSONSchema4 => ({
   properties: {
-    allNamesMatchPattern: {
-      type: 'string',
-    },
+    allNamesMatchPattern: regexJsonSchema,
     ...additionalProperties,
   },
   additionalProperties: false,
@@ -265,13 +289,3 @@ export let buildCustomGroupSelectorJsonSchema = (
   enum: selectors,
   type: 'string',
 })
-
-export let elementNamePatternJsonSchema: JSONSchema4 = {
-  description: 'Element name pattern filter.',
-  type: 'string',
-}
-
-export let elementValuePatternJsonSchema: JSONSchema4 = {
-  description: 'Element value pattern filter.',
-  type: 'string',
-}

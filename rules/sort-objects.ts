@@ -14,6 +14,7 @@ import {
   buildTypeJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
+  regexJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   DEPENDENCY_ORDER_ERROR,
@@ -158,9 +159,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       })
       if (
         objectParentForIgnorePattern?.name &&
-        options.ignorePattern.some(pattern =>
-          matches(objectParentForIgnorePattern.name, pattern),
-        )
+        matches(objectParentForIgnorePattern.name, options.ignorePattern)
       ) {
         return
       }
@@ -476,27 +475,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ],
             description: 'Controls whether to sort destructured objects.',
           },
-          ignorePattern: {
-            description:
-              'Specifies names or patterns for nodes that should be ignored by rule.',
-            items: {
-              type: 'string',
-            },
-            type: 'array',
-          },
-          useConfigurationIf: buildUseConfigurationIfJsonSchema({
-            additionalProperties: {
-              callingFunctionNamePattern: {
-                type: 'string',
-              },
-            },
-          }),
           customGroups: {
             oneOf: [
               customGroupsJsonSchema,
               buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
             ],
           },
+          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+            additionalProperties: {
+              callingFunctionNamePattern: regexJsonSchema,
+            },
+          }),
           destructureOnly: {
             description: 'Controls whether to sort only destructured objects.',
             type: 'boolean',
@@ -513,6 +502,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
+          ignorePattern: regexJsonSchema,
           groups: groupsJsonSchema,
         },
         additionalProperties: false,

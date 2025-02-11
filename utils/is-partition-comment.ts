@@ -2,18 +2,16 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_TOKEN_TYPES } from '@typescript-eslint/types'
 
+import type {
+  PartitionByCommentOption,
+  RegexOption,
+} from '../types/common-options'
+
 import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 import { matches } from './matches'
 
 interface IsPartitionCommentParameters {
-  partitionByComment:
-    | {
-        block?: string[] | boolean | string
-        line?: string[] | boolean | string
-      }
-    | string[]
-    | boolean
-    | string
+  partitionByComment: PartitionByCommentOption
   comment: TSESTree.Comment
 }
 
@@ -38,10 +36,13 @@ export let isPartitionComment = ({
     })
   }
 
-  let relevantPartitionByComment =
-    comment.type === AST_TOKEN_TYPES.Block
-      ? partitionByComment.block
-      : partitionByComment.line
+  let relevantPartitionByComment
+  if (comment.type === AST_TOKEN_TYPES.Block && 'block' in partitionByComment) {
+    relevantPartitionByComment = partitionByComment.block
+  }
+  if (comment.type === AST_TOKEN_TYPES.Line && 'line' in partitionByComment) {
+    relevantPartitionByComment = partitionByComment.line
+  }
 
   return (
     // eslint-disable-next-line no-undefined
@@ -57,16 +58,11 @@ let isTrimmedCommentPartitionComment = ({
   partitionByComment,
   trimmedComment,
 }: {
-  partitionByComment: string[] | boolean | string
+  partitionByComment: RegexOption | boolean
   trimmedComment: string
 }): boolean => {
   if (typeof partitionByComment === 'boolean') {
     return partitionByComment
   }
-  if (typeof partitionByComment === 'string') {
-    return matches(trimmedComment.trim(), partitionByComment)
-  }
-  return partitionByComment.some(pattern =>
-    matches(trimmedComment.trim(), pattern),
-  )
+  return matches(trimmedComment, partitionByComment)
 }

@@ -7,7 +7,7 @@ export let getCommentAfter = (
 ): TSESTree.Comment | null => {
   let token = source.getTokenAfter(node, {
     filter: ({ value, type }) =>
-      !(type === 'Punctuator' && [',', ';', ':'].includes(value)),
+      type !== 'Punctuator' || ![',', ';', ':'].includes(value),
     includeComments: true,
   })
 

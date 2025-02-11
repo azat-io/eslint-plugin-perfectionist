@@ -1,6 +1,5 @@
 import type { TSESLint } from '@typescript-eslint/utils'
-
-import { TSESTree } from '@typescript-eslint/types'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../types/sorting-node'
 import type { Options } from './sort-maps/types'
@@ -84,9 +83,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let matchedContextOptions = getMatchingContextOptions({
         nodeNames: elements
           .filter(
-            element =>
-              element !== null &&
-              element.type !== TSESTree.AST_NODE_TYPES.SpreadElement,
+            element => element !== null && element.type !== 'SpreadElement',
           )
           .map(element => getNodeName({ sourceCode, element })),
         contextOptions: context.options,

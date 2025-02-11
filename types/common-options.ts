@@ -23,12 +23,11 @@ export interface CommonOptions {
 
 export type PartitionByCommentOption =
   | {
-      block?: string[] | boolean | string
-      line?: string[] | boolean | string
+      block?: RegexOption | boolean
+      line?: RegexOption | boolean
     }
-  | string[]
+  | RegexOption
   | boolean
-  | string
 
 export type GroupsOptions<T> = (
   | { newlinesBetween: NewlinesBetweenOption }
@@ -49,8 +48,17 @@ export type TypeOption = 'alphabetical' | 'line-length' | 'natural' | 'custom'
 
 export type DeprecatedCustomGroupsOption = Record<string, string[] | string>
 
+export type RegexOption = SingleRegexOption[] | SingleRegexOption
+
 export type NewlinesBetweenOption = 'ignore' | 'always' | 'never'
 
 export type SpecialCharactersOption = 'remove' | 'trim' | 'keep'
 
 export type OrderOption = 'desc' | 'asc'
+
+type SingleRegexOption =
+  | {
+      pattern: string
+      flags?: string
+    }
+  | string

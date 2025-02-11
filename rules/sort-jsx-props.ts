@@ -4,6 +4,7 @@ import type {
   NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
+  RegexOption,
   TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
@@ -15,6 +16,7 @@ import {
   buildTypeJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
+  regexJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   MISSED_SPACING_ERROR,
@@ -46,7 +48,7 @@ type Options<T extends string = string> = [
       newlinesBetween: NewlinesBetweenOption
       groups: GroupsOptions<Group<T>>
       partitionByNewLine: boolean
-      ignorePattern: string[]
+      ignorePattern: RegexOption
       type: TypeOption
     } & CommonOptions
   >,
@@ -94,13 +96,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let sourceCode = getSourceCode(context)
 
-      let shouldIgnore = false
-      if (options.ignorePattern.length > 0) {
-        let tagName = sourceCode.getText(node.openingElement.name)
-        shouldIgnore = options.ignorePattern.some(pattern =>
-          matches(tagName, pattern),
-        )
-      }
+      let shouldIgnore = matches(
+        sourceCode.getText(node.openingElement.name),
+        options.ignorePattern,
+      )
       if (shouldIgnore || !isSortable(node.openingElement.attributes)) {
         return
       }
@@ -193,17 +192,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         properties: {
           ...commonJsonSchemas,
-          ignorePattern: {
-            description:
-              'Specifies names or patterns for nodes that should be ignored by rule.',
-            items: {
-              type: 'string',
-            },
-            type: 'array',
-          },
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           customGroups: customGroupsJsonSchema,
+          ignorePattern: regexJsonSchema,
           type: buildTypeJsonSchema(),
           groups: groupsJsonSchema,
         },

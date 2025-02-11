@@ -213,6 +213,14 @@ Specifies the sorting locales. See [String.prototype.localeCompare() - locales](
 
 ### ignorePattern
 
+<sub>
+  type:
+  ```
+  {
+    allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+  }
+  ```
+</sub>
 <sub>default: `[]`</sub>
 
 Allows you to specify names or patterns for JSX elements that should be ignored by this rule. This can be useful if you have specific components that you do not want to sort.

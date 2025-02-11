@@ -191,9 +191,9 @@ Allows you to use comments to separate the members of types into logical groups.
 
 - `true` — All comments will be treated as delimiters, creating partitions.
 - `false` — Comments will not be used as delimiters.
-- `string` — A regexp pattern to specify which comments should act as delimiters.
-- `string[]` — A list of regexp patterns to specify which comments should act as delimiters.
-- `{ block: boolean | string | string[]; line: boolean | string | string[] }` — Specify which block and line comments should act as delimiters.
+- `RegExpPattern = string | { pattern: string; flags: string}` — A regexp pattern to specify which comments should act as delimiters.
+- `RegExpPattern[]` — A list of regexp patterns to specify which comments should act as delimiters.
+- `{ block: boolean | RegExpPattern | RegExpPattern[]; line: boolean | RegExpPattern | RegExpPattern[] }` — Specify which block and line comments should act as delimiters.
 
 ### partitionByNewLine
 
@@ -253,7 +253,13 @@ Allows you to group type object keys by their kind, determining whether required
 ### useConfigurationIf
 
 <sub>
-  type: `{ allNamesMatchPattern?: string; declarationMatchesPattern?: string }`
+  type:
+  ```
+  {
+    allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+    declarationMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+  }
+  ```
 </sub>
 <sub>default: `{}`</sub>
 
@@ -468,7 +474,7 @@ interface CustomGroupDefinition {
   newlinesInside?: 'always' | 'never'
   selector?: string
   modifiers?: string[]
-  elementNamePattern?: string
+  elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
 }
 
 ```
@@ -485,7 +491,7 @@ interface CustomGroupAnyOfDefinition {
   anyOf: Array<{
       selector?: string
       modifiers?: string[]
-      elementNamePattern?: string
+      elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
   }>
 }
 ```

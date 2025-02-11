@@ -221,10 +221,10 @@ Allows you to group set elements by their kind, determining whether spread value
 Allows you to use comments to separate the members of sets into logical groups. This can help in organizing and maintaining large sets by creating partitions based on comments.
 
 - `true` — All comments will be treated as delimiters, creating partitions.
--	`false` — Comments will not be used as delimiters.
-- `string` — A regexp pattern to specify which comments should act as delimiters.
-- `string[]` — A list of regexp patterns to specify which comments should act as delimiters.
-- `{ block: boolean | string | string[]; line: boolean | string | string[] }` — Specify which block and line comments should act as delimiters.
+- `false` — Comments will not be used as delimiters.
+- `RegExpPattern = string | { pattern: string; flags: string}` — A regexp pattern to specify which comments should act as delimiters.
+- `RegExpPattern[]` — A list of regexp patterns to specify which comments should act as delimiters.
+- `{ block: boolean | RegExpPattern | RegExpPattern[]; line: boolean | RegExpPattern | RegExpPattern[] }` — Specify which block and line comments should act as delimiters.
 
 ### partitionByNewLine
 
@@ -330,7 +330,7 @@ interface CustomGroupDefinition {
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
   selector?: string
-  elementNamePattern?: string
+  elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
 }
 
 ```
@@ -345,7 +345,7 @@ interface CustomGroupAnyOfDefinition {
   order?: 'asc' | 'desc'
   anyOf: Array<{
       selector?: string
-      elementNamePattern?: string
+      elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
   }>
 }
 ```
