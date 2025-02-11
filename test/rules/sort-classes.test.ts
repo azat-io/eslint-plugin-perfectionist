@@ -7474,6 +7474,83 @@ describe(ruleName, () => {
       ],
       valid: [],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'a',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
+              },
+            ],
+            output: dedent`
+              class Class {
+                bb: string;
+                c: string;
+                a: string;
+              }
+            `,
+            code: dedent`
+              class Class {
+                a: string;
+                bb: string;
+                c: string;
+              }
+            `,
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedClassesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              },
+            ],
+            output: dedent`
+              class Class {
+                bb: string;
+                a: string;
+                c: string;
+              }
+            `,
+            code: dedent`
+              class Class {
+                c: string;
+                bb: string;
+                a: string;
+              }
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: custom groups`, () => {

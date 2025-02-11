@@ -138,6 +138,25 @@ Determines whether the sorted items should be in ascending or descending order.
 - `'asc'` — Sort items in ascending order (A to Z, 1 to 9).
 - `'desc'` — Sort items in descending order (Z to A, 9 to 1).
 
+### fallbackSort
+
+<sub>
+  type: `{ type: string; order?: 'asc' | 'desc' }`
+</sub>
+<sub>default: `{ type: 'unsorted' }`</sub>
+
+Defines a list of fallback sort options to use when comparing two elements that are equal according to the primary sort
+[`type`](#type).
+
+Example: enforce alphabetical sort between two elements with the same length.
+```ts
+{
+  type: 'line-length',
+  order: 'desc'
+  fallbackSort: { type: 'alphabetical', order: 'asc' }
+}
+```
+
 ### alphabet
 
 <sub>default: `''`</sub>

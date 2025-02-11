@@ -4624,6 +4624,83 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'a',
+                },
+                messageId: 'unexpectedInterfacePropertiesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
+              },
+            ],
+            output: dedent`
+              interface Interface {
+                bb: string;
+                c: string;
+                a: string;
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                a: string;
+                bb: string;
+                c: string;
+              }
+            `,
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedInterfacePropertiesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              },
+            ],
+            output: dedent`
+              interface Interface {
+                bb: string;
+                a: string;
+                c: string;
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                c: string;
+                bb: string;
+                a: string;
+              }
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: validating group configuration`, () => {

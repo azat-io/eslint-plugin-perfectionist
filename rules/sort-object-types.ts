@@ -68,6 +68,7 @@ interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeElement> {
 }
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',

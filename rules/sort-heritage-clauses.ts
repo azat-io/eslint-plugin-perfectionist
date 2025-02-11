@@ -42,6 +42,7 @@ type MESSAGE_ID =
 type Group<T extends string> = 'unknown' | T
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   type: 'alphabetical',
   ignoreCase: true,

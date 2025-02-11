@@ -18,6 +18,7 @@ type MESSAGE_ID =
   | 'unexpectedInterfacePropertiesOrder'
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',

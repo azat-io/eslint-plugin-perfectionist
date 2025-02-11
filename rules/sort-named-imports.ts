@@ -47,6 +47,7 @@ interface SortNamedImportsSortingNode
 type MESSAGE_ID = 'unexpectedNamedImportsOrder'
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByNewLine: false,
   partitionByComment: false,

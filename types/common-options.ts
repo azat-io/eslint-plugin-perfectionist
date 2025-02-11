@@ -8,12 +8,14 @@ export type CustomGroupsOption<SingleCustomGroup = object> = ((
     }
 ) & {
   newlinesInside?: 'always' | 'never'
+  fallbackSort?: FallbackSortOption
   groupName: string
 } & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup))[]
 
 export interface CommonOptions {
   specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
+  fallbackSort: FallbackSortOption
   ignoreCase: boolean
   order: OrderOption
   alphabet: string
@@ -32,6 +34,11 @@ export type GroupsOptions<T> = (
   | T[]
   | T
 )[]
+
+export interface FallbackSortOption {
+  type: TypeOption | 'unsorted'
+  order?: OrderOption
+}
 
 export interface AnyOfCustomGroup<SingleCustomGroup> {
   anyOf: SingleCustomGroup[]

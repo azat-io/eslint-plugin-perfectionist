@@ -82,6 +82,7 @@ let defaultOptions: Required<SortModulesOptions[0]> = {
     'export-function',
     'function',
   ],
+  fallbackSort: { type: 'unsorted' },
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',

@@ -43,6 +43,7 @@ type MESSAGE_ID =
   | 'unexpectedVariableDeclarationsOrder'
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByNewLine: false,
   partitionByComment: false,

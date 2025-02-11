@@ -92,6 +92,7 @@ let defaultOptions: Required<SortClassesOptions[0]> = {
     'unknown',
   ],
   ignoreCallbackDependenciesPatterns: [],
+  fallbackSort: { type: 'unsorted' },
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',

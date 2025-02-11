@@ -56,6 +56,7 @@ type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 type Group<T extends string> = 'unknown' | T
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByComment: false,
   sortOnProperties: true,

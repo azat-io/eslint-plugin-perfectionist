@@ -2,6 +2,7 @@ import { compare as createNaturalCompare } from 'natural-orderby'
 
 import type {
   SpecialCharactersOption,
+  FallbackSortOption,
   OrderOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
@@ -20,6 +21,7 @@ interface BaseCompareOptions<T extends SortingNode> {
    * node's name.
    */
   nodeValueGetter?: ((node: T) => string) | null
+  fallbackSort: FallbackSortOption
   order: OrderOption
 }
 
@@ -70,17 +72,35 @@ export let compare = <T extends SortingNode>(
     case 'alphabetical':
       sortingFunction = getAlphabeticalSortingFunction(options, nodeValueGetter)
       break
+    case 'line-length':
+      sortingFunction = getLineLengthSortingFunction(options, nodeValueGetter)
+      break
     case 'natural':
       sortingFunction = getNaturalSortingFunction(options, nodeValueGetter)
       break
     case 'custom':
       sortingFunction = getCustomSortingFunction(options, nodeValueGetter)
       break
-    case 'line-length':
-      sortingFunction = getLineLengthSortingFunction(options, nodeValueGetter)
   }
 
-  return convertBooleanToSign(options.order === 'asc') * sortingFunction(a, b)
+  let compareValue =
+    convertBooleanToSign(options.order === 'asc') * sortingFunction(a, b)
+
+  if (compareValue) {
+    return compareValue
+  }
+
+  let { fallbackSort, order } = options
+  if (fallbackSort.type === 'unsorted') {
+    return 0
+  }
+
+  return compare(a, b, {
+    ...options,
+    order: fallbackSort.order ?? order,
+    type: fallbackSort.type,
+    fallbackSort,
+  } as CompareOptions<T>)
 }
 
 let getAlphabeticalSortingFunction = <T extends SortingNode>(

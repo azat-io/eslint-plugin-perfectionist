@@ -8,12 +8,13 @@ import { compare } from '../../utils/compare'
 describe('compare', () => {
   describe('alphabetical', () => {
     let compareOptions = {
-      specialCharacters: 'keep',
-      type: 'alphabetical',
+      fallbackSort: { type: 'unsorted' } as const,
+      specialCharacters: 'keep' as const,
+      type: 'alphabetical' as const,
+      locales: 'en-US' as const,
+      order: 'asc' as const,
       ignoreCase: false,
-      locales: 'en-US',
-      order: 'asc',
-    } as const
+    }
 
     it('sorts by order asc', () => {
       expect(
@@ -72,12 +73,13 @@ describe('compare', () => {
 
   describe('natural', () => {
     let compareOptions = {
-      specialCharacters: 'keep',
+      fallbackSort: { type: 'unsorted' } as const,
+      specialCharacters: 'keep' as const,
+      locales: 'en-US' as const,
+      type: 'natural' as const,
+      order: 'asc' as const,
       ignoreCase: false,
-      locales: 'en-US',
-      type: 'natural',
-      order: 'asc',
-    } as const
+    }
 
     it('sorts by order asc', () => {
       expect(
@@ -136,12 +138,13 @@ describe('compare', () => {
 
   describe('line-length', () => {
     let compareOptions = {
-      specialCharacters: 'keep',
-      type: 'line-length',
+      fallbackSort: { type: 'unsorted' } as const,
+      specialCharacters: 'keep' as const,
+      type: 'line-length' as const,
+      locales: 'en-US' as const,
+      order: 'desc' as const,
       ignoreCase: false,
-      locales: 'en-US',
-      order: 'desc',
-    } as const
+    }
 
     it('sorts by order asc', () => {
       expect(
@@ -168,12 +171,13 @@ describe('compare', () => {
       alphabet: Alphabet.generateRecommendedAlphabet()
         .sortByLocaleCompare('en-US')
         .getCharacters(),
-      specialCharacters: 'keep',
+      fallbackSort: { type: 'unsorted' } as const,
+      specialCharacters: 'keep' as const,
+      locales: 'en-US' as const,
+      type: 'custom' as const,
+      order: 'asc' as const,
       ignoreCase: false,
-      locales: 'en-US',
-      type: 'custom',
-      order: 'asc',
-    } as const
+    }
 
     it('sorts by order asc', () => {
       expect(
@@ -261,6 +265,49 @@ describe('compare', () => {
         compare(createTestNode({ name: '' }), createTestNode({ name: 'a' }), {
           ...compareOptions,
           alphabet: 'a',
+        }),
+      ).toBe(-1)
+    })
+  })
+
+  describe('fallback sorting', () => {
+    let compareOptions = {
+      specialCharacters: 'keep' as const,
+      type: 'line-length' as const,
+      locales: 'en-US' as const,
+      order: 'desc' as const,
+      ignoreCase: false,
+    }
+
+    it('sorts using the fallback configuration', () => {
+      let nodeAaa = createTestNode({ name: 'aaa' })
+      let nodeBbb = createTestNode({ name: 'bbb' })
+      expect(
+        compare(nodeBbb, nodeAaa, {
+          ...compareOptions,
+          fallbackSort: {
+            type: 'alphabetical',
+            order: 'asc',
+          } as const,
+        }),
+      ).toBe(1)
+
+      expect(
+        compare(nodeBbb, nodeAaa, {
+          ...compareOptions,
+          fallbackSort: {
+            type: 'alphabetical',
+            order: 'desc',
+          } as const,
+        }),
+      ).toBe(-1)
+
+      expect(
+        compare(nodeBbb, nodeAaa, {
+          ...compareOptions,
+          fallbackSort: {
+            type: 'alphabetical',
+          } as const,
         }),
       ).toBe(-1)
     })

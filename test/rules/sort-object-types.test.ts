@@ -3904,6 +3904,83 @@ describe(ruleName, () => {
       ],
       invalid: [],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
+              },
+            ],
+            output: dedent`
+              type Type = {
+                bb: string;
+                c: string;
+                a: string;
+              }
+            `,
+            code: dedent`
+              type Type = {
+                a: string;
+                bb: string;
+                c: string;
+              }
+            `,
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              },
+            ],
+            output: dedent`
+              type Type = {
+                bb: string;
+                a: string;
+                c: string;
+              }
+            `,
+            code: dedent`
+              type Type = {
+                c: string;
+                bb: string;
+                a: string;
+              }
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: validating group configuration`, () => {

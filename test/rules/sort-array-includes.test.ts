@@ -2447,6 +2447,83 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'a',
+                },
+                messageId: 'unexpectedArrayIncludesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
+              },
+            ],
+            output: dedent`
+              [
+                'bb',
+                'c',
+                'a',
+              ].includes(value)
+            `,
+            code: dedent`
+              [
+                'a',
+                'bb',
+                'c',
+              ].includes(value)
+            `,
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedArrayIncludesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              },
+            ],
+            output: dedent`
+              [
+                'bb',
+                'a',
+                'c',
+              ].includes(value)
+            `,
+            code: dedent`
+              [
+                'c',
+                'bb',
+                'a',
+              ].includes(value)
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorts by custom alphabet`, () => {

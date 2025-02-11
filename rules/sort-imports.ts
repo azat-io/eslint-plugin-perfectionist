@@ -6,6 +6,7 @@ import type {
   PartitionByCommentOption,
   SpecialCharactersOption,
   NewlinesBetweenOption,
+  FallbackSortOption,
   GroupsOptions,
   OrderOption,
   RegexOption,
@@ -59,6 +60,7 @@ export type Options<T extends string = string> = [
     specialCharacters: SpecialCharactersOption
     locales: NonNullable<Intl.LocalesArgument>
     newlinesBetween: NewlinesBetweenOption
+    fallbackSort: FallbackSortOption
     groups: GroupsOptions<Group<T>>
     internalPattern: RegexOption[]
     environment: 'node' | 'bun'
@@ -122,6 +124,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           'unknown',
         ],
         customGroups: { value: {}, type: {} },
+        fallbackSort: { type: 'unsorted' },
         internalPattern: ['^~/.+'],
         partitionByComment: false,
         partitionByNewLine: false,

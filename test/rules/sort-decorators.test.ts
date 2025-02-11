@@ -3829,6 +3829,163 @@ describe(ruleName, () => {
         invalid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            output: dedent`
+              @BB
+              @C
+              @A
+              class Class {
+
+                @BB
+                @C
+                @A
+                property
+
+                @BB
+                @C
+                @A
+                accessor field
+
+                @BB
+                @C
+                @A
+                method(
+                  @BB
+                  @C
+                  @A
+                  parameter) {}
+              }
+            `,
+            code: dedent`
+              @A
+              @BB
+              @C
+              class Class {
+
+                @A
+                @BB
+                @C
+                property
+
+                @A
+                @BB
+                @C
+                accessor field
+
+                @A
+                @BB
+                @C
+                method(
+                  @A
+                  @BB
+                  @C
+                  parameter) {}
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                data: {
+                  right: 'BB',
+                  left: 'A',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ]),
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
+
+                order: 'desc',
+              },
+            ],
+          },
+          {
+            output: dedent`
+              @BB
+              @A
+              @C
+              class Class {
+
+                @BB
+                @A
+                @C
+                property
+
+                @BB
+                @A
+                @C
+                accessor field
+
+                @BB
+                @A
+                @C
+                method(
+                  @BB
+                  @A
+                  @C
+                  parameter) {}
+              }
+            `,
+            code: dedent`
+              @C
+              @BB
+              @A
+              class Class {
+
+                @C
+                @BB
+                @A
+                property
+
+                @C
+                @BB
+                @A
+                accessor field
+
+                @C
+                @BB
+                @A
+                method(
+                  @C
+                  @BB
+                  @A
+                  parameter) {}
+              }
+            `,
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+
+                order: 'desc',
+              },
+            ],
+            errors: duplicate5Times([
+              {
+                data: {
+                  right: 'BB',
+                  left: 'C',
+                },
+                messageId: 'unexpectedDecoratorsOrder',
+              },
+            ]),
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {

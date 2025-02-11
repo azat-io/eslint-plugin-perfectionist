@@ -6020,6 +6020,75 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'a',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
+              },
+            ],
+            output: dedent`
+              import { bb } from 'bb'
+              import { c } from 'c'
+              import { a } from 'a'
+            `,
+            code: dedent`
+              import { a } from 'a'
+              import { bb } from 'bb'
+              import { c } from 'c'
+            `,
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedImportsOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              },
+            ],
+            output: dedent`
+              import { bb } from 'bb'
+              import { a } from 'a'
+              import { c } from 'c'
+            `,
+            code: dedent`
+              import { c } from 'c'
+              import { bb } from 'bb'
+              import { a } from 'a'
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: validating group configuration`, () => {

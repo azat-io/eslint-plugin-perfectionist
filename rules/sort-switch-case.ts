@@ -38,6 +38,7 @@ type Options = [
 type MESSAGE_ID = 'unexpectedSwitchCaseOrder'
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   type: 'alphabetical',
   ignoreCase: true,

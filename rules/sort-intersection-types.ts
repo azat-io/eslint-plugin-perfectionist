@@ -19,6 +19,7 @@ type MESSAGE_ID =
 type Options = SortUnionTypesOptions
 
 let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
   partitionByComment: false,

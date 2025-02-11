@@ -63,6 +63,7 @@ interface SortArrayIncludesSortingNode
 }
 
 export let defaultOptions: Required<Options[0]> = {
+  fallbackSort: { type: 'unsorted' },
   groupKind: 'literals-first',
   specialCharacters: 'keep',
   partitionByComment: false,

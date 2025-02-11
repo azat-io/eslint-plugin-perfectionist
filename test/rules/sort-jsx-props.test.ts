@@ -2054,6 +2054,83 @@ describe(ruleName, () => {
         },
       ],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'a',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
+              },
+            ],
+            output: dedent`
+              <Element
+                bb="bb"
+                c="c"
+                a="a"
+              />
+            `,
+            code: dedent`
+              <Element
+                a="a"
+                bb="bb"
+                c="c"
+              />
+            `,
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              },
+            ],
+            output: dedent`
+              <Element
+                bb="bb"
+                a="a"
+                c="c"
+              />
+            `,
+            code: dedent`
+              <Element
+                c="c"
+                bb="bb"
+                a="a"
+              />
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: validating group configuration`, () => {

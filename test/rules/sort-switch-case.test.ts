@@ -2589,6 +2589,95 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): handles "fallbackSort" option`,
+      rule,
+      {
+        invalid: [
+          {
+            output: dedent`
+              switch (x) {
+                case 'bb':
+                  break;
+                case 'c':
+                  break;
+                case 'a':
+                  break;
+              }
+            `,
+            code: dedent`
+              switch (x) {
+                case 'a':
+                  break;
+                case 'bb':
+                  break;
+                case 'c':
+                  break;
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'a',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
+              },
+            ],
+          },
+          {
+            output: dedent`
+              switch (x) {
+                case 'bb':
+                  break;
+                case 'a':
+                  break;
+                case 'c':
+                  break;
+              }
+            `,
+            code: dedent`
+              switch (x) {
+                case 'c':
+                  break;
+                case 'bb':
+                  break;
+                case 'a':
+                  break;
+              }
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              },
+            ],
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: misc`, () => {
