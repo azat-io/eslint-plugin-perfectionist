@@ -11,7 +11,7 @@ import type { CompareOptions } from './compare'
 type Options = {
   customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption
   groups: GroupsOptions<string>
-  type: TypeOption
+  type: TypeOption | 'unsorted'
 } & CommonOptions
 
 /**

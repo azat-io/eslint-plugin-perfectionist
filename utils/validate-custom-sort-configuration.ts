@@ -1,7 +1,7 @@
 import type { TypeOption } from '../types/common-options'
 
 interface Options {
-  type: TypeOption
+  type: TypeOption | 'unsorted'
   alphabet: string
 }
 

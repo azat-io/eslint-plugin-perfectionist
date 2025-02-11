@@ -123,19 +123,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         )
       })
 
-      let completeOptions = complete(
-        matchedContextOptions,
-        settings,
-        defaultOptions,
-      )
-      let { type } = completeOptions
-      if (type === 'unsorted') {
-        return
-      }
-      let options = {
-        ...completeOptions,
-        type,
-      }
+      let options = complete(matchedContextOptions, settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGeneratedGroupsConfiguration({
         selectors: allSelectors,

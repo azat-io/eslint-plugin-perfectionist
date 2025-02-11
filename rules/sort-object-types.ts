@@ -196,19 +196,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       options.useConfigurationIf.declarationMatchesPattern,
     )
   })
-  let completeOptions = complete(
-    matchedContextOptions,
-    settings,
-    defaultOptions,
-  )
-  let { type } = completeOptions
-  if (type === 'unsorted') {
-    return
-  }
-  let options = {
-    ...completeOptions,
-    type,
-  }
+  let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
     selectors: allSelectors,
