@@ -2211,6 +2211,31 @@ describe(ruleName, () => {
     )
   })
 
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            new Map([
+              [b, b],
+              [c, c],
+              [a, a],
+            ])
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
+    })
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
