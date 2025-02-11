@@ -7,6 +7,7 @@ import type {
   CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
+  RegexOption,
   TypeOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
@@ -14,15 +15,14 @@ import type { JoinWithDash } from '../../types/join-with-dash'
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-  elementValuePatternJsonSchema,
-  elementNamePatternJsonSchema,
+  regexJsonSchema,
 } from '../../utils/common-json-schemas'
 
 export type Options = Partial<
   {
     useConfigurationIf: {
-      callingFunctionNamePattern?: string
-      allNamesMatchPattern?: string
+      callingFunctionNamePattern?: RegexOption
+      allNamesMatchPattern?: RegexOption
     }
     customGroups:
       | CustomGroupsOption<SingleCustomGroup>
@@ -34,12 +34,12 @@ export type Options = Partial<
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
     objectDeclarations: boolean
+    ignorePattern: RegexOption
     styledComponents: boolean
     /**
      * @deprecated for {@link `destructuredObjects`} and {@link `objectDeclarations`}
      */
     destructureOnly: boolean
-    ignorePattern: string[]
   } & CommonOptions
 >[]
 
@@ -49,8 +49,8 @@ export type SingleCustomGroup = (
   | BaseSingleCustomGroup<MethodSelector>
   | BaseSingleCustomGroup<MemberSelector>
 ) & {
-  elementValuePattern?: string
-  elementNamePattern?: string
+  elementValuePattern?: RegexOption
+  elementNamePattern?: RegexOption
 }
 
 export type Selector =
@@ -140,6 +140,6 @@ export let allModifiers: Modifier[] = ['optional', 'required', 'multiline']
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementValuePattern: elementValuePatternJsonSchema,
-  elementNamePattern: elementNamePatternJsonSchema,
+  elementValuePattern: regexJsonSchema,
+  elementNamePattern: regexJsonSchema,
 }

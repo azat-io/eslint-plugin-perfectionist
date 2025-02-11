@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
+import type { RegexOption } from '../../types/common-options'
+
 import { getMatchingContextOptions } from '../../utils/get-matching-context-options'
 
 describe('get-matching-context-options', () => {
@@ -37,8 +39,8 @@ describe('get-matching-context-options', () => {
   })
 
   let buildContextOptions = (
-    allNamesMatchPattern?: string,
-  ): { useConfigurationIf: { allNamesMatchPattern?: string } } => ({
+    allNamesMatchPattern?: RegexOption,
+  ): { useConfigurationIf: { allNamesMatchPattern?: RegexOption } } => ({
     useConfigurationIf: {
       ...(allNamesMatchPattern ? { allNamesMatchPattern } : {}),
     },

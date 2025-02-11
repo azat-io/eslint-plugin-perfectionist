@@ -1,16 +1,11 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { PartitionByCommentOption } from '../types/common-options'
+
 import { isPartitionComment } from './is-partition-comment'
 
 interface HasPartitionCommentParameters {
-  partitionByComment:
-    | {
-        block?: string[] | boolean | string
-        line?: string[] | boolean | string
-      }
-    | string[]
-    | boolean
-    | string
+  partitionByComment: PartitionByCommentOption
   comments: TSESTree.Comment[]
 }
 

@@ -536,7 +536,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: '^Part*',
+                  partitionByComment: '^Part',
                 },
               ],
             },
@@ -590,7 +590,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: '^Part*',
+                  partitionByComment: '^Part',
                 },
               ],
             },
@@ -666,7 +666,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                  partitionByComment: ['Partition Comment', 'Part:', 'Other'],
                 },
               ],
             },

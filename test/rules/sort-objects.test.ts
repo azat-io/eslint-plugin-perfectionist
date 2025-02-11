@@ -1287,7 +1287,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: '^Part*',
+                  partitionByComment: '^Part',
                 },
               ],
             },
@@ -1395,7 +1395,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: '^Part*',
+                partitionByComment: '^Part',
               },
             ],
           },
@@ -1474,7 +1474,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: ['Partition Comment', 'Part: *'],
+                partitionByComment: ['Partition Comment', 'Part:'],
               },
             ],
           },
@@ -2517,71 +2517,78 @@ describe(ruleName, () => {
     )
 
     describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
-        rule,
-        {
-          invalid: [
-            {
-              errors: [
-                {
-                  data: {
-                    rightGroup: 'g',
-                    leftGroup: 'b',
-                    right: 'g',
-                    left: 'b',
+      for (let rgbAllNamesMatchPattern of [
+        '^r|g|b$',
+        ['noMatch', '^r|g|b$'],
+        { pattern: '^R|G|B$', flags: 'i' },
+        ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+      ]) {
+        ruleTester.run(
+          `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'g',
+                      leftGroup: 'b',
+                      right: 'g',
+                      left: 'b',
+                    },
+                    messageId: 'unexpectedObjectsGroupOrder',
                   },
-                  messageId: 'unexpectedObjectsGroupOrder',
-                },
-                {
-                  data: {
-                    rightGroup: 'r',
-                    leftGroup: 'g',
-                    right: 'r',
-                    left: 'g',
+                  {
+                    data: {
+                      rightGroup: 'r',
+                      leftGroup: 'g',
+                      right: 'r',
+                      left: 'g',
+                    },
+                    messageId: 'unexpectedObjectsGroupOrder',
                   },
-                  messageId: 'unexpectedObjectsGroupOrder',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  useConfigurationIf: {
-                    allNamesMatchPattern: 'foo',
+                ],
+                options: [
+                  {
+                    ...options,
+                    useConfigurationIf: {
+                      allNamesMatchPattern: 'foo',
+                    },
                   },
-                },
-                {
-                  ...options,
-                  customGroups: {
-                    r: 'r',
-                    g: 'g',
-                    b: 'b',
+                  {
+                    ...options,
+                    customGroups: {
+                      r: 'r',
+                      g: 'g',
+                      b: 'b',
+                    },
+                    useConfigurationIf: {
+                      allNamesMatchPattern: rgbAllNamesMatchPattern,
+                    },
+                    groups: ['r', 'g', 'b'],
                   },
-                  useConfigurationIf: {
-                    allNamesMatchPattern: '^r|g|b$',
-                  },
-                  groups: ['r', 'g', 'b'],
-                },
-              ],
-              output: dedent`
-                let obj = {
-                  r: string,
-                  g: string,
-                  b: string
-                }
-              `,
-              code: dedent`
-                let obj = {
-                  b: string,
-                  g: string,
-                  r: string
-                }
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                ],
+                output: dedent`
+                  let obj = {
+                    r: string,
+                    g: string,
+                    b: string
+                  }
+                `,
+                code: dedent`
+                  let obj = {
+                    b: string,
+                    g: string,
+                    r: string
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
 
       ruleTester.run(
         `${ruleName}(${type}): allows to use 'callingFunctionNamePattern'`,
@@ -2755,104 +2762,118 @@ describe(ruleName, () => {
         valid: [],
       })
 
-      ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
-        invalid: [
-          {
-            options: [
-              {
-                customGroups: [
-                  {
-                    groupName: 'propertiesStartingWithHello',
-                    elementNamePattern: 'hello*',
-                    selector: 'property',
-                  },
-                ],
-                groups: ['propertiesStartingWithHello', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                data: {
-                  rightGroup: 'propertiesStartingWithHello',
-                  right: 'helloProperty',
-                  leftGroup: 'unknown',
-                  left: 'method',
+      for (let elementNamePattern of [
+        'hello',
+        ['noMatch', 'hello'],
+        { pattern: 'HELLO', flags: 'i' },
+        ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'propertiesStartingWithHello',
+                      selector: 'property',
+                      elementNamePattern,
+                    },
+                  ],
+                  groups: ['propertiesStartingWithHello', 'unknown'],
                 },
-                messageId: 'unexpectedObjectsGroupOrder',
-              },
-            ],
-            output: dedent`
-              let obj = {
-                helloProperty,
-                a,
-                b,
-                method() {},
-              }
-            `,
-            code: dedent`
-              let obj = {
-                a,
-                b,
-                method() {},
-                helloProperty,
-              }
-            `,
-          },
-        ],
-        valid: [],
-      })
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'propertiesStartingWithHello',
+                    right: 'helloProperty',
+                    leftGroup: 'unknown',
+                    left: 'method',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+              ],
+              output: dedent`
+                let obj = {
+                  helloProperty,
+                  a,
+                  b,
+                  method() {},
+                }
+              `,
+              code: dedent`
+                let obj = {
+                  a,
+                  b,
+                  method() {},
+                  helloProperty,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
 
-      ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
-        invalid: [
-          {
-            options: [
-              {
-                customGroups: [
-                  {
-                    elementValuePattern: 'inject*',
-                    groupName: 'inject',
-                  },
-                  {
-                    elementValuePattern: 'computed*',
-                    groupName: 'computed',
-                  },
-                ],
-                groups: ['computed', 'inject', 'unknown'],
-              },
-            ],
-            errors: [
-              {
-                data: {
-                  rightGroup: 'computed',
-                  leftGroup: 'inject',
-                  right: 'z',
-                  left: 'y',
+      for (let injectElementValuePattern of [
+        'inject',
+        ['noMatch', 'inject'],
+        { pattern: 'INJECT', flags: 'i' },
+        ['noMatch', { pattern: 'INJECT', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementValuePattern: injectElementValuePattern,
+                      groupName: 'inject',
+                    },
+                    {
+                      elementValuePattern: 'computed',
+                      groupName: 'computed',
+                    },
+                  ],
+                  groups: ['computed', 'inject', 'unknown'],
                 },
-                messageId: 'unexpectedObjectsGroupOrder',
-              },
-            ],
-            output: dedent`
-              let obj = {
-                a: computed(A),
-                z: computed(Z),
-                b: inject(B),
-                y: inject(Y),
-                c() {},
-              }
-            `,
-            code: dedent`
-              let obj = {
-                a: computed(A),
-                b: inject(B),
-                y: inject(Y),
-                z: computed(Z),
-                c() {},
-              }
-            `,
-          },
-        ],
-        valid: [],
-      })
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'computed',
+                    leftGroup: 'inject',
+                    right: 'z',
+                    left: 'y',
+                  },
+                  messageId: 'unexpectedObjectsGroupOrder',
+                },
+              ],
+              output: dedent`
+                let obj = {
+                  a: computed(A),
+                  z: computed(Z),
+                  b: inject(B),
+                  y: inject(Y),
+                  c() {},
+                }
+              `,
+              code: dedent`
+                let obj = {
+                  a: computed(A),
+                  b: inject(B),
+                  y: inject(Y),
+                  z: computed(Z),
+                  c() {},
+                }
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
 
       ruleTester.run(
         `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
@@ -3925,7 +3946,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: '^Part*',
+                partitionByComment: '^Part',
               },
             ],
           },
@@ -4004,7 +4025,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: ['Partition Comment', 'Part: *'],
+                partitionByComment: ['Partition Comment', 'Part:'],
               },
             ],
           },
@@ -4805,7 +4826,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: '^Part*',
+                partitionByComment: '^Part',
               },
             ],
           },
@@ -4884,7 +4905,7 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                partitionByComment: ['Partition Comment', 'Part: *'],
+                partitionByComment: ['Partition Comment', 'Part:'],
               },
             ],
           },
@@ -4920,7 +4941,7 @@ describe(ruleName, () => {
                 ...options,
                 partitionByComment: [
                   'Public Safety Bureau',
-                  'Crime Coefficient: *',
+                  'Crime Coefficient:',
                   'Victims',
                 ],
               },
@@ -5225,25 +5246,37 @@ describe(ruleName, () => {
           ],
         },
       ],
-      valid: [
-        {
-          code: dedent`
-            const buttonStyles = {
-              background: "red",
-              display: 'flex',
-              flexDirection: 'column',
-              width: "50px",
-              height: "50px",
-            }
-          `,
-          options: [
-            {
-              ignorePattern: ['Styles$'],
-            },
-          ],
-        },
-      ],
+      valid: [],
     })
+
+    for (let ignorePattern of [
+      'Styles$',
+      ['noMatch', 'Styles$'],
+      { pattern: 'STYLES$', flags: 'i' },
+      ['noMatch', { pattern: 'STYLES$', flags: 'i' }],
+    ]) {
+      ruleTester.run(`${ruleName}: allow to ignore pattern`, rule, {
+        valid: [
+          {
+            code: dedent`
+              const buttonStyles = {
+                background: "red",
+                display: 'flex',
+                flexDirection: 'column',
+                width: "50px",
+                height: "50px",
+              }
+            `,
+            options: [
+              {
+                ignorePattern,
+              },
+            ],
+          },
+        ],
+        invalid: [],
+      })
+    }
 
     ruleTester.run(`${ruleName}: allow to ignore pattern`, rule, {
       invalid: [
@@ -5734,7 +5767,7 @@ describe(ruleName, () => {
             ],
             options: [
               {
-                partitionByComment: 'PartitionComment:*',
+                partitionByComment: 'PartitionComment:',
                 type: 'alphabetical',
               },
             ],

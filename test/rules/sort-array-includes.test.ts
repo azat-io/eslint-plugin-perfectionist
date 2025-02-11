@@ -480,7 +480,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: '^Part*',
+                  partitionByComment: '^Part',
                 },
               ],
             },
@@ -559,7 +559,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: ['Partition Comment', 'Part: *', 'Other'],
+                  partitionByComment: ['Partition Comment', 'Part:', 'Other'],
                 },
               ],
             },
@@ -611,7 +611,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  partitionByComment: '^Part: *',
+                  partitionByComment: '^Part:',
                   groupKind: 'spreads-first',
                 },
               ],
@@ -1103,51 +1103,58 @@ describe(ruleName, () => {
         valid: [],
       })
 
-      ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
-        invalid: [
-          {
-            options: [
-              {
-                customGroups: [
-                  {
-                    groupName: 'literalsStartingWithHello',
-                    elementNamePattern: 'hello*',
-                    selector: 'literal',
-                  },
-                ],
-                groups: ['literalsStartingWithHello', 'unknown'],
-                groupKind: 'mixed',
-              },
-            ],
-            errors: [
-              {
-                data: {
-                  rightGroup: 'literalsStartingWithHello',
-                  right: 'helloLiteral',
-                  leftGroup: 'unknown',
-                  left: 'b',
+      for (let elementNamePattern of [
+        'hello',
+        ['noMatch', 'hello'],
+        { pattern: 'HELLO', flags: 'i' },
+        ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'literalsStartingWithHello',
+                      selector: 'literal',
+                      elementNamePattern,
+                    },
+                  ],
+                  groups: ['literalsStartingWithHello', 'unknown'],
+                  groupKind: 'mixed',
                 },
-                messageId: 'unexpectedArrayIncludesGroupOrder',
-              },
-            ],
-            output: dedent`
-              [
-                'helloLiteral',
-                'a',
-                'b',
-              ].includes(value)
-            `,
-            code: dedent`
-              [
-                'a',
-                'b',
-                'helloLiteral',
-              ].includes(value)
-            `,
-          },
-        ],
-        valid: [],
-      })
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'literalsStartingWithHello',
+                    right: 'helloLiteral',
+                    leftGroup: 'unknown',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedArrayIncludesGroupOrder',
+                },
+              ],
+              output: dedent`
+                [
+                  'helloLiteral',
+                  'a',
+                  'b',
+                ].includes(value)
+              `,
+              code: dedent`
+                [
+                  'a',
+                  'b',
+                  'helloLiteral',
+                ].includes(value)
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
 
       ruleTester.run(
         `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
@@ -1380,80 +1387,87 @@ describe(ruleName, () => {
     })
 
     describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
-      ruleTester.run(
-        `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  useConfigurationIf: {
-                    allNamesMatchPattern: 'foo',
-                  },
-                },
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: '^r$',
-                      groupName: 'r',
+      for (let allNamesMatchPattern of [
+        'foo',
+        ['noMatch', 'foo'],
+        { pattern: 'FOO', flags: 'i' },
+        ['noMatch', { pattern: 'foo', flags: 'i' }],
+      ]) {
+        ruleTester.run(
+          `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    useConfigurationIf: {
+                      allNamesMatchPattern,
                     },
-                    {
-                      elementNamePattern: '^g$',
-                      groupName: 'g',
+                  },
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: '^r$',
+                        groupName: 'r',
+                      },
+                      {
+                        elementNamePattern: '^g$',
+                        groupName: 'g',
+                      },
+                      {
+                        elementNamePattern: '^b$',
+                        groupName: 'b',
+                      },
+                    ],
+                    useConfigurationIf: {
+                      allNamesMatchPattern: '^r|g|b$',
                     },
-                    {
-                      elementNamePattern: '^b$',
-                      groupName: 'b',
+                    groups: ['r', 'g', 'b'],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'g',
+                      leftGroup: 'b',
+                      right: 'g',
+                      left: 'b',
                     },
-                  ],
-                  useConfigurationIf: {
-                    allNamesMatchPattern: '^r|g|b$',
+                    messageId: 'unexpectedArrayIncludesGroupOrder',
                   },
-                  groups: ['r', 'g', 'b'],
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    rightGroup: 'g',
-                    leftGroup: 'b',
-                    right: 'g',
-                    left: 'b',
+                  {
+                    data: {
+                      rightGroup: 'r',
+                      leftGroup: 'g',
+                      right: 'r',
+                      left: 'g',
+                    },
+                    messageId: 'unexpectedArrayIncludesGroupOrder',
                   },
-                  messageId: 'unexpectedArrayIncludesGroupOrder',
-                },
-                {
-                  data: {
-                    rightGroup: 'r',
-                    leftGroup: 'g',
-                    right: 'r',
-                    left: 'g',
-                  },
-                  messageId: 'unexpectedArrayIncludesGroupOrder',
-                },
-              ],
-              output: dedent`
-                [
-                  'r',
-                  'g',
-                  'b',
-                ].includes(value)
-              `,
-              code: dedent`
-                [
-                  'b',
-                  'g',
-                  'r',
-                ].includes(value)
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                ],
+                output: dedent`
+                  [
+                    'r',
+                    'g',
+                    'b',
+                  ].includes(value)
+                `,
+                code: dedent`
+                  [
+                    'b',
+                    'g',
+                    'r',
+                  ].includes(value)
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
     })
 
     describe(`${ruleName}: newlinesBetween`, () => {

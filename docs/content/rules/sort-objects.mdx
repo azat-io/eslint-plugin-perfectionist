@@ -220,9 +220,9 @@ Allows you to use comments to separate the keys of objects into logical groups. 
 
 - `true` — All comments will be treated as delimiters, creating partitions.
 - `false` — Comments will not be used as delimiters.
-- `string` — A regexp pattern to specify which comments should act as delimiters.
-- `string[]` — An array of regexp patterns to specify which comments should act as delimiters.
-- `{ block: boolean | string | string[]; line: boolean | string | string[] }` — Specify which block and line comments should act as delimiters.
+- `RegExpPattern = string | { pattern: string; flags: string}` — A regexp pattern to specify which comments should act as delimiters.
+- `RegExpPattern[]` — A list of regexp patterns to specify which comments should act as delimiters.
+- `{ block: boolean | RegExpPattern | RegExpPattern[]; line: boolean | RegExpPattern | RegExpPattern[] }` — Specify which block and line comments should act as delimiters.
 
 ### partitionByNewLine
 
@@ -275,6 +275,14 @@ Determines whether this rule should be applied to styled-components like librari
 
 ### ignorePattern
 
+<sub>
+  type:
+  ```
+  {
+    allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+  }
+  ```
+</sub>
 <sub>default: `[]`</sub>
 
 Allows you to specify names or patterns for object that should be ignored by this rule. This can be useful if you have specific objects that you do not want to sort.
@@ -308,7 +316,13 @@ The `groups` attribute allows you to specify whether to use groups to sort destr
 ### useConfigurationIf
 
 <sub>
-  type: `{ allNamesMatchPattern?: string; callingFunctionNamePattern?: string }`
+  type:
+  ```
+  {
+    allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+    callingFunctionNamePattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+  }
+  ```
 </sub>
 <sub>default: `{}`</sub>
 
@@ -516,8 +530,8 @@ interface CustomGroupDefinition {
   newlinesInside?: 'always' | 'never'
   selector?: string
   modifiers?: string[]
-  elementNamePattern?: string
-  elementValuePattern?: string
+  elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+  elementValuePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
 }
 
 ```
@@ -534,8 +548,8 @@ interface CustomGroupAnyOfDefinition {
   anyOf: Array<{
       selector?: string
       modifiers?: string[]
-      elementNamePattern?: string
-      elementValuePattern?: string
+      elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+      elementValuePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
   }>
 }
 ```
