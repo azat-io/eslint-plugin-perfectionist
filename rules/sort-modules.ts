@@ -15,7 +15,6 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
-  buildTypeJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
@@ -107,7 +106,6 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
-          type: buildTypeJsonSchema(),
           groups: groupsJsonSchema,
         },
         additionalProperties: false,
