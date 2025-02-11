@@ -8471,6 +8471,163 @@ describe(ruleName, () => {
     })
   })
 
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            class Class {
+              b
+              c
+              a
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces grouping`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: '^b',
+                  groupName: 'b',
+                },
+              ],
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'b',
+                leftGroup: 'a',
+                right: 'ba',
+                left: 'aa',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              ba
+              bb
+              ab
+              aa
+            }
+          `,
+          code: dedent`
+            class Class {
+              ab
+              aa
+              ba
+              bb
+            }
+          `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces newlines between`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              newlinesBetween: 'always',
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'missedSpacingBetweenClassMembers',
+            },
+          ],
+          output: dedent`
+            class Class {
+              b
+
+              a
+            }
+          `,
+          code: dedent`
+            class Class {
+              b
+              a
+            }
+          `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces dependency sorting`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                nodeDependentOnRight: 'a',
+                right: 'b',
+              },
+              messageId: 'unexpectedClassesDependencyOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              b
+              a = this.b
+            }
+          `,
+          code: dedent`
+            class Class {
+              a = this.b
+              b
+            }
+          `,
+          options: [
+            {
+              ...options,
+            },
+          ],
+        },
+      ],
+      valid: [],
+    })
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
