@@ -1189,6 +1189,76 @@ describe(ruleName, () => {
     )
   })
 
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            interface Interface extends
+              b,
+              c,
+              a
+            {}
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces grouping`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                rightGroup: 'b',
+                leftGroup: 'a',
+                right: 'ba',
+                left: 'aa',
+              },
+              messageId: 'unexpectedHeritageClausesGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              customGroups: {
+                a: '^a',
+                b: '^b',
+              },
+              groups: ['b', 'a'],
+            },
+          ],
+          output: dedent`
+            interface Interface extends
+              ba,
+              bb,
+              ab,
+              aa
+            {}
+          `,
+          code: dedent`
+            interface Interface extends
+              ab,
+              aa,
+              ba,
+              bb
+            {}
+          `,
+        },
+      ],
+      valid: [],
+    })
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
