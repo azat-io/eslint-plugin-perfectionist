@@ -221,6 +221,7 @@ interface Interface extends WithId, Logged, StartupService {
                 {
                   type: 'alphabetical',
                   order: 'asc',
+                  fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
                   groups: [],
@@ -247,6 +248,7 @@ interface Interface extends WithId, Logged, StartupService {
               {
                 type: 'alphabetical',
                 order: 'asc',
+                fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
                 groups: [],
