@@ -2598,19 +2598,19 @@ describe(ruleName, () => {
           {
             output: dedent`
               switch (x) {
-                case 'aa':
+                case 'bb':
                   break;
                 case 'c':
                   break;
-                case 'b':
+                case 'a':
                   break;
               }
             `,
             code: dedent`
               switch (x) {
-                case 'aa':
+                case 'a':
                   break;
-                case 'b':
+                case 'bb':
                   break;
                 case 'c':
                   break;
@@ -2619,8 +2619,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedSwitchCaseOrder',
               },
@@ -2637,9 +2637,9 @@ describe(ruleName, () => {
           {
             output: dedent`
               switch (x) {
-                case 'aa':
+                case 'bb':
                   break;
-                case 'b':
+                case 'a':
                   break;
                 case 'c':
                   break;
@@ -2647,18 +2647,18 @@ describe(ruleName, () => {
             `,
             code: dedent`
               switch (x) {
-                case 'aa':
-                  break;
                 case 'c':
                   break;
-                case 'b':
+                case 'bb':
+                  break;
+                case 'a':
                   break;
               }
             `,
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedSwitchCaseOrder',

@@ -1120,8 +1120,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedHeritageClausesOrder',
               },
@@ -1136,16 +1136,16 @@ describe(ruleName, () => {
             ],
             output: dedent`
               interface Interface extends
-                aa,
+                bb,
                 c,
-                b
+                a,
               {}
             `,
             code: dedent`
               interface Interface extends
-                aa,
-                b,
-                c
+                a,
+                bb,
+                c,
               {}
             `,
           },
@@ -1153,7 +1153,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedHeritageClausesOrder',
@@ -1170,16 +1170,16 @@ describe(ruleName, () => {
             ],
             output: dedent`
               interface Interface extends
-                aa,
-                b,
+                bb,
+                a,
                 c,
               {}
             `,
             code: dedent`
               interface Interface extends
-                aa,
                 c,
-                b,
+                bb,
+                a,
               {}
             `,
           },

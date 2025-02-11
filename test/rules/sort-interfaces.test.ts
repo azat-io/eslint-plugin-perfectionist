@@ -4620,8 +4620,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedInterfacePropertiesOrder',
               },
@@ -4636,15 +4636,15 @@ describe(ruleName, () => {
             ],
             output: dedent`
               interface Interface {
-                aa: string;
+                bb: string;
                 c: string;
-                b: string;
+                a: string;
               }
             `,
             code: dedent`
               interface Interface {
-                aa: string;
-                b: string;
+                a: string;
+                bb: string;
                 c: string;
               }
             `,
@@ -4653,7 +4653,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedInterfacePropertiesOrder',
@@ -4670,16 +4670,16 @@ describe(ruleName, () => {
             ],
             output: dedent`
               interface Interface {
-                aa: string;
-                b: string;
+                bb: string;
+                a: string;
                 c: string;
               }
             `,
             code: dedent`
               interface Interface {
-                aa: string;
                 c: string;
-                b: string;
+                bb: string;
+                a: string;
               }
             `,
           },

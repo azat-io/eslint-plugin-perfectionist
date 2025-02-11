@@ -1647,8 +1647,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedVariableDeclarationsOrder',
               },
@@ -1663,14 +1663,14 @@ describe(ruleName, () => {
             ],
             output: dedent`
               let
-                aa,
+                bb,
                 c,
-                b,
+                a,
             `,
             code: dedent`
               let
-                aa,
-                b,
+                a,
+                bb,
                 c,
             `,
           },
@@ -1678,7 +1678,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedVariableDeclarationsOrder',
@@ -1695,15 +1695,15 @@ describe(ruleName, () => {
             ],
             output: dedent`
               let
-                aa,
-                b,
+                bb,
+                a,
                 c,
             `,
             code: dedent`
               let
-                aa,
                 c,
-                b,
+                bb,
+                a,
             `,
           },
         ],

@@ -2443,8 +2443,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedArrayIncludesOrder',
               },
@@ -2459,15 +2459,15 @@ describe(ruleName, () => {
             ],
             output: dedent`
               [
-                'aa',
+                'bb',
                 'c',
-                'b',
+                'a',
               ].includes(value)
             `,
             code: dedent`
               [
-                'aa',
-                'b',
+                'a',
+                'bb',
                 'c',
               ].includes(value)
             `,
@@ -2476,7 +2476,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedArrayIncludesOrder',
@@ -2493,16 +2493,16 @@ describe(ruleName, () => {
             ],
             output: dedent`
               [
-                'aa',
-                'b',
+                'bb',
+                'a',
                 'c',
               ].includes(value)
             `,
             code: dedent`
               [
-                'aa',
                 'c',
-                'b',
+                'bb',
+                'a',
               ].includes(value)
             `,
           },

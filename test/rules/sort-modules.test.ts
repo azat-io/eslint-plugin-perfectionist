@@ -3239,8 +3239,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedModulesOrder',
               },
@@ -3254,13 +3254,13 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-              function aa() {}
+              function bb() {}
               function c() {}
-              function b() {}
+              function a() {}
             `,
             code: dedent`
-              function aa() {}
-              function b() {}
+              function a() {}
+              function bb() {}
               function c() {}
             `,
           },
@@ -3268,7 +3268,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedModulesOrder',
@@ -3284,14 +3284,14 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-              function aa() {}
-              function b() {}
+              function bb() {}
+              function a() {}
               function c() {}
             `,
             code: dedent`
-              function aa() {}
               function c() {}
-              function b() {}
+              function bb() {}
+              function a() {}
             `,
           },
         ],

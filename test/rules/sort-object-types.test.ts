@@ -3900,8 +3900,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedObjectTypesOrder',
               },
@@ -3916,15 +3916,15 @@ describe(ruleName, () => {
             ],
             output: dedent`
               type Type = {
-                aa: string;
+                bb: string;
                 c: string;
-                b: string;
+                a: string;
               }
             `,
             code: dedent`
               type Type = {
-                aa: string;
-                b: string;
+                a: string;
+                bb: string;
                 c: string;
               }
             `,
@@ -3933,7 +3933,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedObjectTypesOrder',
@@ -3950,16 +3950,16 @@ describe(ruleName, () => {
             ],
             output: dedent`
               type Type = {
-                aa: string;
-                b: string;
+                bb: string;
+                a: string;
                 c: string;
               }
             `,
             code: dedent`
               type Type = {
-                aa: string;
                 c: string;
-                b: string;
+                bb: string;
+                a: string;
               }
             `,
           },

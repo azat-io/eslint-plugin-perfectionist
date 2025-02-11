@@ -2663,8 +2663,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedEnumsOrder',
               },
@@ -2679,15 +2679,15 @@ describe(ruleName, () => {
             ],
             output: dedent`
               enum Enum {
-                aa = 'aa',
+                bb = 'bb',
                 c = 'c',
-                b = 'b',
+                a = 'a',
               }
             `,
             code: dedent`
               enum Enum {
-                aa = 'aa',
-                b = 'b',
+                a = 'a',
+                bb = 'bb',
                 c = 'c',
               }
             `,
@@ -2696,7 +2696,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedEnumsOrder',
@@ -2713,16 +2713,16 @@ describe(ruleName, () => {
             ],
             output: dedent`
               enum Enum {
-                aa = 'aa',
-                b = 'b',
+                bb = 'bb',
+                a = 'a',
                 c = 'c'
               }
             `,
             code: dedent`
               enum Enum {
-                aa = 'aa',
                 c = 'c',
-                b = 'b'
+                bb = 'bb',
+                a = 'a'
               }
             `,
           },

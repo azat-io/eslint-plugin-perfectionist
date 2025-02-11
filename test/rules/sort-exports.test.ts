@@ -1318,8 +1318,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedExportsOrder',
               },
@@ -1333,13 +1333,13 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-              export * from 'aa'
+              export * from 'bb'
               export * from 'c'
-              export * from 'b'
+              export * from 'a'
             `,
             code: dedent`
-              export * from 'aa'
-              export * from 'b'
+              export * from 'a'
+              export * from 'bb'
               export * from 'c'
             `,
           },
@@ -1347,7 +1347,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedExportsOrder',
@@ -1363,14 +1363,14 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-              export * from 'aa'
-              export * from 'b'
+              export * from 'bb'
+              export * from 'a'
               export * from 'c'
             `,
             code: dedent`
-              export * from 'aa'
               export * from 'c'
-              export * from 'b'
+              export * from 'bb'
+              export * from 'a'
             `,
           },
         ],

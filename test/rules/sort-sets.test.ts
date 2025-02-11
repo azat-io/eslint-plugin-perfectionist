@@ -2449,8 +2449,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedSetsOrder',
               },
@@ -2465,20 +2465,29 @@ describe(ruleName, () => {
             ],
             output: dedent`
               new Set([
-                'aa',
+                'bb',
                 'c',
-                'b',
+                'a',
               ])
             `,
             code: dedent`
               new Set([
-                'aa',
-                'b',
+                'a',
+                'bb',
                 'c',
               ])
             `,
           },
           {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedSetsOrder',
+              },
+            ],
             options: [
               {
                 ...options,
@@ -2488,27 +2497,18 @@ describe(ruleName, () => {
                 },
               },
             ],
-            errors: [
-              {
-                data: {
-                  right: 'b',
-                  left: 'c',
-                },
-                messageId: 'unexpectedSetsOrder',
-              },
-            ],
             output: dedent`
               new Set([
-                'aa',
-                'b',
+                'bb',
+                'a',
                 'c',
               ])
             `,
             code: dedent`
               new Set([
-                'aa',
                 'c',
-                'b',
+                'bb',
+                'a',
               ])
             `,
           },

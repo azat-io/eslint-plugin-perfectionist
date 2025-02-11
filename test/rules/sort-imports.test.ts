@@ -6030,8 +6030,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedImportsOrder',
               },
@@ -6045,13 +6045,13 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-              import { aa } from 'aa'
+              import { bb } from 'bb'
               import { c } from 'c'
-              import { b } from 'b'
+              import { a } from 'a'
             `,
             code: dedent`
-              import { aa } from 'aa'
-              import { b } from 'b'
+              import { a } from 'a'
+              import { bb } from 'bb'
               import { c } from 'c'
             `,
           },
@@ -6059,7 +6059,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedImportsOrder',
@@ -6075,14 +6075,14 @@ describe(ruleName, () => {
               },
             ],
             output: dedent`
-              import { aa } from 'aa'
-              import { b } from 'b'
+              import { bb } from 'bb'
+              import { a } from 'a'
               import { c } from 'c'
             `,
             code: dedent`
-              import { aa } from 'aa'
               import { c } from 'c'
-              import { b } from 'b'
+              import { bb } from 'bb'
+              import { a } from 'a'
             `,
           },
         ],

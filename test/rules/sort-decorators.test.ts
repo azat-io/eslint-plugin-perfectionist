@@ -3837,53 +3837,53 @@ describe(ruleName, () => {
         invalid: [
           {
             output: dedent`
-              @AA
+              @BB
               @C
-              @B
+              @A
               class Class {
 
-                @AA
+                @BB
                 @C
-                @B
+                @A
                 property
 
-                @AA
+                @BB
                 @C
-                @B
+                @A
                 accessor field
 
-                @AA
+                @BB
                 @C
-                @B
+                @A
                 method(
-                  @AA
+                  @BB
                   @C
-                  @B
+                  @A
                   parameter) {}
               }
             `,
             code: dedent`
-              @AA
-              @B
+              @A
+              @BB
               @C
               class Class {
 
-                @AA
-                @B
+                @A
+                @BB
                 @C
                 property
 
-                @AA
-                @B
+                @A
+                @BB
                 @C
                 accessor field
 
-                @AA
-                @B
+                @A
+                @BB
                 @C
                 method(
-                  @AA
-                  @B
+                  @A
+                  @BB
                   @C
                   parameter) {}
               }
@@ -3891,8 +3891,8 @@ describe(ruleName, () => {
             errors: duplicate5Times([
               {
                 data: {
-                  right: 'C',
-                  left: 'B',
+                  right: 'BB',
+                  left: 'A',
                 },
                 messageId: 'unexpectedDecoratorsOrder',
               },
@@ -3910,54 +3910,54 @@ describe(ruleName, () => {
           },
           {
             output: dedent`
-              @AA
-              @B
+              @BB
+              @A
               @C
               class Class {
 
-                @AA
-                @B
+                @BB
+                @A
                 @C
                 property
 
-                @AA
-                @B
+                @BB
+                @A
                 @C
                 accessor field
 
-                @AA
-                @B
+                @BB
+                @A
                 @C
                 method(
-                  @AA
-                  @B
+                  @BB
+                  @A
                   @C
                   parameter) {}
               }
             `,
             code: dedent`
-              @AA
               @C
-              @B
+              @BB
+              @A
               class Class {
 
-                @AA
                 @C
-                @B
+                @BB
+                @A
                 property
 
-                @AA
                 @C
-                @B
+                @BB
+                @A
                 accessor field
 
-                @AA
                 @C
-                @B
+                @BB
+                @A
                 method(
-                  @AA
                   @C
-                  @B
+                  @BB
+                  @A
                   parameter) {}
               }
             `,
@@ -3975,7 +3975,7 @@ describe(ruleName, () => {
             errors: duplicate5Times([
               {
                 data: {
-                  right: 'B',
+                  right: 'BB',
                   left: 'C',
                 },
                 messageId: 'unexpectedDecoratorsOrder',

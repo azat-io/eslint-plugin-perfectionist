@@ -2064,8 +2064,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedJSXPropsOrder',
               },
@@ -2080,15 +2080,15 @@ describe(ruleName, () => {
             ],
             output: dedent`
               <Element
-                aa="aa"
+                bb="bb"
                 c="c"
-                b="b"
+                a="a"
               />
             `,
             code: dedent`
               <Element
-                aa="aa"
-                b="b"
+                a="a"
+                bb="bb"
                 c="c"
               />
             `,
@@ -2097,7 +2097,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedJSXPropsOrder',
@@ -2114,16 +2114,16 @@ describe(ruleName, () => {
             ],
             output: dedent`
               <Element
-                aa="aa"
-                b="b"
+                bb="bb"
+                a="a"
                 c="c"
               />
             `,
             code: dedent`
               <Element
-                aa="aa"
                 c="c"
-                b="b"
+                bb="bb"
+                a="a"
               />
             `,
           },

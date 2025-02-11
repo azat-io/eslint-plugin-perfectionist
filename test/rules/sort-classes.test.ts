@@ -7471,8 +7471,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedClassesOrder',
               },
@@ -7487,15 +7487,15 @@ describe(ruleName, () => {
             ],
             output: dedent`
               class Class {
-                aa: string;
+                bb: string;
                 c: string;
-                b: string;
+                a: string;
               }
             `,
             code: dedent`
               class Class {
-                aa: string;
-                b: string;
+                a: string;
+                bb: string;
                 c: string;
               }
             `,
@@ -7504,7 +7504,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedClassesOrder',
@@ -7521,16 +7521,16 @@ describe(ruleName, () => {
             ],
             output: dedent`
               class Class {
-                aa: string;
-                b: string;
+                bb: string;
+                a: string;
                 c: string;
               }
             `,
             code: dedent`
               class Class {
-                aa: string;
                 c: string;
-                b: string;
+                bb: string;
+                a: string;
               }
             `,
           },

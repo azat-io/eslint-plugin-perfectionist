@@ -2253,8 +2253,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'C',
-                  left: 'B',
+                  right: 'BB',
+                  left: 'A',
                 },
                 messageId: 'unexpectedUnionTypesOrder',
               },
@@ -2269,14 +2269,14 @@ describe(ruleName, () => {
             ],
             output: dedent`
               type T =
-                | AA
+                | BB
                 | C
-                | B
+                | A
             `,
             code: dedent`
               type T =
-                | AA
-                | B
+                | A
+                | BB
                 | C
             `,
           },
@@ -2284,7 +2284,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'B',
+                  right: 'BB',
                   left: 'C',
                 },
                 messageId: 'unexpectedUnionTypesOrder',
@@ -2301,16 +2301,16 @@ describe(ruleName, () => {
             ],
             output: dedent`
               type T =
-                | AA
-                | B
+                | BB
+                | A
                 | C
 
             `,
             code: dedent`
               type T =
-                | AA
                 | C
-                | B
+                | BB
+                | A
             `,
           },
         ],

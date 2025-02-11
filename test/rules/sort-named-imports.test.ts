@@ -1730,8 +1730,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'c',
-                  left: 'b',
+                  right: 'bb',
+                  left: 'a',
                 },
                 messageId: 'unexpectedNamedImportsOrder',
               },
@@ -1746,15 +1746,15 @@ describe(ruleName, () => {
             ],
             output: dedent`
               import {
-                aa,
+                bb,
                 c,
-                b,
+                a,
               } from 'module'
             `,
             code: dedent`
               import {
-                aa,
-                b,
+                a,
+                bb,
                 c,
               } from 'module'
             `,
@@ -1763,7 +1763,7 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  right: 'b',
+                  right: 'bb',
                   left: 'c',
                 },
                 messageId: 'unexpectedNamedImportsOrder',
@@ -1780,16 +1780,16 @@ describe(ruleName, () => {
             ],
             output: dedent`
               import {
-                aa,
-                b,
+                bb,
+                a,
                 c,
               } from 'module'
             `,
             code: dedent`
               import {
-                aa,
                 c,
-                b,
+                bb,
+                a,
               } from 'module'
             `,
           },
