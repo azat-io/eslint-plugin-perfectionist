@@ -15,7 +15,6 @@ import {
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
-  buildTypeJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
   regexJsonSchema,
@@ -52,13 +51,13 @@ type Options = Partial<
     }
     customGroups: DeprecatedCustomGroupsOption
     newlinesBetween: NewlinesBetweenOption
-    type: TypeOption | 'unsorted'
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
     /**
      * @deprecated for {@link `useConfigurationIf.tagMatchesPattern`}
      */
     ignorePattern: RegexOption
+    type: TypeOption
   } & CommonOptions
 >[]
 
@@ -112,19 +111,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           options.useConfigurationIf.tagMatchesPattern,
         )
       })
-      let completeOptions = complete(
-        matchedContextOptions,
-        settings,
-        defaultOptions,
-      )
-      let { type } = completeOptions
-      if (type === 'unsorted') {
-        return
-      }
-      let options = {
-        ...completeOptions,
-        type,
-      }
+      let options = complete(matchedContextOptions, settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGroupsConfiguration({
         allowedPredefinedGroups: ['multiline', 'shorthand', 'unknown'],
@@ -231,7 +218,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
               tagMatchesPattern: regexJsonSchema,
             },
           }),
-          type: buildTypeJsonSchema({ withUnsorted: true }),
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           customGroups: customGroupsJsonSchema,
