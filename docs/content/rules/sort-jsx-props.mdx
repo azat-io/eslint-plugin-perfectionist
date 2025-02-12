@@ -144,6 +144,7 @@ Specifies the sorting method.
 - `'natural'` — Sort items in a [natural](https://github.com/yobacca/natural-orderby) order (e.g., “item2” < “item10”).
 - `'line-length'` — Sort items by the length of the code line (shorter lines first).
 - `'custom'` — Sort items using the alphabet entered in the [`alphabet`](#alphabet) option.
+- `'unsorted'` — Do not sort items. To be used with the [`useConfigurationIf`](#useconfigurationif) option.
 
 ### order
 
@@ -211,7 +212,7 @@ Specifies the sorting locales. See [String.prototype.localeCompare() - locales](
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
-### ignorePattern
+### [DEPRECATED] ignorePattern
 
 <sub>
   type:
@@ -223,6 +224,8 @@ Specifies the sorting locales. See [String.prototype.localeCompare() - locales](
 </sub>
 <sub>default: `[]`</sub>
 
+Use the [useConfigurationIf.tagMatchesPattern](#useconfigurationif) option alongside [type: unsorted](#type) instead.
+
 Allows you to specify names or patterns for JSX elements that should be ignored by this rule. This can be useful if you have specific components that you do not want to sort.
 
 You can specify their names or a regexp pattern to ignore, for example: `'^Table.+'` to ignore all object types whose names begin with the word Table.
@@ -232,6 +235,68 @@ You can specify their names or a regexp pattern to ignore, for example: `'^Table
 <sub>default: `false`</sub>
 
 When `true`, the rule will not sort members if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
+### useConfigurationIf
+
+<sub>
+  type:
+  ```
+  {
+    allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+    tagMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+  }
+  ```
+</sub>
+<sub>default: `{}`</sub>
+
+Allows you to specify filters to match a particular options configuration for a given object type.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all keys must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-jsx-props': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort tag with colors keys by RGB
+      customGroups: {
+        r: '^r$',
+        g: '^g$',
+        b: '^b$',
+      },
+      useConfigurationIf: {
+        allNamesMatchPattern: '^r|g|b$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `tagMatchesPattern` — A regexp pattern that the JSX tag must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-jsx-props': [
+    'error',
+    {
+      type: 'unsorted', // Do not sort Component elements
+      useConfigurationIf: {
+        tagMatchesPattern: '*Component$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
 
 ### groups
 
@@ -334,6 +399,7 @@ Custom group matching takes precedence over predefined group matching.
                   ignorePattern: [],
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
+                  useConfigurationIf: {},
                   groups: [],
                   customGroups: {},
                 },
@@ -363,6 +429,7 @@ Custom group matching takes precedence over predefined group matching.
                 ignorePattern: [],
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
+                useConfigurationIf: {},
                 groups: [],
                 customGroups: {},
               },

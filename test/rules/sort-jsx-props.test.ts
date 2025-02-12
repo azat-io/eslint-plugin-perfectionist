@@ -1049,6 +1049,151 @@ describe(ruleName, () => {
         },
       )
     })
+
+    describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
+      for (let rgbAllNamesMatchPattern of [
+        '^r|g|b$',
+        ['noMatch', '^r|g|b$'],
+        { pattern: '^R|G|B$', flags: 'i' },
+        ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+      ]) {
+        ruleTester.run(
+          `${ruleName}(${type}): allows to use 'allNamesMatchPattern'`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'g',
+                      leftGroup: 'b',
+                      right: 'g',
+                      left: 'b',
+                    },
+                    messageId: 'unexpectedJSXPropsGroupOrder',
+                  },
+                  {
+                    data: {
+                      rightGroup: 'r',
+                      leftGroup: 'g',
+                      right: 'r',
+                      left: 'g',
+                    },
+                    messageId: 'unexpectedJSXPropsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    useConfigurationIf: {
+                      allNamesMatchPattern: 'foo',
+                    },
+                  },
+                  {
+                    ...options,
+                    customGroups: {
+                      r: 'r',
+                      g: 'g',
+                      b: 'b',
+                    },
+                    useConfigurationIf: {
+                      allNamesMatchPattern: rgbAllNamesMatchPattern,
+                    },
+                    groups: ['r', 'g', 'b'],
+                  },
+                ],
+                output: dedent`
+                  <Component
+                    r
+                    g
+                    b
+                  />
+                `,
+                code: dedent`
+                  <Component
+                    b
+                    g
+                    r
+                  />
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
+
+      describe(`${ruleName}(${type}): allows to use 'tagMatchesPattern'`, () => {
+        for (let tagMatchesPattern of [
+          '^Component$',
+          ['noMatch', '^Component'],
+          { pattern: '^COMPONENT$', flags: 'i' },
+          ['noMatch', { pattern: '^COMPONENT', flags: 'i' }],
+        ]) {
+          ruleTester.run(
+            `${ruleName}(${type}): detects tag name by pattern`,
+            rule,
+            {
+              invalid: [
+                {
+                  errors: [
+                    {
+                      data: {
+                        right: 'a',
+                        left: 'b',
+                      },
+                      messageId: 'unexpectedJSXPropsOrder',
+                    },
+                  ],
+                  options: [
+                    {
+                      useConfigurationIf: {
+                        tagMatchesPattern,
+                      },
+                      type: 'unsorted',
+                    },
+                    options,
+                  ],
+                  output: dedent`
+                    <OtherComponent
+                      a
+                      b
+                    />
+                  `,
+                  code: dedent`
+                    <OtherComponent
+                      b
+                      a
+                    />
+                  `,
+                },
+              ],
+              valid: [
+                {
+                  options: [
+                    {
+                      useConfigurationIf: {
+                        tagMatchesPattern,
+                      },
+                      type: 'unsorted',
+                    },
+                    options,
+                  ],
+                  code: dedent`
+                    <Component
+                      b
+                      c
+                      a
+                    />
+                  `,
+                },
+              ],
+            },
+          )
+        }
+      })
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
