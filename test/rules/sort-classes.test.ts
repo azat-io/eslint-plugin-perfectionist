@@ -4105,29 +4105,36 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): should ignore callback dependencies in 'ignoreCallbackDependenciesPatterns'`,
-        rule,
-        {
-          valid: [
-            {
-              code: dedent`
-                class Class {
-                  a = computed(() => this.c)
-                  c
-                  b = notComputed(() => this.c)
-                }
-              `,
-              options: [
-                {
-                  ignoreCallbackDependenciesPatterns: ['^computed$'],
-                },
-              ],
-            },
-          ],
-          invalid: [],
-        },
-      )
+      for (let ignoreCallbackDependenciesPatterns of [
+        '^computed$',
+        ['noMatch', '^computed$'],
+        { pattern: '^COMPUTED$', flags: 'i' },
+        ['noMatch', { pattern: '^COMPUTED$', flags: 'i' }],
+      ]) {
+        ruleTester.run(
+          `${ruleName}(${type}): should ignore callback dependencies in 'ignoreCallbackDependenciesPatterns'`,
+          rule,
+          {
+            valid: [
+              {
+                code: dedent`
+                  class Class {
+                    a = computed(() => this.c)
+                    c
+                    b = notComputed(() => this.c)
+                  }
+                `,
+                options: [
+                  {
+                    ignoreCallbackDependenciesPatterns,
+                  },
+                ],
+              },
+            ],
+            invalid: [],
+          },
+        )
+      }
     })
 
     ruleTester.run(`${ruleName}(${type}): should ignore unknown group`, rule, {

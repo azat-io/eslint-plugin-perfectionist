@@ -16,6 +16,7 @@ import {
   buildTypeJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
+  regexJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   DEPENDENCY_ORDER_ERROR,
@@ -250,8 +251,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 'name' in nodeValue.callee ? nodeValue.callee.name : null
               shouldIgnore =
                 functionName !== null &&
-                options.ignoreCallbackDependenciesPatterns.some(pattern =>
-                  matches(functionName, pattern),
+                matches(
+                  functionName,
+                  options.ignoreCallbackDependenciesPatterns,
                 )
             }
             if (!shouldIgnore) {
@@ -654,17 +656,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
       {
         properties: {
           ...commonJsonSchemas,
-          ignoreCallbackDependenciesPatterns: {
-            description:
-              'Patterns that should be ignored when detecting dependencies in method callbacks.',
-            items: {
-              type: 'string',
-            },
-            type: 'array',
-          },
           customGroups: buildCustomGroupsArrayJsonSchema({
             singleCustomGroupJsonSchema,
           }),
+          ignoreCallbackDependenciesPatterns: regexJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
