@@ -32,8 +32,8 @@ export type SortClassesOptions = [
   Partial<
     {
       customGroups: CustomGroupsOption<SingleCustomGroup>
+      ignoreCallbackDependenciesPatterns: RegexOption
       partitionByComment: PartitionByCommentOption
-      ignoreCallbackDependenciesPatterns: string[]
       newlinesBetween: NewlinesBetweenOption
       groups: GroupsOptions<Group>
       partitionByNewLine: boolean

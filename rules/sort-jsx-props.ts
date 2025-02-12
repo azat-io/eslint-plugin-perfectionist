@@ -1,6 +1,7 @@
-import type { TSESTree } from '@typescript-eslint/types'
+import { TSESTree } from '@typescript-eslint/types'
 
 import type {
+  DeprecatedCustomGroupsOption,
   NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
@@ -10,6 +11,7 @@ import type {
 import type { SortingNode } from '../types/sorting-node'
 
 import {
+  buildUseConfigurationIfJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
@@ -27,6 +29,7 @@ import {
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -41,18 +44,23 @@ import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
-type Options<T extends string = string> = [
-  Partial<
-    {
-      customGroups: Record<T, string[] | string>
-      newlinesBetween: NewlinesBetweenOption
-      groups: GroupsOptions<Group<T>>
-      partitionByNewLine: boolean
-      ignorePattern: RegexOption
-      type: TypeOption
-    } & CommonOptions
-  >,
-]
+type Options = Partial<
+  {
+    useConfigurationIf: {
+      allNamesMatchPattern?: RegexOption
+      tagMatchesPattern?: RegexOption
+    }
+    customGroups: DeprecatedCustomGroupsOption
+    newlinesBetween: NewlinesBetweenOption
+    type: TypeOption | 'unsorted'
+    groups: GroupsOptions<Group>
+    partitionByNewLine: boolean
+    /**
+     * @deprecated for {@link `useConfigurationIf.tagMatchesPattern`}
+     */
+    ignorePattern: RegexOption
+  } & CommonOptions
+>[]
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenJSXPropsMembers'
@@ -60,13 +68,14 @@ type MESSAGE_ID =
   | 'unexpectedJSXPropsGroupOrder'
   | 'unexpectedJSXPropsOrder'
 
-type Group<T extends string> = 'multiline' | 'shorthand' | 'unknown' | T
+type Group = 'multiline' | 'shorthand' | 'unknown' | string
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
   partitionByNewLine: false,
+  useConfigurationIf: {},
   type: 'alphabetical',
   ignorePattern: [],
   ignoreCase: true,
@@ -85,7 +94,37 @@ export default createEslintRule<Options, MESSAGE_ID>({
       }
 
       let settings = getSettings(context.settings)
-      let options = complete(context.options.at(0), settings, defaultOptions)
+      let sourceCode = getSourceCode(context)
+      let matchedContextOptions = getMatchingContextOptions({
+        nodeNames: node.openingElement.attributes
+          .filter(
+            attribute =>
+              attribute.type !== TSESTree.AST_NODE_TYPES.JSXSpreadAttribute,
+          )
+          .map(attribute => getNodeName({ attribute })),
+        contextOptions: context.options,
+      }).find(options => {
+        if (!options.useConfigurationIf?.tagMatchesPattern) {
+          return true
+        }
+        return matches(
+          sourceCode.getText(node.openingElement.name),
+          options.useConfigurationIf.tagMatchesPattern,
+        )
+      })
+      let completeOptions = complete(
+        matchedContextOptions,
+        settings,
+        defaultOptions,
+      )
+      let { type } = completeOptions
+      if (type === 'unsorted') {
+        return
+      }
+      let options = {
+        ...completeOptions,
+        type,
+      }
       validateCustomSortConfiguration(options)
       validateGroupsConfiguration({
         allowedPredefinedGroups: ['multiline', 'shorthand', 'unknown'],
@@ -93,8 +132,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         options,
       })
       validateNewlinesAndPartitionConfiguration(options)
-
-      let sourceCode = getSourceCode(context)
 
       let shouldIgnore = matches(
         sourceCode.getText(node.openingElement.name),
@@ -115,15 +152,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
             accumulator: SortingNode[][],
             attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
           ) => {
-            if (attribute.type === 'JSXSpreadAttribute') {
+            if (attribute.type === TSESTree.AST_NODE_TYPES.JSXSpreadAttribute) {
               accumulator.push([])
               return accumulator
             }
 
-            let name =
-              attribute.name.type === 'JSXNamespacedName'
-                ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
-                : attribute.name.name
+            let name = getNodeName({ attribute })
 
             let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
 
@@ -188,21 +222,28 @@ export default createEslintRule<Options, MESSAGE_ID>({
     },
   }),
   meta: {
-    schema: [
-      {
+    schema: {
+      items: {
         properties: {
           ...commonJsonSchemas,
+          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+            additionalProperties: {
+              tagMatchesPattern: regexJsonSchema,
+            },
+          }),
+          type: buildTypeJsonSchema({ withUnsorted: true }),
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
           customGroups: customGroupsJsonSchema,
           ignorePattern: regexJsonSchema,
-          type: buildTypeJsonSchema(),
           groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
       },
-    ],
+      uniqueItems: true,
+      type: 'array',
+    },
     messages: {
       missedSpacingBetweenJSXPropsMembers: MISSED_SPACING_ERROR,
       extraSpacingBetweenJSXPropsMembers: EXTRA_SPACING_ERROR,
@@ -220,3 +261,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
   name: 'sort-jsx-props',
 })
+
+let getNodeName = ({
+  attribute,
+}: {
+  attribute: TSESTree.JSXAttribute
+}): string =>
+  attribute.name.type === TSESTree.AST_NODE_TYPES.JSXNamespacedName
+    ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
+    : attribute.name.name
