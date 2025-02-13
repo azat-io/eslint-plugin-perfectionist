@@ -1,6 +1,5 @@
 export type CustomGroupsOption<SingleCustomGroup = object> = ({
   newlinesInside?: 'always' | 'never'
-  fallbackSort?: FallbackSortOption
   groupName: string
 } & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) & {
     order?: OrderOption
