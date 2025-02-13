@@ -2311,6 +2311,117 @@ describe(ruleName, () => {
     )
   })
 
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            <Component
+              b
+              c
+              a
+            />
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces grouping`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                rightGroup: 'b',
+                leftGroup: 'a',
+                right: 'ba',
+                left: 'aa',
+              },
+              messageId: 'unexpectedJSXPropsGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              customGroups: {
+                a: '^a',
+                b: '^b',
+              },
+              groups: ['b', 'a'],
+            },
+          ],
+          output: dedent`
+            <Component
+              ba
+              bb
+              ab
+              aa
+            />
+          `,
+          code: dedent`
+            <Component
+              ab
+              aa
+              ba
+              bb
+            />
+          `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces newlines between`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: {
+                a: '^a',
+                b: '^b',
+              },
+              newlinesBetween: 'always',
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'missedSpacingBetweenJSXPropsMembers',
+            },
+          ],
+          output: dedent`
+            <Component
+              b
+
+              a
+            />
+          `,
+          code: dedent`
+            <Component
+              b
+              a
+            />
+          `,
+        },
+      ],
+      valid: [],
+    })
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,

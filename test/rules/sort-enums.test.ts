@@ -2746,6 +2746,163 @@ describe(ruleName, () => {
     )
   })
 
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            enum Enum {
+              b = 'b',
+              c = 'c',
+              a = 'a',
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces grouping`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: '^b',
+                  groupName: 'b',
+                },
+              ],
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'b',
+                leftGroup: 'a',
+                right: 'ba',
+                left: 'aa',
+              },
+              messageId: 'unexpectedEnumsGroupOrder',
+            },
+          ],
+          output: dedent`
+            enum Enum {
+              ba = 'ba',
+              bb = 'bb',
+              ab = 'ab',
+              aa = 'aa',
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              ab = 'ab',
+              aa = 'aa',
+              ba = 'ba',
+              bb = 'bb',
+            }
+          `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces newlines between`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              newlinesBetween: 'always',
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'missedSpacingBetweenEnumsMembers',
+            },
+          ],
+          output: dedent`
+            enum Enum {
+              b = 'b',
+
+              a = 'a',
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              b = 'b',
+              a = 'a',
+            }
+          `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces dependency sorting`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                nodeDependentOnRight: 'a',
+                right: 'b',
+              },
+              messageId: 'unexpectedEnumsDependencyOrder',
+            },
+          ],
+          output: dedent`
+            enum Enum {
+              b = 1,
+              a = b,
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              a = b,
+              b = 1,
+            }
+          `,
+          options: [
+            {
+              ...options,
+            },
+          ],
+        },
+      ],
+      valid: [],
+    })
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(`${ruleName}: detects numeric enums`, rule, {
       valid: [

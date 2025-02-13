@@ -10,7 +10,6 @@ import type { SortingNode } from '../types/sorting-node'
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  buildTypeJsonSchema,
   commonJsonSchemas,
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -178,7 +177,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          type: buildTypeJsonSchema(),
         },
         additionalProperties: false,
         type: 'object',

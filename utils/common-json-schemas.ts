@@ -1,17 +1,9 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-export let buildTypeJsonSchema = ({
-  withUnsorted,
-}: { withUnsorted?: boolean } = {}): JSONSchema4 => {
-  let enumValues = ['alphabetical', 'natural', 'line-length', 'custom']
-  if (withUnsorted) {
-    enumValues.push('unsorted')
-  }
-  return {
-    description: 'Specifies the sorting method.',
-    enum: enumValues,
-    type: 'string',
-  }
+let typeJsonSchema: JSONSchema4 = {
+  enum: ['alphabetical', 'natural', 'line-length', 'custom', 'unsorted'],
+  description: 'Specifies the sorting method.',
+  type: 'string',
 }
 
 let orderJsonSchema: JSONSchema4 = {
@@ -55,8 +47,8 @@ let specialCharactersJsonSchema: JSONSchema4 = {
 
 let fallbackSortJsonSchema: JSONSchema4 = {
   properties: {
-    type: buildTypeJsonSchema(),
     order: orderJsonSchema,
+    type: typeJsonSchema,
   },
   description: 'Fallback sort order.',
   type: 'object',
@@ -69,6 +61,7 @@ export let commonJsonSchemas: Record<string, JSONSchema4> = {
   alphabet: alphabetJsonSchema,
   locales: localesJsonSchema,
   order: orderJsonSchema,
+  type: typeJsonSchema,
 }
 
 export let newlinesBetweenJsonSchema: JSONSchema4 = {

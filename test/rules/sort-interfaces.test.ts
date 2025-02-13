@@ -4703,6 +4703,129 @@ describe(ruleName, () => {
     )
   })
 
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            interface Interface {
+              b: string;
+              c: string;
+              a: string;
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces grouping`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: '^b',
+                  groupName: 'b',
+                },
+              ],
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'b',
+                leftGroup: 'a',
+                right: 'ba',
+                left: 'aa',
+              },
+              messageId: 'unexpectedInterfacePropertiesGroupOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface {
+              ba: string
+              bb: string
+              ab: string
+              aa: string
+            }
+          `,
+          code: dedent`
+            interface Interface {
+              ab: string
+              aa: string
+              ba: string
+              bb: string
+            }
+          `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces newlines between`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              newlinesBetween: 'always',
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'missedSpacingBetweenInterfaceMembers',
+            },
+          ],
+          output: dedent`
+            interface Interface {
+              b: string
+
+              a: string
+            }
+          `,
+          code: dedent`
+            interface Interface {
+              b: string
+              a: string
+            }
+          `,
+        },
+      ],
+      valid: [],
+    })
+  })
+
   describe(`${ruleName}: validating group configuration`, () => {
     ruleTester.run(
       `${ruleName}: allows predefined groups and defined custom groups`,
@@ -4733,26 +4856,6 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
-    ruleTester.run(`${ruleName}: allows to use "unsorted" as type`, rule, {
-      valid: [
-        {
-          code: dedent`
-            interface Interface {
-              b: string;
-              c: string;
-              a: string;
-            }
-          `,
-          options: [
-            {
-              type: 'unsorted',
-            },
-          ],
-        },
-      ],
-      invalid: [],
-    })
-
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,

@@ -2585,8 +2585,15 @@ describe(ruleName, () => {
     })
   })
 
-  describe(`${ruleName}: misc`, () => {
-    ruleTester.run(`${ruleName}: allows to use "unsorted" as type`, rule, {
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
       valid: [
         {
           code: dedent`
@@ -2596,16 +2603,112 @@ describe(ruleName, () => {
               'a'
             ].includes(value)
           `,
-          options: [
-            {
-              type: 'unsorted',
-            },
-          ],
+          options: [options],
         },
       ],
       invalid: [],
     })
 
+    ruleTester.run(`${ruleName}(${type}): enforces grouping`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: '^b',
+                  groupName: 'b',
+                },
+              ],
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'b',
+                leftGroup: 'a',
+                right: 'ba',
+                left: 'aa',
+              },
+              messageId: 'unexpectedArrayIncludesGroupOrder',
+            },
+          ],
+          output: dedent`
+            [
+              'ba',
+              'bb',
+              'ab',
+              'aa',
+            ].includes(value)
+          `,
+          code: dedent`
+            [
+              'ab',
+              'aa',
+              'ba',
+              'bb',
+            ].includes(value)
+          `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces newlines between`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              newlinesBetween: 'always',
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'missedSpacingBetweenArrayIncludesMembers',
+            },
+          ],
+          output: dedent`
+            [
+              'b',
+
+              'a',
+            ].includes(value)
+          `,
+          code: dedent`
+            [
+              'b',
+              'a',
+            ].includes(value)
+          `,
+        },
+      ],
+      valid: [],
+    })
+  })
+
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,

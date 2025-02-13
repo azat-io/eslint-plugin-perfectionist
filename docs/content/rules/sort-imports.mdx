@@ -127,6 +127,7 @@ Specifies the sorting method.
 - `'natural'` — Sort items in a [natural](https://github.com/yobacca/natural-orderby) order (e.g., “item2” < “item10”).
 - `'line-length'` — Sort items by the length of the code line (shorter lines first).
 - `'custom'` — Sort items using the alphabet entered in the [`alphabet`](#alphabet) option.
+- `'unsorted'` — Do not sort items. [`grouping`](#groups) and [`newlines behavior`](#newlinesbetween) are still enforced.
 
 ### order
 
@@ -450,6 +451,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                 {
                   type: 'alphabetical',
                   order: 'asc',
+                  fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
                   internalPattern: ['^~/.+'],
@@ -491,6 +493,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
               {
                 type: 'alphabetical',
                 order: 'asc',
+                fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
                 internalPattern: ['^~/.+'],

@@ -12,6 +12,7 @@ import { convertBooleanToSign } from './convert-boolean-to-sign'
 export type CompareOptions<T extends SortingNode> =
   | AlphabeticalCompareOptions<T>
   | LineLengthCompareOptions<T>
+  | UnsortedCompareOptions<T>
   | NaturalCompareOptions<T>
   | CustomCompareOptions<T>
 
@@ -55,6 +56,11 @@ interface LineLengthCompareOptions<T extends SortingNode>
   type: 'line-length'
 }
 
+interface UnsortedCompareOptions<T extends SortingNode>
+  extends BaseCompareOptions<T> {
+  type: 'unsorted'
+}
+
 type SortingFunction<T extends SortingNode> = (a: T, b: T) => number
 
 type IndexByCharacters = Map<string, number>
@@ -75,6 +81,8 @@ export let compare = <T extends SortingNode>(
     case 'line-length':
       sortingFunction = getLineLengthSortingFunction(options, nodeValueGetter)
       break
+    case 'unsorted':
+      return 0
     case 'natural':
       sortingFunction = getNaturalSortingFunction(options, nodeValueGetter)
       break
@@ -91,10 +99,6 @@ export let compare = <T extends SortingNode>(
   }
 
   let { fallbackSort, order } = options
-  if (fallbackSort.type === 'unsorted') {
-    return 0
-  }
-
   return compare(a, b, {
     ...options,
     order: fallbackSort.order ?? order,

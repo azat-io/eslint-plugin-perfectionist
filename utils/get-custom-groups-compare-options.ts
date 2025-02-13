@@ -39,15 +39,10 @@ export let getCustomGroupsCompareOptions = <T extends SortingNode>(
           currentGroup => group === currentGroup.groupName,
         )
       : null
-  if (customGroup?.type === 'unsorted') {
-    return null
-  }
+
   return {
     ...options,
-    order:
-      customGroup && 'order' in customGroup && customGroup.order
-        ? customGroup.order
-        : options.order,
+    order: customGroup?.order ?? options.order,
     type: customGroup?.type ?? options.type,
   }
 }

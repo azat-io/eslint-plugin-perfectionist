@@ -15,7 +15,6 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
-  buildTypeJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
@@ -93,7 +92,6 @@ export let jsonSchema: JSONSchema4 = {
     partitionByComment: partitionByCommentJsonSchema,
     partitionByNewLine: partitionByNewLineJsonSchema,
     newlinesBetween: newlinesBetweenJsonSchema,
-    type: buildTypeJsonSchema(),
     groups: groupsJsonSchema,
   },
   additionalProperties: false,

@@ -12,7 +12,6 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
-  buildTypeJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
@@ -92,7 +91,6 @@ export let jsonSchema: JSONSchema4 = {
         singleCustomGroupJsonSchema,
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema(),
-      type: buildTypeJsonSchema({ withUnsorted: true }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,
@@ -181,19 +179,7 @@ export let sortArray = <MessageIds extends string>({
     contextOptions: context.options,
   })
 
-  let completeOptions = complete(
-    matchedContextOptions[0],
-    settings,
-    defaultOptions,
-  )
-  let { type } = completeOptions
-  if (type === 'unsorted') {
-    return
-  }
-  let options = {
-    ...completeOptions,
-    type,
-  }
+  let options = complete(matchedContextOptions[0], settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
     selectors: allSelectors,

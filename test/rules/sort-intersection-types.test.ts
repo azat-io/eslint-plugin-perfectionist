@@ -2319,6 +2319,104 @@ describe(ruleName, () => {
     })
   })
 
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            type Type =
+              & B
+              & C
+              & A
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces grouping`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                leftGroup: 'literal',
+                rightGroup: 'named',
+                left: "'aa'",
+                right: 'ba',
+              },
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
+            },
+          ],
+          output: dedent`
+            type Type =
+              & ba
+              & bb
+              & 'ab'
+              & 'aa'
+          `,
+          code: dedent`
+            type Type =
+              & 'ab'
+              & 'aa'
+              & ba
+              & bb
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['named', 'literal'],
+            },
+          ],
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces newlines between`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: "'a'",
+                left: 'b',
+              },
+              messageId: 'missedSpacingBetweenIntersectionTypes',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['named', 'literal'],
+              newlinesBetween: 'always',
+            },
+          ],
+          output: dedent`
+            type Type =
+              & b
+
+              & 'a'
+          `,
+          code: dedent`
+            type Type =
+              & b
+              & 'a'
+          `,
+        },
+      ],
+      valid: [],
+    })
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,

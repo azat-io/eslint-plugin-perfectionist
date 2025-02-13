@@ -1712,6 +1712,62 @@ describe(ruleName, () => {
     )
   })
 
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            let
+              b,
+              c,
+              a,
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces dependency sorting`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                nodeDependentOnRight: 'a',
+                right: 'b',
+              },
+              messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            },
+          ],
+          output: dedent`
+            let
+              b = 1,
+              a = b,
+          `,
+          code: dedent`
+            let
+              a = b,
+              b = 1,
+          `,
+          options: [
+            {
+              ...options,
+            },
+          ],
+        },
+      ],
+      valid: [],
+    })
+  })
+
   describe(`${ruleName}: misc`, () => {
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
     ruleTester.run(eslintDisableRuleTesterName, rule, {

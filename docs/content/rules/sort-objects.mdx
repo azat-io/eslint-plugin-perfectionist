@@ -163,7 +163,7 @@ Specifies the sorting method.
 - `'natural'` — Sort items in a [natural](https://github.com/yobacca/natural-orderby) order (e.g., “item2” < “item10”).
 - `'line-length'` — Sort items by the length of the code line (shorter lines first).
 - `'custom'` — Sort items using the alphabet entered in the [`alphabet`](#alphabet) option.
-- `'unsorted'` — Do not sort items. To be used with the [`useConfigurationIf`](#useconfigurationif) option.
+- `'unsorted'` — Do not sort items. [`grouping`](#groups) and [`newlines behavior`](#newlinesbetween) are still enforced.
 
 ### order
 
@@ -658,6 +658,7 @@ let user = {
                 {
                   type: 'alphabetical',
                   order: 'asc',
+                  fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
                   partitionByComment: false,
@@ -692,6 +693,7 @@ let user = {
               {
                 type: 'alphabetical',
                 order: 'asc',
+                fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
                 partitionByComment: false,

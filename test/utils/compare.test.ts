@@ -270,6 +270,25 @@ describe('compare', () => {
     })
   })
 
+  describe('unsorted', () => {
+    let compareOptions = {
+      fallbackSort: { type: 'unsorted' } as const,
+      specialCharacters: 'keep' as const,
+      type: 'unsorted' as const,
+      locales: 'en-US' as const,
+      order: 'desc' as const,
+      ignoreCase: false,
+    }
+
+    it('does not sort', () => {
+      expect(
+        compare(createTestNode({ name: 'b' }), createTestNode({ name: 'a' }), {
+          ...compareOptions,
+        }),
+      ).toBe(0)
+    })
+  })
+
   describe('fallback sorting', () => {
     let compareOptions = {
       specialCharacters: 'keep' as const,

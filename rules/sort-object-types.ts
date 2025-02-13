@@ -13,7 +13,6 @@ import {
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
-  buildTypeJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
   regexJsonSchema,
@@ -105,7 +104,6 @@ export let jsonSchema: JSONSchema4 = {
         description: 'Specifies top-level groups.',
         type: 'string',
       },
-      type: buildTypeJsonSchema({ withUnsorted: true }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,
@@ -196,19 +194,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       options.useConfigurationIf.declarationMatchesPattern,
     )
   })
-  let completeOptions = complete(
-    matchedContextOptions,
-    settings,
-    defaultOptions,
-  )
-  let { type } = completeOptions
-  if (type === 'unsorted') {
-    return
-  }
-  let options = {
-    ...completeOptions,
-    type,
-  }
+  let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
     selectors: allSelectors,

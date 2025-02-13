@@ -5124,27 +5124,168 @@ describe(ruleName, () => {
     )
   })
 
-  describe(`${ruleName}: misc`, () => {
-    ruleTester.run(`${ruleName}: allows to use "unsorted" as type`, rule, {
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
       valid: [
         {
           code: dedent`
             let obj = {
               b: 'b',
               c: 'c',
-              a: 'a'
+              a: 'a',
             }
           `,
-          options: [
-            {
-              type: 'unsorted',
-            },
-          ],
+          options: [options],
         },
       ],
       invalid: [],
     })
 
+    ruleTester.run(`${ruleName}(${type}): enforces grouping`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: '^b',
+                  groupName: 'b',
+                },
+              ],
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'b',
+                leftGroup: 'a',
+                right: 'ba',
+                left: 'aa',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+          ],
+          output: dedent`
+            let obj = {
+              ba: 'ba',
+              bb: 'bb',
+              ab: 'ab',
+              aa: 'aa',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              ab: 'ab',
+              aa: 'aa',
+              ba: 'ba',
+              bb: 'bb',
+            }
+          `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces newlines between`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              newlinesBetween: 'always',
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'missedSpacingBetweenObjectMembers',
+            },
+          ],
+          output: dedent`
+            let obj = {
+              b: 'b',
+
+              a: 'a',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              b: 'b',
+              a: 'a',
+            }
+          `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces dependency sorting`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                nodeDependentOnRight: 'a',
+                right: 'b',
+              },
+              messageId: 'unexpectedObjectsDependencyOrder',
+            },
+          ],
+          output: dedent`
+            let Func = ({
+              b,
+              a = b,
+            }) => {
+              // ...
+            }
+          `,
+          code: dedent`
+            let Func = ({
+              a = b,
+              b,
+            }) => {
+              // ...
+            }
+          `,
+          options: [
+            {
+              ...options,
+            },
+          ],
+        },
+      ],
+      valid: [],
+    })
+  })
+
+  describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,

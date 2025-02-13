@@ -13,7 +13,6 @@ import type { SortingNode } from '../types/sorting-node'
 import {
   partitionByCommentJsonSchema,
   customGroupsJsonSchema,
-  buildTypeJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
@@ -166,7 +165,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           partitionByComment: partitionByCommentJsonSchema,
           customGroups: customGroupsJsonSchema,
-          type: buildTypeJsonSchema(),
           groups: groupsJsonSchema,
         },
         additionalProperties: false,

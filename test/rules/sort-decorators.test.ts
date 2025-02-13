@@ -3988,6 +3988,141 @@ describe(ruleName, () => {
     )
   })
 
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            @B
+            @C
+            @A
+            class Class {
+
+              @B
+              @C
+              @A
+              property
+
+              @B
+              @C
+              @A
+              accessor field
+
+              @B
+              @C
+              @A
+              method(
+                @B
+                @C
+                @A
+                parameter) {}
+            }
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces grouping`, rule, {
+      invalid: [
+        {
+          output: dedent`
+            @BA
+            @BB
+            @AB
+            @AA
+            class Class {
+
+              @BA
+              @BB
+              @AB
+              @AA
+              property
+
+              @BA
+              @BB
+              @AB
+              @AA
+              accessor field
+
+              @BA
+              @BB
+              @AB
+              @AA
+              method(
+                @BA
+                @BB
+                @AB
+                @AA
+                parameter) {}
+            }
+          `,
+          code: dedent`
+            @AB
+            @AA
+            @BA
+            @BB
+            class Class {
+
+              @AB
+              @AA
+              @BA
+              @BB
+              property
+
+              @AB
+              @AA
+              @BA
+              @BB
+              accessor field
+
+              @AB
+              @AA
+              @BA
+              @BB
+              method(
+                @AB
+                @AA
+                @BA
+                @BB
+                parameter) {}
+            }
+          `,
+          errors: duplicate5Times([
+            {
+              data: {
+                rightGroup: 'B',
+                leftGroup: 'A',
+                right: 'BA',
+                left: 'AA',
+              },
+              messageId: 'unexpectedDecoratorsGroupOrder',
+            },
+          ]),
+          options: [
+            {
+              ...options,
+              customGroups: {
+                A: '^A',
+                B: '^B',
+              },
+              groups: ['B', 'A'],
+            },
+          ],
+        },
+      ],
+      valid: [],
+    })
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
