@@ -1,5 +1,26 @@
 # Changelog
 
+## v4.9.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.8.0...v4.9.0)
+
+### 🚀 Features
+
+- Add missing newlines between validation in groups ([e6e0588](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e6e0588))
+- Improve regex-related options ([00a8080](https://github.com/azat-io/eslint-plugin-perfectionist/commit/00a8080))
+- Add fallback sort option to all rules ([f639d94](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f639d94))
+- **sort-jsx-props:** Add use configuration if option ([7208274](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7208274))
+- Allow unsorted type for all remaining rules ([f92ab2a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f92ab2a))
+
+### 🐞 Bug Fixes
+
+- Fix complex decorators not being handled ([e667433](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e667433))
+- **sort-classes:** Fix dependency detection regression ([df40df4](https://github.com/azat-io/eslint-plugin-perfectionist/commit/df40df4))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](http://github.com/hugop95))
+
 ## v4.8.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.7.0...v4.8.0)
