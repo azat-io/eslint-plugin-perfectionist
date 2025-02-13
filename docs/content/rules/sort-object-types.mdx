@@ -501,6 +501,7 @@ interface CustomGroupDefinition {
   groupName: string
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
+  sortBy?: 'name' | 'value'
   newlinesInside?: 'always' | 'never'
   selector?: string
   modifiers?: string[]
@@ -518,6 +519,7 @@ interface CustomGroupAnyOfDefinition {
   groupName: string
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
+  sortBy?: 'name' | 'value'
   newlinesInside?: 'always' | 'never'
   anyOf: Array<{
       selector?: string
@@ -539,6 +541,7 @@ An object type will match a `CustomGroupAnyOfDefinition` group if it matches all
 - `elementValuePattern`: Only for properties. If entered, will check that the value of the property matches the pattern entered.
 - `type`: Overrides the sort type for that custom group. `unsorted` will not sort the group.
 - `order`: Overrides the sort order for that custom group
+- `sortBy`: Overrides the `sortBy` option for that custom group
 - `newlinesInside`: Enforces a specific newline behavior between elements of the group.
 
 #### Match importance

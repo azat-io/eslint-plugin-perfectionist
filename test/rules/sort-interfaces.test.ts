@@ -1257,6 +1257,79 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'sortBy'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'fooElementsSortedByValue',
+                    leftGroup: 'unknown',
+                    right: 'fooC',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+                {
+                  data: {
+                    right: 'fooA',
+                    left: 'fooB',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'fooElementsSortedByValue',
+                    leftGroup: 'unknown',
+                    right: 'fooMethod',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'fooElementsSortedByValue',
+                      elementNamePattern: '^foo',
+                      sortBy: 'value',
+                    },
+                  ],
+                  groups: ['fooElementsSortedByValue', 'unknown'],
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  fooA: Date
+                  fooC: number
+                  fooB: string
+                  fooMethod(): void
+                  a: string
+                  z: boolean
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  z: boolean
+                  fooC: number
+                  fooB: string
+                  fooA: Date
+                  a: string
+                  fooMethod(): void
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}: does not sort custom groups with 'unsorted' type`,
         rule,
         {

@@ -1,4 +1,5 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
   DeprecatedCustomGroupsOption,
@@ -10,6 +11,7 @@ import type {
   RegexOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
+import type { SortingNode } from '../../types/sorting-node'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -43,8 +45,10 @@ export type Options = Partial<
 >[]
 
 export type SingleCustomGroup = (
-  | (BaseSingleCustomGroup<PropertySelector> &
-      ElementValuePatternFilterCustomGroup)
+  | ({
+      elementValuePattern?: RegexOption
+      sortBy?: 'value' | 'name'
+    } & BaseSingleCustomGroup<PropertySelector>)
   | BaseSingleCustomGroup<IndexSignatureSelector>
   | BaseSingleCustomGroup<MultilineSelector>
   | BaseSingleCustomGroup<MethodSelector>
@@ -117,10 +121,6 @@ type MultilineGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineSelector]
 >
 
-interface ElementValuePatternFilterCustomGroup {
-  elementValuePattern?: RegexOption
-}
-
 interface ElementNamePatternFilterCustomGroup {
   elementNamePattern?: RegexOption
 }
@@ -154,6 +154,11 @@ export let allSelectors: Selector[] = [
 
 export let allModifiers: Modifier[] = ['optional', 'required', 'multiline']
 
+export let sortByJsonSchema: JSONSchema4 = {
+  enum: ['name', 'value'],
+  type: 'string',
+}
+
 /**
  * Ideally, we should generate as many schemas as there are selectors, and ensure
  * that users do not enter invalid modifiers for a given selector
@@ -163,4 +168,11 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   elementValuePattern: regexJsonSchema,
   elementNamePattern: regexJsonSchema,
+  sortBy: sortByJsonSchema,
+}
+
+export interface SortObjectTypesSortingNode
+  extends SortingNode<TSESTree.TypeElement> {
+  groupKind: 'required' | 'optional'
+  value: string | null
 }
