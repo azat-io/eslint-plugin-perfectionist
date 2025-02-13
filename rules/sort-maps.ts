@@ -10,7 +10,6 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
-  buildTypeJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
@@ -208,7 +207,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
             singleCustomGroupJsonSchema,
           }),
           useConfigurationIf: buildUseConfigurationIfJsonSchema(),
-          type: buildTypeJsonSchema({ withUnsorted: true }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
