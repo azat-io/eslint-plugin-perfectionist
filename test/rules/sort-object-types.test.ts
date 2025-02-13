@@ -2688,6 +2688,173 @@ describe(ruleName, () => {
         )
       })
     })
+
+    describe(`${ruleName}(${type}): sorting by value`, () => {
+      ruleTester.run(`${ruleName}(${type}): allows sorting by value`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                b: 'a'
+                a: 'b'
+              }
+            `,
+            options: [
+              {
+                sortBy: 'value',
+                ...options,
+              },
+            ],
+            code: dedent`
+              type Type = {
+                a: 'b'
+                b: 'a'
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): does not enforce sorting of non-properties in the same group`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  y: 'y'
+                  a(): void
+                  z: 'z'
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  z: 'z'
+                  a(): void
+                  y: 'y'
+                }
+              `,
+              options: [
+                {
+                  sortBy: 'value',
+                  ...options,
+                },
+              ],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    right: '[key: string]',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+                {
+                  data: {
+                    left: '[key: string]',
+                    right: 'y',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  y: 'y'
+                  [key: string]
+                  z: 'z'
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  z: 'z'
+                  [key: string]
+                  y: 'y'
+                }
+              `,
+              options: [
+                {
+                  sortBy: 'value',
+                  ...options,
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): enforces grouping but does not enforce sorting of non-properties`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'method',
+                    leftGroup: 'unknown',
+                    right: 'a',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  sortBy: 'value',
+                  ...options,
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  b(): void
+                  a(): void
+                  z: 'z'
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  b(): void
+                  z: 'z'
+                  a(): void
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

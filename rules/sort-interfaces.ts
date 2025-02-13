@@ -30,6 +30,7 @@ let defaultOptions: Required<Options[0]> = {
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',
+  sortBy: 'name',
   alphabet: '',
   order: 'asc',
   groups: [],

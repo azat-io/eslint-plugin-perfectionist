@@ -5,6 +5,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { Modifier, Selector, Options } from './sort-object-types/types'
 import type { SortingNode } from '../types/sorting-node'
+import type { CompareOptions } from '../utils/compare'
 
 import {
   buildUseConfigurationIfJsonSchema,
@@ -64,6 +65,7 @@ type MESSAGE_ID =
 
 interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeElement> {
   groupKind: 'required' | 'optional'
+  value: string | null
 }
 
 let defaultOptions: Required<Options[0]> = {
@@ -79,6 +81,7 @@ let defaultOptions: Required<Options[0]> = {
   ignoreCase: true,
   customGroups: {},
   locales: 'en-US',
+  sortBy: 'name',
   alphabet: '',
   order: 'asc',
   groups: [],
@@ -102,6 +105,10 @@ export let jsonSchema: JSONSchema4 = {
       groupKind: {
         enum: ['mixed', 'required-first', 'optional-first'],
         description: 'Specifies top-level groups.',
+        type: 'string',
+      },
+      sortBy: {
+        enum: ['name', 'value'],
         type: 'string',
       },
       partitionByComment: partitionByCommentJsonSchema,
@@ -296,6 +303,14 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         })
       }
 
+      let value: string | null = null
+      if (
+        typeElement.type === 'TSPropertySignature' &&
+        typeElement.typeAnnotation
+      ) {
+        value = sourceCode.getText(typeElement.typeAnnotation.typeAnnotation)
+      }
+
       let sortingNode: SortObjectTypesSortingNode = {
         isEslintDisabled: isNodeEslintDisabled(
           typeElement,
@@ -306,6 +321,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         addSafetySemicolonWhenInline: true,
         group: getGroup(),
         node: typeElement,
+        value,
         name,
       }
 
@@ -343,13 +359,26 @@ export let sortObjectTypeElements = <MessageIds extends string>({
           groupKind === 'any' || currentNode.groupKind === groupKind,
       ),
     )
+
+    let compareOptions: CompareOptions<SortObjectTypesSortingNode> &
+      Required<Options[0]> = {
+      ...options,
+      nodeValueGetter:
+        options.sortBy === 'value' ? node => node.value ?? '' : null,
+    }
     let sortNodesExcludingEslintDisabled = (
       ignoreEslintDisabledNodes: boolean,
     ): SortObjectTypesSortingNode[] =>
       filteredGroupKindNodes.flatMap(groupedNodes =>
-        sortNodesByGroups(groupedNodes, options, {
+        sortNodesByGroups(groupedNodes, compareOptions, {
+          isNodeIgnoredForGroup: (node, groupCompareOptions) => {
+            if (groupCompareOptions.sortBy === 'value') {
+              return !node.value
+            }
+            return false
+          },
           getGroupCompareOptions: groupNumber =>
-            getCustomGroupsCompareOptions(options, groupNumber),
+            getCustomGroupsCompareOptions(compareOptions, groupNumber),
           ignoreEslintDisabledNodes,
         }),
       )

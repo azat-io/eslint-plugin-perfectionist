@@ -164,6 +164,36 @@ Controls whether special characters should be trimmed, removed or kept before so
 - `'trim'` — Trim special characters when sorting alphabetically or naturally (e.g., “_a” and “a” are the same).
 - `'remove'` — Remove special characters when sorting (e.g., “/a/b” and “ab” are the same).
 
+### sortBy
+
+<sub>default: `name`</sub>
+
+Controls whether sorting should be done only using the object type's values.
+
+- `name` — Use object types keys.
+- `value` — Use the values of properties. Non-properties will not have an enforced sort order.
+
+Example
+
+```ts
+type User = {
+  createdAt: Date
+  lastLoginAt: Date
+  _id: ObjectId
+  groupId: ObjectId
+  city: string
+}
+```
+
+`sortBy` option configuration:
+
+```js
+{
+  sortBy: 'value',
+}
+
+```
+
 ### locales
 
 <sub>default: `'en-US'`</sub>
@@ -600,6 +630,7 @@ This feature is only applicable when `partitionByNewLine` is false.
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
+                  sortBy: 'name',
                   ignorePattern: [],
                   partitionByComment: false,
                   partitionByNewLine: false,
@@ -632,6 +663,7 @@ This feature is only applicable when `partitionByNewLine` is false.
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
+                sortBy: 'name',
                 ignorePattern: [],
                 partitionByComment: false,
                 partitionByNewLine: false,

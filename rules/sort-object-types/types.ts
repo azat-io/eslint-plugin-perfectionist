@@ -38,6 +38,7 @@ export type Options = Partial<
      * @deprecated for {@link `useConfigurationIf.declarationMatchesPattern`}
      */
     ignorePattern: RegexOption
+    sortBy: 'value' | 'name'
   } & CommonOptions
 >[]
 
