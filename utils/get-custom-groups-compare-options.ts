@@ -20,13 +20,13 @@ type Options = {
  * including groups and custom groups.
  * @param {number} groupNumber - The index of the group to retrieve compare
  * options for.
- * @returns {CompareOptions | null} The compare options for the group, or `null`
+ * @returns {CompareOptions} The compare options for the group, or `null`
  * if the group should not be sorted.
  */
 export let getCustomGroupsCompareOptions = <T extends SortingNode>(
   options: Options,
   groupNumber: number,
-): CompareOptions<T> | null => {
+): CompareOptions<T> => {
   if (!Array.isArray(options.customGroups)) {
     return options
   }

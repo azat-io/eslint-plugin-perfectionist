@@ -6,12 +6,10 @@ import { getGroupNumber } from './get-group-number'
 import { sortNodes } from './sort-nodes'
 
 interface ExtraOptions<T extends SortingNode> {
-  /**
-   * If not provided, `options` will be used. If function returns null, nodes
-   * will not be sorted within the group.
-   */
-  getGroupCompareOptions?(groupNumber: number): CompareOptions<T> | null
+  getGroupCompareOptions?(groupNumber: number): CompareOptions<T>
+
   ignoreEslintDisabledNodes: boolean
+
   isNodeIgnored?(node: T): boolean
 }
 
@@ -44,14 +42,9 @@ export let sortNodesByGroups = <T extends SortingNode>(
   for (let groupNumber of Object.keys(nodesByNonIgnoredGroupNumber).sort(
     (a, b) => Number(a) - Number(b),
   )) {
-    let compareOptions = extraOptions?.getGroupCompareOptions
-      ? extraOptions.getGroupCompareOptions(Number(groupNumber))
-      : options
+    let compareOptions =
+      extraOptions?.getGroupCompareOptions?.(Number(groupNumber)) ?? options
     let nodesToPush = nodesByNonIgnoredGroupNumber[Number(groupNumber)]!
-    if (!compareOptions) {
-      sortedNodes.push(...nodesToPush)
-      continue
-    }
     sortedNodes.push(...sortNodes(nodesToPush, compareOptions))
   }
 
