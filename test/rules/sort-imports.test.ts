@@ -6141,6 +6141,112 @@ describe(ruleName, () => {
     )
   })
 
+  describe(`${ruleName}: unsorted type`, () => {
+    let type = 'unsorted'
+
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    ruleTester.run(`${ruleName}(${type}): does not enforce sorting`, rule, {
+      valid: [
+        {
+          code: dedent`
+            import { b } from 'b';
+            import { c } from 'c';
+            import { a } from 'a';
+          `,
+          options: [options],
+        },
+      ],
+      invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces grouping`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                rightGroup: 'b',
+                leftGroup: 'a',
+                right: 'ba',
+                left: 'aa',
+              },
+              messageId: 'unexpectedImportsGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              customGroups: {
+                value: {
+                  a: '^a',
+                  b: '^b',
+                },
+              },
+              groups: ['b', 'a'],
+            },
+          ],
+          output: dedent`
+            import { ba } from 'ba'
+            import { bb } from 'bb'
+
+            import { ab } from 'ab'
+            import { aa } from 'aa'
+          `,
+          code: dedent`
+            import { ab } from 'ab'
+            import { aa } from 'aa'
+            import { ba } from 'ba'
+            import { bb } from 'bb'
+          `,
+        },
+      ],
+      valid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces newlines between`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: {
+                value: {
+                  a: '^a',
+                  b: '^b',
+                },
+              },
+              newlinesBetween: 'never',
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
+          output: dedent`
+            import { b } from 'b'
+            import { a } from 'a'
+          `,
+          code: dedent`
+            import { b } from 'b'
+
+            import { a } from 'a'
+          `,
+        },
+      ],
+      valid: [],
+    })
+  })
+
   describe(`${ruleName}: misc`, () => {
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
