@@ -4,10 +4,8 @@ import type {
   GroupsOptions,
   CommonOptions,
 } from '../types/common-options'
-import type { SortingNode } from '../types/sorting-node'
-import type { CompareOptions } from './compare'
 
-type Options = {
+type BaseOptions = {
   customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption
   groups: GroupsOptions<string>
 } & CommonOptions
@@ -16,17 +14,16 @@ type Options = {
  * Retrieves the compare options used to sort a given group. If the group is a
  * custom group, its options will be favored over the default options. Returns
  * `null` if the group should not be sorted.
- * @param {Options} options - The sorting options,
- * including groups and custom groups.
+ * @param {BaseOptions} options - The sorting options, including groups and
+ * custom groups.
  * @param {number} groupNumber - The index of the group to retrieve compare
  * options for.
- * @returns {CompareOptions} The compare options for the group, or `null`
- * if the group should not be sorted.
+ * @returns {BaseOptions} The options for the group
  */
-export let getCustomGroupsCompareOptions = <T extends SortingNode>(
+export let getCustomGroupsCompareOptions = <Options extends BaseOptions>(
   options: Options,
   groupNumber: number,
-): CompareOptions<T> => {
+): Options => {
   if (!Array.isArray(options.customGroups)) {
     return options
   }
