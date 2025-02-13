@@ -3,7 +3,6 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type {
   PartitionByCommentOption,
   CommonOptions,
-  TypeOption,
 } from '../types/common-options'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
@@ -32,7 +31,6 @@ type Options = [
     {
       partitionByComment: PartitionByCommentOption
       partitionByNewLine: boolean
-      type: TypeOption
     } & CommonOptions
   >,
 ]

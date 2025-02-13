@@ -3,7 +3,6 @@ import type {
   CustomGroupsOption,
   GroupsOptions,
   CommonOptions,
-  TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { CompareOptions } from './compare'
@@ -11,7 +10,6 @@ import type { CompareOptions } from './compare'
 type Options = {
   customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption
   groups: GroupsOptions<string>
-  type: TypeOption
 } & CommonOptions
 
 /**

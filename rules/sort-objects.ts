@@ -1,8 +1,7 @@
 import { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { Modifier, Selector } from './sort-objects/types'
-import type { Options } from './sort-objects/types'
+import type { Modifier, Selector, Options } from './sort-objects/types'
 
 import {
   buildUseConfigurationIfJsonSchema,
@@ -24,6 +23,11 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import {
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-objects/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getFirstNodeParentWithType } from './sort-objects/get-first-node-parent-with-type'
 import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
@@ -33,9 +37,7 @@ import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { doesCustomGroupMatch } from './sort-objects/does-custom-group-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { singleCustomGroupJsonSchema } from './sort-objects/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { allModifiers, allSelectors } from './sort-objects/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'

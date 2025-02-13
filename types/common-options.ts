@@ -14,6 +14,7 @@ export interface CommonOptions {
   ignoreCase: boolean
   order: OrderOption
   alphabet: string
+  type: TypeOption
 }
 
 export type PartitionByCommentOption =
