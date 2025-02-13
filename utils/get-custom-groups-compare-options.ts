@@ -42,10 +42,7 @@ export let getCustomGroupsCompareOptions = <T extends SortingNode>(
 
   return {
     ...options,
-    order:
-      customGroup && 'order' in customGroup && customGroup.order
-        ? customGroup.order
-        : options.order,
+    order: customGroup?.order ?? options.order,
     type: customGroup?.type ?? options.type,
   }
 }
