@@ -277,10 +277,19 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       }
 
       let name = getNodeName({ typeElement, sourceCode })
+      let value: string | null = null
+      if (
+        typeElement.type === 'TSPropertySignature' &&
+        typeElement.typeAnnotation
+      ) {
+        value = sourceCode.getText(typeElement.typeAnnotation.typeAnnotation)
+      }
+
       if (Array.isArray(options.customGroups)) {
         for (let customGroup of options.customGroups) {
           if (
             doesCustomGroupMatch({
+              elementValue: value,
               elementName: name,
               customGroup,
               selectors,
@@ -301,14 +310,6 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         setCustomGroups(options.customGroups, name, {
           override: true,
         })
-      }
-
-      let value: string | null = null
-      if (
-        typeElement.type === 'TSPropertySignature' &&
-        typeElement.typeAnnotation
-      ) {
-        value = sourceCode.getText(typeElement.typeAnnotation.typeAnnotation)
       }
 
       let sortingNode: SortObjectTypesSortingNode = {

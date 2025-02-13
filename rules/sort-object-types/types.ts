@@ -43,9 +43,10 @@ export type Options = Partial<
 >[]
 
 export type SingleCustomGroup = (
+  | (BaseSingleCustomGroup<PropertySelector> &
+      ElementValuePatternFilterCustomGroup)
   | BaseSingleCustomGroup<IndexSignatureSelector>
   | BaseSingleCustomGroup<MultilineSelector>
-  | BaseSingleCustomGroup<PropertySelector>
   | BaseSingleCustomGroup<MethodSelector>
   | BaseSingleCustomGroup<MemberSelector>
 ) &
@@ -116,6 +117,10 @@ type MultilineGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineSelector]
 >
 
+interface ElementValuePatternFilterCustomGroup {
+  elementValuePattern?: RegexOption
+}
+
 interface ElementNamePatternFilterCustomGroup {
   elementNamePattern?: RegexOption
 }
@@ -156,5 +161,6 @@ export let allModifiers: Modifier[] = ['optional', 'required', 'multiline']
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
+  elementValuePattern: regexJsonSchema,
   elementNamePattern: regexJsonSchema,
 }

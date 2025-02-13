@@ -1110,6 +1110,65 @@ describe(ruleName, () => {
         })
       }
 
+      for (let dateElementValuePattern of [
+        'Date',
+        ['noMatch', 'Date'],
+        { pattern: 'DATE', flags: 'i' },
+        ['noMatch', { pattern: 'DATE', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementValuePattern: dateElementValuePattern,
+                      groupName: 'date',
+                    },
+                    {
+                      elementValuePattern: 'number',
+                      groupName: 'number',
+                    },
+                  ],
+                  groups: ['number', 'date', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'number',
+                    leftGroup: 'date',
+                    right: 'z',
+                    left: 'y',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  a: number
+                  z: number
+                  b: Date
+                  y: Date
+                  c(): string
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  a: number
+                  b: Date
+                  y: Date
+                  z: number
+                  c(): string
+                }
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
+
       ruleTester.run(
         `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
         rule,
