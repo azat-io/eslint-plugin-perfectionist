@@ -118,7 +118,13 @@ Determines whether the sorted items should be in ascending or descending order.
 ### fallbackSort
 
 <sub>
-  type: `{ type: string; order?: 'asc' | 'desc' }`
+  type:
+  ```
+  {
+    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted'
+    order?: 'asc' | 'desc'
+  }
+  ```
 </sub>
 <sub>default: `{ type: 'unsorted' }`</sub>
 
