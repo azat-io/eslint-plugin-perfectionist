@@ -6,7 +6,6 @@ import type {
   CommonOptions,
   GroupsOptions,
   RegexOption,
-  TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -57,7 +56,6 @@ type Options = Partial<
      * @deprecated for {@link `useConfigurationIf.tagMatchesPattern`}
      */
     ignorePattern: RegexOption
-    type: TypeOption
   } & CommonOptions
 >[]
 

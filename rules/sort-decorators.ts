@@ -6,7 +6,6 @@ import type {
   PartitionByCommentOption,
   CommonOptions,
   GroupsOptions,
-  TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -45,7 +44,6 @@ export type Options = [
       sortOnAccessors: boolean
       sortOnMethods: boolean
       sortOnClasses: boolean
-      type: TypeOption
     } & CommonOptions
   >,
 ]

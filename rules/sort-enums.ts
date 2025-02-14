@@ -51,6 +51,7 @@ type MESSAGE_ID =
 interface SortEnumsSortingNode
   extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
   numericValue: number | null
+  value: string | null
 }
 
 let defaultOptions: Required<Options[0]> = {
@@ -173,6 +174,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   member.initializer,
                 ) /* v8 ignore next - Unsure how we can reach that case */
               : null,
+            value:
+              member.initializer?.type === 'Literal'
+                ? (member.initializer.value?.toString() ?? null)
+                : null,
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
             size: rangeToDiff(member, sourceCode),
             group: getGroup(),
@@ -216,10 +221,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 if (isNumericEnum) {
                   return sortingNode.numericValue!.toString()
                 }
-                if (sortingNode.node.initializer?.type === 'Literal') {
-                  return sortingNode.node.initializer.value?.toString() ?? ''
-                }
-                return ''
+                return sortingNode.value ?? ''
               }
             : null,
         /**

@@ -5,6 +5,7 @@ import { matches } from '../../utils/matches'
 
 interface DoesCustomGroupMatchParameters {
   customGroup: AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup
+  elementValue: string | null
   selectors: Selector[]
   modifiers: Modifier[]
   elementName: string
@@ -50,6 +51,19 @@ export let doesCustomGroupMatch = (
       props.customGroup.elementNamePattern,
     )
     if (!matchesElementNamePattern) {
+      return false
+    }
+  }
+
+  if (
+    'elementValuePattern' in props.customGroup &&
+    props.customGroup.elementValuePattern
+  ) {
+    let matchesElementValuePattern: boolean = matches(
+      props.elementValue ?? '',
+      props.customGroup.elementValuePattern,
+    )
+    if (!matchesElementValuePattern) {
       return false
     }
   }
