@@ -1,7 +1,8 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { CompareOptions } from '../utils/compare'
+import type { NodeValueGetterFunction } from '../utils/compare'
+import type { TypeOption } from '../types/common-options'
 import type { Options } from './sort-enums/types'
 
 import {
@@ -23,7 +24,7 @@ import {
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
+import { getCustomGroupOverriddenOptions } from '../utils/get-custom-groups-compare-options'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from './sort-enums/does-custom-group-match'
@@ -211,44 +212,39 @@ export default createEslintRule<Options, MESSAGE_ID>({
           !Number.isNaN(sortingNode.numericValue),
       )
 
-      let compareOptions: CompareOptions<SortEnumsSortingNode> &
-        Required<Options[0]> = {
+      let nodeValueGetter = computeNodeValueGetter({
+        isNumericEnum,
+        options,
+      })
+      let overriddenOptions = {
         ...options,
-        // Get the enum value rather than the name if needed.
-        nodeValueGetter:
-          options.sortByValue || (isNumericEnum && options.forceNumericSort)
-            ? sortingNode => {
-                if (isNumericEnum) {
-                  return sortingNode.numericValue!.toString()
-                }
-                return sortingNode.value ?? ''
-              }
-            : null,
-        /**
-         * If the enum is numeric, and we sort by value, always use the
-         * `natural` sort type, which will correctly sort them.
-         */
-        type:
-          isNumericEnum && (options.forceNumericSort || options.sortByValue)
-            ? 'natural'
-            : options.type,
+        type: computeOptionType({
+          isNumericEnum,
+          options,
+        }),
       }
-
       let sortNodesExcludingEslintDisabled = (
         ignoreEslintDisabledNodes: boolean,
-      ): SortEnumsSortingNode[] =>
-        sortNodesByDependencies(
-          formattedMembers.flatMap(sortingNodes =>
-            sortNodesByGroups(sortingNodes, compareOptions, {
-              getGroupCompareOptions: groupNumber =>
-                getCustomGroupsCompareOptions(compareOptions, groupNumber),
-              ignoreEslintDisabledNodes,
+      ): SortEnumsSortingNode[] => {
+        let nodesSortedByGroups = formattedMembers.flatMap(sortingNodes =>
+          sortNodesByGroups({
+            getOptionsByGroupNumber: groupNumber => ({
+              options: getCustomGroupOverriddenOptions({
+                options: overriddenOptions,
+                groupNumber,
+              }),
+              nodeValueGetter,
             }),
-          ),
-          {
             ignoreEslintDisabledNodes,
-          },
+            groups: options.groups,
+            nodes: sortingNodes,
+          }),
         )
+
+        return sortNodesByDependencies(nodesSortedByGroups, {
+          ignoreEslintDisabledNodes,
+        })
+      }
 
       reportAllErrors<MESSAGE_ID>({
         availableMessageIds: {
@@ -389,3 +385,38 @@ let getBinaryExpressionNumberValue = (
       return Number.NaN
   }
 }
+
+let computeNodeValueGetter = ({
+  isNumericEnum,
+  options,
+}: {
+  options: Pick<Required<Options[0]>, 'forceNumericSort' | 'sortByValue'>
+  isNumericEnum: boolean
+}): NodeValueGetterFunction<SortEnumsSortingNode> | null =>
+  // Get the enum value rather than the name if needed.
+  options.sortByValue || (isNumericEnum && options.forceNumericSort)
+    ? sortingNode => {
+        if (isNumericEnum) {
+          return sortingNode.numericValue!.toString()
+        }
+        return sortingNode.value ?? ''
+      }
+    : null
+
+let computeOptionType = ({
+  isNumericEnum,
+  options,
+}: {
+  options: Pick<
+    Required<Options[0]>,
+    'forceNumericSort' | 'sortByValue' | 'type'
+  >
+  isNumericEnum: boolean
+}): TypeOption =>
+  /**
+   * If the enum is numeric, and we sort by value, always use the
+   * `natural` sort type, which will correctly sort them.
+   */
+  isNumericEnum && (options.forceNumericSort || options.sortByValue)
+    ? 'natural'
+    : options.type

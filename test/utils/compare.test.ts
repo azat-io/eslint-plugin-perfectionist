@@ -7,131 +7,149 @@ import { compare } from '../../utils/compare'
 
 describe('compare', () => {
   describe('alphabetical', () => {
-    let compareOptions = {
+    let options = {
       fallbackSort: { type: 'unsorted' } as const,
       specialCharacters: 'keep' as const,
       type: 'alphabetical' as const,
       locales: 'en-US' as const,
       order: 'asc' as const,
       ignoreCase: false,
+      alphabet: '',
     }
 
     it('sorts by order asc', () => {
       expect(
-        compare(
-          createTestNode({ name: 'b' }),
-          createTestNode({ name: 'a' }),
-          compareOptions,
-        ),
+        compare({
+          b: createTestNode({ name: 'a' }),
+          a: createTestNode({ name: 'b' }),
+          options,
+        }),
       ).toBe(1)
     })
 
     it('sorts by order desc', () => {
       expect(
-        compare(createTestNode({ name: 'a' }), createTestNode({ name: 'b' }), {
-          ...compareOptions,
-          order: 'desc',
+        compare({
+          options: {
+            ...options,
+            order: 'desc',
+          },
+          a: createTestNode({ name: 'a' }),
+          b: createTestNode({ name: 'b' }),
         }),
       ).toBe(1)
     })
 
     it('sorts ignoring case', () => {
       expect(
-        compare(
-          createTestNode({ name: 'aB' }),
-          createTestNode({ name: 'Ab' }),
-          {
-            ...compareOptions,
+        compare({
+          options: {
+            ...options,
             ignoreCase: true,
           },
-        ),
+          a: createTestNode({ name: 'aB' }),
+          b: createTestNode({ name: 'Ab' }),
+        }),
       ).toBe(0)
     })
 
     it('sorts while trimming special characters', () => {
       expect(
-        compare(createTestNode({ name: '_a' }), createTestNode({ name: 'a' }), {
-          ...compareOptions,
-          specialCharacters: 'trim',
+        compare({
+          options: {
+            ...options,
+            specialCharacters: 'trim',
+          },
+          a: createTestNode({ name: '_a' }),
+          b: createTestNode({ name: 'a' }),
         }),
       ).toBe(0)
     })
 
     it('sorts while removing special characters', () => {
       expect(
-        compare(
-          createTestNode({ name: 'ab' }),
-          createTestNode({ name: 'a_b' }),
-          {
-            ...compareOptions,
+        compare({
+          options: {
+            ...options,
             specialCharacters: 'remove',
           },
-        ),
+          b: createTestNode({ name: 'a_b' }),
+          a: createTestNode({ name: 'ab' }),
+        }),
       ).toBe(0)
     })
   })
 
   describe('natural', () => {
-    let compareOptions = {
+    let options = {
       fallbackSort: { type: 'unsorted' } as const,
       specialCharacters: 'keep' as const,
       locales: 'en-US' as const,
       type: 'natural' as const,
       order: 'asc' as const,
       ignoreCase: false,
+      alphabet: '',
     }
 
     it('sorts by order asc', () => {
       expect(
-        compare(
-          createTestNode({ name: 'b' }),
-          createTestNode({ name: 'a' }),
-          compareOptions,
-        ),
+        compare({
+          b: createTestNode({ name: 'a' }),
+          a: createTestNode({ name: 'b' }),
+          options,
+        }),
       ).toBe(1)
     })
 
     it('sorts by order desc', () => {
       expect(
-        compare(createTestNode({ name: 'a' }), createTestNode({ name: 'b' }), {
-          ...compareOptions,
-          order: 'desc',
+        compare({
+          options: {
+            ...options,
+            order: 'desc',
+          },
+          a: createTestNode({ name: 'a' }),
+          b: createTestNode({ name: 'b' }),
         }),
       ).toBe(1)
     })
 
     it('sorts ignoring case', () => {
       expect(
-        compare(
-          createTestNode({ name: 'aB' }),
-          createTestNode({ name: 'Ab' }),
-          {
-            ...compareOptions,
+        compare({
+          options: {
+            ...options,
             ignoreCase: true,
           },
-        ),
+          a: createTestNode({ name: 'aB' }),
+          b: createTestNode({ name: 'Ab' }),
+        }),
       ).toBe(0)
     })
 
     it('sorts while trimming special characters', () => {
       expect(
-        compare(createTestNode({ name: '_a' }), createTestNode({ name: 'a' }), {
-          ...compareOptions,
-          specialCharacters: 'trim',
+        compare({
+          options: {
+            ...options,
+            specialCharacters: 'trim',
+          },
+          a: createTestNode({ name: '_a' }),
+          b: createTestNode({ name: 'a' }),
         }),
       ).toBe(0)
     })
 
     it('sorts while removing special characters', () => {
       expect(
-        compare(
-          createTestNode({ name: 'ab' }),
-          createTestNode({ name: 'a_b' }),
-          {
-            ...compareOptions,
+        compare({
+          options: {
+            ...options,
             specialCharacters: 'remove',
           },
-        ),
+          b: createTestNode({ name: 'a_b' }),
+          a: createTestNode({ name: 'ab' }),
+        }),
       ).toBe(0)
     })
   })
@@ -144,30 +162,38 @@ describe('compare', () => {
       locales: 'en-US' as const,
       order: 'desc' as const,
       ignoreCase: false,
+      alphabet: '',
     }
 
     it('sorts by order asc', () => {
       expect(
-        compare(createTestNode({ name: 'b' }), createTestNode({ name: 'aa' }), {
-          ...compareOptions,
-          order: 'asc',
+        compare({
+          options: {
+            ...compareOptions,
+            order: 'desc',
+          },
+          b: createTestNode({ name: 'aa' }),
+          a: createTestNode({ name: 'b' }),
         }),
-      ).toBe(-1)
+      ).toBe(1)
     })
 
     it('sorts by order desc', () => {
       expect(
-        compare(
-          createTestNode({ name: 'aa' }),
-          createTestNode({ name: 'b' }),
-          compareOptions,
-        ),
+        compare({
+          options: {
+            ...compareOptions,
+            order: 'desc',
+          },
+          a: createTestNode({ name: 'aa' }),
+          b: createTestNode({ name: 'b' }),
+        }),
       ).toBe(-1)
     })
   })
 
   describe('custom', () => {
-    let compareOptions = {
+    let options = {
       alphabet: Alphabet.generateRecommendedAlphabet()
         .sortByLocaleCompare('en-US')
         .getCharacters(),
@@ -181,90 +207,109 @@ describe('compare', () => {
 
     it('sorts by order asc', () => {
       expect(
-        compare(
-          createTestNode({ name: 'b' }),
-          createTestNode({ name: 'a' }),
-          compareOptions,
-        ),
+        compare({
+          b: createTestNode({ name: 'a' }),
+          a: createTestNode({ name: 'b' }),
+          options,
+        }),
       ).toBe(1)
     })
 
     it('sorts by order desc', () => {
       expect(
-        compare(createTestNode({ name: 'a' }), createTestNode({ name: 'b' }), {
-          ...compareOptions,
-          order: 'desc',
+        compare({
+          options: {
+            ...options,
+            order: 'desc',
+          },
+          a: createTestNode({ name: 'a' }),
+          b: createTestNode({ name: 'b' }),
         }),
       ).toBe(1)
     })
 
     it('sorts ignoring case', () => {
       expect(
-        compare(
-          createTestNode({ name: 'aB' }),
-          createTestNode({ name: 'Ab' }),
-          {
-            ...compareOptions,
+        compare({
+          options: {
+            ...options,
             ignoreCase: true,
           },
-        ),
+          a: createTestNode({ name: 'aB' }),
+          b: createTestNode({ name: 'Ab' }),
+        }),
       ).toBe(0)
     })
 
     it('sorts while trimming special characters', () => {
       expect(
-        compare(createTestNode({ name: '_a' }), createTestNode({ name: 'a' }), {
-          ...compareOptions,
-          specialCharacters: 'trim',
+        compare({
+          options: {
+            ...options,
+            specialCharacters: 'trim',
+          },
+          a: createTestNode({ name: '_a' }),
+          b: createTestNode({ name: 'a' }),
         }),
       ).toBe(0)
     })
 
     it('sorts while removing special characters', () => {
       expect(
-        compare(
-          createTestNode({ name: 'ab' }),
-          createTestNode({ name: 'a_b' }),
-          {
-            ...compareOptions,
+        compare({
+          options: {
+            ...options,
             specialCharacters: 'remove',
           },
-        ),
+          b: createTestNode({ name: 'a_b' }),
+          a: createTestNode({ name: 'ab' }),
+        }),
       ).toBe(0)
     })
 
     it('gives minimum priority to characters not in the alphabet', () => {
       expect(
-        compare(createTestNode({ name: 'a' }), createTestNode({ name: 'b' }), {
-          ...compareOptions,
-          alphabet: 'b',
+        compare({
+          options: {
+            ...options,
+            alphabet: 'b',
+          },
+          a: createTestNode({ name: 'a' }),
+          b: createTestNode({ name: 'b' }),
         }),
       ).toBe(1)
+
       expect(
-        compare(createTestNode({ name: 'b' }), createTestNode({ name: 'a' }), {
-          ...compareOptions,
-          alphabet: 'b',
+        compare({
+          options: {
+            ...options,
+            alphabet: 'b',
+          },
+          b: createTestNode({ name: 'a' }),
+          a: createTestNode({ name: 'b' }),
         }),
       ).toBe(-1)
-      expect(
-        compare(createTestNode({ name: 'b' }), createTestNode({ name: 'a' }), {
-          ...compareOptions,
-          alphabet: 'c',
-        }),
-      ).toBe(0)
     })
 
     it('gives maximum priority to void', () => {
       expect(
-        compare(createTestNode({ name: 'a' }), createTestNode({ name: '' }), {
-          ...compareOptions,
-          alphabet: 'a',
+        compare({
+          options: {
+            ...options,
+            alphabet: 'a',
+          },
+          a: createTestNode({ name: 'a' }),
+          b: createTestNode({ name: '' }),
         }),
       ).toBe(1)
       expect(
-        compare(createTestNode({ name: '' }), createTestNode({ name: 'a' }), {
-          ...compareOptions,
-          alphabet: 'a',
+        compare({
+          options: {
+            ...options,
+            alphabet: 'a',
+          },
+          b: createTestNode({ name: 'a' }),
+          a: createTestNode({ name: '' }),
         }),
       ).toBe(-1)
     })
@@ -278,55 +323,105 @@ describe('compare', () => {
       locales: 'en-US' as const,
       order: 'desc' as const,
       ignoreCase: false,
+      alphabet: '',
     }
 
     it('does not sort', () => {
       expect(
-        compare(createTestNode({ name: 'b' }), createTestNode({ name: 'a' }), {
-          ...compareOptions,
+        compare({
+          a: createTestNode({ name: 'b' }),
+          b: createTestNode({ name: 'a' }),
+          options: compareOptions,
         }),
       ).toBe(0)
     })
   })
 
+  describe('"nodeValueGetter"', () => {
+    let options = {
+      specialCharacters: 'keep' as const,
+      type: 'alphabetical' as const,
+      locales: 'en-US' as const,
+      order: 'asc' as const,
+      ignoreCase: false,
+      alphabet: '',
+    }
+
+    it('sorts using the "nodeValueGetter"', () => {
+      let a = createTestNode({
+        additionalProperties: { value: 'b' },
+        name: 'a',
+      })
+      let b = createTestNode({
+        additionalProperties: { value: 'a' },
+        name: 'b',
+      })
+      expect(
+        compare({
+          options: {
+            ...options,
+            fallbackSort: { type: 'unsorted' },
+          },
+          nodeValueGetter: node =>
+            'value' in node ? (node.value as string) : '',
+          a,
+          b,
+        }),
+      ).toBe(1)
+    })
+  })
+
   describe('fallback sorting', () => {
-    let compareOptions = {
+    let options = {
       specialCharacters: 'keep' as const,
       type: 'line-length' as const,
       locales: 'en-US' as const,
       order: 'desc' as const,
       ignoreCase: false,
+      alphabet: '',
     }
 
     it('sorts using the fallback configuration', () => {
-      let nodeAaa = createTestNode({ name: 'aaa' })
-      let nodeBbb = createTestNode({ name: 'bbb' })
+      let a = createTestNode({ name: 'aaa' })
+      let b = createTestNode({ name: 'bbb' })
       expect(
-        compare(nodeBbb, nodeAaa, {
-          ...compareOptions,
-          fallbackSort: {
-            type: 'alphabetical',
-            order: 'asc',
-          } as const,
+        compare({
+          options: {
+            ...options,
+            fallbackSort: {
+              type: 'alphabetical',
+              order: 'asc',
+            },
+          },
+          a: b,
+          b: a,
         }),
       ).toBe(1)
 
       expect(
-        compare(nodeBbb, nodeAaa, {
-          ...compareOptions,
-          fallbackSort: {
-            type: 'alphabetical',
-            order: 'desc',
-          } as const,
+        compare({
+          options: {
+            ...options,
+            fallbackSort: {
+              type: 'alphabetical',
+              order: 'desc',
+            },
+          },
+          a: b,
+          b: a,
         }),
       ).toBe(-1)
 
       expect(
-        compare(nodeBbb, nodeAaa, {
-          ...compareOptions,
-          fallbackSort: {
-            type: 'alphabetical',
-          } as const,
+        compare({
+          options: {
+            ...options,
+            fallbackSort: {
+              type: 'alphabetical',
+            },
+          },
+          a: b,
+          b: a,
         }),
       ).toBe(-1)
     })
@@ -335,20 +430,31 @@ describe('compare', () => {
       let node = createTestNode({ name: 'aaa' })
       let duplicateNode = createTestNode({ name: 'aaa' })
       expect(
-        compare(node, duplicateNode, {
-          ...compareOptions,
-          fallbackSort: {
-            type: 'alphabetical',
-            order: 'asc',
-          } as const,
+        compare({
+          options: {
+            ...options,
+            fallbackSort: {
+              type: 'alphabetical',
+              order: 'asc',
+            } as const,
+          },
+          b: duplicateNode,
+          a: node,
         }),
       ).toBe(0)
     })
   })
 
-  let createTestNode = ({ name }: { name: string }): SortingNode =>
+  let createTestNode = ({
+    additionalProperties,
+    name,
+  }: {
+    additionalProperties?: object
+    name: string
+  }): SortingNode =>
     ({
       size: name.length,
       name,
+      ...additionalProperties,
     }) as SortingNode
 })

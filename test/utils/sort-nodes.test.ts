@@ -5,19 +5,26 @@ import type { SortingNode } from '../../types/sorting-node'
 import { sortNodes } from '../../utils/sort-nodes'
 
 describe('sort-nodes', () => {
-  let compareOptions = {
+  let options = {
     fallbackSort: { type: 'unsorted' },
     specialCharacters: 'keep',
     type: 'alphabetical',
     ignoreCase: false,
     locales: 'en-US',
     order: 'asc',
+    alphabet: '',
   } as const
 
   it('sorts nodes', () => {
     let a = createTestNode({ name: 'a' })
     let b = createTestNode({ name: 'b' })
-    expect(sortNodes([b, a], compareOptions)).toStrictEqual([a, b])
+    expect(
+      sortNodes({
+        ignoreEslintDisabledNodes: false,
+        nodes: [b, a],
+        options,
+      }),
+    ).toStrictEqual([a, b])
   })
 
   describe('ignoreEslintDisabledNodes', () => {
@@ -27,16 +34,20 @@ describe('sort-nodes', () => {
 
     it('should ignore eslint disabled nodes if "ignoreEslintDisabledNodes" is true', () => {
       expect(
-        sortNodes([nodeB, nodeC, nodeA], compareOptions, {
+        sortNodes({
           ignoreEslintDisabledNodes: true,
+          nodes: [nodeB, nodeC, nodeA],
+          options,
         }),
       ).toStrictEqual([nodeA, nodeC, nodeB])
     })
 
     it('should not ignore eslint disabled nodes if "ignoreEslintDisabledNodes" is false', () => {
       expect(
-        sortNodes([nodeB, nodeC, nodeA], compareOptions, {
+        sortNodes({
           ignoreEslintDisabledNodes: false,
+          nodes: [nodeB, nodeC, nodeA],
+          options,
         }),
       ).toStrictEqual([nodeA, nodeB, nodeC])
     })
@@ -48,16 +59,38 @@ describe('sort-nodes', () => {
       let nodeB = createTestNode({ name: 'b' })
       let nodeC = createTestNode({ name: 'c' })
       expect(
-        sortNodes([nodeB, nodeC, nodeA], compareOptions, {
+        sortNodes({
           isNodeIgnored: node => node === nodeC,
           ignoreEslintDisabledNodes: false,
+          nodes: [nodeB, nodeC, nodeA],
+          options,
         }),
       ).toStrictEqual([nodeA, nodeC, nodeB])
     })
   })
 
-  let createTestNode = (node: {
-    isEslintDisabled?: boolean
-    name: string
-  }): SortingNode => node as SortingNode
+  it('should handle "nodeValueGetter"', () => {
+    let nodeA = createTestNode({ name: 'a' }, { actualValue: 'b' })
+    let nodeB = createTestNode({ name: 'b' }, { actualValue: 'a' })
+    expect(
+      sortNodes({
+        nodeValueGetter: node => node.actualValue,
+        ignoreEslintDisabledNodes: false,
+        nodes: [nodeA, nodeB],
+        options,
+      }),
+    ).toStrictEqual([nodeB, nodeA])
+  })
+
+  let createTestNode = <T extends object>(
+    node: {
+      isEslintDisabled?: boolean
+      name: string
+    },
+    additionalParameters?: T,
+  ): SortingNode & T =>
+    ({
+      ...node,
+      ...additionalParameters,
+    }) as SortingNode & T
 })

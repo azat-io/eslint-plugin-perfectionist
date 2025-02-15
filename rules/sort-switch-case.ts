@@ -86,10 +86,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
       // For each case group, ensure the nodes are in the correct order.
       let hasUnsortedNodes = false
       for (let caseNodesSortingNodeGroup of caseNameSortingNodeGroups) {
-        let sortedCaseNameSortingNodes = sortNodes(
-          caseNodesSortingNodeGroup,
+        let sortedCaseNameSortingNodes = sortNodes({
+          nodes: caseNodesSortingNodeGroup,
+          ignoreEslintDisabledNodes: false,
           options,
-        )
+        })
         hasUnsortedNodes ||= sortedCaseNameSortingNodes.some(
           (node, index) => node !== caseNodesSortingNodeGroup[index],
         )
@@ -220,7 +221,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
           if (b.some(node => node.isDefaultClause)) {
             return -1
           }
-          return compare(a.at(0)!, b.at(0)!, options)
+          return compare({
+            a: a.at(0)!,
+            b: b.at(0)!,
+            options,
+          })
         })
         .flat()
       let sortingNodeGroupsForBlockSortFlat =

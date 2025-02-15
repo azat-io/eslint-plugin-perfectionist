@@ -1,46 +1,51 @@
-import type { GroupsOptions } from '../types/common-options'
+import type { CommonOptions, GroupsOptions } from '../types/common-options'
+import type { NodeValueGetterFunction } from './compare'
 import type { SortingNode } from '../types/sorting-node'
-import type { CompareOptions } from './compare'
 
 import { getGroupNumber } from './get-group-number'
 import { sortNodes } from './sort-nodes'
 
-interface ExtraOptions<T extends SortingNode, Options extends BaseOptions<T>> {
-  getGroupCompareOptions?(groupNumber: number): CompareOptions<T> & Options
+export type BaseSortNodesByGroupsOptions = {
+  maxLineLength?: number
+} & CommonOptions
 
-  isNodeIgnoredForGroup?(node: T, compareOptions: Options): boolean
-
+interface SortNodesByGroupsParameters<
+  Options extends BaseSortNodesByGroupsOptions,
+  T extends SortingNode,
+> {
+  getOptionsByGroupNumber(groupNumber: number): {
+    nodeValueGetter?: NodeValueGetterFunction<T> | null
+    options: Options
+  }
+  isNodeIgnoredForGroup?(node: T, groupOptions: Options): boolean
   ignoreEslintDisabledNodes: boolean
-
   isNodeIgnored?(node: T): boolean
-}
-
-type BaseOptions<T extends SortingNode> = CompareOptions<T> & GroupsOption
-
-interface GroupsOption {
   groups: GroupsOptions<string>
+  nodes: T[]
 }
 
 export let sortNodesByGroups = <
   T extends SortingNode,
-  Options extends BaseOptions<T>,
->(
-  nodes: T[],
-  options: Options,
-  extraOptions?: ExtraOptions<T, Options>,
-): T[] => {
+  Options extends BaseSortNodesByGroupsOptions,
+>({
+  ignoreEslintDisabledNodes,
+  getOptionsByGroupNumber,
+  isNodeIgnoredForGroup,
+  isNodeIgnored,
+  groups,
+  nodes,
+}: SortNodesByGroupsParameters<Options, T>): T[] => {
   let nodesByNonIgnoredGroupNumber: Record<number, T[]> = {}
   let ignoredNodeIndices: number[] = []
   for (let [index, sortingNode] of nodes.entries()) {
     if (
-      (sortingNode.isEslintDisabled &&
-        extraOptions?.ignoreEslintDisabledNodes) ||
-      extraOptions?.isNodeIgnored?.(sortingNode)
+      (sortingNode.isEslintDisabled && ignoreEslintDisabledNodes) ||
+      isNodeIgnored?.(sortingNode)
     ) {
       ignoredNodeIndices.push(index)
       continue
     }
-    let groupNumber = getGroupNumber(options.groups, sortingNode)
+    let groupNumber = getGroupNumber(groups, sortingNode)
     nodesByNonIgnoredGroupNumber[groupNumber] ??= []
     nodesByNonIgnoredGroupNumber[groupNumber].push(sortingNode)
   }
@@ -49,20 +54,22 @@ export let sortNodesByGroups = <
   for (let groupNumber of Object.keys(nodesByNonIgnoredGroupNumber).sort(
     (a, b) => Number(a) - Number(b),
   )) {
-    let compareOptions =
-      extraOptions?.getGroupCompareOptions?.(Number(groupNumber)) ?? options
+    let { nodeValueGetter, options } = getOptionsByGroupNumber(
+      Number(groupNumber),
+    )
     let nodesToPush = nodesByNonIgnoredGroupNumber[Number(groupNumber)]!
 
     let groupIgnoredNodes = new Set(
-      nodesToPush.filter(node =>
-        extraOptions?.isNodeIgnoredForGroup?.(node, compareOptions),
-      ),
+      nodesToPush.filter(node => isNodeIgnoredForGroup?.(node, options)),
     )
 
     sortedNodes.push(
-      ...sortNodes(nodesToPush, compareOptions, {
+      ...sortNodes({
         isNodeIgnored: node => groupIgnoredNodes.has(node),
         ignoreEslintDisabledNodes: false,
+        nodes: nodesToPush,
+        nodeValueGetter,
+        options,
       }),
     )
   }

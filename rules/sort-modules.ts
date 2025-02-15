@@ -26,6 +26,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -33,7 +34,6 @@ import {
   allSelectors,
 } from './sort-modules/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { doesCustomGroupMatch } from './sort-modules/does-custom-group-match'
@@ -346,22 +346,23 @@ let analyzeModule = ({
 
   let sortNodesExcludingEslintDisabled = (
     ignoreEslintDisabledNodes: boolean,
-  ): SortingNodeWithDependencies[] =>
-    sortNodesByDependencies(
-      formattedNodes.flatMap(nodes =>
-        sortNodesByGroups(nodes, options, {
-          isNodeIgnored: sortingNode =>
-            getGroupNumber(options.groups, sortingNode) ===
-            options.groups.length,
-          getGroupCompareOptions: groupNumber =>
-            getCustomGroupsCompareOptions(options, groupNumber),
-          ignoreEslintDisabledNodes,
-        }),
-      ),
-      {
+  ): SortingNodeWithDependencies[] => {
+    let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
+      sortNodesByGroups({
+        isNodeIgnored: sortingNode =>
+          getGroupNumber(options.groups, sortingNode) === options.groups.length,
+        getOptionsByGroupNumber:
+          buildGetCustomGroupOverriddenOptionsFunction(options),
         ignoreEslintDisabledNodes,
-      },
+        groups: options.groups,
+        nodes,
+      }),
     )
+
+    return sortNodesByDependencies(nodesSortedByGroups, {
+      ignoreEslintDisabledNodes,
+    })
+  }
   let nodes = formattedNodes.flat()
 
   reportAllErrors<MESSAGE_ID>({

@@ -141,8 +141,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ignoreEslintDisabledNodes: boolean,
         ): SortNamedExportsSortingNode[] =>
           filteredGroupKindNodes.flatMap(groupedNodes =>
-            sortNodes(groupedNodes, options, {
+            sortNodes({
               ignoreEslintDisabledNodes,
+              nodes: groupedNodes,
+              options,
             }),
           )
 

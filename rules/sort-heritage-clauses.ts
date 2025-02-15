@@ -140,7 +140,12 @@ let sortHeritageClauses = (
   let sortNodesExcludingEslintDisabled = (
     ignoreEslintDisabledNodes: boolean,
   ): SortingNode[] =>
-    sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
+    sortNodesByGroups({
+      getOptionsByGroupNumber: () => ({ options }),
+      ignoreEslintDisabledNodes,
+      groups: options.groups,
+      nodes,
+    })
 
   reportAllErrors<MESSAGE_ID>({
     availableMessageIds: {

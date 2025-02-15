@@ -22,13 +22,13 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import {
   singleCustomGroupJsonSchema,
   allSelectors,
 } from './sort-array-includes/types'
-import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
 import { doesCustomGroupMatch } from './sort-array-includes/does-custom-group-match'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -292,10 +292,12 @@ export let sortArray = <MessageIds extends string>({
       ignoreEslintDisabledNodes: boolean,
     ): SortArrayIncludesSortingNode[] =>
       filteredGroupKindNodes.flatMap(groupedNodes =>
-        sortNodesByGroups(groupedNodes, options, {
-          getGroupCompareOptions: groupNumber =>
-            getCustomGroupsCompareOptions(options, groupNumber),
+        sortNodesByGroups({
+          getOptionsByGroupNumber:
+            buildGetCustomGroupOverriddenOptionsFunction(options),
           ignoreEslintDisabledNodes,
+          groups: options.groups,
+          nodes: groupedNodes,
         }),
       )
 

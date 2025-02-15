@@ -1,26 +1,30 @@
+import type { CommonOptions } from '../types/common-options'
+import type { NodeValueGetterFunction } from './compare'
 import type { SortingNode } from '../types/sorting-node'
-import type { CompareOptions } from './compare'
 
 import { compare } from './compare'
 
-interface ExtraOptions<T extends SortingNode> {
+interface SortNodesParameters<T extends SortingNode> {
+  options: { maxLineLength?: number } & CommonOptions
+  nodeValueGetter?: NodeValueGetterFunction<T> | null
   ignoreEslintDisabledNodes: boolean
-
   isNodeIgnored?(node: T): boolean
+  nodes: T[]
 }
 
-export let sortNodes = <T extends SortingNode>(
-  nodes: T[],
-  options: CompareOptions<T>,
-  extraOptions?: ExtraOptions<T>,
-): T[] => {
+export let sortNodes = <T extends SortingNode>({
+  ignoreEslintDisabledNodes,
+  nodeValueGetter,
+  isNodeIgnored,
+  options,
+  nodes,
+}: SortNodesParameters<T>): T[] => {
   let nonIgnoredNodes: T[] = []
   let ignoredNodeIndices: number[] = []
   for (let [index, sortingNode] of nodes.entries()) {
     if (
-      (sortingNode.isEslintDisabled &&
-        extraOptions?.ignoreEslintDisabledNodes) ||
-      extraOptions?.isNodeIgnored?.(sortingNode)
+      (sortingNode.isEslintDisabled && ignoreEslintDisabledNodes) ||
+      isNodeIgnored?.(sortingNode)
     ) {
       ignoredNodeIndices.push(index)
     } else {
@@ -28,7 +32,14 @@ export let sortNodes = <T extends SortingNode>(
     }
   }
 
-  let sortedNodes = [...nonIgnoredNodes].sort((a, b) => compare(a, b, options))
+  let sortedNodes = [...nonIgnoredNodes].sort((a, b) =>
+    compare({
+      nodeValueGetter,
+      options,
+      a,
+      b,
+    }),
+  )
 
   // Add ignored nodes at the same position as they were before linting.
   for (let ignoredIndex of ignoredNodeIndices) {
