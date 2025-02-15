@@ -82,6 +82,24 @@ describe('sort-nodes', () => {
     ).toStrictEqual([nodeB, nodeA])
   })
 
+  it('should handle "fallbackSortNodeValueGetter"', () => {
+    let nodeA = createTestNode({ name: 'a' }, { actualValue: 'b' })
+    let nodeB = createTestNode({ name: 'a' }, { actualValue: 'a' })
+    expect(
+      sortNodes({
+        options: {
+          ...options,
+          fallbackSort: {
+            type: 'alphabetical',
+          },
+        },
+        fallbackSortNodeValueGetter: node => node.actualValue,
+        ignoreEslintDisabledNodes: false,
+        nodes: [nodeA, nodeB],
+      }),
+    ).toStrictEqual([nodeB, nodeA])
+  })
+
   let createTestNode = <T extends object>(
     node: {
       isEslintDisabled?: boolean

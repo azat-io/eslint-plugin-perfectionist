@@ -127,6 +127,33 @@ describe('sort-nodes-by-groups', () => {
     ).toStrictEqual([nodeB, nodeA])
   })
 
+  it('should handle "fallbackSortNodeValueGetter"', () => {
+    let nodeA = createTestNode(
+      { group: 'group1', name: 'a' },
+      { actualValue: 'b' },
+    )
+    let nodeB = createTestNode(
+      { group: 'group1', name: 'a' },
+      { actualValue: 'a' },
+    )
+    expect(
+      sortNodesByGroups({
+        getOptionsByGroupNumber: () => ({
+          options: {
+            ...options,
+            fallbackSort: {
+              type: 'alphabetical',
+            },
+          },
+          fallbackSortNodeValueGetter: node => node.actualValue,
+        }),
+        ignoreEslintDisabledNodes: false,
+        nodes: [nodeA, nodeB],
+        groups: ['group1'],
+      }),
+    ).toStrictEqual([nodeB, nodeA])
+  })
+
   let createTestNode = <T extends object>(
     node: {
       isEslintDisabled?: boolean
