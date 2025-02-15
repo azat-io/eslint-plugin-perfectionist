@@ -5,6 +5,7 @@ import type { SortingNode } from '../types/sorting-node'
 import { compare } from './compare'
 
 interface SortNodesParameters<T extends SortingNode> {
+  fallbackSortNodeValueGetter?: NodeValueGetterFunction<T> | null
   options: { maxLineLength?: number } & CommonOptions
   nodeValueGetter?: NodeValueGetterFunction<T> | null
   ignoreEslintDisabledNodes: boolean
@@ -13,6 +14,7 @@ interface SortNodesParameters<T extends SortingNode> {
 }
 
 export let sortNodes = <T extends SortingNode>({
+  fallbackSortNodeValueGetter,
   ignoreEslintDisabledNodes,
   nodeValueGetter,
   isNodeIgnored,
@@ -34,6 +36,7 @@ export let sortNodes = <T extends SortingNode>({
 
   let sortedNodes = [...nonIgnoredNodes].sort((a, b) =>
     compare({
+      fallbackSortNodeValueGetter,
       nodeValueGetter,
       options,
       a,
