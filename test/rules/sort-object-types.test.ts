@@ -998,6 +998,58 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'fallbackSort'`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      fallbackSort: {
+                        type: 'alphabetical',
+                        order: 'asc',
+                      },
+                      elementNamePattern: '^foo',
+                      type: 'line-length',
+                      groupName: 'foo',
+                      order: 'desc',
+                    },
+                  ],
+                  type: 'alphabetical',
+                  groups: ['foo'],
+                  order: 'asc',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'fooBar',
+                    left: 'fooZar',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  fooBar: string
+                  fooZar: string
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  fooZar: string
+                  fooBar: string
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}: sort custom groups by overriding 'sortBy'`,
         rule,
         {
