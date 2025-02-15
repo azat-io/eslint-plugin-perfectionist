@@ -17,6 +17,7 @@ export let getCustomGroupsCompareOptions = (
     Required<Options[0]>,
     'fallbackSort' | 'sortBy' | 'order' | 'type'
   >
+  fallbackSortNodeValueGetter?: NodeValueGetterFunction<SortObjectTypesSortingNode> | null
   nodeValueGetter?: NodeValueGetterFunction<SortObjectTypesSortingNode> | null
 } => {
   let baseCompareOptions = baseGetCustomGroupsCompareOptions(
@@ -24,7 +25,8 @@ export let getCustomGroupsCompareOptions = (
     groupNumber,
   )
 
-  let { customGroups, sortBy, groups } = options
+  let { fallbackSort, customGroups, sortBy, groups } = options
+  let fallbackSortBy = fallbackSort.sortBy
   if (Array.isArray(customGroups)) {
     let group = groups[groupNumber]
     let customGroup =
@@ -32,16 +34,26 @@ export let getCustomGroupsCompareOptions = (
         ? customGroups.find(currentGroup => group === currentGroup.groupName)
         : null
 
-    if (customGroup && 'sortBy' in customGroup && customGroup.sortBy) {
-      ;({ sortBy } = customGroup)
+    if (customGroup) {
+      fallbackSortBy = customGroup.fallbackSort?.sortBy ?? fallbackSortBy
+      if ('sortBy' in customGroup && customGroup.sortBy) {
+        ;({ sortBy } = customGroup)
+      }
     }
   }
 
   return {
     options: {
       ...baseCompareOptions,
+      fallbackSort: {
+        ...baseCompareOptions.fallbackSort,
+        sortBy: fallbackSortBy,
+      },
       sortBy,
     },
+    fallbackSortNodeValueGetter: fallbackSortBy
+      ? buildNodeValueGetter(fallbackSortBy)
+      : null,
     nodeValueGetter: buildNodeValueGetter(sortBy),
   }
 }

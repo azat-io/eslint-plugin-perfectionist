@@ -1044,6 +1044,47 @@ describe(ruleName, () => {
                 }
               `,
             },
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      fallbackSort: {
+                        type: 'alphabetical',
+                        sortBy: 'value',
+                      },
+                      elementValuePattern: '^foo',
+                      type: 'line-length',
+                      groupName: 'foo',
+                    },
+                  ],
+                  type: 'alphabetical',
+                  groups: ['foo'],
+                  order: 'asc',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  b: fooBar
+                  a: fooZar
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  a: fooZar
+                  b: fooBar
+                }
+              `,
+            },
           ],
           valid: [],
         },
@@ -4325,6 +4366,40 @@ describe(ruleName, () => {
                 c: string;
                 bb: string;
                 a: string;
+              }
+            `,
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  sortBy: 'value',
+                },
+              },
+            ],
+            output: dedent`
+              type Type = {
+                bb: string;
+                c: boolean;
+                a: number;
+              }
+            `,
+            code: dedent`
+              type Type = {
+                c: boolean;
+                bb: string;
+                a: number;
               }
             `,
           },

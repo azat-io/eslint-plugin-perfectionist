@@ -1,15 +1,20 @@
 import { describe, expect, it } from 'vitest'
 
-import type { CommonOptions } from '../../types/common-options'
+import type { Options } from '../../../rules/sort-object-types/types'
 
-import { getCustomGroupsCompareOptions } from '../../utils/get-custom-groups-compare-options'
+import { getCustomGroupsCompareOptions } from '../../../rules/sort-object-types/get-custom-groups-compare-options'
 
 describe('get-custom-groups-compare-options', () => {
-  let baseOptions: Pick<CommonOptions, 'fallbackSort' | 'order' | 'type'> = {
+  let commonOptions: Pick<
+    Required<Options[0]>,
+    'fallbackSort' | 'sortBy' | 'order' | 'type'
+  > = {
     fallbackSort: {
       type: 'unsorted',
+      sortBy: 'name',
     },
     type: 'alphabetical',
+    sortBy: 'name',
     order: 'asc',
   }
 
@@ -17,14 +22,16 @@ describe('get-custom-groups-compare-options', () => {
     expect(
       getCustomGroupsCompareOptions(
         {
-          ...baseOptions,
+          ...commonOptions,
           groups: ['group'],
           customGroups: {},
         },
         0,
       ),
     ).toStrictEqual({
-      ...baseOptions,
+      fallbackSortNodeValueGetter: null,
+      options: commonOptions,
+      nodeValueGetter: null,
     })
   })
 
@@ -32,14 +39,16 @@ describe('get-custom-groups-compare-options', () => {
     expect(
       getCustomGroupsCompareOptions(
         {
-          ...baseOptions,
+          ...commonOptions,
           groups: ['group'],
           customGroups: [],
         },
         0,
       ),
     ).toStrictEqual({
-      ...baseOptions,
+      fallbackSortNodeValueGetter: null,
+      options: commonOptions,
+      nodeValueGetter: null,
     })
   })
 
@@ -48,7 +57,7 @@ describe('get-custom-groups-compare-options', () => {
       expect(
         getCustomGroupsCompareOptions(
           {
-            ...baseOptions,
+            ...commonOptions,
             customGroups: [
               {
                 fallbackSort: {
@@ -62,10 +71,15 @@ describe('get-custom-groups-compare-options', () => {
           0,
         ),
       ).toStrictEqual({
-        ...baseOptions,
-        fallbackSort: {
-          type: 'unsorted',
+        options: {
+          ...commonOptions,
+          fallbackSort: {
+            ...commonOptions.fallbackSort,
+            type: 'unsorted',
+          },
         },
+        fallbackSortNodeValueGetter: null,
+        nodeValueGetter: null,
       })
     })
 
@@ -73,7 +87,7 @@ describe('get-custom-groups-compare-options', () => {
       expect(
         getCustomGroupsCompareOptions(
           {
-            ...baseOptions,
+            ...commonOptions,
             customGroups: [
               {
                 fallbackSort: {
@@ -88,11 +102,47 @@ describe('get-custom-groups-compare-options', () => {
           0,
         ),
       ).toStrictEqual({
-        ...baseOptions,
-        fallbackSort: {
-          type: 'alphabetical',
-          order: 'desc',
+        options: {
+          ...commonOptions,
+          fallbackSort: {
+            ...commonOptions.fallbackSort,
+            type: 'alphabetical',
+            order: 'desc',
+          },
         },
+        fallbackSortNodeValueGetter: null,
+        nodeValueGetter: null,
+      })
+    })
+
+    it('overrides "fallbackSort.sortBy"', () => {
+      expect(
+        getCustomGroupsCompareOptions(
+          {
+            ...commonOptions,
+            customGroups: [
+              {
+                fallbackSort: {
+                  type: 'alphabetical',
+                  sortBy: 'value',
+                },
+                groupName: 'group',
+              },
+            ],
+            groups: ['group'],
+          },
+          0,
+        ),
+      ).toStrictEqual({
+        options: {
+          ...commonOptions,
+          fallbackSort: {
+            type: 'alphabetical',
+            sortBy: 'value',
+          },
+        },
+        fallbackSortNodeValueGetter: expect.any(Function),
+        nodeValueGetter: null,
       })
     })
   })
@@ -101,7 +151,7 @@ describe('get-custom-groups-compare-options', () => {
     expect(
       getCustomGroupsCompareOptions(
         {
-          ...baseOptions,
+          ...commonOptions,
           customGroups: [
             {
               groupName: 'group',
@@ -113,11 +163,12 @@ describe('get-custom-groups-compare-options', () => {
         0,
       ),
     ).toStrictEqual({
-      ...baseOptions,
-      fallbackSort: {
+      options: {
+        ...commonOptions,
         type: 'unsorted',
       },
-      type: 'unsorted',
+      fallbackSortNodeValueGetter: null,
+      nodeValueGetter: null,
     })
   })
 
@@ -125,7 +176,7 @@ describe('get-custom-groups-compare-options', () => {
     expect(
       getCustomGroupsCompareOptions(
         {
-          ...baseOptions,
+          ...commonOptions,
           customGroups: [
             {
               groupName: 'group',
@@ -137,11 +188,12 @@ describe('get-custom-groups-compare-options', () => {
         0,
       ),
     ).toStrictEqual({
-      ...baseOptions,
-      fallbackSort: {
-        type: 'unsorted',
+      options: {
+        ...commonOptions,
+        order: 'desc',
       },
-      order: 'desc',
+      fallbackSortNodeValueGetter: null,
+      nodeValueGetter: null,
     })
   })
 })
