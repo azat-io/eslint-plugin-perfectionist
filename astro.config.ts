@@ -4,7 +4,6 @@ import { browserslistToTargets } from 'lightningcss'
 import svelteSvg from '@poppanator/sveltekit-svg'
 import remarkSectionize from 'remark-sectionize'
 import { defineConfig } from 'astro/config'
-import compress from '@playform/compress'
 import { fileURLToPath } from 'node:url'
 import browserslist from 'browserslist'
 import sitemap from '@astrojs/sitemap'
@@ -19,25 +18,6 @@ let dirname = fileURLToPath(path.dirname(import.meta.url))
 let site = 'https://perfectionist.dev'
 
 export default defineConfig({
-  integrations: [
-    compress({
-      JavaScript: true,
-      Image: true,
-      CSS: false,
-      HTML: true,
-      SVG: true,
-    }),
-    svelte({
-      compilerOptions: {
-        cssHash: ({ hash, css }) => `s-${hash(css)}`,
-        discloseVersion: false,
-      },
-    }),
-    sitemap({
-      filter: page => !new RegExp(`^${site}/guide$`, 'u').test(page),
-    }),
-    mdx(),
-  ],
   markdown: {
     rehypePlugins: [
       [
@@ -49,7 +29,11 @@ export default defineConfig({
       ],
     ],
     shikiConfig: {
-      transformers: [transformerNotationDiff()],
+      transformers: [
+        transformerNotationDiff({
+          matchAlgorithm: 'v3',
+        }),
+      ],
       theme: colorTheme,
     },
     remarkPlugins: [remarkSectionize, remarkHeadings],
@@ -70,6 +54,18 @@ export default defineConfig({
       svelteSvg(),
     ],
   },
+  integrations: [
+    svelte({
+      compilerOptions: {
+        cssHash: ({ hash, css }) => `s-${hash(css)}`,
+        discloseVersion: false,
+      },
+    }),
+    sitemap({
+      filter: page => !new RegExp(`^${site}/guide$`, 'u').test(page),
+    }),
+    mdx(),
+  ],
   prefetch: {
     defaultStrategy: 'viewport',
     prefetchAll: true,
