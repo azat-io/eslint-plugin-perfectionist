@@ -8,7 +8,6 @@ import type {
   CommonOptions,
   GroupsOptions,
   RegexOption,
-  TypeOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
@@ -39,7 +38,6 @@ export type Options = Partial<
      * @deprecated for {@link `destructuredObjects`} and {@link `objectDeclarations`}
      */
     destructureOnly: boolean
-    type: TypeOption
   } & CommonOptions
 >[]
 

@@ -510,7 +510,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
                   return options
                 }
                 let group = options.groups[groupNumber]
-                return isSideEffectOnlyGroup(group) ? null : options
+                return {
+                  ...options,
+                  type: isSideEffectOnlyGroup(group)
+                    ? 'unsorted'
+                    : options.type,
+                }
               },
               isNodeIgnored: node => node.isIgnored,
               ignoreEslintDisabledNodes,

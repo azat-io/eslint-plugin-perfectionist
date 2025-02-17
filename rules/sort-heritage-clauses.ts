@@ -5,7 +5,6 @@ import type {
   DeprecatedCustomGroupsOption,
   CommonOptions,
   GroupsOptions,
-  TypeOption,
 } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -34,7 +33,6 @@ export type Options = [
     {
       customGroups: DeprecatedCustomGroupsOption
       groups: GroupsOptions<Group>
-      type: TypeOption
     } & CommonOptions
   >,
 ]

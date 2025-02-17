@@ -7,7 +7,6 @@ import type {
   CommonOptions,
   GroupsOptions,
   RegexOption,
-  TypeOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
@@ -37,7 +36,6 @@ export type SortClassesOptions = [
       newlinesBetween: NewlinesBetweenOption
       groups: GroupsOptions<Group>
       partitionByNewLine: boolean
-      type: TypeOption
     } & CommonOptions
   >,
 ]

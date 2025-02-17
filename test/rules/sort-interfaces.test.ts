@@ -1110,6 +1110,65 @@ describe(ruleName, () => {
         })
       }
 
+      for (let dateElementValuePattern of [
+        'Date',
+        ['noMatch', 'Date'],
+        { pattern: 'DATE', flags: 'i' },
+        ['noMatch', { pattern: 'DATE', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementValuePattern: dateElementValuePattern,
+                      groupName: 'date',
+                    },
+                    {
+                      elementValuePattern: 'number',
+                      groupName: 'number',
+                    },
+                  ],
+                  groups: ['number', 'date', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'number',
+                    leftGroup: 'date',
+                    right: 'z',
+                    left: 'y',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  a: number
+                  z: number
+                  b: Date
+                  y: Date
+                  c(): string
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  a: number
+                  b: Date
+                  y: Date
+                  z: number
+                  c(): string
+                }
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
+
       ruleTester.run(
         `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
         rule,
@@ -1189,6 +1248,79 @@ describe(ruleName, () => {
                   g: string
                   anotherMethod(): void
                   yetAnotherMethod(): void
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'sortBy'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'fooElementsSortedByValue',
+                    leftGroup: 'unknown',
+                    right: 'fooC',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+                {
+                  data: {
+                    right: 'fooA',
+                    left: 'fooB',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'fooElementsSortedByValue',
+                    leftGroup: 'unknown',
+                    right: 'fooMethod',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'fooElementsSortedByValue',
+                      elementNamePattern: '^foo',
+                      sortBy: 'value',
+                    },
+                  ],
+                  groups: ['fooElementsSortedByValue', 'unknown'],
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  fooA: Date
+                  fooC: number
+                  fooB: string
+                  fooMethod(): void
+                  a: string
+                  z: boolean
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  z: boolean
+                  fooC: number
+                  fooB: string
+                  fooA: Date
+                  a: string
+                  fooMethod(): void
                 }
               `,
             },
@@ -2794,6 +2926,173 @@ describe(ruleName, () => {
           },
         )
       })
+    })
+
+    describe(`${ruleName}(${type}): sorting by value`, () => {
+      ruleTester.run(`${ruleName}(${type}): allows sorting by value`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedInterfacePropertiesOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface {
+                b: 'a'
+                a: 'b'
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                a: 'b'
+                b: 'a'
+              }
+            `,
+            options: [
+              {
+                sortBy: 'value',
+                ...options,
+              },
+            ],
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): does not enforce sorting of non-properties in the same group`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  y: 'y'
+                  a(): void
+                  z: 'z'
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  z: 'z'
+                  a(): void
+                  y: 'y'
+                }
+              `,
+              options: [
+                {
+                  sortBy: 'value',
+                  ...options,
+                },
+              ],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    right: '[key: string]',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                },
+                {
+                  data: {
+                    left: '[key: string]',
+                    right: 'y',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  y: 'y'
+                  [key: string]
+                  z: 'z'
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  z: 'z'
+                  [key: string]
+                  y: 'y'
+                }
+              `,
+              options: [
+                {
+                  sortBy: 'value',
+                  ...options,
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): enforces grouping but does not enforce sorting of non-properties`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'method',
+                    leftGroup: 'unknown',
+                    right: 'a',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  sortBy: 'value',
+                  ...options,
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  b(): void
+                  a(): void
+                  z: 'z'
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  b(): void
+                  z: 'z'
+                  a(): void
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
   })
 

@@ -190,33 +190,19 @@ export let buildUseConfigurationIfJsonSchema = ({
   type: 'object',
 })
 
-let customGroupSortJsonSchema: Record<string, JSONSchema4> = {
-  type: {
-    enum: ['alphabetical', 'line-length', 'natural', 'unsorted'],
-    description: 'Custom group sort type.',
-    type: 'string',
-  },
-  order: {
-    description: 'Custom group sort order.',
-    enum: ['desc', 'asc'],
-    type: 'string',
-  },
-}
-
-let customGroupNameJsonSchema: Record<string, JSONSchema4> = {
-  groupName: {
-    description: 'Custom group name.',
-    type: 'string',
-  },
-}
-
-let customGroupNewlinesInsideJsonSchema: Record<string, JSONSchema4> = {
+let commonCustomGroupJsonSchemas: Record<string, JSONSchema4> = {
   newlinesInside: {
     description:
       'Specifies how new lines should be handled between members of the custom group.',
     enum: ['always', 'never'],
     type: 'string',
   },
+  groupName: {
+    description: 'Custom group name.',
+    type: 'string',
+  },
+  order: orderJsonSchema,
+  type: typeJsonSchema,
 }
 
 export let buildCustomGroupsArrayJsonSchema = ({
@@ -228,9 +214,7 @@ export let buildCustomGroupsArrayJsonSchema = ({
     oneOf: [
       {
         properties: {
-          ...customGroupNameJsonSchema,
-          ...customGroupSortJsonSchema,
-          ...customGroupNewlinesInsideJsonSchema,
+          ...commonCustomGroupJsonSchemas,
           anyOf: {
             items: {
               properties: {
@@ -249,9 +233,7 @@ export let buildCustomGroupsArrayJsonSchema = ({
       },
       {
         properties: {
-          ...customGroupNameJsonSchema,
-          ...customGroupSortJsonSchema,
-          ...customGroupNewlinesInsideJsonSchema,
+          ...commonCustomGroupJsonSchemas,
           ...singleCustomGroupJsonSchema,
         },
         description: 'Custom group.',
