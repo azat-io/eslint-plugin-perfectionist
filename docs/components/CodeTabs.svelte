@@ -96,7 +96,7 @@
   <div
     style:block-size="calc({initialLines}lh + var(--space-m) * 2 + 2px)"
     class="code-loader"
-  />
+  ></div>
 {/if}
 
 <style>
