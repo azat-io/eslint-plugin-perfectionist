@@ -330,6 +330,20 @@ describe('compare', () => {
         }),
       ).toBe(-1)
     })
+
+    it("doesn't sort using the fallback configuration more than once", () => {
+      let node = createTestNode({ name: 'aaa' })
+      let duplicateNode = createTestNode({ name: 'aaa' })
+      expect(
+        compare(node, duplicateNode, {
+          ...compareOptions,
+          fallbackSort: {
+            type: 'alphabetical',
+            order: 'asc',
+          } as const,
+        }),
+      ).toBe(0)
+    })
   })
 
   let createTestNode = ({ name }: { name: string }): SortingNode =>

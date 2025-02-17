@@ -101,9 +101,11 @@ export let compare = <T extends SortingNode>(
   let { fallbackSort, order } = options
   return compare(a, b, {
     ...options,
+    fallbackSort: {
+      type: 'unsorted',
+    },
     order: fallbackSort.order ?? order,
     type: fallbackSort.type,
-    fallbackSort,
   } as CompareOptions<T>)
 }
 
