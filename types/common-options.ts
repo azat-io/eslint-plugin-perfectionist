@@ -1,6 +1,5 @@
 export type CustomGroupsOption<SingleCustomGroup = object> = ({
   newlinesInside?: 'always' | 'never'
-  fallbackSort?: FallbackSortOption
   groupName: string
 } & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) & {
     order?: OrderOption
@@ -14,6 +13,7 @@ export interface CommonOptions {
   ignoreCase: boolean
   order: OrderOption
   alphabet: string
+  type: TypeOption
 }
 
 export type PartitionByCommentOption =

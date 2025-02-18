@@ -851,6 +851,65 @@ describe(ruleName, () => {
         })
       }
 
+      for (let dateElementValuePattern of [
+        'Date',
+        ['noMatch', 'Date'],
+        { pattern: 'DATE', flags: 'i' },
+        ['noMatch', { pattern: 'DATE', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementValuePattern: dateElementValuePattern,
+                      groupName: 'date',
+                    },
+                    {
+                      elementValuePattern: 'number',
+                      groupName: 'number',
+                    },
+                  ],
+                  groups: ['number', 'date', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'number',
+                    leftGroup: 'date',
+                    right: 'z',
+                    left: 'y',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  a: number
+                  z: number
+                  b: Date
+                  y: Date
+                  c(): string
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  a: number
+                  b: Date
+                  y: Date
+                  z: number
+                  c(): string
+                }
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
+
       ruleTester.run(
         `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
         rule,
@@ -930,6 +989,79 @@ describe(ruleName, () => {
                   g: string
                   anotherMethod(): void
                   yetAnotherMethod(): void
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'sortBy'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'fooElementsSortedByValue',
+                    leftGroup: 'unknown',
+                    right: 'fooC',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+                {
+                  data: {
+                    right: 'fooA',
+                    left: 'fooB',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'fooElementsSortedByValue',
+                    leftGroup: 'unknown',
+                    right: 'fooMethod',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'fooElementsSortedByValue',
+                      elementNamePattern: '^foo',
+                      sortBy: 'value',
+                    },
+                  ],
+                  groups: ['fooElementsSortedByValue', 'unknown'],
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  fooA: Date
+                  fooC: number
+                  fooB: string
+                  fooMethod(): void
+                  a: string
+                  z: boolean
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  z: boolean
+                  fooC: number
+                  fooB: string
+                  fooA: Date
+                  a: string
+                  fooMethod(): void
                 }
               `,
             },
@@ -2687,6 +2819,173 @@ describe(ruleName, () => {
           },
         )
       })
+    })
+
+    describe(`${ruleName}(${type}): sorting by value`, () => {
+      ruleTester.run(`${ruleName}(${type}): allows sorting by value`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectTypesOrder',
+              },
+            ],
+            output: dedent`
+              type Type = {
+                b: 'a'
+                a: 'b'
+              }
+            `,
+            options: [
+              {
+                sortBy: 'value',
+                ...options,
+              },
+            ],
+            code: dedent`
+              type Type = {
+                a: 'b'
+                b: 'a'
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): does not enforce sorting of non-properties in the same group`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  y: 'y'
+                  a(): void
+                  z: 'z'
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  z: 'z'
+                  a(): void
+                  y: 'y'
+                }
+              `,
+              options: [
+                {
+                  sortBy: 'value',
+                  ...options,
+                },
+              ],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    right: '[key: string]',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+                {
+                  data: {
+                    left: '[key: string]',
+                    right: 'y',
+                  },
+                  messageId: 'unexpectedObjectTypesOrder',
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  y: 'y'
+                  [key: string]
+                  z: 'z'
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  z: 'z'
+                  [key: string]
+                  y: 'y'
+                }
+              `,
+              options: [
+                {
+                  sortBy: 'value',
+                  ...options,
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): enforces grouping but does not enforce sorting of non-properties`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'method',
+                    leftGroup: 'unknown',
+                    right: 'a',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedObjectTypesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  sortBy: 'value',
+                  ...options,
+                  groups: ['method', 'unknown'],
+                },
+              ],
+              output: dedent`
+                type Type = {
+                  b(): void
+                  a(): void
+                  z: 'z'
+                }
+              `,
+              code: dedent`
+                type Type = {
+                  b(): void
+                  z: 'z'
+                  a(): void
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
   })
 

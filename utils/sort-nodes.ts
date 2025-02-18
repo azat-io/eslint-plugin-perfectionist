@@ -3,21 +3,24 @@ import type { CompareOptions } from './compare'
 
 import { compare } from './compare'
 
-interface ExtraOptions {
+interface ExtraOptions<T extends SortingNode> {
   ignoreEslintDisabledNodes: boolean
+
+  isNodeIgnored?(node: T): boolean
 }
 
 export let sortNodes = <T extends SortingNode>(
   nodes: T[],
   options: CompareOptions<T>,
-  extraOptions?: ExtraOptions,
+  extraOptions?: ExtraOptions<T>,
 ): T[] => {
   let nonIgnoredNodes: T[] = []
   let ignoredNodeIndices: number[] = []
   for (let [index, sortingNode] of nodes.entries()) {
     if (
-      sortingNode.isEslintDisabled &&
-      extraOptions?.ignoreEslintDisabledNodes
+      (sortingNode.isEslintDisabled &&
+        extraOptions?.ignoreEslintDisabledNodes) ||
+      extraOptions?.isNodeIgnored?.(sortingNode)
     ) {
       ignoredNodeIndices.push(index)
     } else {

@@ -7,7 +7,6 @@ import type {
   CommonOptions,
   GroupsOptions,
   RegexOption,
-  TypeOption,
 } from '../../types/common-options'
 
 import { regexJsonSchema } from '../../utils/common-json-schemas'
@@ -21,7 +20,6 @@ export type Options = Partial<
     partitionByNewLine: boolean
     forceNumericSort: boolean
     sortByValue: boolean
-    type: TypeOption
   } & CommonOptions
 >[]
 

@@ -6,9 +6,8 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { sortUnionOrIntersectionTypes } from './sort-union-types'
+import { sortUnionOrIntersectionTypes, jsonSchema } from './sort-union-types'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { jsonSchema } from './sort-union-types'
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenIntersectionTypes'

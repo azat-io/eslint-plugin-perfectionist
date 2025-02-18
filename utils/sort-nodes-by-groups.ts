@@ -5,24 +5,29 @@ import type { CompareOptions } from './compare'
 import { getGroupNumber } from './get-group-number'
 import { sortNodes } from './sort-nodes'
 
-interface ExtraOptions<T extends SortingNode> {
-  /**
-   * If not provided, `options` will be used. If function returns null, nodes
-   * will not be sorted within the group.
-   */
-  getGroupCompareOptions?(groupNumber: number): CompareOptions<T> | null
+interface ExtraOptions<T extends SortingNode, Options extends BaseOptions<T>> {
+  getGroupCompareOptions?(groupNumber: number): CompareOptions<T> & Options
+
+  isNodeIgnoredForGroup?(node: T, compareOptions: Options): boolean
+
   ignoreEslintDisabledNodes: boolean
+
   isNodeIgnored?(node: T): boolean
 }
+
+type BaseOptions<T extends SortingNode> = CompareOptions<T> & GroupsOption
 
 interface GroupsOption {
   groups: GroupsOptions<string>
 }
 
-export let sortNodesByGroups = <T extends SortingNode>(
+export let sortNodesByGroups = <
+  T extends SortingNode,
+  Options extends BaseOptions<T>,
+>(
   nodes: T[],
-  options: CompareOptions<T> & GroupsOption,
-  extraOptions?: ExtraOptions<T>,
+  options: Options,
+  extraOptions?: ExtraOptions<T, Options>,
 ): T[] => {
   let nodesByNonIgnoredGroupNumber: Record<number, T[]> = {}
   let ignoredNodeIndices: number[] = []
@@ -44,15 +49,22 @@ export let sortNodesByGroups = <T extends SortingNode>(
   for (let groupNumber of Object.keys(nodesByNonIgnoredGroupNumber).sort(
     (a, b) => Number(a) - Number(b),
   )) {
-    let compareOptions = extraOptions?.getGroupCompareOptions
-      ? extraOptions.getGroupCompareOptions(Number(groupNumber))
-      : options
+    let compareOptions =
+      extraOptions?.getGroupCompareOptions?.(Number(groupNumber)) ?? options
     let nodesToPush = nodesByNonIgnoredGroupNumber[Number(groupNumber)]!
-    if (!compareOptions) {
-      sortedNodes.push(...nodesToPush)
-      continue
-    }
-    sortedNodes.push(...sortNodes(nodesToPush, compareOptions))
+
+    let groupIgnoredNodes = new Set(
+      nodesToPush.filter(node =>
+        extraOptions?.isNodeIgnoredForGroup?.(node, compareOptions),
+      ),
+    )
+
+    sortedNodes.push(
+      ...sortNodes(nodesToPush, compareOptions, {
+        isNodeIgnored: node => groupIgnoredNodes.has(node),
+        ignoreEslintDisabledNodes: false,
+      }),
+    )
   }
 
   // Add ignored nodes at the same position as they were before linting.

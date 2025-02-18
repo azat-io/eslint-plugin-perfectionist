@@ -7,7 +7,6 @@ import type {
   CommonOptions,
   GroupsOptions,
   RegexOption,
-  TypeOption,
 } from '../../types/common-options'
 
 import {
@@ -29,7 +28,6 @@ export type Options = Partial<
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
-    type: TypeOption
   } & CommonOptions
 >[]
 
