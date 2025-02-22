@@ -14,6 +14,7 @@ interface SortNodesByGroupsParameters<
   T extends SortingNode,
 > {
   getOptionsByGroupNumber(groupNumber: number): {
+    fallbackSortNodeValueGetter?: NodeValueGetterFunction<T> | null
     nodeValueGetter?: NodeValueGetterFunction<T> | null
     options: Options
   }
@@ -54,9 +55,8 @@ export let sortNodesByGroups = <
   for (let groupNumber of Object.keys(nodesByNonIgnoredGroupNumber).sort(
     (a, b) => Number(a) - Number(b),
   )) {
-    let { nodeValueGetter, options } = getOptionsByGroupNumber(
-      Number(groupNumber),
-    )
+    let { fallbackSortNodeValueGetter, nodeValueGetter, options } =
+      getOptionsByGroupNumber(Number(groupNumber))
     let nodesToPush = nodesByNonIgnoredGroupNumber[Number(groupNumber)]!
 
     let groupIgnoredNodes = new Set(
@@ -67,6 +67,7 @@ export let sortNodesByGroups = <
       ...sortNodes({
         isNodeIgnored: node => groupIgnoredNodes.has(node),
         ignoreEslintDisabledNodes: false,
+        fallbackSortNodeValueGetter,
         nodes: nodesToPush,
         nodeValueGetter,
         options,

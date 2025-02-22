@@ -1,10 +1,14 @@
-export type CustomGroupsOption<SingleCustomGroup = object> = ({
+export type CustomGroupsOption<
+  SingleCustomGroup = object,
+  AdditionalOptions = Record<never, never>,
+> = ({
   newlinesInside?: 'always' | 'never'
   fallbackSort?: FallbackSortOption
   order?: OrderOption
   groupName: string
   type?: TypeOption
-} & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup))[]
+} & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) &
+  AdditionalOptions)[]
 
 export interface CommonOptions {
   specialCharacters: SpecialCharactersOption

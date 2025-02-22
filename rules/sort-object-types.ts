@@ -17,7 +17,7 @@ import {
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
-  commonJsonSchemas,
+  buildCommonJsonSchemas,
   groupsJsonSchema,
   regexJsonSchema,
 } from '../utils/common-json-schemas'
@@ -68,7 +68,7 @@ type MESSAGE_ID =
   | 'unexpectedObjectTypesOrder'
 
 let defaultOptions: Required<Options[0]> = {
-  fallbackSort: { type: 'unsorted' },
+  fallbackSort: { type: 'unsorted', sortBy: 'name' },
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
@@ -89,11 +89,18 @@ let defaultOptions: Required<Options[0]> = {
 export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
-      ...commonJsonSchemas,
+      ...buildCommonJsonSchemas({
+        additionalFallbackSortProperties: {
+          sortBy: sortByJsonSchema,
+        },
+      }),
       customGroups: {
         oneOf: [
           customGroupsJsonSchema,
-          buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
+          buildCustomGroupsArrayJsonSchema({
+            additionalFallbackSortProperties: { sortBy: sortByJsonSchema },
+            singleCustomGroupJsonSchema,
+          }),
         ],
       },
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
@@ -363,13 +370,17 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       filteredGroupKindNodes.flatMap(groupedNodes =>
         sortNodesByGroups({
           getOptionsByGroupNumber: groupNumber => {
-            let { options: overriddenOptions, nodeValueGetter } =
-              getCustomGroupsCompareOptions(options, groupNumber)
+            let {
+              fallbackSortNodeValueGetter,
+              options: overriddenOptions,
+              nodeValueGetter,
+            } = getCustomGroupsCompareOptions(options, groupNumber)
             return {
               options: {
                 ...options,
                 ...overriddenOptions,
               },
+              fallbackSortNodeValueGetter,
               nodeValueGetter,
             }
           },

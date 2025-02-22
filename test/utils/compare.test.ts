@@ -426,6 +426,32 @@ describe('compare', () => {
       ).toBe(-1)
     })
 
+    it('handles `fallbackSort.nodeValueGetter`', () => {
+      let a = createTestNode({
+        additionalProperties: { value: 'b' },
+        name: 'aaa',
+      })
+      let b = createTestNode({
+        additionalProperties: { value: 'a' },
+        name: 'bbb',
+      })
+      expect(
+        compare({
+          options: {
+            ...options,
+            fallbackSort: {
+              type: 'alphabetical',
+              order: 'asc',
+            },
+          },
+          fallbackSortNodeValueGetter: node =>
+            'value' in node ? (node.value as string) : '',
+          a,
+          b,
+        }),
+      ).toBe(1)
+    })
+
     it("doesn't sort using the fallback configuration more than once", () => {
       let node = createTestNode({ name: 'aaa' })
       let duplicateNode = createTestNode({ name: 'aaa' })
