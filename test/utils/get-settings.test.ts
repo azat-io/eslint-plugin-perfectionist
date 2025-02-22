@@ -20,6 +20,7 @@ describe('get-settings', () => {
 
   it('accepts official settings provided', () => {
     let allowedOptions: { [key in keyof Required<Settings>]: Settings[key] } = {
+      fallbackSort: { type: 'alphabetical' },
       partitionByComment: 'value',
       specialCharacters: 'keep',
       partitionByNewLine: true,

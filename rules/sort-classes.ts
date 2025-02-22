@@ -25,6 +25,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -32,7 +33,6 @@ import {
   allSelectors,
 } from './sort-classes/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
 import { getOverloadSignatureGroups } from './sort-classes/get-overload-signature-groups'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
@@ -602,22 +602,24 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
       let sortNodesExcludingEslintDisabled = (
         ignoreEslintDisabledNodes: boolean,
-      ): SortClassSortingNodes[] =>
-        sortNodesByDependencies(
-          formattedNodes.flatMap(nodes =>
-            sortNodesByGroups(nodes, options, {
-              isNodeIgnored: sortingNode =>
-                getGroupNumber(options.groups, sortingNode) ===
-                options.groups.length,
-              getGroupCompareOptions: groupNumber =>
-                getCustomGroupsCompareOptions(options, groupNumber),
-              ignoreEslintDisabledNodes,
-            }),
-          ),
-          {
+      ): SortClassSortingNodes[] => {
+        let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
+          sortNodesByGroups({
+            isNodeIgnored: sortingNode =>
+              getGroupNumber(options.groups, sortingNode) ===
+              options.groups.length,
+            getOptionsByGroupNumber:
+              buildGetCustomGroupOverriddenOptionsFunction(options),
             ignoreEslintDisabledNodes,
-          },
+            groups: options.groups,
+            nodes,
+          }),
         )
+
+        return sortNodesByDependencies(nodesSortedByGroups, {
+          ignoreEslintDisabledNodes,
+        })
+      }
 
       let nodes = formattedNodes.flat()
 

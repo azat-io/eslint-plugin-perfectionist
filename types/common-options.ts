@@ -1,10 +1,10 @@
 export type CustomGroupsOption<SingleCustomGroup = object> = ({
   newlinesInside?: 'always' | 'never'
+  fallbackSort?: FallbackSortOption
+  order?: OrderOption
   groupName: string
-} & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) & {
-    order?: OrderOption
-    type?: TypeOption
-  })[]
+  type?: TypeOption
+} & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup))[]
 
 export interface CommonOptions {
   specialCharacters: SpecialCharactersOption

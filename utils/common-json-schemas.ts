@@ -201,6 +201,7 @@ let commonCustomGroupJsonSchemas: Record<string, JSONSchema4> = {
     description: 'Custom group name.',
     type: 'string',
   },
+  fallbackSort: fallbackSortJsonSchema,
   order: orderJsonSchema,
   type: typeJsonSchema,
 }

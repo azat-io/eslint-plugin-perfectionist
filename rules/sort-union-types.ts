@@ -274,7 +274,12 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
     let sortNodesExcludingEslintDisabled = (
       ignoreEslintDisabledNodes: boolean,
     ): SortingNode[] =>
-      sortNodesByGroups(nodes, options, { ignoreEslintDisabledNodes })
+      sortNodesByGroups({
+        getOptionsByGroupNumber: () => ({ options }),
+        ignoreEslintDisabledNodes,
+        groups: options.groups,
+        nodes,
+      })
 
     reportAllErrors<MessageIds>({
       sortNodesExcludingEslintDisabled,

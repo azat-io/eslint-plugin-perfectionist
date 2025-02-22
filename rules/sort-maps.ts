@@ -19,9 +19,9 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from './sort-maps/does-custom-group-match'
@@ -173,10 +173,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let sortNodesExcludingEslintDisabled = (
             ignoreEslintDisabledNodes: boolean,
           ): SortingNode[] =>
-            sortNodesByGroups(nodes, options, {
-              getGroupCompareOptions: groupNumber =>
-                getCustomGroupsCompareOptions(options, groupNumber),
+            sortNodesByGroups({
+              getOptionsByGroupNumber:
+                buildGetCustomGroupOverriddenOptionsFunction(options),
               ignoreEslintDisabledNodes,
+              groups: options.groups,
+              nodes,
             })
 
           reportAllErrors<MESSAGE_ID>({

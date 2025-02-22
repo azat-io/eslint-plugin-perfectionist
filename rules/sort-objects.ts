@@ -1,6 +1,7 @@
 import { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
+import type { BaseSortNodesByGroupsOptions } from '../utils/sort-nodes-by-groups'
 import type { Modifier, Selector, Options } from './sort-objects/types'
 
 import {
@@ -22,6 +23,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -30,7 +32,6 @@ import {
 } from './sort-objects/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getFirstNodeParentWithType } from './sort-objects/get-first-node-parent-with-type'
-import { getCustomGroupsCompareOptions } from '../utils/get-custom-groups-compare-options'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
@@ -396,27 +397,36 @@ export default createEslintRule<Options, MESSAGE_ID>({
         )
       let formattedMembers = formatProperties(nodeObject.properties)
 
+      let sortingOptions: BaseSortNodesByGroupsOptions = options
       let nodesSortingFunction =
         isDestructuredObject &&
         typeof options.destructuredObjects === 'object' &&
         !options.destructuredObjects.groups
-          ? sortNodes
-          : sortNodesByGroups
+          ? ('sortNodes' as const)
+          : ('sortNodesByGroups' as const)
       let sortNodesExcludingEslintDisabled = (
         ignoreEslintDisabledNodes: boolean,
-      ): SortingNodeWithDependencies[] =>
-        sortNodesByDependencies(
-          formattedMembers.flatMap(nodes =>
-            nodesSortingFunction(nodes, options, {
-              getGroupCompareOptions: groupNumber =>
-                getCustomGroupsCompareOptions(options, groupNumber),
-              ignoreEslintDisabledNodes,
-            }),
-          ),
-          {
-            ignoreEslintDisabledNodes,
-          },
+      ): SortingNodeWithDependencies[] => {
+        let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
+          nodesSortingFunction === 'sortNodes'
+            ? sortNodes({
+                ignoreEslintDisabledNodes,
+                options: sortingOptions,
+                nodes,
+              })
+            : sortNodesByGroups({
+                getOptionsByGroupNumber:
+                  buildGetCustomGroupOverriddenOptionsFunction(options),
+                ignoreEslintDisabledNodes,
+                groups: options.groups,
+                nodes,
+              }),
         )
+
+        return sortNodesByDependencies(nodesSortedByGroups, {
+          ignoreEslintDisabledNodes,
+        })
+      }
       let nodes = formattedMembers.flat()
 
       reportAllErrors<MESSAGE_ID>({

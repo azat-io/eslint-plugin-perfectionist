@@ -177,7 +177,13 @@ Determines whether the sorted items should be in ascending or descending order.
 ### fallbackSort
 
 <sub>
-  type: `{ type: string; order?: 'asc' | 'desc' }`
+  type:
+  ```
+  {
+    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted'
+    order?: 'asc' | 'desc'
+  }
+  ```
 </sub>
 <sub>default: `{ type: 'unsorted' }`</sub>
 
@@ -548,6 +554,7 @@ interface CustomGroupDefinition {
   groupName: string
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
   newlinesInside?: 'always' | 'never'
   selector?: string
   modifiers?: string[]
@@ -565,6 +572,7 @@ interface CustomGroupAnyOfDefinition {
   groupName: string
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
   newlinesInside?: 'always' | 'never'
   anyOf: Array<{
       selector?: string
@@ -586,6 +594,7 @@ An object will match a `CustomGroupAnyOfDefinition` group if it matches all the 
 - `elementValuePattern`: Only for non-function properties. If entered, will check that the value of the property matches the pattern entered.
 - `type`: Overrides the sort type for that custom group. `unsorted` will not sort the group.
 - `order`: Overrides the sort order for that custom group
+- `fallbackSort`: Overrides the fallbackSort option for that custom group
 - `newlinesInside`: Enforces a specific newline behavior between elements of the group.
 
 #### Match importance

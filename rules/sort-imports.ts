@@ -504,21 +504,26 @@ export default createEslintRule<Options, MESSAGE_ID>({
           let sortNodesExcludingEslintDisabled = (
             ignoreEslintDisabledNodes: boolean,
           ): SortImportsSortingNode[] =>
-            sortNodesByGroups(nodes, options, {
-              getGroupCompareOptions: groupNumber => {
+            sortNodesByGroups({
+              getOptionsByGroupNumber: groupNumber => {
                 if (options.sortSideEffects) {
-                  return options
+                  return {
+                    options,
+                  }
                 }
-                let group = options.groups[groupNumber]
                 return {
-                  ...options,
-                  type: isSideEffectOnlyGroup(group)
-                    ? 'unsorted'
-                    : options.type,
+                  options: {
+                    ...options,
+                    type: isSideEffectOnlyGroup(options.groups[groupNumber])
+                      ? 'unsorted'
+                      : options.type,
+                  },
                 }
               },
               isNodeIgnored: node => node.isIgnored,
               ignoreEslintDisabledNodes,
+              groups: options.groups,
+              nodes,
             })
 
           reportAllErrors<MESSAGE_ID>({

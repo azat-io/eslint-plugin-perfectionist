@@ -1,18 +1,23 @@
 import { describe, expect, it } from 'vitest'
 
+import type { BaseSortNodesByGroupsOptions } from '../../utils/sort-nodes-by-groups'
 import type { SortingNode } from '../../types/sorting-node'
 
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 
 describe('sort-nodes-by-groups', () => {
-  let compareOptions = {
+  let options: BaseSortNodesByGroupsOptions = {
     fallbackSort: { type: 'unsorted' },
     specialCharacters: 'keep',
     type: 'alphabetical',
     ignoreCase: false,
     locales: 'en-US',
     order: 'asc',
+    alphabet: '',
   } as const
+  let getOptionsByGroupNumber: () => {
+    options: BaseSortNodesByGroupsOptions
+  } = () => ({ options })
 
   it('sorts nodes by groups', () => {
     let nodeA = createTestNode({ group: 'group2', name: 'a' })
@@ -20,9 +25,11 @@ describe('sort-nodes-by-groups', () => {
     let nodeC = createTestNode({ group: 'group2', name: 'c' })
     let nodeD = createTestNode({ group: 'group1', name: 'd' })
     expect(
-      sortNodesByGroups([nodeD, nodeC, nodeB, nodeA], {
-        ...compareOptions,
+      sortNodesByGroups({
+        nodes: [nodeD, nodeC, nodeB, nodeA],
+        ignoreEslintDisabledNodes: false,
         groups: ['group1', 'group2'],
+        getOptionsByGroupNumber,
       }),
     ).toStrictEqual([nodeB, nodeD, nodeA, nodeC])
   })
@@ -39,31 +46,23 @@ describe('sort-nodes-by-groups', () => {
 
     it('should ignore eslint disabled nodes if "ignoreEslintDisabledNodes" is true', () => {
       expect(
-        sortNodesByGroups(
-          [nodeD, nodeC, nodeB, nodeA],
-          {
-            ...compareOptions,
-            groups: ['group1', 'group2'],
-          },
-          {
-            ignoreEslintDisabledNodes: true,
-          },
-        ),
+        sortNodesByGroups({
+          nodes: [nodeD, nodeC, nodeB, nodeA],
+          ignoreEslintDisabledNodes: true,
+          groups: ['group1', 'group2'],
+          getOptionsByGroupNumber,
+        }),
       ).toStrictEqual([nodeB, nodeC, nodeD, nodeA])
     })
 
     it('should not ignore eslint disabled nodes if "ignoreEslintDisabledNodes" is false', () => {
       expect(
-        sortNodesByGroups(
-          [nodeD, nodeC, nodeB, nodeA],
-          {
-            ...compareOptions,
-            groups: ['group1', 'group2'],
-          },
-          {
-            ignoreEslintDisabledNodes: false,
-          },
-        ),
+        sortNodesByGroups({
+          nodes: [nodeD, nodeC, nodeB, nodeA],
+          ignoreEslintDisabledNodes: false,
+          groups: ['group1', 'group2'],
+          getOptionsByGroupNumber,
+        }),
       ).toStrictEqual([nodeB, nodeD, nodeA, nodeC])
     })
   })
@@ -75,17 +74,13 @@ describe('sort-nodes-by-groups', () => {
       let nodeC = createTestNode({ group: 'group2', name: 'c' })
       let nodeD = createTestNode({ group: 'group1', name: 'd' })
       expect(
-        sortNodesByGroups(
-          [nodeD, nodeC, nodeB, nodeA],
-          {
-            ...compareOptions,
-            groups: ['group1', 'group2'],
-          },
-          {
-            isNodeIgnored: node => node === nodeC,
-            ignoreEslintDisabledNodes: false,
-          },
-        ),
+        sortNodesByGroups({
+          isNodeIgnored: node => node === nodeC,
+          nodes: [nodeD, nodeC, nodeB, nodeA],
+          ignoreEslintDisabledNodes: false,
+          groups: ['group1', 'group2'],
+          getOptionsByGroupNumber,
+        }),
       ).toStrictEqual([nodeB, nodeC, nodeD, nodeA])
     })
   })
@@ -99,24 +94,49 @@ describe('sort-nodes-by-groups', () => {
       let nodeE = createTestNode({ group: 'group2', name: 'e' })
       let nodeF = createTestNode({ group: 'group1', name: 'f' })
       expect(
-        sortNodesByGroups(
-          [nodeF, nodeE, nodeD, nodeC, nodeB, nodeA],
-          {
-            ...compareOptions,
-            groups: ['group1', 'group2'],
-          },
-          {
-            isNodeIgnoredForGroup: node => node === nodeB,
-            ignoreEslintDisabledNodes: false,
-          },
-        ),
+        sortNodesByGroups({
+          nodes: [nodeF, nodeE, nodeD, nodeC, nodeB, nodeA],
+          isNodeIgnoredForGroup: node => node === nodeB,
+          ignoreEslintDisabledNodes: false,
+          groups: ['group1', 'group2'],
+          getOptionsByGroupNumber,
+        }),
       ).toStrictEqual([nodeD, nodeF, nodeB, nodeA, nodeC, nodeE])
     })
   })
 
-  let createTestNode = (node: {
-    isEslintDisabled?: boolean
-    group?: string
-    name: string
-  }): SortingNode => node as SortingNode
+  it('should handle "nodeValueGetter"', () => {
+    let nodeA = createTestNode(
+      { group: 'group1', name: 'a' },
+      { actualValue: 'b' },
+    )
+    let nodeB = createTestNode(
+      { group: 'group1', name: 'a' },
+      { actualValue: 'a' },
+    )
+    expect(
+      sortNodesByGroups({
+        getOptionsByGroupNumber: () => ({
+          nodeValueGetter: node => node.actualValue,
+          options,
+        }),
+        ignoreEslintDisabledNodes: false,
+        nodes: [nodeA, nodeB],
+        groups: ['group1'],
+      }),
+    ).toStrictEqual([nodeB, nodeA])
+  })
+
+  let createTestNode = <T extends object>(
+    node: {
+      isEslintDisabled?: boolean
+      group: string
+      name: string
+    },
+    additionalParameters?: T,
+  ): SortingNode & T =>
+    ({
+      ...node,
+      ...additionalParameters,
+    }) as SortingNode & T
 })

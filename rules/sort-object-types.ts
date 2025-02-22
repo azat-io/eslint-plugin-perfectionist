@@ -9,7 +9,6 @@ import type {
   Selector,
   Options,
 } from './sort-object-types/types'
-import type { CompareOptions } from '../utils/compare'
 
 import {
   buildUseConfigurationIfJsonSchema,
@@ -38,7 +37,6 @@ import { validateGeneratedGroupsConfiguration } from '../utils/validate-generate
 import { getCustomGroupsCompareOptions } from './sort-object-types/get-custom-groups-compare-options'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { doesCustomGroupMatch } from './sort-object-types/does-custom-group-match'
-import { buildNodeValueGetter } from './sort-object-types/build-node-value-getter'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -359,25 +357,31 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       ),
     )
 
-    let compareOptions: CompareOptions<SortObjectTypesSortingNode> &
-      Required<Options[0]> = {
-      ...options,
-      nodeValueGetter: buildNodeValueGetter(options.sortBy),
-    }
     let sortNodesExcludingEslintDisabled = (
       ignoreEslintDisabledNodes: boolean,
     ): SortObjectTypesSortingNode[] =>
       filteredGroupKindNodes.flatMap(groupedNodes =>
-        sortNodesByGroups(groupedNodes, compareOptions, {
-          isNodeIgnoredForGroup: (node, groupCompareOptions) => {
-            if (groupCompareOptions.sortBy === 'value') {
+        sortNodesByGroups({
+          getOptionsByGroupNumber: groupNumber => {
+            let { options: overriddenOptions, nodeValueGetter } =
+              getCustomGroupsCompareOptions(options, groupNumber)
+            return {
+              options: {
+                ...options,
+                ...overriddenOptions,
+              },
+              nodeValueGetter,
+            }
+          },
+          isNodeIgnoredForGroup: (node, groupOptions) => {
+            if (groupOptions.sortBy === 'value') {
               return !node.value
             }
             return false
           },
-          getGroupCompareOptions: groupNumber =>
-            getCustomGroupsCompareOptions(compareOptions, groupNumber),
           ignoreEslintDisabledNodes,
+          groups: options.groups,
+          nodes: groupedNodes,
         }),
       )
 

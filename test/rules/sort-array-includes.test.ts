@@ -1245,6 +1245,58 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'fallbackSort'`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      fallbackSort: {
+                        type: 'alphabetical',
+                        order: 'asc',
+                      },
+                      elementNamePattern: '^foo',
+                      type: 'line-length',
+                      groupName: 'foo',
+                      order: 'desc',
+                    },
+                  ],
+                  type: 'alphabetical',
+                  groups: ['foo'],
+                  order: 'asc',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'fooBar',
+                    left: 'fooZar',
+                  },
+                  messageId: 'unexpectedArrayIncludesOrder',
+                },
+              ],
+              output: dedent`
+                [
+                  'fooBar',
+                  'fooZar',
+                ].includes(value)
+              `,
+              code: dedent`
+                [
+                  'fooZar',
+                  'fooBar',
+                ].includes(value)
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}: does not sort custom groups with 'unsorted' type`,
         rule,
         {

@@ -213,8 +213,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ): SortingNodeWithDependencies[] =>
         sortNodesByDependencies(
           formattedMembers.flatMap(nodes =>
-            sortNodes(nodes, options, {
+            sortNodes({
               ignoreEslintDisabledNodes,
+              options,
+              nodes,
             }),
           ),
           {
