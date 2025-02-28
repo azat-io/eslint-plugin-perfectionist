@@ -11,6 +11,7 @@ import { convertBooleanToSign } from './convert-boolean-to-sign'
 export type NodeValueGetterFunction<T extends SortingNode> = (node: T) => string
 
 interface CompareParameters<T extends SortingNode> {
+  fallbackSortNodeValueGetter?: NodeValueGetterFunction<T> | null
   options: { maxLineLength?: number } & CommonOptions
   nodeValueGetter?: NodeValueGetterFunction<T> | null
   a: T
@@ -23,6 +24,7 @@ type IndexByCharacters = Map<string, number>
 let alphabetCache = new Map<string, IndexByCharacters>()
 
 export let compare = <T extends SortingNode>({
+  fallbackSortNodeValueGetter,
   nodeValueGetter,
   options,
   a,
@@ -50,7 +52,7 @@ export let compare = <T extends SortingNode>({
       order: fallbackSort.order ?? order,
       type: fallbackSort.type,
     },
-    nodeValueGetter: finalNodeValueGetter,
+    nodeValueGetter: fallbackSortNodeValueGetter ?? finalNodeValueGetter,
     a,
     b,
   })

@@ -1303,6 +1303,47 @@ describe(ruleName, () => {
                 }
               `,
             },
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      fallbackSort: {
+                        type: 'alphabetical',
+                        sortBy: 'value',
+                      },
+                      elementValuePattern: '^foo',
+                      type: 'line-length',
+                      groupName: 'foo',
+                    },
+                  ],
+                  type: 'alphabetical',
+                  groups: ['foo'],
+                  order: 'asc',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  b: fooBar
+                  a: fooZar
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  a: fooZar
+                  b: fooBar
+                }
+              `,
+            },
           ],
           valid: [],
         },
@@ -5045,6 +5086,40 @@ describe(ruleName, () => {
                 c: string;
                 bb: string;
                 a: string;
+              }
+            `,
+          },
+          {
+            errors: [
+              {
+                data: {
+                  right: 'bb',
+                  left: 'c',
+                },
+                messageId: 'unexpectedInterfacePropertiesOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: {
+                  type: 'alphabetical',
+                  sortBy: 'value',
+                },
+              },
+            ],
+            output: dedent`
+              interface Interface {
+                bb: string;
+                c: boolean;
+                a: number;
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                c: boolean;
+                bb: string;
+                a: number;
               }
             `,
           },
