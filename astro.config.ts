@@ -19,6 +19,15 @@ let site = 'https://perfectionist.dev'
 
 export default defineConfig({
   markdown: {
+    shikiConfig: {
+      transformers: [
+        // @ts-ignore
+        transformerNotationDiff({
+          matchAlgorithm: 'v3',
+        }),
+      ],
+      theme: colorTheme,
+    },
     rehypePlugins: [
       [
         rehypeExternalLinks,
@@ -28,14 +37,6 @@ export default defineConfig({
         },
       ],
     ],
-    shikiConfig: {
-      transformers: [
-        transformerNotationDiff({
-          matchAlgorithm: 'v3',
-        }),
-      ],
-      theme: colorTheme,
-    },
     remarkPlugins: [remarkSectionize, remarkHeadings],
   },
   vite: {

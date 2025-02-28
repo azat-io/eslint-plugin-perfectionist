@@ -13,8 +13,8 @@ import dedent from 'dedent'
 
 import type { MESSAGE_ID, Options } from '../../rules/sort-imports'
 
-import * as readClosestTsConfigUtils from '../../rules/sort-imports/read-closest-ts-config-by-path'
-import * as getTypescriptImportUtils from '../../rules/sort-imports/get-typescript-import'
+import * as readClosestTsConfigUtilities from '../../rules/sort-imports/read-closest-ts-config-by-path'
+import * as getTypescriptImportUtilities from '../../rules/sort-imports/get-typescript-import'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-imports'
 
@@ -6828,7 +6828,7 @@ describe(ruleName, () => {
               before: () => {
                 mockReadClosestTsConfigByPathWith(null)
                 vi.spyOn(
-                  getTypescriptImportUtils,
+                  getTypescriptImportUtilities,
                   'getTypescriptImport',
                 ).mockReturnValue(null)
               },
@@ -6853,7 +6853,7 @@ describe(ruleName, () => {
         compilerOptions: CompilerOptions | null,
       ): void => {
         vi.spyOn(
-          readClosestTsConfigUtils,
+          readClosestTsConfigUtilities,
           'readClosestTsConfigByPath',
         ).mockReturnValue(
           compilerOptions
