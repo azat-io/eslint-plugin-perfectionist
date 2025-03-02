@@ -180,6 +180,9 @@ importers:
       vite-plugin-lightningcss:
         specifier: ^0.0.5
         version: 0.0.5
+      vite-plugin-prettier-format:
+        specifier: ^1.0.0
+        version: 1.0.0(prettier@3.5.2)
       vitest:
         specifier: ^3.0.7
         version: 3.0.7(@types/debug@4.1.12)(@types/node@22.13.5)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0)
@@ -5196,6 +5199,12 @@ packages:
 
   vite-plugin-lightningcss@0.0.5:
     resolution: {integrity: sha512-lhz5GkXeRT/k09A7qEqmoL3CwdJDHgODPeGVlWGU1UxuGPEKfvSpKnDXza8nawKvxvc0eawJEsKjBzQP4AeGHw==}
+
+  vite-plugin-prettier-format@1.0.0:
+    resolution: {integrity: sha512-lJCT7cQ5+GbiavfRF+a5sOoZrAzfbg2+yTzHIfUijJuksV9cD4W6JbL55m3qX9rwJSy+W7zv5MM5EEsloDrlog==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    peerDependencies:
+      prettier: '>=3.0.0'
 
   vite@6.2.0:
     resolution: {integrity: sha512-7dPxoo+WsT/64rDcwoOjk76XHj+TqNTIvHKcuMQ1k4/SeHDaQt5GFAeLYzrimZrMpn/O6DtdI03WUjdxuPM0oQ==}
@@ -11824,6 +11833,10 @@ snapshots:
     dependencies:
       browserslist: 4.24.4
       lightningcss: 1.29.1
+
+  vite-plugin-prettier-format@1.0.0(prettier@3.5.2):
+    dependencies:
+      prettier: 3.5.2
 
   vite@6.2.0(@types/node@22.13.5)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0):
     dependencies:

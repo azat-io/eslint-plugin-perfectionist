@@ -114,6 +114,7 @@
     "vite": "^6.2.0",
     "vite-plugin-dts": "4.5.1",
     "vite-plugin-lightningcss": "^0.0.5",
+    "vite-plugin-prettier-format": "^1.0.0",
     "vitest": "^3.0.7"
   },
   "peerDependencies": {
