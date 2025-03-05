@@ -72,21 +72,24 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
  * for.
  * @param {SortingNodeWithDependencies[]} params.nodes - The list of
  * nodes currently ordered.
+ * @param {Map<SortingNodeWithDependencies, Set<SortingNodeWithDependencies>>} params.nonCircularDependenciesByNode
+ * - The map of nodes to their non-circular dependencies.
  * @returns {SortingNodeWithDependencies | undefined} The first unordered
  * dependent node, or `undefined` if none found.
  */
 export let getFirstUnorderedNodeDependentOn = <
   T extends SortingNodeWithDependencies,
 >({
+  nonCircularDependenciesByNode,
   nodes,
   node,
 }: {
+  nonCircularDependenciesByNode: Map<T, Set<T>>
   nodes: T[]
   node: T
 }): undefined | T => {
-  let nodesNonCircularDependencies = getNonCircularDependenciesByNode(nodes)
   let nodesDependentOnNode = nodes.filter(currentlyOrderedNode =>
-    nodesNonCircularDependencies.get(currentlyOrderedNode)?.has(node),
+    nonCircularDependenciesByNode.get(currentlyOrderedNode)?.has(node),
   )
   return nodesDependentOnNode.find(firstNodeDependentOnNode => {
     let currentIndexOfNode = nodes.indexOf(node)
@@ -97,7 +100,9 @@ export let getFirstUnorderedNodeDependentOn = <
   })
 }
 
-let getNonCircularDependenciesByNode = <T extends SortingNodeWithDependencies>(
+export let getNonCircularDependenciesByNode = <
+  T extends SortingNodeWithDependencies,
+>(
   nodes: T[],
 ): Map<T, Set<T>> => {
   let nonCircularDependenciesMap = new Map<T, Set<T>>()
