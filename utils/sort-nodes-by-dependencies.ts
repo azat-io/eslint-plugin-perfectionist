@@ -32,6 +32,7 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
   let result: T[] = []
   let visitedNodes = new Set<T>()
   let inProcessNodes = new Set<T>()
+  let nonCircularDependenciesByNode = getNonCircularDependenciesByNode(nodes)
 
   let visitNode = (sortingNode: T): void => {
     if (visitedNodes.has(sortingNode)) {
@@ -43,10 +44,7 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
     }
     inProcessNodes.add(sortingNode)
 
-    let dependentNodes = nodes.filter(({ dependencyName, name }) =>
-      sortingNode.dependencies.includes(dependencyName ?? name),
-    )
-    for (let dependentNode of dependentNodes) {
+    for (let dependentNode of nonCircularDependenciesByNode.get(sortingNode)!) {
       if (
         !extraOptions.ignoreEslintDisabledNodes ||
         !dependentNode.isEslintDisabled
@@ -82,11 +80,12 @@ export let getFirstUnorderedNodeDependentOn = <
   node: T,
   currentlyOrderedNodes: T[],
 ): undefined | T => {
+  let nonCircularDependenciesByNode = getNonCircularDependenciesByNode(
+    currentlyOrderedNodes,
+  )
   let nodesDependentOnNode = currentlyOrderedNodes.filter(
     currentlyOrderedNode =>
-      currentlyOrderedNode.dependencies.includes(
-        node.dependencyName ?? node.name,
-      ),
+      nonCircularDependenciesByNode.get(currentlyOrderedNode)?.has(node),
   )
   return nodesDependentOnNode.find(firstNodeDependentOnNode => {
     let currentIndexOfNode = currentlyOrderedNodes.indexOf(node)
@@ -95,4 +94,23 @@ export let getFirstUnorderedNodeDependentOn = <
     )
     return currentIndexOfFirstNodeDependentOnNode < currentIndexOfNode
   })
+}
+
+let getNonCircularDependenciesByNode = <T extends SortingNodeWithDependencies>(
+  nodes: T[],
+): Map<T, Set<T>> => {
+  let nonCircularDependenciesMap = new Map<T, Set<T>>()
+
+  for (let node of nodes) {
+    let dependentNodes = nodes.filter(({ dependencyName, name }) =>
+      node.dependencies.includes(dependencyName ?? name),
+    )
+    let nodeNonCircularDependencies: T[] = dependentNodes.filter(
+      dependentNode =>
+        !dependentNode.dependencies.includes(node.dependencyName ?? node.name),
+    )
+    nonCircularDependenciesMap.set(node, new Set(nodeNonCircularDependencies))
+  }
+
+  return nonCircularDependenciesMap
 }
