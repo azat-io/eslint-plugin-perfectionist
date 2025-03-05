@@ -6,6 +6,7 @@ import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
+import { getNonCircularDependenciesByNode } from './sort-nodes-by-dependencies'
 import { getFirstUnorderedNodeDependentOn } from './sort-nodes-by-dependencies'
 import { createNodeIndexMap } from './create-node-index-map'
 import { getNewlinesErrors } from './get-newlines-errors'
@@ -53,6 +54,12 @@ export let reportAllErrors = <
     sortNodesExcludingEslintDisabled(true)
   let nodeIndexMap = createNodeIndexMap(sortedNodes)
 
+  let nonCircularDependenciesByNode =
+    availableMessageIds.unexpectedDependencyOrder
+      ? getNonCircularDependenciesByNode(
+          nodes as unknown as SortingNodeWithDependencies[],
+        )
+      : new Map()
   pairwise(nodes, (left, right) => {
     let leftNumber = options.groups ? getGroupNumber(options.groups, left) : 0
     let rightNumber = options.groups ? getGroupNumber(options.groups, right) : 0
@@ -70,6 +77,7 @@ export let reportAllErrors = <
       firstUnorderedNodeDependentOnRight = getFirstUnorderedNodeDependentOn({
         nodes: nodes as unknown as SortingNodeWithDependencies[],
         node: right as unknown as SortingNodeWithDependencies,
+        nonCircularDependenciesByNode,
       }) as unknown as T
     }
 
