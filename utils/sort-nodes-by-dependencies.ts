@@ -67,29 +67,30 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
 /**
  * Returns the first node that is dependent on the given node but is not ordered
  * before it.
- * @param {SortingNodeWithDependencies} node - The node to check dependencies
+ * @param {object} params - The parameters for the operation
+ * @param {SortingNodeWithDependencies} params.node - The node to check dependencies
  * for.
- * @param {SortingNodeWithDependencies[]} currentlyOrderedNodes - The list of
+ * @param {SortingNodeWithDependencies[]} params.nodes - The list of
  * nodes currently ordered.
  * @returns {SortingNodeWithDependencies | undefined} The first unordered
  * dependent node, or `undefined` if none found.
  */
 export let getFirstUnorderedNodeDependentOn = <
   T extends SortingNodeWithDependencies,
->(
-  node: T,
-  currentlyOrderedNodes: T[],
-): undefined | T => {
-  let nonCircularDependenciesByNode = getNonCircularDependenciesByNode(
-    currentlyOrderedNodes,
-  )
-  let nodesDependentOnNode = currentlyOrderedNodes.filter(
-    currentlyOrderedNode =>
-      nonCircularDependenciesByNode.get(currentlyOrderedNode)?.has(node),
+>({
+  nodes,
+  node,
+}: {
+  nodes: T[]
+  node: T
+}): undefined | T => {
+  let nodesNonCircularDependencies = getNonCircularDependenciesByNode(nodes)
+  let nodesDependentOnNode = nodes.filter(currentlyOrderedNode =>
+    nodesNonCircularDependencies.get(currentlyOrderedNode)?.has(node),
   )
   return nodesDependentOnNode.find(firstNodeDependentOnNode => {
-    let currentIndexOfNode = currentlyOrderedNodes.indexOf(node)
-    let currentIndexOfFirstNodeDependentOnNode = currentlyOrderedNodes.indexOf(
+    let currentIndexOfNode = nodes.indexOf(node)
+    let currentIndexOfFirstNodeDependentOnNode = nodes.indexOf(
       firstNodeDependentOnNode,
     )
     return currentIndexOfFirstNodeDependentOnNode < currentIndexOfNode
