@@ -73,7 +73,7 @@ See [docs](https://perfectionist.dev).
 
 ## Installation
 
-You'll first need to install [ESLint](https://eslint.org):
+You'll first need to install [ESLint](https://eslint.org) v8.45.0 or greater:
 
 ```sh
 npm install --save-dev eslint
