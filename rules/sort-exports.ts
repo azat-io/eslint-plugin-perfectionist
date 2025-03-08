@@ -1,10 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  PartitionByCommentOption,
-  CommonOptions,
-} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
+import type { Options } from './sort-exports/types'
 
 import {
   partitionByCommentJsonSchema,
@@ -22,16 +19,6 @@ import { ORDER_ERROR } from '../utils/report-errors'
 import { getSettings } from '../utils/get-settings'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
-
-type Options = [
-  Partial<
-    {
-      groupKind: 'values-first' | 'types-first' | 'mixed'
-      partitionByComment: PartitionByCommentOption
-      partitionByNewLine: boolean
-    } & CommonOptions
-  >,
-]
 
 interface SortExportsSortingNode
   extends SortingNode<
