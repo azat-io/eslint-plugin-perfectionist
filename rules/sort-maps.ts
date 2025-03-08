@@ -31,7 +31,6 @@ import { singleCustomGroupJsonSchema } from './sort-maps/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -76,7 +75,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         return
       }
 
-      let sourceCode = getSourceCode(context)
+      let { sourceCode, id } = context
       let settings = getSettings(context.settings)
 
       let matchedContextOptions = getMatchingContextOptions({
@@ -97,7 +96,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       })
 
       let eslintDisabledLines = getEslintDisabledLines({
-        ruleName: context.id,
+        ruleName: id,
         sourceCode,
       })
 

@@ -17,7 +17,6 @@ import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { ORDER_ERROR } from '../utils/report-errors'
 import { getSettings } from '../utils/get-settings'
@@ -63,9 +62,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let options = complete(context.options.at(0), settings, defaultOptions)
     validateCustomSortConfiguration(options)
 
-    let sourceCode = getSourceCode(context)
+    let { sourceCode, id } = context
     let eslintDisabledLines = getEslintDisabledLines({
-      ruleName: context.id,
+      ruleName: id,
       sourceCode,
     })
 
