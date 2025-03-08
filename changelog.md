@@ -1,5 +1,23 @@
 # Changelog
 
+## v4.10.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.9.0...v4.10.0)
+
+### 🚀 Features
+
+- Add sort by value related-options ([94caac8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/94caac8))
+- Add custom groups fallback sort option ([f42f24f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f42f24f))
+- Support sorting by type in fallback sorting ([79d0441](https://github.com/azat-io/eslint-plugin-perfectionist/commit/79d0441))
+
+### 🐞 Bug Fixes
+
+- Fix maximum call stack size with fallback sort ([8b78710](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8b78710))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v4.9.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.8.0...v4.9.0)
