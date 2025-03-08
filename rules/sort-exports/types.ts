@@ -7,6 +7,9 @@ import type { JoinWithDash } from '../../types/join-with-dash'
 
 export type Options = Partial<
   {
+    /**
+     * @deprecated for {@link `groups`}
+     */
     groupKind: 'values-first' | 'types-first' | 'mixed'
     partitionByComment: PartitionByCommentOption
     groups: GroupsOptions<Group>

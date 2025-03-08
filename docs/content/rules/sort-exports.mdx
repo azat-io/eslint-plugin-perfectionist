@@ -193,9 +193,11 @@ export { AnotherNamed } from './second-folder';
 
 Each group of exports (separated by empty lines) is treated independently, and the order within each group is preserved.
 
-### groupKind
+### [DEPRECATED] groupKind
 
 <sub>default: `'mixed'`</sub>
+
+Use the [groups](#groups) option with the `value` and `type` modifiers instead.
 
 Allows you to group exports by their kind, determining whether value exports should come before or after type exports.
 
