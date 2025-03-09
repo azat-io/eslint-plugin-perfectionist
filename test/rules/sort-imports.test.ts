@@ -1829,6 +1829,31 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): does not sort side-effects and side-effect-style even with fallback sort`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  groups: ['side-effect', 'side-effect-style'],
+                  fallbackSort: { type: 'alphabetical' },
+                },
+              ],
+              code: dedent`
+                import 'b';
+                import 'a';
+
+                import 'b.css';
+                import 'a.css';
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
     })
 
     ruleTester.run(
