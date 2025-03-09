@@ -30,6 +30,10 @@ export let compare = <T extends SortingNode>({
   a,
   b,
 }: CompareParameters<T>): number => {
+  if (options.type === 'unsorted') {
+    return 0
+  }
+
   let finalNodeValueGetter = nodeValueGetter ?? ((node: T) => node.name)
   let compareValue = computeCompareValue({
     nodeValueGetter: finalNodeValueGetter,
