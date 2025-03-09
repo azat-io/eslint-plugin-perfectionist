@@ -1,5 +1,19 @@
 # Changelog
 
+## v4.10.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.10.0...v4.10.1)
+
+### 🐞 Bug Fixes
+
+- Remove deprecated eslint source code api ([8d4ad4f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8d4ad4f))
+- **sort-imports:** Fix explicit fallback sort overriding side-effects ([1ac83c9](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1ac83c9))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+- Azat S. ([@azat-io](https://github.com/azat-io))
+
 ## v4.10.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.9.0...v4.10.0)
