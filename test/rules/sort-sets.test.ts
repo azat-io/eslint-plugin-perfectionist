@@ -3168,7 +3168,18 @@ describe(ruleName, () => {
           options: [{}],
         },
       ],
-      valid: [],
+      valid: [
+        {
+          code: dedent`
+            new Set([
+              'b',
+              'c',
+              // eslint-disable-next-line
+              'a',
+            ])
+          `,
+        },
+      ],
     })
 
     eslintRuleTester.run(
