@@ -76,7 +76,8 @@ export let reportAllErrors = <
     if (
       firstUnorderedNodeDependentOnRight ||
       leftIndex > rightIndex ||
-      leftIndex >= indexOfRightExcludingEslintDisabled
+      (left.isEslintDisabled &&
+        leftIndex >= indexOfRightExcludingEslintDisabled)
     ) {
       if (firstUnorderedNodeDependentOnRight) {
         messageIds.push(availableMessageIds.unexpectedDependencyOrder!)
