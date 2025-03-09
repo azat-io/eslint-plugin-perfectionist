@@ -35,7 +35,6 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { getEnumMembers } from '../utils/get-enum-members'
-import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -93,9 +92,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       })
       validateNewlinesAndPartitionConfiguration(options)
 
-      let sourceCode = getSourceCode(context)
+      let { sourceCode, id } = context
       let eslintDisabledLines = getEslintDisabledLines({
-        ruleName: context.id,
+        ruleName: id,
         sourceCode,
       })
 

@@ -1,3 +1,5 @@
+import type { TSESLint } from '@typescript-eslint/utils'
+
 import { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
@@ -42,7 +44,6 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -87,7 +88,7 @@ let defaultOptions: Required<Options[0]> = {
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
     let settings = getSettings(context.settings)
-    let sourceCode = getSourceCode(context)
+    let { sourceCode, id } = context
 
     let sortObject = (
       nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
@@ -181,7 +182,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       }
 
       let eslintDisabledLines = getEslintDisabledLines({
-        ruleName: context.id,
+        ruleName: id,
         sourceCode,
       })
 
@@ -532,7 +533,7 @@ let getNodeName = ({
   sourceCode,
   property,
 }: {
-  sourceCode: ReturnType<typeof getSourceCode>
+  sourceCode: TSESLint.SourceCode
   property: TSESTree.Property
 }): string => {
   if (property.key.type === 'Identifier') {
@@ -547,7 +548,7 @@ let getNodeValue = ({
   sourceCode,
   property,
 }: {
-  sourceCode: ReturnType<typeof getSourceCode>
+  sourceCode: TSESLint.SourceCode
   property: TSESTree.Property
 }): string | null => {
   if (

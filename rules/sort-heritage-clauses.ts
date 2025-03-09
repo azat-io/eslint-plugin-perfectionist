@@ -21,7 +21,6 @@ import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
-import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -113,9 +112,9 @@ let sortHeritageClauses = (
   if (!isSortable(heritageClauses)) {
     return
   }
-  let sourceCode = getSourceCode(context)
+  let { sourceCode, id } = context
   let eslintDisabledLines = getEslintDisabledLines({
-    ruleName: context.id,
+    ruleName: id,
     sourceCode,
   })
 

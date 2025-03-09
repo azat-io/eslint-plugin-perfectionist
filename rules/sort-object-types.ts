@@ -48,7 +48,6 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { sortByJsonSchema } from './sort-object-types/types'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -186,7 +185,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
   }
 
   let settings = getSettings(context.settings)
-  let sourceCode = getSourceCode(context)
+  let { sourceCode, id } = context
   let matchedContextOptions = getMatchingContextOptions({
     nodeNames: elements.map(node =>
       getNodeName({ typeElement: node, sourceCode }),
@@ -218,7 +217,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
   }
 
   let eslintDisabledLines = getEslintDisabledLines({
-    ruleName: context.id,
+    ruleName: id,
     sourceCode,
   })
 

@@ -10,7 +10,6 @@ import { reportErrors, ORDER_ERROR, RIGHT, LEFT } from '../utils/report-errors'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { commonJsonSchemas } from '../utils/common-json-schemas'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -50,7 +49,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
 
-      let sourceCode = getSourceCode(context)
+      let { sourceCode } = context
       let isDiscriminantTrue =
         switchNode.discriminant.type === 'Literal' &&
         switchNode.discriminant.value === true

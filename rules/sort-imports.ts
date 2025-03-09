@@ -42,7 +42,6 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -217,9 +216,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       }
     }
 
-    let sourceCode = getSourceCode(context)
+    let { sourceCode, filename, id } = context
     let eslintDisabledLines = getEslintDisabledLines({
-      ruleName: context.id,
+      ruleName: id,
       sourceCode,
     })
     let sortingNodes: SortImportsSortingNode[] = []
@@ -335,7 +334,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         let resolution = typescriptImport.resolveModuleName(
           value,
-          context.filename,
+          filename,
           tsConfigOutput.compilerOptions,
           typescriptImport.sys,
           tsConfigOutput.cache,

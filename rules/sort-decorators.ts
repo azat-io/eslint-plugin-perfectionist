@@ -26,7 +26,6 @@ import { getDecoratorName } from '../utils/get-decorator-name'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -193,9 +192,9 @@ let sortDecorators = (
   if (!isSortable(decorators)) {
     return
   }
-  let sourceCode = getSourceCode(context)
+  let { sourceCode, id } = context
   let eslintDisabledLines = getEslintDisabledLines({
-    ruleName: context.id,
+    ruleName: id,
     sourceCode,
   })
 

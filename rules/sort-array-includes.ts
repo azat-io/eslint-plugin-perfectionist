@@ -38,7 +38,6 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { getSourceCode } from '../utils/get-source-code'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -169,7 +168,7 @@ export let sortArray = <MessageIds extends string>({
     return
   }
 
-  let sourceCode = getSourceCode(context)
+  let { sourceCode, id } = context
   let settings = getSettings(context.settings)
 
   let matchedContextOptions = getMatchingContextOptions({
@@ -189,7 +188,7 @@ export let sortArray = <MessageIds extends string>({
   validateNewlinesAndPartitionConfiguration(options)
 
   let eslintDisabledLines = getEslintDisabledLines({
-    ruleName: context.id,
+    ruleName: id,
     sourceCode,
   })
 
