@@ -2810,7 +2810,18 @@ describe(ruleName, () => {
           options: [{}],
         },
       ],
-      valid: [],
+      valid: [
+        {
+          code: dedent`
+            <Element
+              b="b"
+              c="c"
+              // eslint-disable-next-line
+              a="a"
+            />
+          `,
+        },
+      ],
     })
   })
 })

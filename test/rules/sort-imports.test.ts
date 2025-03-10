@@ -7184,7 +7184,16 @@ describe(ruleName, () => {
           options: [{}],
         },
       ],
-      valid: [],
+      valid: [
+        {
+          code: dedent`
+            import { b } from "./b"
+            import { c } from "./c"
+            // eslint-disable-next-line
+            import { a } from "./a"
+          `,
+        },
+      ],
     })
 
     eslintRuleTester.run(

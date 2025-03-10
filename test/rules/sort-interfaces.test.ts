@@ -5687,7 +5687,18 @@ describe(ruleName, () => {
           options: [{}],
         },
       ],
-      valid: [],
+      valid: [
+        {
+          code: dedent`
+            interface Interface {
+              b: string;
+              c: string;
+              // eslint-disable-next-line
+              a: string;
+            }
+          `,
+        },
+      ],
     })
   })
 })
