@@ -38,4 +38,4 @@ Make sure tests pass.
 
 ## Additional information
 
-This plugin uses [@typescript/eslint-parser](https://github.com/typescript-eslint/typescript-eslint/tree/main/packages/parser). When developing, I recommend using [AST explorer](https://astexplorer.net). It makes development much easier.
+This plugin uses [@typescript-eslint/parser](https://github.com/typescript-eslint/typescript-eslint/tree/main/packages/parser). When developing, I recommend using [AST explorer](https://ast-explorer.dev). It makes development much easier.
