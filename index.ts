@@ -1,5 +1,6 @@
 import type { ESLint, Linter, Rule } from 'eslint'
 
+import { version as packageVersion, name as packageName } from './package.json'
 import sortVariableDeclarations from './rules/sort-variable-declarations'
 import sortIntersectionTypes from './rules/sort-intersection-types'
 import sortHeritageClauses from './rules/sort-heritage-clauses'
@@ -54,6 +55,10 @@ interface PluginConfig {
     'recommended-natural': Linter.Config
     'recommended-custom': Linter.Config
   }
+  meta: {
+    version: string
+    name: string
+  }
   name: string
 }
 
@@ -62,7 +67,7 @@ interface BaseOptions {
   order: 'desc' | 'asc'
 }
 
-let name = 'perfectionist'
+let pluginName = 'perfectionist'
 
 let plugin = {
   rules: {
@@ -87,27 +92,31 @@ let plugin = {
     'sort-sets': sortSets,
     'sort-maps': sortMaps,
   },
-  name,
+  meta: {
+    version: packageVersion,
+    name: packageName,
+  },
+  name: packageName,
 } as unknown as ESLint.Plugin
 
 let getRules = (options: BaseOptions): Linter.RulesRecord =>
   Object.fromEntries(
     Object.keys(plugin.rules!).map(ruleName => [
-      `${name}/${ruleName}`,
+      `${pluginName}/${ruleName}`,
       ['error', options],
     ]),
   )
 
 let createConfig = (options: BaseOptions): Linter.Config => ({
   plugins: {
-    [name]: plugin,
+    [pluginName]: plugin,
   },
   rules: getRules(options),
 })
 
 let createLegacyConfig = (options: BaseOptions): Linter.LegacyConfig => ({
   rules: getRules(options),
-  plugins: [name],
+  plugins: [pluginName],
 })
 
 export default {
