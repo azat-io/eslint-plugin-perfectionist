@@ -137,6 +137,9 @@ let singleRegexJsonSchema: JSONSchema4 = {
         },
       },
       additionalProperties: false,
+      // https://github.com/azat-io/eslint-plugin-perfectionist/pull/490#issuecomment-2720969705
+      // Uncomment the code below in the next major version (v5)
+      // To uncomment: required: ['pattern'],
       type: 'object',
     },
     {
