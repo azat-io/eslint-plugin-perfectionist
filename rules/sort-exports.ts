@@ -4,16 +4,22 @@ import type { Modifier, Selector, Options } from './sort-exports/types'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
+import { doesCustomGroupMatch } from './sort-exports/does-custom-group-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
+import { singleCustomGroupJsonSchema } from './sort-exports/types'
+import { allModifiers, allSelectors } from './sort-exports/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -44,6 +50,7 @@ let defaultOptions: Required<Options[0]> = {
   partitionByNewLine: false,
   type: 'alphabetical',
   groupKind: 'mixed',
+  customGroups: [],
   ignoreCase: true,
   locales: 'en-US',
   alphabet: '',
@@ -57,6 +64,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
     let options = complete(context.options.at(0), settings, defaultOptions)
     validateCustomSortConfiguration(options)
+    validateGeneratedGroupsConfiguration({
+      modifiers: allModifiers,
+      selectors: allSelectors,
+      options,
+    })
 
     let { sourceCode, id } = context
     let eslintDisabledLines = getEslintDisabledLines({
@@ -90,13 +102,33 @@ export default createEslintRule<Options, MESSAGE_ID>({
         defineGroup(predefinedGroup)
       }
 
+      let name = node.source.value
+      for (let customGroup of options.customGroups) {
+        if (
+          doesCustomGroupMatch({
+            elementName: name,
+            customGroup,
+            modifiers,
+          })
+        ) {
+          defineGroup(customGroup.groupName, true)
+          /**
+           * If the custom group is not referenced in the `groups` option, it
+           * will be ignored
+           */
+          if (getGroup() === customGroup.groupName) {
+            break
+          }
+        }
+      }
+
       let sortingNode: SortExportsSortingNode = {
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         groupKind: node.exportKind === 'value' ? 'value' : 'type',
         size: rangeToDiff(node, sourceCode),
         addSafetySemicolonWhenInline: true,
-        name: node.source.value,
         group: getGroup(),
+        name,
         node,
       }
       let lastNode = formattedMembers.at(-1)?.at(-1)
@@ -138,7 +170,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ): SortExportsSortingNode[] =>
             filteredGroupKindNodes.flatMap(groupedNodes =>
               sortNodesByGroups({
-                getOptionsByGroupNumber: () => ({ options }),
+                getOptionsByGroupNumber:
+                  buildGetCustomGroupOverriddenOptionsFunction(options),
                 ignoreEslintDisabledNodes,
                 groups: options.groups,
                 nodes: groupedNodes,
@@ -176,6 +209,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description: 'Specifies top-level groups.',
             type: 'string',
           },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           groups: groupsJsonSchema,
