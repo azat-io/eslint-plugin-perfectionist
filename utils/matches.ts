@@ -9,7 +9,8 @@ export let matches = (value: string, regexOption: RegexOption): boolean => {
     return new RegExp(regexOption).test(value)
   }
 
-  // Handler for non-string regexes until an error is thrown
+  // Handler for non-string regexes until an error is thrown on the JSON schema
+  // Level
   if ('source' in regexOption) {
     throw new Error(
       'Invalid configuration: please enter your RegExp expressions as strings.\n' +
