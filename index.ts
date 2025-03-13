@@ -59,7 +59,6 @@ interface PluginConfig {
     version: string
     name: string
   }
-  name: string
 }
 
 interface BaseOptions {
@@ -96,7 +95,6 @@ let plugin = {
     version: packageVersion,
     name: packageName,
   },
-  name: packageName,
 } as unknown as ESLint.Plugin
 
 let getRules = (options: BaseOptions): Linter.RulesRecord =>
