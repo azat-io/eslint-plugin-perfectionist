@@ -5066,7 +5066,41 @@ describe(ruleName, () => {
           options: [{}],
         },
       ],
-      valid: [],
+      valid: [
+        {
+          code: dedent`
+            @B
+            @C
+            // eslint-disable-next-line
+            @A
+            class Class {
+
+              @B
+              @C
+              // eslint-disable-next-line
+              @A
+              property
+
+              @B
+              @C
+              // eslint-disable-next-line
+              @A
+              accessor field
+
+              @B
+              @C
+              // eslint-disable-next-line
+              @A
+              method(
+                @B
+                @C
+                // eslint-disable-next-line
+                @A
+                parameter) {}
+            }
+          `,
+        },
+      ],
     })
 
     eslintRuleTester.run(

@@ -50,9 +50,6 @@ export let compare = <T extends SortingNode>({
   return computeCompareValue({
     options: {
       ...options,
-      fallbackSort: {
-        type: 'unsorted',
-      },
       order: fallbackSort.order ?? order,
       type: fallbackSort.type,
     },

@@ -2812,7 +2812,17 @@ describe(ruleName, () => {
           options: [{}],
         },
       ],
-      valid: [],
+      valid: [
+        {
+          code: dedent`
+            type Type =
+              | B
+              | C
+              // eslint-disable-next-line
+              | A
+          `,
+        },
+      ],
     })
   })
 })
