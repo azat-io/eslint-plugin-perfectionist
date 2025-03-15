@@ -31,4 +31,11 @@ describe('matches', () => {
       ]),
     ).toBeTruthy()
   })
+
+  it('should throw an error if the regex option is not a string', () => {
+    expect(() => matches('foo', /foo/u as unknown as string)).toThrow(
+      'Invalid configuration: please enter your RegExp expressions as strings.\n' +
+        'For example, write ".*foo" instead of /.*foo/',
+    )
+  })
 })
