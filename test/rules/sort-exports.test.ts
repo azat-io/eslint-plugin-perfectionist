@@ -811,6 +811,43 @@ describe(ruleName, () => {
         valid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use predefined groups`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'value-export',
+                  leftGroup: 'type-export',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedExportsGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['value-export', 'type-export'],
+              },
+            ],
+            output: dedent`
+              export { b } from 'b';
+              export type { a } from 'a';
+            `,
+            code: dedent`
+              export type { a } from 'a';
+              export { b } from 'b';
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
