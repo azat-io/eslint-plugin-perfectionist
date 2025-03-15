@@ -1166,6 +1166,91 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}(${type}): detects dependencies in object destructuring`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'a',
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                },
+              ],
+              output: dedent`
+                let {
+                  b: bRenamed,
+                  a = bRenamed,
+                } = obj;
+              `,
+              code: dedent`
+                let {
+                  a = bRenamed,
+                  b: bRenamed,
+                } = obj;
+              `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'a',
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                },
+              ],
+              output: dedent`
+                let [{
+                  b: bRenamed,
+                  a = bRenamed,
+                }] = [obj];
+              `,
+              code: dedent`
+                let [{
+                  a = bRenamed,
+                  b: bRenamed,
+                }] = [obj];
+              `,
+              options: [options],
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'a',
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedObjectsDependencyOrder',
+                },
+              ],
+              output: dedent`
+                let {
+                  [b]: bRenamed,
+                  a = bRenamed,
+                } = obj;
+              `,
+              code: dedent`
+                let {
+                  a = bRenamed,
+                  [b]: bRenamed,
+                } = obj;
+              `,
+              options: [options],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}): detects circular dependencies`,
         rule,
         {

@@ -367,6 +367,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
               })
             }
 
+            let dependencyName: string = name
+            if (isDestructuredObject && property.value.type === 'Identifier') {
+              dependencyName = property.value.name
+            }
+
             let sortingNode: SortingNodeWithDependencies = {
               isEslintDisabled: isNodeEslintDisabled(
                 property,
@@ -374,6 +379,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               ),
               size: rangeToDiff(property, sourceCode),
               group: getGroup(),
+              dependencyName,
               node: property,
               dependencies,
               name,
