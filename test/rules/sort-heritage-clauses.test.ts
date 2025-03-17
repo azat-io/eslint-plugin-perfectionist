@@ -1917,7 +1917,18 @@ describe(ruleName, () => {
           options: [{}],
         },
       ],
-      valid: [],
+      valid: [
+        {
+          code: dedent`
+            class Class implements
+              B,
+              C,
+              // eslint-disable-next-line
+              A
+            {}
+          `,
+        },
+      ],
     })
 
     eslintRuleTester.run(

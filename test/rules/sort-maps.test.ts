@@ -2851,7 +2851,18 @@ describe(ruleName, () => {
           options: [{}],
         },
       ],
-      valid: [],
+      valid: [
+        {
+          code: dedent`
+            new Map([
+              [b, 'b'],
+              [c, 'c'],
+              // eslint-disable-next-line
+              [a, 'a'],
+            ])
+          `,
+        },
+      ],
     })
 
     eslintRuleTester.run(

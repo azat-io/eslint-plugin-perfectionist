@@ -4074,7 +4074,18 @@ describe(ruleName, () => {
           options: [{}],
         },
       ],
-      valid: [],
+      valid: [
+        {
+          code: dedent`
+            enum Enum {
+              B = 'B',
+              C = 'C',
+              // eslint-disable-next-line
+              A = 'A',
+            }
+          `,
+        },
+      ],
     })
   })
 })

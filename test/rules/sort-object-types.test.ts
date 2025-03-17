@@ -4993,7 +4993,18 @@ describe(ruleName, () => {
           options: [{}],
         },
       ],
-      valid: [],
+      valid: [
+        {
+          code: dedent`
+            type Type = {
+              b: string;
+              c: string;
+              // eslint-disable-next-line
+              a: string;
+            }
+          `,
+        },
+      ],
     })
   })
 })
