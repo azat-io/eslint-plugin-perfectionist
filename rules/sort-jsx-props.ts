@@ -1,5 +1,6 @@
 import { TSESTree } from '@typescript-eslint/types'
 
+import type { Modifier, Selector } from './sort-jsx-props/types'
 import type { SortingNode } from '../types/sorting-node'
 import type { Options } from './sort-jsx-props/types'
 
@@ -22,6 +23,7 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
+import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { allModifiers, allSelectors } from './sort-jsx-props/types'
@@ -35,6 +37,11 @@ import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
+
+/**
+ * Cache computed groups by modifiers and selectors for performance
+ */
+let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenJSXPropsMembers'
@@ -123,10 +130,26 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             setCustomGroups(options.customGroups, name)
 
+            let selectors: Selector[] = []
+            let modifiers: Modifier[] = []
+
             if (attribute.value === null) {
-              defineGroup('shorthand')
-            } else if (attribute.loc.start.line !== attribute.loc.end.line) {
-              defineGroup('multiline')
+              selectors.push('shorthand')
+              modifiers.push('shorthand')
+            }
+            if (attribute.loc.start.line !== attribute.loc.end.line) {
+              selectors.push('multiline')
+              modifiers.push('multiline')
+            }
+            selectors.push('prop')
+
+            let predefinedGroups = generatePredefinedGroups({
+              cache: cachedGroupsByModifiersAndSelectors,
+              selectors,
+              modifiers,
+            })
+            for (let predefinedGroup of predefinedGroups) {
+              defineGroup(predefinedGroup)
             }
 
             let sortingNode: SortingNode = {

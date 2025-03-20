@@ -329,21 +329,26 @@ Example configuration:
 
 Allows you to specify a list of JSX props groups for sorting. Groups help organize props into categories, making your components more readable and maintainable.
 
-Predefined groups:
-
-- `'multiline'` — Props with multiline values.
-- `'shorthand'` — Shorthand props, which are used without a value, typically for boolean props.
-- `'unknown'` — Props that don’t fit into any group specified in the `groups` option.
-
-If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
-
-Each JSX prop will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
+Each element will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
 The order of items in the `groups` option determines how groups are ordered.
 
 Within a given group, members will be sorted according to the `type`, `order`, `ignoreCase`, etc. options.
 
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
+
+Predefined groups are characterized by a single selector and potentially multiple modifiers. You may enter modifiers in any order, but the selector must always come at the end.
+
+##### List of selectors
+
+The only selector possible for this rule is `prop`.
+
+#### Modifiers
+
+- `multiline`: Matches multiline props.
+- `shorthand`: Matches shorthand props, which are used without a value, typically for boolean props.
+
+Example: `shorthand-prop`.
 
 #### Newlines between groups
 
@@ -385,9 +390,9 @@ Custom group matching takes precedence over predefined group matching.
 ```js
  {
    groups: [
-     'multiline',
+     'multiline-prop',
      'unknown',
-     'shorthand',
+     'shorthand-prop',
 +    'callback',       // [!code ++]
    ],
 +  customGroups: {     // [!code ++]
