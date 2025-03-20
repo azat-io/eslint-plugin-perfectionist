@@ -7,9 +7,17 @@ import {
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
+  newlinesBetweenJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -17,7 +25,6 @@ import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { doesCustomGroupMatch } from './sort-exports/does-custom-group-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
 import { singleCustomGroupJsonSchema } from './sort-exports/types'
 import { allModifiers, allSelectors } from './sort-exports/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -41,12 +48,17 @@ interface SortExportsSortingNode
   groupKind: 'value' | 'type'
 }
 
-type MESSAGE_ID = 'unexpectedExportsGroupOrder' | 'unexpectedExportsOrder'
+type MESSAGE_ID =
+  | 'unexpectedExportsGroupOrder'
+  | 'missedSpacingBetweenExports'
+  | 'extraSpacingBetweenExports'
+  | 'unexpectedExportsOrder'
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByComment: false,
+  newlinesBetween: 'ignore',
   partitionByNewLine: false,
   type: 'alphabetical',
   groupKind: 'mixed',
@@ -69,6 +81,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       selectors: allSelectors,
       options,
     })
+    validateNewlinesAndPartitionConfiguration(options)
 
     let { sourceCode, id } = context
     let eslintDisabledLines = getEslintDisabledLines({
@@ -180,6 +193,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           reportAllErrors<MESSAGE_ID>({
             availableMessageIds: {
+              missedSpacingBetweenMembers: 'missedSpacingBetweenExports',
+              extraSpacingBetweenMembers: 'extraSpacingBetweenExports',
               unexpectedGroupOrder: 'unexpectedExportsGroupOrder',
               unexpectedOrder: 'unexpectedExportsOrder',
             },
@@ -214,6 +229,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
           groups: groupsJsonSchema,
         },
         additionalProperties: false,
@@ -222,14 +238,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
       uniqueItems: true,
       type: 'array',
     },
+    messages: {
+      missedSpacingBetweenExports: MISSED_SPACING_ERROR,
+      extraSpacingBetweenExports: EXTRA_SPACING_ERROR,
+      unexpectedExportsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedExportsOrder: ORDER_ERROR,
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-exports',
       description: 'Enforce sorted exports.',
       recommended: true,
-    },
-    messages: {
-      unexpectedExportsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedExportsOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',

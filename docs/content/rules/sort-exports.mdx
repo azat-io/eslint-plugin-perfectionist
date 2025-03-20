@@ -88,7 +88,7 @@ Specifies the sorting method.
 - `'natural'` — Sort items in a [natural](https://github.com/yobacca/natural-orderby) order (e.g., “item2” < “item10”).
 - `'line-length'` — Sort items by the length of the code line (shorter lines first).
 - `'custom'` — Sort items using the alphabet entered in the [`alphabet`](#alphabet) option.
-- `'unsorted'` — Do not sort items.
+- `'unsorted'` — Do not sort items. [`grouping`](#groups) and [`newlines behavior`](#newlinesbetween) are still enforced.
 
 ### order
 
@@ -193,6 +193,22 @@ export { AnotherNamed } from './second-folder';
 
 Each group of exports (separated by empty lines) is treated independently, and the order within each group is preserved.
 
+### newlinesBetween
+
+<sub>default: `'ignore'`</sub>
+
+Specifies how new lines should be handled between groups.
+
+- `ignore` — Do not report errors related to new lines.
+- `always` — Enforce one new line between each group, and forbid new lines inside a group.
+- `never` — No new lines are allowed.
+
+You can also enforce the newline behavior between two specific groups through the `groups` options.
+
+See the [`groups`](#newlines-between-groups) option.
+
+This option is only applicable when `partitionByNewLine` is `false`.
+
 ### [DEPRECATED] groupKind
 
 <sub>default: `'mixed'`</sub>
@@ -241,6 +257,25 @@ Example: `type-export`.
 
 Members that don’t fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option,
 it will automatically be added to the end of the list.
+
+##### Newlines between groups
+
+You may place `newlinesBetween` objects between your groups to enforce the newline behavior between two specific groups.
+
+See the [`newlinesBetween`](#newlinesbetween) option.
+
+This feature is only applicable when `partitionByNewLine` is false.
+
+```ts
+{
+  newlinesBetween: 'always',
+  groups: [
+    'a',
+    { newlinesBetween: 'never' }, // Overrides the global newlinesBetween option
+    'b',
+  ]
+}
+```
 
 ### customGroups
 
@@ -324,6 +359,7 @@ Custom groups have a higher priority than any predefined group.
                   specialCharacters: 'keep',
                   partitionByComment: false,
                   partitionByNewLine: false,
+                  newlinesBetween: 'ignore',
                   groupKind: 'mixed',
                   groups: [],
                   customGroups: [],
@@ -354,6 +390,7 @@ Custom groups have a higher priority than any predefined group.
                 specialCharacters: 'keep',
                 partitionByComment: false,
                 partitionByNewLine: false,
+                newlinesBetween: 'ignore',
                 groupKind: 'mixed',
                 groups: [],
                 customGroups: [],
