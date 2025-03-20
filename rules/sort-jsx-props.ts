@@ -19,11 +19,12 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { allModifiers, allSelectors } from './sort-jsx-props/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -85,9 +86,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       })
       let options = complete(matchedContextOptions, settings, defaultOptions)
       validateCustomSortConfiguration(options)
-      validateGroupsConfiguration({
-        allowedPredefinedGroups: ['multiline', 'shorthand', 'unknown'],
-        allowedCustomGroups: Object.keys(options.customGroups),
+      validateGeneratedGroupsConfiguration({
+        selectors: allSelectors,
+        modifiers: allModifiers,
         options,
       })
       validateNewlinesAndPartitionConfiguration(options)

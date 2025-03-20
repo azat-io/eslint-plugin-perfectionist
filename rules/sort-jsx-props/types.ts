@@ -5,6 +5,7 @@ import type {
   GroupsOptions,
   RegexOption,
 } from '../../types/common-options'
+import type { JoinWithDash } from '../../types/join-with-dash'
 
 export type Options = Partial<
   {
@@ -23,4 +24,50 @@ export type Options = Partial<
   } & CommonOptions
 >[]
 
-type Group = 'multiline' | 'shorthand' | 'unknown' | string
+export type Selector = AttributeSelector | MultilineSelector | ShorthandSelector
+
+export type Modifier = MultilineModifier | ShorthandModifier
+
+type AttributeGroup = JoinWithDash<
+  [ShorthandModifier, MultilineModifier, AttributeSelector]
+>
+
+/**
+ * Only used in code, so I don't know if it's worth maintaining this.
+ */
+type Group =
+  | ShorthandGroup
+  | MultilineGroup
+  | AttributeGroup
+  | 'unknown'
+  | string
+
+/**
+ * @deprecated For {@link `MultilineModifier`}
+ */
+type MultilineGroup = JoinWithDash<[MultilineSelector]>
+
+/**
+ * @deprecated For {@link `ShorthandModifier`}
+ */
+type ShorthandGroup = JoinWithDash<[ShorthandSelector]>
+
+/**
+ * @deprecated For {@link `ShorthandModifier`}
+ */
+type ShorthandSelector = 'shorthand'
+
+/**
+ * @deprecated For {@link `MultilineModifier`}
+ */
+type MultilineSelector = 'multiline'
+
+type MultilineModifier = 'multiline'
+
+type ShorthandModifier = 'shorthand'
+
+type AttributeSelector = 'attribute'
+
+export let allSelectors: Selector[] = ['multiline', 'attribute', 'shorthand']
+
+export let allModifiers: Modifier[] = ['shorthand', 'multiline']
