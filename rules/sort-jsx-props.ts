@@ -1,13 +1,7 @@
 import { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  DeprecatedCustomGroupsOption,
-  NewlinesBetweenOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
+import type { Options } from './sort-jsx-props/types'
 
 import {
   buildUseConfigurationIfJsonSchema,
@@ -41,30 +35,11 @@ import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
-type Options = Partial<
-  {
-    useConfigurationIf: {
-      allNamesMatchPattern?: RegexOption
-      tagMatchesPattern?: RegexOption
-    }
-    customGroups: DeprecatedCustomGroupsOption
-    newlinesBetween: NewlinesBetweenOption
-    groups: GroupsOptions<Group>
-    partitionByNewLine: boolean
-    /**
-     * @deprecated for {@link `useConfigurationIf.tagMatchesPattern`}
-     */
-    ignorePattern: RegexOption
-  } & CommonOptions
->[]
-
 type MESSAGE_ID =
   | 'missedSpacingBetweenJSXPropsMembers'
   | 'extraSpacingBetweenJSXPropsMembers'
   | 'unexpectedJSXPropsGroupOrder'
   | 'unexpectedJSXPropsOrder'
-
-type Group = 'multiline' | 'shorthand' | 'unknown' | string
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
