@@ -234,13 +234,29 @@ Use the [useConfigurationIf.tagMatchesPattern](#useconfigurationif) option along
 
 Allows you to specify names or patterns for JSX elements that should be ignored by this rule. This can be useful if you have specific components that you do not want to sort.
 
-You can specify their names or a regexp pattern to ignore, for example: `'^Table.+'` to ignore all object types whose names begin with the word Table.
+You can specify their names or a regexp pattern to ignore, for example: `'^Table.+'` to ignore all JSX elements whose names begin with the word Table.
 
 ### partitionByNewLine
 
 <sub>default: `false`</sub>
 
 When `true`, the rule will not sort members if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
+### newlinesBetween
+
+<sub>default: `'ignore'`</sub>
+
+Specifies how new lines should be handled between groups.
+
+- `ignore` — Do not report errors related to new lines.
+- `always` — Enforce one new line between each group, and forbid new lines inside a group.
+- `never` — No new lines are allowed.
+
+You can also enforce the newline behavior between two specific groups through the `groups` options.
+
+See the [`groups`](#newlines-between-groups) option.
+
+This option is only applicable when `partitionByNewLine` is `false`.
 
 ### useConfigurationIf
 
@@ -255,7 +271,7 @@ When `true`, the rule will not sort members if there is an empty line between th
 </sub>
 <sub>default: `{}`</sub>
 
-Allows you to specify filters to match a particular options configuration for a given object type.
+Allows you to specify filters to match a particular options configuration for a given JSX element.
 
 The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
 
