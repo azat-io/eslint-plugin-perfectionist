@@ -6,6 +6,7 @@ import type { Options } from './sort-jsx-props/types'
 
 import {
   buildUseConfigurationIfJsonSchema,
+  buildCustomGroupsArrayJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
   customGroupsJsonSchema,
@@ -20,12 +21,15 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
+import { doesCustomGroupMatch } from './sort-jsx-props/does-custom-group-match'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { singleCustomGroupJsonSchema } from './sort-jsx-props/types'
 import { allModifiers, allSelectors } from './sort-jsx-props/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -128,8 +132,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
 
-            setCustomGroups(options.customGroups, name)
-
             let selectors: Selector[] = []
             let modifiers: Modifier[] = []
 
@@ -150,6 +152,32 @@ export default createEslintRule<Options, MESSAGE_ID>({
             })
             for (let predefinedGroup of predefinedGroups) {
               defineGroup(predefinedGroup)
+            }
+
+            if (Array.isArray(options.customGroups)) {
+              for (let customGroup of options.customGroups) {
+                if (
+                  doesCustomGroupMatch({
+                    elementName: name,
+                    customGroup,
+                    selectors,
+                    modifiers,
+                  })
+                ) {
+                  defineGroup(customGroup.groupName, true)
+                  /**
+                   * If the custom group is not referenced in the `groups` option, it
+                   * will be ignored
+                   */
+                  if (getGroup() === customGroup.groupName) {
+                    break
+                  }
+                }
+              }
+            } else {
+              setCustomGroups(options.customGroups, name, {
+                override: true,
+              })
             }
 
             let sortingNode: SortingNode = {
@@ -187,7 +215,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ignoreEslintDisabledNodes: boolean,
         ): SortingNode[] =>
           sortNodesByGroups({
-            getOptionsByGroupNumber: () => ({ options }),
+            getOptionsByGroupNumber:
+              buildGetCustomGroupOverriddenOptionsFunction(options),
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes,
@@ -214,6 +243,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
       items: {
         properties: {
           ...commonJsonSchemas,
+          customGroups: {
+            oneOf: [
+              customGroupsJsonSchema,
+              buildCustomGroupsArrayJsonSchema({
+                singleCustomGroupJsonSchema,
+              }),
+            ],
+          },
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {
               tagMatchesPattern: regexJsonSchema,
@@ -221,7 +258,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }),
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
-          customGroups: customGroupsJsonSchema,
           ignorePattern: regexJsonSchema,
           groups: groupsJsonSchema,
         },

@@ -1,11 +1,20 @@
+import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
+
 import type {
   DeprecatedCustomGroupsOption,
   NewlinesBetweenOption,
+  CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
   RegexOption,
 } from '../../types/common-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
+
+import {
+  buildCustomGroupModifiersJsonSchema,
+  buildCustomGroupSelectorJsonSchema,
+  regexJsonSchema,
+} from '../../utils/common-json-schemas'
 
 export type Options = Partial<
   {
@@ -13,7 +22,9 @@ export type Options = Partial<
       allNamesMatchPattern?: RegexOption
       tagMatchesPattern?: RegexOption
     }
-    customGroups: DeprecatedCustomGroupsOption
+    customGroups:
+      | CustomGroupsOption<SingleCustomGroup>
+      | DeprecatedCustomGroupsOption
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
@@ -25,7 +36,6 @@ export type Options = Partial<
 >[]
 
 export interface SingleCustomGroup {
-  elementValuePattern?: RegexOption
   elementNamePattern?: RegexOption
   modifiers?: Modifier[]
   selector?: Selector
@@ -78,3 +88,9 @@ type PropertySelector = 'prop'
 export let allSelectors: Selector[] = ['multiline', 'prop', 'shorthand']
 
 export let allModifiers: Modifier[] = ['shorthand', 'multiline']
+
+export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+  modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
+  selector: buildCustomGroupSelectorJsonSchema(allSelectors),
+  elementNamePattern: regexJsonSchema,
+}
