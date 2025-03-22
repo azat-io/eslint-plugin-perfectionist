@@ -102,16 +102,16 @@ export let jsonSchema: JSONSchema4 = {
           }),
         ],
       },
+      groupKind: {
+        description: '[DEPRECATED] Specifies top-level groups.',
+        enum: ['mixed', 'required-first', 'optional-first'],
+        type: 'string',
+      },
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {
           declarationMatchesPattern: regexJsonSchema,
         },
       }),
-      groupKind: {
-        enum: ['mixed', 'required-first', 'optional-first'],
-        description: 'Specifies top-level groups.',
-        type: 'string',
-      },
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,

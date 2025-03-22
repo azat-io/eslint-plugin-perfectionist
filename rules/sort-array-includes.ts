@@ -82,8 +82,8 @@ export let jsonSchema: JSONSchema4 = {
     properties: {
       ...commonJsonSchemas,
       groupKind: {
+        description: '[DEPRECATED] Specifies top-level groups.',
         enum: ['mixed', 'literals-first', 'spreads-first'],
-        description: 'Specifies top-level groups.',
         type: 'string',
       },
       customGroups: buildCustomGroupsArrayJsonSchema({

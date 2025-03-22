@@ -493,7 +493,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             },
           }),
           destructureOnly: {
-            description: 'Controls whether to sort only destructured objects.',
+            description:
+              '[DEPRECATED] Controls whether to sort only destructured objects.',
             type: 'boolean',
           },
           objectDeclarations: {
