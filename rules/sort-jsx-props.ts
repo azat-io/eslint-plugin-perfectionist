@@ -158,6 +158,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
               for (let customGroup of options.customGroups) {
                 if (
                   doesCustomGroupMatch({
+                    elementValue: attribute.value
+                      ? sourceCode.getText(attribute.value)
+                      : null,
                     elementName: name,
                     customGroup,
                     selectors,

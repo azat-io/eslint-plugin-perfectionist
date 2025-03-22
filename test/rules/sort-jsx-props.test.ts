@@ -686,6 +686,57 @@ describe(ruleName, () => {
         })
       }
 
+      for (let elementValuePattern of [
+        'HELLO',
+        ['noMatch', 'HELLO'],
+        { pattern: 'hello', flags: 'i' },
+        ['noMatch', { pattern: 'hello', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'valuesStartingWithHello',
+                    leftGroup: 'unknown',
+                    right: 'z',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedJSXPropsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'valuesStartingWithHello',
+                      elementValuePattern,
+                    },
+                  ],
+                  groups: ['valuesStartingWithHello', 'unknown'],
+                },
+              ],
+              output: dedent`
+                <Element
+                  z="HELLO_VALUE"
+                  a="a"
+                  b
+                />
+              `,
+              code: dedent`
+                <Element
+                  a="a"
+                  b
+                  z="HELLO_VALUE"
+                />
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
+
       ruleTester.run(
         `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
         rule,
