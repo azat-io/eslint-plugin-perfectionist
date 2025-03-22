@@ -36,6 +36,7 @@ export type Options = Partial<
 >[]
 
 export interface SingleCustomGroup {
+  elementValuePattern?: RegexOption
   elementNamePattern?: RegexOption
   modifiers?: Modifier[]
   selector?: Selector
@@ -92,5 +93,6 @@ export let allModifiers: Modifier[] = ['shorthand', 'multiline']
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
+  elementValuePattern: regexJsonSchema,
   elementNamePattern: regexJsonSchema,
 }
