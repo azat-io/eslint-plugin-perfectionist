@@ -9,9 +9,17 @@ import {
   buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
+  newlinesBetweenJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
@@ -23,7 +31,6 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -37,6 +44,8 @@ import { complete } from '../utils/complete'
 
 type MESSAGE_ID =
   | 'unexpectedNamedExportsGroupOrder'
+  | 'missedSpacingBetweenNamedExports'
+  | 'extraSpacingBetweenNamedExports'
   | 'unexpectedNamedExportsOrder'
 
 /**
@@ -49,6 +58,7 @@ let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   partitionByNewLine: false,
   partitionByComment: false,
+  newlinesBetween: 'ignore',
   type: 'alphabetical',
   ignoreAlias: false,
   groupKind: 'mixed',
@@ -75,6 +85,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         selectors: allSelectors,
         options,
       })
+      validateNewlinesAndPartitionConfiguration(options)
 
       let { sourceCode, id } = context
       let eslintDisabledLines = getEslintDisabledLines({
@@ -186,6 +197,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         reportAllErrors<MESSAGE_ID>({
           availableMessageIds: {
+            missedSpacingBetweenMembers: 'missedSpacingBetweenNamedExports',
+            extraSpacingBetweenMembers: 'extraSpacingBetweenNamedExports',
             unexpectedGroupOrder: 'unexpectedNamedExportsGroupOrder',
             unexpectedOrder: 'unexpectedNamedExportsOrder',
           },
@@ -217,6 +230,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
           groups: groupsJsonSchema,
         },
         additionalProperties: false,
@@ -225,14 +239,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
       uniqueItems: true,
       type: 'array',
     },
+    messages: {
+      missedSpacingBetweenNamedExports: MISSED_SPACING_ERROR,
+      extraSpacingBetweenNamedExports: EXTRA_SPACING_ERROR,
+      unexpectedNamedExportsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedNamedExportsOrder: ORDER_ERROR,
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-named-exports',
       description: 'Enforce sorted named exports.',
       recommended: true,
-    },
-    messages: {
-      unexpectedNamedExportsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedNamedExportsOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',

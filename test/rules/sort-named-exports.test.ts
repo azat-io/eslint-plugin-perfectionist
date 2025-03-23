@@ -1216,6 +1216,483 @@ describe(ruleName, () => {
         },
       )
     })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'y',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenNamedExports',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedNamedExportsOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'extraSpacingBetweenNamedExports',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                  ],
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                },
+              ],
+              code: dedent`
+                export {
+                    a,
+
+
+                   y,
+                  z,
+
+                      b,
+                }
+              `,
+              output: dedent`
+                export {
+                    a,
+                   b,
+                  y,
+                      z,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenNamedExports',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedNamedExportsOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'y',
+                  },
+                  messageId: 'missedSpacingBetweenNamedExports',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                    {
+                      elementNamePattern: 'b',
+                      groupName: 'b',
+                    },
+                  ],
+                  groups: ['a', 'unknown', 'b'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              output: dedent`
+                export {
+                    a,
+
+                   y,
+                  z,
+
+                      b,
+                }
+              `,
+              code: dedent`
+                export {
+                    a,
+
+
+                   z,
+                  y,
+                      b,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): handles "newlinesBetween" between consecutive groups`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'a',
+                      { newlinesBetween: 'always' },
+                      'b',
+                      { newlinesBetween: 'always' },
+                      'c',
+                      { newlinesBetween: 'never' },
+                      'd',
+                      { newlinesBetween: 'ignore' },
+                      'e',
+                    ],
+                    customGroups: [
+                      { elementNamePattern: 'a', groupName: 'a' },
+                      { elementNamePattern: 'b', groupName: 'b' },
+                      { elementNamePattern: 'c', groupName: 'c' },
+                      { elementNamePattern: 'd', groupName: 'd' },
+                      { elementNamePattern: 'e', groupName: 'e' },
+                    ],
+                    newlinesBetween: 'always',
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'missedSpacingBetweenNamedExports',
+                  },
+                  {
+                    data: {
+                      right: 'c',
+                      left: 'b',
+                    },
+                    messageId: 'extraSpacingBetweenNamedExports',
+                  },
+                  {
+                    data: {
+                      right: 'd',
+                      left: 'c',
+                    },
+                    messageId: 'extraSpacingBetweenNamedExports',
+                  },
+                ],
+                code: dedent`
+                    export {
+                    a,
+                    b,
+
+
+                    c,
+
+                    d,
+
+
+                    e,
+                  }
+                `,
+                output: dedent`
+                  export {
+                    a,
+
+                    b,
+
+                    c,
+                    d,
+
+
+                    e,
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
+          for (let [globalNewlinesBetween, groupNewlinesBetween] of [
+            ['always', 'never'] as const,
+            ['always', 'ignore'] as const,
+            ['never', 'always'] as const,
+            ['ignore', 'always'] as const,
+          ]) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        groups: [
+                          'a',
+                          'unusedGroup',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'b',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'b',
+                          left: 'a',
+                        },
+                        messageId: 'missedSpacingBetweenNamedExports',
+                      },
+                    ],
+                    output: dedent`
+                      export {
+                        a,
+
+                        b,
+                      }
+                    `,
+                    code: dedent`
+                      export {
+                        a,
+                        b,
+                      }
+                    `,
+                  },
+                ],
+                valid: [],
+              },
+            )
+          }
+
+          for (let globalNewlinesBetween of [
+            'always',
+            'ignore',
+            'never',
+          ] as const) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'a',
+                          { newlinesBetween: 'never' },
+                          'unusedGroup',
+                          { newlinesBetween: 'never' },
+                          'b',
+                          { newlinesBetween: 'always' },
+                          'c',
+                        ],
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { elementNamePattern: 'c', groupName: 'c' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'b',
+                          left: 'a',
+                        },
+                        messageId: 'extraSpacingBetweenNamedExports',
+                      },
+                    ],
+                    output: dedent`
+                      export {
+                        a,
+                        b,
+                      }
+                    `,
+                    code: dedent`
+                      export {
+                        a,
+
+                        b,
+                      }
+                    `,
+                  },
+                ],
+                valid: [],
+              },
+            )
+          }
+
+          for (let [globalNewlinesBetween, groupNewlinesBetween] of [
+            ['ignore', 'never'] as const,
+            ['never', 'ignore'] as const,
+          ]) {
+            ruleTester.run(
+              `${ruleName}(${type}): does not enforce a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              rule,
+              {
+                valid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        groups: [
+                          'a',
+                          'unusedGroup',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'b',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    code: dedent`
+                      export {
+                        a,
+
+                        b,
+                      }
+                    `,
+                  },
+                  {
+                    options: [
+                      {
+                        ...options,
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        groups: [
+                          'a',
+                          'unusedGroup',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'b',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    code: dedent`
+                      export {
+                        a,
+                        b,
+                      }
+                    `,
+                  },
+                ],
+                invalid: [],
+              },
+            )
+          }
+        })
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): handles newlines and comment after fixes`,
+        rule,
+        {
+          invalid: [
+            {
+              output: [
+                dedent`
+                  export {
+                    a, // Comment after
+                    b,
+
+                    c,
+                  }
+                `,
+                dedent`
+                  export {
+                    a, // Comment after
+
+                    b,
+                    c,
+                  }
+                `,
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: 'b|c',
+                      groupName: 'b|c',
+                    },
+                  ],
+                  groups: ['unknown', 'b|c'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unknown',
+                    leftGroup: 'b|c',
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedNamedExportsGroupOrder',
+                },
+              ],
+              code: dedent`
+                export {
+                  b,
+                  a, // Comment after
+
+                  c,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -1651,6 +2128,53 @@ describe(ruleName, () => {
         },
       ],
       invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces newlines between`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              newlinesBetween: 'always',
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'missedSpacingBetweenNamedExports',
+            },
+          ],
+          output: dedent`
+            export {
+                b,
+
+                a,
+            }
+          `,
+          code: dedent`
+            export {
+                b,
+                a,
+            }
+          `,
+        },
+      ],
+      valid: [],
     })
   })
 
