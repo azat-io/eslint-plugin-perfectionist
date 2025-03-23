@@ -29,11 +29,11 @@ import {
   singleCustomGroupJsonSchema,
   allSelectors,
 } from './sort-array-includes/types'
-import { doesCustomGroupMatch } from './sort-array-includes/does-custom-group-match'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -228,6 +228,7 @@ export let sortArray = <MessageIds extends string>({
           doesCustomGroupMatch({
             selectors: [selector],
             elementName: name,
+            modifiers: [],
             customGroup,
           })
         ) {
