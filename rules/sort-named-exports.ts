@@ -1,10 +1,7 @@
-import type { TSESTree } from '@typescript-eslint/types'
-
 import type {
-  PartitionByCommentOption,
-  CommonOptions,
-} from '../types/common-options'
-import type { SortingNode } from '../types/sorting-node'
+  SortNamedExportsSortingNode,
+  Options,
+} from './sort-named-exports/types'
 
 import {
   partitionByCommentJsonSchema,
@@ -23,22 +20,6 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
-
-type Options = [
-  Partial<
-    {
-      groupKind: 'values-first' | 'types-first' | 'mixed'
-      partitionByComment: PartitionByCommentOption
-      partitionByNewLine: boolean
-      ignoreAlias: boolean
-    } & CommonOptions
-  >,
-]
-
-interface SortNamedExportsSortingNode
-  extends SortingNode<TSESTree.ExportSpecifier> {
-  groupKind: 'value' | 'type'
-}
 
 type MESSAGE_ID = 'unexpectedNamedExportsOrder'
 
@@ -161,8 +142,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     },
   }),
   meta: {
-    schema: [
-      {
+    schema: {
+      items: {
         properties: {
           ...commonJsonSchemas,
           groupKind: {
@@ -180,7 +161,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         additionalProperties: false,
         type: 'object',
       },
-    ],
+      uniqueItems: true,
+      type: 'array',
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-named-exports',
       description: 'Enforce sorted named exports.',
