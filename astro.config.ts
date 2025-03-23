@@ -43,9 +43,9 @@ export default defineConfig({
     css: {
       lightningcss: {
         targets: browserslistToTargets(
-          browserslist(null, {
-            config: path.join(dirname, './.browserslistrc'),
-          }),
+          browserslist(
+            browserslist.loadConfig({ path: '.' }) ?? browserslist.defaults,
+          ),
         ),
       },
       transformer: 'lightningcss',
