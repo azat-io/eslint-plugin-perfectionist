@@ -180,8 +180,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         properties: {
           ...commonJsonSchemas,
           groupKind: {
+            description: '[DEPRECATED] Specifies top-level groups.',
             enum: ['mixed', 'values-first', 'types-first'],
-            description: 'Specifies top-level groups.',
             type: 'string',
           },
           ignoreAlias: {
