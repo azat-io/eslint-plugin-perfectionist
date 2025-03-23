@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
   PartitionByCommentOption,
+  NewlinesBetweenOption,
   CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
@@ -25,6 +26,7 @@ export type Options = Partial<
     groupKind: 'values-first' | 'types-first' | 'mixed'
     customGroups: CustomGroupsOption<SingleCustomGroup>
     partitionByComment: PartitionByCommentOption
+    newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
     ignoreAlias: boolean
