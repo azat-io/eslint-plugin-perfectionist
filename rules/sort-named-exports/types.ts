@@ -10,6 +10,9 @@ import type { SortingNode } from '../../types/sorting-node'
 
 export type Options = Partial<
   {
+    /**
+     * @deprecated for {@link `groups`}
+     */
     groupKind: 'values-first' | 'types-first' | 'mixed'
     partitionByComment: PartitionByCommentOption
     groups: GroupsOptions<Group>
