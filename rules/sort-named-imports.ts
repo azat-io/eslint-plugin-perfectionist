@@ -1,20 +1,30 @@
 import type {
   SortNamedImportsSortingNode,
+  Modifier,
+  Selector,
   Options,
 } from './sort-named-imports/types'
-import type { Modifier, Selector } from './sort-named-imports/types'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-named-imports/types'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
+import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -42,6 +52,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreAlias: false,
   groupKind: 'mixed',
+  customGroups: [],
   ignoreCase: true,
   locales: 'en-US',
   alphabet: '',
@@ -62,6 +73,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
+      validateGeneratedGroupsConfiguration({
+        modifiers: allModifiers,
+        selectors: allSelectors,
+        options,
+      })
 
       let { sourceCode, id } = context
       let eslintDisabledLines = getEslintDisabledLines({
@@ -100,6 +116,26 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         for (let predefinedGroup of predefinedGroups) {
           defineGroup(predefinedGroup)
+        }
+
+        for (let customGroup of options.customGroups) {
+          if (
+            doesCustomGroupMatch({
+              selectors: [selector],
+              elementName: name,
+              customGroup,
+              modifiers,
+            })
+          ) {
+            defineGroup(customGroup.groupName, true)
+            /**
+             * If the custom group is not referenced in the `groups` option, it
+             * will be ignored
+             */
+            if (getGroup() === customGroup.groupName) {
+              break
+            }
+          }
         }
 
         let sortingNode: SortNamedImportsSortingNode = {
@@ -154,7 +190,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ): SortNamedImportsSortingNode[] =>
           filteredGroupKindNodes.flatMap(groupedNodes =>
             sortNodesByGroups({
-              getOptionsByGroupNumber: () => ({ options }),
+              getOptionsByGroupNumber:
+                buildGetCustomGroupOverriddenOptionsFunction(options),
               ignoreEslintDisabledNodes,
               groups: options.groups,
               nodes: groupedNodes,
@@ -189,6 +226,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             description: 'Controls whether to ignore alias names.',
             type: 'boolean',
           },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           groups: groupsJsonSchema,
