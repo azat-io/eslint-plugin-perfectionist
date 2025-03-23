@@ -2,26 +2,37 @@ import type {
   SortNamedImportsSortingNode,
   Options,
 } from './sort-named-imports/types'
+import type { Modifier, Selector } from './sort-named-imports/types'
 
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   commonJsonSchemas,
+  groupsJsonSchema,
 } from '../utils/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
+import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
-import { ORDER_ERROR } from '../utils/report-errors'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 
-type MESSAGE_ID = 'unexpectedNamedImportsOrder'
+type MESSAGE_ID =
+  | 'unexpectedNamedImportsGroupOrder'
+  | 'unexpectedNamedImportsOrder'
+
+/**
+ * Cache computed groups by modifiers and selectors for performance
+ */
+let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
@@ -35,6 +46,7 @@ let defaultOptions: Required<Options[0]> = {
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
+  groups: [],
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
@@ -69,7 +81,27 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
         }
 
-        let lastSortingNode = formattedMembers.at(-1)?.at(-1)
+        let selector: Selector = 'import'
+        let modifiers: Modifier[] = []
+        if (
+          specifier.type === 'ImportSpecifier' &&
+          specifier.importKind === 'type'
+        ) {
+          modifiers.push('type')
+        } else {
+          modifiers.push('value')
+        }
+
+        let predefinedGroups = generatePredefinedGroups({
+          cache: cachedGroupsByModifiersAndSelectors,
+          selectors: [selector],
+          modifiers,
+        })
+        let group = computeGroup({
+          predefinedGroups,
+          options,
+        })
+
         let sortingNode: SortNamedImportsSortingNode = {
           groupKind:
             specifier.type === 'ImportSpecifier' &&
@@ -82,9 +114,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ),
           size: rangeToDiff(specifier, sourceCode),
           node: specifier,
+          group,
           name,
         }
 
+        let lastSortingNode = formattedMembers.at(-1)?.at(-1)
         if (
           shouldPartition({
             lastSortingNode,
@@ -119,15 +153,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ignoreEslintDisabledNodes: boolean,
         ): SortNamedImportsSortingNode[] =>
           filteredGroupKindNodes.flatMap(groupedNodes =>
-            sortNodes({
+            sortNodesByGroups({
+              getOptionsByGroupNumber: () => ({ options }),
               ignoreEslintDisabledNodes,
+              groups: options.groups,
               nodes: groupedNodes,
-              options,
             }),
           )
 
         reportAllErrors<MESSAGE_ID>({
           availableMessageIds: {
+            unexpectedGroupOrder: 'unexpectedNamedImportsGroupOrder',
             unexpectedOrder: 'unexpectedNamedImportsOrder',
           },
           sortNodesExcludingEslintDisabled,
@@ -155,6 +191,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
+          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
@@ -168,6 +205,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       recommended: true,
     },
     messages: {
+      unexpectedNamedImportsGroupOrder: GROUP_ORDER_ERROR,
       unexpectedNamedImportsOrder: ORDER_ERROR,
     },
     type: 'suggestion',
