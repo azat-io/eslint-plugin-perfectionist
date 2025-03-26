@@ -234,13 +234,29 @@ Use the [useConfigurationIf.tagMatchesPattern](#useconfigurationif) option along
 
 Allows you to specify names or patterns for JSX elements that should be ignored by this rule. This can be useful if you have specific components that you do not want to sort.
 
-You can specify their names or a regexp pattern to ignore, for example: `'^Table.+'` to ignore all object types whose names begin with the word Table.
+You can specify their names or a regexp pattern to ignore, for example: `'^Table.+'` to ignore all JSX elements whose names begin with the word Table.
 
 ### partitionByNewLine
 
 <sub>default: `false`</sub>
 
 When `true`, the rule will not sort members if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+
+### newlinesBetween
+
+<sub>default: `'ignore'`</sub>
+
+Specifies how new lines should be handled between groups.
+
+- `ignore` — Do not report errors related to new lines.
+- `always` — Enforce one new line between each group, and forbid new lines inside a group.
+- `never` — No new lines are allowed.
+
+You can also enforce the newline behavior between two specific groups through the `groups` options.
+
+See the [`groups`](#newlines-between-groups) option.
+
+This option is only applicable when `partitionByNewLine` is `false`.
 
 ### useConfigurationIf
 
@@ -255,7 +271,7 @@ When `true`, the rule will not sort members if there is an empty line between th
 </sub>
 <sub>default: `{}`</sub>
 
-Allows you to specify filters to match a particular options configuration for a given object type.
+Allows you to specify filters to match a particular options configuration for a given JSX element.
 
 The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
 
@@ -313,21 +329,26 @@ Example configuration:
 
 Allows you to specify a list of JSX props groups for sorting. Groups help organize props into categories, making your components more readable and maintainable.
 
-Predefined groups:
-
-- `'multiline'` — Props with multiline values.
-- `'shorthand'` — Shorthand props, which are used without a value, typically for boolean props.
-- `'unknown'` — Props that don’t fit into any group specified in the `groups` option.
-
-If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
-
-Each JSX prop will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
+Each element will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
 The order of items in the `groups` option determines how groups are ordered.
 
 Within a given group, members will be sorted according to the `type`, `order`, `ignoreCase`, etc. options.
 
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
+
+Predefined groups are characterized by a single selector and potentially multiple modifiers. You may enter modifiers in any order, but the selector must always come at the end.
+
+##### List of selectors
+
+The only selector possible for this rule is `prop`.
+
+#### Modifiers
+
+- `multiline`: Matches multiline props.
+- `shorthand`: Matches shorthand props, which are used without a value, typically for boolean props.
+
+Example: `shorthand-prop`.
 
 #### Newlines between groups
 
@@ -350,33 +371,114 @@ This feature is only applicable when `partitionByNewLine` is false.
 
 ### customGroups
 
+<Important title="Migrating from the old API">
+Support for the object-based `customGroups` option is deprecated.
+
+Migrating from the old to the current API is easy:
+
+Old API:
+```ts
+{
+  "key1": "value1",
+  "key2": "value2"
+}
+```
+
+Current API:
+```ts
+[
+  {
+    "groupName": "key1",
+    "elementNamePattern": "value1"
+  },
+  {
+    "groupName": "key2",
+    "elementNamePattern": "value2"
+  }
+]
+```
+</Important>
+
 <sub>
-  type: `{ [groupName: string]: string | string[] }`
+  type: `Array<CustomGroupDefinition | CustomGroupAnyOfDefinition>`
 </sub>
-<sub>default: `{}`</sub>
+<sub>default: `[]`</sub>
 
-You can define your own groups and use regexp patterns to match specific JSX attributes.
+You can define your own groups and use regexp patterns to match specific JSX prop.
 
-Each key of `customGroups` represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
-- `string` — A JSX prop's name matching the value will be marked as part of the group referenced by the key.
-- `string[]` — A JSX prop's name matching any of the values of the array will be marked as part of the group referenced by the key.
-The order of values in the array does not matter.
+A custom group definition may follow one of the two following interfaces:
 
-Custom group matching takes precedence over predefined group matching.
+```ts
+interface CustomGroupDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc'; sortBy?: 'name' | 'value' }
+  newlinesInside?: 'always' | 'never'
+  selector?: string
+  modifiers?: string[]
+  elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+  elementValuePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+}
+
+```
+A JSX prop will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+
+or:
+
+```ts
+interface CustomGroupAnyOfDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc'; sortBy?: 'name' | 'value' }
+  newlinesInside?: 'always' | 'never'
+  anyOf: Array<{
+      selector?: string
+      modifiers?: string[]
+      elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+      elementValuePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+  }>
+}
+```
+
+A JSX prop will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+
+#### Attributes
+
+- `groupName`: The group's name, which needs to be put in the `groups` option.
+- `selector`: Filter on the `selector` of the element.
+- `modifiers`: Filter on the `modifiers` of the element. (All the modifiers of the element must be present in that list)
+- `elementNamePattern`: If entered, will check that the name of the element matches the pattern entered.
+- `elementValuePattern`: If entered, will check that the value of the element matches the pattern entered.
+- `type`: Overrides the sort type for that custom group. `unsorted` will not sort the group.
+- `order`: Overrides the sort order for that custom group
+- `fallbackSort`: Overrides the fallbackSort option for that custom group
+- `newlinesInside`: Enforces a specific newline behavior between elements of the group.
+
+#### Match importance
+
+The `customGroups` list is ordered:
+The first custom group definition that matches an element will be used.
+
+Custom groups have a higher priority than any predefined group.
 
 #### Example
 
 ```js
  {
    groups: [
-     'multiline',
+     'multiline-prop',
      'unknown',
-     'shorthand',
+     'shorthand-prop',
 +    'callback',       // [!code ++]
    ],
-+  customGroups: {     // [!code ++]
-+    callback: '^on.+' // [!code ++]
-+  }                   // [!code ++]
++  customGroups: [     // [!code ++]
++    {                 // [!code ++]
++      groupName: 'callback',      // [!code ++]
++      elementNamePattern: '^on.+' // [!code ++]
++    }                 // [!code ++]
++  ]                   // [!code ++]
  }
 ```
 

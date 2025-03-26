@@ -549,6 +549,473 @@ describe(ruleName, () => {
       },
     )
 
+    describe(`${ruleName}: custom groups`, () => {
+      ruleTester.run(`${ruleName}: filters on selector`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'shorthandElements',
+                  leftGroup: 'unknown',
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'shorthandElements',
+                    selector: 'shorthand',
+                  },
+                ],
+                groups: ['shorthandElements', 'unknown'],
+              },
+            ],
+            output: dedent`
+              <Element
+                a
+                b="b"
+              />
+            `,
+            code: dedent`
+              <Element
+                b="b"
+                a
+              />
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(`${ruleName}: filters on modifier`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'shorthandElements',
+                  leftGroup: 'unknown',
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'shorthandElements',
+                    modifiers: ['shorthand'],
+                  },
+                ],
+                groups: ['shorthandElements', 'unknown'],
+              },
+            ],
+            output: dedent`
+              <Element
+                a
+                b="b"
+              />
+            `,
+            code: dedent`
+              <Element
+                b="b"
+                a
+              />
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      for (let elementNamePattern of [
+        'hello',
+        ['noMatch', 'hello'],
+        { pattern: 'HELLO', flags: 'i' },
+        ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'shorthandsStartingWithHello',
+                      modifiers: ['shorthand'],
+                      elementNamePattern,
+                    },
+                  ],
+                  groups: ['shorthandsStartingWithHello', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'shorthandsStartingWithHello',
+                    right: 'helloShorthand',
+                    leftGroup: 'unknown',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedJSXPropsGroupOrder',
+                },
+              ],
+              output: dedent`
+                <Element
+                  helloShorthand
+                  a="a"
+                  b="b"
+                />
+              `,
+              code: dedent`
+                <Element
+                  a="a"
+                  b="b"
+                  helloShorthand
+                />
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
+
+      for (let elementValuePattern of [
+        'HELLO',
+        ['noMatch', 'HELLO'],
+        { pattern: 'hello', flags: 'i' },
+        ['noMatch', { pattern: 'hello', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementValuePattern`, rule, {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'valuesStartingWithHello',
+                    leftGroup: 'unknown',
+                    right: 'z',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedJSXPropsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'valuesStartingWithHello',
+                      elementValuePattern,
+                    },
+                  ],
+                  groups: ['valuesStartingWithHello', 'unknown'],
+                },
+              ],
+              output: dedent`
+                <Element
+                  z="HELLO_VALUE"
+                  a="a"
+                  b
+                />
+              `,
+              code: dedent`
+                <Element
+                  a="a"
+                  b
+                  z="HELLO_VALUE"
+                />
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedJSXPropsOrder',
+                },
+                {
+                  data: {
+                    right: 'ccc',
+                    left: 'bb',
+                  },
+                  messageId: 'unexpectedJSXPropsOrder',
+                },
+                {
+                  data: {
+                    right: 'dddd',
+                    left: 'ccc',
+                  },
+                  messageId: 'unexpectedJSXPropsOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'reversedShorthandsByLineLength',
+                    leftGroup: 'unknown',
+                    right: 'eee',
+                    left: 'm',
+                  },
+                  messageId: 'unexpectedJSXPropsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'reversedShorthandsByLineLength',
+                      modifiers: ['shorthand'],
+                      type: 'line-length',
+                      order: 'desc',
+                    },
+                  ],
+                  groups: ['reversedShorthandsByLineLength', 'unknown'],
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                <Element
+                  dddd
+                  ccc
+                  eee
+                  bb
+                  ff
+                  a
+                  g
+                  m="m"
+                  o="o"
+                  p="p"
+                />
+              `,
+              code: dedent`
+                <Element
+                  a
+                  bb
+                  ccc
+                  dddd
+                  m="m"
+                  eee
+                  ff
+                  g
+                  o="o"
+                  p="p"
+                />
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'fallbackSort'`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      fallbackSort: {
+                        type: 'alphabetical',
+                        order: 'asc',
+                      },
+                      elementNamePattern: '^foo',
+                      type: 'line-length',
+                      groupName: 'foo',
+                      order: 'desc',
+                    },
+                  ],
+                  type: 'alphabetical',
+                  groups: ['foo'],
+                  order: 'asc',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'fooBar',
+                    left: 'fooZar',
+                  },
+                  messageId: 'unexpectedJSXPropsOrder',
+                },
+              ],
+              output: dedent`
+                <Element
+                  fooBar
+                  fooZar
+                />
+              `,
+              code: dedent`
+                <Element
+                  fooZar
+                  fooBar
+                />
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: does not sort custom groups with 'unsorted' type`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'unsortedShorthands',
+                      modifiers: ['shorthand'],
+                      type: 'unsorted',
+                    },
+                  ],
+                  groups: ['unsortedShorthands', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unsortedShorthands',
+                    leftGroup: 'unknown',
+                    right: 'c',
+                    left: 'm',
+                  },
+                  messageId: 'unexpectedJSXPropsGroupOrder',
+                },
+              ],
+              output: dedent`
+                <Element
+                  b
+                  a
+                  d
+                  e
+                  c
+                  m="m"
+                />
+              `,
+              code: dedent`
+                <Element
+                  b
+                  a
+                  d
+                  e
+                  m="m"
+                  c
+                />
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    anyOf: [
+                      {
+                        elementNamePattern: 'foo|Foo',
+                        modifiers: ['shorthand'],
+                      },
+                      {
+                        elementNamePattern: 'foo|Foo',
+                      },
+                    ],
+                    groupName: 'elementsIncludingFoo',
+                  },
+                ],
+                groups: ['elementsIncludingFoo', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'elementsIncludingFoo',
+                  leftGroup: 'unknown',
+                  right: 'cFoo',
+                  left: 'a',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+            ],
+            output: dedent`
+              <Element
+                cFoo
+                foo="foo"
+                a
+              />
+            `,
+            code: dedent`
+              <Element
+                a
+                cFoo
+                foo="foo"
+              />
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: allows to use regex for element names in custom groups`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: '^(?!.*Foo).*$',
+                      groupName: 'elementsWithoutFoo',
+                    },
+                  ],
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                  type: 'alphabetical',
+                },
+              ],
+              code: dedent`
+                <Element
+                  iHaveFooInMyName
+                  meTooIHaveFoo
+                  a
+                  b
+                />
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
     ruleTester.run(
       `${ruleName}(${type}): allows to remove special characters`,
       rule,

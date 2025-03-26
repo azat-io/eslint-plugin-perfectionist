@@ -294,6 +294,7 @@ interface CustomGroupDefinition {
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  newlinesInside?: 'always' | 'never'
   selector?: string
   elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
 }
@@ -309,6 +310,7 @@ interface CustomGroupAnyOfDefinition {
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  newlinesInside?: 'always' | 'never'
   anyOf: Array<{
       selector?: string
       elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
@@ -326,6 +328,7 @@ An export will match a `CustomGroupAnyOfDefinition` group if it matches all the 
 - `type`: Overrides the sort type for that custom group. `unsorted` will not sort the group.
 - `order`: Overrides the sort order for that custom group
 - `fallbackSort`: Overrides the fallbackSort option for that custom group
+- `newlinesInside`: Enforces a specific newline behavior between elements of the group.
 
 #### Match importance
 
