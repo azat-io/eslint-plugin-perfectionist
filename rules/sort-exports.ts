@@ -22,9 +22,9 @@ import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custo
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
-import { doesCustomGroupMatch } from './sort-exports/does-custom-group-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { singleCustomGroupJsonSchema } from './sort-exports/types'
 import { allModifiers, allSelectors } from './sort-exports/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -119,6 +119,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       for (let customGroup of options.customGroups) {
         if (
           doesCustomGroupMatch({
+            selectors: [selector],
             elementName: name,
             customGroup,
             modifiers,

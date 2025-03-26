@@ -27,8 +27,8 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { getCustomGroupOverriddenOptions } from '../utils/get-custom-groups-compare-options'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { doesCustomGroupMatch } from './sort-enums/does-custom-group-match'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { singleCustomGroupJsonSchema } from './sort-enums/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -153,6 +153,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
               doesCustomGroupMatch({
                 elementValue: sourceCode.getText(member.initializer),
                 elementName: name,
+                selectors: [],
+                modifiers: [],
                 customGroup,
               })
             ) {

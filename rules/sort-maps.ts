@@ -24,8 +24,8 @@ import { validateGeneratedGroupsConfiguration } from '../utils/validate-generate
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getMatchingContextOptions } from '../utils/get-matching-context-options'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { doesCustomGroupMatch } from './sort-maps/does-custom-group-match'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { singleCustomGroupJsonSchema } from './sort-maps/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -129,6 +129,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             if (
               doesCustomGroupMatch({
                 elementName: name,
+                selectors: [],
+                modifiers: [],
                 customGroup,
               })
             ) {
