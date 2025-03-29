@@ -90,5 +90,21 @@ describe('computeGroup', () => {
         }),
       ).toBe('group2')
     })
+
+    it('should return the first matching custom group encountered that exists in `options.groups`', () => {
+      expect(
+        computeGroup({
+          options: {
+            customGroups: {
+              group1: 'name',
+              group2: 'name',
+            },
+            groups: ['group2', 'group1'],
+          },
+          predefinedGroups: [],
+          name: 'name',
+        }),
+      ).toBe('group1')
+    })
   })
 })

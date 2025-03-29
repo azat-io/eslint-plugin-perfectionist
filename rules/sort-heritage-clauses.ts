@@ -21,10 +21,10 @@ import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 
 export type Options = [
@@ -121,9 +121,11 @@ let sortHeritageClauses = (
   let nodes: SortingNode[] = heritageClauses!.map(heritageClause => {
     let name = getHeritageClauseExpressionName(heritageClause.expression)
 
-    let { setCustomGroups, getGroup } = useGroups(options)
-    setCustomGroups(options.customGroups, name)
-
+    let group = computeGroup({
+      predefinedGroups: [],
+      options,
+      name,
+    })
     return {
       isEslintDisabled: isNodeEslintDisabled(
         heritageClause,
@@ -131,7 +133,7 @@ let sortHeritageClauses = (
       ),
       size: rangeToDiff(heritageClause, sourceCode),
       node: heritageClause,
-      group: getGroup(),
+      group,
       name,
     }
   })

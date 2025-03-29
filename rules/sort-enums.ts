@@ -35,10 +35,10 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { getEnumMembers } from '../utils/get-enum-members'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 
 type MESSAGE_ID =
@@ -147,27 +147,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
               ? `${member.id.value}`
               : sourceCode.getText(member.id)
 
-          let { defineGroup, getGroup } = useGroups(options)
-          for (let customGroup of options.customGroups) {
-            if (
+          let group = computeGroup({
+            customGroupMatcher: customGroup =>
               doesCustomGroupMatch({
                 elementValue: sourceCode.getText(member.initializer),
                 elementName: name,
                 selectors: [],
                 modifiers: [],
                 customGroup,
-              })
-            ) {
-              defineGroup(customGroup.groupName, true)
-              /**
-               * If the custom group is not referenced in the `groups` option, it
-               * will be ignored
-               */
-              if (getGroup() === customGroup.groupName) {
-                break
-              }
-            }
-          }
+              }),
+            predefinedGroups: [],
+            options,
+          })
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
           let sortingNode: SortEnumsSortingNode = {
@@ -182,9 +173,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 : null,
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
             size: rangeToDiff(member, sourceCode),
-            group: getGroup(),
             node: member,
             dependencies,
+            group,
             name,
           }
 

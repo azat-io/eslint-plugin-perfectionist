@@ -38,10 +38,10 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 
 /**
@@ -201,7 +201,6 @@ export let sortArray = <MessageIds extends string>({
         return accumulator
       }
 
-      let { defineGroup, getGroup } = useGroups(options)
       let groupKind: 'literal' | 'spread'
       let selector: Selector
       if (element.type === 'SpreadElement') {
@@ -212,43 +211,30 @@ export let sortArray = <MessageIds extends string>({
         selector = 'literal'
       }
 
+      let name = getNodeName({ sourceCode, element })
       let predefinedGroups = generatePredefinedGroups({
         cache: cachedGroupsByModifiersAndSelectors,
         selectors: [selector],
         modifiers: [],
       })
-
-      for (let predefinedGroup of predefinedGroups) {
-        defineGroup(predefinedGroup)
-      }
-
-      let name = getNodeName({ sourceCode, element })
-      for (let customGroup of options.customGroups) {
-        if (
+      let group = computeGroup({
+        customGroupMatcher: customGroup =>
           doesCustomGroupMatch({
             selectors: [selector],
             elementName: name,
             modifiers: [],
             customGroup,
-          })
-        ) {
-          defineGroup(customGroup.groupName, true)
-          /**
-           * If the custom group is not referenced in the `groups` option, it
-           * will be ignored
-           */
-          if (getGroup() === customGroup.groupName) {
-            break
-          }
-        }
-      }
+          }),
+        predefinedGroups,
+        options,
+      })
 
       let sortingNode: SortArrayIncludesSortingNode = {
         isEslintDisabled: isNodeEslintDisabled(element, eslintDisabledLines),
         size: rangeToDiff(element, sourceCode),
-        group: getGroup(),
         node: element,
         groupKind,
+        group,
         name,
       }
 

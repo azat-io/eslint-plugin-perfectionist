@@ -55,7 +55,10 @@ export let computeGroup = <SingleCustomGroup>({
     } else if (name) {
       for (let [key, pattern] of Object.entries(options.customGroups)) {
         if (matches(name, pattern)) {
-          defineGroup(key)
+          let groupDefined = defineGroup(key)
+          if (groupDefined) {
+            break
+          }
         }
       }
     }
