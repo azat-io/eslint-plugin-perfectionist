@@ -48,10 +48,10 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { sortByJsonSchema } from './sort-object-types/types'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
@@ -234,8 +234,6 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       let lastGroup = accumulator.at(-1)
       let lastSortingNode = lastGroup?.at(-1)
 
-      let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
-
       let selectors: Selector[] = []
       let modifiers: Modifier[] = []
 
@@ -268,16 +266,6 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         modifiers.push('required')
       }
 
-      let predefinedGroups = generatePredefinedGroups({
-        cache: cachedGroupsByModifiersAndSelectors,
-        selectors,
-        modifiers,
-      })
-
-      for (let predefinedGroup of predefinedGroups) {
-        defineGroup(predefinedGroup)
-      }
-
       let name = getNodeName({ typeElement, sourceCode })
       let value: string | null = null
       if (
@@ -287,32 +275,24 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         value = sourceCode.getText(typeElement.typeAnnotation.typeAnnotation)
       }
 
-      if (Array.isArray(options.customGroups)) {
-        for (let customGroup of options.customGroups) {
-          if (
-            doesCustomGroupMatch({
-              elementValue: value,
-              elementName: name,
-              customGroup,
-              selectors,
-              modifiers,
-            })
-          ) {
-            defineGroup(customGroup.groupName, true)
-            /**
-             * If the custom group is not referenced in the `groups` option, it
-             * will be ignored
-             */
-            if (getGroup() === customGroup.groupName) {
-              break
-            }
-          }
-        }
-      } else {
-        setCustomGroups(options.customGroups, name, {
-          override: true,
-        })
-      }
+      let predefinedGroups = generatePredefinedGroups({
+        cache: cachedGroupsByModifiersAndSelectors,
+        selectors,
+        modifiers,
+      })
+      let group = computeGroup({
+        customGroupMatcher: customGroup =>
+          doesCustomGroupMatch({
+            elementValue: value,
+            elementName: name,
+            customGroup,
+            selectors,
+            modifiers,
+          }),
+        predefinedGroups,
+        options,
+        name,
+      })
 
       let sortingNode: SortObjectTypesSortingNode = {
         isEslintDisabled: isNodeEslintDisabled(
@@ -322,8 +302,8 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         groupKind: isMemberOptional(typeElement) ? 'optional' : 'required',
         size: rangeToDiff(typeElement, sourceCode),
         addSafetySemicolonWhenInline: true,
-        group: getGroup(),
         node: typeElement,
+        group,
         value,
         name,
       }
