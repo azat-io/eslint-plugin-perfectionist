@@ -35,10 +35,10 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
@@ -130,8 +130,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
             let name = getNodeName({ attribute })
 
-            let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
-
             let selectors: Selector[] = []
             let modifiers: Modifier[] = []
 
@@ -150,38 +148,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
               selectors,
               modifiers,
             })
-            for (let predefinedGroup of predefinedGroups) {
-              defineGroup(predefinedGroup)
-            }
-
-            if (Array.isArray(options.customGroups)) {
-              for (let customGroup of options.customGroups) {
-                if (
-                  doesCustomGroupMatch({
-                    elementValue: attribute.value
-                      ? sourceCode.getText(attribute.value)
-                      : null,
-                    elementName: name,
-                    customGroup,
-                    selectors,
-                    modifiers,
-                  })
-                ) {
-                  defineGroup(customGroup.groupName, true)
-                  /**
-                   * If the custom group is not referenced in the `groups` option, it
-                   * will be ignored
-                   */
-                  if (getGroup() === customGroup.groupName) {
-                    break
-                  }
-                }
-              }
-            } else {
-              setCustomGroups(options.customGroups, name, {
-                override: true,
-              })
-            }
+            let group = computeGroup({
+              customGroupMatcher: customGroup =>
+                doesCustomGroupMatch({
+                  elementValue: attribute.value
+                    ? sourceCode.getText(attribute.value)
+                    : null,
+                  elementName: name,
+                  customGroup,
+                  selectors,
+                  modifiers,
+                }),
+              predefinedGroups,
+              options,
+              name,
+            })
 
             let sortingNode: SortingNode = {
               isEslintDisabled: isNodeEslintDisabled(
@@ -189,8 +170,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 eslintDisabledLines,
               ),
               size: rangeToDiff(attribute, sourceCode),
-              group: getGroup(),
               node: attribute,
+              group,
               name,
             }
 
