@@ -79,17 +79,25 @@ export let getNewlinesBetweenOption = ({
         return groupBetween.newlinesBetween
       }
     } else {
-      if (globalNewlinesBetweenOption === 'always') {
+      let relevantGroups = options.groups.slice(
+        nodeGroupNumber,
+        nextNodeGroupNumber + 1,
+      )
+      let groupsWithAllNewlinesBetween = buildGroupsWithAllNewlinesBetween(
+        relevantGroups,
+        globalNewlinesBetweenOption,
+      )
+      let newlinesBetweenOptions = new Set(
+        groupsWithAllNewlinesBetween
+          .filter(isNewlinesBetweenOption)
+          .map(group => group.newlinesBetween),
+      )
+
+      if (newlinesBetweenOptions.has('always')) {
         return 'always'
       }
-      for (let i = nodeGroupNumber + 2; i < nextNodeGroupNumber; i++) {
-        let groupBetween = options.groups[i]!
-        if (
-          isNewlinesBetweenOption(groupBetween) &&
-          groupBetween.newlinesBetween !== 'never'
-        ) {
-          return groupBetween.newlinesBetween
-        }
+      if (newlinesBetweenOptions.has('ignore')) {
+        return 'ignore'
       }
     }
   }
@@ -113,4 +121,24 @@ let getGlobalNewlinesBetweenOption = ({
     return 'never'
   }
   return nodeGroupNumber === nextNodeGroupNumber ? 'never' : 'always'
+}
+
+let buildGroupsWithAllNewlinesBetween = (
+  groups: GroupsOptions<string>,
+  globalNewlinesBetweenOption: NewlinesBetweenOption,
+): GroupsOptions<string> => {
+  let returnValue: GroupsOptions<string> = []
+  for (let i = 0; i < groups.length; i++) {
+    let group = groups[i]!
+    if (isNewlinesBetweenOption(group)) {
+      returnValue.push(group)
+    } else {
+      let previousGroup = groups[i - 1]
+      if (previousGroup && !isNewlinesBetweenOption(previousGroup)) {
+        returnValue.push({ newlinesBetween: globalNewlinesBetweenOption })
+      }
+      returnValue.push(group)
+    }
+  }
+  return returnValue
 }
