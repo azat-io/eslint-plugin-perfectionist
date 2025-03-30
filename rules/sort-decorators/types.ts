@@ -22,6 +22,7 @@ export type Options = Partial<
     partitionByComment: PartitionByCommentOption
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
+    partitionByNewLine: boolean
     sortOnParameters: boolean
     sortOnProperties: boolean
     sortOnAccessors: boolean
