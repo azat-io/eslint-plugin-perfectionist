@@ -2,12 +2,9 @@ import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
-  DeprecatedCustomGroupsOption,
-  PartitionByCommentOption,
-  CommonOptions,
-  GroupsOptions,
-} from '../types/common-options'
-import type { SortingNode } from '../types/sorting-node'
+  SortDecoratorsSortingNode,
+  Options,
+} from './sort-decorators/types'
 
 import {
   deprecatedCustomGroupsJsonSchema,
@@ -32,26 +29,7 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-export type Options = [
-  Partial<
-    {
-      partitionByComment: PartitionByCommentOption
-      customGroups: DeprecatedCustomGroupsOption
-      groups: GroupsOptions<Group>
-      sortOnParameters: boolean
-      sortOnProperties: boolean
-      sortOnAccessors: boolean
-      sortOnMethods: boolean
-      sortOnClasses: boolean
-    } & CommonOptions
-  >,
-]
-
 type MessageId = 'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
-
-type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
-
-type Group = 'unknown' | string
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
@@ -131,8 +109,8 @@ export default createEslintRule<Options, MessageId>({
     }
   },
   meta: {
-    schema: [
-      {
+    schema: {
+      items: {
         properties: {
           ...commonJsonSchemas,
           sortOnParameters: {
@@ -167,7 +145,9 @@ export default createEslintRule<Options, MessageId>({
         additionalProperties: false,
         type: 'object',
       },
-    ],
+      uniqueItems: true,
+      type: 'array',
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-decorators',
       description: 'Enforce sorted decorators.',
