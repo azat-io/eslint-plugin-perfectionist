@@ -186,8 +186,9 @@ describe('get-newlines-between-option', () => {
       })
 
       describe('non-adjacent groups', () => {
-        it('should return `always` if the global option is `always`', () => {
-          for (let newlinesBetween of ['always', 'ignore', 'never'] as const) {
+        it.each(['always', 'ignore', 'never'] as const)(
+          'should return `always` if the global option is `always`',
+          newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
                 buildParameters({
@@ -201,8 +202,8 @@ describe('get-newlines-between-option', () => {
                 }),
               ),
             ).toBe('always')
-          }
-        })
+          },
+        )
 
         it('should return `always` if `always` exists between the groups', () => {
           expect(
@@ -238,8 +239,9 @@ describe('get-newlines-between-option', () => {
           ).toBe('ignore')
         })
 
-        it('should return the global option if no `ignore` or `always` exist', () => {
-          for (let newlinesBetween of ['always', 'ignore', 'never'] as const) {
+        it.each(['always', 'ignore', 'never'] as const)(
+          'should return the global option (`%s`) if no `ignore` or `always` exist',
+          newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
                 buildParameters({
@@ -255,8 +257,8 @@ describe('get-newlines-between-option', () => {
                 }),
               ),
             ).toBe(newlinesBetween)
-          }
-        })
+          },
+        )
       })
     })
   })
