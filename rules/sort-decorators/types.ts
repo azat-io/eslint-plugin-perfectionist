@@ -4,6 +4,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type {
   DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
+  NewlinesBetweenOption,
   CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
@@ -19,6 +20,7 @@ export type Options = Partial<
       | CustomGroupsOption<SingleCustomGroup>
       | DeprecatedCustomGroupsOption
     partitionByComment: PartitionByCommentOption
+    newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
     sortOnParameters: boolean
     sortOnProperties: boolean

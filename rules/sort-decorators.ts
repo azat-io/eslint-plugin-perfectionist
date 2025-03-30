@@ -10,15 +10,21 @@ import {
   buildCustomGroupsArrayJsonSchema,
   deprecatedCustomGroupsJsonSchema,
   partitionByCommentJsonSchema,
+  newlinesBetweenJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { singleCustomGroupJsonSchema } from './sort-decorators/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -33,12 +39,17 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-type MessageId = 'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
+type MessageId =
+  | 'unexpectedDecoratorsGroupOrder'
+  | 'missedSpacingBetweenDecorators'
+  | 'extraSpacingBetweenDecorators'
+  | 'unexpectedDecoratorsOrder'
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByComment: false,
+  newlinesBetween: 'ignore',
   sortOnProperties: true,
   sortOnParameters: true,
   sortOnAccessors: true,
@@ -91,6 +102,7 @@ export default createEslintRule<Options, MessageId>({
             type: 'boolean',
           },
           partitionByComment: partitionByCommentJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
           groups: groupsJsonSchema,
         },
         additionalProperties: false,
@@ -99,14 +111,16 @@ export default createEslintRule<Options, MessageId>({
       uniqueItems: true,
       type: 'array',
     },
+    messages: {
+      missedSpacingBetweenDecorators: MISSED_SPACING_ERROR,
+      extraSpacingBetweenDecorators: EXTRA_SPACING_ERROR,
+      unexpectedDecoratorsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedDecoratorsOrder: ORDER_ERROR,
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-decorators',
       description: 'Enforce sorted decorators.',
       recommended: true,
-    },
-    messages: {
-      unexpectedDecoratorsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedDecoratorsOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',
@@ -254,6 +268,8 @@ function sortDecorators(
 
   reportAllErrors<MessageId>({
     availableMessageIds: {
+      missedSpacingBetweenMembers: 'missedSpacingBetweenDecorators',
+      extraSpacingBetweenMembers: 'extraSpacingBetweenDecorators',
       unexpectedGroupOrder: 'unexpectedDecoratorsGroupOrder',
       unexpectedOrder: 'unexpectedDecoratorsOrder',
     },
