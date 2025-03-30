@@ -274,6 +274,27 @@ describe('get-newlines-between-option', () => {
         )
 
         it.each(['always', 'ignore', 'never'] as const)(
+          'should return `never` if there are only `never` between all groups and global option is `%s`',
+          newlinesBetween => {
+            expect(
+              getNewlinesBetweenOption(
+                buildParameters({
+                  groups: [
+                    'group1',
+                    { newlinesBetween: 'never' },
+                    'someOtherGroup',
+                    { newlinesBetween: 'never' },
+                    'group2',
+                    'someOtherGroup2',
+                  ],
+                  newlinesBetween,
+                }),
+              ),
+            ).toBe('never')
+          },
+        )
+
+        it.each(['always', 'ignore', 'never'] as const)(
           'should return the global option (`%s`) if no `ignore` or `always` exist',
           newlinesBetween => {
             expect(

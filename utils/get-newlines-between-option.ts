@@ -99,6 +99,9 @@ export let getNewlinesBetweenOption = ({
       if (newlinesBetweenOptions.has('ignore')) {
         return 'ignore'
       }
+      if (newlinesBetweenOptions.has('never')) {
+        return 'never'
+      }
     }
   }
 
