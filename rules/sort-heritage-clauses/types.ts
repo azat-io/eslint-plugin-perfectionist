@@ -18,6 +18,7 @@ export type Options = Partial<
       | DeprecatedCustomGroupsOption
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
+    partitionByNewLine: boolean
   } & CommonOptions
 >[]
 
