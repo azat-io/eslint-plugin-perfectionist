@@ -1139,6 +1139,55 @@ describe('sort-heritage-clauses', () => {
         })
       },
     )
+
+    it('sorts within newline-separated partitions', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'd',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'e',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+        ],
+        output: dedent`
+          class Class implements
+            a,
+            d,
+
+            c,
+
+            b,
+            e
+          {}
+        `,
+        code: dedent`
+          class Class implements
+            d,
+            a,
+
+            c,
+
+            e,
+            b
+          {}
+        `,
+        options: [
+          {
+            partitionByNewLine: true,
+            type: 'alphabetical',
+          },
+        ],
+      })
+    })
   })
 
   describe('natural', () => {

@@ -145,6 +145,12 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
+### partitionByNewLine
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort the heritage clauses if there is an empty line between them.
+
 ### newlinesBetween
 
 <sub>type: `number | 'ignore'`</sub>
@@ -337,6 +343,7 @@ interface Interface extends WithId, Logged, StartupService {
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
+                  partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   groups: [],
                   customGroups: [],
@@ -365,6 +372,7 @@ interface Interface extends WithId, Logged, StartupService {
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
+                partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 groups: [],
                 customGroups: [],
