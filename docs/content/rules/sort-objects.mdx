@@ -36,7 +36,7 @@ If you use the [`sort-keys`](https://eslint.org/docs/latest/rules/sort-keys) rul
       date: new Date('2023-09-15'),
       description: 'Annual conference discussing the latest in technology.',
       location: {
-        address: '123 Tech Street'
+        address: '123 Tech Street',
         city: 'San Francisco',
         country: 'USA',
         postalCode: '94103',
@@ -46,22 +46,22 @@ If you use the [`sort-keys`](https://eslint.org/docs/latest/rules/sort-keys) rul
       organizer: {
         email: 'charlie.brown@protonmail.com',
         name: 'Charlie Brown',
-        phone: '555-1234'
+        phone: '555-1234',
       },
       schedule: [
         {
           activity: 'Registration',
-          speaker: null
+          speaker: null,
           time: '09:00 AM',
         },
         {
           activity: 'Opening Keynote',
-          speaker: 'Jane Doe'
+          speaker: 'Jane Doe',
           time: '10:00 AM',
         },
         {
           activity: 'Tech Trends 2023',
-          speaker: 'Alice Johnson'
+          speaker: 'Alice Johnson',
           time: '11:00 AM',
         }
       ],
@@ -75,21 +75,21 @@ If you use the [`sort-keys`](https://eslint.org/docs/latest/rules/sort-keys) rul
         {
           activity: 'Registration',
           time: '09:00 AM',
-          speaker: null
+          speaker: null,
         },
         {
           activity: 'Opening Keynote',
-          speaker: 'Jane Doe'
+          speaker: 'Jane Doe',
           time: '10:00 AM',
         },
         {
           activity: 'Tech Trends 2023',
-          speaker: 'Alice Johnson'
+          speaker: 'Alice Johnson',
           time: '11:00 AM',
         }
       ],
       location: {
-        address: '123 Tech Street'
+        address: '123 Tech Street',
         city: 'San Francisco',
         venue: 'Tech Center',
         postalCode: '94103',
@@ -99,7 +99,7 @@ If you use the [`sort-keys`](https://eslint.org/docs/latest/rules/sort-keys) rul
       organizer: {
         email: 'charlie.brown@protonmail.com',
         name: 'Charlie Brown',
-        phone: '555-1234'
+        phone: '555-1234',
       },
       description: 'Annual conference discussing the latest in technology.',
       title: 'Tech Conference 2023',
@@ -112,30 +112,30 @@ If you use the [`sort-keys`](https://eslint.org/docs/latest/rules/sort-keys) rul
       description: 'Annual conference discussing the latest in technology.',
       organizer: {
         email: 'charlie.brown@protonmail.com',
-        phone: '555-1234'
+        phone: '555-1234',
         name: 'Charlie Brown',
       },
       title: 'Tech Conference 2023',
       schedule: [
         {
-          speaker: null
+          speaker: null,
           time: '09:00 AM',
           activity: 'Registration',
         },
         {
-          speaker: 'Jane Doe'
+          speaker: 'Jane Doe',
           time: '10:00 AM',
           activity: 'Opening Keynote',
         },
         {
           activity: 'Tech Trends 2023',
           time: '11:00 AM',
-          speaker: 'Alice Johnson'
+          speaker: 'Alice Johnson',
         }
       ],
       location: {
         state: 'CA',
-        address: '123 Tech Street'
+        address: '123 Tech Street',
         city: 'San Francisco',
         postalCode: '94103',
         country: 'USA',
@@ -194,7 +194,7 @@ Example: enforce alphabetical sort between two elements with the same length.
 ```ts
 {
   type: 'line-length',
-  order: 'desc'
+  order: 'desc',
   fallbackSort: { type: 'alphabetical', order: 'asc' }
 }
 ```
