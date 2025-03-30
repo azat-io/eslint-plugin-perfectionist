@@ -1484,33 +1484,12 @@ describe(ruleName, () => {
     )
 
     ruleTester.run(
-      `${ruleName}(${type}): detects circular dependencies`,
+      `${ruleName}(${type}): detects and ignores circular dependencies`,
       rule,
       {
         invalid: [
           {
-            errors: [
-              {
-                messageId: 'unexpectedVariableDeclarationsOrder',
-                data: { right: 'd', left: 'c' },
-              },
-              {
-                data: {
-                  nodeDependentOnRight: 'b',
-                  right: 'f',
-                },
-                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-              },
-            ],
             output: dedent`
-              const a,
-                    d = b + 1,
-                    f = d + 1,
-                    b = f + 1,
-                    c,
-                    e
-            `,
-            code: dedent`
               const a,
                     b = f + 1,
                     c,
@@ -1518,6 +1497,20 @@ describe(ruleName, () => {
                     e,
                     f = d + 1
             `,
+            code: dedent`
+              const a,
+                    c,
+                    b = f + 1,
+                    d = b + 1,
+                    e,
+                    f = d + 1
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: { right: 'b', left: 'c' },
+              },
+            ],
             options: [options],
           },
         ],

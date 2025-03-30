@@ -2,6 +2,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../types/sorting-node'
 
+import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
+
 export interface SortingNodeWithDependencies<
   Node extends TSESTree.Node = TSESTree.Node,
 > extends SortingNode<Node> {
@@ -29,23 +31,22 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
   nodes: T[],
   extraOptions: ExtraOptions,
 ): T[] => {
+  let nodesInCircularDependencies = computeNodesInCircularDependencies(nodes)
+
   let result: T[] = []
   let visitedNodes = new Set<T>()
-  let inProcessNodes = new Set<T>()
 
   let visitNode = (sortingNode: T): void => {
     if (visitedNodes.has(sortingNode)) {
       return
     }
-    if (inProcessNodes.has(sortingNode)) {
-      // Circular dependency
-      return
-    }
-    inProcessNodes.add(sortingNode)
 
-    let dependentNodes = nodes.filter(({ dependencyName, name }) =>
-      sortingNode.dependencies.includes(dependencyName ?? name),
-    )
+    let dependentNodes = nodes
+      .filter(dependentNode => !nodesInCircularDependencies.has(dependentNode))
+      .filter(({ dependencyName, name }) =>
+        sortingNode.dependencies.includes(dependencyName ?? name),
+      )
+
     for (let dependentNode of dependentNodes) {
       if (
         !extraOptions.ignoreEslintDisabledNodes ||
@@ -55,7 +56,6 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
       }
     }
     visitedNodes.add(sortingNode)
-    inProcessNodes.delete(sortingNode)
     result.push(sortingNode)
   }
 
