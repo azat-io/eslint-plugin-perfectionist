@@ -360,6 +360,204 @@ describe('sort-heritage-clauses', () => {
         options: [options],
       })
     })
+
+    it.each([
+      ['string pattern', 'Hello'],
+      ['array of patterns', ['noMatch', 'Hello']],
+      ['case-insensitive regex', { pattern: 'HELLO', flags: 'i' }],
+      ['regex in array', ['noMatch', { pattern: 'HELLO', flags: 'i' }]],
+    ])(
+      'groups elements by name pattern - %s',
+      async (_, elementNamePattern) => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'decoratorsContainingHello',
+                right: 'HelloInterface',
+                leftGroup: 'unknown',
+                left: 'B',
+              },
+              messageId: 'unexpectedHeritageClausesGroupOrder',
+            },
+          ],
+          options: [
+            {
+              customGroups: [
+                {
+                  groupName: 'decoratorsContainingHello',
+                  elementNamePattern,
+                },
+              ],
+              groups: ['decoratorsContainingHello', 'unknown'],
+            },
+          ],
+          output: dedent`
+            class Class implements
+              HelloInterface, A, B
+            {}
+          `,
+          code: dedent`
+            class Class implements
+              A, B, HelloInterface
+            {}
+          `,
+        })
+      },
+    )
+
+    it('overrides sort type and order for specific groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'reversedContainingFooByLineLength',
+              leftGroup: 'unknown',
+              right: 'aFoo',
+              left: 'p',
+            },
+            messageId: 'unexpectedHeritageClausesGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'reversedContainingFooByLineLength',
+              leftGroup: 'unknown',
+              right: 'bbFoo',
+              left: 'oo',
+            },
+            messageId: 'unexpectedHeritageClausesGroupOrder',
+          },
+        ],
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'reversedContainingFooByLineLength',
+                elementNamePattern: 'Foo',
+                type: 'line-length',
+                order: 'desc',
+              },
+            ],
+            groups: ['reversedContainingFooByLineLength', 'unknown'],
+            type: 'alphabetical',
+            order: 'asc',
+          },
+        ],
+        output: dedent`
+          class Class implements
+            bbFoo, aFoo, oo, p
+          {}
+        `,
+        code: dedent`
+          class Class implements
+            p, aFoo, oo, bbFoo
+          {}
+        `,
+      })
+    })
+
+    it('applies fallback sort when primary sort results in tie', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+                elementNamePattern: '^foo',
+                type: 'line-length',
+                groupName: 'foo',
+                order: 'desc',
+              },
+            ],
+            type: 'alphabetical',
+            groups: ['foo'],
+            order: 'asc',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'fooBar',
+              left: 'fooZar',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+        ],
+        output: dedent`
+          class Class implements
+            fooBar, fooZar
+          {}
+        `,
+        code: dedent`
+          class Class implements
+            fooZar, fooBar
+          {}
+        `,
+      })
+    })
+
+    it('preserves original order for unsorted groups', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'unsortedContainingFoo',
+                elementNamePattern: 'Foo',
+                type: 'unsorted',
+              },
+            ],
+            groups: ['unsortedContainingFoo', 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              rightGroup: 'unsortedContainingFoo',
+              leftGroup: 'unknown',
+              right: 'cFoo',
+              left: 'm',
+            },
+            messageId: 'unexpectedHeritageClausesGroupOrder',
+          },
+        ],
+        output: dedent`
+          class Class implements
+            bFoo, aFoo, dFoo, eFoo, cFoo, m
+          {}
+        `,
+        code: dedent`
+          class Class implements
+            bFoo, aFoo, dFoo, eFoo, m, cFoo
+          {}
+        `,
+      })
+    })
+
+    it('supports negative regex patterns in custom groups', async () => {
+      await valid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
+            groups: ['unknown', 'elementsWithoutFoo'],
+            type: 'alphabetical',
+          },
+        ],
+        code: dedent`
+          class Class implements
+            iHaveFooInMyName, meTooIHaveFoo, a, b
+          {}
+        `,
+      })
+    })
   })
 
   describe('natural', () => {
