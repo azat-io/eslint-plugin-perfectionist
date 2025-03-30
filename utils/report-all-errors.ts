@@ -67,10 +67,10 @@ export let reportAllErrors = <
 
     let firstUnorderedNodeDependentOnRight: undefined | T
     if (availableMessageIds.unexpectedDependencyOrder) {
-      firstUnorderedNodeDependentOnRight = getFirstUnorderedNodeDependentOn(
-        right as unknown as SortingNodeWithDependencies,
-        nodes as unknown as SortingNodeWithDependencies[],
-      ) as unknown as T
+      firstUnorderedNodeDependentOnRight = getFirstUnorderedNodeDependentOn({
+        nodes: nodes as unknown as SortingNodeWithDependencies[],
+        node: right as unknown as SortingNodeWithDependencies,
+      }) as unknown as T
     }
 
     if (
