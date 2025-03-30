@@ -269,19 +269,90 @@ All members of the groups in the array will be sorted together as if they were p
 
 ### customGroups
 
+<Important title="Migrating from the old API">
+Support for the object-based `customGroups` option has been removed.
+
+Migrating from the old to the current API is easy:
+
+Old API:
+```ts
+{
+  "key1": "value1",
+  "key2": "value2"
+}
+```
+
+Current API:
+```ts
+[
+  {
+    "groupName": "key1",
+    "elementNamePattern": "value1"
+  },
+  {
+    "groupName": "key2",
+    "elementNamePattern": "value2"
+  }
+]
+```
+</Important>
+
 <sub>
-  type: `{ [groupName: string]: string | string[] }`
+  type: `Array<CustomGroupDefinition | CustomGroupAnyOfDefinition>`
 </sub>
-<sub>default: `{}`</sub>
+<sub>default: `[]`</sub>
 
-You can define your own groups and use regex to match specific decorators.
+Defines custom groups to match specific decorators.
 
-Each key of `customGroups` represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
-- `string` — A decorator's name matching the value will be marked as part of the group referenced by the key.
-- `string[]` — A decorator's name matching any of the values of the array will be marked as part of the group referenced by the key.
-The order of values in the array does not matter.
+A custom group definition may follow one of the two following interfaces:
 
-Custom group matching takes precedence over predefined group matching.
+```ts
+interface CustomGroupDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  newlinesInside?: number
+  selector?: string
+  elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+}
+
+```
+A declaration will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+
+or:
+
+```ts
+interface CustomGroupAnyOfDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  newlinesInside?: number
+  anyOf: Array<{
+      selector?: string
+      elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+  }>
+}
+```
+
+A declaration will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+
+#### Attributes
+
+- `groupName` — The group's name, which needs to be put in the [`groups`](#groups) option.
+- `elementNamePattern` — If entered, will check that the name of the element matches the pattern entered.
+- `type` — Overrides the [`type`](#type) option for that custom group. `unsorted` will not sort the group.
+- `order` — Overrides the [`order`](#order) option for that custom group.
+- `fallbackSort` — Overrides the [`fallbackSort`](#fallbacksort) option for that custom group.
+- `newlinesInside` — Enforces a specific newline behavior between elements of the group.
+
+#### Match importance
+
+The `customGroups` list is ordered:
+The first custom group definition that matches an element will be used.
+
+Custom groups have a higher priority than any predefined group.
 
 #### Example for class decorators
 
@@ -306,9 +377,12 @@ class MyClass {
      'unknown',
      'error'          // [!code ++]
    ],
-+  customGroups: {    // [!code ++]
-+    error: '.*Error' // [!code ++]
-+  }                  // [!code ++]
++  customGroups: [    // [!code ++]
++    {                // [!code ++]
++      groupName: 'error', // [!code ++]
++      elementNamePattern: 'Error', // [!code ++]
++    }                // [!code ++]
++  ]                  // [!code ++]
  }
 ```
 
@@ -336,7 +410,7 @@ class MyClass {
                   ignoreCase: true,
                   specialCharacters: 'keep',
                   groups: [],
-                  customGroups: {},
+                  customGroups: [],
                   sortOnClasses: true,
                   sortOnMethods: true,
                   sortOnAccessors: true,
@@ -368,7 +442,7 @@ class MyClass {
                 ignoreCase: true,
                 specialCharacters: 'keep',
                 groups: [],
-                customGroups: {},
+                customGroups: [],
                 sortOnClasses: true,
                 sortOnMethods: true,
                 sortOnAccessors: true,

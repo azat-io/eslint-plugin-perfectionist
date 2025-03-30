@@ -662,6 +662,387 @@ describe('sort-decorators', () => {
       })
     })
 
+    it.each([
+      ['string pattern', 'Hello'],
+      ['array of patterns', ['noMatch', 'Hello']],
+      ['case-insensitive regex', { pattern: 'HELLO', flags: 'i' }],
+      ['regex in array', ['noMatch', { pattern: 'HELLO', flags: 'i' }]],
+    ])(
+      'groups elements by name pattern - %s',
+      async (_, elementNamePattern) => {
+        await invalid({
+          output: dedent`
+            @HelloDecorator
+            @A
+            @B
+            class Class {
+
+              @HelloDecorator
+              @A
+              @B
+              property
+
+              @HelloDecorator
+              @A
+              @B
+              accessor field
+
+              @HelloDecorator
+              @A
+              @B
+              method(
+                @HelloDecorator
+                @A
+                @B
+                parameter) {}
+
+            }
+          `,
+          code: dedent`
+            @A
+            @B
+            @HelloDecorator
+            class Class {
+
+              @A
+              @B
+              @HelloDecorator
+              property
+
+              @A
+              @B
+              @HelloDecorator
+              accessor field
+
+              @A
+              @B
+              @HelloDecorator
+              method(
+                @A
+                @B
+                @HelloDecorator
+                parameter) {}
+
+            }
+          `,
+          errors: duplicate5Times([
+            {
+              data: {
+                rightGroup: 'decoratorsContainingHello',
+                right: 'HelloDecorator',
+                leftGroup: 'unknown',
+                left: 'B',
+              },
+              messageId: 'unexpectedDecoratorsGroupOrder',
+            },
+          ]),
+          options: [
+            {
+              customGroups: [
+                {
+                  groupName: 'decoratorsContainingHello',
+                  elementNamePattern,
+                },
+              ],
+              groups: ['decoratorsContainingHello', 'unknown'],
+            },
+          ],
+        })
+      },
+    )
+
+    it('overrides sort type and order for specific groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'reversedContainingFooByLineLength',
+              leftGroup: 'unknown',
+              right: 'aFoo',
+              left: 'p',
+            },
+            messageId: 'unexpectedDecoratorsGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'reversedContainingFooByLineLength',
+              leftGroup: 'unknown',
+              right: 'bbFoo',
+              left: 'oo',
+            },
+            messageId: 'unexpectedDecoratorsGroupOrder',
+          },
+        ],
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'reversedContainingFooByLineLength',
+                elementNamePattern: 'Foo',
+                type: 'line-length',
+                order: 'desc',
+              },
+            ],
+            groups: ['reversedContainingFooByLineLength', 'unknown'],
+            type: 'alphabetical',
+            order: 'asc',
+          },
+        ],
+        output: dedent`
+          @bbFoo
+          @aFoo
+          @oo
+          @p
+          class Class {}
+        `,
+        code: dedent`
+          @p
+          @aFoo
+          @oo
+          @bbFoo
+          class Class {}
+        `,
+      })
+    })
+
+    it('applies fallback sort when primary sort results in tie', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+                elementNamePattern: '^foo',
+                type: 'line-length',
+                groupName: 'foo',
+                order: 'desc',
+              },
+            ],
+            type: 'alphabetical',
+            groups: ['foo'],
+            order: 'asc',
+          },
+        ],
+        output: dedent`
+          @fooBar
+          @fooZar
+          class Class {
+
+            @fooBar
+            @fooZar
+            property
+
+            @fooBar
+            @fooZar
+            accessor field
+
+            @fooBar
+            @fooZar
+            method(
+              @fooBar
+              @fooZar
+              parameter) {}
+
+          }
+        `,
+        code: dedent`
+          @fooZar
+          @fooBar
+          class Class {
+
+            @fooZar
+            @fooBar
+            property
+
+            @fooZar
+            @fooBar
+            accessor field
+
+            @fooZar
+            @fooBar
+            method(
+              @fooZar
+              @fooBar
+              parameter) {}
+
+          }
+        `,
+        errors: duplicate5Times([
+          {
+            data: {
+              right: 'fooBar',
+              left: 'fooZar',
+            },
+            messageId: 'unexpectedDecoratorsOrder',
+          },
+        ]),
+      })
+    })
+
+    it('preserves original order for unsorted groups', async () => {
+      await invalid({
+        output: dedent`
+          @bFoo
+          @aFoo
+          @dFoo
+          @eFoo
+          @cFoo
+          @m
+          class Class {
+
+            @bFoo
+            @aFoo
+            @dFoo
+            @eFoo
+            @cFoo
+            @m
+            property
+
+            @bFoo
+            @aFoo
+            @dFoo
+            @eFoo
+            @cFoo
+            @m
+            accessor field
+
+            @bFoo
+            @aFoo
+            @dFoo
+            @eFoo
+            @cFoo
+            @m
+            method(
+              @bFoo
+              @aFoo
+              @dFoo
+              @eFoo
+              @cFoo
+              @m
+              parameter) {}
+
+          }
+        `,
+        code: dedent`
+          @bFoo
+          @aFoo
+          @dFoo
+          @eFoo
+          @m
+          @cFoo
+          class Class {
+
+            @bFoo
+            @aFoo
+            @dFoo
+            @eFoo
+            @m
+            @cFoo
+            property
+
+            @bFoo
+            @aFoo
+            @dFoo
+            @eFoo
+            @m
+            @cFoo
+            accessor field
+
+            @bFoo
+            @aFoo
+            @dFoo
+            @eFoo
+            @m
+            @cFoo
+            method(
+              @bFoo
+              @aFoo
+              @dFoo
+              @eFoo
+              @m
+              @cFoo
+              parameter) {}
+
+          }
+        `,
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'unsortedContainingFoo',
+                elementNamePattern: 'Foo',
+                type: 'unsorted',
+              },
+            ],
+            groups: ['unsortedContainingFoo', 'unknown'],
+          },
+        ],
+        errors: duplicate5Times([
+          {
+            data: {
+              rightGroup: 'unsortedContainingFoo',
+              leftGroup: 'unknown',
+              right: 'cFoo',
+              left: 'm',
+            },
+            messageId: 'unexpectedDecoratorsGroupOrder',
+          },
+        ]),
+      })
+    })
+
+    it('supports negative regex patterns in custom groups', async () => {
+      await valid({
+        code: dedent`
+          @iHaveFooInMyName
+          @meTooIHaveFoo
+          @a
+          @b
+          class Class {
+
+            @iHaveFooInMyName
+            @meTooIHaveFoo
+            @a
+            @b
+            property
+
+            @iHaveFooInMyName
+            @meTooIHaveFoo
+            @a
+            @b
+            accessor field
+
+            @iHaveFooInMyName
+            @meTooIHaveFoo
+            @a
+            @b
+            method(
+              @iHaveFooInMyName
+              @meTooIHaveFoo
+              @a
+              @b
+              parameter) {}
+
+          }
+        `,
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
+            groups: ['unknown', 'elementsWithoutFoo'],
+            type: 'alphabetical',
+          },
+        ],
+      })
+    })
+
     it('sorts decorators within partition comment boundaries', async () => {
       await invalid({
         output: dedent`
