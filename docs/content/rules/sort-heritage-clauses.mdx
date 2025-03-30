@@ -145,6 +145,18 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
+### partitionByComment
+
+<sub>default: `false`</sub>
+
+Enables the use of comments to separate class decorators into logical groups.
+
+- `true` — All comments will be treated as delimiters, creating partitions.
+- `false` — Comments will not be used as delimiters.
+- `RegExpPattern = string | { pattern: string; flags: string}` — A regexp pattern to specify which comments should act as delimiters.
+- `RegExpPattern[]` — A list of regexp patterns to specify which comments should act as delimiters.
+- `{ block: boolean | RegExpPattern | RegExpPattern[]; line: boolean | RegExpPattern | RegExpPattern[] }` — Specify which block and line comments should act as delimiters.
+
 ### partitionByNewLine
 
 <sub>default: `false`</sub>
@@ -343,6 +355,7 @@ interface Interface extends WithId, Logged, StartupService {
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
+                  partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   groups: [],
@@ -372,6 +385,7 @@ interface Interface extends WithId, Logged, StartupService {
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
+                partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 groups: [],

@@ -373,7 +373,7 @@ describe('sort-heritage-clauses', () => {
           errors: [
             {
               data: {
-                rightGroup: 'decoratorsContainingHello',
+                rightGroup: 'heritageClausesContainingHello',
                 right: 'HelloInterface',
                 leftGroup: 'unknown',
                 left: 'B',
@@ -385,11 +385,11 @@ describe('sort-heritage-clauses', () => {
             {
               customGroups: [
                 {
-                  groupName: 'decoratorsContainingHello',
+                  groupName: 'heritageClausesContainingHello',
                   elementNamePattern,
                 },
               ],
-              groups: ['decoratorsContainingHello', 'unknown'],
+              groups: ['heritageClausesContainingHello', 'unknown'],
             },
           ],
           output: dedent`
@@ -1184,6 +1184,346 @@ describe('sort-heritage-clauses', () => {
           {
             partitionByNewLine: true,
             type: 'alphabetical',
+          },
+        ],
+      })
+    })
+
+    it('sorts heritageClauses within partition comment boundaries', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'Bbb',
+              left: 'D',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+          {
+            data: {
+              right: 'Fff',
+              left: 'Gg',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+        ],
+        output: dedent`
+          class Class implements
+            // Part: A
+            // Not partition comment
+            Bbb,
+            Cc,
+            D,
+            // Part: B
+            Aaaa,
+            E,
+            // Part: C
+            // Not partition comment
+            Fff,
+            Gg
+          {}
+        `,
+        code: dedent`
+          class Class implements
+            // Part: A
+            Cc,
+            D,
+            // Not partition comment
+            Bbb,
+            // Part: B
+            Aaaa,
+            E,
+            // Part: C
+            Gg,
+            // Not partition comment
+            Fff
+          {}
+        `,
+        options: [
+          {
+            ...options,
+            partitionByComment: '^Part',
+          },
+        ],
+      })
+    })
+
+    it('treats all comments as partition boundaries', async () => {
+      await valid({
+        code: dedent`
+          class Class implements
+            // Comment
+            bb,
+            // Other comment
+            a
+          {}
+        `,
+        options: [
+          {
+            ...options,
+            partitionByComment: true,
+          },
+        ],
+      })
+    })
+
+    it('supports multiple partition comment patterns', async () => {
+      await invalid({
+        output: dedent`
+          class Class implements
+            /* Partition Comment */
+            // Part: A
+            D,
+            // Part: B
+            Aaa,
+            Bb,
+            C,
+            /* Other */
+            E
+          {}
+        `,
+        code: dedent`
+          class Class implements
+            /* Partition Comment */
+            // Part: A
+            D,
+            // Part: B
+            Aaa,
+            C,
+            Bb,
+            /* Other */
+            E
+          {}
+        `,
+        errors: [
+          {
+            data: {
+              right: 'Bb',
+              left: 'C',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+      })
+    })
+
+    it('supports regex patterns for partition comments', async () => {
+      await valid({
+        code: dedent`
+          class Class implements
+            E,
+            F,
+            // I am a partition comment because I don't have f o o
+            A,
+            B
+          {}
+        `,
+        options: [
+          {
+            ...options,
+            partitionByComment: ['^(?!.*foo).*$'],
+          },
+        ],
+      })
+    })
+
+    it('ignores block comments when line comments are partition boundaries', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'A',
+              left: 'B',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: true,
+            },
+          },
+        ],
+        output: dedent`
+          class Class implements
+            /* Comment */
+            A,
+            B
+          {}
+        `,
+        code: dedent`
+          class Class implements
+            B,
+            /* Comment */
+            A
+          {}
+        `,
+      })
+    })
+
+    it('uses line comments as partition boundaries', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: true,
+            },
+          },
+        ],
+        code: dedent`
+          class Class implements
+            B,
+            // Comment
+            A
+          {}
+        `,
+      })
+    })
+
+    it('matches specific line comment patterns', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: ['A', 'B'],
+            },
+          },
+        ],
+        code: dedent`
+          class Class implements
+            C,
+            // B
+            B,
+            // A
+            A
+          {}
+        `,
+      })
+    })
+
+    it('supports regex patterns for line comment partitions', async () => {
+      await valid({
+        code: dedent`
+          class Class implements
+            B,
+            // I am a partition comment because I don't have f o o
+            A
+          {}
+        `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: ['^(?!.*foo).*$'],
+            },
+          },
+        ],
+      })
+    })
+
+    it('ignores line comments when block comments are partition boundaries', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'A',
+              left: 'B',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: true,
+            },
+          },
+        ],
+        output: dedent`
+          class Class implements
+            // Comment
+            A,
+            B
+          {}
+        `,
+        code: dedent`
+          class Class implements
+            B,
+            // Comment
+            A
+          {}
+        `,
+      })
+    })
+
+    it('uses block comments as partition boundaries', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: true,
+            },
+          },
+        ],
+        code: dedent`
+          class Class implements
+            B,
+            /* Comment */
+            A
+          {}
+        `,
+      })
+    })
+
+    it('matches specific block comment patterns', async () => {
+      await valid({
+        code: dedent`
+          class Class implements
+            C,
+            /* B */
+            B,
+            /* A */
+            A
+          {}
+        `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: ['A', 'B'],
+            },
+          },
+        ],
+      })
+    })
+
+    it('supports regex patterns for block comment partitions', async () => {
+      await valid({
+        code: dedent`
+          class Class implements
+            B,
+            /* I am a partition comment because I don't have f o o */
+            A
+          {}
+        `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: ['^(?!.*foo).*$'],
+            },
           },
         ],
       })
