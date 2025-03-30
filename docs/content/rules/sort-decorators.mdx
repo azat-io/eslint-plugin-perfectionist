@@ -244,6 +244,23 @@ Enables the use of comments to separate class decorators into logical groups.
 - `RegExpPattern[]` — A list of regexp patterns to specify which comments should act as delimiters.
 - `{ block: boolean | RegExpPattern | RegExpPattern[]; line: boolean | RegExpPattern | RegExpPattern[] }` — Specify which block and line comments should act as delimiters.
 
+### newlinesBetween
+
+<sub>type: `number | 'ignore'`</sub>
+<sub>default: `'ignore'`</sub>
+
+Specifies how to handle newlines between groups.
+
+- `'ignore'` — Do not report errors related to newlines.
+- `0` — No newlines are allowed.
+- Any other number — Enforce this number of newlines between each group, and forbid newlines inside groups.
+
+You can also enforce the newline behavior between two specific groups through the `groups` options.
+
+See the [`groups`](#newlines-between-groups) option.
+
+This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
+
 ### groups
 
 <sub>
@@ -266,6 +283,25 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
+
+#### Newlines between groups
+
+You may place `newlinesBetween` objects between your groups to enforce the newline behavior between two specific groups.
+
+See the [`newlinesBetween`](#newlinesbetween) option.
+
+This feature is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
+
+```ts
+{
+  newlinesBetween: 1,
+  groups: [
+    'a',
+    { newlinesBetween: 0 }, // Overrides the global newlinesBetween option
+    'b',
+  ]
+}
+```
 
 ### customGroups
 
@@ -409,6 +445,8 @@ class MyClass {
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
+                  partitionByComment: false,
+                  newlinesBetween: 'ignore',
                   groups: [],
                   customGroups: [],
                   sortOnClasses: true,
@@ -441,6 +479,8 @@ class MyClass {
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
+                partitionByComment: false,
+                newlinesBetween: 'ignore',
                 groups: [],
                 customGroups: [],
                 sortOnClasses: true,
