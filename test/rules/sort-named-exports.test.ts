@@ -842,6 +842,380 @@ describe(ruleName, () => {
       ],
       valid: [],
     })
+
+    describe(`${ruleName}: custom groups`, () => {
+      ruleTester.run(`${ruleName}: filters on modifier`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'typeElements',
+                  leftGroup: 'unknown',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedNamedExportsGroupOrder',
+              },
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'typeElements',
+                    modifiers: ['type'],
+                  },
+                ],
+                groups: ['typeElements', 'unknown'],
+              },
+            ],
+            output: dedent`
+              export {
+                type b,
+                a,
+              }
+            `,
+            code: dedent`
+              export {
+                a,
+                type b,
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      for (let elementNamePattern of [
+        'hello',
+        ['noMatch', 'hello'],
+        { pattern: 'HELLO', flags: 'i' },
+        ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'typesStartingWithHello',
+                      modifiers: ['type'],
+                      elementNamePattern,
+                    },
+                  ],
+                  groups: ['typesStartingWithHello', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'typesStartingWithHello',
+                    leftGroup: 'unknown',
+                    right: 'helloType',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedNamedExportsGroupOrder',
+                },
+              ],
+              output: dedent`
+                export {
+                  type helloType,
+                  a,
+                  b,
+                }
+              `,
+              code: dedent`
+                export {
+                  a,
+                  b,
+                  type helloType,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedNamedExportsOrder',
+                },
+                {
+                  data: {
+                    right: 'ccc',
+                    left: 'bb',
+                  },
+                  messageId: 'unexpectedNamedExportsOrder',
+                },
+                {
+                  data: {
+                    right: 'dddd',
+                    left: 'ccc',
+                  },
+                  messageId: 'unexpectedNamedExportsOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'reversedTypesByLineLength',
+                    leftGroup: 'unknown',
+                    right: 'eee',
+                    left: 'm',
+                  },
+                  messageId: 'unexpectedNamedExportsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'reversedTypesByLineLength',
+                      modifiers: ['type'],
+                      type: 'line-length',
+                      order: 'desc',
+                    },
+                  ],
+                  groups: ['reversedTypesByLineLength', 'unknown'],
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                export {
+                  type dddd,
+                  type ccc,
+                  type eee,
+                  type bb,
+                  type ff,
+                  type a,
+                  type g,
+                  m,
+                  o,
+                  p,
+                }
+              `,
+              code: dedent`
+                export {
+                  type a,
+                  type bb,
+                  type ccc,
+                  type dddd,
+                  m,
+                  type eee,
+                  type ff,
+                  type g,
+                  o,
+                  p,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'fallbackSort'`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      fallbackSort: {
+                        type: 'alphabetical',
+                        order: 'asc',
+                      },
+                      elementNamePattern: '^foo',
+                      type: 'line-length',
+                      groupName: 'foo',
+                      order: 'desc',
+                    },
+                  ],
+                  type: 'alphabetical',
+                  groups: ['foo'],
+                  order: 'asc',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'fooBar',
+                    left: 'fooZar',
+                  },
+                  messageId: 'unexpectedNamedExportsOrder',
+                },
+              ],
+              output: dedent`
+                export {
+                  fooBar,
+                  fooZar,
+                }
+              `,
+              code: dedent`
+                export {
+                  fooZar,
+                  fooBar,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: does not sort custom groups with 'unsorted' type`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'unsortedTypes',
+                      modifiers: ['type'],
+                      type: 'unsorted',
+                    },
+                  ],
+                  groups: ['unsortedTypes', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unsortedTypes',
+                    leftGroup: 'unknown',
+                    right: 'c',
+                    left: 'm',
+                  },
+                  messageId: 'unexpectedNamedExportsGroupOrder',
+                },
+              ],
+              output: dedent`
+                export {
+                  type b,
+                  type a,
+                  type d,
+                  type e,
+                  type c,
+                  m,
+                }
+              `,
+              code: dedent`
+                export {
+                  type b,
+                  type a,
+                  type d,
+                  type e,
+                  m,
+                  type c,
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    anyOf: [
+                      {
+                        elementNamePattern: 'foo|Foo',
+                        modifiers: ['type'],
+                      },
+                      {
+                        elementNamePattern: 'foo|Foo',
+                      },
+                    ],
+                    groupName: 'elementsIncludingFoo',
+                  },
+                ],
+                groups: ['elementsIncludingFoo', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'elementsIncludingFoo',
+                  leftGroup: 'unknown',
+                  right: 'cFoo',
+                  left: 'a',
+                },
+                messageId: 'unexpectedNamedExportsGroupOrder',
+              },
+            ],
+            output: dedent`
+              export {
+                type cFoo,
+                foo,
+                type a,
+              }
+            `,
+            code: dedent`
+              export {
+                type a,
+                type cFoo,
+                foo,
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: allows to use regex for element names in custom groups`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: '^(?!.*Foo).*$',
+                      groupName: 'elementsWithoutFoo',
+                    },
+                  ],
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                  type: 'alphabetical',
+                },
+              ],
+              code: dedent`
+                export {
+                  iHaveFooInMyName,
+                  meTooIHaveFoo,
+                  a,
+                  b,
+                }
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
