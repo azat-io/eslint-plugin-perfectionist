@@ -1,11 +1,7 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  DeprecatedCustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-} from '../types/common-options'
+import type { Options } from './sort-heritage-clauses/types'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
@@ -27,20 +23,9 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-export type Options = [
-  Partial<
-    {
-      customGroups: DeprecatedCustomGroupsOption
-      groups: GroupsOptions<Group>
-    } & CommonOptions
-  >,
-]
-
 type MessageId =
   | 'unexpectedHeritageClausesGroupOrder'
   | 'unexpectedHeritageClausesOrder'
-
-type Group = 'unknown' | string
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
@@ -56,8 +41,8 @@ let defaultOptions: Required<Options[0]> = {
 
 export default createEslintRule<Options, MessageId>({
   meta: {
-    schema: [
-      {
+    schema: {
+      items: {
         properties: {
           ...commonJsonSchemas,
           customGroups: deprecatedCustomGroupsJsonSchema,
@@ -66,7 +51,9 @@ export default createEslintRule<Options, MessageId>({
         additionalProperties: false,
         type: 'object',
       },
-    ],
+      uniqueItems: true,
+      type: 'array',
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-heritage-clauses',
       description: 'Enforce sorted heritage clauses.',
