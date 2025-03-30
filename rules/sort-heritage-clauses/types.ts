@@ -2,6 +2,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
   DeprecatedCustomGroupsOption,
+  NewlinesBetweenOption,
   CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
@@ -15,6 +16,7 @@ export type Options = Partial<
     customGroups:
       | CustomGroupsOption<SingleCustomGroup>
       | DeprecatedCustomGroupsOption
+    newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
   } & CommonOptions
 >[]
