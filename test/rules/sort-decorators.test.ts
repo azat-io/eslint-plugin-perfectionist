@@ -1603,6 +1603,127 @@ describe('sort-decorators', () => {
       },
     )
 
+    it('sorts within newline-separated partitions', async () => {
+      await invalid({
+        output: dedent`
+          @a
+          @d
+
+          @c
+
+          @b
+          @e
+          class Class {
+
+            @a
+            @d
+
+            @c
+
+            @b
+            @e
+            property
+
+            @a
+            @d
+
+            @c
+
+            @b
+            @e
+            accessor field
+
+            @a
+            @d
+
+            @c
+
+            @b
+            @e
+            method(
+              @a
+              @d
+
+              @c
+
+              @b
+              @e
+              parameter) {}
+
+          }
+        `,
+        code: dedent`
+          @d
+          @a
+
+          @c
+
+          @e
+          @b
+          class Class {
+
+            @d
+            @a
+
+            @c
+
+            @e
+            @b
+            property
+
+            @d
+            @a
+
+            @c
+
+            @e
+            @b
+            accessor field
+
+            @d
+            @a
+
+            @c
+
+            @e
+            @b
+            method(
+              @d
+              @a
+
+              @c
+
+              @e
+              @b
+              parameter) {}
+
+          }
+        `,
+        errors: duplicate5Times([
+          {
+            data: {
+              right: 'a',
+              left: 'd',
+            },
+            messageId: 'unexpectedDecoratorsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'e',
+            },
+            messageId: 'unexpectedDecoratorsOrder',
+          },
+        ]),
+        options: [
+          {
+            partitionByNewLine: true,
+            type: 'alphabetical',
+          },
+        ],
+      })
+    })
+
     it('sorts decorators within partition comment boundaries', async () => {
       await invalid({
         output: dedent`

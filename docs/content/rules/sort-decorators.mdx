@@ -244,6 +244,12 @@ Enables the use of comments to separate class decorators into logical groups.
 - `RegExpPattern[]` — A list of regexp patterns to specify which comments should act as delimiters.
 - `{ block: boolean | RegExpPattern | RegExpPattern[]; line: boolean | RegExpPattern | RegExpPattern[] }` — Specify which block and line comments should act as delimiters.
 
+### partitionByNewLine
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort the decorators if there is an empty line between them.
+
 ### newlinesBetween
 
 <sub>type: `number | 'ignore'`</sub>
@@ -445,6 +451,7 @@ class MyClass {
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
+                  partitionByNewLine: false,
                   partitionByComment: false,
                   newlinesBetween: 'ignore',
                   groups: [],
@@ -479,6 +486,7 @@ class MyClass {
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
+                partitionByNewLine: false,
                 partitionByComment: false,
                 newlinesBetween: 'ignore',
                 groups: [],
