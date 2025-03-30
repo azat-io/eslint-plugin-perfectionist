@@ -1808,6 +1808,67 @@ describe(ruleName, () => {
             )
           }
 
+          for (let globalNewlinesBetween of [
+            'always',
+            'ignore',
+            'never',
+          ] as const) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'a',
+                          { newlinesBetween: 'never' },
+                          'unusedGroup',
+                          { newlinesBetween: 'never' },
+                          'b',
+                          { newlinesBetween: 'always' },
+                          'c',
+                        ],
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { elementNamePattern: 'c', groupName: 'c' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'b',
+                          left: 'a',
+                        },
+                        messageId: 'extraSpacingBetweenArrayIncludesMembers',
+                      },
+                    ],
+                    output: dedent`
+                      [
+                        a,
+                        b,
+                      ].includes(value)
+                    `,
+                    code: dedent`
+                      [
+                        a,
+
+                        b,
+                      ].includes(value)
+                    `,
+                  },
+                ],
+                valid: [],
+              },
+            )
+          }
+
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
             ['ignore', 'never'] as const,
             ['never', 'ignore'] as const,

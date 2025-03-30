@@ -1255,6 +1255,57 @@ describe(ruleName, () => {
             )
           }
 
+          for (let globalNewlinesBetween of [
+            'always',
+            'ignore',
+            'never',
+          ] as const) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'named',
+                          { newlinesBetween: 'never' },
+                          'tuple',
+                          { newlinesBetween: 'never' },
+                          'nullish',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'null',
+                          left: 'A',
+                        },
+                        messageId: 'extraSpacingBetweenUnionTypes',
+                      },
+                    ],
+                    output: dedent`
+                      type T =
+                        A |
+                        null
+                    `,
+                    code: dedent`
+                      type T =
+                        A |
+
+                        null
+                    `,
+                  },
+                ],
+                valid: [],
+              },
+            )
+          }
+
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
             ['ignore', 'never'] as const,
             ['never', 'ignore'] as const,
