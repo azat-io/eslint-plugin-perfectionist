@@ -6,7 +6,6 @@ import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
-import { getFirstUnorderedNodeDependentOn } from './sort-nodes-by-dependencies'
 import { createNodeIndexMap } from './create-node-index-map'
 import { getNewlinesErrors } from './get-newlines-errors'
 import { getGroupNumber } from './get-group-number'
@@ -130,5 +129,26 @@ export let reportAllErrors = <
       right,
       left,
     })
+  })
+}
+
+let getFirstUnorderedNodeDependentOn = <T extends SortingNodeWithDependencies>({
+  nodes,
+  node,
+}: {
+  nodes: T[]
+  node: T
+}): undefined | T => {
+  let nodesDependentOnNode = nodes.filter(currentlyOrderedNode =>
+    currentlyOrderedNode.dependencies.includes(
+      node.dependencyName ?? node.name,
+    ),
+  )
+  return nodesDependentOnNode.find(firstNodeDependentOnNode => {
+    let currentIndexOfNode = nodes.indexOf(node)
+    let currentIndexOfFirstNodeDependentOnNode = nodes.indexOf(
+      firstNodeDependentOnNode,
+    )
+    return currentIndexOfFirstNodeDependentOnNode < currentIndexOfNode
   })
 }
