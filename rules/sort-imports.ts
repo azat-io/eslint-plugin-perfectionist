@@ -1,4 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import { builtinModules } from 'node:module'
 
@@ -134,22 +135,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         | TSESTree.VariableDeclaration
         | TSESTree.ImportDeclaration,
     ): void => {
-      let name: string
-
-      if (node.type === 'ImportDeclaration') {
-        name = node.source.value
-      } else if (node.type === 'TSImportEqualsDeclaration') {
-        if (node.moduleReference.type === 'TSExternalModuleReference') {
-          name = node.moduleReference.expression.value
-        } else {
-          name = sourceCode.getText(node.moduleReference)
-        }
-      } else {
-        let decl = node.declarations[0].init as TSESTree.CallExpression
-        let { value } = decl.arguments[0] as TSESTree.Literal
-        name = value!.toString()
-      }
-
       let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
 
       let matchesInternalPattern = (value: string): boolean | number =>
@@ -217,22 +202,27 @@ export default createEslintRule<Options, MESSAGE_ID>({
           : 'internal'
       }
 
+      let name = getNodeName({
+        sourceCode,
+        node,
+      })
+
       if (node.type !== 'VariableDeclaration' && node.importKind === 'type') {
         if (node.type === 'ImportDeclaration') {
-          setCustomGroups(options.customGroups.type, node.source.value)
-          let internalExternalGroup = matchesInternalPattern(node.source.value)
+          setCustomGroups(options.customGroups.type, name)
+          let internalExternalGroup = matchesInternalPattern(name)
             ? 'internal'
-            : getInternalOrExternalGroup(node.source.value)
+            : getInternalOrExternalGroup(name)
 
-          if (isIndex(node.source.value)) {
+          if (isIndex(name)) {
             defineGroup('index-type')
           }
 
-          if (isSibling(node.source.value)) {
+          if (isSibling(name)) {
             defineGroup('sibling-type')
           }
 
-          if (isParent(node.source.value)) {
+          if (isParent(name)) {
             defineGroup('parent-type')
           }
 
@@ -240,7 +230,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             defineGroup('internal-type')
           }
 
-          if (isCoreModule(node.source.value)) {
+          if (isCoreModule(name)) {
             defineGroup('builtin-type')
           }
 
@@ -258,21 +248,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         node.type === 'ImportDeclaration' ||
         node.type === 'VariableDeclaration'
       ) {
-        let value: string
-        if (node.type === 'ImportDeclaration') {
-          ;({ value } = node.source)
-        } else {
-          let decl = node.declarations[0].init as TSESTree.CallExpression
-          let declValue = (decl.arguments[0] as TSESTree.Literal).value
-          value = declValue!.toString()
-        }
-        let internalExternalGroup = matchesInternalPattern(value)
+        let internalExternalGroup = matchesInternalPattern(name)
           ? 'internal'
-          : getInternalOrExternalGroup(value)
-        let isStyleValue = isStyle(value)
+          : getInternalOrExternalGroup(name)
+        let isStyleValue = isStyle(name)
         isStyleSideEffect = isSideEffect && isStyleValue
 
-        setCustomGroups(options.customGroups.value, value)
+        setCustomGroups(options.customGroups.value, name)
 
         if (isStyleSideEffect) {
           defineGroup('side-effect-style')
@@ -286,15 +268,15 @@ export default createEslintRule<Options, MESSAGE_ID>({
           defineGroup('style')
         }
 
-        if (isIndex(value)) {
+        if (isIndex(name)) {
           defineGroup('index')
         }
 
-        if (isSibling(value)) {
+        if (isSibling(name)) {
           defineGroup('sibling')
         }
 
-        if (isParent(value)) {
+        if (isParent(name)) {
           defineGroup('parent')
         }
 
@@ -302,7 +284,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           defineGroup('internal')
         }
 
-        if (isCoreModule(value)) {
+        if (isCoreModule(name)) {
           defineGroup('builtin')
         }
 
@@ -321,8 +303,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         size: rangeToDiff(node, sourceCode),
         addSafetySemicolonWhenInline: true,
         group: getGroup(),
-        node,
         name,
+        node,
         ...(options.type === 'line-length' &&
           options.maxLineLength && {
             hasMultipleImportDeclarations: isSortable(
@@ -594,3 +576,30 @@ let isSideEffectImport = ({
   !/\}\s*from\s+/u.test(sourceCode.getText(node))
 
 
+
+let getNodeName = ({
+  sourceCode,
+  node,
+}: {
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration
+  sourceCode: TSESLint.SourceCode
+}): string => {
+  if (node.type === 'ImportDeclaration') {
+    return node.source.value
+  }
+
+  if (node.type === 'TSImportEqualsDeclaration') {
+    if (node.moduleReference.type === 'TSExternalModuleReference') {
+      return node.moduleReference.expression.value
+    }
+
+    return sourceCode.getText(node.moduleReference)
+  }
+
+  let callExpression = node.declarations[0].init as TSESTree.CallExpression
+  let { value } = callExpression.arguments[0] as TSESTree.Literal
+  return value!.toString()
+}
