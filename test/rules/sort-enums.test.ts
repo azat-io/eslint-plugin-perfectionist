@@ -3386,54 +3386,51 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(`${ruleName}: detects circular dependencies`, rule, {
-        invalid: [
-          {
-            errors: [
-              {
-                data: {
-                  right: 'D',
-                  left: 'C',
+      ruleTester.run(
+        `${ruleName}: detects and ignores circular dependencies`,
+        rule,
+        {
+          invalid: [
+            {
+              output: dedent`
+                enum Enum {
+                  A = 'A',
+                  B = F,
+                  C = 'C',
+                  D = B,
+                  E = 'E',
+                  F = D
+                }
+              `,
+              code: dedent`
+                enum Enum {
+                  B = F,
+                  A = 'A',
+                  C = 'C',
+                  D = B,
+                  E = 'E',
+                  F = D
+                }
+              `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedEnumsOrder',
                 },
-                messageId: 'unexpectedEnumsOrder',
-              },
-              {
-                data: {
-                  nodeDependentOnRight: 'B',
-                  right: 'F',
+              ],
+              options: [
+                {
+                  type: 'alphabetical',
                 },
-                messageId: 'unexpectedEnumsDependencyOrder',
-              },
-            ],
-            output: dedent`
-              enum Enum {
-                A = 'A',
-                D = B,
-                F = D,
-                B = F,
-                C = 'C',
-                E = 'E'
-              }
-            `,
-            code: dedent`
-              enum Enum {
-                A = 'A',
-                B = F,
-                C = 'C',
-                D = B,
-                E = 'E',
-                F = D
-              }
-            `,
-            options: [
-              {
-                type: 'alphabetical',
-              },
-            ],
-          },
-        ],
-        valid: [],
-      })
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
 
       ruleTester.run(
         `${ruleName}: prioritizes dependencies over partitionByComment`,

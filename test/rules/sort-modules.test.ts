@@ -1843,53 +1843,46 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}) detects circular dependencies`,
+        `${ruleName}(${type}) detects and ignores circular dependencies`,
         rule,
         {
           invalid: [
             {
-              errors: [
-                {
-                  data: {
-                    nodeDependentOnRight: 'A',
-                    right: 'B',
-                  },
-                  messageId: 'unexpectedModulesDependencyOrder',
-                },
-                {
-                  data: {
-                    nodeDependentOnRight: 'B',
-                    right: 'C',
-                  },
-                  messageId: 'unexpectedModulesDependencyOrder',
-                },
-              ],
               output: dedent`
-                class C {
-                  static c = A.a
+                class A {
+                  static a = B.b
                 }
 
                 class B {
                   static b = C.c
                 }
 
-                class A {
-                  static a = B.b
+                class C {
+                  static c = A.a
                 }
               `,
               code: dedent`
-                class A {
-                  static a = B.b
-                }
-
                 class B {
                   static b = C.c
+                }
+
+                class A {
+                  static a = B.b
                 }
 
                 class C {
                   static c = A.a
                 }
               `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               options: [
                 {
                   ...options,

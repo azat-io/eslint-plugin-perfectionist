@@ -3851,7 +3851,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}) detects circular dependencies`,
+        `${ruleName}(${type}) detects and ignores circular dependencies`,
         rule,
         {
           invalid: [
@@ -3864,28 +3864,14 @@ describe(ruleName, () => {
                   },
                   messageId: 'unexpectedClassesOrder',
                 },
-                {
-                  data: {
-                    nodeDependentOnRight: 'b',
-                    right: 'e',
-                  },
-                  messageId: 'unexpectedClassesDependencyOrder',
-                },
-                {
-                  data: {
-                    nodeDependentOnRight: 'e',
-                    right: 'g',
-                  },
-                  messageId: 'unexpectedClassesDependencyOrder',
-                },
               ],
               output: dedent`
                 class Class {
                   a
-                  g = this.b
-                  e = this.g
                   b = this.e
+                  e = this.g
                   f
+                  g = this.b
                 }
               `,
               code: dedent`

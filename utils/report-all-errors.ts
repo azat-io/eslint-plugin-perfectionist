@@ -6,7 +6,7 @@ import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
-import { getFirstUnorderedNodeDependentOn } from './sort-nodes-by-dependencies'
+import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
 import { createNodeIndexMap } from './create-node-index-map'
 import { getNewlinesErrors } from './get-newlines-errors'
 import { getGroupNumber } from './get-group-number'
@@ -52,6 +52,12 @@ export let reportAllErrors = <
   let sortedNodesExcludingEslintDisabled =
     sortNodesExcludingEslintDisabled(true)
   let nodeIndexMap = createNodeIndexMap(sortedNodes)
+  let nodesInCircularDependencies =
+    availableMessageIds.unexpectedDependencyOrder
+      ? computeNodesInCircularDependencies(
+          nodes as unknown as SortingNodeWithDependencies[],
+        )
+      : new Set<SortingNodeWithDependencies>()
 
   pairwise(nodes, (left, right) => {
     let leftNumber = options.groups ? getGroupNumber(options.groups, left) : 0
@@ -67,10 +73,11 @@ export let reportAllErrors = <
 
     let firstUnorderedNodeDependentOnRight: undefined | T
     if (availableMessageIds.unexpectedDependencyOrder) {
-      firstUnorderedNodeDependentOnRight = getFirstUnorderedNodeDependentOn(
-        right as unknown as SortingNodeWithDependencies,
-        nodes as unknown as SortingNodeWithDependencies[],
-      ) as unknown as T
+      firstUnorderedNodeDependentOnRight = getFirstUnorderedNodeDependentOn({
+        nodes: nodes as unknown as SortingNodeWithDependencies[],
+        node: right as unknown as SortingNodeWithDependencies,
+        nodesInCircularDependencies,
+      }) as unknown as T
     }
 
     if (
@@ -130,5 +137,30 @@ export let reportAllErrors = <
       right,
       left,
     })
+  })
+}
+
+let getFirstUnorderedNodeDependentOn = <T extends SortingNodeWithDependencies>({
+  nodesInCircularDependencies,
+  nodes,
+  node,
+}: {
+  nodesInCircularDependencies: Set<T>
+  nodes: T[]
+  node: T
+}): undefined | T => {
+  let nodesDependentOnNode = nodes.filter(
+    currentlyOrderedNode =>
+      !nodesInCircularDependencies.has(currentlyOrderedNode) &&
+      currentlyOrderedNode.dependencies.includes(
+        node.dependencyName ?? node.name,
+      ),
+  )
+  return nodesDependentOnNode.find(firstNodeDependentOnNode => {
+    let currentIndexOfNode = nodes.indexOf(node)
+    let currentIndexOfFirstNodeDependentOnNode = nodes.indexOf(
+      firstNodeDependentOnNode,
+    )
+    return currentIndexOfFirstNodeDependentOnNode < currentIndexOfNode
   })
 }
