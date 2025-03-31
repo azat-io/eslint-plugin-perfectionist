@@ -117,23 +117,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         })
       : null
 
-    let isSideEffectOnlyGroup = (
-      group:
-        | { newlinesBetween: NewlinesBetweenOption }
-        | undefined
-        | string[]
-        | string,
-    ): boolean => {
-      if (!group || isNewlinesBetweenOption(group)) {
-        return false
-      }
-      if (typeof group === 'string') {
-        return group === 'side-effect' || group === 'side-effect-style'
-      }
-
-      return group.every(isSideEffectOnlyGroup)
-    }
-
     /**
      * Ensure that if `sortSideEffects: false`, no side effect group is in a
      * nested group with non-side-effect groups.
@@ -163,28 +146,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
     })
     let sortingNodes: SortImportsSortingNode[] = []
 
-    let isSideEffectImport = (node: TSESTree.Node): boolean =>
-      node.type === 'ImportDeclaration' &&
-      node.specifiers.length === 0 &&
-      /* Avoid matching on named imports without specifiers */
-      !/\}\s*from\s+/u.test(sourceCode.getText(node))
-
-    let styleExtensions = [
-      '.less',
-      '.scss',
-      '.sass',
-      '.styl',
-      '.pcss',
-      '.css',
-      '.sss',
-    ]
-    let isStyle = (value: string): boolean => {
-      let [cleanedValue] = value.split('?')
-      return styleExtensions.some(extension =>
-        cleanedValue?.endsWith(extension),
-      )
-    }
-
     let flatGroups = new Set(options.groups.flat())
     let shouldRegroupSideEffectNodes = flatGroups.has('side-effect')
     let shouldRegroupSideEffectStyleNodes = flatGroups.has('side-effect-style')
@@ -209,21 +170,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let { value } = decl.arguments[0] as TSESTree.Literal
         name = value!.toString()
       }
-
-      let isIndex = (value: string): boolean =>
-        [
-          './index.d.js',
-          './index.d.ts',
-          './index.js',
-          './index.ts',
-          './index',
-          './',
-          '.',
-        ].includes(value)
-
-      let isParent = (value: string): boolean => value.startsWith('..')
-
-      let isSibling = (value: string): boolean => value.startsWith('./')
 
       let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
 
@@ -327,7 +273,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         defineGroup('type')
       }
 
-      let isSideEffect = isSideEffectImport(node)
+      let isSideEffect = isSideEffectImport({ sourceCode, node })
       let isStyleSideEffect = false
       if (
         node.type === 'ImportDeclaration' ||
@@ -409,14 +355,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
     return {
       'Program:exit': () => {
-        let hasContentBetweenNodes = (
-          left: SortImportsSortingNode,
-          right: SortImportsSortingNode,
-        ): boolean =>
-          sourceCode.getTokensBetween(left.node, right.node, {
-            includeComments: false,
-          }).length > 0
-
         let formattedMembers: SortImportsSortingNode[][] = [[]]
         for (let sortingNode of sortingNodes) {
           let lastGroup = formattedMembers.at(-1)
@@ -430,7 +368,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               options,
             }) ||
             (lastSortingNode &&
-              hasContentBetweenNodes(lastSortingNode, sortingNode))
+              hasContentBetweenNodes(sourceCode, lastSortingNode, sortingNode))
           ) {
             lastGroup = []
             formattedMembers.push(lastGroup)
@@ -623,3 +561,66 @@ export default createEslintRule<Options, MESSAGE_ID>({
   ],
   name: 'sort-imports',
 })
+
+let hasContentBetweenNodes = (
+  sourceCode: TSESLint.SourceCode,
+  left: SortImportsSortingNode,
+  right: SortImportsSortingNode,
+): boolean =>
+  sourceCode.getTokensBetween(left.node, right.node, {
+    includeComments: false,
+  }).length > 0
+
+let styleExtensions = [
+  '.less',
+  '.scss',
+  '.sass',
+  '.styl',
+  '.pcss',
+  '.css',
+  '.sss',
+]
+let isStyle = (value: string): boolean => {
+  let [cleanedValue] = value.split('?')
+  return styleExtensions.some(extension => cleanedValue?.endsWith(extension))
+}
+
+let isParent = (value: string): boolean => value.startsWith('..')
+
+let isSibling = (value: string): boolean => value.startsWith('./')
+
+let isIndex = (value: string): boolean =>
+  [
+    './index.d.js',
+    './index.d.ts',
+    './index.js',
+    './index.ts',
+    './index',
+    './',
+    '.',
+  ].includes(value)
+
+let isSideEffectImport = ({
+  sourceCode,
+  node,
+}: {
+  sourceCode: TSESLint.SourceCode
+  node: TSESTree.Node
+}): boolean =>
+  node.type === 'ImportDeclaration' &&
+  node.specifiers.length === 0 &&
+  /* Avoid matching on named imports without specifiers */
+  !/\}\s*from\s+/u.test(sourceCode.getText(node))
+
+let isSideEffectOnlyGroup = (
+  group: GroupsOptions<string>[0] | undefined,
+): boolean => {
+  if (!group || isNewlinesBetweenOption(group)) {
+    return false
+  }
+  if (typeof group === 'string') {
+    return group === 'side-effect' || group === 'side-effect-style'
+  }
+
+  return group.every(isSideEffectOnlyGroup)
+}
