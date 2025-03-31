@@ -3851,7 +3851,7 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}) detects circular dependencies`,
+        `${ruleName}(${type}) detects and ignores circular dependencies`,
         rule,
         {
           invalid: [
@@ -3864,28 +3864,14 @@ describe(ruleName, () => {
                   },
                   messageId: 'unexpectedClassesOrder',
                 },
-                {
-                  data: {
-                    nodeDependentOnRight: 'b',
-                    right: 'e',
-                  },
-                  messageId: 'unexpectedClassesDependencyOrder',
-                },
-                {
-                  data: {
-                    nodeDependentOnRight: 'e',
-                    right: 'g',
-                  },
-                  messageId: 'unexpectedClassesDependencyOrder',
-                },
               ],
               output: dedent`
                 class Class {
                   a
-                  g = this.b
-                  e = this.g
                   b = this.e
+                  e = this.g
                   f
+                  g = this.b
                 }
               `,
               code: dedent`
@@ -4642,6 +4628,67 @@ describe(ruleName, () => {
                       class Class {
                         a: string
                         b: string
+                      }
+                    `,
+                  },
+                ],
+                valid: [],
+              },
+            )
+          }
+
+          for (let globalNewlinesBetween of [
+            'always',
+            'ignore',
+            'never',
+          ] as const) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'a',
+                          { newlinesBetween: 'never' },
+                          'unusedGroup',
+                          { newlinesBetween: 'never' },
+                          'b',
+                          { newlinesBetween: 'always' },
+                          'c',
+                        ],
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { elementNamePattern: 'c', groupName: 'c' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'b',
+                          left: 'a',
+                        },
+                        messageId: 'extraSpacingBetweenClassMembers',
+                      },
+                    ],
+                    output: dedent`
+                      class Class {
+                        a
+                        b
+                      }
+                    `,
+                    code: dedent`
+                      class Class {
+                        a
+
+                        b
                       }
                     `,
                   },

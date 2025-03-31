@@ -1251,40 +1251,12 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}): detects circular dependencies`,
+        `${ruleName}(${type}): detects and ignores circular dependencies`,
         rule,
         {
           invalid: [
             {
-              errors: [
-                {
-                  data: {
-                    right: 'd',
-                    left: 'c',
-                  },
-                  messageId: 'unexpectedObjectsOrder',
-                },
-                {
-                  data: {
-                    nodeDependentOnRight: 'b',
-                    right: 'f',
-                  },
-                  messageId: 'unexpectedObjectsDependencyOrder',
-                },
-              ],
               output: dedent`
-                let Func = ({
-                  a,
-                  d = b + 1,
-                  f = d + 1,
-                  b = f + 1,
-                  c,
-                  e
-                }) => {
-                  // ...
-                }
-              `,
-              code: dedent`
                 let Func = ({
                   a,
                   b = f + 1,
@@ -1296,6 +1268,27 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
+              code: dedent`
+                let Func = ({
+                  b = f + 1,
+                  a,
+                  c,
+                  d = b + 1,
+                  e,
+                  f = d + 1
+                }) => {
+                  // ...
+                }
+              `,
+              errors: [
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedObjectsOrder',
+                },
+              ],
               options: [options],
             },
           ],
@@ -2413,6 +2406,67 @@ describe(ruleName, () => {
                     code: dedent`
                       let obj = {
                         a: null,
+                        b: null,
+                      }
+                    `,
+                  },
+                ],
+                valid: [],
+              },
+            )
+          }
+
+          for (let globalNewlinesBetween of [
+            'always',
+            'ignore',
+            'never',
+          ] as const) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'a',
+                          { newlinesBetween: 'never' },
+                          'unusedGroup',
+                          { newlinesBetween: 'never' },
+                          'b',
+                          { newlinesBetween: 'always' },
+                          'c',
+                        ],
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { elementNamePattern: 'c', groupName: 'c' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'b',
+                          left: 'a',
+                        },
+                        messageId: 'extraSpacingBetweenObjectMembers',
+                      },
+                    ],
+                    output: dedent`
+                      let obj = {
+                        a: null,
+                        b: null,
+                      }
+                    `,
+                    code: dedent`
+                      let obj = {
+                        a: null,
+
                         b: null,
                       }
                     `,

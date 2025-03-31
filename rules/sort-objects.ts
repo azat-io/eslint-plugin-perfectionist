@@ -186,9 +186,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         sourceCode,
       })
 
-      let extractDependencies = (
-        init: TSESTree.AssignmentPattern,
-      ): string[] => {
+      let extractDependencies = (init: TSESTree.Expression): string[] => {
         let dependencies: string[] = []
 
         let checkNode = (nodeValue: TSESTree.Node): void => {
@@ -305,7 +303,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             let modifiers: Modifier[] = []
 
             if (property.value.type === 'AssignmentPattern') {
-              dependencies = extractDependencies(property.value)
+              dependencies = extractDependencies(property.value.right)
             }
 
             if (

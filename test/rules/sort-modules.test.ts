@@ -1843,53 +1843,46 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
-        `${ruleName}(${type}) detects circular dependencies`,
+        `${ruleName}(${type}) detects and ignores circular dependencies`,
         rule,
         {
           invalid: [
             {
-              errors: [
-                {
-                  data: {
-                    nodeDependentOnRight: 'A',
-                    right: 'B',
-                  },
-                  messageId: 'unexpectedModulesDependencyOrder',
-                },
-                {
-                  data: {
-                    nodeDependentOnRight: 'B',
-                    right: 'C',
-                  },
-                  messageId: 'unexpectedModulesDependencyOrder',
-                },
-              ],
               output: dedent`
-                class C {
-                  static c = A.a
+                class A {
+                  static a = B.b
                 }
 
                 class B {
                   static b = C.c
                 }
 
-                class A {
-                  static a = B.b
+                class C {
+                  static c = A.a
                 }
               `,
               code: dedent`
-                class A {
-                  static a = B.b
-                }
-
                 class B {
                   static b = C.c
+                }
+
+                class A {
+                  static a = B.b
                 }
 
                 class C {
                   static c = A.a
                 }
               `,
+              errors: [
+                {
+                  data: {
+                    right: 'A',
+                    left: 'B',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
               options: [
                 {
                   ...options,
@@ -2351,6 +2344,63 @@ describe(ruleName, () => {
                     `,
                     code: dedent`
                       function a() {}
+                      function b() {}
+                    `,
+                  },
+                ],
+                valid: [],
+              },
+            )
+          }
+
+          for (let globalNewlinesBetween of [
+            'always',
+            'ignore',
+            'never',
+          ] as const) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'a',
+                          { newlinesBetween: 'never' },
+                          'unusedGroup',
+                          { newlinesBetween: 'never' },
+                          'b',
+                          { newlinesBetween: 'always' },
+                          'c',
+                        ],
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { elementNamePattern: 'c', groupName: 'c' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'b',
+                          left: 'a',
+                        },
+                        messageId: 'extraSpacingBetweenModulesMembers',
+                      },
+                    ],
+                    output: dedent`
+                      function a() {}
+                      function b() {}
+                    `,
+                    code: dedent`
+                      function a() {}
+
                       function b() {}
                     `,
                   },
