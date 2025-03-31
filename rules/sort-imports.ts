@@ -3,7 +3,6 @@ import type { TSESTree } from '@typescript-eslint/types'
 import { builtinModules } from 'node:module'
 
 import type { SortImportsSortingNode, Options } from './sort-imports/types'
-import type { GroupsOptions } from '../types/common-options'
 
 import {
   partitionByCommentJsonSchema,
@@ -20,11 +19,12 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
-import { isNewlinesBetweenOption } from '../utils/is-newlines-between-option'
+import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { getTypescriptImport } from './sort-imports/get-typescript-import'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -108,6 +108,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     })
     validateCustomSortConfiguration(options)
     validateNewlinesAndPartitionConfiguration(options)
+    validateSideEffectsConfiguration(options)
 
     let tsConfigOutput = options.tsconfigRootDir
       ? readClosestTsConfigByPath({
@@ -116,28 +117,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           contextCwd: context.cwd,
         })
       : null
-
-    /**
-     * Ensure that if `sortSideEffects: false`, no side effect group is in a
-     * nested group with non-side-effect groups.
-     */
-    if (!options.sortSideEffects) {
-      let hasInvalidGroup = options.groups
-        .filter(group => Array.isArray(group))
-        .some(
-          nestedGroup =>
-            !isSideEffectOnlyGroup(nestedGroup) &&
-            nestedGroup.some(
-              subGroup =>
-                subGroup === 'side-effect' || subGroup === 'side-effect-style',
-            ),
-        )
-      if (hasInvalidGroup) {
-        throw new Error(
-          "Side effect groups cannot be nested with non side effect groups when 'sortSideEffects' is 'false'.",
-        )
-      }
-    }
 
     let { sourceCode, filename, id } = context
     let eslintDisabledLines = getEslintDisabledLines({
@@ -391,9 +370,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 return {
                   options: {
                     ...options,
-                    type: isSideEffectOnlyGroup(options.groups[groupNumber])
-                      ? 'unsorted'
-                      : options.type,
+                    type:
+                      options.groups[groupNumber] &&
+                      isSideEffectOnlyGroup(options.groups[groupNumber])
+                        ? 'unsorted'
+                        : options.type,
                   },
                 }
               },
@@ -612,15 +593,4 @@ let isSideEffectImport = ({
   /* Avoid matching on named imports without specifiers */
   !/\}\s*from\s+/u.test(sourceCode.getText(node))
 
-let isSideEffectOnlyGroup = (
-  group: GroupsOptions<string>[0] | undefined,
-): boolean => {
-  if (!group || isNewlinesBetweenOption(group)) {
-    return false
-  }
-  if (typeof group === 'string') {
-    return group === 'side-effect' || group === 'side-effect-style'
-  }
 
-  return group.every(isSideEffectOnlyGroup)
-}
