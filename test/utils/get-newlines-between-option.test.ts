@@ -7,46 +7,45 @@ import { getNewlinesBetweenOption } from '../../utils/get-newlines-between-optio
 
 describe('get-newlines-between-option', () => {
   describe('global "newlinesBetween" option', () => {
-    it('should return the global option if "customGroups" is not defined', () => {
-      expect(
-        getNewlinesBetweenOption(
-          buildParameters({
-            newlinesBetween: 'ignore',
-          }),
-        ),
-      ).toBe('ignore')
-    })
+    it.each(['always', 'ignore', 'never'] as const)(
+      'should return the global option (`%s`) if "customGroups" is not defined',
+      newlinesBetween => {
+        expect(
+          getNewlinesBetweenOption(
+            buildParameters({
+              newlinesBetween,
+            }),
+          ),
+        ).toBe(newlinesBetween)
+      },
+    )
 
-    it('should return the global option if "customGroups" is not an array', () => {
-      expect(
-        getNewlinesBetweenOption(
-          buildParameters({
-            newlinesBetween: 'ignore',
-            customGroups: {},
-          }),
-        ),
-      ).toBe('ignore')
-    })
+    it.each(['always', 'ignore', 'never'] as const)(
+      'should return the global option (`%s`) if "customGroups" is not an array',
+      newlinesBetween => {
+        expect(
+          getNewlinesBetweenOption(
+            buildParameters({
+              customGroups: {},
+              newlinesBetween,
+            }),
+          ),
+        ).toBe(newlinesBetween)
+      },
+    )
 
-    it('should return "ignore" if "newlinesBetween" is "ignore"', () => {
-      expect(
-        getNewlinesBetweenOption(
-          buildParameters({
-            newlinesBetween: 'ignore',
-          }),
-        ),
-      ).toBe('ignore')
-    })
-
-    it('should return "never" if "newlinesBetween" is "never"', () => {
-      expect(
-        getNewlinesBetweenOption(
-          buildParameters({
-            newlinesBetween: 'never',
-          }),
-        ),
-      ).toBe('never')
-    })
+    it.each(['ignore', 'never'] as const)(
+      'should return "%s" if "newlinesBetween" is "%s"',
+      newlinesBetween => {
+        expect(
+          getNewlinesBetweenOption(
+            buildParameters({
+              newlinesBetween,
+            }),
+          ),
+        ).toBe(newlinesBetween)
+      },
+    )
 
     it('should return "always" if "newlinesBetween" is "always" and nodeGroupNumber !== nextNodeGroupNumber', () => {
       expect(
@@ -74,37 +73,43 @@ describe('get-newlines-between-option', () => {
       ).toBe('never')
     })
 
-    it("should return the global option if the node's group is within an array", () => {
-      expect(
-        getNewlinesBetweenOption(
-          buildParameters({
-            customGroups: [
-              {
-                groupName: 'group1',
-              },
-            ],
-            groups: [['group1', 'group3'], 'group2'],
-            newlinesBetween: 'never',
-          }),
-        ),
-      ).toBe('never')
-    })
+    it.each(['always', 'ignore', 'never'] as const)(
+      "should return the global option (`%s`) if the node's group is within an array",
+      newlinesBetween => {
+        expect(
+          getNewlinesBetweenOption(
+            buildParameters({
+              customGroups: [
+                {
+                  groupName: 'group1',
+                },
+              ],
+              groups: [['group1', 'group3'], 'group2'],
+              newlinesBetween,
+            }),
+          ),
+        ).toBe(newlinesBetween)
+      },
+    )
 
-    it("should return the global option if the next node's group is within an array", () => {
-      expect(
-        getNewlinesBetweenOption(
-          buildParameters({
-            customGroups: [
-              {
-                groupName: 'group1',
-              },
-            ],
-            groups: ['group1', ['group2', 'group3']],
-            newlinesBetween: 'never',
-          }),
-        ),
-      ).toBe('never')
-    })
+    it.each(['always', 'ignore', 'never'] as const)(
+      "should return the global option (`%s`) if the next node's group is within an array",
+      newlinesBetween => {
+        expect(
+          getNewlinesBetweenOption(
+            buildParameters({
+              customGroups: [
+                {
+                  groupName: 'group1',
+                },
+              ],
+              groups: ['group1', ['group2', 'group3']],
+              newlinesBetween,
+            }),
+          ),
+        ).toBe(newlinesBetween)
+      },
+    )
   })
 
   describe('custom groups "newlinesBetween" option', () => {
@@ -118,76 +123,100 @@ describe('get-newlines-between-option', () => {
         ],
         nextSortingNodeGroup: 'group1',
         sortingNodeGroup: 'group1',
-        newlinesBetween: 'never',
       } as const
 
-      it('should return the "newlinesInside" option if defined', () => {
-        expect(
-          getNewlinesBetweenOption(
-            buildParameters({
-              ...parameters,
-              customGroups: [
-                {
-                  newlinesInside: 'always',
-                  groupName: 'group1',
-                },
-              ],
-            }),
-          ),
-        ).toBe('always')
-      })
+      it.each(['always', 'never'] as const)(
+        'should return the "newlinesInside" option (`%s`) if defined',
+        newlinesInside => {
+          expect(
+            getNewlinesBetweenOption(
+              buildParameters({
+                ...parameters,
+                customGroups: [
+                  {
+                    groupName: 'group1',
+                    newlinesInside,
+                  },
+                ],
+                newlinesBetween: 'never',
+              }),
+            ),
+          ).toBe(newlinesInside)
+        },
+      )
 
-      it('should return the global option if the "newlinesInside" option is not defined', () => {
-        expect(
-          getNewlinesBetweenOption(
-            buildParameters({
-              ...parameters,
-              customGroups: [
-                {
-                  groupName: 'group1',
-                },
-              ],
-            }),
-          ),
-        ).toBe('never')
-      })
+      it.each(['ignore', 'never'] as const)(
+        'should return the global option (`%s`) if the "newlinesInside" option is not defined',
+        newlinesBetween => {
+          expect(
+            getNewlinesBetweenOption(
+              buildParameters({
+                ...parameters,
+                customGroups: [
+                  {
+                    groupName: 'group1',
+                  },
+                ],
+                newlinesBetween,
+              }),
+            ),
+          ).toBe(newlinesBetween)
+        },
+      )
     })
 
     describe('when the node and next node do not belong to the same custom group', () => {
-      it('should return the global option', () => {
-        expect(
-          getNewlinesBetweenOption(
-            buildParameters({
-              customGroups: [
-                {
-                  groupName: 'group1',
-                },
-                {
-                  groupName: 'group2',
-                },
-              ],
-              newlinesBetween: 'never',
-            }),
-          ),
-        ).toBe('never')
-      })
+      it.each(['always', 'ignore', 'never'] as const)(
+        'should return the global option (`%s`)',
+        newlinesBetween => {
+          expect(
+            getNewlinesBetweenOption(
+              buildParameters({
+                customGroups: [
+                  {
+                    groupName: 'group1',
+                  },
+                  {
+                    groupName: 'group2',
+                  },
+                ],
+                newlinesBetween,
+              }),
+            ),
+          ).toBe(newlinesBetween)
+        },
+      )
     })
 
     describe('newlinesBetween option between two groups', () => {
-      it('should return the newlinesBetween option between two adjacent groups', () => {
-        expect(
-          getNewlinesBetweenOption(
-            buildParameters({
-              groups: ['group1', { newlinesBetween: 'always' }, 'group2'],
-              newlinesBetween: 'never',
-            }),
-          ),
-        ).toBe('always')
-      })
+      it.each([
+        { globalNewlinesBetween: 'always', newlinesBetween: 'always' },
+        { globalNewlinesBetween: 'always', newlinesBetween: 'ignore' },
+        { globalNewlinesBetween: 'always', newlinesBetween: 'never' },
+        { globalNewlinesBetween: 'ignore', newlinesBetween: 'always' },
+        { globalNewlinesBetween: 'ignore', newlinesBetween: 'ignore' },
+        { globalNewlinesBetween: 'ignore', newlinesBetween: 'never' },
+        { globalNewlinesBetween: 'never', newlinesBetween: 'always' },
+        { globalNewlinesBetween: 'never', newlinesBetween: 'ignore' },
+        { globalNewlinesBetween: 'never', newlinesBetween: 'never' },
+      ] as const)(
+        'should return the newlinesBetween option between two adjacent groups (%s)',
+        ({ globalNewlinesBetween, newlinesBetween }) => {
+          expect(
+            getNewlinesBetweenOption(
+              buildParameters({
+                groups: ['group1', { newlinesBetween }, 'group2'],
+                newlinesBetween: globalNewlinesBetween,
+              }),
+            ),
+          ).toBe(newlinesBetween)
+        },
+      )
 
       describe('non-adjacent groups', () => {
-        it('should return `always` if the global option is `always`', () => {
-          for (let newlinesBetween of ['always', 'ignore', 'never'] as const) {
+        it.each(['always', 'ignore', 'never'] as const)(
+          'should return `always` if the global option is `always`',
+          newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
                 buildParameters({
@@ -201,45 +230,73 @@ describe('get-newlines-between-option', () => {
                 }),
               ),
             ).toBe('always')
-          }
-        })
+          },
+        )
 
-        it('should return `always` if `always` exists between the groups', () => {
-          expect(
-            getNewlinesBetweenOption(
-              buildParameters({
-                groups: [
-                  'group1',
-                  'someOtherGroup',
-                  { newlinesBetween: 'always' },
-                  'group2',
-                ],
-                newlinesBetween: 'never',
-              }),
-            ),
-          ).toBe('always')
-        })
+        it.each(['always', 'ignore', 'never'] as const)(
+          'should return `always` if `always` exists between the groups and global option is `%s`',
+          newlinesBetween => {
+            expect(
+              getNewlinesBetweenOption(
+                buildParameters({
+                  groups: [
+                    'group1',
+                    'someOtherGroup',
+                    { newlinesBetween: 'always' },
+                    'group2',
+                  ],
+                  newlinesBetween,
+                }),
+              ),
+            ).toBe('always')
+          },
+        )
 
-        it('should return `ignore` if `ignore` exists between the groups', () => {
-          expect(
-            getNewlinesBetweenOption(
-              buildParameters({
-                groups: [
-                  'group1',
-                  'someOtherGroup',
-                  { newlinesBetween: 'ignore' },
-                  'group2',
-                  { newlinesBetween: 'always' },
-                  'someOtherGroup2',
-                ],
-                newlinesBetween: 'never',
-              }),
-            ),
-          ).toBe('ignore')
-        })
+        it.each(['ignore', 'never'] as const)(
+          'should return `ignore` if `ignore` exists between the groups and not `always` with global option `%s`',
+          newlinesBetween => {
+            expect(
+              getNewlinesBetweenOption(
+                buildParameters({
+                  groups: [
+                    'group1',
+                    'someOtherGroup',
+                    { newlinesBetween: 'ignore' },
+                    'group2',
+                    { newlinesBetween: 'always' },
+                    'someOtherGroup2',
+                  ],
+                  newlinesBetween,
+                }),
+              ),
+            ).toBe('ignore')
+          },
+        )
 
-        it('should return the global option if no `ignore` or `always` exist', () => {
-          for (let newlinesBetween of ['always', 'ignore', 'never'] as const) {
+        it.each(['always', 'ignore', 'never'] as const)(
+          'should return `never` if there are only `never` between all groups and global option is `%s`',
+          newlinesBetween => {
+            expect(
+              getNewlinesBetweenOption(
+                buildParameters({
+                  groups: [
+                    'group1',
+                    { newlinesBetween: 'never' },
+                    'someOtherGroup',
+                    { newlinesBetween: 'never' },
+                    'group2',
+                    'someOtherGroup2',
+                  ],
+                  newlinesBetween,
+                }),
+              ),
+            ).toBe('never')
+          },
+        )
+
+        it.each(['always', 'ignore', 'never'] as const)(
+          'should return the global option (`%s`) if no `ignore` or `always` exist',
+          newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
                 buildParameters({
@@ -255,8 +312,8 @@ describe('get-newlines-between-option', () => {
                 }),
               ),
             ).toBe(newlinesBetween)
-          }
-        })
+          },
+        )
       })
     })
   })

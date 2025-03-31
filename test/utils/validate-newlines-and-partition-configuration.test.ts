@@ -3,10 +3,9 @@ import { describe, expect, it } from 'vitest'
 import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
 
 describe('validate-newlines-and-partition-configuration', () => {
-  it("throws an error when 'partitionByNewline' is enabled and 'newlinesBetween' is not 'ignore'", () => {
-    let newlinesBetweenValues = ['always', 'never'] as const
-
-    for (let newlinesBetween of newlinesBetweenValues) {
+  it.each(['always', 'never'] as const)(
+    "throws an error when 'partitionByNewline' is enabled and 'newlinesBetween' is '%s'",
+    newlinesBetween => {
       expect(() => {
         validateNewlinesAndPartitionConfiguration({
           partitionByNewLine: true,
@@ -16,13 +15,12 @@ describe('validate-newlines-and-partition-configuration', () => {
       }).toThrow(
         "The 'partitionByNewLine' and 'newlinesBetween' options cannot be used together",
       )
-    }
-  })
+    },
+  )
 
-  it("throws an error when 'partitionByNewline' is enabled and 'newlinesBetween' objects exist in 'groups'", () => {
-    let newlinesBetweenValues = ['always', 'never', 'ignore'] as const
-
-    for (let newlinesBetween of newlinesBetweenValues) {
+  it.each(['always', 'never', 'ignore'] as const)(
+    "throws an error when 'partitionByNewline' is enabled and `newlinesBetween: '%s'` objects exist in 'groups'",
+    newlinesBetween => {
       expect(() => {
         validateNewlinesAndPartitionConfiguration({
           groups: [{ newlinesBetween }],
@@ -32,8 +30,8 @@ describe('validate-newlines-and-partition-configuration', () => {
       }).toThrow(
         "'newlinesBetween' objects can not be used in 'groups' alongside 'partitionByNewLine'",
       )
-    }
-  })
+    },
+  )
 
   it("allows 'partitionByNewline' when 'newlinesBetween' is 'ignore'", () => {
     expect(() => {
@@ -45,10 +43,9 @@ describe('validate-newlines-and-partition-configuration', () => {
     }).not.toThrow()
   })
 
-  it("allows 'newlinesBetween' when 'partitionByNewline' is 'false'", () => {
-    let newlinesBetweenValues = ['always', 'never', 'ignore'] as const
-
-    for (let newlinesBetween of newlinesBetweenValues) {
+  it.each(['always', 'never', 'ignore'] as const)(
+    "allows `newlinesBetween: '%s'` when 'partitionByNewline' is 'false'",
+    newlinesBetween => {
       expect(() => {
         validateNewlinesAndPartitionConfiguration({
           partitionByNewLine: false,
@@ -56,6 +53,6 @@ describe('validate-newlines-and-partition-configuration', () => {
           groups: [],
         })
       }).not.toThrow()
-    }
-  })
+    },
+  )
 })
