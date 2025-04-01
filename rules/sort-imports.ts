@@ -2,18 +2,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { builtinModules } from 'node:module'
 
-import type {
-  DeprecatedCustomGroupsOption,
-  PartitionByCommentOption,
-  SpecialCharactersOption,
-  NewlinesBetweenOption,
-  FallbackSortOption,
-  GroupsOptions,
-  OrderOption,
-  RegexOption,
-  TypeOption,
-} from '../types/common-options'
-import type { SortingNode } from '../types/sorting-node'
+import type { SortImportsSortingNode, Options } from './sort-imports/types'
+import type { GroupsOptions } from '../types/common-options'
 
 import {
   partitionByCommentJsonSchema,
@@ -49,61 +39,11 @@ import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
-export type Options = [
-  Partial<{
-    customGroups: {
-      value?: DeprecatedCustomGroupsOption
-      type?: DeprecatedCustomGroupsOption
-    }
-    partitionByComment: PartitionByCommentOption
-    specialCharacters: SpecialCharactersOption
-    locales: NonNullable<Intl.LocalesArgument>
-    newlinesBetween: NewlinesBetweenOption
-    fallbackSort: FallbackSortOption
-    internalPattern: RegexOption[]
-    groups: GroupsOptions<Group>
-    environment: 'node' | 'bun'
-    partitionByNewLine: boolean
-    sortSideEffects: boolean
-    tsconfigRootDir?: string
-    maxLineLength?: number
-    ignoreCase: boolean
-    order: OrderOption
-    type: TypeOption
-    alphabet: string
-  }>,
-]
-
 export type MESSAGE_ID =
   | 'missedSpacingBetweenImports'
   | 'unexpectedImportsGroupOrder'
   | 'extraSpacingBetweenImports'
   | 'unexpectedImportsOrder'
-
-type Group =
-  | 'side-effect-style'
-  | 'external-type'
-  | 'internal-type'
-  | 'builtin-type'
-  | 'sibling-type'
-  | 'parent-type'
-  | 'side-effect'
-  | 'index-type'
-  | 'internal'
-  | 'external'
-  | 'sibling'
-  | 'unknown'
-  | 'builtin'
-  | 'parent'
-  | 'object'
-  | 'index'
-  | 'style'
-  | 'type'
-  | string
-
-interface SortImportsSortingNode extends SortingNode {
-  isIgnored: boolean
-}
 
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
