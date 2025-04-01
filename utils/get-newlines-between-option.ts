@@ -133,15 +133,15 @@ let buildGroupsWithAllNewlinesBetween = (
   let returnValue: GroupsOptions<string> = []
   for (let i = 0; i < groups.length; i++) {
     let group = groups[i]!
-    if (isNewlinesBetweenOption(group)) {
-      returnValue.push(group)
-    } else {
+
+    if (!isNewlinesBetweenOption(group)) {
       let previousGroup = groups[i - 1]
       if (previousGroup && !isNewlinesBetweenOption(previousGroup)) {
         returnValue.push({ newlinesBetween: globalNewlinesBetweenOption })
       }
-      returnValue.push(group)
     }
+
+    returnValue.push(group)
   }
   return returnValue
 }
