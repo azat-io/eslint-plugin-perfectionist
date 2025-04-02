@@ -171,6 +171,15 @@ Controls whether special characters should be trimmed, removed or kept before so
 - `'trim'` — Trim special characters when sorting alphabetically or naturally (e.g., “_a” and “a” are the same).
 - `'remove'` — Remove special characters when sorting (e.g., “/a/b” and “ab” are the same).
 
+### locales
+
+<sub>default: `'en-US'`</sub>
+
+Specifies the sorting locales. See [String.prototype.localeCompare() - locales](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare#locales).
+
+- `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
+- `string[]` — An array of BCP 47 language tags.
+
 ### sortBy
 
 <sub>default: `name`</sub>
@@ -200,15 +209,6 @@ type User = {
 }
 
 ```
-
-### locales
-
-<sub>default: `'en-US'`</sub>
-
-Specifies the sorting locales. See [String.prototype.localeCompare() - locales](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare#locales).
-
-- `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
-- `string[]` — An array of BCP 47 language tags.
 
 ### [DEPRECATED] ignorePattern
 
