@@ -418,6 +418,8 @@ type User = {
 
 Elements that are not `optional` will be matched with the `required` modifier, even if the keyword is not present.
 
+#### Important notes
+
 ##### The `unknown` group
 
 Members that don’t fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option,
@@ -462,6 +464,25 @@ interface Interface {
   description?: string;
   // 'required-method'
   method(): string
+```
+
+##### Newlines between groups
+
+You may place `newlinesBetween` objects between your groups to enforce the newline behavior between two specific groups.
+
+See the [`newlinesBetween`](#newlinesbetween) option.
+
+This feature is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
+
+```ts
+{
+  newlinesBetween: 'always',
+  groups: [
+    'a',
+    { newlinesBetween: 'never' }, // Overrides the global newlinesBetween option
+    'b',
+  ]
+}
 ```
 
 ### customGroups
@@ -602,25 +623,6 @@ type User = {
 +    }                                       // [!code ++]
 +  ]                                         // [!code ++]
  }
-```
-
-#### Newlines between groups
-
-You may place `newlinesBetween` objects between your groups to enforce the newline behavior between two specific groups.
-
-See the [`newlinesBetween`](#newlinesbetween) option.
-
-This feature is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
-
-```ts
-{
-  newlinesBetween: 'always',
-  groups: [
-    'a',
-    { newlinesBetween: 'never' }, // Overrides the global newlinesBetween option
-    'b',
-  ]
-}
 ```
 
 ## Usage
