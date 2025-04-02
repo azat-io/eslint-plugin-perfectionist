@@ -103,15 +103,15 @@ Specifies the sorting method.
 
 - `'alphabetical'` — Sort items alphabetically (e.g., “a” < “b” < “c”) using [localeCompare](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare).
 - `'natural'` — Sort items in a [natural](https://github.com/yobacca/natural-orderby) order (e.g., “item2” < “item10”).
-- `'line-length'` — Sort items by the length of the code line (shorter lines first).
-- `'custom'` — Sort items using the alphabet entered in the [`alphabet`](#alphabet) option.
+- `'line-length'` — Sort items by code line length (shorter lines first).
+- `'custom'` — Sort items using the alphabet specified in the [`alphabet`](#alphabet) option.
 - `'unsorted'` — Do not sort items. [`grouping`](#groups) and [`newlines behavior`](#newlinesbetween) are still enforced.
 
 ### order
 
 <sub>default: `'asc'`</sub>
 
-Determines whether the sorted items should be in ascending or descending order.
+Specifies whether to sort items in ascending or descending order.
 
 - `'asc'` — Sort items in ascending order (A to Z, 1 to 9).
 - `'desc'` — Sort items in descending order (Z to A, 9 to 1).
@@ -130,7 +130,7 @@ Determines whether the sorted items should be in ascending or descending order.
 </sub>
 <sub>default: `{ type: 'unsorted' }`</sub>
 
-Defines a list of fallback sort options to use when comparing two elements that are equal according to the primary sort
+Specifies fallback sort options for elements that are equal according to the primary sort
 [`type`](#type).
 
 Example: enforce alphabetical sort between two elements with the same length.
@@ -146,7 +146,7 @@ Example: enforce alphabetical sort between two elements with the same length.
 
 <sub>default: `''`</sub>
 
-Only used when the [`type`](#type) option is set to `'custom'`. Specifies the custom alphabet to use when sorting.
+Used only when the [`type`](#type) option is set to `'custom'`. Specifies the custom alphabet for sorting.
 
 Use the `Alphabet` utility class from `eslint-plugin-perfectionist/alphabet` to quickly generate a custom alphabet.
 
@@ -156,7 +156,7 @@ Example: `0123456789abcdef...`
 
 <sub>default: `true`</sub>
 
-Controls whether sorting should be case-sensitive or not.
+Specifies whether sorting should be case-sensitive.
 
 - `true` — Ignore case when sorting alphabetically or naturally (e.g., “A” and “a” are the same).
 - `false` — Consider case when sorting (e.g., “a” comes before “A”).
@@ -165,7 +165,7 @@ Controls whether sorting should be case-sensitive or not.
 
 <sub>default: `keep`</sub>
 
-Controls whether special characters should be trimmed, removed or kept before sorting.
+Specifies whether to trim, remove, or keep special characters before sorting.
 
 - `'keep'` — Keep special characters when sorting (e.g., “_a” comes before “a”).
 - `'trim'` — Trim special characters when sorting alphabetically or naturally (e.g., “_a” and “a” are the same).
@@ -175,7 +175,7 @@ Controls whether special characters should be trimmed, removed or kept before so
 
 <sub>default: `'en-US'`</sub>
 
-Specifies the sorting locales. See [String.prototype.localeCompare() - locales](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare#locales).
+Specifies the sorting locales. Refer To [String.prototype.localeCompare() - locales](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare#locales).
 
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
@@ -184,7 +184,7 @@ Specifies the sorting locales. See [String.prototype.localeCompare() - locales](
 
 <sub>default: `name`</sub>
 
-Controls whether sorting should be done only using the object type's values.
+Specifies whether to sort using object type keys or values.
 
 - `name` — Use object types keys.
 - `value` — Use the values of properties. Non-properties will not have an enforced sort order.
@@ -216,7 +216,7 @@ type User = {
 
 Use the [useConfigurationIf.declarationMatchesPattern](#useconfigurationif) option alongside [type: unsorted](#type) instead.
 
-Allows you to specify names or patterns for object types that should be ignored by this rule. This can be useful if you have specific object types that you do not want to sort.
+Specifies names or patterns for object types to be ignored by this rule. This can be useful if you have specific object types that you do not want to sort.
 
 You can specify their names or a regexp pattern to ignore, for example: `'^Component.+'` to ignore all object types whose names begin with the word “Component”.
 
@@ -224,7 +224,7 @@ You can specify their names or a regexp pattern to ignore, for example: `'^Compo
 
 <sub>default: `false`</sub>
 
-Allows you to use comments to separate the members of types into logical groups. This can help in organizing and maintaining large object types by creating partitions based on comments.
+Enables the use of comments to separate the members of types into logical groups. This can help in organizing and maintaining large object types by creating partitions based on comments.
 
 - `true` — All comments will be treated as delimiters, creating partitions.
 - `false` — Comments will not be used as delimiters.
@@ -236,7 +236,7 @@ Allows you to use comments to separate the members of types into logical groups.
 
 <sub>default: `false`</sub>
 
-When `true`, the rule will not sort the members of an object if there is an empty line between them. This can be useful for keeping logically separated groups of members in their defined order.
+When `true`, the rule will not sort the members of an object if there is an empty line between them. This helps maintain the defined order of logically separated groups of members.
 
 ```ts
 type User = {
@@ -263,7 +263,7 @@ Each group of members (separated by empty lines) is treated independently, and t
 
 <sub>default: `'ignore'`</sub>
 
-Specifies how new lines should be handled between object type groups.
+Specifies how to handle new lines between object type groups.
 
 - `ignore` — Do not report errors related to new lines between object type groups.
 - `always` — Enforce one new line between each group, and forbid new lines inside a group.
@@ -281,7 +281,7 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
 
 Use the [groups](#groups) option with the `optional` and `required` modifiers instead.
 
-Allows you to group type object keys by their kind, determining whether required values should come before or after optional values.
+Groups type object keys by their kind, determining whether required values should come before or after optional values.
 
 - `mixed` — Do not group object keys by their kind; required values are sorted together optional values.
 - `required-first` — Group all required values before optional.
@@ -300,7 +300,7 @@ Allows you to group type object keys by their kind, determining whether required
 </sub>
 <sub>default: `{}`</sub>
 
-Allows you to specify filters to match a particular options configuration for a given object type.
+Specifies filters to match a particular options configuration for a given object type.
 
 The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
 
@@ -356,7 +356,7 @@ Example configuration:
 </sub>
 <sub>default: `[]`</sub>
 
-Allows you to specify a list of type properties groups for sorting. Groups help organize properties into categories, making your type definitions more readable and maintainable.
+Specifies a list of type properties groups for sorting. Groups help organize properties into categories, making your type definitions more readable and maintainable.
 
 Each property will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
 The order of items in the `groups` option determines how groups are ordered.
@@ -520,7 +520,7 @@ Current API:
 </sub>
 <sub>default: `[]`</sub>
 
-You can define your own groups and use regexp patterns to match specific object type members.
+Defines custom groups to match specific object type members.
 
 A custom group definition may follow one of the two following interfaces:
 
