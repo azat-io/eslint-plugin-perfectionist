@@ -1,5 +1,28 @@
 # Changelog
 
+## v4.11.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.10.1...v4.11.0)
+
+### 🚀 Features
+
+- **sort-exports:** Add groups-related options ([ca3f34d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ca3f34d))
+- **sort-jsx-props:** Migrate groups-related option to new api ([3e500d0](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3e500d0))
+
+### 🐞 Bug Fixes
+
+- Export plugin meta data ([38a3a23](https://github.com/azat-io/eslint-plugin-perfectionist/commit/38a3a23))
+- Fix detection of object destructuring dependencies ([a0af5a7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a0af5a7))
+- Throw an error if regexp expressions are entered ([2b27b7d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2b27b7d))
+- Fix false positive errors from eslint-disable ([067a871](https://github.com/azat-io/eslint-plugin-perfectionist/commit/067a871))
+- Prevent circular dependency loops ([ab50323](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ab50323))
+- Fix invalid newlines between results ([e18a65a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e18a65a))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+- Ntnyq ([@ntnyq](https://github.com/ntnyq))
+
 ## v4.10.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.10.0...v4.10.1)
