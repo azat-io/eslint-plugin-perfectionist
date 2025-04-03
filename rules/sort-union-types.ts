@@ -32,9 +32,9 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 
 export type Options = [
@@ -180,34 +180,34 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
 
   let formattedMembers: SortingNode[][] = node.types.reduce(
     (accumulator: SortingNode[][], type) => {
-      let { defineGroup, getGroup } = useGroups(options)
+      let predefinedGroups: string[] = []
 
       switch (type.type) {
         case 'TSTemplateLiteralType':
         case 'TSLiteralType':
-          defineGroup('literal')
+          predefinedGroups.push('literal')
           break
         case 'TSIndexedAccessType':
         case 'TSTypeReference':
         case 'TSQualifiedName':
         case 'TSArrayType':
         case 'TSInferType':
-          defineGroup('named')
+          predefinedGroups.push('named')
           break
         case 'TSIntersectionType':
-          defineGroup('intersection')
+          predefinedGroups.push('intersection')
           break
         case 'TSUndefinedKeyword':
         case 'TSNullKeyword':
         case 'TSVoidKeyword':
-          defineGroup('nullish')
+          predefinedGroups.push('nullish')
           break
         case 'TSConditionalType':
-          defineGroup('conditional')
+          predefinedGroups.push('conditional')
           break
         case 'TSConstructorType':
         case 'TSFunctionType':
-          defineGroup('function')
+          predefinedGroups.push('function')
           break
         case 'TSBooleanKeyword':
         case 'TSUnknownKeyword':
@@ -219,26 +219,31 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
         case 'TSNeverKeyword':
         case 'TSAnyKeyword':
         case 'TSThisType':
-          defineGroup('keyword')
+          predefinedGroups.push('keyword')
           break
         case 'TSTypeOperator':
         case 'TSTypeQuery':
-          defineGroup('operator')
+          predefinedGroups.push('operator')
           break
         case 'TSTypeLiteral':
         case 'TSMappedType':
-          defineGroup('object')
+          predefinedGroups.push('object')
           break
         case 'TSImportType':
-          defineGroup('import')
+          predefinedGroups.push('import')
           break
         case 'TSTupleType':
-          defineGroup('tuple')
+          predefinedGroups.push('tuple')
           break
         case 'TSUnionType':
-          defineGroup('union')
+          predefinedGroups.push('union')
           break
       }
+
+      let group = computeGroup({
+        predefinedGroups,
+        options,
+      })
 
       let lastGroup = accumulator.at(-1)
       let lastSortingNode = lastGroup?.at(-1)
@@ -246,8 +251,8 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
         isEslintDisabled: isNodeEslintDisabled(type, eslintDisabledLines),
         size: rangeToDiff(type, sourceCode),
         name: sourceCode.getText(type),
-        group: getGroup(),
         node: type,
+        group,
       }
 
       if (

@@ -31,10 +31,10 @@ import { singleCustomGroupJsonSchema } from './sort-maps/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 
 type MESSAGE_ID =
@@ -124,26 +124,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let lastSortingNode = formattedMembers.at(-1)?.at(-1)
 
-          let { defineGroup, getGroup } = useGroups(options)
-          for (let customGroup of options.customGroups) {
-            if (
+          let group = computeGroup({
+            customGroupMatcher: customGroup =>
               doesCustomGroupMatch({
                 elementName: name,
                 selectors: [],
                 modifiers: [],
                 customGroup,
-              })
-            ) {
-              defineGroup(customGroup.groupName, true)
-              /**
-               * If the custom group is not referenced in the `groups` option, it
-               * will be ignored
-               */
-              if (getGroup() === customGroup.groupName) {
-                break
-              }
-            }
-          }
+              }),
+            predefinedGroups: [],
+            options,
+          })
 
           let sortingNode: SortingNode = {
             isEslintDisabled: isNodeEslintDisabled(
@@ -151,8 +142,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
               eslintDisabledLines,
             ),
             size: rangeToDiff(element, sourceCode),
-            group: getGroup(),
             node: element,
+            group,
             name,
           }
 

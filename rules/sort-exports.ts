@@ -31,9 +31,9 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 
 /**
@@ -96,7 +96,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         | TSESTree.ExportNamedDeclarationWithSource
         | TSESTree.ExportAllDeclaration,
     ): void => {
-      let { defineGroup, getGroup } = useGroups(options)
       let selector: Selector = 'export'
       let modifiers: Modifier[] = []
       if (node.exportKind === 'value') {
@@ -105,43 +104,31 @@ export default createEslintRule<Options, MESSAGE_ID>({
         modifiers.push('type')
       }
 
+      let name = node.source.value
+
       let predefinedGroups = generatePredefinedGroups({
         cache: cachedGroupsByModifiersAndSelectors,
         selectors: [selector],
         modifiers,
       })
-
-      for (let predefinedGroup of predefinedGroups) {
-        defineGroup(predefinedGroup)
-      }
-
-      let name = node.source.value
-      for (let customGroup of options.customGroups) {
-        if (
+      let group = computeGroup({
+        customGroupMatcher: customGroup =>
           doesCustomGroupMatch({
             selectors: [selector],
             elementName: name,
             customGroup,
             modifiers,
-          })
-        ) {
-          defineGroup(customGroup.groupName, true)
-          /**
-           * If the custom group is not referenced in the `groups` option, it
-           * will be ignored
-           */
-          if (getGroup() === customGroup.groupName) {
-            break
-          }
-        }
-      }
+          }),
+        predefinedGroups,
+        options,
+      })
 
       let sortingNode: SortExportsSortingNode = {
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         groupKind: node.exportKind === 'value' ? 'value' : 'type',
         size: rangeToDiff(node, sourceCode),
         addSafetySemicolonWhenInline: true,
-        group: getGroup(),
+        group,
         name,
         node,
       }
