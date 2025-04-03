@@ -46,10 +46,10 @@ import { getDecoratorName } from '../utils/get-decorator-name'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { getGroupNumber } from '../utils/get-group-number'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
@@ -300,7 +300,6 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         (accumulator: SortClassSortingNodes[][], member) => {
           let name: string
           let dependencies: string[] = []
-          let { defineGroup, getGroup } = useGroups(options)
 
           if (member.type === 'StaticBlock') {
             name = 'static'
@@ -514,13 +513,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             selectors,
             modifiers,
           })
-
-          for (let predefinedGroup of predefinedGroups) {
-            defineGroup(predefinedGroup)
-          }
-
-          for (let customGroup of options.customGroups) {
-            if (
+          let group = computeGroup({
+            customGroupMatcher: customGroup =>
               doesCustomGroupMatch({
                 elementValue: memberValue,
                 elementName: name,
@@ -528,18 +522,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
                 decorators,
                 modifiers,
                 selectors,
-              })
-            ) {
-              defineGroup(customGroup.groupName, true)
-              /**
-               * If the custom group is not referenced in the `groups` option,
-               * it will be ignored.
-               */
-              if (getGroup() === customGroup.groupName) {
-                break
-              }
-            }
-          }
+              }),
+            predefinedGroups,
+            options,
+          })
 
           /**
            * Members belonging to the same overload signature group should have
@@ -573,9 +559,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
               : rangeToDiff(member, sourceCode),
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
             addSafetySemicolonWhenInline,
-            group: getGroup(),
             node: member,
             dependencies,
+            group,
             name,
           }
 

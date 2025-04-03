@@ -26,10 +26,10 @@ import { getDecoratorName } from '../utils/get-decorator-name'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 
 export type Options = [
@@ -200,19 +200,22 @@ let sortDecorators = (
 
   let formattedMembers: SortDecoratorsSortingNode[][] = decorators.reduce(
     (accumulator: SortDecoratorsSortingNode[][], decorator) => {
-      let { setCustomGroups, getGroup } = useGroups(options)
       let name = getDecoratorName({
         sourceCode,
         decorator,
       })
 
-      setCustomGroups(options.customGroups, name)
+      let group = computeGroup({
+        predefinedGroups: [],
+        options,
+        name,
+      })
 
       let sortingNode: SortDecoratorsSortingNode = {
         isEslintDisabled: isNodeEslintDisabled(decorator, eslintDisabledLines),
         size: rangeToDiff(decorator, sourceCode),
-        group: getGroup(),
         node: decorator,
+        group,
         name,
       }
 

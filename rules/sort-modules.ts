@@ -47,10 +47,10 @@ import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { getGroupNumber } from '../utils/get-group-number'
 import { getEnumMembers } from '../utils/get-enum-members'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 
 /**
@@ -289,41 +289,31 @@ let analyzeModule = ({
       continue
     }
 
-    let { defineGroup, getGroup } = useGroups(options)
-    for (let predefinedGroup of generatePredefinedGroups({
+    let predefinedGroups = generatePredefinedGroups({
       cache: cachedGroupsByModifiersAndSelectors,
       selectors: [selector],
       modifiers,
-    })) {
-      defineGroup(predefinedGroup)
-    }
-    for (let customGroup of options.customGroups) {
-      if (
+    })
+    let group = computeGroup({
+      customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
-          selectors: [selector],
-          elementName: name,
+          selectors: [selector!],
+          elementName: name!,
           customGroup,
           decorators,
           modifiers,
-        })
-      ) {
-        defineGroup(customGroup.groupName, true)
-        /**
-         * If the custom group is not referenced in the `groups` option, it will
-         * be ignored
-         */
-        if (getGroup() === customGroup.groupName) {
-          break
-        }
-      }
-    }
+        }),
+      predefinedGroups,
+      options,
+    })
+
     let sortingNode: SortingNodeWithDependencies = {
       isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
       size: rangeToDiff(node, sourceCode),
       addSafetySemicolonWhenInline,
       dependencyName: name,
-      group: getGroup(),
       dependencies,
+      group,
       name,
       node,
     }
