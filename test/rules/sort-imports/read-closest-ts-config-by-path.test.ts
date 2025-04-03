@@ -38,7 +38,7 @@ vi.mock('node:module', _ => ({
   }),
 }))
 
-let mockGetTypescriptImport: Mock<() => null> = vi.fn()
+let mockGetTypescriptImport: Mock<() => typeof ts | null> = vi.fn()
 
 vi.mock('../../../rules/sort-imports/get-typescript-import', () => ({
   getTypescriptImport: () => mockGetTypescriptImport(),
@@ -86,7 +86,7 @@ describe('readClosestTsConfigByPath', () => {
         '../../../rules/sort-imports/get-typescript-import',
       )
       mockGetTypescriptImport.mockImplementation(
-        actualGetTypescriptImport['getTypescriptImport'] as never,
+        actualGetTypescriptImport['getTypescriptImport'] as () => typeof ts,
       )
     })
 
