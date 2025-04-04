@@ -2934,6 +2934,391 @@ describe(ruleName, () => {
           },
         )
       })
+
+      describe(`custom groups`, () => {
+        for (let elementNamePattern of [
+          'hello',
+          ['noMatch', 'hello'],
+          { pattern: 'HELLO', flags: 'i' },
+          ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+        ]) {
+          ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'importsStartingWithHello',
+                      right: 'helloImport',
+                      leftGroup: 'unknown',
+                      left: 'a',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        groupName: 'importsStartingWithHello',
+                        elementNamePattern,
+                      },
+                    ],
+                    groups: ['importsStartingWithHello', 'unknown'],
+                  },
+                ],
+                output: dedent`
+                  import hello from 'helloImport'
+
+                  import a from 'a'
+                `,
+                code: dedent`
+                  import a from 'a'
+
+                  import hello from 'helloImport'
+                `,
+              },
+            ],
+            valid: [],
+          })
+        }
+
+        ruleTester.run(
+          `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'bb',
+                      left: 'a',
+                    },
+                    messageId: 'unexpectedImportsOrder',
+                  },
+                  {
+                    data: {
+                      right: 'ccc',
+                      left: 'bb',
+                    },
+                    messageId: 'unexpectedImportsOrder',
+                  },
+                  {
+                    data: {
+                      right: 'dddd',
+                      left: 'ccc',
+                    },
+                    messageId: 'unexpectedImportsOrder',
+                  },
+                  {
+                    data: {
+                      rightGroup: 'reversedExternalImportsByLineLength',
+                      leftGroup: 'unknown',
+                      left: './jjjjj',
+                      right: 'eee',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        groupName: 'reversedExternalImportsByLineLength',
+                        selector: 'external',
+                        type: 'line-length',
+                        order: 'desc',
+                      },
+                    ],
+                    groups: ['reversedExternalImportsByLineLength', 'unknown'],
+                    newlinesBetween: 'ignore',
+                    type: 'alphabetical',
+                    order: 'asc',
+                  },
+                ],
+                output: dedent`
+                  import dddd from 'dddd'
+                  import ccc from 'ccc'
+                  import eee from 'eee'
+                  import bb from 'bb'
+                  import ff from 'ff'
+                  import a from 'a'
+                  import g from 'g'
+                  import h from './h'
+                  import i from './i'
+                  import jjjjj from './jjjjj'
+                `,
+                code: dedent`
+                  import a from 'a'
+                  import bb from 'bb'
+                  import ccc from 'ccc'
+                  import dddd from 'dddd'
+                  import jjjjj from './jjjjj'
+                  import eee from 'eee'
+                  import ff from 'ff'
+                  import g from 'g'
+                  import h from './h'
+                  import i from './i'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}: sort custom groups by overriding 'fallbackSort'`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        fallbackSort: {
+                          type: 'alphabetical',
+                          order: 'asc',
+                        },
+                        elementNamePattern: '^foo',
+                        type: 'line-length',
+                        groupName: 'foo',
+                        order: 'desc',
+                      },
+                    ],
+                    type: 'alphabetical',
+                    groups: ['foo'],
+                    order: 'asc',
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'fooBar',
+                      left: 'fooZar',
+                    },
+                    messageId: 'unexpectedImportsOrder',
+                  },
+                ],
+                output: dedent`
+                  import fooBar from 'fooBar'
+                  import fooZar from 'fooZar'
+                `,
+                code: dedent`
+                  import fooZar from 'fooZar'
+                  import fooBar from 'fooBar'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}: does not sort custom groups with 'unsorted' type`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        groupName: 'unsortedExternalImports',
+                        selector: 'external',
+                        type: 'unsorted',
+                      },
+                    ],
+                    groups: ['unsortedExternalImports', 'unknown'],
+                    newlinesBetween: 'ignore',
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'unsortedExternalImports',
+                      leftGroup: 'unknown',
+                      left: './something',
+                      right: 'c',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                output: dedent`
+                  import b from 'b'
+                  import a from 'a'
+                  import d from 'd'
+                  import e from 'e'
+                  import c from 'c'
+                  import something from './something'
+                `,
+                code: dedent`
+                  import b from 'b'
+                  import a from 'a'
+                  import d from 'd'
+                  import e from 'e'
+                  import something from './something'
+                  import c from 'c'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      anyOf: [
+                        {
+                          selector: 'external',
+                        },
+                        {
+                          selector: 'sibling',
+                          modifiers: ['type'],
+                        },
+                      ],
+                      groupName: 'externalAndTypeSiblingImports',
+                    },
+                  ],
+                  groups: [
+                    ['externalAndTypeSiblingImports', 'index'],
+                    'unknown',
+                  ],
+                  newlinesBetween: 'ignore',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'externalAndTypeSiblingImports',
+                    leftGroup: 'unknown',
+                    right: './c',
+                    left: './b',
+                  },
+                  messageId: 'unexpectedImportsGroupOrder',
+                },
+                {
+                  data: {
+                    right: './index',
+                    left: 'e',
+                  },
+                  messageId: 'unexpectedImportsOrder',
+                },
+              ],
+              output: dedent`
+                import type c from './c'
+                import type d from './d'
+                import i from './index'
+                import a from 'a'
+                import e from 'e'
+                import b from './b'
+              `,
+              code: dedent`
+                import a from 'a'
+                import b from './b'
+                import type c from './c'
+                import type d from './d'
+                import e from 'e'
+                import i from './index'
+              `,
+            },
+          ],
+          valid: [],
+        })
+
+        describe('newlinesInside', () => {
+          ruleTester.run(
+            `${ruleName}: allows to use newlinesInside: always`,
+            rule,
+            {
+              invalid: [
+                {
+                  options: [
+                    {
+                      customGroups: [
+                        {
+                          newlinesInside: 'always',
+                          selector: 'external',
+                          groupName: 'group1',
+                        },
+                      ],
+                      groups: ['group1'],
+                    },
+                  ],
+                  errors: [
+                    {
+                      data: {
+                        right: 'b',
+                        left: 'a',
+                      },
+                      messageId: 'missedSpacingBetweenImports',
+                    },
+                  ],
+                  output: dedent`
+                    import a from 'a'
+
+                    import b from 'b'
+                  `,
+                  code: dedent`
+                    import a from 'a'
+                    import b from 'b'
+                  `,
+                },
+              ],
+              valid: [],
+            },
+          )
+
+          ruleTester.run(
+            `${ruleName}: allows to use newlinesInside: never`,
+            rule,
+            {
+              invalid: [
+                {
+                  options: [
+                    {
+                      customGroups: [
+                        {
+                          newlinesInside: 'never',
+                          selector: 'external',
+                          groupName: 'group1',
+                        },
+                      ],
+                      type: 'alphabetical',
+                      groups: ['group1'],
+                    },
+                  ],
+                  errors: [
+                    {
+                      data: {
+                        right: 'b',
+                        left: 'a',
+                      },
+                      messageId: 'extraSpacingBetweenImports',
+                    },
+                  ],
+                  output: dedent`
+                    import a from 'a'
+                    import b from 'b'
+                  `,
+                  code: dedent`
+                    import a from 'a'
+
+                    import b from 'b'
+                  `,
+                },
+              ],
+              valid: [],
+            },
+          )
+        })
+      })
     })
   })
 

@@ -406,25 +406,110 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 
 ### customGroups
 
-<sub>
-  type:
-  ```
-  {
-    value: { [groupName: string]: string | string[] }
-    type: { [groupName: string]: string | string[] }
+<Important title="Migrating from the old API">
+Support for the object-based `customGroups` option is deprecated.
+
+Here is how to migrate from the old to the current API:
+
+Old API:
+```ts
+{
+  value: {
+    "keyForValue1": "value1",
+    "keyForValue2": "value2"
+  },
+  type: {
+    "keyForType1": "value1",
+    "keyForType2": "value2"
   }
-  ```
+}
+```
+
+Current API:
+```ts
+[
+  {
+    "selector": "type",
+    "groupName": "keyForType1",
+    "elementNamePattern": "value1"
+  },
+  {
+    "selector": "type",
+    "groupName": "keyForType2",
+    "elementNamePattern": "value2"
+  },
+  {
+    "groupName": "keyForValue1",
+    "elementNamePattern": "value1"
+  },
+  {
+    "groupName": "keyForValue2",
+    "elementNamePattern": "value2"
+  }
+]
+```
+</Important>
+
+<sub>
+  type: `Array<CustomGroupDefinition | CustomGroupAnyOfDefinition>`
 </sub>
-<sub>default: `{ value: {}, type: {} }`</sub>
+<sub>default: `[]`</sub>
 
-Defines custom groups to match specific imports.
+You can define your own groups and use regex for matching very specific imports.
 
-Each key of the `value` or `type` fields represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
-- `string` — An import matching the value will be marked as part of the group referenced by the key.
-- `string[]` — An import matching any of the values of the array will be marked as part of the group referenced by the key.
-The order of values in the array does not matter.
+A custom group definition may follow one of the two following interfaces:
 
-Custom group matching takes precedence over predefined group matching.
+```ts
+interface CustomGroupDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  newlinesInside?: 'always' | 'never'
+  selector?: string
+  modifiers?: string[]
+  elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+}
+```
+An import will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+
+or:
+
+```ts
+interface CustomGroupAnyOfDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  newlinesInside?: 'always' | 'never'
+  anyOf: Array<{
+      selector?: string
+      modifiers?: string[]
+      elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+  }>
+}
+```
+
+An import will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+
+#### Attributes
+
+- `groupName` — The group's name, which needs to be put in the [`groups`](#groups) option.
+- `selector` — Filter on the `selector` of the element.
+- `modifiers` — Filter on the `modifiers` of the element. (All the modifiers of the element must be present in that list)
+- `elementNamePattern` — If entered, will check that the name of the element matches the pattern entered.
+- `type` — Overrides the [`type`](#type) option for that custom group. `unsorted` will not sort the group.
+- `order` — Overrides the [`order`](#order) option for that custom group.
+- `fallbackSort` — Overrides the [`fallbackSort`](#fallbacksort) option for that custom group.
+- `newlinesInside` — Enforces a specific newline behavior between elements of the group.
+
+#### Match importance
+
+The `customGroups` list is ordered:
+The first custom group definition that matches an element will be used.
+
+Custom groups have a higher priority than any predefined group. If you want a predefined group to take precedence over a custom group,
+you must write a custom group definition that does the same as what the predefined group does (using `selector` and `modifiers` filters), and put it first in the list.
 
 #### Example
 
@@ -440,15 +525,16 @@ Custom group matching takes precedence over predefined group matching.
      ['parent', 'sibling', 'index'],
      'unknown',
    ],
-+  customGroups: {                      // [!code ++]
-+    value: {                           // [!code ++]
-+     react: ['^react$', '^react-.+'],  // [!code ++]
-+     lodash: 'lodash',                 // [!code ++]
++  customGroups: [                      // [!code ++]
++    {                                // [!code ++]
++      groupName: 'react',             // [!code ++]
++      elementNamePattern: ['^react$', '^react-.+'], // [!code ++]
 +    },                                 // [!code ++]
-+    type: {                            // [!code ++]
-+      react: ['^react$', '^react-.+'], // [!code ++]
-+    }                                  // [!code ++]
-+  },                                   // [!code ++]
++    {                                 // [!code ++]
++      groupName: 'lodash',           // [!code ++]
++      elementNamePattern: 'lodash', // [!code ++]
++    }                               // [!code ++]
++  ],                                   // [!code ++]
  }
 ```
 
@@ -495,7 +581,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                     ['parent', 'sibling', 'index'],
                     'unknown',
                   ],
-                  customGroups: { type: {}, value: {} },
+                  customGroups: [],
                   environment: 'node',
                 },
               ],
@@ -536,7 +622,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   ['parent', 'sibling', 'index'],
                   'unknown',
                 ],
-                customGroups: { type: {}, value: {} },
+                customGroups: [],
                 environment: 'node',
               },
             ],
