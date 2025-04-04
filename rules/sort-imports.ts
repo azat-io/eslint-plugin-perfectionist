@@ -8,9 +8,13 @@ import type {
   Options,
   Group,
 } from './sort-imports/types'
-import type { DeprecatedCustomGroupsOption } from '../types/common-options'
+import type {
+  DeprecatedCustomGroupsOption,
+  CustomGroupsOption,
+} from '../types/common-options'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
@@ -25,8 +29,10 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { getCustomGroupOverriddenOptions } from '../utils/get-custom-groups-compare-options'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
@@ -35,8 +41,12 @@ import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { singleCustomGroupJsonSchema } from './sort-imports/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
+import { allModifiers, allSelectors } from './sort-imports/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { allDeprecatedSelectors } from './sort-imports/types'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { computeGroup } from '../utils/compute-group'
@@ -90,33 +100,34 @@ export default createEslintRule<Options, MESSAGE_ID>({
       } as const),
     )
 
-    validateGroupsConfiguration({
-      allowedPredefinedGroups: [
-        'side-effect-style',
-        'external-type',
-        'internal-type',
-        'builtin-type',
-        'sibling-type',
-        'parent-type',
-        'side-effect',
-        'index-type',
-        'internal',
-        'external',
-        'sibling',
-        'unknown',
-        'builtin',
-        'parent',
-        'object',
-        'index',
-        'style',
-        'type',
-      ],
-      allowedCustomGroups: [
-        ...Object.keys(options.customGroups.type ?? {}),
-        ...Object.keys(options.customGroups.value ?? {}),
-      ],
-      options,
-    })
+    if (Array.isArray(options.customGroups)) {
+      validateGeneratedGroupsConfiguration({
+        options: {
+          ...options,
+          customGroups: options.customGroups,
+        },
+        selectors: allSelectors,
+        modifiers: allModifiers,
+      })
+    } else {
+      let generatedGroups = generatePredefinedGroups({
+        cache: cachedGroupsByModifiersAndSelectors,
+        selectors: allSelectors,
+        modifiers: allModifiers,
+      })
+      validateGroupsConfiguration({
+        allowedCustomGroups: [
+          ...Object.keys(options.customGroups.type ?? {}),
+          ...Object.keys(options.customGroups.value ?? {}),
+        ],
+        allowedPredefinedGroups: [
+          ...generatedGroups,
+          ...allDeprecatedSelectors,
+          'unknown',
+        ],
+        options,
+      })
+    }
     validateCustomSortConfiguration(options)
     validateNewlinesAndPartitionConfiguration(options)
     validateSideEffectsConfiguration(options)
@@ -164,11 +175,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       if (node.type !== 'VariableDeclaration' && node.importKind === 'type') {
         if (node.type === 'ImportDeclaration') {
-          group = computeGroupExceptUnknown({
-            customGroups: options.customGroups.type,
-            options,
-            name,
-          })
+          if (!Array.isArray(options.customGroups)) {
+            group = computeGroupExceptUnknown({
+              customGroups: options.customGroups.type,
+              options,
+              name,
+            })
+          }
 
           for (let selector of commonSelectors) {
             selectors.push(`${selector}-type`)
@@ -178,23 +191,28 @@ export default createEslintRule<Options, MESSAGE_ID>({
         selectors.push('type')
         modifiers.push('type')
 
-        group ??= computeGroupExceptUnknown({
-          selectors,
-          modifiers,
-          options,
-          name,
-        })
+        if (!group && !Array.isArray(options.customGroups)) {
+          group = computeGroupExceptUnknown({
+            customGroups: [],
+            selectors,
+            modifiers,
+            options,
+            name,
+          })
+        }
       }
 
       let isSideEffect = isSideEffectImport({ sourceCode, node })
       let isStyleValue = isStyle(name)
       let isStyleSideEffect = isSideEffect && isStyleValue
 
-      group ??= computeGroupExceptUnknown({
-        customGroups: options.customGroups.value,
-        options,
-        name,
-      })
+      if (!group && !Array.isArray(options.customGroups)) {
+        group = computeGroupExceptUnknown({
+          customGroups: options.customGroups.value,
+          options,
+          name,
+        })
+      }
 
       if (isStyleSideEffect) {
         selectors.push('side-effect-style')
@@ -214,8 +232,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       group ??=
         computeGroupExceptUnknown({
-          modifiers,
+          customGroups: Array.isArray(options.customGroups)
+            ? options.customGroups
+            : [],
           selectors,
+          modifiers,
           options,
           name,
         }) ?? 'unknown'
@@ -271,19 +292,39 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ): SortImportsSortingNode[] =>
             sortNodesByGroups({
               getOptionsByGroupNumber: groupNumber => {
+                let customGroupOverriddenOptions =
+                  getCustomGroupOverriddenOptions({
+                    options: {
+                      ...options,
+                      customGroups: Array.isArray(options.customGroups)
+                        ? options.customGroups
+                        : [],
+                    },
+                    groupNumber,
+                  })
+
                 if (options.sortSideEffects) {
                   return {
-                    options,
+                    options: {
+                      ...options,
+                      ...customGroupOverriddenOptions,
+                    },
                   }
+                }
+                let overriddenOptions = {
+                  ...options,
+                  ...customGroupOverriddenOptions,
                 }
                 return {
                   options: {
-                    ...options,
+                    ...overriddenOptions,
                     type:
-                      options.groups[groupNumber] &&
-                      isSideEffectOnlyGroup(options.groups[groupNumber])
+                      overriddenOptions.groups[groupNumber] &&
+                      isSideEffectOnlyGroup(
+                        overriddenOptions.groups[groupNumber],
+                      )
                         ? 'unsorted'
-                        : options.type,
+                        : overriddenOptions.type,
                   },
                 }
               },
@@ -302,7 +343,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
             },
             options: {
               ...options,
-              customGroups: [],
+              customGroups: Array.isArray(options.customGroups)
+                ? options.customGroups
+                : [],
             },
             sortNodesExcludingEslintDisabled,
             sourceCode,
@@ -332,19 +375,24 @@ export default createEslintRule<Options, MESSAGE_ID>({
         properties: {
           ...commonJsonSchemas,
           customGroups: {
-            properties: {
-              value: {
-                description: 'Specifies custom groups for value imports.',
+            oneOf: [
+              {
+                properties: {
+                  value: {
+                    description: 'Specifies custom groups for value imports.',
+                    type: 'object',
+                  },
+                  type: {
+                    description: 'Specifies custom groups for type imports.',
+                    type: 'object',
+                  },
+                },
+                description: 'Specifies custom groups.',
+                additionalProperties: false,
                 type: 'object',
               },
-              type: {
-                description: 'Specifies custom groups for type imports.',
-                type: 'object',
-              },
-            },
-            description: 'Specifies custom groups.',
-            additionalProperties: false,
-            type: 'object',
+              buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
+            ],
           },
           maxLineLength: {
             description: 'Specifies the maximum line length.',
@@ -527,7 +575,7 @@ let computeGroupExceptUnknown = ({
     Required<Options[0]>,
     'tsconfigRootDir' | 'maxLineLength' | 'customGroups'
   >
-  customGroups?: DeprecatedCustomGroupsOption | undefined
+  customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption | undefined
   selectors?: Selector[]
   modifiers?: Modifier[]
   name: string
@@ -541,6 +589,13 @@ let computeGroupExceptUnknown = ({
         })
       : []
   let computedCustomGroup = computeGroup({
+    customGroupMatcher: customGroup =>
+      doesCustomGroupMatch({
+        modifiers: modifiers!,
+        selectors: selectors!,
+        elementName: name,
+        customGroup,
+      }),
     options: {
       ...options,
       customGroups,
