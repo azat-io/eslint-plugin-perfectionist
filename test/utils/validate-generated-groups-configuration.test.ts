@@ -1,20 +1,29 @@
 import { describe, expect, it } from 'vitest'
 
 import { validateGeneratedGroupsConfiguration } from '../../utils/validate-generated-groups-configuration'
-import { allModifiers, allSelectors } from '../../rules/sort-classes/types'
 import { getArrayCombinations } from '../../utils/get-array-combinations'
 
 describe('validate-generated-groups-configuration', () => {
+  let selectors = [
+    'selector1',
+    'selector2',
+    'selector3',
+    'double-selector',
+    'three-word-selector',
+  ]
+  let modifiers = ['modifier1', 'modifier2', 'modifier3']
+
   it('allows predefined groups', () => {
     let allModifierCombinationPermutations =
-      getAllNonEmptyCombinations(allModifiers)
+      getAllNonEmptyCombinations(modifiers)
     let allPredefinedGroups = [
-      ...allSelectors.flatMap(selector =>
+      ...selectors.flatMap(selector =>
         allModifierCombinationPermutations.map(
-          modifiers => `${modifiers.join('-')}-${selector}`,
+          modifiersCombinations =>
+            `${modifiersCombinations.join('-')}-${selector}`,
         ),
       ),
-      ...allSelectors,
+      ...selectors,
     ]
     expect(() =>
       validateGeneratedGroupsConfiguration({
@@ -22,8 +31,8 @@ describe('validate-generated-groups-configuration', () => {
           groups: allPredefinedGroups,
           customGroups: [],
         },
-        selectors: allSelectors,
-        modifiers: allModifiers,
+        selectors,
+        modifiers,
       }),
     ).not.toThrow()
   })
@@ -37,10 +46,10 @@ describe('validate-generated-groups-configuration', () => {
               groupName: 'myCustomGroup',
             },
           ],
-          groups: ['static-property', 'myCustomGroup'],
+          groups: ['modifier1-selector1', 'myCustomGroup'],
         },
-        selectors: allSelectors,
-        modifiers: allModifiers,
+        selectors,
+        modifiers,
       }),
     ).not.toThrow()
   })
@@ -49,26 +58,26 @@ describe('validate-generated-groups-configuration', () => {
     expect(() =>
       validateGeneratedGroupsConfiguration({
         options: {
-          groups: ['static-static-property'],
+          groups: ['modifier1-modifier1-selector1'],
           customGroups: [],
         },
-        selectors: allSelectors,
-        modifiers: allModifiers,
+        selectors,
+        modifiers,
       }),
-    ).toThrow('Invalid group(s): static-static-property')
+    ).toThrow('Invalid group(s): modifier1-modifier1-selector1')
   })
 
   it('throws an error if a duplicate group is provided', () => {
     expect(() =>
       validateGeneratedGroupsConfiguration({
         options: {
-          groups: ['static-property', 'static-property'],
+          groups: ['modifier1-selector1', 'modifier1-selector1'],
           customGroups: [],
         },
-        selectors: allSelectors,
-        modifiers: allModifiers,
+        selectors,
+        modifiers,
       }),
-    ).toThrow('Duplicated group(s): static-property')
+    ).toThrow('Duplicated group(s): modifier1-selector1')
   })
 
   it('throws an error if invalid groups are provided', () => {
@@ -80,10 +89,10 @@ describe('validate-generated-groups-configuration', () => {
               groupName: 'myCustomGroupNotReferenced',
             },
           ],
-          groups: ['static-property', 'myCustomGroup', ''],
+          groups: ['modifier1-selector1', 'myCustomGroup', ''],
         },
-        selectors: allSelectors,
-        modifiers: allModifiers,
+        selectors,
+        modifiers,
       }),
     ).toThrow('Invalid group(s): myCustomGroup')
   })

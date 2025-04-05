@@ -88,8 +88,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'internal-type',
-                leftGroup: 'internal',
+                rightGroup: 'type-internal',
+                leftGroup: 'value-internal',
                 right: '~/i',
                 left: '~/b',
               },
@@ -104,8 +104,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                leftGroup: 'sibling-type',
-                rightGroup: 'builtin',
+                rightGroup: 'value-builtin',
+                leftGroup: 'type-sibling',
                 left: './d',
                 right: 'fs',
               },
@@ -127,17 +127,17 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'index-type',
+                leftGroup: 'value-parent',
+                rightGroup: 'type-index',
                 right: './index.d.ts',
-                leftGroup: 'parent',
                 left: '../../h',
               },
               messageId: 'unexpectedImportsGroupOrder',
             },
             {
               data: {
-                leftGroup: 'index',
-                rightGroup: 'type',
+                rightGroup: 'type-import',
+                leftGroup: 'value-index',
                 right: 't',
                 left: '.',
               },
@@ -243,8 +243,8 @@ describe(ruleName, () => {
           errors: [
             {
               data: {
-                rightGroup: 'external',
-                leftGroup: 'index',
+                rightGroup: 'value-external',
+                leftGroup: 'value-index',
                 right: 'a',
                 left: '.',
               },
@@ -252,8 +252,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                leftGroup: 'internal',
-                rightGroup: 'type',
+                leftGroup: 'value-internal',
+                rightGroup: 'type-import',
                 left: '~/c',
                 right: 't',
               },
@@ -261,8 +261,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'internal',
-                leftGroup: 'parent',
+                rightGroup: 'value-internal',
+                leftGroup: 'value-parent',
                 left: '../../e',
                 right: '~/b',
               },
@@ -383,9 +383,9 @@ describe(ruleName, () => {
               },
               {
                 data: {
-                  rightGroup: 'external',
+                  rightGroup: 'value-external',
+                  leftGroup: 'value-parent',
                   right: 'console.log',
-                  leftGroup: 'parent',
                   left: '../b',
                 },
                 messageId: 'unexpectedImportsGroupOrder',
@@ -576,7 +576,6 @@ describe(ruleName, () => {
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
                   'style',
-                  'object',
                   'unknown',
                 ],
               },
@@ -610,7 +609,6 @@ describe(ruleName, () => {
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
                   'side-effect',
-                  'object',
                   'unknown',
                 ],
               },
@@ -667,7 +665,7 @@ describe(ruleName, () => {
                   'internal',
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
-                  ['object', 'unknown'],
+                  'unknown',
                 ],
               },
             ],
@@ -708,8 +706,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'external',
-                leftGroup: 'sibling',
+                rightGroup: 'value-external',
+                leftGroup: 'value-sibling',
                 left: './b',
                 right: 'c',
               },
@@ -786,7 +784,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
-                  'object',
                   'unknown',
                 ],
                 customGroups: {
@@ -1046,8 +1043,8 @@ describe(ruleName, () => {
               },
               {
                 data: {
-                  leftGroup: 'internal',
-                  rightGroup: 'builtin',
+                  leftGroup: 'value-internal',
+                  rightGroup: 'value-builtin',
                   left: '~/b',
                   right: 'fs',
                 },
@@ -2666,6 +2663,702 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    describe(`${ruleName}(${type}): handles the new "groups" and "customGroups" API`, () => {
+      describe('selectors priority', () => {
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "index-type" over "sibling-type"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      leftGroup: 'sibling-type',
+                      rightGroup: 'index-type',
+                      right: './index',
+                      left: './a',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['index-type', 'sibling-type'],
+                  },
+                ],
+                output: dedent`
+                  import type b from './index'
+
+                  import type a from './a'
+                `,
+                code: dedent`
+                  import type a from './a'
+
+                  import type b from './index'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes precise "type" selectors over "type"`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      [
+                        'index-type',
+                        'internal-type',
+                        'external-type',
+                        'sibling-type',
+                        'builtin-type',
+                      ],
+                      'type',
+                    ],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'sibling-type',
+                      leftGroup: 'type',
+                      right: './b',
+                      left: '../a',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                output: dedent`
+                  import type b from './b'
+                  import type c from './index'
+                  import type d from 'd'
+                  import type e from 'timers'
+
+                  import type a from '../a'
+                `,
+                code: dedent`
+                  import type a from '../a'
+
+                  import type b from './b'
+                  import type c from './index'
+                  import type d from 'd'
+                  import type e from 'timers'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "index" over "sibling"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      leftGroup: 'sibling',
+                      rightGroup: 'index',
+                      right: './index',
+                      left: './a',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['index', 'sibling'],
+                  },
+                ],
+                output: dedent`
+                  import b from './index'
+
+                  import a from './a'
+                `,
+                code: dedent`
+                  import a from './a'
+
+                  import b from './index'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "side-effect-style" over "side-effect"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'side-effect-style',
+                      leftGroup: 'side-effect',
+                      right: 'style.css',
+                      left: 'something',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['side-effect-style', 'side-effect'],
+                  },
+                ],
+                output: dedent`
+                  import 'style.css'
+
+                  import 'something'
+                `,
+                code: dedent`
+                  import 'something'
+
+                  import 'style.css'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "side-effect" over "style"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'side-effect',
+                      right: 'something',
+                      leftGroup: 'style',
+                      left: 'style.css',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['side-effect', 'style'],
+                  },
+                ],
+                output: dedent`
+                  import 'something'
+
+                  import style from 'style.css'
+                `,
+                code: dedent`
+                  import style from 'style.css'
+
+                  import 'something'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "style" over any other non-type "selector"`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+
+                    groups: [
+                      'style',
+                      [
+                        'index',
+                        'internal',
+                        'external',
+                        'sibling',
+                        'builtin',
+                        'parent',
+                      ],
+                    ],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      leftGroup: 'builtin',
+                      rightGroup: 'style',
+                      right: 'style.css',
+                      left: 'timers',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                output: dedent`
+                  import style from 'style.css'
+
+                  import a from '../a'
+                  import b from './b'
+                  import c from './index'
+                  import d from 'd'
+                  import e from 'timers'
+                `,
+                code: dedent`
+                  import a from '../a'
+                  import b from './b'
+                  import c from './index'
+                  import d from 'd'
+                  import e from 'timers'
+
+                  import style from 'style.css'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "external" over "import"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'external',
+                      leftGroup: 'import',
+                      left: './a',
+                      right: 'b',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['external', 'import'],
+                  },
+                ],
+                output: dedent`
+                  import b from 'b'
+
+                  import a from './a'
+                `,
+                code: dedent`
+                  import a from './a'
+
+                  import b from 'b'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
+
+      describe(`custom groups`, () => {
+        for (let elementNamePattern of [
+          'hello',
+          ['noMatch', 'hello'],
+          { pattern: 'HELLO', flags: 'i' },
+          ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+        ]) {
+          ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'importsStartingWithHello',
+                      right: 'helloImport',
+                      leftGroup: 'unknown',
+                      left: 'a',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        groupName: 'importsStartingWithHello',
+                        elementNamePattern,
+                      },
+                    ],
+                    groups: ['importsStartingWithHello', 'unknown'],
+                  },
+                ],
+                output: dedent`
+                  import hello from 'helloImport'
+
+                  import a from 'a'
+                `,
+                code: dedent`
+                  import a from 'a'
+
+                  import hello from 'helloImport'
+                `,
+              },
+            ],
+            valid: [],
+          })
+        }
+
+        ruleTester.run(
+          `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'bb',
+                      left: 'a',
+                    },
+                    messageId: 'unexpectedImportsOrder',
+                  },
+                  {
+                    data: {
+                      right: 'ccc',
+                      left: 'bb',
+                    },
+                    messageId: 'unexpectedImportsOrder',
+                  },
+                  {
+                    data: {
+                      right: 'dddd',
+                      left: 'ccc',
+                    },
+                    messageId: 'unexpectedImportsOrder',
+                  },
+                  {
+                    data: {
+                      rightGroup: 'reversedExternalImportsByLineLength',
+                      leftGroup: 'unknown',
+                      left: './jjjjj',
+                      right: 'eee',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        groupName: 'reversedExternalImportsByLineLength',
+                        selector: 'external',
+                        type: 'line-length',
+                        order: 'desc',
+                      },
+                    ],
+                    groups: ['reversedExternalImportsByLineLength', 'unknown'],
+                    newlinesBetween: 'ignore',
+                    type: 'alphabetical',
+                    order: 'asc',
+                  },
+                ],
+                output: dedent`
+                  import dddd from 'dddd'
+                  import ccc from 'ccc'
+                  import eee from 'eee'
+                  import bb from 'bb'
+                  import ff from 'ff'
+                  import a from 'a'
+                  import g from 'g'
+                  import h from './h'
+                  import i from './i'
+                  import jjjjj from './jjjjj'
+                `,
+                code: dedent`
+                  import a from 'a'
+                  import bb from 'bb'
+                  import ccc from 'ccc'
+                  import dddd from 'dddd'
+                  import jjjjj from './jjjjj'
+                  import eee from 'eee'
+                  import ff from 'ff'
+                  import g from 'g'
+                  import h from './h'
+                  import i from './i'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}: sort custom groups by overriding 'fallbackSort'`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        fallbackSort: {
+                          type: 'alphabetical',
+                          order: 'asc',
+                        },
+                        elementNamePattern: '^foo',
+                        type: 'line-length',
+                        groupName: 'foo',
+                        order: 'desc',
+                      },
+                    ],
+                    type: 'alphabetical',
+                    groups: ['foo'],
+                    order: 'asc',
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'fooBar',
+                      left: 'fooZar',
+                    },
+                    messageId: 'unexpectedImportsOrder',
+                  },
+                ],
+                output: dedent`
+                  import fooBar from 'fooBar'
+                  import fooZar from 'fooZar'
+                `,
+                code: dedent`
+                  import fooZar from 'fooZar'
+                  import fooBar from 'fooBar'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}: does not sort custom groups with 'unsorted' type`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        groupName: 'unsortedExternalImports',
+                        selector: 'external',
+                        type: 'unsorted',
+                      },
+                    ],
+                    groups: ['unsortedExternalImports', 'unknown'],
+                    newlinesBetween: 'ignore',
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'unsortedExternalImports',
+                      leftGroup: 'unknown',
+                      left: './something',
+                      right: 'c',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                output: dedent`
+                  import b from 'b'
+                  import a from 'a'
+                  import d from 'd'
+                  import e from 'e'
+                  import c from 'c'
+                  import something from './something'
+                `,
+                code: dedent`
+                  import b from 'b'
+                  import a from 'a'
+                  import d from 'd'
+                  import e from 'e'
+                  import something from './something'
+                  import c from 'c'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      anyOf: [
+                        {
+                          selector: 'external',
+                        },
+                        {
+                          selector: 'sibling',
+                          modifiers: ['type'],
+                        },
+                      ],
+                      groupName: 'externalAndTypeSiblingImports',
+                    },
+                  ],
+                  groups: [
+                    ['externalAndTypeSiblingImports', 'index'],
+                    'unknown',
+                  ],
+                  newlinesBetween: 'ignore',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'externalAndTypeSiblingImports',
+                    leftGroup: 'unknown',
+                    right: './c',
+                    left: './b',
+                  },
+                  messageId: 'unexpectedImportsGroupOrder',
+                },
+                {
+                  data: {
+                    right: './index',
+                    left: 'e',
+                  },
+                  messageId: 'unexpectedImportsOrder',
+                },
+              ],
+              output: dedent`
+                import type c from './c'
+                import type d from './d'
+                import i from './index'
+                import a from 'a'
+                import e from 'e'
+                import b from './b'
+              `,
+              code: dedent`
+                import a from 'a'
+                import b from './b'
+                import type c from './c'
+                import type d from './d'
+                import e from 'e'
+                import i from './index'
+              `,
+            },
+          ],
+          valid: [],
+        })
+
+        describe('newlinesInside', () => {
+          ruleTester.run(
+            `${ruleName}: allows to use newlinesInside: always`,
+            rule,
+            {
+              invalid: [
+                {
+                  options: [
+                    {
+                      customGroups: [
+                        {
+                          newlinesInside: 'always',
+                          selector: 'external',
+                          groupName: 'group1',
+                        },
+                      ],
+                      groups: ['group1'],
+                    },
+                  ],
+                  errors: [
+                    {
+                      data: {
+                        right: 'b',
+                        left: 'a',
+                      },
+                      messageId: 'missedSpacingBetweenImports',
+                    },
+                  ],
+                  output: dedent`
+                    import a from 'a'
+
+                    import b from 'b'
+                  `,
+                  code: dedent`
+                    import a from 'a'
+                    import b from 'b'
+                  `,
+                },
+              ],
+              valid: [],
+            },
+          )
+
+          ruleTester.run(
+            `${ruleName}: allows to use newlinesInside: never`,
+            rule,
+            {
+              invalid: [
+                {
+                  options: [
+                    {
+                      customGroups: [
+                        {
+                          newlinesInside: 'never',
+                          selector: 'external',
+                          groupName: 'group1',
+                        },
+                      ],
+                      type: 'alphabetical',
+                      groups: ['group1'],
+                    },
+                  ],
+                  errors: [
+                    {
+                      data: {
+                        right: 'b',
+                        left: 'a',
+                      },
+                      messageId: 'extraSpacingBetweenImports',
+                    },
+                  ],
+                  output: dedent`
+                    import a from 'a'
+                    import b from 'b'
+                  `,
+                  code: dedent`
+                    import a from 'a'
+
+                    import b from 'b'
+                  `,
+                },
+              ],
+              valid: [],
+            },
+          )
+        })
+      })
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -2724,8 +3417,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'internal-type',
-                leftGroup: 'internal',
+                rightGroup: 'type-internal',
+                leftGroup: 'value-internal',
                 right: '~/i',
                 left: '~/b',
               },
@@ -2740,8 +3433,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                leftGroup: 'sibling-type',
-                rightGroup: 'builtin',
+                rightGroup: 'value-builtin',
+                leftGroup: 'type-sibling',
                 left: './d',
                 right: 'fs',
               },
@@ -2763,17 +3456,17 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'index-type',
+                leftGroup: 'value-parent',
+                rightGroup: 'type-index',
                 right: './index.d.ts',
-                leftGroup: 'parent',
                 left: '../../h',
               },
               messageId: 'unexpectedImportsGroupOrder',
             },
             {
               data: {
-                leftGroup: 'index',
-                rightGroup: 'type',
+                rightGroup: 'type-import',
+                leftGroup: 'value-index',
                 right: 't',
                 left: '.',
               },
@@ -2879,8 +3572,8 @@ describe(ruleName, () => {
           errors: [
             {
               data: {
-                rightGroup: 'external',
-                leftGroup: 'index',
+                rightGroup: 'value-external',
+                leftGroup: 'value-index',
                 right: 'a',
                 left: '.',
               },
@@ -2888,8 +3581,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                leftGroup: 'internal',
-                rightGroup: 'type',
+                leftGroup: 'value-internal',
+                rightGroup: 'type-import',
                 left: '~/c',
                 right: 't',
               },
@@ -2897,8 +3590,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'internal',
-                leftGroup: 'parent',
+                rightGroup: 'value-internal',
+                leftGroup: 'value-parent',
                 left: '../../e',
                 right: '~/b',
               },
@@ -3019,9 +3712,9 @@ describe(ruleName, () => {
               },
               {
                 data: {
-                  rightGroup: 'external',
+                  rightGroup: 'value-external',
+                  leftGroup: 'value-parent',
                   right: 'console.log',
-                  leftGroup: 'parent',
                   left: '../b',
                 },
                 messageId: 'unexpectedImportsGroupOrder',
@@ -3213,7 +3906,6 @@ describe(ruleName, () => {
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
                   'style',
-                  'object',
                   'unknown',
                 ],
               },
@@ -3247,7 +3939,6 @@ describe(ruleName, () => {
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
                   'side-effect',
-                  'object',
                   'unknown',
                 ],
               },
@@ -3304,7 +3995,7 @@ describe(ruleName, () => {
                   'internal',
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
-                  ['object', 'unknown'],
+                  'unknown',
                 ],
               },
             ],
@@ -3345,8 +4036,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'external',
-                leftGroup: 'sibling',
+                rightGroup: 'value-external',
+                leftGroup: 'value-sibling',
                 left: './b',
                 right: 'c',
               },
@@ -3423,7 +4114,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
-                  'object',
                   'unknown',
                 ],
                 customGroups: {
@@ -3683,8 +4373,8 @@ describe(ruleName, () => {
               },
               {
                 data: {
-                  leftGroup: 'internal',
-                  rightGroup: 'builtin',
+                  leftGroup: 'value-internal',
+                  rightGroup: 'value-builtin',
                   left: '~/b',
                   right: 'fs',
                 },
@@ -4048,8 +4738,8 @@ describe(ruleName, () => {
           errors: [
             {
               data: {
-                rightGroup: 'internal-type',
-                leftGroup: 'internal',
+                rightGroup: 'type-internal',
+                leftGroup: 'value-internal',
                 right: '~/i',
                 left: '~/b',
               },
@@ -4064,8 +4754,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                leftGroup: 'sibling-type',
-                rightGroup: 'builtin',
+                rightGroup: 'value-builtin',
+                leftGroup: 'type-sibling',
                 left: './d',
                 right: 'fs',
               },
@@ -4101,17 +4791,17 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'index-type',
+                leftGroup: 'value-parent',
+                rightGroup: 'type-index',
                 right: './index.d.ts',
-                leftGroup: 'parent',
                 left: '../../h',
               },
               messageId: 'unexpectedImportsGroupOrder',
             },
             {
               data: {
-                leftGroup: 'index',
-                rightGroup: 'type',
+                rightGroup: 'type-import',
+                leftGroup: 'value-index',
                 right: 't',
                 left: '.',
               },
@@ -4231,8 +4921,8 @@ describe(ruleName, () => {
           errors: [
             {
               data: {
-                rightGroup: 'external',
-                leftGroup: 'index',
+                rightGroup: 'value-external',
+                leftGroup: 'value-index',
                 right: 'a',
                 left: '.',
               },
@@ -4240,8 +4930,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                leftGroup: 'internal',
-                rightGroup: 'type',
+                leftGroup: 'value-internal',
+                rightGroup: 'type-import',
                 left: '~/c',
                 right: 't',
               },
@@ -4249,8 +4939,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'internal',
-                leftGroup: 'parent',
+                rightGroup: 'value-internal',
+                leftGroup: 'value-parent',
                 left: '../../e',
                 right: '~/b',
               },
@@ -4371,9 +5061,9 @@ describe(ruleName, () => {
               },
               {
                 data: {
-                  rightGroup: 'external',
+                  rightGroup: 'value-external',
+                  leftGroup: 'value-parent',
                   right: 'console.log',
-                  leftGroup: 'parent',
                   left: '../b',
                 },
                 messageId: 'unexpectedImportsGroupOrder',
@@ -4550,7 +5240,6 @@ describe(ruleName, () => {
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
                   'style',
-                  'object',
                   'unknown',
                 ],
               },
@@ -4584,7 +5273,6 @@ describe(ruleName, () => {
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
                   'side-effect',
-                  'object',
                   'unknown',
                 ],
               },
@@ -4641,7 +5329,7 @@ describe(ruleName, () => {
                   'internal',
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
-                  ['object', 'unknown'],
+                  'unknown',
                 ],
               },
             ],
@@ -4682,8 +5370,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'external',
-                leftGroup: 'sibling',
+                rightGroup: 'value-external',
+                leftGroup: 'value-sibling',
                 left: './b',
                 right: 'c',
               },
@@ -4730,7 +5418,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
-                  'object',
                   'unknown',
                 ],
                 customGroups: {
@@ -5078,8 +5765,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  leftGroup: 'internal',
-                  rightGroup: 'builtin',
+                  leftGroup: 'value-internal',
+                  rightGroup: 'value-builtin',
                   left: '~/b',
                   right: 'fs',
                 },
@@ -5455,7 +6142,6 @@ describe(ruleName, () => {
                   'unknown',
                   'builtin',
                   'parent',
-                  'object',
                   'index',
                   'style',
                   'type',
@@ -5822,6 +6508,21 @@ describe(ruleName, () => {
             ],
             options: [
               {
+                customGroups: {
+                  value: {
+                    validators: ['~/validators/.+'],
+                    composable: ['~/composable/.+'],
+                    components: ['~/components/.+'],
+                    services: ['~/services/.+'],
+                    widgets: ['~/widgets/.+'],
+                    stores: ['~/stores/.+'],
+                    logics: ['~/logics/.+'],
+                    assets: ['~/assets/.+'],
+                    utils: ['~/utils/.+'],
+                    pages: ['~/pages/.+'],
+                    ui: ['~/ui/.+'],
+                  },
+                },
                 groups: [
                   ['builtin', 'external'],
                   'internal',
@@ -5841,24 +6542,8 @@ describe(ruleName, () => {
                   'side-effect',
                   'index',
                   'style',
-                  'object',
                   'unknown',
                 ],
-                customGroups: {
-                  value: {
-                    validators: ['~/validators/.+'],
-                    composable: ['~/composable/.+'],
-                    components: ['~/components/.+'],
-                    services: ['~/services/.+'],
-                    widgets: ['~/widgets/.+'],
-                    stores: ['~/stores/.+'],
-                    logics: ['~/logics/.+'],
-                    assets: ['~/assets/.+'],
-                    utils: ['~/utils/.+'],
-                    pages: ['~/pages/.+'],
-                    ui: ['~/ui/.+'],
-                  },
-                },
                 type: 'line-length',
               },
             ],
@@ -5907,6 +6592,21 @@ describe(ruleName, () => {
           {
             options: [
               {
+                customGroups: {
+                  value: {
+                    validators: ['^~/validators/.+'],
+                    composable: ['^~/composable/.+'],
+                    components: ['^~/components/.+'],
+                    services: ['^~/services/.+'],
+                    widgets: ['^~/widgets/.+'],
+                    stores: ['^~/stores/.+'],
+                    logics: ['^~/logics/.+'],
+                    assets: ['^~/assets/.+'],
+                    utils: ['^~/utils/.+'],
+                    pages: ['^~/pages/.+'],
+                    ui: ['^~/ui/.+'],
+                  },
+                },
                 groups: [
                   ['builtin', 'external'],
                   'internal',
@@ -5926,24 +6626,8 @@ describe(ruleName, () => {
                   'side-effect',
                   'index',
                   'style',
-                  'object',
                   'unknown',
                 ],
-                customGroups: {
-                  value: {
-                    validators: ['^~/validators/.+'],
-                    composable: ['^~/composable/.+'],
-                    components: ['^~/components/.+'],
-                    services: ['^~/services/.+'],
-                    widgets: ['^~/widgets/.+'],
-                    stores: ['^~/stores/.+'],
-                    logics: ['^~/logics/.+'],
-                    assets: ['^~/assets/.+'],
-                    utils: ['^~/utils/.+'],
-                    pages: ['^~/pages/.+'],
-                    ui: ['^~/ui/.+'],
-                  },
-                },
                 type: 'line-length',
               },
             ],
