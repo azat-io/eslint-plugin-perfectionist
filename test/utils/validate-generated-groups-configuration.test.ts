@@ -4,7 +4,13 @@ import { validateGeneratedGroupsConfiguration } from '../../utils/validate-gener
 import { getArrayCombinations } from '../../utils/get-array-combinations'
 
 describe('validate-generated-groups-configuration', () => {
-  let selectors = ['selector1', 'selector2', 'selector3']
+  let selectors = [
+    'selector1',
+    'selector2',
+    'selector3',
+    'double-selector',
+    'three-word-selector',
+  ]
   let modifiers = ['modifier1', 'modifier2', 'modifier3']
 
   it('allows predefined groups', () => {
