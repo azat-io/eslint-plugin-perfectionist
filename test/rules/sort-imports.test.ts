@@ -277,13 +277,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedImportsGroupOrder',
             },
           ],
-          options: [
-            {
-              ...options,
-
-              newlinesBetween: 'never',
-            },
-          ],
           code: dedent`
             import d from '.'
             import { a1, a2, a3 } from 'a'
@@ -302,17 +295,16 @@ describe(ruleName, () => {
             import d from '.'
             import { e1, e2, e3 } from '../../e'
           `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+            },
+          ],
         },
       ],
       valid: [
         {
-          options: [
-            {
-              ...options,
-
-              newlinesBetween: 'never',
-            },
-          ],
           code: dedent`
             import type { T } from 't'
             import { a1, a2, a3 } from 'a'
@@ -321,6 +313,12 @@ describe(ruleName, () => {
             import d from '.'
             import { e1, e2, e3 } from '../../e'
           `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+            },
+          ],
         },
       ],
     })
@@ -328,11 +326,6 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): disallow extra spaces`, rule, {
       invalid: [
         {
-          options: [
-            {
-              ...options,
-            },
-          ],
           errors: [
             {
               data: {
@@ -365,15 +358,15 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
-        },
-      ],
-      valid: [
-        {
           options: [
             {
               ...options,
             },
           ],
+        },
+      ],
+      valid: [
+        {
           code: dedent`
             import { A } from 'a'
 
@@ -381,6 +374,11 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
+          options: [
+            {
+              ...options,
+            },
+          ],
         },
       ],
     })
@@ -391,11 +389,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             errors: [
               {
                 data: {
@@ -431,15 +424,15 @@ describe(ruleName, () => {
               import log = console.log
               import c = require('c/c')
             `,
-          },
-        ],
-        valid: [
-          {
             options: [
               {
                 ...options,
               },
             ],
+          },
+        ],
+        valid: [
+          {
             code: dedent`
               import type T = require("T")
 
@@ -450,6 +443,11 @@ describe(ruleName, () => {
               import c = require('c/c')
               import log = console.log
             `,
+            options: [
+              {
+                ...options,
+              },
+            ],
           },
         ],
       },
@@ -528,16 +526,16 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): ignores inline comments`, rule, {
       valid: [
         {
-          options: [
-            {
-              ...options,
-            },
-          ],
           code: dedent`
             import { a } from 'a'
             import { b1, b2 } from 'b' // Comment
             import { c } from 'c'
           `,
+          options: [
+            {
+              ...options,
+            },
+          ],
         },
       ],
       invalid: [],
@@ -549,17 +547,17 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               import type { T } from 't'
 
               // @ts-expect-error missing types
               import { t } from 't'
             `,
+            options: [
+              {
+                ...options,
+              },
+            ],
           },
         ],
         invalid: [],
@@ -572,11 +570,6 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               import type { V } from 'v'
 
@@ -584,6 +577,11 @@ describe(ruleName, () => {
 
               import type { T1, T2 } from 't'
             `,
+            options: [
+              {
+                ...options,
+              },
+            ],
           },
         ],
         invalid: [],
@@ -747,11 +745,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedImportsGroupOrder',
             },
           ],
-          options: [
-            {
-              ...options,
-            },
-          ],
           code: dedent`
             import { a } from 'a'
 
@@ -768,6 +761,11 @@ describe(ruleName, () => {
 
             import { b } from './b'
           `,
+          options: [
+            {
+              ...options,
+            },
+          ],
         },
       ],
       valid: [],
@@ -909,12 +907,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-                internalPattern: ['#.+'],
-              },
-            ],
             errors: [
               {
                 data: {
@@ -954,16 +946,16 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
-          },
-        ],
-        valid: [
-          {
             options: [
               {
                 ...options,
                 internalPattern: ['#.+'],
               },
             ],
+          },
+        ],
+        valid: [
+          {
             code: dedent`
               import type { T } from 'a'
 
@@ -976,6 +968,12 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
+            options: [
+              {
+                ...options,
+                internalPattern: ['#.+'],
+              },
+            ],
           },
         ],
       },
@@ -1213,7 +1211,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-
                 sortSideEffects: false,
               },
             ],
@@ -1254,7 +1251,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-
                 sortSideEffects: true,
               },
             ],
@@ -1276,7 +1272,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-
                 sortSideEffects: false,
               },
             ],
@@ -1293,7 +1288,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-
                 sortSideEffects: false,
               },
             ],
@@ -1349,7 +1343,6 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-
                   groups: ['unknown'],
                 },
               ],
@@ -2677,12 +2670,6 @@ describe(ruleName, () => {
                 messageId: 'unexpectedImportsGroupOrder',
               },
             ],
-            options: [
-              {
-                ...options,
-                groups: ['style', 'unknown'],
-              },
-            ],
             output: dedent`
               import b from './b.css?raw'
               import c from './c.css'
@@ -2694,22 +2681,28 @@ describe(ruleName, () => {
               import b from './b.css?raw'
               import c from './c.css'
             `,
-          },
-        ],
-        valid: [
-          {
             options: [
               {
                 ...options,
                 groups: ['style', 'unknown'],
               },
             ],
+          },
+        ],
+        valid: [
+          {
             code: dedent`
               import b from './b.css?raw'
               import c from './c.css'
 
               import a from './a.js'
             `,
+            options: [
+              {
+                ...options,
+                groups: ['style', 'unknown'],
+              },
+            ],
           },
         ],
       },
@@ -2961,13 +2954,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedImportsGroupOrder',
             },
           ],
-          options: [
-            {
-              ...options,
-
-              newlinesBetween: 'never',
-            },
-          ],
           code: dedent`
             import d from '.'
             import { a1, a2, a3 } from 'a'
@@ -2986,17 +2972,16 @@ describe(ruleName, () => {
             import d from '.'
             import { e1, e2, e3 } from '../../e'
           `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+            },
+          ],
         },
       ],
       valid: [
         {
-          options: [
-            {
-              ...options,
-
-              newlinesBetween: 'never',
-            },
-          ],
           code: dedent`
             import type { T } from 't'
             import { a1, a2, a3 } from 'a'
@@ -3005,6 +2990,12 @@ describe(ruleName, () => {
             import d from '.'
             import { e1, e2, e3 } from '../../e'
           `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+            },
+          ],
         },
       ],
     })
@@ -3012,11 +3003,6 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): disallow extra spaces`, rule, {
       invalid: [
         {
-          options: [
-            {
-              ...options,
-            },
-          ],
           errors: [
             {
               data: {
@@ -3049,15 +3035,15 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
-        },
-      ],
-      valid: [
-        {
           options: [
             {
               ...options,
             },
           ],
+        },
+      ],
+      valid: [
+        {
           code: dedent`
             import { A } from 'a'
 
@@ -3065,6 +3051,11 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
+          options: [
+            {
+              ...options,
+            },
+          ],
         },
       ],
     })
@@ -3075,11 +3066,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             errors: [
               {
                 data: {
@@ -3115,15 +3101,15 @@ describe(ruleName, () => {
               import log = console.log
               import c = require('c/c')
             `,
-          },
-        ],
-        valid: [
-          {
             options: [
               {
                 ...options,
               },
             ],
+          },
+        ],
+        valid: [
+          {
             code: dedent`
               import type T = require("T")
 
@@ -3134,6 +3120,11 @@ describe(ruleName, () => {
               import c = require('c/c')
               import log = console.log
             `,
+            options: [
+              {
+                ...options,
+              },
+            ],
           },
         ],
       },
@@ -3212,16 +3203,16 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): ignores inline comments`, rule, {
       valid: [
         {
-          options: [
-            {
-              ...options,
-            },
-          ],
           code: dedent`
             import { a } from 'a'
             import { b1, b2 } from 'b' // Comment
             import { c } from 'c'
           `,
+          options: [
+            {
+              ...options,
+            },
+          ],
         },
       ],
       invalid: [],
@@ -3233,17 +3224,17 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               import type { T } from 't'
 
               // @ts-expect-error missing types
               import { t } from 't'
             `,
+            options: [
+              {
+                ...options,
+              },
+            ],
           },
         ],
         invalid: [],
@@ -3256,11 +3247,6 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               import type { V } from 'v'
 
@@ -3268,6 +3254,11 @@ describe(ruleName, () => {
 
               import type { T1, T2 } from 't'
             `,
+            options: [
+              {
+                ...options,
+              },
+            ],
           },
         ],
         invalid: [],
@@ -3431,11 +3422,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedImportsGroupOrder',
             },
           ],
-          options: [
-            {
-              ...options,
-            },
-          ],
           code: dedent`
             import { a } from 'a'
 
@@ -3452,6 +3438,11 @@ describe(ruleName, () => {
 
             import { b } from './b'
           `,
+          options: [
+            {
+              ...options,
+            },
+          ],
         },
       ],
       valid: [],
@@ -3593,12 +3584,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-                internalPattern: ['#.+'],
-              },
-            ],
             errors: [
               {
                 data: {
@@ -3638,16 +3623,16 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
-          },
-        ],
-        valid: [
-          {
             options: [
               {
                 ...options,
                 internalPattern: ['#.+'],
               },
             ],
+          },
+        ],
+        valid: [
+          {
             code: dedent`
               import type { T } from 'a'
 
@@ -3660,6 +3645,12 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
+            options: [
+              {
+                ...options,
+                internalPattern: ['#.+'],
+              },
+            ],
           },
         ],
       },
@@ -3897,7 +3888,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-
                 sortSideEffects: false,
               },
             ],
@@ -3938,7 +3928,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-
                 sortSideEffects: true,
               },
             ],
@@ -3960,7 +3949,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-
                 sortSideEffects: false,
               },
             ],
@@ -3977,7 +3965,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-
                 sortSideEffects: false,
               },
             ],
@@ -4008,12 +3995,6 @@ describe(ruleName, () => {
                 messageId: 'unexpectedImportsGroupOrder',
               },
             ],
-            options: [
-              {
-                ...options,
-                groups: ['style', 'unknown'],
-              },
-            ],
             output: dedent`
               import b from './b.css?raw'
               import c from './c.css'
@@ -4025,22 +4006,28 @@ describe(ruleName, () => {
               import b from './b.css?raw'
               import c from './c.css'
             `,
-          },
-        ],
-        valid: [
-          {
             options: [
               {
                 ...options,
                 groups: ['style', 'unknown'],
               },
             ],
+          },
+        ],
+        valid: [
+          {
             code: dedent`
               import b from './b.css?raw'
               import c from './c.css'
 
               import a from './a.js'
             `,
+            options: [
+              {
+                ...options,
+                groups: ['style', 'unknown'],
+              },
+            ],
           },
         ],
       },
@@ -4359,13 +4346,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedImportsGroupOrder',
             },
           ],
-          options: [
-            {
-              ...options,
-
-              newlinesBetween: 'never',
-            },
-          ],
           code: dedent`
             import d from '.'
             import { a1, a2, a3 } from 'a'
@@ -4384,17 +4364,16 @@ describe(ruleName, () => {
             import { e1, e2, e3 } from '../../e'
             import d from '.'
           `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+            },
+          ],
         },
       ],
       valid: [
         {
-          options: [
-            {
-              ...options,
-
-              newlinesBetween: 'never',
-            },
-          ],
           code: dedent`
             import type { T } from 't'
             import { a1, a2, a3 } from 'a'
@@ -4403,6 +4382,12 @@ describe(ruleName, () => {
             import { e1, e2, e3 } from '../../e'
             import d from '.'
           `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+            },
+          ],
         },
       ],
     })
@@ -4410,11 +4395,6 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): disallow extra spaces`, rule, {
       invalid: [
         {
-          options: [
-            {
-              ...options,
-            },
-          ],
           errors: [
             {
               data: {
@@ -4447,15 +4427,15 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
-        },
-      ],
-      valid: [
-        {
           options: [
             {
               ...options,
             },
           ],
+        },
+      ],
+      valid: [
+        {
           code: dedent`
             import { A } from 'a'
 
@@ -4463,6 +4443,11 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
+          options: [
+            {
+              ...options,
+            },
+          ],
         },
       ],
     })
@@ -4473,11 +4458,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             errors: [
               {
                 data: {
@@ -4513,15 +4493,15 @@ describe(ruleName, () => {
               import log = console.log
               import c = require('c/c')
             `,
-          },
-        ],
-        valid: [
-          {
             options: [
               {
                 ...options,
               },
             ],
+          },
+        ],
+        valid: [
+          {
             code: dedent`
               import type T = require("T")
 
@@ -4532,6 +4512,11 @@ describe(ruleName, () => {
               import c = require('c/c')
               import log = console.log
             `,
+            options: [
+              {
+                ...options,
+              },
+            ],
           },
         ],
       },
@@ -4613,17 +4598,17 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               import type { T } from 't'
 
               // @ts-expect-error missing types
               import { t } from 't'
             `,
+            options: [
+              {
+                ...options,
+              },
+            ],
           },
         ],
         invalid: [],
@@ -4636,11 +4621,6 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               import type { V } from 'v'
 
@@ -4648,6 +4628,11 @@ describe(ruleName, () => {
 
               import type { T1, T2 } from 't'
             `,
+            options: [
+              {
+                ...options,
+              },
+            ],
           },
         ],
         invalid: [],
@@ -4811,11 +4796,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedImportsGroupOrder',
             },
           ],
-          options: [
-            {
-              ...options,
-            },
-          ],
           code: dedent`
             import { a } from 'a'
 
@@ -4832,6 +4812,11 @@ describe(ruleName, () => {
 
             import { b } from './b'
           `,
+          options: [
+            {
+              ...options,
+            },
+          ],
         },
       ],
       valid: [],
@@ -4966,12 +4951,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-                internalPattern: ['#.+'],
-              },
-            ],
             errors: [
               {
                 data: {
@@ -5011,16 +4990,16 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
-          },
-        ],
-        valid: [
-          {
             options: [
               {
                 ...options,
                 internalPattern: ['#.+'],
               },
             ],
+          },
+        ],
+        valid: [
+          {
             code: dedent`
               import type { T } from 'a'
 
@@ -5033,6 +5012,12 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
+            options: [
+              {
+                ...options,
+                internalPattern: ['#.+'],
+              },
+            ],
           },
         ],
       },
@@ -5101,7 +5086,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-
               maxLineLength: 80,
               order: 'asc',
             },
@@ -5350,7 +5334,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-
                 sortSideEffects: false,
               },
             ],
@@ -5391,7 +5374,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-
                 sortSideEffects: true,
               },
             ],
@@ -5413,7 +5395,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-
                 sortSideEffects: false,
               },
             ],
@@ -5430,7 +5411,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-
                 sortSideEffects: false,
               },
             ],
@@ -5461,12 +5441,6 @@ describe(ruleName, () => {
                 messageId: 'unexpectedImportsGroupOrder',
               },
             ],
-            options: [
-              {
-                ...options,
-                groups: ['style', 'unknown'],
-              },
-            ],
             output: dedent`
               import b from './b.css?raw'
               import c from './c.css'
@@ -5478,22 +5452,28 @@ describe(ruleName, () => {
               import b from './b.css?raw'
               import c from './c.css'
             `,
-          },
-        ],
-        valid: [
-          {
             options: [
               {
                 ...options,
                 groups: ['style', 'unknown'],
               },
             ],
+          },
+        ],
+        valid: [
+          {
             code: dedent`
               import b from './b.css?raw'
               import c from './c.css'
 
               import a from './a.js'
             `,
+            options: [
+              {
+                ...options,
+                groups: ['style', 'unknown'],
+              },
+            ],
           },
         ],
       },
@@ -5997,7 +5977,6 @@ describe(ruleName, () => {
                     ui: ['~/ui/.+'],
                   },
                 },
-
                 type: 'line-length',
               },
             ],
@@ -6083,7 +6062,6 @@ describe(ruleName, () => {
                     ui: ['^~/ui/.+'],
                   },
                 },
-
                 type: 'line-length',
               },
             ],
