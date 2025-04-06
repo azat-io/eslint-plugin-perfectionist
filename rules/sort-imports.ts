@@ -1,19 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
-import { builtinModules } from 'node:module'
-
-import type {
-  DeprecatedCustomGroupsOption,
-  PartitionByCommentOption,
-  SpecialCharactersOption,
-  NewlinesBetweenOption,
-  FallbackSortOption,
-  GroupsOptions,
-  OrderOption,
-  RegexOption,
-  TypeOption,
-} from '../types/common-options'
-import type { SortingNode } from '../types/sorting-node'
+import type { SortImportsSortingNode, Options } from './sort-imports/types'
 
 import {
   partitionByCommentJsonSchema,
@@ -30,13 +18,14 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
+import { computeCommonPredefinedGroups } from './sort-imports/compute-common-predefined-groups'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
-import { isNewlinesBetweenOption } from '../utils/is-newlines-between-option'
+import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { getTypescriptImport } from './sort-imports/get-typescript-import'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -47,63 +36,12 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
-import { matches } from '../utils/matches'
-
-export type Options = [
-  Partial<{
-    customGroups: {
-      value?: DeprecatedCustomGroupsOption
-      type?: DeprecatedCustomGroupsOption
-    }
-    partitionByComment: PartitionByCommentOption
-    specialCharacters: SpecialCharactersOption
-    locales: NonNullable<Intl.LocalesArgument>
-    newlinesBetween: NewlinesBetweenOption
-    fallbackSort: FallbackSortOption
-    internalPattern: RegexOption[]
-    groups: GroupsOptions<Group>
-    environment: 'node' | 'bun'
-    partitionByNewLine: boolean
-    sortSideEffects: boolean
-    tsconfigRootDir?: string
-    maxLineLength?: number
-    ignoreCase: boolean
-    order: OrderOption
-    type: TypeOption
-    alphabet: string
-  }>,
-]
 
 export type MESSAGE_ID =
   | 'missedSpacingBetweenImports'
   | 'unexpectedImportsGroupOrder'
   | 'extraSpacingBetweenImports'
   | 'unexpectedImportsOrder'
-
-type Group =
-  | 'side-effect-style'
-  | 'external-type'
-  | 'internal-type'
-  | 'builtin-type'
-  | 'sibling-type'
-  | 'parent-type'
-  | 'side-effect'
-  | 'index-type'
-  | 'internal'
-  | 'external'
-  | 'sibling'
-  | 'unknown'
-  | 'builtin'
-  | 'parent'
-  | 'object'
-  | 'index'
-  | 'style'
-  | 'type'
-  | string
-
-interface SortImportsSortingNode extends SortingNode {
-  isIgnored: boolean
-}
 
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
@@ -168,6 +106,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     })
     validateCustomSortConfiguration(options)
     validateNewlinesAndPartitionConfiguration(options)
+    validateSideEffectsConfiguration(options)
 
     let tsConfigOutput = options.tsconfigRootDir
       ? readClosestTsConfigByPath({
@@ -177,45 +116,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         })
       : null
 
-    let isSideEffectOnlyGroup = (
-      group:
-        | { newlinesBetween: NewlinesBetweenOption }
-        | undefined
-        | string[]
-        | string,
-    ): boolean => {
-      if (!group || isNewlinesBetweenOption(group)) {
-        return false
-      }
-      if (typeof group === 'string') {
-        return group === 'side-effect' || group === 'side-effect-style'
-      }
-
-      return group.every(isSideEffectOnlyGroup)
-    }
-
-    /**
-     * Ensure that if `sortSideEffects: false`, no side effect group is in a
-     * nested group with non-side-effect groups.
-     */
-    if (!options.sortSideEffects) {
-      let hasInvalidGroup = options.groups
-        .filter(group => Array.isArray(group))
-        .some(
-          nestedGroup =>
-            !isSideEffectOnlyGroup(nestedGroup) &&
-            nestedGroup.some(
-              subGroup =>
-                subGroup === 'side-effect' || subGroup === 'side-effect-style',
-            ),
-        )
-      if (hasInvalidGroup) {
-        throw new Error(
-          "Side effect groups cannot be nested with non side effect groups when 'sortSideEffects' is 'false'.",
-        )
-      }
-    }
-
     let { sourceCode, filename, id } = context
     let eslintDisabledLines = getEslintDisabledLines({
       ruleName: id,
@@ -223,191 +123,52 @@ export default createEslintRule<Options, MESSAGE_ID>({
     })
     let sortingNodes: SortImportsSortingNode[] = []
 
-    let isSideEffectImport = (node: TSESTree.Node): boolean =>
-      node.type === 'ImportDeclaration' &&
-      node.specifiers.length === 0 &&
-      /* Avoid matching on named imports without specifiers */
-      !/\}\s*from\s+/u.test(sourceCode.getText(node))
-
-    let styleExtensions = [
-      '.less',
-      '.scss',
-      '.sass',
-      '.styl',
-      '.pcss',
-      '.css',
-      '.sss',
-    ]
-    let isStyle = (value: string): boolean => {
-      let [cleanedValue] = value.split('?')
-      return styleExtensions.some(extension =>
-        cleanedValue?.endsWith(extension),
-      )
-    }
-
     let flatGroups = new Set(options.groups.flat())
     let shouldRegroupSideEffectNodes = flatGroups.has('side-effect')
     let shouldRegroupSideEffectStyleNodes = flatGroups.has('side-effect-style')
+
     let registerNode = (
       node:
         | TSESTree.TSImportEqualsDeclaration
         | TSESTree.VariableDeclaration
         | TSESTree.ImportDeclaration,
     ): void => {
-      let name: string
-
-      if (node.type === 'ImportDeclaration') {
-        name = node.source.value
-      } else if (node.type === 'TSImportEqualsDeclaration') {
-        if (node.moduleReference.type === 'TSExternalModuleReference') {
-          name = node.moduleReference.expression.value
-        } else {
-          name = sourceCode.getText(node.moduleReference)
-        }
-      } else {
-        let decl = node.declarations[0].init as TSESTree.CallExpression
-        let { value } = decl.arguments[0] as TSESTree.Literal
-        name = value!.toString()
-      }
-
-      let isIndex = (value: string): boolean =>
-        [
-          './index.d.js',
-          './index.d.ts',
-          './index.js',
-          './index.ts',
-          './index',
-          './',
-          '.',
-        ].includes(value)
-
-      let isParent = (value: string): boolean => value.startsWith('..')
-
-      let isSibling = (value: string): boolean => value.startsWith('./')
-
       let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
 
-      let matchesInternalPattern = (value: string): boolean | number =>
-        options.internalPattern.some(pattern => matches(value, pattern))
+      let name = getNodeName({
+        sourceCode,
+        node,
+      })
 
-      let isCoreModule = (value: string): boolean => {
-        let bunModules = [
-          'bun',
-          'bun:ffi',
-          'bun:jsc',
-          'bun:sqlite',
-          'bun:test',
-          'bun:wrap',
-          'detect-libc',
-          'undici',
-          'ws',
-        ]
-        let builtinPrefixOnlyModules = ['sea', 'sqlite', 'test']
-        let valueToCheck = value.startsWith('node:')
-          ? value.split('node:')[1]
-          : value
-        return (
-          (!!valueToCheck && builtinModules.includes(valueToCheck)) ||
-          builtinPrefixOnlyModules.some(module => `node:${module}` === value) ||
-          (options.environment === 'bun' ? bunModules.includes(value) : false)
-        )
-      }
-
-      let getInternalOrExternalGroup = (
-        value: string,
-      ): 'internal' | 'external' | null => {
-        let typescriptImport = getTypescriptImport()
-        if (!typescriptImport) {
-          return !value.startsWith('.') && !value.startsWith('/')
-            ? 'external'
-            : null
-        }
-
-        let isRelativeImport =
-          typescriptImport.isExternalModuleNameRelative(value)
-        if (isRelativeImport) {
-          return null
-        }
-        if (!tsConfigOutput) {
-          return 'external'
-        }
-
-        let resolution = typescriptImport.resolveModuleName(
-          value,
-          filename,
-          tsConfigOutput.compilerOptions,
-          typescriptImport.sys,
-          tsConfigOutput.cache,
-        )
-        // If the module can't be resolved, assume it is external.
-        if (
-          typeof resolution.resolvedModule?.isExternalLibraryImport !==
-          'boolean'
-        ) {
-          return 'external'
-        }
-
-        return resolution.resolvedModule.isExternalLibraryImport
-          ? 'external'
-          : 'internal'
-      }
+      let commonPredefinedGroups = computeCommonPredefinedGroups({
+        tsConfigOutput,
+        filename,
+        options,
+        name,
+      })
 
       if (node.type !== 'VariableDeclaration' && node.importKind === 'type') {
         if (node.type === 'ImportDeclaration') {
-          setCustomGroups(options.customGroups.type, node.source.value)
-          let internalExternalGroup = matchesInternalPattern(node.source.value)
-            ? 'internal'
-            : getInternalOrExternalGroup(node.source.value)
+          setCustomGroups(options.customGroups.type, name)
 
-          if (isIndex(node.source.value)) {
-            defineGroup('index-type')
-          }
-
-          if (isSibling(node.source.value)) {
-            defineGroup('sibling-type')
-          }
-
-          if (isParent(node.source.value)) {
-            defineGroup('parent-type')
-          }
-
-          if (internalExternalGroup === 'internal') {
-            defineGroup('internal-type')
-          }
-
-          if (isCoreModule(node.source.value)) {
-            defineGroup('builtin-type')
-          }
-
-          if (internalExternalGroup === 'external') {
-            defineGroup('external-type')
+          for (let group of commonPredefinedGroups) {
+            defineGroup(`${group}-type`)
           }
         }
 
         defineGroup('type')
       }
 
-      let isSideEffect = isSideEffectImport(node)
+      let isSideEffect = isSideEffectImport({ sourceCode, node })
       let isStyleSideEffect = false
       if (
         node.type === 'ImportDeclaration' ||
         node.type === 'VariableDeclaration'
       ) {
-        let value: string
-        if (node.type === 'ImportDeclaration') {
-          ;({ value } = node.source)
-        } else {
-          let decl = node.declarations[0].init as TSESTree.CallExpression
-          let declValue = (decl.arguments[0] as TSESTree.Literal).value
-          value = declValue!.toString()
-        }
-        let internalExternalGroup = matchesInternalPattern(value)
-          ? 'internal'
-          : getInternalOrExternalGroup(value)
-        let isStyleValue = isStyle(value)
+        let isStyleValue = isStyle(name)
         isStyleSideEffect = isSideEffect && isStyleValue
 
-        setCustomGroups(options.customGroups.value, value)
+        setCustomGroups(options.customGroups.value, name)
 
         if (isStyleSideEffect) {
           defineGroup('side-effect-style')
@@ -421,28 +182,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           defineGroup('style')
         }
 
-        if (isIndex(value)) {
-          defineGroup('index')
-        }
-
-        if (isSibling(value)) {
-          defineGroup('sibling')
-        }
-
-        if (isParent(value)) {
-          defineGroup('parent')
-        }
-
-        if (internalExternalGroup === 'internal') {
-          defineGroup('internal')
-        }
-
-        if (isCoreModule(value)) {
-          defineGroup('builtin')
-        }
-
-        if (internalExternalGroup === 'external') {
-          defineGroup('external')
+        for (let group of commonPredefinedGroups) {
+          defineGroup(group)
         }
       }
 
@@ -456,8 +197,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
         size: rangeToDiff(node, sourceCode),
         addSafetySemicolonWhenInline: true,
         group: getGroup(),
-        node,
         name,
+        node,
         ...(options.type === 'line-length' &&
           options.maxLineLength && {
             hasMultipleImportDeclarations: isSortable(
@@ -469,14 +210,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
     return {
       'Program:exit': () => {
-        let hasContentBetweenNodes = (
-          left: SortImportsSortingNode,
-          right: SortImportsSortingNode,
-        ): boolean =>
-          sourceCode.getTokensBetween(left.node, right.node, {
-            includeComments: false,
-          }).length > 0
-
         let formattedMembers: SortImportsSortingNode[][] = [[]]
         for (let sortingNode of sortingNodes) {
           let lastGroup = formattedMembers.at(-1)
@@ -490,7 +223,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               options,
             }) ||
             (lastSortingNode &&
-              hasContentBetweenNodes(lastSortingNode, sortingNode))
+              hasContentBetweenNodes(sourceCode, lastSortingNode, sortingNode))
           ) {
             lastGroup = []
             formattedMembers.push(lastGroup)
@@ -513,9 +246,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 return {
                   options: {
                     ...options,
-                    type: isSideEffectOnlyGroup(options.groups[groupNumber])
-                      ? 'unsorted'
-                      : options.type,
+                    type:
+                      options.groups[groupNumber] &&
+                      isSideEffectOnlyGroup(options.groups[groupNumber])
+                        ? 'unsorted'
+                        : options.type,
                   },
                 }
               },
@@ -683,3 +418,65 @@ export default createEslintRule<Options, MESSAGE_ID>({
   ],
   name: 'sort-imports',
 })
+
+let hasContentBetweenNodes = (
+  sourceCode: TSESLint.SourceCode,
+  left: SortImportsSortingNode,
+  right: SortImportsSortingNode,
+): boolean =>
+  sourceCode.getTokensBetween(left.node, right.node, {
+    includeComments: false,
+  }).length > 0
+
+let styleExtensions = [
+  '.less',
+  '.scss',
+  '.sass',
+  '.styl',
+  '.pcss',
+  '.css',
+  '.sss',
+]
+let isStyle = (value: string): boolean => {
+  let [cleanedValue] = value.split('?')
+  return styleExtensions.some(extension => cleanedValue?.endsWith(extension))
+}
+
+let isSideEffectImport = ({
+  sourceCode,
+  node,
+}: {
+  sourceCode: TSESLint.SourceCode
+  node: TSESTree.Node
+}): boolean =>
+  node.type === 'ImportDeclaration' &&
+  node.specifiers.length === 0 &&
+  /* Avoid matching on named imports without specifiers */
+  !/\}\s*from\s+/u.test(sourceCode.getText(node))
+
+let getNodeName = ({
+  sourceCode,
+  node,
+}: {
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration
+  sourceCode: TSESLint.SourceCode
+}): string => {
+  if (node.type === 'ImportDeclaration') {
+    return node.source.value
+  }
+
+  if (node.type === 'TSImportEqualsDeclaration') {
+    if (node.moduleReference.type === 'TSExternalModuleReference') {
+      return node.moduleReference.expression.value
+    }
+
+    return sourceCode.getText(node.moduleReference)
+  }
+
+  let callExpression = node.declarations[0].init as TSESTree.CallExpression
+  let { value } = callExpression.arguments[0] as TSESTree.Literal
+  return value!.toString()
+}

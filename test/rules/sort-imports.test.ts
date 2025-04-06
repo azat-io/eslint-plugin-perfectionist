@@ -11,7 +11,8 @@ import { createModuleResolutionCache } from 'typescript'
 import { RuleTester as EslintRuleTester } from 'eslint'
 import dedent from 'dedent'
 
-import type { MESSAGE_ID, Options } from '../../rules/sort-imports'
+import type { Options } from '../../rules/sort-imports/types'
+import type { MESSAGE_ID } from '../../rules/sort-imports'
 
 import * as readClosestTsConfigUtilities from '../../rules/sort-imports/read-closest-ts-config-by-path'
 import * as getTypescriptImportUtilities from '../../rules/sort-imports/get-typescript-import'

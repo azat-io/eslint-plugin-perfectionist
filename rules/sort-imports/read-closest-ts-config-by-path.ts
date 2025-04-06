@@ -10,7 +10,7 @@ import { getTypescriptImport } from './get-typescript-import'
  * https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/src/parseSettings/getProjectConfigFiles.ts
  */
 
-interface ReadClosestTsConfigByPathValue {
+export interface ReadClosestTsConfigByPathValue {
   compilerOptions: ts.CompilerOptions
   cache: ts.ModuleResolutionCache
 }
