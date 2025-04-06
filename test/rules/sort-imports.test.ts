@@ -204,18 +204,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
         },
@@ -251,18 +239,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
         },
@@ -304,17 +280,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
+
               newlinesBetween: 'never',
             },
           ],
@@ -343,17 +309,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
+
               newlinesBetween: 'never',
             },
           ],
@@ -375,18 +331,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
           errors: [
@@ -428,18 +372,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
           code: dedent`
@@ -462,18 +394,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             errors: [
@@ -518,18 +438,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -578,8 +486,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -607,8 +513,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -627,18 +531,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
           code: dedent`
@@ -660,18 +552,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -695,18 +575,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -742,8 +610,6 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -778,8 +644,6 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -805,8 +669,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['builtin-type', 'type'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -838,8 +700,6 @@ describe(ruleName, () => {
                   ['parent', 'sibling', 'index'],
                   ['object', 'unknown'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             errors: [
@@ -890,16 +750,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
             },
           ],
           code: dedent`
@@ -1062,17 +912,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                newlinesBetween: 'always',
                 internalPattern: ['#.+'],
               },
             ],
@@ -1122,17 +961,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                newlinesBetween: 'always',
                 internalPattern: ['#.+'],
               },
             ],
@@ -1318,18 +1146,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
           },
@@ -1355,18 +1171,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
           },
@@ -1409,8 +1213,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 sortSideEffects: false,
               },
             ],
@@ -1451,8 +1254,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 sortSideEffects: true,
               },
             ],
@@ -1474,8 +1276,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 sortSideEffects: false,
               },
             ],
@@ -1492,8 +1293,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 sortSideEffects: false,
               },
             ],
@@ -1549,7 +1349,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  newlinesBetween: 'always',
+
                   groups: ['unknown'],
                 },
               ],
@@ -1611,7 +1411,6 @@ describe(ruleName, () => {
                 {
                   ...options,
                   groups: ['side-effect', 'unknown'],
-                  newlinesBetween: 'always',
                 },
               ],
             },
@@ -1673,7 +1472,6 @@ describe(ruleName, () => {
                 {
                   ...options,
                   groups: [['side-effect', 'side-effect-style'], 'unknown'],
-                  newlinesBetween: 'always',
                 },
               ],
             },
@@ -1751,7 +1549,6 @@ describe(ruleName, () => {
                 {
                   ...options,
                   groups: ['side-effect', 'side-effect-style', 'unknown'],
-                  newlinesBetween: 'always',
                 },
               ],
             },
@@ -1822,7 +1619,6 @@ describe(ruleName, () => {
                 {
                   ...options,
                   groups: ['side-effect-style', 'unknown'],
-                  newlinesBetween: 'always',
                 },
               ],
             },
@@ -2885,7 +2681,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['style', 'unknown'],
-                newlinesBetween: 'always',
               },
             ],
             output: dedent`
@@ -2907,7 +2702,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['style', 'unknown'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3094,18 +2888,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
         },
@@ -3141,18 +2923,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
         },
@@ -3194,17 +2964,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
+
               newlinesBetween: 'never',
             },
           ],
@@ -3233,17 +2993,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
+
               newlinesBetween: 'never',
             },
           ],
@@ -3265,18 +3015,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
           errors: [
@@ -3318,18 +3056,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
           code: dedent`
@@ -3352,18 +3078,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             errors: [
@@ -3408,18 +3122,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3468,8 +3170,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3497,8 +3197,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3517,18 +3215,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
           code: dedent`
@@ -3550,18 +3236,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3585,18 +3259,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3632,8 +3294,6 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3668,8 +3328,6 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3695,8 +3353,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['builtin-type', 'type'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3728,8 +3384,6 @@ describe(ruleName, () => {
                   ['parent', 'sibling', 'index'],
                   ['object', 'unknown'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             errors: [
@@ -3780,16 +3434,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
             },
           ],
           code: dedent`
@@ -3952,17 +3596,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                newlinesBetween: 'always',
                 internalPattern: ['#.+'],
               },
             ],
@@ -4012,17 +3645,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                newlinesBetween: 'always',
                 internalPattern: ['#.+'],
               },
             ],
@@ -4208,18 +3830,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
           },
@@ -4245,18 +3855,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
           },
@@ -4299,8 +3897,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 sortSideEffects: false,
               },
             ],
@@ -4341,8 +3938,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 sortSideEffects: true,
               },
             ],
@@ -4364,8 +3960,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 sortSideEffects: false,
               },
             ],
@@ -4382,8 +3977,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 sortSideEffects: false,
               },
             ],
@@ -4418,7 +4012,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['style', 'unknown'],
-                newlinesBetween: 'always',
               },
             ],
             output: dedent`
@@ -4440,7 +4033,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['style', 'unknown'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -4694,18 +4286,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
         },
@@ -4741,18 +4321,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
         },
@@ -4794,17 +4362,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
+
               newlinesBetween: 'never',
             },
           ],
@@ -4833,17 +4391,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
+
               newlinesBetween: 'never',
             },
           ],
@@ -4865,18 +4413,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
           errors: [
@@ -4918,18 +4454,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
             },
           ],
           code: dedent`
@@ -4952,18 +4476,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             errors: [
@@ -5008,18 +4520,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5068,8 +4568,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5097,8 +4595,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5120,18 +4616,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5155,18 +4639,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5202,8 +4674,6 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5238,8 +4708,6 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5265,8 +4733,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['builtin-type', 'type'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5298,8 +4764,6 @@ describe(ruleName, () => {
                   ['parent', 'sibling', 'index'],
                   ['object', 'unknown'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             errors: [
@@ -5350,16 +4814,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
             },
           ],
           code: dedent`
@@ -5515,17 +4969,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                newlinesBetween: 'always',
                 internalPattern: ['#.+'],
               },
             ],
@@ -5575,17 +5018,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                newlinesBetween: 'always',
                 internalPattern: ['#.+'],
               },
             ],
@@ -5669,16 +5101,7 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
+
               maxLineLength: 80,
               order: 'asc',
             },
@@ -5860,18 +5283,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
           },
@@ -5897,18 +5308,6 @@ describe(ruleName, () => {
             options: [
               {
                 ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
           },
@@ -5951,8 +5350,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 sortSideEffects: false,
               },
             ],
@@ -5993,8 +5391,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 sortSideEffects: true,
               },
             ],
@@ -6016,8 +5413,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 sortSideEffects: false,
               },
             ],
@@ -6034,8 +5430,7 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 sortSideEffects: false,
               },
             ],
@@ -6070,7 +5465,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['style', 'unknown'],
-                newlinesBetween: 'always',
               },
             ],
             output: dedent`
@@ -6092,7 +5486,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['style', 'unknown'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -6604,8 +5997,7 @@ describe(ruleName, () => {
                     ui: ['~/ui/.+'],
                   },
                 },
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 type: 'line-length',
               },
             ],
@@ -6691,8 +6083,7 @@ describe(ruleName, () => {
                     ui: ['^~/ui/.+'],
                   },
                 },
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
+
                 type: 'line-length',
               },
             ],
