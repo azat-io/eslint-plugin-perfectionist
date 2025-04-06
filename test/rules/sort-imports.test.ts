@@ -201,11 +201,7 @@ describe(ruleName, () => {
             import { j } from '../j'
             import { K, L, M } from '../k'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [
@@ -236,11 +232,7 @@ describe(ruleName, () => {
             import { K, L, M } from '../k'
             import './style.css'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
     })
@@ -358,11 +350,7 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [
@@ -374,11 +362,7 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
     })
@@ -424,11 +408,7 @@ describe(ruleName, () => {
               import log = console.log
               import c = require('c/c')
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         valid: [
@@ -443,11 +423,7 @@ describe(ruleName, () => {
               import c = require('c/c')
               import log = console.log
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
       },
@@ -531,11 +507,7 @@ describe(ruleName, () => {
             import { b1, b2 } from 'b' // Comment
             import { c } from 'c'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       invalid: [],
@@ -553,11 +525,7 @@ describe(ruleName, () => {
               // @ts-expect-error missing types
               import { t } from 't'
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -577,11 +545,7 @@ describe(ruleName, () => {
 
               import type { T1, T2 } from 't'
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -761,11 +725,7 @@ describe(ruleName, () => {
 
             import { b } from './b'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [],
@@ -1141,11 +1101,7 @@ describe(ruleName, () => {
               const { j } = require('../j')
               const { K, L, M } = require('../k')
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         valid: [
@@ -1166,11 +1122,7 @@ describe(ruleName, () => {
               const { j } = require('../j')
               const { K, L, M } = require('../k')
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
       },
@@ -2878,11 +2830,7 @@ describe(ruleName, () => {
             import { j } from '../j'
             import { K, L, M } from '../k'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [
@@ -2913,11 +2861,7 @@ describe(ruleName, () => {
             import { K, L, M } from '../k'
             import './style.css'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
     })
@@ -3035,11 +2979,7 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [
@@ -3051,11 +2991,7 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
     })
@@ -3101,11 +3037,7 @@ describe(ruleName, () => {
               import log = console.log
               import c = require('c/c')
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         valid: [
@@ -3120,11 +3052,7 @@ describe(ruleName, () => {
               import c = require('c/c')
               import log = console.log
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
       },
@@ -3208,11 +3136,7 @@ describe(ruleName, () => {
             import { b1, b2 } from 'b' // Comment
             import { c } from 'c'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       invalid: [],
@@ -3230,11 +3154,7 @@ describe(ruleName, () => {
               // @ts-expect-error missing types
               import { t } from 't'
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -3254,11 +3174,7 @@ describe(ruleName, () => {
 
               import type { T1, T2 } from 't'
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -3438,11 +3354,7 @@ describe(ruleName, () => {
 
             import { b } from './b'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [],
@@ -3818,11 +3730,7 @@ describe(ruleName, () => {
               const { j } = require('../j')
               const { K, L, M } = require('../k')
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         valid: [
@@ -3843,11 +3751,7 @@ describe(ruleName, () => {
               const { j } = require('../j')
               const { K, L, M } = require('../k')
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
       },
@@ -4270,11 +4174,7 @@ describe(ruleName, () => {
             import { j } from '../j'
             import { K, L, M } from '../k'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [
@@ -4305,11 +4205,7 @@ describe(ruleName, () => {
             import './style.css'
             import a from '.'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
     })
@@ -4427,11 +4323,7 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [
@@ -4443,11 +4335,7 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
     })
@@ -4493,11 +4381,7 @@ describe(ruleName, () => {
               import log = console.log
               import c = require('c/c')
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         valid: [
@@ -4512,11 +4396,7 @@ describe(ruleName, () => {
               import c = require('c/c')
               import log = console.log
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
       },
@@ -4604,11 +4484,7 @@ describe(ruleName, () => {
               // @ts-expect-error missing types
               import { t } from 't'
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -4628,11 +4504,7 @@ describe(ruleName, () => {
 
               import type { T1, T2 } from 't'
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -4812,11 +4684,7 @@ describe(ruleName, () => {
 
             import { b } from './b'
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [],
@@ -5264,11 +5132,7 @@ describe(ruleName, () => {
               const { j } = require('../j')
               const { K, L, M } = require('../k')
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         valid: [
@@ -5289,11 +5153,7 @@ describe(ruleName, () => {
               const h = require('../../h')
               const a = require('.')
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
       },

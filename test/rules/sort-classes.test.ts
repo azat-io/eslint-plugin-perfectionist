@@ -2791,11 +2791,7 @@ describe(ruleName, () => {
                   b = () => null
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -3117,11 +3113,7 @@ describe(ruleName, () => {
                   c = 10
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           valid: [],
@@ -3295,11 +3287,7 @@ describe(ruleName, () => {
                    static a = Class.b.bMethod().anotherNestedMethod(this.c).finalMethod()
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -3745,11 +3733,7 @@ describe(ruleName, () => {
                static #a = this.#b
               }
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
           {
             code: dedent`
@@ -3758,11 +3742,7 @@ describe(ruleName, () => {
                static #a = this.#b()
               }
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
           {
             code: dedent`
@@ -7010,11 +6990,7 @@ describe(ruleName, () => {
                 messageId: 'unexpectedClassesGroupOrder',
               },
             ],
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         valid: [
@@ -8716,11 +8692,7 @@ describe(ruleName, () => {
               b
             }
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [],

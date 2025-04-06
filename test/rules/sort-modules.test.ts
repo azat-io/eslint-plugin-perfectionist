@@ -1782,11 +1782,7 @@ describe(ruleName, () => {
                 static b = 1
               }
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         valid: [],
@@ -1883,11 +1879,7 @@ describe(ruleName, () => {
                   messageId: 'unexpectedModulesOrder',
                 },
               ],
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           valid: [],
@@ -3554,11 +3546,7 @@ describe(ruleName, () => {
             class A extends B {}
             class B {}
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [],

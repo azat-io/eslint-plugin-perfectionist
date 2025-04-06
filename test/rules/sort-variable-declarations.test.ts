@@ -318,37 +318,25 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = () => 1,
               a = b();
             `,
+            options: [options],
           },
           {
             code: dedent`
               let b = function() { return 1 },
               a = b();
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
           {
             code: dedent`
               let b = () => 1,
               a = a.map(b);
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -361,26 +349,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = 1,
               a = {x: b};
             `,
+            options: [options],
           },
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = 1,
               a = {[b]: 0};
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -390,26 +370,18 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}) detects chained dependencies`, rule, {
       valid: [
         {
-          options: [
-            {
-              ...options,
-            },
-          ],
           code: dedent`
             let b = {x: 1},
             a = b.x;
           `,
+          options: [options],
         },
         {
           code: dedent`
             let b = new Subject(),
             a = b.asObservable();
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       invalid: [],
@@ -421,15 +393,11 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = {x: 1},
               a = b?.x;
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -442,15 +410,11 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = 1,
               a = b!;
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -460,15 +424,11 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}) detects unary dependencies`, rule, {
       valid: [
         {
-          options: [
-            {
-              ...options,
-            },
-          ],
           code: dedent`
             let b = true,
             a = !b;
           `,
+          options: [options],
         },
       ],
       invalid: [],
@@ -480,26 +440,18 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = {x: 1},
               a = {...b};
             `,
+            options: [options],
           },
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = [1]
               a = [...b];
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -512,37 +464,25 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = 0,
               a = b ? 1 : 0;
             `,
+            options: [options],
           },
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = 0,
               a = x ? b : 0;
             `,
+            options: [options],
           },
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = 0,
               a = x ? 0 : b;
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -555,15 +495,11 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = 'b',
               a = b as any;
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -576,15 +512,11 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = 'b',
               a = <any>b;
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -597,15 +529,11 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let b = 'b',
               a = \`\${b}\`
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -618,37 +546,25 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-              },
-            ],
             code: dedent`
               let a = () => b,
               b = 1;
             `,
+            options: [options],
           },
           {
             code: dedent`
               let a = function() { return b },
               b = 1;
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
           {
             code: dedent`
               let a = () => {return b},
               b = 1;
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -1750,11 +1666,7 @@ describe(ruleName, () => {
               a = b,
               b = 1,
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [],
