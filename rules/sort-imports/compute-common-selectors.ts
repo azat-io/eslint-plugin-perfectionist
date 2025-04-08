@@ -2,11 +2,17 @@ import { builtinModules } from 'node:module'
 
 import type { ReadClosestTsConfigByPathValue } from './read-closest-ts-config-by-path'
 import type { RegexOption } from '../../types/common-options'
+import type { Selector } from './types'
 
 import { getTypescriptImport } from './get-typescript-import'
 import { matches } from '../../utils/matches'
 
-export let computeCommonPredefinedGroups = ({
+type CommonSelector = Extract<
+  Selector,
+  'internal' | 'external' | 'sibling' | 'builtin' | 'parent' | 'index'
+>
+
+export let computeCommonSelectors = ({
   tsConfigOutput,
   filename,
   options,
@@ -19,7 +25,7 @@ export let computeCommonPredefinedGroups = ({
   tsConfigOutput: ReadClosestTsConfigByPathValue | null
   filename: string
   name: string
-}): string[] => {
+}): CommonSelector[] => {
   let matchesInternalPattern = (value: string): boolean | number =>
     options.internalPattern.some(pattern => matches(value, pattern))
 
@@ -31,7 +37,7 @@ export let computeCommonPredefinedGroups = ({
         name,
       })
 
-  let predefinedGroups: string[] = []
+  let predefinedGroups: CommonSelector[] = []
 
   if (isIndex(name)) {
     predefinedGroups.push('index')
