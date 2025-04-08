@@ -3005,11 +3005,7 @@ describe(ruleName, () => {
               b = 1,
             }
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [],

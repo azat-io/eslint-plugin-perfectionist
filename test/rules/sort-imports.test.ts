@@ -201,23 +201,7 @@ describe(ruleName, () => {
             import { j } from '../j'
             import { K, L, M } from '../k'
           `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [
@@ -248,23 +232,7 @@ describe(ruleName, () => {
             import { K, L, M } from '../k'
             import './style.css'
           `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
+          options: [options],
         },
       ],
     })
@@ -301,23 +269,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedImportsGroupOrder',
             },
           ],
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'never',
-            },
-          ],
           code: dedent`
             import d from '.'
             import { a1, a2, a3 } from 'a'
@@ -336,27 +287,16 @@ describe(ruleName, () => {
             import d from '.'
             import { e1, e2, e3 } from '../../e'
           `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+            },
+          ],
         },
       ],
       valid: [
         {
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'never',
-            },
-          ],
           code: dedent`
             import type { T } from 't'
             import { a1, a2, a3 } from 'a'
@@ -365,6 +305,12 @@ describe(ruleName, () => {
             import d from '.'
             import { e1, e2, e3 } from '../../e'
           `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+            },
+          ],
         },
       ],
     })
@@ -372,23 +318,6 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): disallow extra spaces`, rule, {
       invalid: [
         {
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
           errors: [
             {
               data: {
@@ -421,27 +350,11 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
+          options: [options],
         },
       ],
       valid: [
         {
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
           code: dedent`
             import { A } from 'a'
 
@@ -449,6 +362,7 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
+          options: [options],
         },
       ],
     })
@@ -459,23 +373,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
             errors: [
               {
                 data: {
@@ -511,27 +408,11 @@ describe(ruleName, () => {
               import log = console.log
               import c = require('c/c')
             `,
+            options: [options],
           },
         ],
         valid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
             code: dedent`
               import type T = require("T")
 
@@ -542,6 +423,7 @@ describe(ruleName, () => {
               import c = require('c/c')
               import log = console.log
             `,
+            options: [options],
           },
         ],
       },
@@ -578,8 +460,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -607,8 +487,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -624,28 +502,12 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): ignores inline comments`, rule, {
       valid: [
         {
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
           code: dedent`
             import { a } from 'a'
             import { b1, b2 } from 'b' // Comment
             import { c } from 'c'
           `,
+          options: [options],
         },
       ],
       invalid: [],
@@ -657,29 +519,13 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
             code: dedent`
               import type { T } from 't'
 
               // @ts-expect-error missing types
               import { t } from 't'
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -692,23 +538,6 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
             code: dedent`
               import type { V } from 'v'
 
@@ -716,6 +545,7 @@ describe(ruleName, () => {
 
               import type { T1, T2 } from 't'
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -742,8 +572,6 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -778,8 +606,6 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -805,8 +631,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['builtin-type', 'type'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -838,8 +662,6 @@ describe(ruleName, () => {
                   ['parent', 'sibling', 'index'],
                   ['object', 'unknown'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             errors: [
@@ -887,21 +709,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedImportsGroupOrder',
             },
           ],
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
           code: dedent`
             import { a } from 'a'
 
@@ -918,6 +725,7 @@ describe(ruleName, () => {
 
             import { b } from './b'
           `,
+          options: [options],
         },
       ],
       valid: [],
@@ -1059,23 +867,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                newlinesBetween: 'always',
-                internalPattern: ['#.+'],
-              },
-            ],
             errors: [
               {
                 data: {
@@ -1115,27 +906,16 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
+            options: [
+              {
+                ...options,
+                internalPattern: ['#.+'],
+              },
+            ],
           },
         ],
         valid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                newlinesBetween: 'always',
-                internalPattern: ['#.+'],
-              },
-            ],
             code: dedent`
               import type { T } from 'a'
 
@@ -1148,6 +928,12 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
+            options: [
+              {
+                ...options,
+                internalPattern: ['#.+'],
+              },
+            ],
           },
         ],
       },
@@ -1315,23 +1101,7 @@ describe(ruleName, () => {
               const { j } = require('../j')
               const { K, L, M } = require('../k')
             `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
+            options: [options],
           },
         ],
         valid: [
@@ -1352,23 +1122,7 @@ describe(ruleName, () => {
               const { j } = require('../j')
               const { K, L, M } = require('../k')
             `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
+            options: [options],
           },
         ],
       },
@@ -1409,8 +1163,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 sortSideEffects: false,
               },
             ],
@@ -1451,8 +1203,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 sortSideEffects: true,
               },
             ],
@@ -1474,8 +1224,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 sortSideEffects: false,
               },
             ],
@@ -1492,8 +1240,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 sortSideEffects: false,
               },
             ],
@@ -1549,7 +1295,6 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  newlinesBetween: 'always',
                   groups: ['unknown'],
                 },
               ],
@@ -1611,7 +1356,6 @@ describe(ruleName, () => {
                 {
                   ...options,
                   groups: ['side-effect', 'unknown'],
-                  newlinesBetween: 'always',
                 },
               ],
             },
@@ -1673,7 +1417,6 @@ describe(ruleName, () => {
                 {
                   ...options,
                   groups: [['side-effect', 'side-effect-style'], 'unknown'],
-                  newlinesBetween: 'always',
                 },
               ],
             },
@@ -1751,7 +1494,6 @@ describe(ruleName, () => {
                 {
                   ...options,
                   groups: ['side-effect', 'side-effect-style', 'unknown'],
-                  newlinesBetween: 'always',
                 },
               ],
             },
@@ -1822,7 +1564,6 @@ describe(ruleName, () => {
                 {
                   ...options,
                   groups: ['side-effect-style', 'unknown'],
-                  newlinesBetween: 'always',
                 },
               ],
             },
@@ -2881,13 +2622,6 @@ describe(ruleName, () => {
                 messageId: 'unexpectedImportsGroupOrder',
               },
             ],
-            options: [
-              {
-                ...options,
-                groups: ['style', 'unknown'],
-                newlinesBetween: 'always',
-              },
-            ],
             output: dedent`
               import b from './b.css?raw'
               import c from './c.css'
@@ -2899,23 +2633,28 @@ describe(ruleName, () => {
               import b from './b.css?raw'
               import c from './c.css'
             `,
-          },
-        ],
-        valid: [
-          {
             options: [
               {
                 ...options,
                 groups: ['style', 'unknown'],
-                newlinesBetween: 'always',
               },
             ],
+          },
+        ],
+        valid: [
+          {
             code: dedent`
               import b from './b.css?raw'
               import c from './c.css'
 
               import a from './a.js'
             `,
+            options: [
+              {
+                ...options,
+                groups: ['style', 'unknown'],
+              },
+            ],
           },
         ],
       },
@@ -3091,23 +2830,7 @@ describe(ruleName, () => {
             import { j } from '../j'
             import { K, L, M } from '../k'
           `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [
@@ -3138,23 +2861,7 @@ describe(ruleName, () => {
             import { K, L, M } from '../k'
             import './style.css'
           `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
+          options: [options],
         },
       ],
     })
@@ -3191,23 +2898,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedImportsGroupOrder',
             },
           ],
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'never',
-            },
-          ],
           code: dedent`
             import d from '.'
             import { a1, a2, a3 } from 'a'
@@ -3226,27 +2916,16 @@ describe(ruleName, () => {
             import d from '.'
             import { e1, e2, e3 } from '../../e'
           `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+            },
+          ],
         },
       ],
       valid: [
         {
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'never',
-            },
-          ],
           code: dedent`
             import type { T } from 't'
             import { a1, a2, a3 } from 'a'
@@ -3255,6 +2934,12 @@ describe(ruleName, () => {
             import d from '.'
             import { e1, e2, e3 } from '../../e'
           `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+            },
+          ],
         },
       ],
     })
@@ -3262,23 +2947,6 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): disallow extra spaces`, rule, {
       invalid: [
         {
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
           errors: [
             {
               data: {
@@ -3311,27 +2979,11 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
+          options: [options],
         },
       ],
       valid: [
         {
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
           code: dedent`
             import { A } from 'a'
 
@@ -3339,6 +2991,7 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
+          options: [options],
         },
       ],
     })
@@ -3349,23 +3002,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
             errors: [
               {
                 data: {
@@ -3401,27 +3037,11 @@ describe(ruleName, () => {
               import log = console.log
               import c = require('c/c')
             `,
+            options: [options],
           },
         ],
         valid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
             code: dedent`
               import type T = require("T")
 
@@ -3432,6 +3052,7 @@ describe(ruleName, () => {
               import c = require('c/c')
               import log = console.log
             `,
+            options: [options],
           },
         ],
       },
@@ -3468,8 +3089,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3497,8 +3116,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3514,28 +3131,12 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): ignores inline comments`, rule, {
       valid: [
         {
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
           code: dedent`
             import { a } from 'a'
             import { b1, b2 } from 'b' // Comment
             import { c } from 'c'
           `,
+          options: [options],
         },
       ],
       invalid: [],
@@ -3547,29 +3148,13 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
             code: dedent`
               import type { T } from 't'
 
               // @ts-expect-error missing types
               import { t } from 't'
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -3582,23 +3167,6 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
             code: dedent`
               import type { V } from 'v'
 
@@ -3606,6 +3174,7 @@ describe(ruleName, () => {
 
               import type { T1, T2 } from 't'
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -3632,8 +3201,6 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3668,8 +3235,6 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3695,8 +3260,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['builtin-type', 'type'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -3728,8 +3291,6 @@ describe(ruleName, () => {
                   ['parent', 'sibling', 'index'],
                   ['object', 'unknown'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             errors: [
@@ -3777,21 +3338,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedImportsGroupOrder',
             },
           ],
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
           code: dedent`
             import { a } from 'a'
 
@@ -3808,6 +3354,7 @@ describe(ruleName, () => {
 
             import { b } from './b'
           `,
+          options: [options],
         },
       ],
       valid: [],
@@ -3949,23 +3496,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                newlinesBetween: 'always',
-                internalPattern: ['#.+'],
-              },
-            ],
             errors: [
               {
                 data: {
@@ -4005,27 +3535,16 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
+            options: [
+              {
+                ...options,
+                internalPattern: ['#.+'],
+              },
+            ],
           },
         ],
         valid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                newlinesBetween: 'always',
-                internalPattern: ['#.+'],
-              },
-            ],
             code: dedent`
               import type { T } from 'a'
 
@@ -4038,6 +3557,12 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
+            options: [
+              {
+                ...options,
+                internalPattern: ['#.+'],
+              },
+            ],
           },
         ],
       },
@@ -4205,23 +3730,7 @@ describe(ruleName, () => {
               const { j } = require('../j')
               const { K, L, M } = require('../k')
             `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
+            options: [options],
           },
         ],
         valid: [
@@ -4242,23 +3751,7 @@ describe(ruleName, () => {
               const { j } = require('../j')
               const { K, L, M } = require('../k')
             `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
+            options: [options],
           },
         ],
       },
@@ -4299,8 +3792,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 sortSideEffects: false,
               },
             ],
@@ -4341,8 +3832,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 sortSideEffects: true,
               },
             ],
@@ -4364,8 +3853,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 sortSideEffects: false,
               },
             ],
@@ -4382,8 +3869,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 sortSideEffects: false,
               },
             ],
@@ -4414,13 +3899,6 @@ describe(ruleName, () => {
                 messageId: 'unexpectedImportsGroupOrder',
               },
             ],
-            options: [
-              {
-                ...options,
-                groups: ['style', 'unknown'],
-                newlinesBetween: 'always',
-              },
-            ],
             output: dedent`
               import b from './b.css?raw'
               import c from './c.css'
@@ -4432,23 +3910,28 @@ describe(ruleName, () => {
               import b from './b.css?raw'
               import c from './c.css'
             `,
-          },
-        ],
-        valid: [
-          {
             options: [
               {
                 ...options,
                 groups: ['style', 'unknown'],
-                newlinesBetween: 'always',
               },
             ],
+          },
+        ],
+        valid: [
+          {
             code: dedent`
               import b from './b.css?raw'
               import c from './c.css'
 
               import a from './a.js'
             `,
+            options: [
+              {
+                ...options,
+                groups: ['style', 'unknown'],
+              },
+            ],
           },
         ],
       },
@@ -4691,23 +4174,7 @@ describe(ruleName, () => {
             import { j } from '../j'
             import { K, L, M } from '../k'
           `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [
@@ -4738,23 +4205,7 @@ describe(ruleName, () => {
             import './style.css'
             import a from '.'
           `,
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
+          options: [options],
         },
       ],
     })
@@ -4791,23 +4242,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedImportsGroupOrder',
             },
           ],
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'never',
-            },
-          ],
           code: dedent`
             import d from '.'
             import { a1, a2, a3 } from 'a'
@@ -4826,27 +4260,16 @@ describe(ruleName, () => {
             import { e1, e2, e3 } from '../../e'
             import d from '.'
           `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+            },
+          ],
         },
       ],
       valid: [
         {
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'never',
-            },
-          ],
           code: dedent`
             import type { T } from 't'
             import { a1, a2, a3 } from 'a'
@@ -4855,6 +4278,12 @@ describe(ruleName, () => {
             import { e1, e2, e3 } from '../../e'
             import d from '.'
           `,
+          options: [
+            {
+              ...options,
+              newlinesBetween: 'never',
+            },
+          ],
         },
       ],
     })
@@ -4862,23 +4291,6 @@ describe(ruleName, () => {
     ruleTester.run(`${ruleName}(${type}): disallow extra spaces`, rule, {
       invalid: [
         {
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
           errors: [
             {
               data: {
@@ -4911,27 +4323,11 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
+          options: [options],
         },
       ],
       valid: [
         {
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-              internalPattern: ['^~/.*'],
-              newlinesBetween: 'always',
-            },
-          ],
           code: dedent`
             import { A } from 'a'
 
@@ -4939,6 +4335,7 @@ describe(ruleName, () => {
             import c from '~/c'
             import d from '~/d'
           `,
+          options: [options],
         },
       ],
     })
@@ -4949,23 +4346,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
             errors: [
               {
                 data: {
@@ -5001,27 +4381,11 @@ describe(ruleName, () => {
               import log = console.log
               import c = require('c/c')
             `,
+            options: [options],
           },
         ],
         valid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
             code: dedent`
               import type T = require("T")
 
@@ -5032,6 +4396,7 @@ describe(ruleName, () => {
               import c = require('c/c')
               import log = console.log
             `,
+            options: [options],
           },
         ],
       },
@@ -5068,8 +4433,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5097,8 +4460,6 @@ describe(ruleName, () => {
                   'internal',
                   ['parent', 'sibling', 'index'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5117,29 +4478,13 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
             code: dedent`
               import type { T } from 't'
 
               // @ts-expect-error missing types
               import { t } from 't'
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -5152,23 +4497,6 @@ describe(ruleName, () => {
       {
         valid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
             code: dedent`
               import type { V } from 'v'
 
@@ -5176,6 +4504,7 @@ describe(ruleName, () => {
 
               import type { T1, T2 } from 't'
             `,
+            options: [options],
           },
         ],
         invalid: [],
@@ -5202,8 +4531,6 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5238,8 +4565,6 @@ describe(ruleName, () => {
                   'object',
                   'unknown',
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5265,8 +4590,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['builtin-type', 'type'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             code: dedent`
@@ -5298,8 +4621,6 @@ describe(ruleName, () => {
                   ['parent', 'sibling', 'index'],
                   ['object', 'unknown'],
                 ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
               },
             ],
             errors: [
@@ -5347,21 +4668,6 @@ describe(ruleName, () => {
               messageId: 'unexpectedImportsGroupOrder',
             },
           ],
-          options: [
-            {
-              ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
-            },
-          ],
           code: dedent`
             import { a } from 'a'
 
@@ -5378,6 +4684,7 @@ describe(ruleName, () => {
 
             import { b } from './b'
           `,
+          options: [options],
         },
       ],
       valid: [],
@@ -5512,23 +4819,6 @@ describe(ruleName, () => {
       {
         invalid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                newlinesBetween: 'always',
-                internalPattern: ['#.+'],
-              },
-            ],
             errors: [
               {
                 data: {
@@ -5568,27 +4858,16 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
+            options: [
+              {
+                ...options,
+                internalPattern: ['#.+'],
+              },
+            ],
           },
         ],
         valid: [
           {
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                newlinesBetween: 'always',
-                internalPattern: ['#.+'],
-              },
-            ],
             code: dedent`
               import type { T } from 'a'
 
@@ -5601,6 +4880,12 @@ describe(ruleName, () => {
 
               import { d } from '../d'
             `,
+            options: [
+              {
+                ...options,
+                internalPattern: ['#.+'],
+              },
+            ],
           },
         ],
       },
@@ -5669,16 +4954,6 @@ describe(ruleName, () => {
           options: [
             {
               ...options,
-              groups: [
-                'type',
-                ['builtin', 'external'],
-                'internal-type',
-                'internal',
-                ['parent-type', 'sibling-type', 'index-type'],
-                ['parent', 'sibling', 'index'],
-                'object',
-                'unknown',
-              ],
               maxLineLength: 80,
               order: 'asc',
             },
@@ -5857,23 +5132,7 @@ describe(ruleName, () => {
               const { j } = require('../j')
               const { K, L, M } = require('../k')
             `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
+            options: [options],
           },
         ],
         valid: [
@@ -5894,23 +5153,7 @@ describe(ruleName, () => {
               const h = require('../../h')
               const a = require('.')
             `,
-            options: [
-              {
-                ...options,
-                groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
-                  'object',
-                  'unknown',
-                ],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
-              },
-            ],
+            options: [options],
           },
         ],
       },
@@ -5951,8 +5194,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 sortSideEffects: false,
               },
             ],
@@ -5993,8 +5234,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 sortSideEffects: true,
               },
             ],
@@ -6016,8 +5255,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 sortSideEffects: false,
               },
             ],
@@ -6034,8 +5271,6 @@ describe(ruleName, () => {
               {
                 ...options,
                 groups: ['external', 'side-effect', 'unknown'],
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 sortSideEffects: false,
               },
             ],
@@ -6066,13 +5301,6 @@ describe(ruleName, () => {
                 messageId: 'unexpectedImportsGroupOrder',
               },
             ],
-            options: [
-              {
-                ...options,
-                groups: ['style', 'unknown'],
-                newlinesBetween: 'always',
-              },
-            ],
             output: dedent`
               import b from './b.css?raw'
               import c from './c.css'
@@ -6084,23 +5312,28 @@ describe(ruleName, () => {
               import b from './b.css?raw'
               import c from './c.css'
             `,
-          },
-        ],
-        valid: [
-          {
             options: [
               {
                 ...options,
                 groups: ['style', 'unknown'],
-                newlinesBetween: 'always',
               },
             ],
+          },
+        ],
+        valid: [
+          {
             code: dedent`
               import b from './b.css?raw'
               import c from './c.css'
 
               import a from './a.js'
             `,
+            options: [
+              {
+                ...options,
+                groups: ['style', 'unknown'],
+              },
+            ],
           },
         ],
       },
@@ -6604,8 +5837,6 @@ describe(ruleName, () => {
                     ui: ['~/ui/.+'],
                   },
                 },
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 type: 'line-length',
               },
             ],
@@ -6691,8 +5922,6 @@ describe(ruleName, () => {
                     ui: ['^~/ui/.+'],
                   },
                 },
-                internalPattern: ['^~/.*'],
-                newlinesBetween: 'always',
                 type: 'line-length',
               },
             ],

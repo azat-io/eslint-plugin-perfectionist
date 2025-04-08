@@ -1,7 +1,12 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { SortImportsSortingNode, Options } from './sort-imports/types'
+import type {
+  SortImportsSortingNode,
+  Options,
+  Group,
+} from './sort-imports/types'
+import type { DeprecatedCustomGroupsOption } from '../types/common-options'
 
 import {
   partitionByCommentJsonSchema,
@@ -31,10 +36,10 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { useGroups } from '../utils/use-groups'
 import { complete } from '../utils/complete'
 
 export type MESSAGE_ID =
@@ -133,8 +138,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         | TSESTree.VariableDeclaration
         | TSESTree.ImportDeclaration,
     ): void => {
-      let { setCustomGroups, defineGroup, getGroup } = useGroups(options)
-
       let name = getNodeName({
         sourceCode,
         node,
@@ -147,16 +150,30 @@ export default createEslintRule<Options, MESSAGE_ID>({
         name,
       })
 
+      let predefinedGroups: Group[] = []
+      let group: Group | null = null
+
       if (node.type !== 'VariableDeclaration' && node.importKind === 'type') {
         if (node.type === 'ImportDeclaration') {
-          setCustomGroups(options.customGroups.type, name)
+          group = computeGroupExceptUnknown({
+            customGroups: options.customGroups.type,
+            predefinedGroups: [],
+            options,
+            name,
+          })
 
-          for (let group of commonPredefinedGroups) {
-            defineGroup(`${group}-type`)
+          for (let predefinedGroup of commonPredefinedGroups) {
+            predefinedGroups.push(`${predefinedGroup}-type`)
           }
         }
 
-        defineGroup('type')
+        predefinedGroups.push('type')
+
+        group ??= computeGroupExceptUnknown({
+          predefinedGroups,
+          options,
+          name,
+        })
       }
 
       let isSideEffect = isSideEffectImport({ sourceCode, node })
@@ -168,24 +185,36 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let isStyleValue = isStyle(name)
         isStyleSideEffect = isSideEffect && isStyleValue
 
-        setCustomGroups(options.customGroups.value, name)
+        group ??= computeGroupExceptUnknown({
+          customGroups: options.customGroups.value,
+          predefinedGroups: [],
+          options,
+          name,
+        })
 
         if (isStyleSideEffect) {
-          defineGroup('side-effect-style')
+          predefinedGroups.push('side-effect-style')
         }
 
         if (isSideEffect) {
-          defineGroup('side-effect')
+          predefinedGroups.push('side-effect')
         }
 
         if (isStyleValue) {
-          defineGroup('style')
+          predefinedGroups.push('style')
         }
 
-        for (let group of commonPredefinedGroups) {
-          defineGroup(group)
+        for (let predefinedGroup of commonPredefinedGroups) {
+          predefinedGroups.push(predefinedGroup)
         }
       }
+
+      group ??=
+        computeGroupExceptUnknown({
+          predefinedGroups,
+          options,
+          name,
+        }) ?? 'unknown'
 
       sortingNodes.push({
         isIgnored:
@@ -196,7 +225,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         size: rangeToDiff(node, sourceCode),
         addSafetySemicolonWhenInline: true,
-        group: getGroup(),
+        group,
         name,
         node,
         ...(options.type === 'line-length' &&
@@ -479,4 +508,32 @@ let getNodeName = ({
   let callExpression = node.declarations[0].init as TSESTree.CallExpression
   let { value } = callExpression.arguments[0] as TSESTree.Literal
   return value!.toString()
+}
+
+let computeGroupExceptUnknown = ({
+  predefinedGroups,
+  customGroups,
+  options,
+  name,
+}: {
+  options: Omit<
+    Required<Options[0]>,
+    'tsconfigRootDir' | 'maxLineLength' | 'customGroups'
+  >
+  customGroups?: DeprecatedCustomGroupsOption | undefined
+  predefinedGroups: Group[]
+  name: string
+}): Group | null => {
+  let computedCustomGroup = computeGroup({
+    options: {
+      ...options,
+      customGroups,
+    },
+    predefinedGroups,
+    name,
+  })
+  if (computedCustomGroup === 'unknown') {
+    return null
+  }
+  return computedCustomGroup
 }

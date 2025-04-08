@@ -748,11 +748,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
             {
               code: dedent`
@@ -763,11 +759,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
             {
               code: dedent`
@@ -778,11 +770,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -803,11 +791,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
             {
               code: dedent`
@@ -818,11 +802,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -843,11 +823,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
             {
               code: dedent`
@@ -858,11 +834,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -883,11 +855,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -908,11 +876,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -930,11 +894,7 @@ describe(ruleName, () => {
                 // ...
               }
             `,
-            options: [
-              {
-                ...options,
-              },
-            ],
+            options: [options],
           },
         ],
         invalid: [],
@@ -954,11 +914,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
             {
               code: dedent`
@@ -969,11 +925,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -994,11 +946,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
             {
               code: dedent`
@@ -1009,11 +957,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
             {
               code: dedent`
@@ -1024,11 +968,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -1049,11 +989,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -1074,11 +1010,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -1099,11 +1031,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -1124,11 +1052,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
             {
               code: dedent`
@@ -1139,11 +1063,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
             {
               code: dedent`
@@ -1154,11 +1074,7 @@ describe(ruleName, () => {
                   // ...
                 }
               `,
-              options: [
-                {
-                  ...options,
-                },
-              ],
+              options: [options],
             },
           ],
           invalid: [],
@@ -5465,11 +5381,7 @@ describe(ruleName, () => {
               // ...
             }
           `,
-          options: [
-            {
-              ...options,
-            },
-          ],
+          options: [options],
         },
       ],
       valid: [],
