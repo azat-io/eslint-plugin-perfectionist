@@ -1,59 +1,73 @@
-import type { TSESTree } from '@typescript-eslint/types'
-
 import type {
-  PartitionByCommentOption,
-  CommonOptions,
-} from '../types/common-options'
-import type { SortingNode } from '../types/sorting-node'
+  SortNamedExportsSortingNode,
+  Modifier,
+  Selector,
+  Options,
+} from './sort-named-exports/types'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
+  newlinesBetweenJsonSchema,
   commonJsonSchemas,
+  groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import {
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-named-exports/types'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
-import { ORDER_ERROR } from '../utils/report-errors'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 
-type Options = [
-  Partial<
-    {
-      groupKind: 'values-first' | 'types-first' | 'mixed'
-      partitionByComment: PartitionByCommentOption
-      partitionByNewLine: boolean
-      ignoreAlias: boolean
-    } & CommonOptions
-  >,
-]
+type MESSAGE_ID =
+  | 'unexpectedNamedExportsGroupOrder'
+  | 'missedSpacingBetweenNamedExports'
+  | 'extraSpacingBetweenNamedExports'
+  | 'unexpectedNamedExportsOrder'
 
-interface SortNamedExportsSortingNode
-  extends SortingNode<TSESTree.ExportSpecifier> {
-  groupKind: 'value' | 'type'
-}
-
-type MESSAGE_ID = 'unexpectedNamedExportsOrder'
+/**
+ * Cache computed groups by modifiers and selectors for performance
+ */
+let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByNewLine: false,
   partitionByComment: false,
+  newlinesBetween: 'ignore',
   type: 'alphabetical',
   ignoreAlias: false,
   groupKind: 'mixed',
+  customGroups: [],
   ignoreCase: true,
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
+  groups: [],
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
@@ -66,6 +80,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
+      validateGeneratedGroupsConfiguration({
+        modifiers: allModifiers,
+        selectors: allSelectors,
+        options,
+      })
+      validateNewlinesAndPartitionConfiguration(options)
 
       let { sourceCode, id } = context
       let eslintDisabledLines = getEslintDisabledLines({
@@ -94,7 +114,31 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
         }
 
-        let lastSortingNode = formattedMembers.at(-1)?.at(-1)
+        let selector: Selector = 'export'
+        let modifiers: Modifier[] = []
+        if (specifier.exportKind === 'value') {
+          modifiers.push('value')
+        } else {
+          modifiers.push('type')
+        }
+
+        let predefinedGroups = generatePredefinedGroups({
+          cache: cachedGroupsByModifiersAndSelectors,
+          selectors: [selector],
+          modifiers,
+        })
+        let group = computeGroup({
+          customGroupMatcher: customGroup =>
+            doesCustomGroupMatch({
+              selectors: [selector],
+              elementName: name,
+              customGroup,
+              modifiers,
+            }),
+          predefinedGroups,
+          options,
+        })
+
         let sortingNode: SortNamedExportsSortingNode = {
           isEslintDisabled: isNodeEslintDisabled(
             specifier,
@@ -103,9 +147,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
           groupKind: specifier.exportKind === 'type' ? 'type' : 'value',
           size: rangeToDiff(specifier, sourceCode),
           node: specifier,
+          group,
           name,
         }
 
+        let lastSortingNode = formattedMembers.at(-1)?.at(-1)
         if (
           shouldPartition({
             lastSortingNode,
@@ -140,15 +186,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ignoreEslintDisabledNodes: boolean,
         ): SortNamedExportsSortingNode[] =>
           filteredGroupKindNodes.flatMap(groupedNodes =>
-            sortNodes({
+            sortNodesByGroups({
+              getOptionsByGroupNumber:
+                buildGetCustomGroupOverriddenOptionsFunction(options),
               ignoreEslintDisabledNodes,
+              groups: options.groups,
               nodes: groupedNodes,
-              options,
             }),
           )
 
         reportAllErrors<MESSAGE_ID>({
           availableMessageIds: {
+            missedSpacingBetweenMembers: 'missedSpacingBetweenNamedExports',
+            extraSpacingBetweenMembers: 'extraSpacingBetweenNamedExports',
+            unexpectedGroupOrder: 'unexpectedNamedExportsGroupOrder',
             unexpectedOrder: 'unexpectedNamedExportsOrder',
           },
           sortNodesExcludingEslintDisabled,
@@ -161,33 +212,43 @@ export default createEslintRule<Options, MESSAGE_ID>({
     },
   }),
   meta: {
-    schema: [
-      {
+    schema: {
+      items: {
         properties: {
           ...commonJsonSchemas,
           groupKind: {
+            description: '[DEPRECATED] Specifies top-level groups.',
             enum: ['mixed', 'values-first', 'types-first'],
-            description: 'Specifies top-level groups.',
             type: 'string',
           },
           ignoreAlias: {
             description: 'Controls whether to ignore alias names.',
             type: 'boolean',
           },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
+          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
       },
-    ],
+      uniqueItems: true,
+      type: 'array',
+    },
+    messages: {
+      missedSpacingBetweenNamedExports: MISSED_SPACING_ERROR,
+      extraSpacingBetweenNamedExports: EXTRA_SPACING_ERROR,
+      unexpectedNamedExportsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedNamedExportsOrder: ORDER_ERROR,
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-named-exports',
       description: 'Enforce sorted named exports.',
       recommended: true,
-    },
-    messages: {
-      unexpectedNamedExportsOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',

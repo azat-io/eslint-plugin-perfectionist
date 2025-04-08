@@ -108,7 +108,7 @@ Specifies the sorting method.
 - `'natural'` — Sort items in a [natural](https://github.com/yobacca/natural-orderby) order (e.g., “item2” < “item10”).
 - `'line-length'` — Sort items by the length of the code line (shorter lines first).
 - `'custom'` — Sort items using the alphabet entered in the [`alphabet`](#alphabet) option.
-- `'unsorted'` — Do not sort items.
+- `'unsorted'` — Do not sort items. [`grouping`](#groups) and [`newlines behavior`](#newlinesbetween) are still enforced.
 
 ### order
 
@@ -191,13 +191,15 @@ Determines whether to use the import alias as the name for sorting instead of th
 - `true` — Use the import alias for sorting.
 - `false` — Use the exported name for sorting.
 
-### groupKind
+### [DEPRECATED] groupKind
 
 <sub>default: `'mixed'`</sub>
 
+Use the [groups](#groups) option with the `value` and `type` modifiers instead.
+
 Allows you to group named imports by their kind, determining whether value imports should come before or after type imports.
 
-- `mixed` — Do not group named imports by their kind; export statements are sorted together regardless of their type.
+- `mixed` — Do not group named imports by their kind; named imports statements are sorted together regardless of their type.
 - `values-first` — Group all value imports before type imports.
 - `types-first` — Group all type imports before value imports.
 
@@ -239,6 +241,137 @@ import {
 } from './devices'
 ```
 
+### newlinesBetween
+
+<sub>default: `'ignore'`</sub>
+
+Specifies how new lines should be handled between groups.
+
+- `ignore` — Do not report errors related to new lines.
+- `always` — Enforce one new line between each group, and forbid new lines inside a group.
+- `never` — No new lines are allowed.
+
+You can also enforce the newline behavior between two specific groups through the `groups` options.
+
+See the [`groups`](#newlines-between-groups) option.
+
+This option is only applicable when `partitionByNewLine` is `false`.
+
+### groups
+
+<sub>
+  type: `Array<string | string[]>`
+</sub>
+<sub>default: `[]`</sub>
+
+Allows you to specify a list of named imports groups for sorting. Groups help organize named imports into categories, making them more readable and maintainable.
+
+Each named import will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
+The order of items in the `groups` option determines how groups are ordered.
+
+Within a given group, members will be sorted according to the `type`, `order`, `ignoreCase`, etc. options.
+
+Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
+All members of the groups in the array will be sorted together as if they were part of a single group.
+
+Predefined groups are characterized by a single selector and potentially multiple modifiers. You may enter modifiers in any order, but the selector must always come at the end.
+
+#### Selectors
+
+The only selector possible for this rule is `import`.
+
+#### Modifiers
+
+- `value`: Matches value imports.
+- `type`: Matches type imports.
+
+Example: `type-import`.
+
+#### Important notes
+
+##### The `unknown` group
+
+Members that don’t fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option,
+it will automatically be added to the end of the list.
+
+##### Newlines between groups
+
+You may place `newlinesBetween` objects between your groups to enforce the newline behavior between two specific groups.
+
+See the [`newlinesBetween`](#newlinesbetween) option.
+
+This feature is only applicable when `partitionByNewLine` is false.
+
+```ts
+{
+  newlinesBetween: 'always',
+  groups: [
+    'a',
+    { newlinesBetween: 'never' }, // Overrides the global newlinesBetween option
+    'b',
+  ]
+}
+```
+
+### customGroups
+
+<sub>
+  type: `Array<CustomGroupDefinition | CustomGroupAnyOfDefinition>`
+</sub>
+<sub>default: `[]`</sub>
+
+You can define your own groups and use regexp patterns to match specific named imports.
+
+A custom group definition may follow one of the two following interfaces:
+
+```ts
+interface CustomGroupDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  newlinesInside?: 'always' | 'never'
+  selector?: string
+  elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+}
+
+```
+A named import will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+
+or:
+
+```ts
+interface CustomGroupAnyOfDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  newlinesInside?: 'always' | 'never'
+  anyOf: Array<{
+      selector?: string
+      elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+  }>
+}
+```
+
+A named import will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+
+#### Attributes
+
+- `groupName`: The group's name, which needs to be put in the `groups` option.
+- `selector`: Filter on the `selector` of the element.
+- `elementNamePattern`: If entered, will check that the name of the element matches the pattern entered.
+- `type`: Overrides the sort type for that custom group. `unsorted` will not sort the group.
+- `order`: Overrides the sort order for that custom group
+- `fallbackSort`: Overrides the fallbackSort option for that custom group
+- `newlinesInside`: Enforces a specific newline behavior between elements of the group.
+
+#### Match importance
+
+The `customGroups` list is ordered:
+The first custom group definition that matches an element will be used.
+
+Custom groups have a higher priority than any predefined group.
 
 ## Usage
 
@@ -267,6 +400,9 @@ import {
                   groupKind: 'mixed',
                   partitionByNewLine: false,
                   partitionByComment: false,
+                  newlinesBetween: 'ignore',
+                  groups: [],
+                  customGroups: [],
                 },
               ],
             },
@@ -296,6 +432,9 @@ import {
                 groupKind: 'mixed',
                 partitionByNewLine: false,
                 partitionByComment: false,
+                newlinesBetween: 'ignore',
+                groups: [],
+                customGroups: [],
               },
             ],
           },
