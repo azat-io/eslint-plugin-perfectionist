@@ -9,6 +9,7 @@ import type {
   RegexOption,
   TypeOption,
 } from '../../types/common-options'
+import type { JoinWithDash } from '../../types/join-with-dash'
 import type { SortingNode } from '../../types/sorting-node'
 
 export type Options = Partial<{
@@ -34,27 +35,84 @@ export type Options = Partial<{
   alphabet: string
 }>[]
 
-export type Group =
-  | 'side-effect-style'
-  | 'external-type'
-  | 'internal-type'
-  | 'builtin-type'
-  | 'sibling-type'
-  | 'parent-type'
-  | 'side-effect'
-  | 'index-type'
-  | 'internal'
-  | 'external'
-  | 'sibling'
-  | 'unknown'
-  | 'builtin'
-  | 'parent'
-  | 'object'
-  | 'index'
-  | 'style'
-  | 'type'
-  | string
+export type Selector =
+  | SideEffectStyleSelector
+  | InternalTypeSelector
+  | ExternalTypeSelector
+  | SiblingTypeSelector
+  | BuiltinTypeSelector
+  | SideEffectSelector
+  | ParentTypeSelector
+  | IndexTypeSelector
+  | ExternalSelector
+  | InternalSelector
+  | BuiltinSelector
+  | SiblingSelector
+  | ParentSelector
+  | IndexSelector
+  | StyleSelector
+  | TypeSelector
 
 export interface SortImportsSortingNode extends SortingNode {
   isIgnored: boolean
 }
+
+export type Group = ValueGroup | TypeGroup | 'unknown' | string
+
+export type Modifier = TypeModifier
+
+type TypeGroup = JoinWithDash<[TypeModifier, Selector]>
+
+type SideEffectStyleSelector = 'side-effect-style'
+
+/**
+ * @deprecated for the modifier and selector
+ */
+type InternalTypeSelector = 'internal-type'
+
+/**
+ * @deprecated for the modifier and selector
+ */
+type ExternalTypeSelector = 'external-type'
+
+type ValueGroup = JoinWithDash<[Selector]>
+
+/**
+ * @deprecated for the modifier and selector
+ */
+type SiblingTypeSelector = 'sibling-type'
+
+/**
+ * @deprecated for the modifier and selector
+ */
+type BuiltinTypeSelector = 'builtin-type'
+
+type SideEffectSelector = 'side-effect'
+
+/**
+ * @deprecated for the modifier and selector
+ */
+type ParentTypeSelector = 'parent-type'
+
+/**
+ * @deprecated for the modifier and selector
+ */
+type IndexTypeSelector = 'index-type'
+
+type ExternalSelector = 'external'
+
+type InternalSelector = 'internal'
+
+type BuiltinSelector = 'builtin'
+
+type SiblingSelector = 'sibling'
+
+type ParentSelector = 'parent'
+
+type IndexSelector = 'index'
+
+type StyleSelector = 'style'
+
+type TypeModifier = 'type'
+
+type TypeSelector = 'type'

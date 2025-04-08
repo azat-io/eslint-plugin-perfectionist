@@ -2663,6 +2663,278 @@ describe(ruleName, () => {
         ],
       },
     )
+
+    describe(`${ruleName}(${type}): handles the new "groups" and "customGroups" API`, () => {
+      describe('selectors priority', () => {
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "index-type" over "sibling-type"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      leftGroup: 'sibling-type',
+                      rightGroup: 'index-type',
+                      right: './index',
+                      left: './a',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['index-type', 'sibling-type'],
+                  },
+                ],
+                output: dedent`
+                  import type b from './index'
+
+                  import type a from './a'
+                `,
+                code: dedent`
+                  import type a from './a'
+
+                  import type b from './index'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes precise "type" selectors over "type"`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      [
+                        'index-type',
+                        'internal-type',
+                        'external-type',
+                        'sibling-type',
+                        'builtin-type',
+                      ],
+                      'type',
+                    ],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'sibling-type',
+                      leftGroup: 'type',
+                      right: './b',
+                      left: '../a',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                output: dedent`
+                  import type b from './b'
+                  import type c from './index'
+                  import type d from 'd'
+                  import type e from 'timers'
+
+                  import type a from '../a'
+                `,
+                code: dedent`
+                  import type a from '../a'
+
+                  import type b from './b'
+                  import type c from './index'
+                  import type d from 'd'
+                  import type e from 'timers'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "index" over "sibling"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      leftGroup: 'sibling',
+                      rightGroup: 'index',
+                      right: './index',
+                      left: './a',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['index', 'sibling'],
+                  },
+                ],
+                output: dedent`
+                  import b from './index'
+
+                  import a from './a'
+                `,
+                code: dedent`
+                  import a from './a'
+
+                  import b from './index'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "side-effect-style" over "side-effect"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'side-effect-style',
+                      leftGroup: 'side-effect',
+                      right: 'style.css',
+                      left: 'something',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['side-effect-style', 'side-effect'],
+                  },
+                ],
+                output: dedent`
+                  import 'style.css'
+
+                  import 'something'
+                `,
+                code: dedent`
+                  import 'something'
+
+                  import 'style.css'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "side-effect" over "style"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'side-effect',
+                      right: 'something',
+                      leftGroup: 'style',
+                      left: 'style.css',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['side-effect', 'style'],
+                  },
+                ],
+                output: dedent`
+                  import 'something'
+
+                  import style from 'style.css'
+                `,
+                code: dedent`
+                  import style from 'style.css'
+
+                  import 'something'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "style" over any other non-type "selector"`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+
+                    groups: [
+                      'style',
+                      [
+                        'index',
+                        'internal',
+                        'external',
+                        'sibling',
+                        'builtin',
+                        'parent',
+                      ],
+                    ],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      leftGroup: 'builtin',
+                      rightGroup: 'style',
+                      right: 'style.css',
+                      left: 'timers',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                output: dedent`
+                  import style from 'style.css'
+
+                  import a from '../a'
+                  import b from './b'
+                  import c from './index'
+                  import d from 'd'
+                  import e from 'timers'
+                `,
+                code: dedent`
+                  import a from '../a'
+                  import b from './b'
+                  import c from './index'
+                  import d from 'd'
+                  import e from 'timers'
+
+                  import style from 'style.css'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

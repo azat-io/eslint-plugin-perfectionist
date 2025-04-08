@@ -295,27 +295,6 @@ Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is use
 
 Specifies a list of import groups for sorting. Groups help organize imports into meaningful categories, making your code more readable and maintainable.
 
-Predefined groups:
-
-- `'builtin'` — Node.js Built-in Modules.
-- `'external'` — External modules installed in the project.
-- `'internal'` — Your internal modules.
-- `'parent'` — Modules from the parent directory.
-- `'sibling'` — Modules from the same directory.
-- `'side-effect'` — Side effect imports.
-- `'side-effect-style'` — Side effect style imports.
-- `'index'` — Main file from the current directory.
-- `'style'` — Styles.
-- `'external-type'` — TypeScript type imports from external modules.
-- `'builtin-type'` — TypeScript type imports from built-in modules.
-- `'internal-type'` — TypeScript type imports from your internal modules.
-- `'parent-type'` — TypeScript type imports from the parent directory.
-- `'sibling-type'` — TypeScript type imports from the same directory.
-- `'index-type'` — TypeScript type imports from the main directory file.
-- `'unknown'` — Imports that don’t fit into any group specified in the `groups` option.
-
-If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
-
 Each import will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
 The order of items in the `groups` option determines how groups are ordered.
 
@@ -324,7 +303,54 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
 
-#### Example
+Predefined groups are characterized by a single selector and potentially multiple modifiers. You may enter modifiers in any order, but the selector must always come at the end.
+
+#### Selectors
+
+The list of selectors is sorted from most to least important:
+
+- `'type'` — TypeScript type imports.
+- `'side-effect-style'` — Side effect style imports.
+- `'side-effect'` — Side effect imports.
+- `'style'` — Styles.
+- `'index'` — Main file from the current directory.
+- `'sibling'` — Modules from the same directory.
+- `'parent'` — Modules from the parent directory.
+- `'internal'` — Your internal modules.
+- `'builtin'` — Node.js Built-in Modules.
+- `'external'` — External modules installed in the project.
+
+#### Modifiers
+
+- `'type'` — Typescript time imports.
+
+#### Important notes
+
+##### The `unknown` group
+
+Members that don’t fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option,
+the members will remain in their original order.
+
+##### Behavior when multiple groups match an element
+
+The lists of selectors and modifiers above are both sorted by importance, from most to least important.
+In case of multiple groups matching an element, the following rules will be applied:
+
+1. Selector priority: `type`, `index`, ... will take precedence over `external` groups for example.
+2. If the selector is the same, the group with the most modifiers matching will be selected.
+
+Example 1:
+
+```ts
+import type { FC } from 'react'
+```
+
+`react` can be matched by the following groups, from most to least important:
+- `type` (`type` selector).
+- `type-external` (`type` modifier).
+- `external`.
+
+Example 2 (The most important group is written in the comments):
 
 ```ts
 // 'builtin' - Node.js Built-in Modules
@@ -345,17 +371,17 @@ import './styles.scss'
 import main from '.'
 // 'style' - Styles
 import styles from './index.module.css'
-// 'external-type' - TypeScript type imports
+// 'type-external' - TypeScript type imports
 import type { FC } from 'react'
-// 'builtin-type' - TypeScript type imports from Built-in Modules
+// 'type-builtin' - TypeScript type imports from Built-in Modules
 import type { Server } from 'http'
-// 'internal-type' - TypeScript type imports from your internal modules
+// 'type-internal' - TypeScript type imports from your internal modules
 import type { User } from '~/users'
-// 'parent-type' - TypeScript type imports from parent directory
+// 'type-parent' - TypeScript type imports from parent directory
 import type { InputProps } from '../Input'
-// 'sibling-type' - TypeScript type imports from the same directory
+// 'type-sibling' - TypeScript type imports from the same directory
 import type { Details } from './data'
-// 'index-type' - TypeScript type imports from main directory file
+// 'type-index' - TypeScript type imports from main directory file
 import type { BaseOptions } from './index.d.ts'
 ```
 
