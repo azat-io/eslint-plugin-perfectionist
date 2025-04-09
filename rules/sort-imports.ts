@@ -178,35 +178,31 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let isSideEffect = isSideEffectImport({ sourceCode, node })
       let isStyleSideEffect = false
-      if (
-        node.type === 'ImportDeclaration' ||
-        node.type === 'VariableDeclaration'
-      ) {
-        let isStyleValue = isStyle(name)
-        isStyleSideEffect = isSideEffect && isStyleValue
 
-        group ??= computeGroupExceptUnknown({
-          customGroups: options.customGroups.value,
-          predefinedGroups: [],
-          options,
-          name,
-        })
+      let isStyleValue = isStyle(name)
+      isStyleSideEffect = isSideEffect && isStyleValue
 
-        if (isStyleSideEffect) {
-          predefinedGroups.push('side-effect-style')
-        }
+      group ??= computeGroupExceptUnknown({
+        customGroups: options.customGroups.value,
+        predefinedGroups: [],
+        options,
+        name,
+      })
 
-        if (isSideEffect) {
-          predefinedGroups.push('side-effect')
-        }
+      if (isStyleSideEffect) {
+        predefinedGroups.push('side-effect-style')
+      }
 
-        if (isStyleValue) {
-          predefinedGroups.push('style')
-        }
+      if (isSideEffect) {
+        predefinedGroups.push('side-effect')
+      }
 
-        for (let predefinedGroup of commonPredefinedGroups) {
-          predefinedGroups.push(predefinedGroup)
-        }
+      if (isStyleValue) {
+        predefinedGroups.push('style')
+      }
+
+      for (let predefinedGroup of commonPredefinedGroups) {
+        predefinedGroups.push(predefinedGroup)
       }
 
       group ??=
