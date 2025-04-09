@@ -180,7 +180,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let isStyleSideEffect = false
       if (
         node.type === 'ImportDeclaration' ||
-        node.type === 'VariableDeclaration'
+        node.type === 'VariableDeclaration' ||
+        node.type === 'TSImportEqualsDeclaration'
       ) {
         let isStyleValue = isStyle(name)
         isStyleSideEffect = isSideEffect && isStyleValue

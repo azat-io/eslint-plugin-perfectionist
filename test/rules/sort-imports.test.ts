@@ -383,6 +383,15 @@ describe(ruleName, () => {
               },
               {
                 data: {
+                  rightGroup: 'external',
+                  right: 'console.log',
+                  leftGroup: 'parent',
+                  left: '../b',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
                   left: 'console.log',
                   right: 'c/c',
                 },
@@ -393,11 +402,10 @@ describe(ruleName, () => {
               import type T = require("T")
 
               import { A } from 'a'
-
-              import { B } from '../b'
-
               import c = require('c/c')
               import log = console.log
+
+              import { B } from '../b'
             `,
             code: dedent`
               import type T = require("T")
@@ -417,11 +425,10 @@ describe(ruleName, () => {
               import type T = require("T")
 
               import { A } from 'a'
-
-              import { B } from '../b'
-
               import c = require('c/c')
               import log = console.log
+
+              import { B } from '../b'
             `,
             options: [options],
           },
@@ -3012,6 +3019,15 @@ describe(ruleName, () => {
               },
               {
                 data: {
+                  rightGroup: 'external',
+                  right: 'console.log',
+                  leftGroup: 'parent',
+                  left: '../b',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
                   left: 'console.log',
                   right: 'c/c',
                 },
@@ -3022,11 +3038,10 @@ describe(ruleName, () => {
               import type T = require("T")
 
               import { A } from 'a'
-
-              import { B } from '../b'
-
               import c = require('c/c')
               import log = console.log
+
+              import { B } from '../b'
             `,
             code: dedent`
               import type T = require("T")
@@ -3046,11 +3061,11 @@ describe(ruleName, () => {
               import type T = require("T")
 
               import { A } from 'a'
+              import c = require('c/c')
+              import log = console.log
 
               import { B } from '../b'
 
-              import c = require('c/c')
-              import log = console.log
             `,
             options: [options],
           },
@@ -4356,6 +4371,15 @@ describe(ruleName, () => {
               },
               {
                 data: {
+                  rightGroup: 'external',
+                  right: 'console.log',
+                  leftGroup: 'parent',
+                  left: '../b',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
                   left: 'console.log',
                   right: 'c/c',
                 },
@@ -4365,12 +4389,11 @@ describe(ruleName, () => {
             output: dedent`
               import type T = require("T")
 
+              import c = require('c/c')
+              import log = console.log
               import { A } from 'a'
 
               import { B } from '../b'
-
-              import c = require('c/c')
-              import log = console.log
             `,
             code: dedent`
               import type T = require("T")
@@ -4389,12 +4412,11 @@ describe(ruleName, () => {
             code: dedent`
               import type T = require("T")
 
+              import c = require('c/c')
+              import log = console.log
               import { A } from 'a'
 
               import { B } from '../b'
-
-              import c = require('c/c')
-              import log = console.log
             `,
             options: [options],
           },
