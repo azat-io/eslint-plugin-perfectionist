@@ -54,11 +54,30 @@ let isPredefinedGroup = (
     return false
   }
   let twoWordsSelector = input.split('-').slice(-2).join('-')
-  let isTwoWordSelectorValid = allSelectors.includes(twoWordsSelector)
-  if (!allSelectors.includes(singleWordSelector) && !isTwoWordSelectorValid) {
+  let threeWordsSelector = input.split('-').slice(-3).join('-')
+
+  let selectorWordCount = 0
+  if (allSelectors.includes(singleWordSelector)) {
+    selectorWordCount = 1
+  }
+  if (
+    singleWordSelector !== twoWordsSelector &&
+    allSelectors.includes(twoWordsSelector)
+  ) {
+    selectorWordCount = 2
+  }
+  if (
+    twoWordsSelector !== threeWordsSelector &&
+    allSelectors.includes(threeWordsSelector)
+  ) {
+    selectorWordCount = 3
+  }
+
+  if (!selectorWordCount) {
     return false
   }
-  let modifiers = input.split('-').slice(0, isTwoWordSelectorValid ? -2 : -1)
+
+  let modifiers = input.split('-').slice(0, -selectorWordCount)
   return (
     new Set(modifiers).size === modifiers.length &&
     modifiers.every(modifier => allModifiers.includes(modifier))

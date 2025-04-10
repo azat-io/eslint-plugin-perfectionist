@@ -6,7 +6,7 @@ import { builtinModules } from 'node:module'
 
 import type { ReadClosestTsConfigByPathValue } from '../../../rules/sort-imports/read-closest-ts-config-by-path'
 
-import { computeCommonPredefinedGroups } from '../../../rules/sort-imports/compute-common-predefined-groups'
+import { computeCommonSelectors } from '../../../rules/sort-imports/compute-common-selectors'
 
 let mockGetTypescriptImport: Mock<() => typeof ts> = vi.fn()
 
@@ -14,8 +14,8 @@ vi.mock('../../../rules/sort-imports/get-typescript-import', () => ({
   getTypescriptImport: () => mockGetTypescriptImport(),
 }))
 
-describe('compute-common-predefined-groups', () => {
-  describe('`index` group', () => {
+describe('compute-common-selector', () => {
+  describe('`index` selector', () => {
     it.each([
       './index.d.js',
       './index.d.ts',
@@ -25,13 +25,13 @@ describe('compute-common-predefined-groups', () => {
       './',
       '.',
     ])("should match with '%s'", name => {
-      expect(
-        computeCommonPredefinedGroups(buildParameters({ name })),
-      ).toContain('index')
+      expect(computeCommonSelectors(buildParameters({ name }))).toContain(
+        'index',
+      )
     })
   })
 
-  describe('`sibling` group', () => {
+  describe('`sibling` selector', () => {
     it.each([
       './foo.js',
       './foo.ts',
@@ -40,13 +40,13 @@ describe('compute-common-predefined-groups', () => {
       './foo/index.ts',
       './foo/index',
     ])("should match with '%s'", name => {
-      expect(
-        computeCommonPredefinedGroups(buildParameters({ name })),
-      ).toContain('sibling')
+      expect(computeCommonSelectors(buildParameters({ name }))).toContain(
+        'sibling',
+      )
     })
   })
 
-  describe('`parent` group', () => {
+  describe('`parent` selector', () => {
     it.each([
       '../foo.js',
       '../foo.ts',
@@ -55,13 +55,13 @@ describe('compute-common-predefined-groups', () => {
       '../foo/index.ts',
       '../foo/index',
     ])("should match with '%s'", name => {
-      expect(
-        computeCommonPredefinedGroups(buildParameters({ name })),
-      ).toContain('parent')
+      expect(computeCommonSelectors(buildParameters({ name }))).toContain(
+        'parent',
+      )
     })
   })
 
-  describe('`builtin` group', () => {
+  describe('`builtin` selector', () => {
     describe('node builtin modules', () => {
       it.each([
         ...builtinModules,
@@ -70,9 +70,9 @@ describe('compute-common-predefined-groups', () => {
         'node:test',
         'node:sea',
       ])("should match with '%s'", name => {
-        expect(
-          computeCommonPredefinedGroups(buildParameters({ name })),
-        ).toContain('builtin')
+        expect(computeCommonSelectors(buildParameters({ name }))).toContain(
+          'builtin',
+        )
       })
     })
 
@@ -89,15 +89,13 @@ describe('compute-common-predefined-groups', () => {
         'ws',
       ])("should match with '%s'", name => {
         expect(
-          computeCommonPredefinedGroups(
-            buildParameters({ environment: 'bun', name }),
-          ),
+          computeCommonSelectors(buildParameters({ environment: 'bun', name })),
         ).toContain('builtin')
       })
     })
   })
 
-  describe('`internal` group', () => {
+  describe('`internal` selector', () => {
     it.each([
       { internalPattern: ['internal'], name: 'internal' },
       { internalPattern: ['foo', 'internal'], name: 'internalName' },
@@ -105,9 +103,7 @@ describe('compute-common-predefined-groups', () => {
       "should match through `internalPattern` with '%s'",
       ({ internalPattern, name }) => {
         expect(
-          computeCommonPredefinedGroups(
-            buildParameters({ internalPattern, name }),
-          ),
+          computeCommonSelectors(buildParameters({ internalPattern, name })),
         ).toContain('internal')
       },
     )
@@ -119,19 +115,17 @@ describe('compute-common-predefined-groups', () => {
       })
 
       expect(
-        computeCommonPredefinedGroups(
+        computeCommonSelectors(
           buildParameters({ withTsConfigOutput: true, name: 'foo' }),
         ),
       ).toContain('internal')
     })
   })
 
-  describe('`external` group', () => {
+  describe('`external` selector', () => {
     it('should match without typescript if the import does not start with . nor /', () => {
       expect(
-        computeCommonPredefinedGroups(
-          buildParameters({ name: 'somethingExternal' }),
-        ),
+        computeCommonSelectors(buildParameters({ name: 'somethingExternal' })),
       ).toContain('external')
     })
 
@@ -141,7 +135,7 @@ describe('compute-common-predefined-groups', () => {
       })
 
       expect(
-        computeCommonPredefinedGroups(buildParameters({ name: 'foo' })),
+        computeCommonSelectors(buildParameters({ name: 'foo' })),
       ).toContain('external')
     })
 
@@ -151,7 +145,7 @@ describe('compute-common-predefined-groups', () => {
       })
 
       expect(
-        computeCommonPredefinedGroups(
+        computeCommonSelectors(
           buildParameters({ withTsConfigOutput: true, name: 'foo' }),
         ),
       ).toContain('external')
@@ -164,7 +158,7 @@ describe('compute-common-predefined-groups', () => {
       })
 
       expect(
-        computeCommonPredefinedGroups(
+        computeCommonSelectors(
           buildParameters({ withTsConfigOutput: true, name: 'foo' }),
         ),
       ).toContain('external')
@@ -175,9 +169,7 @@ describe('compute-common-predefined-groups', () => {
     it.each(['.foo', '/foo'])(
       "should not match anything without typescript with '%s'",
       name => {
-        expect(
-          computeCommonPredefinedGroups(buildParameters({ name })),
-        ).toEqual([])
+        expect(computeCommonSelectors(buildParameters({ name }))).toEqual([])
       },
     )
 
@@ -186,9 +178,9 @@ describe('compute-common-predefined-groups', () => {
         isExternalModuleNameRelative: true,
       })
 
-      expect(
-        computeCommonPredefinedGroups(buildParameters({ name: 'foo' })),
-      ).toEqual([])
+      expect(computeCommonSelectors(buildParameters({ name: 'foo' }))).toEqual(
+        [],
+      )
     })
   })
 
@@ -202,7 +194,7 @@ describe('compute-common-predefined-groups', () => {
     environment?: 'node' | 'bun'
     internalPattern?: string[]
     name: string
-  }): Parameters<typeof computeCommonPredefinedGroups>[0] => ({
+  }): Parameters<typeof computeCommonSelectors>[0] => ({
     tsConfigOutput: withTsConfigOutput
       ? ({ compilerOptions: {} } as ReadClosestTsConfigByPathValue)
       : null,
