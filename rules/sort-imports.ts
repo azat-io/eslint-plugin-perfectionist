@@ -243,6 +243,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
       if (hasSpecifier(node, 'ImportDefaultSpecifier')) {
         modifiers.push('default')
       }
+      if (hasSpecifier(node, 'ImportNamespaceSpecifier')) {
+        modifiers.push('wildcard')
+      }
       if (hasSpecifier(node, 'ImportSpecifier')) {
         modifiers.push('named')
       }
@@ -524,7 +527,10 @@ let hasSpecifier = (
     | TSESTree.TSImportEqualsDeclaration
     | TSESTree.VariableDeclaration
     | TSESTree.ImportDeclaration,
-  specifier: 'ImportDefaultSpecifier' | 'ImportSpecifier',
+  specifier:
+    | 'ImportNamespaceSpecifier'
+    | 'ImportDefaultSpecifier'
+    | 'ImportSpecifier',
 ): boolean =>
   node.type === 'ImportDeclaration' &&
   node.specifiers.some(nodeSpecifier => nodeSpecifier.type === specifier)
