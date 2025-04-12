@@ -78,7 +78,11 @@ export interface SortImportsSortingNode extends SortingNode {
   isIgnored: boolean
 }
 
-export type Modifier = ValueModifier | NamedModified | TypeModifier
+export type Modifier =
+  | DefaultModifier
+  | ValueModifier
+  | NamedModified
+  | TypeModifier
 
 export type Group = ValueGroup | TypeGroup | 'unknown' | string
 
@@ -130,6 +134,8 @@ type BuiltinSelector = 'builtin'
 
 type SiblingSelector = 'sibling'
 
+type DefaultModifier = 'default'
+
 type ParentSelector = 'parent'
 
 /**
@@ -176,7 +182,7 @@ export let allDeprecatedSelectors: Selector[] = [
   'object',
 ]
 
-export let allModifiers: Modifier[] = ['named', 'type', 'value']
+export let allModifiers: Modifier[] = ['default', 'named', 'type', 'value']
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and ensure
