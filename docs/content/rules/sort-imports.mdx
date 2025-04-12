@@ -288,7 +288,6 @@ Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is use
     'internal',
     ['parent-type', 'sibling-type', 'index-type'],
     ['parent', 'sibling', 'index'],
-    'object',
     'unknown',
   ]
   ```
@@ -306,7 +305,6 @@ Predefined groups:
 - `'side-effect'` — Side effect imports.
 - `'side-effect-style'` — Side effect style imports.
 - `'index'` — Main file from the current directory.
-- `'object'` — TypeScript object imports.
 - `'style'` — Styles.
 - `'external-type'` — TypeScript type imports from external modules.
 - `'builtin-type'` — TypeScript type imports from built-in modules.
@@ -345,8 +343,6 @@ import './set-production-env.js'
 import './styles.scss'
 // 'index' - Main file from the current directory
 import main from '.'
-// 'object' - TypeScript object-imports
-import log = console.log
 // 'style' - Styles
 import styles from './index.module.css'
 // 'external-type' - TypeScript type imports
@@ -416,7 +412,6 @@ Custom group matching takes precedence over predefined group matching.
      'internal',
      ['parent-type', 'sibling-type', 'index-type'],
      ['parent', 'sibling', 'index'],
-     'object',
      'unknown',
    ],
 +  customGroups: {                      // [!code ++]
@@ -472,7 +467,6 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                     'internal',
                     ['parent-type', 'sibling-type', 'index-type'],
                     ['parent', 'sibling', 'index'],
-                    'object',
                     'unknown',
                   ],
                   customGroups: { type: {}, value: {} },
@@ -514,7 +508,6 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   'internal',
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
-                  'object',
                   'unknown',
                 ],
                 customGroups: { type: {}, value: {} },

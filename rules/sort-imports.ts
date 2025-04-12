@@ -62,7 +62,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           'internal',
           ['parent-type', 'sibling-type', 'index-type'],
           ['parent', 'sibling', 'index'],
-          'object',
           'unknown',
         ],
         customGroups: { value: {}, type: {} },
@@ -98,6 +97,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'unknown',
         'builtin',
         'parent',
+        /**
+         * This group is never matched. Kept for backward compatibility.
+         */
         'object',
         'index',
         'style',
@@ -425,7 +427,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         'internal',
         ['parent-type', 'sibling-type', 'index-type'],
         ['parent', 'sibling', 'index'],
-        'object',
         'unknown',
       ],
       customGroups: { value: {}, type: {} },
