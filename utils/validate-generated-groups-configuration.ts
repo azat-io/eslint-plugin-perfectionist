@@ -49,37 +49,86 @@ let isPredefinedGroup = (
   if (input === 'unknown') {
     return true
   }
-  let singleWordSelector = input.split('-').at(-1)
-  if (!singleWordSelector) {
-    return false
-  }
-  let twoWordsSelector = input.split('-').slice(-2).join('-')
-  let threeWordsSelector = input.split('-').slice(-3).join('-')
 
-  let selectorWordCount = 0
-  if (allSelectors.includes(singleWordSelector)) {
-    selectorWordCount = 1
-  }
-  if (
-    singleWordSelector !== twoWordsSelector &&
-    allSelectors.includes(twoWordsSelector)
-  ) {
-    selectorWordCount = 2
-  }
-  if (
-    twoWordsSelector !== threeWordsSelector &&
-    allSelectors.includes(threeWordsSelector)
-  ) {
-    selectorWordCount = 3
-  }
+  let elementsSeparatedWithDash = input.split('-')
 
-  if (!selectorWordCount) {
+  let longestAllowedSelector = computeLongestAllowedWord({
+    allowedValues: allSelectors,
+    elementsSeparatedWithDash,
+    allowThreeWord: true,
+  })
+  if (!longestAllowedSelector) {
     return false
   }
 
-  let modifiers = input.split('-').slice(0, -selectorWordCount)
-  return (
-    new Set(modifiers).size === modifiers.length &&
-    modifiers.every(modifier => allModifiers.includes(modifier))
+  let modifiersToParse = elementsSeparatedWithDash.slice(
+    0,
+    -longestAllowedSelector.dashSeparatedElementsCount,
   )
+  let parsedModifiers = new Set<string>()
+  while (modifiersToParse.length > 0) {
+    let longestAllowedModifier = computeLongestAllowedWord({
+      elementsSeparatedWithDash: modifiersToParse,
+      allowedValues: allModifiers,
+      allowThreeWord: false,
+    })
+    if (!longestAllowedModifier) {
+      return false
+    }
+    if (parsedModifiers.has(longestAllowedModifier.word)) {
+      return false
+    }
+    parsedModifiers.add(longestAllowedModifier.word)
+    modifiersToParse = modifiersToParse.slice(
+      0,
+      -longestAllowedModifier.dashSeparatedElementsCount,
+    )
+  }
+
+  return true
+}
+
+let computeLongestAllowedWord = ({
+  elementsSeparatedWithDash,
+  allowThreeWord,
+  allowedValues,
+}: {
+  elementsSeparatedWithDash: string[]
+  allowedValues: string[]
+  allowThreeWord: boolean
+}): { dashSeparatedElementsCount: number; word: string } | null => {
+  let singleWordElement = elementsSeparatedWithDash.at(-1)
+  if (!singleWordElement) {
+    return null
+  }
+  let twoWordsElement = elementsSeparatedWithDash.slice(-2).join('-')
+  let threeWordsElement = elementsSeparatedWithDash.slice(-3).join('-')
+  let word: undefined | string
+
+  let dashSeparatedElementsCount = 0
+  if (allowedValues.includes(singleWordElement)) {
+    dashSeparatedElementsCount = 1
+    word = singleWordElement
+  }
+  if (
+    singleWordElement !== twoWordsElement &&
+    allowedValues.includes(twoWordsElement)
+  ) {
+    dashSeparatedElementsCount = 2
+    word = twoWordsElement
+  }
+  if (
+    allowThreeWord &&
+    twoWordsElement !== threeWordsElement &&
+    allowedValues.includes(threeWordsElement)
+  ) {
+    dashSeparatedElementsCount = 3
+    word = threeWordsElement
+  }
+
+  if (!dashSeparatedElementsCount || !word) {
+    return null
+  }
+
+  return { dashSeparatedElementsCount, word }
 }
