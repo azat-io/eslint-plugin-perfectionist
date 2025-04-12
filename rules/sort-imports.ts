@@ -233,6 +233,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
         selectors.push(selector)
       }
 
+      if (!modifiers.includes('type')) {
+        modifiers.push('value')
+      }
+
       group ??=
         computeGroupExceptUnknown({
           customGroups: Array.isArray(options.customGroups)

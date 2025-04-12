@@ -323,6 +323,7 @@ The list of selectors is sorted from most to least important:
 #### Modifiers
 
 - `'type'` — Typescript time imports.
+- `'value'` — Value imports.
 
 #### Important notes
 
@@ -353,23 +354,23 @@ import type { FC } from 'react'
 Example 2 (The most important group is written in the comments):
 
 ```ts
-// 'builtin' - Node.js Built-in Modules
+// 'value-builtin' - Node.js Built-in Modules
 import path from 'path'
-// 'external' - External modules installed in the project
+// 'value-external' - External modules installed in the project
 import axios from 'axios'
-// 'internal' - Your internal modules
+// 'value-internal' - Your internal modules
 import Button from '~/components/Button'
-// 'parent' - Modules from parent directory
+// 'value-parent' - Modules from parent directory
 import formatNumber from '../utils/format-number'
-// 'sibling' - Modules from the same directory
+// 'value-sibling' - Modules from the same directory
 import config from './config'
-// 'side-effect' - Side effect imports
+// 'value-side-effect' - Side effect imports
 import './set-production-env.js'
-// side-effect-style - Side effect style imports
+// value-side-effect-style - Side effect style imports
 import './styles.scss'
-// 'index' - Main file from the current directory
+// 'value-index' - Main file from the current directory
 import main from '.'
-// 'style' - Styles
+// 'value-style' - Styles
 import styles from './index.module.css'
 // 'type-external' - TypeScript type imports
 import type { FC } from 'react'

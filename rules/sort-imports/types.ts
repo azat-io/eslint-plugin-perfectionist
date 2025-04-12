@@ -78,7 +78,7 @@ export interface SortImportsSortingNode extends SortingNode {
 
 export type Group = ValueGroup | TypeGroup | 'unknown' | string
 
-export type Modifier = TypeModifier
+export type Modifier = ValueModifier | TypeModifier
 
 type TypeGroup = JoinWithDash<[TypeModifier, Selector]>
 
@@ -137,6 +137,8 @@ type IndexSelector = 'index'
 
 type StyleSelector = 'style'
 
+type ValueModifier = 'value'
+
 type TypeModifier = 'type'
 
 type TypeSelector = 'type'
@@ -164,7 +166,7 @@ export let allDeprecatedSelectors: Selector[] = [
   'object',
 ]
 
-export let allModifiers: Modifier[] = ['type']
+export let allModifiers: Modifier[] = ['type', 'value']
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and ensure
