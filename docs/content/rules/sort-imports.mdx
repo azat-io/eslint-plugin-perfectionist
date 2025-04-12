@@ -282,12 +282,12 @@ Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is use
   default:
   ```
   [
-    'type',
-    ['builtin', 'external'],
-    'internal-type',
-    'internal',
-    ['parent-type', 'sibling-type', 'index-type'],
-    ['parent', 'sibling', 'index'],
+    'type-import',
+    ['value-builtin', 'value-external'],
+    'type-internal',
+    'value-internal',
+    ['type-parent', 'type-sibling', 'type-index'],
+    ['value-parent', 'value-sibling', 'value-index'],
     'unknown',
   ]
   ```
@@ -520,13 +520,13 @@ you must write a custom group definition that does the same as what the predefin
 ```js
    groups: [
 +    'react',                           // [!code ++]
-     'type',
-     ['builtin', 'external'],
+     'type-import',
+     ['value-builtin', 'value-external'],
 +    'lodash',                          // [!code ++]
-     'internal-type',
-     'internal',
-     ['parent-type', 'sibling-type', 'index-type'],
-     ['parent', 'sibling', 'index'],
+     'type-internal',
+     'value-internal',
+     ['type-parent', 'type-sibling', 'type-index'],
+     ['value-parent', 'value-sibling', 'value-index'],
      'unknown',
    ],
 +  customGroups: [                      // [!code ++]
@@ -577,12 +577,12 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   newlinesBetween: 'always',
                   maxLineLength: undefined,
                   groups: [
-                    'type',
-                    ['builtin', 'external'],
-                    'internal-type',
-                    'internal',
-                    ['parent-type', 'sibling-type', 'index-type'],
-                    ['parent', 'sibling', 'index'],
+                    'type-import',
+                    ['value-builtin', 'value-external'],
+                    'type-internal',
+                    'value-internal',
+                    ['type-parent', 'type-sibling', 'type-index'],
+                    ['value-parent', 'value-sibling', 'value-index'],
                     'unknown',
                   ],
                   customGroups: [],
@@ -618,12 +618,12 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                 newlinesBetween: 'always',
                 maxLineLength: undefined,
                 groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
+                  'type-import',
+                  ['value-builtin', 'value-external'],
+                  'type-internal',
+                  'value-internal',
+                  ['type-parent', 'type-sibling', 'type-index'],
+                  ['value-parent', 'value-sibling', 'value-index'],
                   'unknown',
                 ],
                 customGroups: [],

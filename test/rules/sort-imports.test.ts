@@ -88,8 +88,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'internal-type',
-                leftGroup: 'internal',
+                rightGroup: 'type-internal',
+                leftGroup: 'value-internal',
                 right: '~/i',
                 left: '~/b',
               },
@@ -104,8 +104,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                leftGroup: 'sibling-type',
-                rightGroup: 'builtin',
+                rightGroup: 'value-builtin',
+                leftGroup: 'type-sibling',
                 left: './d',
                 right: 'fs',
               },
@@ -127,17 +127,17 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'index-type',
+                leftGroup: 'value-parent',
+                rightGroup: 'type-index',
                 right: './index.d.ts',
-                leftGroup: 'parent',
                 left: '../../h',
               },
               messageId: 'unexpectedImportsGroupOrder',
             },
             {
               data: {
-                leftGroup: 'index',
-                rightGroup: 'type',
+                rightGroup: 'type-import',
+                leftGroup: 'value-index',
                 right: 't',
                 left: '.',
               },
@@ -243,8 +243,8 @@ describe(ruleName, () => {
           errors: [
             {
               data: {
-                rightGroup: 'external',
-                leftGroup: 'index',
+                rightGroup: 'value-external',
+                leftGroup: 'value-index',
                 right: 'a',
                 left: '.',
               },
@@ -252,8 +252,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                leftGroup: 'internal',
-                rightGroup: 'type',
+                leftGroup: 'value-internal',
+                rightGroup: 'type-import',
                 left: '~/c',
                 right: 't',
               },
@@ -261,8 +261,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'internal',
-                leftGroup: 'parent',
+                rightGroup: 'value-internal',
+                leftGroup: 'value-parent',
                 left: '../../e',
                 right: '~/b',
               },
@@ -383,9 +383,9 @@ describe(ruleName, () => {
               },
               {
                 data: {
-                  rightGroup: 'external',
+                  rightGroup: 'value-external',
+                  leftGroup: 'value-parent',
                   right: 'console.log',
-                  leftGroup: 'parent',
                   left: '../b',
                 },
                 messageId: 'unexpectedImportsGroupOrder',
@@ -706,8 +706,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'external',
-                leftGroup: 'sibling',
+                rightGroup: 'value-external',
+                leftGroup: 'value-sibling',
                 left: './b',
                 right: 'c',
               },
@@ -1043,8 +1043,8 @@ describe(ruleName, () => {
               },
               {
                 data: {
-                  leftGroup: 'internal',
-                  rightGroup: 'builtin',
+                  leftGroup: 'value-internal',
+                  rightGroup: 'value-builtin',
                   left: '~/b',
                   right: 'fs',
                 },
@@ -3417,8 +3417,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'internal-type',
-                leftGroup: 'internal',
+                rightGroup: 'type-internal',
+                leftGroup: 'value-internal',
                 right: '~/i',
                 left: '~/b',
               },
@@ -3433,8 +3433,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                leftGroup: 'sibling-type',
-                rightGroup: 'builtin',
+                rightGroup: 'value-builtin',
+                leftGroup: 'type-sibling',
                 left: './d',
                 right: 'fs',
               },
@@ -3456,17 +3456,17 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'index-type',
+                leftGroup: 'value-parent',
+                rightGroup: 'type-index',
                 right: './index.d.ts',
-                leftGroup: 'parent',
                 left: '../../h',
               },
               messageId: 'unexpectedImportsGroupOrder',
             },
             {
               data: {
-                leftGroup: 'index',
-                rightGroup: 'type',
+                rightGroup: 'type-import',
+                leftGroup: 'value-index',
                 right: 't',
                 left: '.',
               },
@@ -3572,8 +3572,8 @@ describe(ruleName, () => {
           errors: [
             {
               data: {
-                rightGroup: 'external',
-                leftGroup: 'index',
+                rightGroup: 'value-external',
+                leftGroup: 'value-index',
                 right: 'a',
                 left: '.',
               },
@@ -3581,8 +3581,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                leftGroup: 'internal',
-                rightGroup: 'type',
+                leftGroup: 'value-internal',
+                rightGroup: 'type-import',
                 left: '~/c',
                 right: 't',
               },
@@ -3590,8 +3590,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'internal',
-                leftGroup: 'parent',
+                rightGroup: 'value-internal',
+                leftGroup: 'value-parent',
                 left: '../../e',
                 right: '~/b',
               },
@@ -3712,9 +3712,9 @@ describe(ruleName, () => {
               },
               {
                 data: {
-                  rightGroup: 'external',
+                  rightGroup: 'value-external',
+                  leftGroup: 'value-parent',
                   right: 'console.log',
-                  leftGroup: 'parent',
                   left: '../b',
                 },
                 messageId: 'unexpectedImportsGroupOrder',
@@ -4036,8 +4036,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'external',
-                leftGroup: 'sibling',
+                rightGroup: 'value-external',
+                leftGroup: 'value-sibling',
                 left: './b',
                 right: 'c',
               },
@@ -4373,8 +4373,8 @@ describe(ruleName, () => {
               },
               {
                 data: {
-                  leftGroup: 'internal',
-                  rightGroup: 'builtin',
+                  leftGroup: 'value-internal',
+                  rightGroup: 'value-builtin',
                   left: '~/b',
                   right: 'fs',
                 },
@@ -4738,8 +4738,8 @@ describe(ruleName, () => {
           errors: [
             {
               data: {
-                rightGroup: 'internal-type',
-                leftGroup: 'internal',
+                rightGroup: 'type-internal',
+                leftGroup: 'value-internal',
                 right: '~/i',
                 left: '~/b',
               },
@@ -4754,8 +4754,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                leftGroup: 'sibling-type',
-                rightGroup: 'builtin',
+                rightGroup: 'value-builtin',
+                leftGroup: 'type-sibling',
                 left: './d',
                 right: 'fs',
               },
@@ -4791,17 +4791,17 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'index-type',
+                leftGroup: 'value-parent',
+                rightGroup: 'type-index',
                 right: './index.d.ts',
-                leftGroup: 'parent',
                 left: '../../h',
               },
               messageId: 'unexpectedImportsGroupOrder',
             },
             {
               data: {
-                leftGroup: 'index',
-                rightGroup: 'type',
+                rightGroup: 'type-import',
+                leftGroup: 'value-index',
                 right: 't',
                 left: '.',
               },
@@ -4921,8 +4921,8 @@ describe(ruleName, () => {
           errors: [
             {
               data: {
-                rightGroup: 'external',
-                leftGroup: 'index',
+                rightGroup: 'value-external',
+                leftGroup: 'value-index',
                 right: 'a',
                 left: '.',
               },
@@ -4930,8 +4930,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                leftGroup: 'internal',
-                rightGroup: 'type',
+                leftGroup: 'value-internal',
+                rightGroup: 'type-import',
                 left: '~/c',
                 right: 't',
               },
@@ -4939,8 +4939,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'internal',
-                leftGroup: 'parent',
+                rightGroup: 'value-internal',
+                leftGroup: 'value-parent',
                 left: '../../e',
                 right: '~/b',
               },
@@ -5061,9 +5061,9 @@ describe(ruleName, () => {
               },
               {
                 data: {
-                  rightGroup: 'external',
+                  rightGroup: 'value-external',
+                  leftGroup: 'value-parent',
                   right: 'console.log',
-                  leftGroup: 'parent',
                   left: '../b',
                 },
                 messageId: 'unexpectedImportsGroupOrder',
@@ -5370,8 +5370,8 @@ describe(ruleName, () => {
             },
             {
               data: {
-                rightGroup: 'external',
-                leftGroup: 'sibling',
+                rightGroup: 'value-external',
+                leftGroup: 'value-sibling',
                 left: './b',
                 right: 'c',
               },
@@ -5765,8 +5765,8 @@ describe(ruleName, () => {
             errors: [
               {
                 data: {
-                  leftGroup: 'internal',
-                  rightGroup: 'builtin',
+                  leftGroup: 'value-internal',
+                  rightGroup: 'value-builtin',
                   left: '~/b',
                   right: 'fs',
                 },
