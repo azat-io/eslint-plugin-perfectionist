@@ -67,19 +67,20 @@ export type Selector =
   | StyleSelector
   | TypeSelector
 
+export type Modifier =
+  | WildcardModifier
+  | RequireModifier
+  | DefaultModifier
+  | ValueModifier
+  | NamedModified
+  | TypeModifier
+
 export type SingleCustomGroup = {
   modifiers?: Modifier[]
   selector?: Selector
 } & {
   elementNamePattern?: RegexOption
 }
-
-export type Modifier =
-  | WildcardModifier
-  | DefaultModifier
-  | ValueModifier
-  | NamedModified
-  | TypeModifier
 
 export interface SortImportsSortingNode extends SortingNode {
   isIgnored: boolean
@@ -139,6 +140,8 @@ type SiblingSelector = 'sibling'
 
 type DefaultModifier = 'default'
 
+type RequireModifier = 'require'
+
 type ParentSelector = 'parent'
 
 /**
@@ -188,6 +191,7 @@ export let allDeprecatedSelectors: Selector[] = [
 export let allModifiers: Modifier[] = [
   'default',
   'named',
+  'require',
   'type',
   'value',
   'wildcard',

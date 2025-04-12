@@ -240,6 +240,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         modifiers.push('value')
       }
 
+      if (node.type === 'VariableDeclaration') {
+        modifiers.push('require')
+      }
       if (hasSpecifier(node, 'ImportDefaultSpecifier')) {
         modifiers.push('default')
       }
