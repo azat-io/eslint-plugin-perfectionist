@@ -230,6 +230,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         if (isSideEffect) {
           selectors.push('side-effect')
+          modifiers.push('side-effect')
         }
 
         if (isStyleValue) {

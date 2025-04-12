@@ -2997,17 +2997,54 @@ describe(ruleName, () => {
                   },
                 ],
                 output: dedent`
-                  import type a from './a'
                   import type z = z
 
                   import f from 'f'
                 `,
                 code: dedent`
-                  import type a from './a'
-
                   import f from 'f'
 
                   import type z = z
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "side-effect" over "value"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'side-effect-import',
+                      leftGroup: 'external',
+                      right: './z',
+                      left: 'f',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['side-effect-import', 'external', 'value-import'],
+                    sortSideEffects: true,
+                  },
+                ],
+                output: dedent`
+                  import "./z"
+
+                  import f from 'f'
+                `,
+                code: dedent`
+                  import f from 'f'
+
+                  import "./z"
                 `,
               },
             ],
@@ -3039,14 +3076,11 @@ describe(ruleName, () => {
                   },
                 ],
                 output: dedent`
-                  import a from './a'
                   import z = z
 
                   import f from 'f'
                 `,
                 code: dedent`
-                  import a from './a'
-
                   import f from 'f'
 
                   import z = z

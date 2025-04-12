@@ -327,6 +327,7 @@ The list of selectors is sorted from most to least important:
 
 The list of modifiers is sorted from most to least important:
 
+- `'side-effect'` — Side effect imports.
 - `'type'` — Typescript type imports.
 - `'value'` — Value imports.
 - `'ts-equals'` — TypeScript import-equals imports.
@@ -369,7 +370,23 @@ import type { FC } from 'react'
 - `named-import`.
 - `import`.
 
-Example 2 (The most important group is written in the comments):
+Example 2:
+
+```ts
+import 'style.scss'
+```
+
+`style.scss` can be matched by the following relevant groups, from most to least important:
+
+- `side-effect-style` (`side-effect-style` selector).
+- `side-effect`.
+- `value-style`.
+- `style`.
+- `side-effect-import`.  (`side-effect` modifier)
+- `value-import`.
+- `import`.
+
+Example 3 (The most important group is written in the comments):
 
 ```ts
 // 'value-builtin' - Node.js Built-in Modules
