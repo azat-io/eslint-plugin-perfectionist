@@ -59,6 +59,7 @@ export type Selector =
   | InternalSelector
   | BuiltinSelector
   | SiblingSelector
+  | SubpathSelector
   | ImportSelector
   | ObjectSelector
   | ParentSelector
@@ -123,6 +124,8 @@ type ExternalSelector = 'external'
 
 type InternalSelector = 'internal'
 
+type SubpathSelector = 'subpath'
+
 type BuiltinSelector = 'builtin'
 
 type SiblingSelector = 'sibling'
@@ -153,6 +156,7 @@ export let allSelectors: Selector[] = [
   'internal',
   'builtin',
   'sibling',
+  'subpath',
   'import',
   'parent',
   'index',
