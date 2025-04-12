@@ -232,6 +232,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       for (let selector of commonSelectors) {
         selectors.push(selector)
       }
+      selectors.push('import')
 
       if (!modifiers.includes('type')) {
         modifiers.push('value')

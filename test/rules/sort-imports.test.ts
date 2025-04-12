@@ -2933,6 +2933,45 @@ describe(ruleName, () => {
             valid: [],
           },
         )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "external" over "import"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'external',
+                      leftGroup: 'import',
+                      left: './a',
+                      right: 'b',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['external', 'import'],
+                  },
+                ],
+                output: dedent`
+                  import b from 'b'
+
+                  import a from './a'
+                `,
+                code: dedent`
+                  import a from './a'
+
+                  import b from 'b'
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
       })
 
       describe(`custom groups`, () => {
