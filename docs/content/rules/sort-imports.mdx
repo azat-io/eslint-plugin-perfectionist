@@ -325,9 +325,12 @@ The list of selectors is sorted from most to least important:
 
 #### Modifiers
 
+The list of modifiers is sorted from most to least important:
+
 - `'type'` — Typescript type imports.
 - `'value'` — Value imports.
 - `'ts-equals'` — TypeScript import-equals imports.
+- `'named'` — Imports containing at least one named specifier.
 
 #### Important notes
 
@@ -343,6 +346,7 @@ In case of multiple groups matching an element, the following rules will be appl
 
 1. Selector priority: `type`, `index`, ... will take precedence over `external` groups for example.
 2. If the selector is the same, the group with the most modifiers matching will be selected.
+3. If modifiers quantity is the same, order will be chosen based on modifier importance as listed above.
 
 Example 1:
 
@@ -351,10 +355,15 @@ import type { FC } from 'react'
 ```
 
 `react` can be matched by the following groups, from most to least important:
-- `type` (`type` selector).
-- `type-external` (`type` modifier).
+- `named-type` (`type` selector).
+- `type`.
+- `named-type-external` or `type-named-external` (`type` modifier).
+- `type-external`.
+- `named-external`.
 - `external`.
+- `named-type-import` or `type-named-import`.
 - `type-import`.
+- `named-import`.
 - `import`.
 
 Example 2 (The most important group is written in the comments):
@@ -382,15 +391,15 @@ import main from '.'
 import styles from './index.module.css'
 // 'type-external' - TypeScript type imports
 import type { FC } from 'react'
-// 'type-builtin' - TypeScript type imports from Built-in Modules
+// 'named-type-builtin' - TypeScript type imports from Built-in Modules
 import type { Server } from 'http'
-// 'type-internal' - TypeScript type imports from your internal modules
+// 'named-type-internal' - TypeScript type imports from your internal modules
 import type { User } from '~/users'
-// 'type-parent' - TypeScript type imports from parent directory
+// 'named-type-parent' - TypeScript type imports from parent directory
 import type { InputProps } from '../Input'
-// 'type-sibling' - TypeScript type imports from the same directory
+// 'named-type-sibling' - TypeScript type imports from the same directory
 import type { Details } from './data'
-// 'type-index' - TypeScript type imports from main directory file
+// 'named-type-index' - TypeScript type imports from main directory file
 import type { BaseOptions } from './index.d.ts'
 // 'value-ts-equals-import' - TypeScript import-equals imports
 import NotFoundError = ErrorsNamespace.NotFoundError

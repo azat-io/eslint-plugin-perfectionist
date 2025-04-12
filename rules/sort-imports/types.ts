@@ -78,7 +78,11 @@ export interface SortImportsSortingNode extends SortingNodeWithDependencies {
   isIgnored: boolean
 }
 
-export type Modifier = TsEqualsModifier | ValueModifier | TypeModifier
+export type Modifier =
+  | TsEqualsModifier
+  | ValueModifier
+  | NamedModifier
+  | TypeModifier
 
 export type Group = ValueGroup | TypeGroup | 'unknown' | string
 
@@ -147,6 +151,8 @@ type StyleSelector = 'style'
 
 type ValueModifier = 'value'
 
+type NamedModifier = 'named'
+
 type TypeModifier = 'type'
 
 type TypeSelector = 'type'
@@ -176,7 +182,7 @@ export let allDeprecatedSelectors: Selector[] = [
   'object',
 ]
 
-export let allModifiers: Modifier[] = ['type', 'ts-equals', 'value']
+export let allModifiers: Modifier[] = ['named', 'ts-equals', 'type', 'value']
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and ensure

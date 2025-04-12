@@ -250,6 +250,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
         modifiers.push('ts-equals')
       }
 
+      if (hasNamedSpecifier(node)) {
+        modifiers.push('named')
+      }
+
       group ??=
         computeGroupExceptUnknown({
           customGroups: Array.isArray(options.customGroups)
@@ -546,6 +550,15 @@ let hasContentBetweenNodes = (
     includeComments: false,
   }).length > 0
 
+let hasNamedSpecifier = (
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration,
+): boolean =>
+  node.type === 'ImportDeclaration' &&
+  node.specifiers.some(specifier => specifier.type === 'ImportSpecifier')
+
 let styleExtensions = [
   '.less',
   '.scss',
@@ -564,8 +577,11 @@ let isSideEffectImport = ({
   sourceCode,
   node,
 }: {
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration
   sourceCode: TSESLint.SourceCode
-  node: TSESTree.Node
 }): boolean =>
   node.type === 'ImportDeclaration' &&
   node.specifiers.length === 0 &&
