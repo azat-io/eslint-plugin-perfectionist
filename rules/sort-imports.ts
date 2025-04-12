@@ -190,7 +190,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           for (let selector of commonSelectors) {
-            selectors.push(`${selector}-type`)
+            if (selector !== 'subpath') {
+              selectors.push(`${selector}-type`)
+            }
           }
         }
 

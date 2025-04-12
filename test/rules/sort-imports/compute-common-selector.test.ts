@@ -61,6 +61,14 @@ describe('compute-common-selector', () => {
     })
   })
 
+  describe('`subpath` selector', () => {
+    it.each(['#', '#a', '#node:sqlite'])("should match with '%s'", name => {
+      expect(computeCommonSelectors(buildParameters({ name }))).toContain(
+        'subpath',
+      )
+    })
+  })
+
   describe('`builtin` selector', () => {
     describe('node builtin modules', () => {
       it.each([

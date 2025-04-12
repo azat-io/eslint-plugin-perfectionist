@@ -2886,6 +2886,7 @@ describe(ruleName, () => {
                       [
                         'index',
                         'internal',
+                        'subpath',
                         'external',
                         'sibling',
                         'builtin',
@@ -2911,6 +2912,7 @@ describe(ruleName, () => {
                   import a from '../a'
                   import b from './b'
                   import c from './index'
+                  import subpath from '#subpath'
                   import d from 'd'
                   import e from 'timers'
                 `,
@@ -2918,6 +2920,7 @@ describe(ruleName, () => {
                   import a from '../a'
                   import b from './b'
                   import c from './index'
+                  import subpath from '#subpath'
                   import d from 'd'
                   import e from 'timers'
 

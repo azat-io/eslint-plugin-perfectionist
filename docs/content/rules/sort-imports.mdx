@@ -317,6 +317,7 @@ The list of selectors is sorted from most to least important:
 - `'index'` — Main file from the current directory.
 - `'sibling'` — Modules from the same directory.
 - `'parent'` — Modules from the parent directory.
+- `'subpath'` — Node.js [subpath](https://nodejs.org/api/packages.html#packages_subpath_imports) imports.
 - `'internal'` — Your internal modules.
 - `'builtin'` — Node.js Built-in Modules.
 - `'external'` — External modules installed in the project.
@@ -367,6 +368,8 @@ import axios from 'axios'
 import Button from '~/components/Button'
 // 'value-parent' - Modules from parent directory
 import formatNumber from '../utils/format-number'
+// 'value-subpath' - Node.js subpath imports
+import subpathContent from '#subpathModule'
 // 'value-sibling' - Modules from the same directory
 import config from './config'
 // 'value-side-effect' - Side effect imports
