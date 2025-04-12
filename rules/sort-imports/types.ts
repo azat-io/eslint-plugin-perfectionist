@@ -68,6 +68,7 @@ export type Selector =
   | TypeSelector
 
 export type Modifier =
+  | SideEffectModifier
   | WildcardModifier
   | RequireModifier
   | DefaultModifier
@@ -120,6 +121,8 @@ type SideEffectSelector = 'side-effect'
  * @deprecated for the modifier and selector
  */
 type ParentTypeSelector = 'parent-type'
+
+type SideEffectModifier = 'side-effect'
 
 /**
  * @deprecated for the modifier and selector
@@ -192,6 +195,7 @@ export let allModifiers: Modifier[] = [
   'default',
   'named',
   'require',
+  'side-effect',
   'type',
   'value',
   'wildcard',
