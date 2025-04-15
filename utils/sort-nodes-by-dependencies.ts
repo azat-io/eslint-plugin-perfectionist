@@ -8,14 +8,7 @@ import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
 export interface SortingNodeWithDependencies<
   Node extends TSESTree.Node = TSESTree.Node,
 > extends SortingNode<Node> {
-  /**
-   * Custom name used to check if a node is a dependency of another node. If
-   * unspecified, defaults to the SortingNode's name.
-   */
-  dependencyName?: string
-  /**
-   * List of dependencies for the node
-   */
+  dependencyNames: string[]
   dependencies: string[]
 }
 
