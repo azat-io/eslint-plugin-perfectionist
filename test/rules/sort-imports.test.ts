@@ -3582,6 +3582,71 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes content-separation over dependencies`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'yImport.y1.y2',
+                    right: 'z',
+                  },
+                  messageId: 'unexpectedImportsDependencyOrder',
+                },
+                {
+                  data: {
+                    nodeDependentOnRight: 'aImport.a1.a2',
+                    right: 'b',
+                  },
+                  messageId: 'unexpectedImportsDependencyOrder',
+                },
+              ],
+              output: dedent`
+                import f = fImport.f1.f2;
+
+                import yImport from "z";
+
+                import y = yImport.y1.y2;
+
+                export { something } from "something";
+
+                import aImport from "b";
+
+                import a = aImport.a1.a2;
+
+                import fImport from "g";
+              `,
+              code: dedent`
+                import f = fImport.f1.f2;
+
+                import y = yImport.y1.y2;
+
+                import yImport from "z";
+
+                export { something } from "something";
+
+                import a = aImport.a1.a2;
+
+                import aImport from "b";
+
+                import fImport from "g";
+              `,
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'ignore',
+                  partitionByNewLine: true,
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
     })
   })
 

@@ -270,103 +270,116 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
     return {
       'Program:exit': () => {
-        let formattedMembers: SortImportsSortingNode[][] = [[]]
+        let contentSeparatedSortingNodeGroups: SortImportsSortingNode[][][] = [
+          [[]],
+        ]
         for (let sortingNode of sortingNodes) {
-          let lastGroup = formattedMembers.at(-1)
-          let lastSortingNode = lastGroup?.at(-1)
+          let lastGroupWithNoContentBetween =
+            contentSeparatedSortingNodeGroups.at(-1)!
+          let lastGroup = lastGroupWithNoContentBetween.at(-1)!
+          let lastSortingNode = lastGroup.at(-1)
 
           if (
+            lastSortingNode &&
+            hasContentBetweenNodes(sourceCode, lastSortingNode, sortingNode)
+          ) {
+            lastGroup = []
+            lastGroupWithNoContentBetween = [lastGroup]
+            contentSeparatedSortingNodeGroups.push(
+              lastGroupWithNoContentBetween,
+            )
+          } else if (
             shouldPartition({
               lastSortingNode,
               sortingNode,
               sourceCode,
               options,
-            }) ||
-            (lastSortingNode &&
-              hasContentBetweenNodes(sourceCode, lastSortingNode, sortingNode))
+            })
           ) {
             lastGroup = []
-            formattedMembers.push(lastGroup)
+            lastGroupWithNoContentBetween.push(lastGroup)
           }
 
-          lastGroup!.push(sortingNode)
+          lastGroup.push(sortingNode)
         }
 
-        let sortNodesExcludingEslintDisabled = (
-          ignoreEslintDisabledNodes: boolean,
-        ): SortImportsSortingNode[] => {
-          let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
-            sortNodesByGroups({
-              getOptionsByGroupNumber: groupNumber => {
-                let customGroupOverriddenOptions =
-                  getCustomGroupOverriddenOptions({
-                    options: {
-                      ...options,
-                      customGroups: Array.isArray(options.customGroups)
-                        ? options.customGroups
-                        : [],
-                    },
-                    groupNumber,
-                  })
+        for (let sortingNodeGroups of contentSeparatedSortingNodeGroups) {
+          let sortNodesExcludingEslintDisabled = (
+            ignoreEslintDisabledNodes: boolean,
+          ): SortImportsSortingNode[] => {
+            let nodesSortedByGroups = sortingNodeGroups.flatMap(nodes =>
+              sortNodesByGroups({
+                getOptionsByGroupNumber: groupNumber => {
+                  let customGroupOverriddenOptions =
+                    getCustomGroupOverriddenOptions({
+                      options: {
+                        ...options,
+                        customGroups: Array.isArray(options.customGroups)
+                          ? options.customGroups
+                          : [],
+                      },
+                      groupNumber,
+                    })
 
-                if (options.sortSideEffects) {
+                  if (options.sortSideEffects) {
+                    return {
+                      options: {
+                        ...options,
+                        ...customGroupOverriddenOptions,
+                      },
+                    }
+                  }
+                  let overriddenOptions = {
+                    ...options,
+                    ...customGroupOverriddenOptions,
+                  }
                   return {
                     options: {
-                      ...options,
-                      ...customGroupOverriddenOptions,
+                      ...overriddenOptions,
+                      type:
+                        overriddenOptions.groups[groupNumber] &&
+                        isSideEffectOnlyGroup(
+                          overriddenOptions.groups[groupNumber],
+                        )
+                          ? 'unsorted'
+                          : overriddenOptions.type,
                     },
                   }
-                }
-                let overriddenOptions = {
-                  ...options,
-                  ...customGroupOverriddenOptions,
-                }
-                return {
-                  options: {
-                    ...overriddenOptions,
-                    type:
-                      overriddenOptions.groups[groupNumber] &&
-                      isSideEffectOnlyGroup(
-                        overriddenOptions.groups[groupNumber],
-                      )
-                        ? 'unsorted'
-                        : overriddenOptions.type,
-                  },
-                }
-              },
-              isNodeIgnored: node => node.isIgnored,
-              ignoreEslintDisabledNodes,
-              groups: options.groups,
-              nodes,
-            }),
-          )
+                },
+                isNodeIgnored: node => node.isIgnored,
+                ignoreEslintDisabledNodes,
+                groups: options.groups,
+                nodes,
+              }),
+            )
 
-          return sortNodesByDependencies(nodesSortedByGroups, {
-            ignoreEslintDisabledNodes,
+            return sortNodesByDependencies(nodesSortedByGroups, {
+              ignoreEslintDisabledNodes,
+            })
+          }
+
+          let nodes = sortingNodeGroups.flat()
+
+          reportAllErrors<MESSAGE_ID>({
+            availableMessageIds: {
+              unexpectedDependencyOrder: 'unexpectedImportsDependencyOrder',
+              missedSpacingBetweenMembers: 'missedSpacingBetweenImports',
+              extraSpacingBetweenMembers: 'extraSpacingBetweenImports',
+              unexpectedGroupOrder: 'unexpectedImportsGroupOrder',
+              unexpectedOrder: 'unexpectedImportsOrder',
+            },
+            options: {
+              ...options,
+              customGroups: Array.isArray(options.customGroups)
+                ? options.customGroups
+                : [],
+            },
+            sortNodesExcludingEslintDisabled,
+            sourceCode,
+            context,
+            nodes,
           })
         }
-
-        let nodes = formattedMembers.flat()
-
-        reportAllErrors<MESSAGE_ID>({
-          availableMessageIds: {
-            unexpectedDependencyOrder: 'unexpectedImportsDependencyOrder',
-            missedSpacingBetweenMembers: 'missedSpacingBetweenImports',
-            extraSpacingBetweenMembers: 'extraSpacingBetweenImports',
-            unexpectedGroupOrder: 'unexpectedImportsGroupOrder',
-            unexpectedOrder: 'unexpectedImportsOrder',
-          },
-          options: {
-            ...options,
-            customGroups: Array.isArray(options.customGroups)
-              ? options.customGroups
-              : [],
-          },
-          sortNodesExcludingEslintDisabled,
-          sourceCode,
-          context,
-          nodes,
-        })
       },
       VariableDeclaration: node => {
         if (
