@@ -155,11 +155,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
         return
       }
 
+      let objectRoot =
+        nodeObject.type === 'ObjectPattern' ? null : getRootObject(nodeObject)
       if (
+        objectRoot &&
         !options.styledComponents &&
-        (isStyledComponents(nodeObject.parent) ||
-          (nodeObject.parent.type === 'ArrowFunctionExpression' &&
-            isStyledComponents(nodeObject.parent.parent)))
+        (isStyledComponents(objectRoot.parent) ||
+          (objectRoot.parent.type === 'ArrowFunctionExpression' &&
+            isStyledComponents(objectRoot.parent.parent)))
       ) {
         return
       }
@@ -556,6 +559,19 @@ let getObjectParent = ({
     }
   }
   return null
+}
+
+let getRootObject = (
+  node: TSESTree.ObjectExpression,
+): TSESTree.ObjectExpression => {
+  let objectRoot = node
+  while (
+    objectRoot.parent.type === 'Property' &&
+    objectRoot.parent.parent.type === 'ObjectExpression'
+  ) {
+    objectRoot = objectRoot.parent.parent
+  }
+  return objectRoot
 }
 
 let getVariableParentName = ({
