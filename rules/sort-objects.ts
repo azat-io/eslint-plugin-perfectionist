@@ -155,23 +155,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         return
       }
 
-      let isStyledCallExpression = (identifier: TSESTree.Expression): boolean =>
-        identifier.type === 'Identifier' && identifier.name === 'styled'
-      let isCssCallExpression = (identifier: TSESTree.Expression): boolean =>
-        identifier.type === 'Identifier' && identifier.name === 'css'
-      let isStyledComponents = (
-        styledNode: TSESTree.Node | undefined,
-      ): boolean =>
-        !!styledNode &&
-        ((styledNode.type === 'CallExpression' &&
-          (isCssCallExpression(styledNode.callee) ||
-            (styledNode.callee.type === 'MemberExpression' &&
-              isStyledCallExpression(styledNode.callee.object)) ||
-            (styledNode.callee.type === 'CallExpression' &&
-              isStyledCallExpression(styledNode.callee.callee)))) ||
-          (styledNode.type === 'JSXExpressionContainer' &&
-            styledNode.parent.type === 'JSXAttribute' &&
-            styledNode.parent.name.name === 'style'))
       if (
         !options.styledComponents &&
         (isStyledComponents(nodeObject.parent) ||
@@ -623,4 +606,32 @@ let getCallExpressionParentName = ({
   }
 
   return callParent.callee.type === 'Identifier' ? callParent.callee.name : null
+}
+
+let isStyledCallExpression = (identifier: TSESTree.Expression): boolean =>
+  identifier.type === 'Identifier' && identifier.name === 'styled'
+
+let isCssCallExpression = (identifier: TSESTree.Expression): boolean =>
+  identifier.type === 'Identifier' && identifier.name === 'css'
+
+let isStyledComponents = (styledNode: TSESTree.Node): boolean => {
+  if (
+    styledNode.type === 'JSXExpressionContainer' &&
+    styledNode.parent.type === 'JSXAttribute' &&
+    styledNode.parent.name.name === 'style'
+  ) {
+    return true
+  }
+
+  if (styledNode.type !== 'CallExpression') {
+    return false
+  }
+
+  return (
+    isCssCallExpression(styledNode.callee) ||
+    (styledNode.callee.type === 'MemberExpression' &&
+      isStyledCallExpression(styledNode.callee.object)) ||
+    (styledNode.callee.type === 'CallExpression' &&
+      isStyledCallExpression(styledNode.callee.callee))
+  )
 }
