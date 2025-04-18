@@ -5507,6 +5507,27 @@ describe(ruleName, () => {
               },
             ],
           },
+          {
+            code: dedent`
+              const PropsBox = styled.div((props) => ({
+                nested1: {
+                  nested2: {
+                    [theme.breakpoints.down('mid2')]: {
+                      right: '24px',
+                    },
+                    [theme.breakpoints.down('mid1')]: {
+                      bottom: '-273px',
+                    }
+                  }
+                }
+              }))
+            `,
+            options: [
+              {
+                styledComponents: false,
+              },
+            ],
+          },
         ],
         invalid: [],
       },
