@@ -3,6 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNode } from '../types/sorting-node'
 
 import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
+import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
 
 export interface SortingNodeWithDependencies<
   Node extends TSESTree.Node = TSESTree.Node,
@@ -12,7 +13,9 @@ export interface SortingNodeWithDependencies<
    * unspecified, defaults to the SortingNode's name.
    */
   dependencyName?: string
-  /** List of dependencies for the node */
+  /**
+   * List of dependencies for the node
+   */
   dependencies: string[]
 }
 
@@ -42,10 +45,8 @@ export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
     }
 
     let dependentNodes = nodes
-      .filter(dependentNode => !nodesInCircularDependencies.has(dependentNode))
-      .filter(({ dependencyName, name }) =>
-        sortingNode.dependencies.includes(dependencyName ?? name),
-      )
+      .filter(node => !nodesInCircularDependencies.has(node))
+      .filter(node => isNodeDependentOnOtherNode(node, sortingNode))
 
     for (let dependentNode of dependentNodes) {
       if (
