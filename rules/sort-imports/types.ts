@@ -12,8 +12,8 @@ import type {
   RegexOption,
   TypeOption,
 } from '../../types/common-options'
+import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { JoinWithDash } from '../../types/join-with-dash'
-import type { SortingNode } from '../../types/sorting-node'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -72,7 +72,7 @@ export type SingleCustomGroup = {
   elementNamePattern?: RegexOption
 }
 
-export interface SortImportsSortingNode extends SortingNode {
+export interface SortImportsSortingNode extends SortingNodeWithDependencies {
   isIgnored: boolean
 }
 

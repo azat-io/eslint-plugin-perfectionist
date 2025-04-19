@@ -23,6 +23,7 @@ import {
   regexJsonSchema,
 } from '../utils/common-json-schemas'
 import {
+  DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
@@ -39,6 +40,7 @@ import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-group
 import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
 import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
@@ -61,6 +63,7 @@ import { complete } from '../utils/complete'
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 export type MESSAGE_ID =
+  | 'unexpectedImportsDependencyOrder'
   | 'missedSpacingBetweenImports'
   | 'unexpectedImportsGroupOrder'
   | 'extraSpacingBetweenImports'
@@ -249,6 +252,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           !shouldRegroupSideEffectNodes &&
           (!isStyleSideEffect || !shouldRegroupSideEffectStyleNodes),
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
+        dependencyNames: computeDependencyNames({ sourceCode, node }),
+        dependencies: computeDependencies(node),
         size: rangeToDiff(node, sourceCode),
         addSafetySemicolonWhenInline: true,
         group,
@@ -287,10 +292,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           lastGroup!.push(sortingNode)
         }
 
-        for (let nodes of formattedMembers) {
-          let sortNodesExcludingEslintDisabled = (
-            ignoreEslintDisabledNodes: boolean,
-          ): SortImportsSortingNode[] =>
+        let sortNodesExcludingEslintDisabled = (
+          ignoreEslintDisabledNodes: boolean,
+        ): SortImportsSortingNode[] => {
+          let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
             sortNodesByGroups({
               getOptionsByGroupNumber: groupNumber => {
                 let customGroupOverriddenOptions =
@@ -333,27 +338,35 @@ export default createEslintRule<Options, MESSAGE_ID>({
               ignoreEslintDisabledNodes,
               groups: options.groups,
               nodes,
-            })
+            }),
+          )
 
-          reportAllErrors<MESSAGE_ID>({
-            availableMessageIds: {
-              missedSpacingBetweenMembers: 'missedSpacingBetweenImports',
-              extraSpacingBetweenMembers: 'extraSpacingBetweenImports',
-              unexpectedGroupOrder: 'unexpectedImportsGroupOrder',
-              unexpectedOrder: 'unexpectedImportsOrder',
-            },
-            options: {
-              ...options,
-              customGroups: Array.isArray(options.customGroups)
-                ? options.customGroups
-                : [],
-            },
-            sortNodesExcludingEslintDisabled,
-            sourceCode,
-            context,
-            nodes,
+          return sortNodesByDependencies(nodesSortedByGroups, {
+            ignoreEslintDisabledNodes,
           })
         }
+
+        let nodes = formattedMembers.flat()
+
+        reportAllErrors<MESSAGE_ID>({
+          availableMessageIds: {
+            unexpectedDependencyOrder: 'unexpectedImportsDependencyOrder',
+            missedSpacingBetweenMembers: 'missedSpacingBetweenImports',
+            extraSpacingBetweenMembers: 'extraSpacingBetweenImports',
+            unexpectedGroupOrder: 'unexpectedImportsGroupOrder',
+            unexpectedOrder: 'unexpectedImportsOrder',
+          },
+          options: {
+            ...options,
+            customGroups: Array.isArray(options.customGroups)
+              ? options.customGroups
+              : [],
+          },
+          sortNodesExcludingEslintDisabled,
+          sourceCode,
+          context,
+          nodes,
+        })
       },
       VariableDeclaration: node => {
         if (
@@ -460,6 +473,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'array',
     },
     messages: {
+      unexpectedImportsDependencyOrder: DEPENDENCY_ORDER_ERROR,
       missedSpacingBetweenImports: MISSED_SPACING_ERROR,
       extraSpacingBetweenImports: EXTRA_SPACING_ERROR,
       unexpectedImportsGroupOrder: GROUP_ORDER_ERROR,
@@ -607,4 +621,72 @@ let computeGroupExceptUnknown = ({
     return null
   }
   return computedCustomGroup
+}
+
+let computeDependencies = (
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration,
+): string[] => {
+  if (node.type !== 'TSImportEqualsDeclaration') {
+    return []
+  }
+  if (node.moduleReference.type !== 'TSQualifiedName') {
+    return []
+  }
+  let qualifiedName = getQualifiedNameDependencyName(node.moduleReference)
+  /* v8 ignore next 3 - Unsure how we can reach that case */
+  if (!qualifiedName) {
+    return []
+  }
+  return [qualifiedName]
+}
+
+let getQualifiedNameDependencyName = (
+  node: TSESTree.EntityName,
+): string | null => {
+  switch (node.type) {
+    case 'TSQualifiedName':
+      return getQualifiedNameDependencyName(node.left)
+    case 'Identifier':
+      return node.name
+    /* v8 ignore next 3 - Unsure how we can reach that case */
+  }
+  return null
+}
+
+let computeDependencyNames = ({
+  sourceCode,
+  node,
+}: {
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration
+  sourceCode: TSESLint.SourceCode
+}): string[] => {
+  if (node.type === 'VariableDeclaration') {
+    return []
+  }
+
+  if (node.type === 'TSImportEqualsDeclaration') {
+    return [node.id.name]
+  }
+
+  let returnValue: string[] = []
+  for (let specifier of node.specifiers) {
+    switch (specifier.type) {
+      case 'ImportNamespaceSpecifier':
+        returnValue.push(sourceCode.getText(specifier.local))
+        break
+      case 'ImportDefaultSpecifier':
+        returnValue.push(sourceCode.getText(specifier.local))
+        break
+      case 'ImportSpecifier':
+        returnValue.push(sourceCode.getText(specifier.imported))
+        break
+    }
+  }
+  return returnValue
 }

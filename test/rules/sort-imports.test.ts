@@ -3320,6 +3320,269 @@ describe(ruleName, () => {
         })
       })
     })
+
+    describe('detects dependencies', () => {
+      ruleTester.run(
+        `${ruleName}(${type}): detects typescript import-equals dependencies`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'aImport.a1.a2',
+                    right: 'b',
+                  },
+                  messageId: 'unexpectedImportsDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['unknown'],
+                },
+              ],
+              output: dedent`
+                import { aImport } from "b";
+                import a = aImport.a1.a2;
+              `,
+              code: dedent`
+                import a = aImport.a1.a2;
+                import { aImport } from "b";
+              `,
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'aImport.a1.a2',
+                    right: 'b',
+                  },
+                  messageId: 'unexpectedImportsDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['unknown'],
+                },
+              ],
+              output: dedent`
+                import * as aImport from "b";
+                import a = aImport.a1.a2;
+              `,
+              code: dedent`
+                import a = aImport.a1.a2;
+                import * as aImport from "b";
+              `,
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'aImport.a1.a2',
+                    right: 'b',
+                  },
+                  messageId: 'unexpectedImportsDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['unknown'],
+                },
+              ],
+              output: dedent`
+                import aImport from "b";
+                import a = aImport.a1.a2;
+              `,
+              code: dedent`
+                import a = aImport.a1.a2;
+                import aImport from "b";
+              `,
+            },
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'aImport.a1.a2',
+                    right: 'b',
+                  },
+                  messageId: 'unexpectedImportsDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['unknown'],
+                },
+              ],
+              output: dedent`
+                import aImport = require("b")
+                import a = aImport.a1.a2;
+              `,
+              code: dedent`
+                import a = aImport.a1.a2;
+                import aImport = require("b")
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over group configuration`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      groupName: 'importsStartingWithA',
+                      elementNamePattern: '^a',
+                    },
+                    {
+                      groupName: 'importsStartingWithB',
+                      elementNamePattern: '^b',
+                    },
+                  ],
+                  groups: ['importsStartingWithA', 'importsStartingWithB'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'aImport.a1.a2',
+                    right: 'b',
+                  },
+                  messageId: 'unexpectedImportsDependencyOrder',
+                },
+                {
+                  data: {
+                    left: 'aImport.a1.a2',
+                    right: 'b',
+                  },
+                  messageId: 'missedSpacingBetweenImports',
+                },
+              ],
+              output: dedent`
+                import aImport from "b";
+
+                import a = aImport.a1.a2;
+              `,
+              code: dedent`
+                import a = aImport.a1.a2;
+                import aImport from "b";
+              `,
+            },
+          ],
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      groupName: 'importsStartingWithA',
+                      elementNamePattern: '^a',
+                    },
+                    {
+                      groupName: 'importsStartingWithB',
+                      elementNamePattern: '^b',
+                    },
+                  ],
+                  groups: ['importsStartingWithA', 'importsStartingWithB'],
+                },
+              ],
+              code: dedent`
+                import aImport from "b";
+                import a = aImport.a1.a2;
+              `,
+            },
+          ],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByComment`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'aImport.a1.a2',
+                    right: 'b',
+                  },
+                  messageId: 'unexpectedImportsDependencyOrder',
+                },
+              ],
+              output: dedent`
+                import aImport from "b";
+                // Part: 1
+                import a = aImport.a1.a2;
+              `,
+              options: [
+                {
+                  ...options,
+                  partitionByComment: '^Part',
+                },
+              ],
+              code: dedent`
+                import a = aImport.a1.a2;
+                // Part: 1
+                import aImport from "b";
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByNewLine`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'aImport.a1.a2',
+                    right: 'b',
+                  },
+                  messageId: 'unexpectedImportsDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  newlinesBetween: 'ignore',
+                  partitionByNewLine: true,
+                },
+              ],
+              output: dedent`
+                import aImport from "b";
+
+                import a = aImport.a1.a2;
+              `,
+              code: dedent`
+                import a = aImport.a1.a2;
+
+                import aImport from "b";
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
