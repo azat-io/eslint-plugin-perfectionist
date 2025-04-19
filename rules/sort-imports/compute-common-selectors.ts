@@ -2,11 +2,23 @@ import { builtinModules } from 'node:module'
 
 import type { ReadClosestTsConfigByPathValue } from './read-closest-ts-config-by-path'
 import type { RegexOption } from '../../types/common-options'
+import type { Selector } from './types'
 
 import { getTypescriptImport } from './get-typescript-import'
 import { matches } from '../../utils/matches'
 
-export let computeCommonPredefinedGroups = ({
+type CommonSelector = Extract<
+  Selector,
+  | 'internal'
+  | 'external'
+  | 'sibling'
+  | 'builtin'
+  | 'subpath'
+  | 'parent'
+  | 'index'
+>
+
+export let computeCommonSelectors = ({
   tsConfigOutput,
   filename,
   options,
@@ -19,7 +31,7 @@ export let computeCommonPredefinedGroups = ({
   tsConfigOutput: ReadClosestTsConfigByPathValue | null
   filename: string
   name: string
-}): string[] => {
+}): CommonSelector[] => {
   let matchesInternalPattern = (value: string): boolean | number =>
     options.internalPattern.some(pattern => matches(value, pattern))
 
@@ -31,33 +43,37 @@ export let computeCommonPredefinedGroups = ({
         name,
       })
 
-  let predefinedGroups: string[] = []
+  let commonSelectors: CommonSelector[] = []
 
   if (isIndex(name)) {
-    predefinedGroups.push('index')
+    commonSelectors.push('index')
   }
 
   if (isSibling(name)) {
-    predefinedGroups.push('sibling')
+    commonSelectors.push('sibling')
   }
 
   if (isParent(name)) {
-    predefinedGroups.push('parent')
+    commonSelectors.push('parent')
+  }
+
+  if (isSubpath(name)) {
+    commonSelectors.push('subpath')
   }
 
   if (internalExternalGroup === 'internal') {
-    predefinedGroups.push('internal')
+    commonSelectors.push('internal')
   }
 
   if (isCoreModule(name, options.environment)) {
-    predefinedGroups.push('builtin')
+    commonSelectors.push('builtin')
   }
 
   if (internalExternalGroup === 'external') {
-    predefinedGroups.push('external')
+    commonSelectors.push('external')
   }
 
-  return predefinedGroups
+  return commonSelectors
 }
 
 let bunModules = new Set([
@@ -85,6 +101,8 @@ let isCoreModule = (value: string, environment: 'node' | 'bun'): boolean => {
 let isParent = (value: string): boolean => value.startsWith('..')
 
 let isSibling = (value: string): boolean => value.startsWith('./')
+
+let isSubpath = (value: string): boolean => value.startsWith('#')
 
 let isIndex = (value: string): boolean =>
   [

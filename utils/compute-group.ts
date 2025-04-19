@@ -26,8 +26,8 @@ export let computeGroup = <SingleCustomGroup>({
   predefinedGroups,
   options,
   name,
-}: GetGroupParameters<SingleCustomGroup>): string => {
-  let group: undefined | 'unknown' | string
+}: GetGroupParameters<SingleCustomGroup>): 'unknown' | string => {
+  let group: undefined | string
   // For lookup performance.
   let groupsSet = new Set(options.groups.flat())
 
