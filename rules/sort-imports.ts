@@ -60,6 +60,16 @@ import { complete } from '../utils/complete'
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+let defaultGroups = [
+  'type-import',
+  ['value-builtin', 'value-external'],
+  'type-internal',
+  'value-internal',
+  ['type-parent', 'type-sibling', 'type-index'],
+  ['value-parent', 'value-sibling', 'value-index'],
+  'unknown',
+]
+
 export type MESSAGE_ID =
   | 'missedSpacingBetweenImports'
   | 'unexpectedImportsGroupOrder'
@@ -73,15 +83,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let userOptions = context.options.at(0)
     let options = getOptionsWithCleanGroups(
       complete(userOptions, settings, {
-        groups: [
-          'type',
-          ['builtin', 'external'],
-          'internal-type',
-          'internal',
-          ['parent-type', 'sibling-type', 'index-type'],
-          ['parent', 'sibling', 'index'],
-          'unknown',
-        ],
         fallbackSort: { type: 'unsorted' },
         internalPattern: ['^~/.+'],
         partitionByComment: false,
@@ -89,6 +90,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         newlinesBetween: 'always',
         specialCharacters: 'keep',
         sortSideEffects: false,
+        groups: defaultGroups,
         type: 'alphabetical',
         environment: 'node',
         customGroups: [],
@@ -229,6 +231,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       for (let selector of commonSelectors) {
         selectors.push(selector)
+      }
+      selectors.push('import')
+
+      if (!modifiers.includes('type')) {
+        modifiers.push('value')
       }
 
       group ??=
@@ -475,15 +482,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
   },
   defaultOptions: [
     {
-      groups: [
-        'type',
-        ['builtin', 'external'],
-        'internal-type',
-        'internal',
-        ['parent-type', 'sibling-type', 'index-type'],
-        ['parent', 'sibling', 'index'],
-        'unknown',
-      ],
       customGroups: { value: {}, type: {} },
       internalPattern: ['^~/.+'],
       partitionByComment: false,
@@ -491,6 +489,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       specialCharacters: 'keep',
       newlinesBetween: 'always',
       sortSideEffects: false,
+      groups: defaultGroups,
       type: 'alphabetical',
       environment: 'node',
       ignoreCase: true,

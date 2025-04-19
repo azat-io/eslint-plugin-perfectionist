@@ -282,12 +282,12 @@ Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is use
   default:
   ```
   [
-    'type',
-    ['builtin', 'external'],
-    'internal-type',
-    'internal',
-    ['parent-type', 'sibling-type', 'index-type'],
-    ['parent', 'sibling', 'index'],
+    'type-import',
+    ['value-builtin', 'value-external'],
+    'type-internal',
+    'value-internal',
+    ['type-parent', 'type-sibling', 'type-index'],
+    ['value-parent', 'value-sibling', 'value-index'],
     'unknown',
   ]
   ```
@@ -319,10 +319,12 @@ The list of selectors is sorted from most to least important:
 - `'internal'` — Your internal modules.
 - `'builtin'` — Node.js Built-in Modules.
 - `'external'` — External modules installed in the project.
+- `'import'` — Any import.
 
 #### Modifiers
 
 - `'type'` — Typescript time imports.
+- `'value'` — Value imports.
 
 #### Important notes
 
@@ -349,27 +351,29 @@ import type { FC } from 'react'
 - `type` (`type` selector).
 - `type-external` (`type` modifier).
 - `external`.
+- `type-import`.
+- `import`.
 
 Example 2 (The most important group is written in the comments):
 
 ```ts
-// 'builtin' - Node.js Built-in Modules
+// 'value-builtin' - Node.js Built-in Modules
 import path from 'path'
-// 'external' - External modules installed in the project
+// 'value-external' - External modules installed in the project
 import axios from 'axios'
-// 'internal' - Your internal modules
+// 'value-internal' - Your internal modules
 import Button from '~/components/Button'
-// 'parent' - Modules from parent directory
+// 'value-parent' - Modules from parent directory
 import formatNumber from '../utils/format-number'
-// 'sibling' - Modules from the same directory
+// 'value-sibling' - Modules from the same directory
 import config from './config'
-// 'side-effect' - Side effect imports
+// 'value-side-effect' - Side effect imports
 import './set-production-env.js'
-// side-effect-style - Side effect style imports
+// value-side-effect-style - Side effect style imports
 import './styles.scss'
-// 'index' - Main file from the current directory
+// 'value-index' - Main file from the current directory
 import main from '.'
-// 'style' - Styles
+// 'value-style' - Styles
 import styles from './index.module.css'
 // 'type-external' - TypeScript type imports
 import type { FC } from 'react'
@@ -516,13 +520,13 @@ you must write a custom group definition that does the same as what the predefin
 ```js
    groups: [
 +    'react',                           // [!code ++]
-     'type',
-     ['builtin', 'external'],
+     'type-import',
+     ['value-builtin', 'value-external'],
 +    'lodash',                          // [!code ++]
-     'internal-type',
-     'internal',
-     ['parent-type', 'sibling-type', 'index-type'],
-     ['parent', 'sibling', 'index'],
+     'type-internal',
+     'value-internal',
+     ['type-parent', 'type-sibling', 'type-index'],
+     ['value-parent', 'value-sibling', 'value-index'],
      'unknown',
    ],
 +  customGroups: [                      // [!code ++]
@@ -573,12 +577,12 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   newlinesBetween: 'always',
                   maxLineLength: undefined,
                   groups: [
-                    'type',
-                    ['builtin', 'external'],
-                    'internal-type',
-                    'internal',
-                    ['parent-type', 'sibling-type', 'index-type'],
-                    ['parent', 'sibling', 'index'],
+                    'type-import',
+                    ['value-builtin', 'value-external'],
+                    'type-internal',
+                    'value-internal',
+                    ['type-parent', 'type-sibling', 'type-index'],
+                    ['value-parent', 'value-sibling', 'value-index'],
                     'unknown',
                   ],
                   customGroups: [],
@@ -614,12 +618,12 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                 newlinesBetween: 'always',
                 maxLineLength: undefined,
                 groups: [
-                  'type',
-                  ['builtin', 'external'],
-                  'internal-type',
-                  'internal',
-                  ['parent-type', 'sibling-type', 'index-type'],
-                  ['parent', 'sibling', 'index'],
+                  'type-import',
+                  ['value-builtin', 'value-external'],
+                  'type-internal',
+                  'value-internal',
+                  ['type-parent', 'type-sibling', 'type-index'],
+                  ['value-parent', 'value-sibling', 'value-index'],
                   'unknown',
                 ],
                 customGroups: [],
