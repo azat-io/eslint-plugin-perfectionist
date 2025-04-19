@@ -288,35 +288,12 @@ Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is use
     'internal',
     ['parent-type', 'sibling-type', 'index-type'],
     ['parent', 'sibling', 'index'],
-    'object',
     'unknown',
   ]
   ```
 </sub>
 
 Specifies a list of import groups for sorting. Groups help organize imports into meaningful categories, making your code more readable and maintainable.
-
-Predefined groups:
-
-- `'builtin'` — Node.js Built-in Modules.
-- `'external'` — External modules installed in the project.
-- `'internal'` — Your internal modules.
-- `'parent'` — Modules from the parent directory.
-- `'sibling'` — Modules from the same directory.
-- `'side-effect'` — Side effect imports.
-- `'side-effect-style'` — Side effect style imports.
-- `'index'` — Main file from the current directory.
-- `'object'` — TypeScript object imports.
-- `'style'` — Styles.
-- `'external-type'` — TypeScript type imports from external modules.
-- `'builtin-type'` — TypeScript type imports from built-in modules.
-- `'internal-type'` — TypeScript type imports from your internal modules.
-- `'parent-type'` — TypeScript type imports from the parent directory.
-- `'sibling-type'` — TypeScript type imports from the same directory.
-- `'index-type'` — TypeScript type imports from the main directory file.
-- `'unknown'` — Imports that don’t fit into any group specified in the `groups` option.
-
-If the `unknown` group is not specified in the `groups` option, it will automatically be added to the end of the list.
 
 Each import will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
 The order of items in the `groups` option determines how groups are ordered.
@@ -326,7 +303,54 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
 
-#### Example
+Predefined groups are characterized by a single selector and potentially multiple modifiers. You may enter modifiers in any order, but the selector must always come at the end.
+
+#### Selectors
+
+The list of selectors is sorted from most to least important:
+
+- `'type'` — TypeScript type imports.
+- `'side-effect-style'` — Side effect style imports.
+- `'side-effect'` — Side effect imports.
+- `'style'` — Styles.
+- `'index'` — Main file from the current directory.
+- `'sibling'` — Modules from the same directory.
+- `'parent'` — Modules from the parent directory.
+- `'internal'` — Your internal modules.
+- `'builtin'` — Node.js Built-in Modules.
+- `'external'` — External modules installed in the project.
+
+#### Modifiers
+
+- `'type'` — Typescript time imports.
+
+#### Important notes
+
+##### The `unknown` group
+
+Members that don’t fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option,
+the members will remain in their original order.
+
+##### Behavior when multiple groups match an element
+
+The lists of selectors and modifiers above are both sorted by importance, from most to least important.
+In case of multiple groups matching an element, the following rules will be applied:
+
+1. Selector priority: `type`, `index`, ... will take precedence over `external` groups for example.
+2. If the selector is the same, the group with the most modifiers matching will be selected.
+
+Example 1:
+
+```ts
+import type { FC } from 'react'
+```
+
+`react` can be matched by the following groups, from most to least important:
+- `type` (`type` selector).
+- `type-external` (`type` modifier).
+- `external`.
+
+Example 2 (The most important group is written in the comments):
 
 ```ts
 // 'builtin' - Node.js Built-in Modules
@@ -345,21 +369,19 @@ import './set-production-env.js'
 import './styles.scss'
 // 'index' - Main file from the current directory
 import main from '.'
-// 'object' - TypeScript object-imports
-import log = console.log
 // 'style' - Styles
 import styles from './index.module.css'
-// 'external-type' - TypeScript type imports
+// 'type-external' - TypeScript type imports
 import type { FC } from 'react'
-// 'builtin-type' - TypeScript type imports from Built-in Modules
+// 'type-builtin' - TypeScript type imports from Built-in Modules
 import type { Server } from 'http'
-// 'internal-type' - TypeScript type imports from your internal modules
+// 'type-internal' - TypeScript type imports from your internal modules
 import type { User } from '~/users'
-// 'parent-type' - TypeScript type imports from parent directory
+// 'type-parent' - TypeScript type imports from parent directory
 import type { InputProps } from '../Input'
-// 'sibling-type' - TypeScript type imports from the same directory
+// 'type-sibling' - TypeScript type imports from the same directory
 import type { Details } from './data'
-// 'index-type' - TypeScript type imports from main directory file
+// 'type-index' - TypeScript type imports from main directory file
 import type { BaseOptions } from './index.d.ts'
 ```
 
@@ -384,25 +406,110 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 
 ### customGroups
 
-<sub>
-  type:
-  ```
-  {
-    value: { [groupName: string]: string | string[] }
-    type: { [groupName: string]: string | string[] }
+<Important title="Migrating from the old API">
+Support for the object-based `customGroups` option is deprecated.
+
+Here is how to migrate from the old to the current API:
+
+Old API:
+```ts
+{
+  value: {
+    "keyForValue1": "value1",
+    "keyForValue2": "value2"
+  },
+  type: {
+    "keyForType1": "value1",
+    "keyForType2": "value2"
   }
-  ```
+}
+```
+
+Current API:
+```ts
+[
+  {
+    "selector": "type",
+    "groupName": "keyForType1",
+    "elementNamePattern": "value1"
+  },
+  {
+    "selector": "type",
+    "groupName": "keyForType2",
+    "elementNamePattern": "value2"
+  },
+  {
+    "groupName": "keyForValue1",
+    "elementNamePattern": "value1"
+  },
+  {
+    "groupName": "keyForValue2",
+    "elementNamePattern": "value2"
+  }
+]
+```
+</Important>
+
+<sub>
+  type: `Array<CustomGroupDefinition | CustomGroupAnyOfDefinition>`
 </sub>
-<sub>default: `{ value: {}, type: {} }`</sub>
+<sub>default: `[]`</sub>
 
-Defines custom groups to match specific imports.
+You can define your own groups and use regex for matching very specific imports.
 
-Each key of the `value` or `type` fields represents a group name which you can then use in the `groups` option. The value for each key can either be of type:
-- `string` — An import matching the value will be marked as part of the group referenced by the key.
-- `string[]` — An import matching any of the values of the array will be marked as part of the group referenced by the key.
-The order of values in the array does not matter.
+A custom group definition may follow one of the two following interfaces:
 
-Custom group matching takes precedence over predefined group matching.
+```ts
+interface CustomGroupDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  newlinesInside?: 'always' | 'never'
+  selector?: string
+  modifiers?: string[]
+  elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+}
+```
+An import will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+
+or:
+
+```ts
+interface CustomGroupAnyOfDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  newlinesInside?: 'always' | 'never'
+  anyOf: Array<{
+      selector?: string
+      modifiers?: string[]
+      elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+  }>
+}
+```
+
+An import will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+
+#### Attributes
+
+- `groupName` — The group's name, which needs to be put in the [`groups`](#groups) option.
+- `selector` — Filter on the `selector` of the element.
+- `modifiers` — Filter on the `modifiers` of the element. (All the modifiers of the element must be present in that list)
+- `elementNamePattern` — If entered, will check that the name of the element matches the pattern entered.
+- `type` — Overrides the [`type`](#type) option for that custom group. `unsorted` will not sort the group.
+- `order` — Overrides the [`order`](#order) option for that custom group.
+- `fallbackSort` — Overrides the [`fallbackSort`](#fallbacksort) option for that custom group.
+- `newlinesInside` — Enforces a specific newline behavior between elements of the group.
+
+#### Match importance
+
+The `customGroups` list is ordered:
+The first custom group definition that matches an element will be used.
+
+Custom groups have a higher priority than any predefined group. If you want a predefined group to take precedence over a custom group,
+you must write a custom group definition that does the same as what the predefined group does (using `selector` and `modifiers` filters), and put it first in the list.
 
 #### Example
 
@@ -416,18 +523,18 @@ Custom group matching takes precedence over predefined group matching.
      'internal',
      ['parent-type', 'sibling-type', 'index-type'],
      ['parent', 'sibling', 'index'],
-     'object',
      'unknown',
    ],
-+  customGroups: {                      // [!code ++]
-+    value: {                           // [!code ++]
-+     react: ['^react$', '^react-.+'],  // [!code ++]
-+     lodash: 'lodash',                 // [!code ++]
++  customGroups: [                      // [!code ++]
++    {                                // [!code ++]
++      groupName: 'react',             // [!code ++]
++      elementNamePattern: ['^react$', '^react-.+'], // [!code ++]
 +    },                                 // [!code ++]
-+    type: {                            // [!code ++]
-+      react: ['^react$', '^react-.+'], // [!code ++]
-+    }                                  // [!code ++]
-+  },                                   // [!code ++]
++    {                                 // [!code ++]
++      groupName: 'lodash',           // [!code ++]
++      elementNamePattern: 'lodash', // [!code ++]
++    }                               // [!code ++]
++  ],                                   // [!code ++]
  }
 ```
 
@@ -472,10 +579,9 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                     'internal',
                     ['parent-type', 'sibling-type', 'index-type'],
                     ['parent', 'sibling', 'index'],
-                    'object',
                     'unknown',
                   ],
-                  customGroups: { type: {}, value: {} },
+                  customGroups: [],
                   environment: 'node',
                 },
               ],
@@ -514,10 +620,9 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   'internal',
                   ['parent-type', 'sibling-type', 'index-type'],
                   ['parent', 'sibling', 'index'],
-                  'object',
                   'unknown',
                 ],
-                customGroups: { type: {}, value: {} },
+                customGroups: [],
                 environment: 'node',
               },
             ],
