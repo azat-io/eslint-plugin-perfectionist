@@ -49,35 +49,23 @@ let isPredefinedGroup = (
   if (input === 'unknown') {
     return true
   }
-  let singleWordSelector = input.split('-').at(-1)
-  if (!singleWordSelector) {
-    return false
-  }
-  let twoWordsSelector = input.split('-').slice(-2).join('-')
-  let threeWordsSelector = input.split('-').slice(-3).join('-')
 
-  let selectorWordCount = 0
-  if (allSelectors.includes(singleWordSelector)) {
-    selectorWordCount = 1
-  }
-  if (
-    singleWordSelector !== twoWordsSelector &&
-    allSelectors.includes(twoWordsSelector)
-  ) {
-    selectorWordCount = 2
-  }
-  if (
-    twoWordsSelector !== threeWordsSelector &&
-    allSelectors.includes(threeWordsSelector)
-  ) {
-    selectorWordCount = 3
-  }
+  let parts = input.split('-')
 
-  if (!selectorWordCount) {
+  let possibleSelector = [
+    { selector: parts.slice(-3).join('-'), wordCount: 3 },
+    { selector: parts.slice(-2).join('-'), wordCount: 2 },
+    { selector: parts.at(-1), wordCount: 1 },
+  ]
+    .filter(({ wordCount }) => parts.length >= wordCount)
+    .find(({ selector }) => selector && allSelectors.includes(selector))
+
+  if (!possibleSelector) {
     return false
   }
 
-  let modifiers = input.split('-').slice(0, -selectorWordCount)
+  let modifiers = parts.slice(0, -possibleSelector.wordCount)
+
   return (
     new Set(modifiers).size === modifiers.length &&
     modifiers.every(modifier => allModifiers.includes(modifier))
