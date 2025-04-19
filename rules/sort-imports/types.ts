@@ -59,6 +59,7 @@ export type Selector =
   | InternalSelector
   | BuiltinSelector
   | SiblingSelector
+  | ImportSelector
   | ObjectSelector
   | ParentSelector
   | IndexSelector
@@ -78,7 +79,7 @@ export interface SortImportsSortingNode extends SortingNodeWithDependencies {
 
 export type Group = ValueGroup | TypeGroup | 'unknown' | string
 
-export type Modifier = TypeModifier
+export type Modifier = ValueModifier | TypeModifier
 
 type TypeGroup = JoinWithDash<[TypeModifier, Selector]>
 
@@ -133,9 +134,13 @@ type ParentSelector = 'parent'
  */
 type ObjectSelector = 'object'
 
+type ImportSelector = 'import'
+
 type IndexSelector = 'index'
 
 type StyleSelector = 'style'
+
+type ValueModifier = 'value'
 
 type TypeModifier = 'type'
 
@@ -148,6 +153,7 @@ export let allSelectors: Selector[] = [
   'internal',
   'builtin',
   'sibling',
+  'import',
   'parent',
   'index',
   'style',
@@ -164,7 +170,7 @@ export let allDeprecatedSelectors: Selector[] = [
   'object',
 ]
 
-export let allModifiers: Modifier[] = ['type']
+export let allModifiers: Modifier[] = ['type', 'value']
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and ensure
