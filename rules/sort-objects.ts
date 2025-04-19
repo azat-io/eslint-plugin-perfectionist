@@ -342,7 +342,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 eslintDisabledLines,
               ),
               size: rangeToDiff(property, sourceCode),
-              dependencyName,
+              dependencyNames: [dependencyName],
               node: property,
               dependencies,
               group,

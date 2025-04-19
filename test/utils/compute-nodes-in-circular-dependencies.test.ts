@@ -37,6 +37,7 @@ describe('computeNodesInCircularDependencies', () => {
   let createTestNode = (name: string): SortingNodeWithDependencies =>
     ({
       dependencies: [] as string[],
+      dependencyNames: [name],
       name,
     }) as SortingNodeWithDependencies
 })

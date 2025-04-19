@@ -7,6 +7,7 @@ import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
 import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
+import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
 import { createNodeIndexMap } from './create-node-index-map'
 import { getNewlinesErrors } from './get-newlines-errors'
 import { getGroupNumber } from './get-group-number'
@@ -152,9 +153,7 @@ let getFirstUnorderedNodeDependentOn = <T extends SortingNodeWithDependencies>({
   let nodesDependentOnNode = nodes.filter(
     currentlyOrderedNode =>
       !nodesInCircularDependencies.has(currentlyOrderedNode) &&
-      currentlyOrderedNode.dependencies.includes(
-        node.dependencyName ?? node.name,
-      ),
+      isNodeDependentOnOtherNode(node, currentlyOrderedNode),
   )
   return nodesDependentOnNode.find(firstNodeDependentOnNode => {
     let currentIndexOfNode = nodes.indexOf(node)

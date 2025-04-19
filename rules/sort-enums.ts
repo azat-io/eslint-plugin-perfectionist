@@ -173,6 +173,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 : null,
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
             size: rangeToDiff(member, sourceCode),
+            dependencyNames: [name],
             node: member,
             dependencies,
             group,

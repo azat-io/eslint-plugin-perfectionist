@@ -311,7 +311,7 @@ let analyzeModule = ({
       isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
       size: rangeToDiff(node, sourceCode),
       addSafetySemicolonWhenInline,
-      dependencyName: name,
+      dependencyNames: [name],
       dependencies,
       group,
       name,

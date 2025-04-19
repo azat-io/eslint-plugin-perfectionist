@@ -543,13 +543,15 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             overloadSignatureGroups[overloadSignatureGroupMemberIndex]?.at(-1)
 
           let sortingNode: SortClassSortingNodes = {
-            dependencyName: getDependencyName({
-              nodeNameWithoutStartingHash: name.startsWith('#')
-                ? name.slice(1)
-                : name,
-              isStatic: modifiers.includes('static'),
-              isPrivateHash,
-            }),
+            dependencyNames: [
+              getDependencyName({
+                nodeNameWithoutStartingHash: name.startsWith('#')
+                  ? name.slice(1)
+                  : name,
+                isStatic: modifiers.includes('static'),
+                isPrivateHash,
+              }),
+            ],
             overloadSignaturesGroupId:
               overloadSignatureGroupMemberIndex === -1
                 ? null
