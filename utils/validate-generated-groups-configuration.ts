@@ -50,24 +50,63 @@ let isPredefinedGroup = (
     return true
   }
 
-  let parts = input.split('-')
+  let elementsSeparatedWithDash = input.split('-')
 
-  let possibleSelector = [
-    { selector: parts.slice(-3).join('-'), wordCount: 3 },
-    { selector: parts.slice(-2).join('-'), wordCount: 2 },
-    { selector: parts.at(-1), wordCount: 1 },
-  ]
-    .filter(({ wordCount }) => parts.length >= wordCount)
-    .find(({ selector }) => selector && allSelectors.includes(selector))
-
-  if (!possibleSelector) {
+  let longestAllowedSelector = computeLongestAllowedWord({
+    allowedValues: allSelectors,
+    elementsSeparatedWithDash,
+    allowThreeWord: true,
+  })
+  if (!longestAllowedSelector) {
     return false
   }
 
-  let modifiers = parts.slice(0, -possibleSelector.wordCount)
-
-  return (
-    new Set(modifiers).size === modifiers.length &&
-    modifiers.every(modifier => allModifiers.includes(modifier))
+  let modifiersToParse = elementsSeparatedWithDash.slice(
+    0,
+    -longestAllowedSelector.wordCount,
   )
+  let parsedModifiers = new Set<string>()
+  while (modifiersToParse.length > 0) {
+    let longestAllowedModifier = computeLongestAllowedWord({
+      elementsSeparatedWithDash: modifiersToParse,
+      allowedValues: allModifiers,
+      allowThreeWord: false,
+    })
+    if (!longestAllowedModifier) {
+      return false
+    }
+    if (parsedModifiers.has(longestAllowedModifier.word)) {
+      return false
+    }
+    parsedModifiers.add(longestAllowedModifier.word)
+    modifiersToParse = modifiersToParse.slice(
+      0,
+      -longestAllowedModifier.wordCount,
+    )
+  }
+
+  return true
+}
+
+let computeLongestAllowedWord = ({
+  elementsSeparatedWithDash,
+  allowedValues,
+}: {
+  elementsSeparatedWithDash: string[]
+  allowedValues: string[]
+  allowThreeWord: boolean
+}): { wordCount: number; word: string } | null => {
+  let match = [
+    { word: elementsSeparatedWithDash.slice(-3).join('-'), wordCount: 3 },
+    { word: elementsSeparatedWithDash.slice(-2).join('-'), wordCount: 2 },
+    { word: elementsSeparatedWithDash.at(-1)!, wordCount: 1 },
+  ]
+    .filter(({ wordCount }) => elementsSeparatedWithDash.length >= wordCount)
+    .find(({ word }) => word && allowedValues.includes(word))
+
+  if (!match) {
+    return null
+  }
+
+  return match
 }
