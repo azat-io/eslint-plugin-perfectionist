@@ -190,7 +190,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           for (let selector of commonSelectors) {
-            if (selector !== 'subpath') {
+            if (selector !== 'subpath' && selector !== 'tsconfig-path') {
               selectors.push(`${selector}-type`)
             }
           }

@@ -4,11 +4,13 @@ import type { ReadClosestTsConfigByPathValue } from './read-closest-ts-config-by
 import type { RegexOption } from '../../types/common-options'
 import type { Selector } from './types'
 
+import { matchesTsconfigPaths } from './matches-tsconfig-paths'
 import { getTypescriptImport } from './get-typescript-import'
 import { matches } from '../../utils/matches'
 
 type CommonSelector = Extract<
   Selector,
+  | 'tsconfig-path'
   | 'internal'
   | 'external'
   | 'sibling'
@@ -44,6 +46,16 @@ export let computeCommonSelectors = ({
       })
 
   let commonSelectors: CommonSelector[] = []
+
+  if (
+    tsConfigOutput &&
+    matchesTsconfigPaths({
+      tsConfigOutput,
+      name,
+    })
+  ) {
+    commonSelectors.push('tsconfig-path')
+  }
 
   if (isIndex(name)) {
     commonSelectors.push('index')

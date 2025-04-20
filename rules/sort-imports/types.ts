@@ -50,6 +50,7 @@ export type Selector =
   | SideEffectStyleSelector
   | InternalTypeSelector
   | ExternalTypeSelector
+  | TsconfigPathSelector
   | SiblingTypeSelector
   | BuiltinTypeSelector
   | SideEffectSelector
@@ -103,6 +104,8 @@ type InternalTypeSelector = 'internal-type'
  * @deprecated for the modifier and selector
  */
 type ExternalTypeSelector = 'external-type'
+
+type TsconfigPathSelector = 'tsconfig-path'
 
 type ValueGroup = JoinWithDash<[Selector]>
 
@@ -171,6 +174,7 @@ type TypeSelector = 'type'
 
 export let allSelectors: Selector[] = [
   'side-effect-style',
+  'tsconfig-path',
   'side-effect',
   'external',
   'internal',

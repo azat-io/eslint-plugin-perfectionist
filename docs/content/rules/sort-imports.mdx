@@ -271,7 +271,9 @@ This option is only available when the type is set to `'line-length'`.
 
 <sub>default: `undefined`</sub>
 
-Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is used for marking aliased imports as `internal` or `internal-type` in the `groups` option.
+Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is used in [`groups`](#groups) for:
+- Marking aliased imports as `internal`.
+- Marking imports matching [tsconfig paths](https://www.typescriptlang.org/tsconfig/#paths) as `tsconfig-path`.
 
 ### groups
 
@@ -314,6 +316,7 @@ The list of selectors is sorted from most to least important:
 - `'side-effect-style'` — Side effect style imports.
 - `'side-effect'` — Side effect imports.
 - `'style'` — Styles.
+- `'tsconfig-path'` — `tsconfig` [paths](https://www.typescriptlang.org/tsconfig/#paths) alias imports. Requires [`tsconfigRootDir`](#tsconfigrootdir) to be set.
 - `'index'` — Main file from the current directory.
 - `'sibling'` — Modules from the same directory.
 - `'parent'` — Modules from the parent directory.

@@ -2880,7 +2880,6 @@ describe(ruleName, () => {
                 options: [
                   {
                     ...options,
-
                     groups: [
                       'style',
                       [
@@ -2891,10 +2890,34 @@ describe(ruleName, () => {
                         'sibling',
                         'builtin',
                         'parent',
+                        'tsconfig-path',
                       ],
                     ],
+                    tsconfigRootDir: '.',
                   },
                 ],
+                output: dedent`
+                  import style from 'style.css'
+
+                  import a from '../a'
+                  import b from './b'
+                  import c from './index'
+                  import subpath from '#subpath'
+                  import tsConfigPath from '$path'
+                  import d from 'd'
+                  import e from 'timers'
+                `,
+                code: dedent`
+                  import a from '../a'
+                  import b from './b'
+                  import c from './index'
+                  import subpath from '#subpath'
+                  import tsConfigPath from '$path'
+                  import d from 'd'
+                  import e from 'timers'
+
+                  import style from 'style.css'
+                `,
                 errors: [
                   {
                     data: {
@@ -2906,26 +2929,13 @@ describe(ruleName, () => {
                     messageId: 'unexpectedImportsGroupOrder',
                   },
                 ],
-                output: dedent`
-                  import style from 'style.css'
-
-                  import a from '../a'
-                  import b from './b'
-                  import c from './index'
-                  import subpath from '#subpath'
-                  import d from 'd'
-                  import e from 'timers'
-                `,
-                code: dedent`
-                  import a from '../a'
-                  import b from './b'
-                  import c from './index'
-                  import subpath from '#subpath'
-                  import d from 'd'
-                  import e from 'timers'
-
-                  import style from 'style.css'
-                `,
+                before: () => {
+                  mockReadClosestTsConfigByPathWith({
+                    paths: {
+                      $path: ['./path'],
+                    },
+                  })
+                },
               },
             ],
             valid: [],
@@ -7421,26 +7431,6 @@ describe(ruleName, () => {
           invalid: [],
         },
       )
-
-      let mockReadClosestTsConfigByPathWith = (
-        compilerOptions: CompilerOptions | null,
-      ): void => {
-        vi.spyOn(
-          readClosestTsConfigUtilities,
-          'readClosestTsConfigByPath',
-        ).mockReturnValue(
-          compilerOptions
-            ? {
-                cache: createModuleResolutionCache(
-                  '.',
-                  filename => filename,
-                  compilerOptions,
-                ),
-                compilerOptions,
-              }
-            : null,
-        )
-      }
     })
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
@@ -7763,4 +7753,24 @@ describe(ruleName, () => {
       },
     )
   })
+
+  let mockReadClosestTsConfigByPathWith = (
+    compilerOptions: CompilerOptions | null,
+  ): void => {
+    vi.spyOn(
+      readClosestTsConfigUtilities,
+      'readClosestTsConfigByPath',
+    ).mockReturnValue(
+      compilerOptions
+        ? {
+            cache: createModuleResolutionCache(
+              '.',
+              filename => filename,
+              compilerOptions,
+            ),
+            compilerOptions,
+          }
+        : null,
+    )
+  }
 })
