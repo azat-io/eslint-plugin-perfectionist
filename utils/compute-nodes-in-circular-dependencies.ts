@@ -28,11 +28,11 @@ export let computeNodesInCircularDependencies = <
     path.push(element)
 
     for (let dependency of element.dependencies) {
-      let dependencyElement = elements.find(
-        currentElement =>
-          currentElement.dependencyName === dependency ||
-          currentElement.name === dependency,
-      )
+      let dependencyElement = elements
+        .filter(currentElement => currentElement !== element)
+        .find(currentElement =>
+          currentElement.dependencyNames.includes(dependency),
+        )
       if (dependencyElement) {
         depthFirstSearch(dependencyElement, [...path])
       }

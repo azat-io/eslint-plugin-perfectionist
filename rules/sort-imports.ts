@@ -23,6 +23,7 @@ import {
   regexJsonSchema,
 } from '../utils/common-json-schemas'
 import {
+  DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
@@ -39,6 +40,7 @@ import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-group
 import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
 import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
@@ -71,6 +73,7 @@ let defaultGroups = [
 ]
 
 export type MESSAGE_ID =
+  | 'unexpectedImportsDependencyOrder'
   | 'missedSpacingBetweenImports'
   | 'unexpectedImportsGroupOrder'
   | 'extraSpacingBetweenImports'
@@ -256,6 +259,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           !shouldRegroupSideEffectNodes &&
           (!isStyleSideEffect || !shouldRegroupSideEffectStyleNodes),
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
+        dependencyNames: computeDependencyNames({ sourceCode, node }),
+        dependencies: computeDependencies(node),
         size: rangeToDiff(node, sourceCode),
         addSafetySemicolonWhenInline: true,
         group,
@@ -272,78 +277,99 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
     return {
       'Program:exit': () => {
-        let formattedMembers: SortImportsSortingNode[][] = [[]]
+        let contentSeparatedSortingNodeGroups: SortImportsSortingNode[][][] = [
+          [[]],
+        ]
         for (let sortingNode of sortingNodes) {
-          let lastGroup = formattedMembers.at(-1)
-          let lastSortingNode = lastGroup?.at(-1)
+          let lastGroupWithNoContentBetween =
+            contentSeparatedSortingNodeGroups.at(-1)!
+          let lastGroup = lastGroupWithNoContentBetween.at(-1)!
+          let lastSortingNode = lastGroup.at(-1)
 
           if (
+            lastSortingNode &&
+            hasContentBetweenNodes(sourceCode, lastSortingNode, sortingNode)
+          ) {
+            lastGroup = []
+            lastGroupWithNoContentBetween = [lastGroup]
+            contentSeparatedSortingNodeGroups.push(
+              lastGroupWithNoContentBetween,
+            )
+          } else if (
             shouldPartition({
               lastSortingNode,
               sortingNode,
               sourceCode,
               options,
-            }) ||
-            (lastSortingNode &&
-              hasContentBetweenNodes(sourceCode, lastSortingNode, sortingNode))
+            })
           ) {
             lastGroup = []
-            formattedMembers.push(lastGroup)
+            lastGroupWithNoContentBetween.push(lastGroup)
           }
 
-          lastGroup!.push(sortingNode)
+          lastGroup.push(sortingNode)
         }
 
-        for (let nodes of formattedMembers) {
+        for (let sortingNodeGroups of contentSeparatedSortingNodeGroups) {
           let sortNodesExcludingEslintDisabled = (
             ignoreEslintDisabledNodes: boolean,
-          ): SortImportsSortingNode[] =>
-            sortNodesByGroups({
-              getOptionsByGroupNumber: groupNumber => {
-                let customGroupOverriddenOptions =
-                  getCustomGroupOverriddenOptions({
-                    options: {
-                      ...options,
-                      customGroups: Array.isArray(options.customGroups)
-                        ? options.customGroups
-                        : [],
-                    },
-                    groupNumber,
-                  })
+          ): SortImportsSortingNode[] => {
+            let nodesSortedByGroups = sortingNodeGroups.flatMap(nodes =>
+              sortNodesByGroups({
+                getOptionsByGroupNumber: groupNumber => {
+                  let customGroupOverriddenOptions =
+                    getCustomGroupOverriddenOptions({
+                      options: {
+                        ...options,
+                        customGroups: Array.isArray(options.customGroups)
+                          ? options.customGroups
+                          : [],
+                      },
+                      groupNumber,
+                    })
 
-                if (options.sortSideEffects) {
+                  if (options.sortSideEffects) {
+                    return {
+                      options: {
+                        ...options,
+                        ...customGroupOverriddenOptions,
+                      },
+                    }
+                  }
+                  let overriddenOptions = {
+                    ...options,
+                    ...customGroupOverriddenOptions,
+                  }
                   return {
                     options: {
-                      ...options,
-                      ...customGroupOverriddenOptions,
+                      ...overriddenOptions,
+                      type:
+                        overriddenOptions.groups[groupNumber] &&
+                        isSideEffectOnlyGroup(
+                          overriddenOptions.groups[groupNumber],
+                        )
+                          ? 'unsorted'
+                          : overriddenOptions.type,
                     },
                   }
-                }
-                let overriddenOptions = {
-                  ...options,
-                  ...customGroupOverriddenOptions,
-                }
-                return {
-                  options: {
-                    ...overriddenOptions,
-                    type:
-                      overriddenOptions.groups[groupNumber] &&
-                      isSideEffectOnlyGroup(
-                        overriddenOptions.groups[groupNumber],
-                      )
-                        ? 'unsorted'
-                        : overriddenOptions.type,
-                  },
-                }
-              },
-              isNodeIgnored: node => node.isIgnored,
+                },
+                isNodeIgnored: node => node.isIgnored,
+                ignoreEslintDisabledNodes,
+                groups: options.groups,
+                nodes,
+              }),
+            )
+
+            return sortNodesByDependencies(nodesSortedByGroups, {
               ignoreEslintDisabledNodes,
-              groups: options.groups,
-              nodes,
             })
+          }
+
+          let nodes = sortingNodeGroups.flat()
 
           reportAllErrors<MESSAGE_ID>({
             availableMessageIds: {
+              unexpectedDependencyOrder: 'unexpectedImportsDependencyOrder',
               missedSpacingBetweenMembers: 'missedSpacingBetweenImports',
               extraSpacingBetweenMembers: 'extraSpacingBetweenImports',
               unexpectedGroupOrder: 'unexpectedImportsGroupOrder',
@@ -467,6 +493,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'array',
     },
     messages: {
+      unexpectedImportsDependencyOrder: DEPENDENCY_ORDER_ERROR,
       missedSpacingBetweenImports: MISSED_SPACING_ERROR,
       extraSpacingBetweenImports: EXTRA_SPACING_ERROR,
       unexpectedImportsGroupOrder: GROUP_ORDER_ERROR,
@@ -606,4 +633,72 @@ let computeGroupExceptUnknown = ({
     return null
   }
   return computedCustomGroup
+}
+
+let computeDependencies = (
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration,
+): string[] => {
+  if (node.type !== 'TSImportEqualsDeclaration') {
+    return []
+  }
+  if (node.moduleReference.type !== 'TSQualifiedName') {
+    return []
+  }
+  let qualifiedName = getQualifiedNameDependencyName(node.moduleReference)
+  /* v8 ignore next 3 - Unsure how we can reach that case */
+  if (!qualifiedName) {
+    return []
+  }
+  return [qualifiedName]
+}
+
+let getQualifiedNameDependencyName = (
+  node: TSESTree.EntityName,
+): string | null => {
+  switch (node.type) {
+    case 'TSQualifiedName':
+      return getQualifiedNameDependencyName(node.left)
+    case 'Identifier':
+      return node.name
+    /* v8 ignore next 3 - Unsure how we can reach that case */
+  }
+  return null
+}
+
+let computeDependencyNames = ({
+  sourceCode,
+  node,
+}: {
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration
+  sourceCode: TSESLint.SourceCode
+}): string[] => {
+  if (node.type === 'VariableDeclaration') {
+    return []
+  }
+
+  if (node.type === 'TSImportEqualsDeclaration') {
+    return [node.id.name]
+  }
+
+  let returnValue: string[] = []
+  for (let specifier of node.specifiers) {
+    switch (specifier.type) {
+      case 'ImportNamespaceSpecifier':
+        returnValue.push(sourceCode.getText(specifier.local))
+        break
+      case 'ImportDefaultSpecifier':
+        returnValue.push(sourceCode.getText(specifier.local))
+        break
+      case 'ImportSpecifier':
+        returnValue.push(sourceCode.getText(specifier.imported))
+        break
+    }
+  }
+  return returnValue
 }
