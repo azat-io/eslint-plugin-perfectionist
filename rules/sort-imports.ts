@@ -220,20 +220,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
         })
       }
 
-      if (isStyleSideEffect) {
-        selectors.push('side-effect-style')
-      }
+      if (!isNonExternalReferenceTsImportEquals(node)) {
+        if (isStyleSideEffect) {
+          selectors.push('side-effect-style')
+        }
 
-      if (isSideEffect) {
-        selectors.push('side-effect')
-      }
+        if (isSideEffect) {
+          selectors.push('side-effect')
+        }
 
-      if (isStyleValue) {
-        selectors.push('style')
-      }
+        if (isStyleValue) {
+          selectors.push('style')
+        }
 
-      for (let selector of commonSelectors) {
-        selectors.push(selector)
+        for (let selector of commonSelectors) {
+          selectors.push(selector)
+        }
       }
       selectors.push('import')
 
@@ -705,4 +707,17 @@ let computeDependencyNames = ({
     }
   }
   return returnValue
+}
+
+let isNonExternalReferenceTsImportEquals = (
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration,
+): node is TSESTree.TSImportEqualsDeclaration => {
+  if (node.type !== 'TSImportEqualsDeclaration') {
+    return false
+  }
+
+  return node.moduleReference.type !== 'TSExternalModuleReference'
 }

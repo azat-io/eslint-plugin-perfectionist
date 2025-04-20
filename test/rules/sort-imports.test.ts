@@ -3650,6 +3650,7 @@ describe(ruleName, () => {
               ],
               output: dedent`
                 import aImport from "b";
+
                 // Part: 1
                 import a = aImport.a1.a2;
               `,
