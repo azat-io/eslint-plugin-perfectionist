@@ -11,7 +11,7 @@ describe('validate-generated-groups-configuration', () => {
     'double-selector',
     'three-word-selector',
   ]
-  let modifiers = ['modifier1', 'modifier2', 'modifier3']
+  let modifiers = ['modifier1', 'modifier2', 'modifier3', 'double-modifier']
 
   it('allows predefined groups', () => {
     let allModifierCombinationPermutations =
@@ -54,18 +54,21 @@ describe('validate-generated-groups-configuration', () => {
     ).not.toThrow()
   })
 
-  it('throws an error with predefined groups with duplicate modifiers', () => {
-    expect(() =>
-      validateGeneratedGroupsConfiguration({
-        options: {
-          groups: ['modifier1-modifier1-selector1'],
-          customGroups: [],
-        },
-        selectors,
-        modifiers,
-      }),
-    ).toThrow('Invalid group(s): modifier1-modifier1-selector1')
-  })
+  it.each(['modifier1-modifier1', 'double-modifier-modifier1-double-modifier'])(
+    "throws an error with duplicate modifiers '(%s)'",
+    groupModifiers => {
+      expect(() =>
+        validateGeneratedGroupsConfiguration({
+          options: {
+            groups: [`${groupModifiers}-selector1`],
+            customGroups: [],
+          },
+          selectors,
+          modifiers,
+        }),
+      ).toThrow(`Invalid group(s): ${groupModifiers}-selector1`)
+    },
+  )
 
   it('throws an error if a duplicate group is provided', () => {
     expect(() =>
@@ -84,17 +87,22 @@ describe('validate-generated-groups-configuration', () => {
     expect(() =>
       validateGeneratedGroupsConfiguration({
         options: {
+          groups: [
+            'modifier1-selector1',
+            'nonAllowedModifier-selector1',
+            'myCustomGroup',
+            '',
+          ],
           customGroups: [
             {
               groupName: 'myCustomGroupNotReferenced',
             },
           ],
-          groups: ['modifier1-selector1', 'myCustomGroup', ''],
         },
         selectors,
         modifiers,
       }),
-    ).toThrow('Invalid group(s): myCustomGroup')
+    ).toThrow('Invalid group(s): nonAllowedModifier-selector1, myCustomGroup')
   })
 
   it('throws an error with consecutive newlines objects', () => {

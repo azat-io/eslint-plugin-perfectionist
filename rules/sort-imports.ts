@@ -69,6 +69,7 @@ let defaultGroups = [
   'value-internal',
   ['type-parent', 'type-sibling', 'type-index'],
   ['value-parent', 'value-sibling', 'value-index'],
+  'ts-equals-import',
   'unknown',
 ]
 
@@ -220,25 +221,31 @@ export default createEslintRule<Options, MESSAGE_ID>({
         })
       }
 
-      if (isStyleSideEffect) {
-        selectors.push('side-effect-style')
-      }
+      if (!isNonExternalReferenceTsImportEquals(node)) {
+        if (isStyleSideEffect) {
+          selectors.push('side-effect-style')
+        }
 
-      if (isSideEffect) {
-        selectors.push('side-effect')
-      }
+        if (isSideEffect) {
+          selectors.push('side-effect')
+        }
 
-      if (isStyleValue) {
-        selectors.push('style')
-      }
+        if (isStyleValue) {
+          selectors.push('style')
+        }
 
-      for (let selector of commonSelectors) {
-        selectors.push(selector)
+        for (let selector of commonSelectors) {
+          selectors.push(selector)
+        }
       }
       selectors.push('import')
 
       if (!modifiers.includes('type')) {
         modifiers.push('value')
+      }
+
+      if (node.type === 'TSImportEqualsDeclaration') {
+        modifiers.push('ts-equals')
       }
 
       group ??=
@@ -701,4 +708,17 @@ let computeDependencyNames = ({
     }
   }
   return returnValue
+}
+
+let isNonExternalReferenceTsImportEquals = (
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration,
+): node is TSESTree.TSImportEqualsDeclaration => {
+  if (node.type !== 'TSImportEqualsDeclaration') {
+    return false
+  }
+
+  return node.moduleReference.type !== 'TSExternalModuleReference'
 }

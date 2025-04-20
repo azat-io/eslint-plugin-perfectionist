@@ -368,7 +368,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}(${type}): supports typescript object-imports`,
+      `${ruleName}(${type}): supports typescript ts import-equals`,
       rule,
       {
         invalid: [
@@ -383,19 +383,12 @@ describe(ruleName, () => {
               },
               {
                 data: {
+                  leftGroup: 'ts-equals-import',
                   rightGroup: 'value-external',
-                  leftGroup: 'value-parent',
-                  right: 'console.log',
-                  left: '../b',
-                },
-                messageId: 'unexpectedImportsGroupOrder',
-              },
-              {
-                data: {
                   left: 'console.log',
                   right: 'c/c',
                 },
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
               },
             ],
             output: dedent`
@@ -403,9 +396,10 @@ describe(ruleName, () => {
 
               import { A } from 'a'
               import c = require('c/c')
-              import log = console.log
 
               import { B } from '../b'
+
+              import log = console.log
             `,
             code: dedent`
               import type T = require("T")
@@ -426,9 +420,10 @@ describe(ruleName, () => {
 
               import { A } from 'a'
               import c = require('c/c')
-              import log = console.log
 
               import { B } from '../b'
+
+              import log = console.log
             `,
             options: [options],
           },
@@ -2974,6 +2969,92 @@ describe(ruleName, () => {
         )
       })
 
+      describe('modifiers priority', () => {
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "type" over "ts-equals"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'type-import',
+                      leftGroup: 'external',
+                      right: 'z',
+                      left: 'f',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['type-import', 'external', 'ts-equals-import'],
+                  },
+                ],
+                output: dedent`
+                  import type a from './a'
+                  import type z = z
+
+                  import f from 'f'
+                `,
+                code: dedent`
+                  import type a from './a'
+
+                  import f from 'f'
+
+                  import type z = z
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "value" over "ts-equals"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'value-import',
+                      leftGroup: 'external',
+                      right: 'z',
+                      left: 'f',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['value-import', 'external', 'ts-equals-import'],
+                  },
+                ],
+                output: dedent`
+                  import a from './a'
+                  import z = z
+
+                  import f from 'f'
+                `,
+                code: dedent`
+                  import a from './a'
+
+                  import f from 'f'
+
+                  import z = z
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
+
       describe(`custom groups`, () => {
         for (let elementNamePattern of [
           'hello',
@@ -3564,6 +3645,7 @@ describe(ruleName, () => {
               ],
               output: dedent`
                 import aImport from "b";
+
                 // Part: 1
                 import a = aImport.a1.a2;
               `,
@@ -4025,7 +4107,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}(${type}): supports typescript object-imports`,
+      `${ruleName}(${type}): supports typescript ts import-equals`,
       rule,
       {
         invalid: [
@@ -4040,19 +4122,12 @@ describe(ruleName, () => {
               },
               {
                 data: {
+                  leftGroup: 'ts-equals-import',
                   rightGroup: 'value-external',
-                  leftGroup: 'value-parent',
-                  right: 'console.log',
-                  left: '../b',
-                },
-                messageId: 'unexpectedImportsGroupOrder',
-              },
-              {
-                data: {
                   left: 'console.log',
                   right: 'c/c',
                 },
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
               },
             ],
             output: dedent`
@@ -4060,9 +4135,10 @@ describe(ruleName, () => {
 
               import { A } from 'a'
               import c = require('c/c')
-              import log = console.log
 
               import { B } from '../b'
+
+              import log = console.log
             `,
             code: dedent`
               import type T = require("T")
@@ -4083,10 +4159,10 @@ describe(ruleName, () => {
 
               import { A } from 'a'
               import c = require('c/c')
-              import log = console.log
 
               import { B } from '../b'
 
+              import log = console.log
             `,
             options: [options],
           },
@@ -5374,7 +5450,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}(${type}): supports typescript object-imports`,
+      `${ruleName}(${type}): supports typescript ts import-equals`,
       rule,
       {
         invalid: [
@@ -5389,29 +5465,23 @@ describe(ruleName, () => {
               },
               {
                 data: {
+                  leftGroup: 'ts-equals-import',
                   rightGroup: 'value-external',
-                  leftGroup: 'value-parent',
-                  right: 'console.log',
-                  left: '../b',
-                },
-                messageId: 'unexpectedImportsGroupOrder',
-              },
-              {
-                data: {
                   left: 'console.log',
                   right: 'c/c',
                 },
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
               },
             ],
             output: dedent`
               import type T = require("T")
 
               import c = require('c/c')
-              import log = console.log
               import { A } from 'a'
 
               import { B } from '../b'
+
+              import log = console.log
             `,
             code: dedent`
               import type T = require("T")
@@ -5431,10 +5501,11 @@ describe(ruleName, () => {
               import type T = require("T")
 
               import c = require('c/c')
-              import log = console.log
               import { A } from 'a'
 
               import { B } from '../b'
+
+              import log = console.log
             `,
             options: [options],
           },

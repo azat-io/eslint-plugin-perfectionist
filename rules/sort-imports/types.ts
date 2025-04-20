@@ -77,9 +77,9 @@ export interface SortImportsSortingNode extends SortingNodeWithDependencies {
   isIgnored: boolean
 }
 
-export type Group = ValueGroup | TypeGroup | 'unknown' | string
+export type Modifier = TsEqualsModifier | ValueModifier | TypeModifier
 
-export type Modifier = ValueModifier | TypeModifier
+export type Group = ValueGroup | TypeGroup | 'unknown' | string
 
 type TypeGroup = JoinWithDash<[TypeModifier, Selector]>
 
@@ -118,6 +118,8 @@ type ParentTypeSelector = 'parent-type'
  * @deprecated for the modifier and selector
  */
 type IndexTypeSelector = 'index-type'
+
+type TsEqualsModifier = 'ts-equals'
 
 type ExternalSelector = 'external'
 
@@ -170,7 +172,7 @@ export let allDeprecatedSelectors: Selector[] = [
   'object',
 ]
 
-export let allModifiers: Modifier[] = ['type', 'value']
+export let allModifiers: Modifier[] = ['type', 'ts-equals', 'value']
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and ensure

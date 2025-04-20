@@ -288,6 +288,7 @@ Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is use
     'value-internal',
     ['type-parent', 'type-sibling', 'type-index'],
     ['value-parent', 'value-sibling', 'value-index'],
+    'ts-equals-import',
     'unknown',
   ]
   ```
@@ -325,6 +326,7 @@ The list of selectors is sorted from most to least important:
 
 - `'type'` — Typescript time imports.
 - `'value'` — Value imports.
+- `'ts-equals'` — TypeScript import-equals imports.
 
 #### Important notes
 
@@ -387,6 +389,8 @@ import type { InputProps } from '../Input'
 import type { Details } from './data'
 // 'type-index' - TypeScript type imports from main directory file
 import type { BaseOptions } from './index.d.ts'
+// 'value-ts-equals-import' - TypeScript import-equals imports
+import NotFoundError = ErrorsNamespace.NotFoundError
 ```
 
 #### Newlines between groups
@@ -527,6 +531,7 @@ you must write a custom group definition that does the same as what the predefin
      'value-internal',
      ['type-parent', 'type-sibling', 'type-index'],
      ['value-parent', 'value-sibling', 'value-index'],
+     'ts-equals-import',
      'unknown',
    ],
 +  customGroups: [                      // [!code ++]
@@ -583,6 +588,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                     'value-internal',
                     ['type-parent', 'type-sibling', 'type-index'],
                     ['value-parent', 'value-sibling', 'value-index'],
+                    'ts-equals-import',
                     'unknown',
                   ],
                   customGroups: [],
@@ -624,6 +630,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   'value-internal',
                   ['type-parent', 'type-sibling', 'type-index'],
                   ['value-parent', 'value-sibling', 'value-index'],
+                  'ts-equals-import',
                   'unknown',
                 ],
                 customGroups: [],
