@@ -241,6 +241,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
         modifiers.push('value')
       }
 
+      if (node.type === 'TSImportEqualsDeclaration') {
+        modifiers.push('ts-equals')
+      }
+
       group ??=
         computeGroupExceptUnknown({
           customGroups: Array.isArray(options.customGroups)

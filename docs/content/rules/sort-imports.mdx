@@ -325,6 +325,7 @@ The list of selectors is sorted from most to least important:
 
 - `'type'` — Typescript time imports.
 - `'value'` — Value imports.
+- `'ts-equals'` — TypeScript import-equals imports.
 
 #### Important notes
 
@@ -387,6 +388,8 @@ import type { InputProps } from '../Input'
 import type { Details } from './data'
 // 'type-index' - TypeScript type imports from main directory file
 import type { BaseOptions } from './index.d.ts'
+// 'value-ts-equals-import' - TypeScript import-equals imports
+import NotFoundError = ErrorsNamespace.NotFoundError
 ```
 
 #### Newlines between groups

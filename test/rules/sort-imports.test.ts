@@ -2974,6 +2974,92 @@ describe(ruleName, () => {
         )
       })
 
+      describe('modifiers priority', () => {
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "type" over "ts-equals"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'type-import',
+                      leftGroup: 'external',
+                      right: 'z',
+                      left: 'f',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['type-import', 'external', 'ts-equals-import'],
+                  },
+                ],
+                output: dedent`
+                  import type a from './a'
+                  import type z = z
+
+                  import f from 'f'
+                `,
+                code: dedent`
+                  import type a from './a'
+
+                  import f from 'f'
+
+                  import type z = z
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "value" over "ts-equals"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'value-import',
+                      leftGroup: 'external',
+                      right: 'z',
+                      left: 'f',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['value-import', 'external', 'ts-equals-import'],
+                  },
+                ],
+                output: dedent`
+                  import a from './a'
+                  import z = z
+
+                  import f from 'f'
+                `,
+                code: dedent`
+                  import a from './a'
+
+                  import f from 'f'
+
+                  import z = z
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
+
       describe(`custom groups`, () => {
         for (let elementNamePattern of [
           'hello',
