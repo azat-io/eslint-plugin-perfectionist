@@ -368,7 +368,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}(${type}): supports typescript object-imports`,
+      `${ruleName}(${type}): supports typescript ts import-equals`,
       rule,
       {
         invalid: [
@@ -383,19 +383,12 @@ describe(ruleName, () => {
               },
               {
                 data: {
+                  leftGroup: 'ts-equals-import',
                   rightGroup: 'value-external',
-                  leftGroup: 'value-parent',
-                  right: 'console.log',
-                  left: '../b',
-                },
-                messageId: 'unexpectedImportsGroupOrder',
-              },
-              {
-                data: {
                   left: 'console.log',
                   right: 'c/c',
                 },
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
               },
             ],
             output: dedent`
@@ -403,9 +396,10 @@ describe(ruleName, () => {
 
               import { A } from 'a'
               import c = require('c/c')
-              import log = console.log
 
               import { B } from '../b'
+
+              import log = console.log
             `,
             code: dedent`
               import type T = require("T")
@@ -426,9 +420,10 @@ describe(ruleName, () => {
 
               import { A } from 'a'
               import c = require('c/c')
-              import log = console.log
 
               import { B } from '../b'
+
+              import log = console.log
             `,
             options: [options],
           },
@@ -4112,7 +4107,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}(${type}): supports typescript object-imports`,
+      `${ruleName}(${type}): supports typescript ts import-equals`,
       rule,
       {
         invalid: [
@@ -4127,19 +4122,12 @@ describe(ruleName, () => {
               },
               {
                 data: {
+                  leftGroup: 'ts-equals-import',
                   rightGroup: 'value-external',
-                  leftGroup: 'value-parent',
-                  right: 'console.log',
-                  left: '../b',
-                },
-                messageId: 'unexpectedImportsGroupOrder',
-              },
-              {
-                data: {
                   left: 'console.log',
                   right: 'c/c',
                 },
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
               },
             ],
             output: dedent`
@@ -4147,9 +4135,10 @@ describe(ruleName, () => {
 
               import { A } from 'a'
               import c = require('c/c')
-              import log = console.log
 
               import { B } from '../b'
+
+              import log = console.log
             `,
             code: dedent`
               import type T = require("T")
@@ -4170,10 +4159,10 @@ describe(ruleName, () => {
 
               import { A } from 'a'
               import c = require('c/c')
-              import log = console.log
 
               import { B } from '../b'
 
+              import log = console.log
             `,
             options: [options],
           },
@@ -5461,7 +5450,7 @@ describe(ruleName, () => {
     })
 
     ruleTester.run(
-      `${ruleName}(${type}): supports typescript object-imports`,
+      `${ruleName}(${type}): supports typescript ts import-equals`,
       rule,
       {
         invalid: [
@@ -5476,29 +5465,23 @@ describe(ruleName, () => {
               },
               {
                 data: {
+                  leftGroup: 'ts-equals-import',
                   rightGroup: 'value-external',
-                  leftGroup: 'value-parent',
-                  right: 'console.log',
-                  left: '../b',
-                },
-                messageId: 'unexpectedImportsGroupOrder',
-              },
-              {
-                data: {
                   left: 'console.log',
                   right: 'c/c',
                 },
-                messageId: 'unexpectedImportsOrder',
+                messageId: 'unexpectedImportsGroupOrder',
               },
             ],
             output: dedent`
               import type T = require("T")
 
               import c = require('c/c')
-              import log = console.log
               import { A } from 'a'
 
               import { B } from '../b'
+
+              import log = console.log
             `,
             code: dedent`
               import type T = require("T")
@@ -5518,10 +5501,11 @@ describe(ruleName, () => {
               import type T = require("T")
 
               import c = require('c/c')
-              import log = console.log
               import { A } from 'a'
 
               import { B } from '../b'
+
+              import log = console.log
             `,
             options: [options],
           },

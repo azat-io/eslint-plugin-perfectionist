@@ -69,6 +69,7 @@ let defaultGroups = [
   'value-internal',
   ['type-parent', 'type-sibling', 'type-index'],
   ['value-parent', 'value-sibling', 'value-index'],
+  'ts-equals-import',
   'unknown',
 ]
 

@@ -288,6 +288,7 @@ Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is use
     'value-internal',
     ['type-parent', 'type-sibling', 'type-index'],
     ['value-parent', 'value-sibling', 'value-index'],
+    'ts-equals-import',
     'unknown',
   ]
   ```
@@ -530,6 +531,7 @@ you must write a custom group definition that does the same as what the predefin
      'value-internal',
      ['type-parent', 'type-sibling', 'type-index'],
      ['value-parent', 'value-sibling', 'value-index'],
+     'ts-equals-import',
      'unknown',
    ],
 +  customGroups: [                      // [!code ++]
@@ -586,6 +588,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                     'value-internal',
                     ['type-parent', 'type-sibling', 'type-index'],
                     ['value-parent', 'value-sibling', 'value-index'],
+                    'ts-equals-import',
                     'unknown',
                   ],
                   customGroups: [],
@@ -627,6 +630,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   'value-internal',
                   ['type-parent', 'type-sibling', 'type-index'],
                   ['value-parent', 'value-sibling', 'value-index'],
+                  'ts-equals-import',
                   'unknown',
                 ],
                 customGroups: [],
