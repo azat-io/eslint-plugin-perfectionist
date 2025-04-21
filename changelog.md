@@ -1,5 +1,27 @@
 # Changelog
 
+## v4.12.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.11.0...v4.12.0)
+
+### 🚀 Features
+
+- Add groups-related options to sort-named-exports and sort-named-imports ([ae7a4a1](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ae7a4a1))
+- **sort-imports:** Add support for new groups and custom groups api ([aeb0322](https://github.com/azat-io/eslint-plugin-perfectionist/commit/aeb0322))
+- **sort-imports:** Update default groups to new api ([c76c28a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c76c28a))
+- **sort-imports:** Add ts-equals modifier to replace deprecated object group ([d03a9b3](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d03a9b3))
+- **sort-imports:** Add subpath, tsconfig-path selectors and 5 modifiers ([5c35234](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5c35234))
+
+### 🐞 Bug Fixes
+
+- Fix typescript imports always matching unknown ([3b0922f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3b0922f))
+- **sort-objects:** Fix nested objects not impacted by styled components ([f790779](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f790779))
+- **sort-imports:** Fix undetected typescript import-equals dependencies ([d7bf203](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d7bf203))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v4.11.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.10.1...v4.11.0)
