@@ -67,19 +67,20 @@ export type Selector =
   | StyleSelector
   | TypeSelector
 
+export type Modifier =
+  | WildcardModifier
+  | TsEqualsModifier
+  | DefaultModifier
+  | ValueModifier
+  | NamedModifier
+  | TypeModifier
+
 export type SingleCustomGroup = {
   modifiers?: Modifier[]
   selector?: Selector
 } & {
   elementNamePattern?: RegexOption
 }
-
-export type Modifier =
-  | TsEqualsModifier
-  | DefaultModifier
-  | ValueModifier
-  | NamedModifier
-  | TypeModifier
 
 export interface SortImportsSortingNode extends SortingNodeWithDependencies {
   isIgnored: boolean
@@ -126,6 +127,8 @@ type ParentTypeSelector = 'parent-type'
 type IndexTypeSelector = 'index-type'
 
 type TsEqualsModifier = 'ts-equals'
+
+type WildcardModifier = 'wildcard'
 
 type ExternalSelector = 'external'
 
@@ -191,6 +194,7 @@ export let allModifiers: Modifier[] = [
   'ts-equals',
   'type',
   'value',
+  'wildcard',
 ]
 
 /**

@@ -3095,6 +3095,45 @@ describe(ruleName, () => {
             valid: [],
           },
         )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "wildcard" over "named"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'wildcard-import',
+                      leftGroup: 'external',
+                      right: './z',
+                      left: 'f',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['wildcard-import', 'external', 'named-import'],
+                  },
+                ],
+                output: dedent`
+                  import z, * as z from "./z"
+
+                  import f from 'f'
+                `,
+                code: dedent`
+                  import f from 'f'
+
+                  import z, * as z from "./z"
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
       })
 
       describe(`custom groups`, () => {
