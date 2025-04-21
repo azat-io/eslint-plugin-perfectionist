@@ -271,7 +271,9 @@ This option is only available when the type is set to `'line-length'`.
 
 <sub>default: `undefined`</sub>
 
-Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is used for marking aliased imports as `internal` or `internal-type` in the `groups` option.
+Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is used in [`groups`](#groups) for:
+- Marking aliased imports as `internal`.
+- Marking imports matching [tsconfig paths](https://www.typescriptlang.org/tsconfig/#paths) as `tsconfig-path`.
 
 ### groups
 
@@ -314,9 +316,11 @@ The list of selectors is sorted from most to least important:
 - `'side-effect-style'` — Side effect style imports.
 - `'side-effect'` — Side effect imports.
 - `'style'` — Styles.
+- `'tsconfig-path'` — `tsconfig` [paths](https://www.typescriptlang.org/tsconfig/#paths) alias imports. Requires [`tsconfigRootDir`](#tsconfigrootdir) to be set.
 - `'index'` — Main file from the current directory.
 - `'sibling'` — Modules from the same directory.
 - `'parent'` — Modules from the parent directory.
+- `'subpath'` — Node.js [subpath](https://nodejs.org/api/packages.html#packages_subpath_imports) imports.
 - `'internal'` — Your internal modules.
 - `'builtin'` — Node.js Built-in Modules.
 - `'external'` — External modules installed in the project.
@@ -324,9 +328,16 @@ The list of selectors is sorted from most to least important:
 
 #### Modifiers
 
-- `'type'` — Typescript time imports.
+The list of modifiers is sorted from most to least important:
+
+- `'side-effect'` — Side effect imports.
+- `'type'` — Typescript type imports.
 - `'value'` — Value imports.
 - `'ts-equals'` — TypeScript import-equals imports.
+- `'require'` — `require` imports.
+- `'default'` — Imports containing the `default` specifier.
+- `'wildcard'` — Imports containing the wildcard (`* as`) specifier.
+- `'named'` — Imports containing at least one named specifier.
 
 #### Important notes
 
@@ -342,6 +353,7 @@ In case of multiple groups matching an element, the following rules will be appl
 
 1. Selector priority: `type`, `index`, ... will take precedence over `external` groups for example.
 2. If the selector is the same, the group with the most modifiers matching will be selected.
+3. If modifiers quantity is the same, order will be chosen based on modifier importance as listed above.
 
 Example 1:
 
@@ -350,13 +362,34 @@ import type { FC } from 'react'
 ```
 
 `react` can be matched by the following groups, from most to least important:
-- `type` (`type` selector).
-- `type-external` (`type` modifier).
+- `named-type` (`type` selector).
+- `type`.
+- `named-type-external` or `type-named-external` (`type` modifier).
+- `type-external`.
+- `named-external`.
 - `external`.
+- `named-type-import` or `type-named-import`.
 - `type-import`.
+- `named-import`.
 - `import`.
 
-Example 2 (The most important group is written in the comments):
+Example 2:
+
+```ts
+import 'style.scss'
+```
+
+`style.scss` can be matched by the following relevant groups, from most to least important:
+
+- `side-effect-style` (`side-effect-style` selector).
+- `side-effect`.
+- `value-style`.
+- `style`.
+- `side-effect-import`.  (`side-effect` modifier)
+- `value-import`.
+- `import`.
+
+Example 3 (The most important group is written in the comments):
 
 ```ts
 // 'value-builtin' - Node.js Built-in Modules
@@ -367,6 +400,8 @@ import axios from 'axios'
 import Button from '~/components/Button'
 // 'value-parent' - Modules from parent directory
 import formatNumber from '../utils/format-number'
+// 'value-subpath' - Node.js subpath imports
+import subpathContent from '#subpathModule'
 // 'value-sibling' - Modules from the same directory
 import config from './config'
 // 'value-side-effect' - Side effect imports
@@ -379,15 +414,15 @@ import main from '.'
 import styles from './index.module.css'
 // 'type-external' - TypeScript type imports
 import type { FC } from 'react'
-// 'type-builtin' - TypeScript type imports from Built-in Modules
+// 'named-type-builtin' - TypeScript type imports from Built-in Modules
 import type { Server } from 'http'
-// 'type-internal' - TypeScript type imports from your internal modules
+// 'named-type-internal' - TypeScript type imports from your internal modules
 import type { User } from '~/users'
-// 'type-parent' - TypeScript type imports from parent directory
+// 'named-type-parent' - TypeScript type imports from parent directory
 import type { InputProps } from '../Input'
-// 'type-sibling' - TypeScript type imports from the same directory
+// 'named-type-sibling' - TypeScript type imports from the same directory
 import type { Details } from './data'
-// 'type-index' - TypeScript type imports from main directory file
+// 'named-type-index' - TypeScript type imports from main directory file
 import type { BaseOptions } from './index.d.ts'
 // 'value-ts-equals-import' - TypeScript import-equals imports
 import NotFoundError = ErrorsNamespace.NotFoundError

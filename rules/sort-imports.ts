@@ -190,7 +190,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
 
           for (let selector of commonSelectors) {
-            selectors.push(`${selector}-type`)
+            if (selector !== 'subpath' && selector !== 'tsconfig-path') {
+              selectors.push(`${selector}-type`)
+            }
           }
         }
 
@@ -228,6 +230,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
         if (isSideEffect) {
           selectors.push('side-effect')
+          modifiers.push('side-effect')
         }
 
         if (isStyleValue) {
@@ -246,6 +249,22 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       if (node.type === 'TSImportEqualsDeclaration') {
         modifiers.push('ts-equals')
+      }
+
+      if (node.type === 'VariableDeclaration') {
+        modifiers.push('require')
+      }
+
+      if (hasSpecifier(node, 'ImportDefaultSpecifier')) {
+        modifiers.push('default')
+      }
+
+      if (hasSpecifier(node, 'ImportNamespaceSpecifier')) {
+        modifiers.push('wildcard')
+      }
+
+      if (hasSpecifier(node, 'ImportSpecifier')) {
+        modifiers.push('named')
       }
 
       group ??=
@@ -544,6 +563,19 @@ let hasContentBetweenNodes = (
     includeComments: false,
   }).length > 0
 
+let hasSpecifier = (
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration,
+  specifier:
+    | 'ImportNamespaceSpecifier'
+    | 'ImportDefaultSpecifier'
+    | 'ImportSpecifier',
+): boolean =>
+  node.type === 'ImportDeclaration' &&
+  node.specifiers.some(nodeSpecifier => nodeSpecifier.type === specifier)
+
 let styleExtensions = [
   '.less',
   '.scss',
@@ -562,8 +594,11 @@ let isSideEffectImport = ({
   sourceCode,
   node,
 }: {
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration
   sourceCode: TSESLint.SourceCode
-  node: TSESTree.Node
 }): boolean =>
   node.type === 'ImportDeclaration' &&
   node.specifiers.length === 0 &&

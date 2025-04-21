@@ -15,6 +15,21 @@ vi.mock('../../../rules/sort-imports/get-typescript-import', () => ({
 }))
 
 describe('compute-common-selector', () => {
+  describe('`tsconfig-path` selector', () => {
+    it.each(['foo/a', 'foo/a/b'])("should match with '%s'", name => {
+      expect(
+        computeCommonSelectors(
+          buildParameters({
+            tsConfig: {
+              paths: ['foo/*'],
+            },
+            name,
+          }),
+        ),
+      ).toContain('tsconfig-path')
+    })
+  })
+
   describe('`index` selector', () => {
     it.each([
       './index.d.js',
@@ -57,6 +72,14 @@ describe('compute-common-selector', () => {
     ])("should match with '%s'", name => {
       expect(computeCommonSelectors(buildParameters({ name }))).toContain(
         'parent',
+      )
+    })
+  })
+
+  describe('`subpath` selector', () => {
+    it.each(['#', '#a', '#node:sqlite'])("should match with '%s'", name => {
+      expect(computeCommonSelectors(buildParameters({ name }))).toContain(
+        'subpath',
       )
     })
   })
@@ -115,9 +138,7 @@ describe('compute-common-selector', () => {
       })
 
       expect(
-        computeCommonSelectors(
-          buildParameters({ withTsConfigOutput: true, name: 'foo' }),
-        ),
+        computeCommonSelectors(buildParameters({ tsConfig: {}, name: 'foo' })),
       ).toContain('internal')
     })
   })
@@ -145,9 +166,7 @@ describe('compute-common-selector', () => {
       })
 
       expect(
-        computeCommonSelectors(
-          buildParameters({ withTsConfigOutput: true, name: 'foo' }),
-        ),
+        computeCommonSelectors(buildParameters({ tsConfig: {}, name: 'foo' })),
       ).toContain('external')
     })
 
@@ -158,9 +177,7 @@ describe('compute-common-selector', () => {
       })
 
       expect(
-        computeCommonSelectors(
-          buildParameters({ withTsConfigOutput: true, name: 'foo' }),
-        ),
+        computeCommonSelectors(buildParameters({ tsConfig: {}, name: 'foo' })),
       ).toContain('external')
     })
   })
@@ -185,18 +202,26 @@ describe('compute-common-selector', () => {
   })
 
   let buildParameters = ({
-    withTsConfigOutput,
     internalPattern,
     environment,
+    tsConfig,
     name,
   }: {
-    withTsConfigOutput?: boolean
+    tsConfig?: {
+      paths?: string[]
+    }
     environment?: 'node' | 'bun'
     internalPattern?: string[]
     name: string
   }): Parameters<typeof computeCommonSelectors>[0] => ({
-    tsConfigOutput: withTsConfigOutput
-      ? ({ compilerOptions: {} } as ReadClosestTsConfigByPathValue)
+    tsConfigOutput: tsConfig
+      ? ({
+          compilerOptions: {
+            paths: Object.fromEntries(
+              (tsConfig.paths ?? []).map(path => [path, ['*']]),
+            ),
+          },
+        } as ReadClosestTsConfigByPathValue)
       : null,
     options: {
       internalPattern: internalPattern ?? [],

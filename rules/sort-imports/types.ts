@@ -50,6 +50,7 @@ export type Selector =
   | SideEffectStyleSelector
   | InternalTypeSelector
   | ExternalTypeSelector
+  | TsconfigPathSelector
   | SiblingTypeSelector
   | BuiltinTypeSelector
   | SideEffectSelector
@@ -59,12 +60,23 @@ export type Selector =
   | InternalSelector
   | BuiltinSelector
   | SiblingSelector
+  | SubpathSelector
   | ImportSelector
   | ObjectSelector
   | ParentSelector
   | IndexSelector
   | StyleSelector
   | TypeSelector
+
+export type Modifier =
+  | SideEffectModifier
+  | WildcardModifier
+  | TsEqualsModifier
+  | RequireModifier
+  | DefaultModifier
+  | ValueModifier
+  | NamedModifier
+  | TypeModifier
 
 export type SingleCustomGroup = {
   modifiers?: Modifier[]
@@ -76,8 +88,6 @@ export type SingleCustomGroup = {
 export interface SortImportsSortingNode extends SortingNodeWithDependencies {
   isIgnored: boolean
 }
-
-export type Modifier = TsEqualsModifier | ValueModifier | TypeModifier
 
 export type Group = ValueGroup | TypeGroup | 'unknown' | string
 
@@ -94,6 +104,8 @@ type InternalTypeSelector = 'internal-type'
  * @deprecated for the modifier and selector
  */
 type ExternalTypeSelector = 'external-type'
+
+type TsconfigPathSelector = 'tsconfig-path'
 
 type ValueGroup = JoinWithDash<[Selector]>
 
@@ -114,6 +126,8 @@ type SideEffectSelector = 'side-effect'
  */
 type ParentTypeSelector = 'parent-type'
 
+type SideEffectModifier = 'side-effect'
+
 /**
  * @deprecated for the modifier and selector
  */
@@ -121,13 +135,21 @@ type IndexTypeSelector = 'index-type'
 
 type TsEqualsModifier = 'ts-equals'
 
+type WildcardModifier = 'wildcard'
+
 type ExternalSelector = 'external'
 
 type InternalSelector = 'internal'
 
+type SubpathSelector = 'subpath'
+
 type BuiltinSelector = 'builtin'
 
 type SiblingSelector = 'sibling'
+
+type DefaultModifier = 'default'
+
+type RequireModifier = 'require'
 
 type ParentSelector = 'parent'
 
@@ -144,17 +166,21 @@ type StyleSelector = 'style'
 
 type ValueModifier = 'value'
 
+type NamedModifier = 'named'
+
 type TypeModifier = 'type'
 
 type TypeSelector = 'type'
 
 export let allSelectors: Selector[] = [
   'side-effect-style',
+  'tsconfig-path',
   'side-effect',
   'external',
   'internal',
   'builtin',
   'sibling',
+  'subpath',
   'import',
   'parent',
   'index',
@@ -172,7 +198,16 @@ export let allDeprecatedSelectors: Selector[] = [
   'object',
 ]
 
-export let allModifiers: Modifier[] = ['type', 'ts-equals', 'value']
+export let allModifiers: Modifier[] = [
+  'default',
+  'named',
+  'require',
+  'side-effect',
+  'ts-equals',
+  'type',
+  'value',
+  'wildcard',
+]
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and ensure

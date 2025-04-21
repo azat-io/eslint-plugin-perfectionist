@@ -2880,20 +2880,44 @@ describe(ruleName, () => {
                 options: [
                   {
                     ...options,
-
                     groups: [
                       'style',
                       [
                         'index',
                         'internal',
+                        'subpath',
                         'external',
                         'sibling',
                         'builtin',
                         'parent',
+                        'tsconfig-path',
                       ],
                     ],
+                    tsconfigRootDir: '.',
                   },
                 ],
+                output: dedent`
+                  import style from 'style.css'
+
+                  import a from '../a'
+                  import b from './b'
+                  import c from './index'
+                  import subpath from '#subpath'
+                  import tsConfigPath from '$path'
+                  import d from 'd'
+                  import e from 'timers'
+                `,
+                code: dedent`
+                  import a from '../a'
+                  import b from './b'
+                  import c from './index'
+                  import subpath from '#subpath'
+                  import tsConfigPath from '$path'
+                  import d from 'd'
+                  import e from 'timers'
+
+                  import style from 'style.css'
+                `,
                 errors: [
                   {
                     data: {
@@ -2905,24 +2929,13 @@ describe(ruleName, () => {
                     messageId: 'unexpectedImportsGroupOrder',
                   },
                 ],
-                output: dedent`
-                  import style from 'style.css'
-
-                  import a from '../a'
-                  import b from './b'
-                  import c from './index'
-                  import d from 'd'
-                  import e from 'timers'
-                `,
-                code: dedent`
-                  import a from '../a'
-                  import b from './b'
-                  import c from './index'
-                  import d from 'd'
-                  import e from 'timers'
-
-                  import style from 'style.css'
-                `,
+                before: () => {
+                  mockReadClosestTsConfigByPathWith({
+                    paths: {
+                      $path: ['./path'],
+                    },
+                  })
+                },
               },
             ],
             valid: [],
@@ -2994,17 +3007,54 @@ describe(ruleName, () => {
                   },
                 ],
                 output: dedent`
-                  import type a from './a'
                   import type z = z
 
                   import f from 'f'
                 `,
                 code: dedent`
-                  import type a from './a'
-
                   import f from 'f'
 
                   import type z = z
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "side-effect" over "value"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'side-effect-import',
+                      leftGroup: 'external',
+                      right: './z',
+                      left: 'f',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['side-effect-import', 'external', 'value-import'],
+                    sortSideEffects: true,
+                  },
+                ],
+                output: dedent`
+                  import "./z"
+
+                  import f from 'f'
+                `,
+                code: dedent`
+                  import f from 'f'
+
+                  import "./z"
                 `,
               },
             ],
@@ -3036,17 +3086,131 @@ describe(ruleName, () => {
                   },
                 ],
                 output: dedent`
-                  import a from './a'
                   import z = z
 
                   import f from 'f'
                 `,
                 code: dedent`
-                  import a from './a'
-
                   import f from 'f'
 
                   import z = z
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "ts-equals" over "require"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'ts-equals-import',
+                      leftGroup: 'external',
+                      right: './z',
+                      left: 'f',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['ts-equals-import', 'external', 'require-import'],
+                  },
+                ],
+                output: dedent`
+                  import z = require('./z')
+
+                  import f from 'f'
+                `,
+                code: dedent`
+                  import f from 'f'
+
+                  import z = require('./z')
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "default" over "named"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'default-import',
+                      leftGroup: 'external',
+                      right: './z',
+                      left: 'f',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['default-import', 'external', 'named-import'],
+                  },
+                ],
+                output: dedent`
+                  import z, { z } from "./z"
+
+                  import f from 'f'
+                `,
+                code: dedent`
+                  import f from 'f'
+
+                  import z, { z } from "./z"
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "wildcard" over "named"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'wildcard-import',
+                      leftGroup: 'external',
+                      right: './z',
+                      left: 'f',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['wildcard-import', 'external', 'named-import'],
+                  },
+                ],
+                output: dedent`
+                  import z, * as z from "./z"
+
+                  import f from 'f'
+                `,
+                code: dedent`
+                  import f from 'f'
+
+                  import z, * as z from "./z"
                 `,
               },
             ],
@@ -7267,26 +7431,6 @@ describe(ruleName, () => {
           invalid: [],
         },
       )
-
-      let mockReadClosestTsConfigByPathWith = (
-        compilerOptions: CompilerOptions | null,
-      ): void => {
-        vi.spyOn(
-          readClosestTsConfigUtilities,
-          'readClosestTsConfigByPath',
-        ).mockReturnValue(
-          compilerOptions
-            ? {
-                cache: createModuleResolutionCache(
-                  '.',
-                  filename => filename,
-                  compilerOptions,
-                ),
-                compilerOptions,
-              }
-            : null,
-        )
-      }
     })
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
@@ -7609,4 +7753,24 @@ describe(ruleName, () => {
       },
     )
   })
+
+  let mockReadClosestTsConfigByPathWith = (
+    compilerOptions: CompilerOptions | null,
+  ): void => {
+    vi.spyOn(
+      readClosestTsConfigUtilities,
+      'readClosestTsConfigByPath',
+    ).mockReturnValue(
+      compilerOptions
+        ? {
+            cache: createModuleResolutionCache(
+              '.',
+              filename => filename,
+              compilerOptions,
+            ),
+            compilerOptions,
+          }
+        : null,
+    )
+  }
 })

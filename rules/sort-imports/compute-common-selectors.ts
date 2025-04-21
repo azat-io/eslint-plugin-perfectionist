@@ -4,12 +4,20 @@ import type { ReadClosestTsConfigByPathValue } from './read-closest-ts-config-by
 import type { RegexOption } from '../../types/common-options'
 import type { Selector } from './types'
 
+import { matchesTsconfigPaths } from './matches-tsconfig-paths'
 import { getTypescriptImport } from './get-typescript-import'
 import { matches } from '../../utils/matches'
 
 type CommonSelector = Extract<
   Selector,
-  'internal' | 'external' | 'sibling' | 'builtin' | 'parent' | 'index'
+  | 'tsconfig-path'
+  | 'internal'
+  | 'external'
+  | 'sibling'
+  | 'builtin'
+  | 'subpath'
+  | 'parent'
+  | 'index'
 >
 
 export let computeCommonSelectors = ({
@@ -37,33 +45,47 @@ export let computeCommonSelectors = ({
         name,
       })
 
-  let predefinedGroups: CommonSelector[] = []
+  let commonSelectors: CommonSelector[] = []
+
+  if (
+    tsConfigOutput &&
+    matchesTsconfigPaths({
+      tsConfigOutput,
+      name,
+    })
+  ) {
+    commonSelectors.push('tsconfig-path')
+  }
 
   if (isIndex(name)) {
-    predefinedGroups.push('index')
+    commonSelectors.push('index')
   }
 
   if (isSibling(name)) {
-    predefinedGroups.push('sibling')
+    commonSelectors.push('sibling')
   }
 
   if (isParent(name)) {
-    predefinedGroups.push('parent')
+    commonSelectors.push('parent')
+  }
+
+  if (isSubpath(name)) {
+    commonSelectors.push('subpath')
   }
 
   if (internalExternalGroup === 'internal') {
-    predefinedGroups.push('internal')
+    commonSelectors.push('internal')
   }
 
   if (isCoreModule(name, options.environment)) {
-    predefinedGroups.push('builtin')
+    commonSelectors.push('builtin')
   }
 
   if (internalExternalGroup === 'external') {
-    predefinedGroups.push('external')
+    commonSelectors.push('external')
   }
 
-  return predefinedGroups
+  return commonSelectors
 }
 
 let bunModules = new Set([
@@ -91,6 +113,8 @@ let isCoreModule = (value: string, environment: 'node' | 'bun'): boolean => {
 let isParent = (value: string): boolean => value.startsWith('..')
 
 let isSibling = (value: string): boolean => value.startsWith('./')
+
+let isSubpath = (value: string): boolean => value.startsWith('#')
 
 let isIndex = (value: string): boolean =>
   [
