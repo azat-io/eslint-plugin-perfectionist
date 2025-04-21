@@ -250,7 +250,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
         modifiers.push('ts-equals')
       }
 
-      if (hasNamedSpecifier(node)) {
+      if (hasSpecifier(node, 'ImportDefaultSpecifier')) {
+        modifiers.push('default')
+      }
+
+      if (hasSpecifier(node, 'ImportSpecifier')) {
         modifiers.push('named')
       }
 
@@ -550,14 +554,15 @@ let hasContentBetweenNodes = (
     includeComments: false,
   }).length > 0
 
-let hasNamedSpecifier = (
+let hasSpecifier = (
   node:
     | TSESTree.TSImportEqualsDeclaration
     | TSESTree.VariableDeclaration
     | TSESTree.ImportDeclaration,
+  specifier: 'ImportDefaultSpecifier' | 'ImportSpecifier',
 ): boolean =>
   node.type === 'ImportDeclaration' &&
-  node.specifiers.some(specifier => specifier.type === 'ImportSpecifier')
+  node.specifiers.some(nodeSpecifier => nodeSpecifier.type === specifier)
 
 let styleExtensions = [
   '.less',

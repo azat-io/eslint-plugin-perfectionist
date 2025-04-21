@@ -3056,6 +3056,45 @@ describe(ruleName, () => {
             valid: [],
           },
         )
+
+        ruleTester.run(
+          `${ruleName}(${type}): prioritizes "default" over "named"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'default-import',
+                      leftGroup: 'external',
+                      right: './z',
+                      left: 'f',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['default-import', 'external', 'named-import'],
+                  },
+                ],
+                output: dedent`
+                  import z, { z } from "./z"
+
+                  import f from 'f'
+                `,
+                code: dedent`
+                  import f from 'f'
+
+                  import z, { z } from "./z"
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
       })
 
       describe(`custom groups`, () => {

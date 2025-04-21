@@ -74,15 +74,16 @@ export type SingleCustomGroup = {
   elementNamePattern?: RegexOption
 }
 
-export interface SortImportsSortingNode extends SortingNodeWithDependencies {
-  isIgnored: boolean
-}
-
 export type Modifier =
   | TsEqualsModifier
+  | DefaultModifier
   | ValueModifier
   | NamedModifier
   | TypeModifier
+
+export interface SortImportsSortingNode extends SortingNodeWithDependencies {
+  isIgnored: boolean
+}
 
 export type Group = ValueGroup | TypeGroup | 'unknown' | string
 
@@ -136,6 +137,8 @@ type BuiltinSelector = 'builtin'
 
 type SiblingSelector = 'sibling'
 
+type DefaultModifier = 'default'
+
 type ParentSelector = 'parent'
 
 /**
@@ -182,7 +185,13 @@ export let allDeprecatedSelectors: Selector[] = [
   'object',
 ]
 
-export let allModifiers: Modifier[] = ['named', 'ts-equals', 'type', 'value']
+export let allModifiers: Modifier[] = [
+  'default',
+  'named',
+  'ts-equals',
+  'type',
+  'value',
+]
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and ensure
