@@ -3058,6 +3058,45 @@ describe(ruleName, () => {
         )
 
         ruleTester.run(
+          `${ruleName}(${type}): prioritizes "ts-equals" over "require"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      rightGroup: 'ts-equals-import',
+                      leftGroup: 'external',
+                      right: './z',
+                      left: 'f',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['ts-equals-import', 'external', 'require-import'],
+                  },
+                ],
+                output: dedent`
+                  import z = require('./z')
+
+                  import f from 'f'
+                `,
+                code: dedent`
+                  import f from 'f'
+
+                  import z = require('./z')
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        ruleTester.run(
           `${ruleName}(${type}): prioritizes "default" over "named"`,
           rule,
           {

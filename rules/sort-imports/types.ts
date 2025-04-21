@@ -70,6 +70,7 @@ export type Selector =
 export type Modifier =
   | WildcardModifier
   | TsEqualsModifier
+  | RequireModifier
   | DefaultModifier
   | ValueModifier
   | NamedModifier
@@ -142,6 +143,8 @@ type SiblingSelector = 'sibling'
 
 type DefaultModifier = 'default'
 
+type RequireModifier = 'require'
+
 type ParentSelector = 'parent'
 
 /**
@@ -191,6 +194,7 @@ export let allDeprecatedSelectors: Selector[] = [
 export let allModifiers: Modifier[] = [
   'default',
   'named',
+  'require',
   'ts-equals',
   'type',
   'value',
