@@ -1,6 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { NewlinesBetweenValueGetter } from './get-newlines-errors'
+import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 

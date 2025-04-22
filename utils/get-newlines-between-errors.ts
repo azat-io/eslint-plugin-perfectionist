@@ -17,7 +17,7 @@ export type NewlinesBetweenValueGetter<T extends SortingNode> = (props: {
   left: T
 }) => NewlinesBetweenOption
 
-interface GetNewlinesErrorsParameters<
+interface GetNewlinesBetweenErrorsParameters<
   MessageIds extends string,
   T extends SortingNode,
 > {
@@ -36,7 +36,7 @@ interface GetNewlinesErrorsParameters<
   left: T
 }
 
-export let getNewlinesErrors = <
+export let getNewlinesBetweenErrors = <
   MessageIds extends string,
   T extends SortingNode,
 >({
@@ -49,7 +49,7 @@ export let getNewlinesErrors = <
   options,
   right,
   left,
-}: GetNewlinesErrorsParameters<MessageIds, T>): MessageIds[] => {
+}: GetNewlinesBetweenErrorsParameters<MessageIds, T>): MessageIds[] => {
   let newlinesBetween = getNewlinesBetweenOption({
     nextSortingNode: right,
     sortingNode: left,
