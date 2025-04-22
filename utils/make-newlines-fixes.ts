@@ -6,7 +6,7 @@ import type {
   CustomGroupsOption,
   GroupsOptions,
 } from '../types/common-options'
-import type { NewlinesBetweenValueGetter } from './get-newlines-errors'
+import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getNewlinesBetweenOption } from './get-newlines-between-option'

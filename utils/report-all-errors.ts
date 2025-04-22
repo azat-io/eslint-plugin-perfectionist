@@ -1,15 +1,15 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
-import type { NewlinesBetweenValueGetter } from './get-newlines-errors'
+import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
 import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
 import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
+import { getNewlinesBetweenErrors } from './get-newlines-between-errors'
 import { createNodeIndexMap } from './create-node-index-map'
-import { getNewlinesErrors } from './get-newlines-errors'
 import { getGroupNumber } from './get-group-number'
 import { reportErrors } from './report-errors'
 import { pairwise } from './pairwise'
@@ -106,7 +106,7 @@ export let reportAllErrors = <
     ) {
       messageIds = [
         ...messageIds,
-        ...getNewlinesErrors({
+        ...getNewlinesBetweenErrors({
           options: {
             ...options,
             newlinesBetween: options.newlinesBetween,
