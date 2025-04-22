@@ -1,8 +1,8 @@
 import type {
   DeprecatedCustomGroupsOption,
-  NewlinesBetweenOption,
   CustomGroupsOption,
   AnyOfCustomGroup,
+  GroupsOptions,
 } from '../types/common-options'
 
 import { matches } from './matches'
@@ -12,7 +12,7 @@ interface GetGroupParameters<SingleCustomGroup> {
     customGroups?:
       | CustomGroupsOption<SingleCustomGroup>
       | DeprecatedCustomGroupsOption
-    groups: ({ newlinesBetween: NewlinesBetweenOption } | string[] | string)[]
+    groups: GroupsOptions<string>
   }
   customGroupMatcher?(
     customGroup: AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup,
