@@ -105,20 +105,19 @@ describe('validate-generated-groups-configuration', () => {
     ).toThrow('Invalid group(s): nonAllowedModifier-selector1, myCustomGroup')
   })
 
-  it('throws an error with consecutive newlines objects', () => {
+  it('throws an error with consecutive newlines/commentAbove objects', () => {
     expect(() => {
       validateGeneratedGroupsConfiguration({
         options: {
-          groups: [
-            { newlinesBetween: 'always' },
-            { newlinesBetween: 'always' },
-          ],
+          groups: [{ newlinesBetween: 'always' }, { commentAbove: 'Comment' }],
           customGroups: [],
         },
         selectors: [],
         modifiers: [],
       })
-    }).toThrow("Consecutive 'newlinesBetween' objects are not allowed")
+    }).toThrow(
+      'Consecutive objects (`newlinesBetween` or `commentAbove` are not allowed: merge them into a single object',
+    )
   })
 })
 
