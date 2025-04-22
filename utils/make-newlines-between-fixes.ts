@@ -13,7 +13,7 @@ import { getNewlinesBetweenOption } from './get-newlines-between-option'
 import { getLinesBetween } from './get-lines-between'
 import { getNodeRange } from './get-node-range'
 
-interface MakeNewlinesFixesParameters<T extends SortingNode> {
+interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
   options: {
     customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
     newlinesBetween: NewlinesBetweenOption
@@ -26,14 +26,14 @@ interface MakeNewlinesFixesParameters<T extends SortingNode> {
   nodes: T[]
 }
 
-export let makeNewlinesFixes = <T extends SortingNode>({
+export let makeNewlinesBetweenFixes = <T extends SortingNode>({
   newlinesBetweenValueGetter,
   sortedNodes,
   sourceCode,
   options,
   fixer,
   nodes,
-}: MakeNewlinesFixesParameters<T>): TSESLint.RuleFix[] => {
+}: MakeNewlinesBetweenFixesParameters<T>): TSESLint.RuleFix[] => {
   let fixes: TSESLint.RuleFix[] = []
 
   for (let i = 0; i < sortedNodes.length - 1; i++) {
