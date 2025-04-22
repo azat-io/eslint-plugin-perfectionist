@@ -1,5 +1,6 @@
+import { compile as compileSchema } from 'json-schema-to-typescript-lite'
 import { RuleTester } from '@typescript-eslint/rule-tester'
-import { afterAll, describe, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import type { Options } from '../../rules/sort-interfaces'
@@ -5343,6 +5344,9 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
+    it('validates JSON schema', async () => {
+      await expect(compileSchema(rule.meta.schema, 'id')).resolves.not.toThrow()
+    })
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,

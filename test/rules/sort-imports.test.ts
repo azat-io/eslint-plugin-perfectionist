@@ -5,6 +5,7 @@ import type {
 import type { CompilerOptions } from 'typescript'
 import type { Rule } from 'eslint'
 
+import { compile as compileSchema } from 'json-schema-to-typescript-lite'
 import { afterAll, describe, expect, it, vi } from 'vitest'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { createModuleResolutionCache } from 'typescript'
@@ -6837,6 +6838,10 @@ describe(ruleName, () => {
   })
 
   describe(`${ruleName}: misc`, () => {
+    it('validates JSON schema', async () => {
+      await expect(compileSchema(rule.meta.schema, 'id')).resolves.not.toThrow()
+    })
+
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,
       rule,
