@@ -87,6 +87,11 @@ export let newlinesBetweenJsonSchema: JSONSchema4 = {
   type: 'string',
 }
 
+let commentAboveJsonSchema: JSONSchema4 = {
+  description: 'Specifies a comment to enforce above the group.',
+  type: 'string',
+}
+
 export let groupsJsonSchema: JSONSchema4 = {
   items: {
     oneOf: [
@@ -104,6 +109,23 @@ export let groupsJsonSchema: JSONSchema4 = {
           newlinesBetween: newlinesBetweenJsonSchema,
         },
         required: ['newlinesBetween'],
+        additionalProperties: false,
+        type: 'object',
+      },
+      {
+        properties: {
+          commentAbove: commentAboveJsonSchema,
+        },
+        additionalProperties: false,
+        required: ['commentAbove'],
+        type: 'object',
+      },
+      {
+        properties: {
+          newlinesBetween: newlinesBetweenJsonSchema,
+          commentAbove: commentAboveJsonSchema,
+        },
+        required: ['newlinesBetween', 'commentAbove'],
         additionalProperties: false,
         type: 'object',
       },
