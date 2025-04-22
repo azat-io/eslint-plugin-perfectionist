@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.12.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.12.0...v4.12.1)
+
+### 🐞 Bug Fixes
+
+- **sort-imports:** Fix json schema definition not found for eslint-typegen ([b531618](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b531618))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v4.12.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.11.0...v4.12.0)
