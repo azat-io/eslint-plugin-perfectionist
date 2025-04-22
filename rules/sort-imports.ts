@@ -480,29 +480,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           internalPattern: regexJsonSchema,
           groups: groupsJsonSchema,
         },
-        definitions: {
-          'max-line-length-requires-line-length-type': {
-            anyOf: [
-              {
-                not: {
-                  required: ['maxLineLength'],
-                  type: 'object',
-                },
-                type: 'object',
-              },
-              {
-                $ref: '#/definitions/is-line-length',
-              },
-            ],
-          },
-          'is-line-length': {
-            properties: {
-              type: { enum: ['line-length'], type: 'string' },
-            },
-            required: ['type'],
-            type: 'object',
-          },
-        },
         allOf: [
           {
             $ref: '#/definitions/max-line-length-requires-line-length-type',
@@ -514,6 +491,29 @@ export default createEslintRule<Options, MESSAGE_ID>({
         additionalProperties: false,
         id: 'sort-imports',
         type: 'object',
+      },
+      definitions: {
+        'max-line-length-requires-line-length-type': {
+          anyOf: [
+            {
+              not: {
+                required: ['maxLineLength'],
+                type: 'object',
+              },
+              type: 'object',
+            },
+            {
+              $ref: '#/definitions/is-line-length',
+            },
+          ],
+        },
+        'is-line-length': {
+          properties: {
+            type: { enum: ['line-length'], type: 'string' },
+          },
+          required: ['type'],
+          type: 'object',
+        },
       },
       uniqueItems: true,
       type: 'array',
