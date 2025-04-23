@@ -75,6 +75,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^3.1.2
         version: 3.1.2(vitest@3.1.2(@types/debug@4.1.12)(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.37.0)(yaml@2.7.1))
+      ajv-draft-04:
+        specifier: ^1.0.0
+        version: 1.0.0(ajv@8.13.0)
       astro:
         specifier: ^5.7.4
         version: 5.7.4(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.3)(rollup@4.40.0)(terser@5.37.0)(typescript@5.8.3)(yaml@2.7.1)

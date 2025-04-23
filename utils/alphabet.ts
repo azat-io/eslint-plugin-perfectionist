@@ -122,7 +122,7 @@ export class Alphabet {
           character.uppercaseCharacterCodePoint ??
             character.lowercaseCharacterCodePoint!
         ]
-      // eslint-disable-next-line no-undefined
+
       if (otherCharacterIndex === undefined) {
         continue
       }

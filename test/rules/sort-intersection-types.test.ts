@@ -1,8 +1,8 @@
-import { compile as compileSchema } from 'json-schema-to-typescript-lite'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { afterAll, describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
+import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import rule from '../../rules/sort-intersection-types'
 import { Alphabet } from '../../utils/alphabet'
 
@@ -2471,7 +2471,9 @@ describe(ruleName, () => {
 
   describe(`${ruleName}: misc`, () => {
     it('validates the JSON schema', async () => {
-      await expect(compileSchema(rule.meta.schema, 'id')).resolves.not.toThrow()
+      await expect(
+        validateRuleJsonSchema(rule.meta.schema),
+      ).resolves.not.toThrow()
     })
     ruleTester.run(
       `${ruleName}: sets alphabetical asc sorting as default`,

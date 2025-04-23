@@ -489,7 +489,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
           maxLineLength: ['type'],
         },
         additionalProperties: false,
-        id: 'sort-imports',
         type: 'object',
       },
       definitions: {
@@ -515,6 +514,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           type: 'object',
         },
       },
+      id: 'sort-imports',
       uniqueItems: true,
       type: 'array',
     },
