@@ -5,7 +5,6 @@ import type {
 import type { CompilerOptions } from 'typescript'
 import type { Rule } from 'eslint'
 
-import { compile as compileSchema } from 'json-schema-to-typescript-lite'
 import { afterAll, describe, expect, it, vi } from 'vitest'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { createModuleResolutionCache } from 'typescript'
@@ -17,6 +16,7 @@ import type { MESSAGE_ID } from '../../rules/sort-imports'
 
 import * as readClosestTsConfigUtilities from '../../rules/sort-imports/read-closest-ts-config-by-path'
 import * as getTypescriptImportUtilities from '../../rules/sort-imports/get-typescript-import'
+import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-imports'
 
@@ -6839,7 +6839,9 @@ describe(ruleName, () => {
 
   describe(`${ruleName}: misc`, () => {
     it('validates the JSON schema', async () => {
-      await expect(compileSchema(rule.meta.schema, 'id')).resolves.not.toThrow()
+      await expect(
+        validateRuleJsonSchema(rule.meta.schema),
+      ).resolves.not.toThrow()
     })
 
     ruleTester.run(
