@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.12.2
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.12.1...v4.12.2)
+
+### 🐞 Bug Fixes
+
+- **sort-imports:** Fix json-schema throwing uncaught warning ([2544ae8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2544ae8))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v4.12.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.12.0...v4.12.1)
