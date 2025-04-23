@@ -45,7 +45,6 @@ export let isPartitionComment = ({
   }
 
   return (
-    // eslint-disable-next-line no-undefined
     relevantPartitionByComment !== undefined &&
     isTrimmedCommentPartitionComment({
       partitionByComment: relevantPartitionByComment,
