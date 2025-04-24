@@ -464,11 +464,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           internalPattern: regexJsonSchema,
           groups: groupsJsonSchema,
         },
-
         additionalProperties: false,
         type: 'object',
       },
-      id: 'sort-imports',
       uniqueItems: true,
       type: 'array',
     },
