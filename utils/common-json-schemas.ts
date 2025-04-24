@@ -56,6 +56,7 @@ let buildFallbackSortJsonSchema = ({
     ...additionalProperties,
   },
   description: 'Fallback sort order.',
+  additionalProperties: false,
   type: 'object',
 })
 
