@@ -3,6 +3,8 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import { compile as compileSchemaForTs } from 'json-schema-to-typescript-lite'
 import Ajv from 'ajv-draft-04'
 
+import { commonJsonSchemas } from '../../utils/common-json-schemas'
+
 export let validateRuleJsonSchema = async (
   schemaOrSchemas: readonly JSONSchema4[] | JSONSchema4,
 ): Promise<void> => {
@@ -18,5 +20,21 @@ export let validateRuleJsonSchema = async (
 
 let validateJsonSchema = async (schema: JSONSchema4): Promise<void> => {
   new Ajv().compile(schema)
-  await compileSchemaForTs(schema, 'id')
+  await validateTsJsonSchema(schema)
+}
+
+let validateTsJsonSchema = async (schema: JSONSchema4): Promise<void> => {
+  let generatedTypescript = await compileSchemaForTs(schema, 'id')
+  for (let [commonJsonSchemaKey, commonJsonSchema] of Object.entries(
+    commonJsonSchemas,
+  )) {
+    if (
+      commonJsonSchema.description &&
+      !generatedTypescript.includes(commonJsonSchema.description)
+    ) {
+      throw new Error(
+        `TypeScript generated from JSON schema seems wrong: no description found for ${commonJsonSchemaKey}:\n${generatedTypescript}`,
+      )
+    }
+  }
 }
