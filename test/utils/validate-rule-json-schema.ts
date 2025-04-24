@@ -27,6 +27,7 @@ let validateTsJsonSchema = async (schema: JSONSchema4): Promise<void> => {
   let generatedTypescript = await compileSchemaForTs(schema, 'id')
 
   assertGeneratedTsSeemsCorrect(generatedTypescript)
+  assertNoWeakIndexSignature(generatedTypescript)
 }
 
 let assertGeneratedTsSeemsCorrect = (generatedTypescript: string): void => {
@@ -41,5 +42,13 @@ let assertGeneratedTsSeemsCorrect = (generatedTypescript: string): void => {
         `TypeScript generated from JSON schema seems wrong: no description found for ${commonJsonSchemaKey}:\n${generatedTypescript}`,
       )
     }
+  }
+}
+
+let assertNoWeakIndexSignature = (generatedTypescript: string): void => {
+  if (generatedTypescript.includes('[k: string]: unknown')) {
+    throw new Error(
+      `Weak TypeScript generated from JSON schema: '[k: string]: unknown' index signature found:\n${generatedTypescript}`,
+    )
   }
 }
