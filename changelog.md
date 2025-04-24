@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.12.3
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.12.2...v4.12.3)
+
+### 🏎 Performance Improvements
+
+- Use validate generated groups configuration for deprecated and new api ([bf57f25](https://github.com/azat-io/eslint-plugin-perfectionist/commit/bf57f25))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v4.12.2
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.12.1...v4.12.2)
