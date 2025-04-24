@@ -64,7 +64,9 @@ export let buildCommonJsonSchemas = ({
 }: {
   additionalFallbackSortProperties?: Record<string, JSONSchema4>
 } = {}): Record<string, JSONSchema4> => ({
-  fallbackSort: buildFallbackSortJsonSchema(additionalFallbackSortProperties),
+  fallbackSort: buildFallbackSortJsonSchema({
+    additionalProperties: additionalFallbackSortProperties,
+  }),
   specialCharacters: specialCharactersJsonSchema,
   ignoreCase: ignoreCaseJsonSchema,
   alphabet: alphabetJsonSchema,
