@@ -25,6 +25,11 @@ let validateJsonSchema = async (schema: JSONSchema4): Promise<void> => {
 
 let validateTsJsonSchema = async (schema: JSONSchema4): Promise<void> => {
   let generatedTypescript = await compileSchemaForTs(schema, 'id')
+
+  assertGeneratedTsSeemsCorrect(generatedTypescript)
+}
+
+let assertGeneratedTsSeemsCorrect = (generatedTypescript: string): void => {
   for (let [commonJsonSchemaKey, commonJsonSchema] of Object.entries(
     commonJsonSchemas,
   )) {
