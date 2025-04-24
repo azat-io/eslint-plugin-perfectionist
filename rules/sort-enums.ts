@@ -7,10 +7,10 @@ import type { Options } from './sort-enums/types'
 
 import {
   buildCustomGroupsArrayJsonSchema,
+  deprecatedCustomGroupsJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
-  customGroupsJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
@@ -260,16 +260,16 @@ export default createEslintRule<Options, MESSAGE_ID>({
       {
         properties: {
           ...commonJsonSchemas,
+          customGroups: {
+            oneOf: [
+              deprecatedCustomGroupsJsonSchema,
+              buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
+            ],
+          },
           forceNumericSort: {
             description:
               'Will always sort numeric enums by their value regardless of the sort type specified.',
             type: 'boolean',
-          },
-          customGroups: {
-            oneOf: [
-              customGroupsJsonSchema,
-              buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
-            ],
           },
           sortByValue: {
             description: 'Compare enum values instead of names.',

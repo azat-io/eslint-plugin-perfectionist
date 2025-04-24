@@ -110,7 +110,7 @@ export let groupsJsonSchema: JSONSchema4 = {
   type: 'array',
 }
 
-export let customGroupsJsonSchema: JSONSchema4 = {
+export let deprecatedCustomGroupsJsonSchema: JSONSchema4 = {
   additionalProperties: {
     oneOf: [
       {

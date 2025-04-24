@@ -7,9 +7,9 @@ import type { Options } from './sort-jsx-props/types'
 import {
   buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
+  deprecatedCustomGroupsJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
-  customGroupsJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
   regexJsonSchema,
@@ -229,7 +229,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ...commonJsonSchemas,
           customGroups: {
             oneOf: [
-              customGroupsJsonSchema,
+              deprecatedCustomGroupsJsonSchema,
               buildCustomGroupsArrayJsonSchema({
                 singleCustomGroupJsonSchema,
               }),
