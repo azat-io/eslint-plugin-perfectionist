@@ -35,7 +35,6 @@ import { validateSideEffectsConfiguration } from './sort-imports/validate-side-e
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getCustomGroupOverriddenOptions } from '../utils/get-custom-groups-compare-options'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
 import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
@@ -105,34 +104,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
       } as const),
     )
 
-    if (Array.isArray(options.customGroups)) {
-      validateGeneratedGroupsConfiguration({
-        options: {
-          ...options,
-          customGroups: options.customGroups,
-        },
-        selectors: [...allSelectors, ...allDeprecatedSelectors],
-        modifiers: allModifiers,
-      })
-    } else {
-      let generatedGroups = generatePredefinedGroups({
-        cache: cachedGroupsByModifiersAndSelectors,
-        selectors: allSelectors,
-        modifiers: allModifiers,
-      })
-      validateGroupsConfiguration({
-        allowedCustomGroups: [
-          ...Object.keys(options.customGroups.type ?? {}),
-          ...Object.keys(options.customGroups.value ?? {}),
-        ],
-        allowedPredefinedGroups: [
-          ...generatedGroups,
-          ...allDeprecatedSelectors,
-          'unknown',
-        ],
-        options,
-      })
-    }
+    validateGeneratedGroupsConfiguration({
+      options: {
+        ...options,
+        customGroups: Array.isArray(options.customGroups)
+          ? options.customGroups
+          : {
+              ...options.customGroups.type,
+              ...options.customGroups.value,
+            },
+      },
+      selectors: [...allSelectors, ...allDeprecatedSelectors],
+      modifiers: allModifiers,
+    })
     validateCustomSortConfiguration(options)
     validateNewlinesAndPartitionConfiguration(options)
     validateSideEffectsConfiguration(options)
