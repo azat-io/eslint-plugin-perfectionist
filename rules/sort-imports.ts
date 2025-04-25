@@ -464,41 +464,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           internalPattern: regexJsonSchema,
           groups: groupsJsonSchema,
         },
-        allOf: [
-          {
-            $ref: '#/definitions/max-line-length-requires-line-length-type',
-          },
-        ],
-        dependencies: {
-          maxLineLength: ['type'],
-        },
         additionalProperties: false,
         type: 'object',
       },
-      definitions: {
-        'max-line-length-requires-line-length-type': {
-          anyOf: [
-            {
-              not: {
-                required: ['maxLineLength'],
-                type: 'object',
-              },
-              type: 'object',
-            },
-            {
-              $ref: '#/definitions/is-line-length',
-            },
-          ],
-        },
-        'is-line-length': {
-          properties: {
-            type: { enum: ['line-length'], type: 'string' },
-          },
-          required: ['type'],
-          type: 'object',
-        },
-      },
-      id: 'sort-imports',
       uniqueItems: true,
       type: 'array',
     },
