@@ -4,6 +4,7 @@ import dedent from 'dedent'
 
 import type { Options } from '../../rules/sort-interfaces'
 
+import { RuleTesterWithPerformanceBenchmark } from '../utils/rule-tester-with-performance-benchmark'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-interfaces'
@@ -18,7 +19,7 @@ describe(ruleName, () => {
   RuleTester.itSkip = it.skip
   RuleTester.it = it
 
-  let ruleTester = new RuleTester()
+  let ruleTester = new RuleTesterWithPerformanceBenchmark()
 
   describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'

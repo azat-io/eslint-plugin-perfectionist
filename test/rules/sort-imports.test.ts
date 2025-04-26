@@ -15,6 +15,7 @@ import type { Options } from '../../rules/sort-imports/types'
 import type { MESSAGE_ID } from '../../rules/sort-imports'
 
 import * as readClosestTsConfigUtilities from '../../rules/sort-imports/read-closest-ts-config-by-path'
+import { RuleTesterWithPerformanceBenchmark } from '../utils/rule-tester-with-performance-benchmark'
 import * as getTypescriptImportUtilities from '../../rules/sort-imports/get-typescript-import'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
@@ -30,7 +31,7 @@ describe(ruleName, () => {
   RuleTester.itSkip = it.skip
   RuleTester.it = it
 
-  let ruleTester = new RuleTester()
+  let ruleTester = new RuleTesterWithPerformanceBenchmark()
   let eslintRuleTester = new EslintRuleTester()
 
   describe(`${ruleName}: sorting by alphabetical order`, () => {

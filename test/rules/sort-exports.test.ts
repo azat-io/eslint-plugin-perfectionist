@@ -5,6 +5,7 @@ import { RuleTester as EslintRuleTester } from 'eslint'
 import { afterAll, describe, it } from 'vitest'
 import dedent from 'dedent'
 
+import { RuleTesterWithPerformanceBenchmark } from '../utils/rule-tester-with-performance-benchmark'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-exports'
 
@@ -18,7 +19,7 @@ describe(ruleName, () => {
   RuleTester.itSkip = it.skip
   RuleTester.it = it
 
-  let ruleTester = new RuleTester()
+  let ruleTester = new RuleTesterWithPerformanceBenchmark()
   let eslintRuleTester = new EslintRuleTester()
 
   describe(`${ruleName}: sorting by alphabetical order`, () => {
