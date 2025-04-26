@@ -3,6 +3,7 @@ import type {
   ValidTestCase,
   RunTests,
 } from '@typescript-eslint/rule-tester'
+import type { RuleTesterConfig } from '@typescript-eslint/rule-tester'
 import type { RuleModule } from '@typescript-eslint/utils/ts-eslint'
 import type { TSUtils } from '@typescript-eslint/utils'
 
@@ -12,6 +13,16 @@ import { expect } from 'vitest'
 let DEFAULT_MAX_MS_DURATION = 250
 
 export class RuleTesterWithPerformanceBenchmark extends RuleTester {
+  private readonly _defaultMaxMsDuration: number
+
+  public constructor(
+    { defaultMaxMsDuration }: { defaultMaxMsDuration?: number } = {},
+    testerConfig?: RuleTesterConfig,
+  ) {
+    super(testerConfig)
+    this._defaultMaxMsDuration = defaultMaxMsDuration ?? DEFAULT_MAX_MS_DURATION
+  }
+
   public run<MessageIds extends string, Options extends readonly unknown[]>(
     ruleName: string,
     rule: RuleModule<MessageIds, Options>,
@@ -20,7 +31,10 @@ export class RuleTesterWithPerformanceBenchmark extends RuleTester {
     return super.run(
       ruleName,
       rule,
-      populateTestsWithPerformanceBenchmark({ test }),
+      populateTestsWithPerformanceBenchmark({
+        maxMsDuration: this._defaultMaxMsDuration,
+        test,
+      }),
     )
   }
 }
@@ -33,7 +47,7 @@ let populateTestsWithPerformanceBenchmark = <
   test,
 }: {
   test: RunTests<TSUtils.NoInfer<MessageIds>, TSUtils.NoInfer<Options>>
-  maxMsDuration?: number
+  maxMsDuration: number
 }): RunTests<TSUtils.NoInfer<MessageIds>, TSUtils.NoInfer<Options>> => ({
   valid: test.valid.map(validTest =>
     typeof validTest === 'string'
@@ -51,7 +65,7 @@ let populateTestWithPerformanceBenchmark = <
   T extends InvalidTestCase<MessageIds, Options> | ValidTestCase<Options>,
 >(
   test: T,
-  maxMsDuration: undefined | number,
+  maxMsDuration: number,
 ): T => {
   let start: number = 0
   return {
@@ -63,7 +77,7 @@ let populateTestWithPerformanceBenchmark = <
         test.after()
       }
       expect(duration, 'Performance benchmark failed').toBeLessThan(
-        maxMsDuration ?? DEFAULT_MAX_MS_DURATION,
+        maxMsDuration,
       )
       console.info(
         `Test ran in ${duration}ms (max allowed: ${maxMsDuration}ms)`,
