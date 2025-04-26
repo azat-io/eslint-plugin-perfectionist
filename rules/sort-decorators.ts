@@ -15,8 +15,8 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
@@ -77,9 +77,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
     let options = complete(context.options.at(0), settings, defaultOptions)
     validateCustomSortConfiguration(options)
-    validateGroupsConfiguration({
-      allowedCustomGroups: Object.keys(options.customGroups),
-      allowedPredefinedGroups: [],
+    validateGeneratedGroupsConfiguration({
+      selectors: [],
+      modifiers: [],
       options,
     })
 
