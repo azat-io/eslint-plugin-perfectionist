@@ -160,7 +160,6 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
       'keyword',
       'literal',
       'nullish',
-      'unknown',
       'import',
       'object',
       'named',

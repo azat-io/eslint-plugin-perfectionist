@@ -79,7 +79,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     validateCustomSortConfiguration(options)
     validateGroupsConfiguration({
       allowedCustomGroups: Object.keys(options.customGroups),
-      allowedPredefinedGroups: ['unknown'],
+      allowedPredefinedGroups: [],
       options,
     })
 

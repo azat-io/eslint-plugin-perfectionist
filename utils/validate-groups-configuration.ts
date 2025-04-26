@@ -31,6 +31,7 @@ export let validateGroupsConfiguration = ({
   options,
 }: ValidateGroupsConfigurationParameters): void => {
   let allowedGroupsSet = new Set([
+    'unknown',
     ...allowedPredefinedGroups,
     ...allowedCustomGroups,
   ])
