@@ -20,7 +20,9 @@ describe(ruleName, () => {
   RuleTester.itSkip = it.skip
   RuleTester.it = it
 
-  let ruleTester = new RuleTesterWithPerformanceBenchmark()
+  let ruleTester = new RuleTesterWithPerformanceBenchmark({
+    defaultMaxMsDuration: 300,
+  })
   let eslintRuleTester = new EslintRuleTester()
 
   describe(`${ruleName}: sorting by alphabetical order`, () => {
