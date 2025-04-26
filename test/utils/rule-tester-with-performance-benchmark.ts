@@ -23,16 +23,53 @@ export class RuleTesterWithPerformanceBenchmark extends RuleTester {
     this._defaultMaxMsDuration = defaultMaxMsDuration ?? DEFAULT_MAX_MS_DURATION
   }
 
+  // eslint-disable-next-line typescript/max-params -- Follow the original API
+  public runWithCustomBenchmarkOptions<
+    MessageIds extends string,
+    Options extends readonly unknown[],
+  >(
+    ruleName: string,
+    rule: RuleModule<MessageIds, Options>,
+    test: RunTests<TSUtils.NoInfer<MessageIds>, TSUtils.NoInfer<Options>>,
+    { maxMsDuration }: { maxMsDuration: number },
+  ): void {
+    return this._run({
+      maxMsDuration,
+      ruleName,
+      rule,
+      test,
+    })
+  }
+
   public run<MessageIds extends string, Options extends readonly unknown[]>(
     ruleName: string,
     rule: RuleModule<MessageIds, Options>,
     test: RunTests<TSUtils.NoInfer<MessageIds>, TSUtils.NoInfer<Options>>,
   ): void {
+    return this._run({
+      maxMsDuration: this._defaultMaxMsDuration,
+      ruleName,
+      rule,
+      test,
+    })
+  }
+
+  private _run<MessageIds extends string, Options extends readonly unknown[]>({
+    maxMsDuration,
+    ruleName,
+    rule,
+    test,
+  }: {
+    test: RunTests<TSUtils.NoInfer<MessageIds>, TSUtils.NoInfer<Options>>
+    rule: RuleModule<MessageIds, Options>
+    maxMsDuration: number
+    ruleName: string
+  }): void {
     return super.run(
       ruleName,
       rule,
       populateTestsWithPerformanceBenchmark({
-        maxMsDuration: this._defaultMaxMsDuration,
+        maxMsDuration,
         test,
       }),
     )
