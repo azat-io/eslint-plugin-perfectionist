@@ -8,13 +8,14 @@ let typeJsonSchema: JSONSchema4 = {
 
 let orderJsonSchema: JSONSchema4 = {
   description:
-    'Determines whether the sorted items should be in ascending or descending order.',
+    'Specifies whether to sort items in ascending or descending order.',
   enum: ['asc', 'desc'],
   type: 'string',
 }
 
 let alphabetJsonSchema: JSONSchema4 = {
-  description: 'Alphabet to use for the `custom` sort type.',
+  description:
+    "Used only when the `type` option is set to `'custom'`. Specifies the custom alphabet for sorting.",
   type: 'string',
 }
 
@@ -40,7 +41,7 @@ let ignoreCaseJsonSchema: JSONSchema4 = {
 
 let specialCharactersJsonSchema: JSONSchema4 = {
   description:
-    'Controls how special characters should be handled before sorting.',
+    'Specifies whether to trim, remove, or keep special characters before sorting.',
   enum: ['remove', 'trim', 'keep'],
   type: 'string',
 }
@@ -56,6 +57,7 @@ let buildFallbackSortJsonSchema = ({
     ...additionalProperties,
   },
   description: 'Fallback sort order.',
+  additionalProperties: false,
   type: 'object',
 })
 
@@ -64,7 +66,9 @@ export let buildCommonJsonSchemas = ({
 }: {
   additionalFallbackSortProperties?: Record<string, JSONSchema4>
 } = {}): Record<string, JSONSchema4> => ({
-  fallbackSort: buildFallbackSortJsonSchema(additionalFallbackSortProperties),
+  fallbackSort: buildFallbackSortJsonSchema({
+    additionalProperties: additionalFallbackSortProperties,
+  }),
   specialCharacters: specialCharactersJsonSchema,
   ignoreCase: ignoreCaseJsonSchema,
   alphabet: alphabetJsonSchema,
@@ -77,7 +81,7 @@ export let commonJsonSchemas: Record<string, JSONSchema4> =
   buildCommonJsonSchemas()
 
 export let newlinesBetweenJsonSchema: JSONSchema4 = {
-  description: 'Specifies how new lines should be handled between groups.',
+  description: 'Specifies how to handle new lines between groups.',
   enum: ['ignore', 'always', 'never'],
   type: 'string',
 }
@@ -103,11 +107,11 @@ export let groupsJsonSchema: JSONSchema4 = {
       },
     ],
   },
-  description: 'Specifies the order of the groups.',
+  description: 'Specifies a list of groups for sorting.',
   type: 'array',
 }
 
-export let customGroupsJsonSchema: JSONSchema4 = {
+export let deprecatedCustomGroupsJsonSchema: JSONSchema4 = {
   additionalProperties: {
     oneOf: [
       {
@@ -130,9 +134,11 @@ let singleRegexJsonSchema: JSONSchema4 = {
     {
       properties: {
         pattern: {
+          description: 'Regular expression pattern.',
           type: 'string',
         },
         flags: {
+          description: 'Regular expression flags.',
           type: 'string',
         },
       },
@@ -172,9 +178,11 @@ export let partitionByCommentJsonSchema: JSONSchema4 = {
     {
       properties: {
         block: {
+          description: 'Enables specific block comments to separate the nodes.',
           oneOf: allowedPartitionByCommentJsonSchemas,
         },
         line: {
+          description: 'Enables specific line comments to separate the nodes.',
           oneOf: allowedPartitionByCommentJsonSchemas,
         },
       },
@@ -183,12 +191,12 @@ export let partitionByCommentJsonSchema: JSONSchema4 = {
     },
   ],
   description:
-    'Allows to use comments to separate members into logical groups.',
+    'Enables the use of comments to separate the nodes into logical groups.',
 }
 
 export let partitionByNewLineJsonSchema: JSONSchema4 = {
   description:
-    'Allows to use newlines to separate the nodes into logical groups.',
+    'Enables the use of newlines to separate the nodes into logical groups.',
   type: 'boolean',
 }
 
@@ -197,6 +205,8 @@ export let buildUseConfigurationIfJsonSchema = ({
 }: {
   additionalProperties?: Record<string, JSONSchema4>
 } = {}): JSONSchema4 => ({
+  description:
+    'Specifies filters to match a particular options configuration for a given element to sort.',
   properties: {
     allNamesMatchPattern: regexJsonSchema,
     ...additionalProperties,
@@ -212,7 +222,7 @@ let buildCommonCustomGroupJsonSchemas = ({
 } = {}): Record<string, JSONSchema4> => ({
   newlinesInside: {
     description:
-      'Specifies how new lines should be handled between members of the custom group.',
+      'Specifies how to handle new lines between members of the custom group.',
     enum: ['always', 'never'],
     type: 'string',
   },
@@ -270,7 +280,7 @@ export let buildCustomGroupsArrayJsonSchema = ({
       },
     ],
   },
-  description: 'Specifies custom groups.',
+  description: 'Defines custom groups to match specific members.',
   type: 'array',
 })
 

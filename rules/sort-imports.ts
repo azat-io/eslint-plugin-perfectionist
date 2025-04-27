@@ -15,6 +15,7 @@ import type {
 
 import {
   buildCustomGroupsArrayJsonSchema,
+  deprecatedCustomGroupsJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
@@ -423,12 +424,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
               {
                 properties: {
                   value: {
+                    ...deprecatedCustomGroupsJsonSchema,
                     description: 'Specifies custom groups for value imports.',
-                    type: 'object',
                   },
                   type: {
+                    ...deprecatedCustomGroupsJsonSchema,
                     description: 'Specifies custom groups for type imports.',
-                    type: 'object',
                   },
                 },
                 description: 'Specifies custom groups.',

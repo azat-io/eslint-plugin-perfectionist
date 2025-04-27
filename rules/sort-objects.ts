@@ -9,10 +9,10 @@ import type { Modifier, Selector, Options } from './sort-objects/types'
 import {
   buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
+  deprecatedCustomGroupsJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
-  customGroupsJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
   regexJsonSchema,
@@ -447,7 +447,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           customGroups: {
             oneOf: [
-              customGroupsJsonSchema,
+              deprecatedCustomGroupsJsonSchema,
               buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
             ],
           },

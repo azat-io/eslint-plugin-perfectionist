@@ -13,10 +13,10 @@ import type {
 import {
   buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
+  deprecatedCustomGroupsJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
-  customGroupsJsonSchema,
   buildCommonJsonSchemas,
   groupsJsonSchema,
   regexJsonSchema,
@@ -95,7 +95,7 @@ export let jsonSchema: JSONSchema4 = {
       }),
       customGroups: {
         oneOf: [
-          customGroupsJsonSchema,
+          deprecatedCustomGroupsJsonSchema,
           buildCustomGroupsArrayJsonSchema({
             additionalFallbackSortProperties: { sortBy: sortByJsonSchema },
             singleCustomGroupJsonSchema,
