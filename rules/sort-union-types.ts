@@ -2,13 +2,8 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  PartitionByCommentOption,
-  NewlinesBetweenOption,
-  CommonOptions,
-  GroupsOptions,
-} from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
+import type { Options } from './sort-union-types/types'
 
 import {
   partitionByCommentJsonSchema,
@@ -36,32 +31,6 @@ import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { complete } from '../utils/complete'
-
-export type Options = [
-  Partial<
-    {
-      partitionByComment: PartitionByCommentOption
-      newlinesBetween: NewlinesBetweenOption
-      groups: GroupsOptions<Group>
-      partitionByNewLine: boolean
-    } & CommonOptions
-  >,
-]
-
-type Group =
-  | 'intersection'
-  | 'conditional'
-  | 'function'
-  | 'operator'
-  | 'keyword'
-  | 'literal'
-  | 'nullish'
-  | 'unknown'
-  | 'import'
-  | 'object'
-  | 'named'
-  | 'tuple'
-  | 'union'
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenUnionTypes'

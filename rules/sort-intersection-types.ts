@@ -1,4 +1,4 @@
-import type { Options as SortUnionTypesOptions } from './sort-union-types'
+import type { Options as SortUnionTypesOptions } from './sort-union-types/types'
 
 import {
   MISSED_SPACING_ERROR,
