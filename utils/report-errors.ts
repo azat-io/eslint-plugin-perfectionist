@@ -71,6 +71,7 @@ export let reportErrors = <MessageIds extends string, T extends SortingNode>({
       },
       fix: (fixer: TSESLint.RuleFixer) =>
         makeFixes({
+          hasCommentAboveMissing: !!commentAboveMissing,
           ignoreFirstNodeHighestBlockComment,
           newlinesBetweenValueGetter,
           sortedNodes,
