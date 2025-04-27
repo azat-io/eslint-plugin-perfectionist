@@ -2,8 +2,8 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { Selector, Options } from './sort-union-types/types'
 import type { SortingNode } from '../types/sorting-node'
-import type { Options } from './sort-union-types/types'
 
 import {
   partitionByCommentJsonSchema,
@@ -21,6 +21,7 @@ import {
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -31,6 +32,11 @@ import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { complete } from '../utils/complete'
+
+/**
+ * Cache computed groups by modifiers and selectors for performance
+ */
+let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 type MESSAGE_ID =
   | 'missedSpacingBetweenUnionTypes'
@@ -151,34 +157,34 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
 
   let formattedMembers: SortingNode[][] = node.types.reduce(
     (accumulator: SortingNode[][], type) => {
-      let predefinedGroups: string[] = []
+      let selectors: Selector[] = []
 
       switch (type.type) {
         case 'TSTemplateLiteralType':
         case 'TSLiteralType':
-          predefinedGroups.push('literal')
+          selectors.push('literal')
           break
         case 'TSIndexedAccessType':
         case 'TSTypeReference':
         case 'TSQualifiedName':
         case 'TSArrayType':
         case 'TSInferType':
-          predefinedGroups.push('named')
+          selectors.push('named')
           break
         case 'TSIntersectionType':
-          predefinedGroups.push('intersection')
+          selectors.push('intersection')
           break
         case 'TSUndefinedKeyword':
         case 'TSNullKeyword':
         case 'TSVoidKeyword':
-          predefinedGroups.push('nullish')
+          selectors.push('nullish')
           break
         case 'TSConditionalType':
-          predefinedGroups.push('conditional')
+          selectors.push('conditional')
           break
         case 'TSConstructorType':
         case 'TSFunctionType':
-          predefinedGroups.push('function')
+          selectors.push('function')
           break
         case 'TSBooleanKeyword':
         case 'TSUnknownKeyword':
@@ -190,27 +196,32 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
         case 'TSNeverKeyword':
         case 'TSAnyKeyword':
         case 'TSThisType':
-          predefinedGroups.push('keyword')
+          selectors.push('keyword')
           break
         case 'TSTypeOperator':
         case 'TSTypeQuery':
-          predefinedGroups.push('operator')
+          selectors.push('operator')
           break
         case 'TSTypeLiteral':
         case 'TSMappedType':
-          predefinedGroups.push('object')
+          selectors.push('object')
           break
         case 'TSImportType':
-          predefinedGroups.push('import')
+          selectors.push('import')
           break
         case 'TSTupleType':
-          predefinedGroups.push('tuple')
+          selectors.push('tuple')
           break
         case 'TSUnionType':
-          predefinedGroups.push('union')
+          selectors.push('union')
           break
       }
 
+      let predefinedGroups = generatePredefinedGroups({
+        cache: cachedGroupsByModifiersAndSelectors,
+        modifiers: [],
+        selectors,
+      })
       let group = computeGroup({
         predefinedGroups,
         options,
