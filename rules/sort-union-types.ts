@@ -24,8 +24,8 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -151,8 +151,8 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
 
   let options = complete(context.options.at(0), settings, defaultOptions)
   validateCustomSortConfiguration(options)
-  validateGroupsConfiguration({
-    allowedPredefinedGroups: [
+  validateGeneratedGroupsConfiguration({
+    selectors: [
       'intersection',
       'conditional',
       'function',
@@ -160,15 +160,17 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
       'keyword',
       'literal',
       'nullish',
-      'unknown',
       'import',
       'object',
       'named',
       'tuple',
       'union',
     ],
-    allowedCustomGroups: [],
-    options,
+    options: {
+      ...options,
+      customGroups: [],
+    },
+    modifiers: [],
   })
   validateNewlinesAndPartitionConfiguration(options)
 
