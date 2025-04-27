@@ -250,6 +250,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               : makeFixes({
                   sortedNodes: sortedSortingNodeGroupsForBlockSort,
                   nodes: sortingNodeGroupsForBlockSortFlat,
+                  hasCommentAboveMissing: false,
                   sourceCode,
                   fixer,
                 }),
