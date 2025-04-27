@@ -45,7 +45,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getDecoratorName } from '../utils/get-decorator-name'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { getGroupNumber } from '../utils/get-group-number'
+import { getGroupIndex } from '../utils/get-group-index'
 import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -593,7 +593,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
           sortNodesByGroups({
             isNodeIgnored: sortingNode =>
-              getGroupNumber(options.groups, sortingNode) ===
+              getGroupIndex(options.groups, sortingNode) ===
               options.groups.length,
             getOptionsByGroupNumber:
               buildGetCustomGroupOverriddenOptionsFunction(options),

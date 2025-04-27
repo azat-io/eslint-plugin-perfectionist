@@ -2,7 +2,7 @@ import type { CommonOptions, GroupsOptions } from '../types/common-options'
 import type { NodeValueGetterFunction } from './compare'
 import type { SortingNode } from '../types/sorting-node'
 
-import { getGroupNumber } from './get-group-number'
+import { getGroupIndex } from './get-group-index'
 import { sortNodes } from './sort-nodes'
 
 export type BaseSortNodesByGroupsOptions = {
@@ -46,7 +46,7 @@ export let sortNodesByGroups = <
       ignoredNodeIndices.push(index)
       continue
     }
-    let groupNumber = getGroupNumber(groups, sortingNode)
+    let groupNumber = getGroupIndex(groups, sortingNode)
     nodesByNonIgnoredGroupNumber[groupNumber] ??= []
     nodesByNonIgnoredGroupNumber[groupNumber].push(sortingNode)
   }
