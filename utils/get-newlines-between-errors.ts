@@ -30,8 +30,8 @@ interface GetNewlinesBetweenErrorsParameters<
   sourceCode: TSESLint.SourceCode
   missedSpacingError: MessageIds
   extraSpacingError: MessageIds
-  rightNum: number
-  leftNum: number
+  rightGroupIndex: number
+  leftGroupIndex: number
   right: T
   left: T
 }
@@ -43,9 +43,9 @@ export let getNewlinesBetweenErrors = <
   newlinesBetweenValueGetter,
   missedSpacingError,
   extraSpacingError,
+  rightGroupIndex,
+  leftGroupIndex,
   sourceCode,
-  rightNum,
-  leftNum,
   options,
   right,
   left,
@@ -61,7 +61,7 @@ export let getNewlinesBetweenErrors = <
       right,
       left,
     }) ?? newlinesBetween
-  if (leftNum > rightNum) {
+  if (leftGroupIndex > rightGroupIndex) {
     return []
   }
   let numberOfEmptyLinesBetween = getLinesBetween(sourceCode, left, right)

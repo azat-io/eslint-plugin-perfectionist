@@ -10,7 +10,7 @@ import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-
 import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
 import { getNewlinesBetweenErrors } from './get-newlines-between-errors'
 import { createNodeIndexMap } from './create-node-index-map'
-import { getGroupNumber } from './get-group-number'
+import { getGroupIndex } from './get-group-index'
 import { reportErrors } from './report-errors'
 import { pairwise } from './pairwise'
 
@@ -61,8 +61,12 @@ export let reportAllErrors = <
       : new Set<SortingNodeWithDependencies>()
 
   pairwise(nodes, (left, right) => {
-    let leftNumber = options.groups ? getGroupNumber(options.groups, left) : 0
-    let rightNumber = options.groups ? getGroupNumber(options.groups, right) : 0
+    let leftGroupIndex = options.groups
+      ? getGroupIndex(options.groups, left)
+      : 0
+    let rightGroupIndex = options.groups
+      ? getGroupIndex(options.groups, right)
+      : 0
 
     let leftIndex = nodeIndexMap.get(left)!
     let rightIndex = nodeIndexMap.get(right)!
@@ -91,7 +95,7 @@ export let reportAllErrors = <
         messageIds.push(availableMessageIds.unexpectedDependencyOrder!)
       } else {
         messageIds.push(
-          leftNumber === rightNumber ||
+          leftGroupIndex === rightGroupIndex ||
             !availableMessageIds.unexpectedGroupOrder
             ? availableMessageIds.unexpectedOrder
             : availableMessageIds.unexpectedGroupOrder,
@@ -116,8 +120,8 @@ export let reportAllErrors = <
           missedSpacingError: availableMessageIds.missedSpacingBetweenMembers,
           extraSpacingError: availableMessageIds.extraSpacingBetweenMembers,
           newlinesBetweenValueGetter,
-          rightNum: rightNumber,
-          leftNum: leftNumber,
+          rightGroupIndex,
+          leftGroupIndex,
           sourceCode,
           right,
           left,
