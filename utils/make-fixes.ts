@@ -12,6 +12,7 @@ import type { SortingNode } from '../types/sorting-node'
 
 import { makeNewlinesBetweenFixes } from './make-newlines-between-fixes'
 import { makeCommentAfterFixes } from './make-comment-after-fixes'
+import { makeCommentAboveFixes } from './make-comment-above-fixes'
 import { makeOrderFixes } from './make-order-fixes'
 
 export interface MakeFixesParameters<T extends SortingNode> {
@@ -24,6 +25,7 @@ export interface MakeFixesParameters<T extends SortingNode> {
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
   ignoreFirstNodeHighestBlockComment?: boolean
   sourceCode: TSESLint.SourceCode
+  hasCommentAboveMissing: boolean
   fixer: TSESLint.RuleFixer
   sortedNodes: T[]
   nodes: T[]
@@ -32,6 +34,7 @@ export interface MakeFixesParameters<T extends SortingNode> {
 export let makeFixes = <T extends SortingNode>({
   ignoreFirstNodeHighestBlockComment,
   newlinesBetweenValueGetter,
+  hasCommentAboveMissing,
   sortedNodes,
   sourceCode,
   options,
@@ -53,26 +56,43 @@ export let makeFixes = <T extends SortingNode>({
     nodes,
     fixer,
   })
-  if (
-    commentAfterFixes.length > 0 ||
-    !options?.groups ||
-    !options.newlinesBetween
-  ) {
+  if (commentAfterFixes.length > 0) {
     return [...orderFixes, ...commentAfterFixes]
   }
 
-  let newlinesFixes = makeNewlinesBetweenFixes({
+  if (options?.groups && options.newlinesBetween) {
+    let newlinesFixes = makeNewlinesBetweenFixes({
+      options: {
+        ...options,
+        newlinesBetween: options.newlinesBetween,
+        groups: options.groups,
+      },
+      newlinesBetweenValueGetter,
+      sortedNodes,
+      sourceCode,
+      fixer,
+      nodes,
+    })
+    if (newlinesFixes.length > 0) {
+      return [...orderFixes, ...newlinesFixes]
+    }
+  }
+
+  if (orderFixes.length > 0) {
+    return orderFixes
+  }
+
+  if (!hasCommentAboveMissing || !options?.groups) {
+    return []
+  }
+
+  return makeCommentAboveFixes({
     options: {
       ...options,
-      newlinesBetween: options.newlinesBetween,
       groups: options.groups,
     },
-    newlinesBetweenValueGetter,
     sortedNodes,
     sourceCode,
     fixer,
-    nodes,
   })
-
-  return [...orderFixes, ...newlinesFixes]
 }
