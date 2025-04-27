@@ -24,6 +24,7 @@ import {
   regexJsonSchema,
 } from '../utils/common-json-schemas'
 import {
+  MISSED_COMMENT_ABOVE_ERROR,
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -78,6 +79,7 @@ export type MESSAGE_ID =
   | 'missedSpacingBetweenImports'
   | 'unexpectedImportsGroupOrder'
   | 'extraSpacingBetweenImports'
+  | 'missedCommentAboveImport'
   | 'unexpectedImportsOrder'
 
 export default createEslintRule<Options, MESSAGE_ID>({
@@ -384,6 +386,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               missedSpacingBetweenMembers: 'missedSpacingBetweenImports',
               extraSpacingBetweenMembers: 'extraSpacingBetweenImports',
               unexpectedGroupOrder: 'unexpectedImportsGroupOrder',
+              missedCommentAbove: 'missedCommentAboveImport',
               unexpectedOrder: 'unexpectedImportsOrder',
             },
             options: {
@@ -473,6 +476,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     },
     messages: {
       unexpectedImportsDependencyOrder: DEPENDENCY_ORDER_ERROR,
+      missedCommentAboveImport: MISSED_COMMENT_ABOVE_ERROR,
       missedSpacingBetweenImports: MISSED_SPACING_ERROR,
       extraSpacingBetweenImports: EXTRA_SPACING_ERROR,
       unexpectedImportsGroupOrder: GROUP_ORDER_ERROR,
