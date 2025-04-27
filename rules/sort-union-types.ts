@@ -6,6 +6,7 @@ import type { Selector, Options } from './sort-union-types/types'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
@@ -19,15 +20,19 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { singleCustomGroupJsonSchema } from './sort-union-types/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { allSelectors } from './sort-union-types/types'
 import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -53,6 +58,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',
+  customGroups: [],
   alphabet: '',
   order: 'asc',
   groups: [],
@@ -61,6 +67,9 @@ let defaultOptions: Required<Options[0]> = {
 export let jsonSchema: JSONSchema4 = {
   properties: {
     ...commonJsonSchemas,
+    customGroups: buildCustomGroupsArrayJsonSchema({
+      singleCustomGroupJsonSchema,
+    }),
     partitionByComment: partitionByCommentJsonSchema,
     partitionByNewLine: partitionByNewLineJsonSchema,
     newlinesBetween: newlinesBetweenJsonSchema,
@@ -127,25 +136,9 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
   let options = complete(context.options.at(0), settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
-    selectors: [
-      'intersection',
-      'conditional',
-      'function',
-      'operator',
-      'keyword',
-      'literal',
-      'nullish',
-      'import',
-      'object',
-      'named',
-      'tuple',
-      'union',
-    ],
-    options: {
-      ...options,
-      customGroups: [],
-    },
+    selectors: allSelectors,
     modifiers: [],
+    options,
   })
   validateNewlinesAndPartitionConfiguration(options)
 
@@ -217,12 +210,21 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
           break
       }
 
+      let name = sourceCode.getText(type)
+
       let predefinedGroups = generatePredefinedGroups({
         cache: cachedGroupsByModifiersAndSelectors,
         modifiers: [],
         selectors,
       })
       let group = computeGroup({
+        customGroupMatcher: customGroup =>
+          doesCustomGroupMatch({
+            elementName: name,
+            modifiers: [],
+            customGroup,
+            selectors,
+          }),
         predefinedGroups,
         options,
       })
@@ -232,9 +234,9 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
       let sortingNode: SortingNode = {
         isEslintDisabled: isNodeEslintDisabled(type, eslintDisabledLines),
         size: rangeToDiff(type, sourceCode),
-        name: sourceCode.getText(type),
         node: type,
         group,
+        name,
       }
 
       if (
@@ -261,7 +263,8 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
       ignoreEslintDisabledNodes: boolean,
     ): SortingNode[] =>
       sortNodesByGroups({
-        getOptionsByGroupNumber: () => ({ options }),
+        getOptionsByGroupNumber:
+          buildGetCustomGroupOverriddenOptionsFunction(options),
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes,

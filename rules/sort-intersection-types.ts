@@ -26,6 +26,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',
+  customGroups: [],
   alphabet: '',
   order: 'asc',
   groups: [],
