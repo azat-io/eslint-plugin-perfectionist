@@ -7,6 +7,7 @@ import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
 import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
+import { getCommentAboveThatShouldExist } from './get-comment-above-that-should-exist'
 import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
 import { getNewlinesBetweenErrors } from './get-newlines-between-errors'
 import { createNodeIndexMap } from './create-node-index-map'
@@ -23,6 +24,7 @@ interface ReportAllErrorsParameters<
     extraSpacingBetweenMembers?: MessageIds
     unexpectedDependencyOrder?: MessageIds
     unexpectedGroupOrder?: MessageIds
+    missedCommentAbove?: MessageIds
     unexpectedOrder: MessageIds
   }
   options: {
@@ -61,14 +63,18 @@ export let reportAllErrors = <
       : new Set<SortingNodeWithDependencies>()
 
   pairwise(nodes, (left, right) => {
-    let leftGroupIndex = options.groups
-      ? getGroupIndex(options.groups, left)
-      : 0
+    let leftInfo = left
+      ? {
+          groupIndex: options.groups
+            ? getGroupIndex(options.groups, left)
+            : null,
+          index: nodeIndexMap.get(left)!,
+        }
+      : null
+
     let rightGroupIndex = options.groups
       ? getGroupIndex(options.groups, right)
-      : 0
-
-    let leftIndex = nodeIndexMap.get(left)!
+      : null
     let rightIndex = nodeIndexMap.get(right)!
 
     let indexOfRightExcludingEslintDisabled =
@@ -86,16 +92,17 @@ export let reportAllErrors = <
     }
 
     if (
-      firstUnorderedNodeDependentOnRight ||
-      leftIndex > rightIndex ||
-      (left.isEslintDisabled &&
-        leftIndex >= indexOfRightExcludingEslintDisabled)
+      leftInfo &&
+      (firstUnorderedNodeDependentOnRight ||
+        leftInfo.index > rightIndex ||
+        (left?.isEslintDisabled &&
+          leftInfo.index >= indexOfRightExcludingEslintDisabled))
     ) {
       if (firstUnorderedNodeDependentOnRight) {
         messageIds.push(availableMessageIds.unexpectedDependencyOrder!)
       } else {
         messageIds.push(
-          leftGroupIndex === rightGroupIndex ||
+          leftInfo.groupIndex === rightGroupIndex ||
             !availableMessageIds.unexpectedGroupOrder
             ? availableMessageIds.unexpectedOrder
             : availableMessageIds.unexpectedGroupOrder,
@@ -104,6 +111,7 @@ export let reportAllErrors = <
     }
 
     if (
+      left &&
       options.newlinesBetween &&
       options.groups &&
       availableMessageIds.missedSpacingBetweenMembers &&
@@ -119,9 +127,9 @@ export let reportAllErrors = <
           },
           missedSpacingError: availableMessageIds.missedSpacingBetweenMembers,
           extraSpacingError: availableMessageIds.extraSpacingBetweenMembers,
+          leftGroupIndex: leftInfo!.groupIndex!,
+          rightGroupIndex: rightGroupIndex!,
           newlinesBetweenValueGetter,
-          rightGroupIndex,
-          leftGroupIndex,
           sourceCode,
           right,
           left,
@@ -129,11 +137,30 @@ export let reportAllErrors = <
       ]
     }
 
+    let commentAboveMissing: undefined | string
+    if (options.groups && availableMessageIds.missedCommentAbove) {
+      let commentAboveThatShouldExist = getCommentAboveThatShouldExist({
+        options: {
+          ...options,
+          groups: options.groups,
+        },
+        leftGroupIndex: leftInfo?.groupIndex ?? null,
+        rightGroupIndex: rightGroupIndex!,
+        sortingNode: right,
+        sourceCode,
+      })
+      if (commentAboveThatShouldExist && !commentAboveThatShouldExist.exists) {
+        commentAboveMissing = commentAboveThatShouldExist.comment
+        messageIds = [...messageIds, availableMessageIds.missedCommentAbove]
+      }
+    }
+
     reportErrors({
       sortedNodes: sortedNodesExcludingEslintDisabled,
       ignoreFirstNodeHighestBlockComment,
       firstUnorderedNodeDependentOnRight,
       newlinesBetweenValueGetter,
+      commentAboveMissing,
       messageIds,
       sourceCode,
       options,
