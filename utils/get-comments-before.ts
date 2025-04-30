@@ -9,7 +9,7 @@ interface GetCommentsBeforeParameters {
 
 /**
  * Returns a list of comments before a given node, excluding ones that are
- * right after code. Includes comment blocks.
+ * right after code. Includes comment blocks, ignore shebang comments.
  * @param {object} params - Parameters object.
  * @param {TSESTree.Node} params.node - The node to get comments before.
  * @param {TSESLint.SourceCode} params.sourceCode - The source code object.
@@ -22,7 +22,7 @@ export let getCommentsBefore = ({
   sourceCode,
   node,
 }: GetCommentsBeforeParameters): TSESTree.Comment[] => {
-  let commentsBefore = getCommentsBeforeNodeOrToken(sourceCode, node)
+  let commentsBefore = getRelevantCommentsBeforeNodeOrToken(sourceCode, node)
   let tokenBeforeNode = sourceCode.getTokenBefore(node)
   if (
     commentsBefore.length > 0 ||
@@ -31,18 +31,24 @@ export let getCommentsBefore = ({
   ) {
     return commentsBefore
   }
-  return getCommentsBeforeNodeOrToken(sourceCode, tokenBeforeNode)
+  return getRelevantCommentsBeforeNodeOrToken(sourceCode, tokenBeforeNode)
 }
 
-let getCommentsBeforeNodeOrToken = (
+let getRelevantCommentsBeforeNodeOrToken = (
   source: TSESLint.SourceCode,
   node: TSESTree.Token | TSESTree.Node,
 ): TSESTree.Comment[] =>
-  source.getCommentsBefore(node).filter(comment => {
-    /**
-     * `getCommentsBefore` also returns comments that are right after code,
-     * filter those out
-     */
-    let tokenBeforeComment = source.getTokenBefore(comment)
-    return tokenBeforeComment?.loc.end.line !== comment.loc.end.line
-  })
+  source
+    .getCommentsBefore(node)
+    .filter(comment => !isShebangComment(comment))
+    .filter(comment => {
+      /**
+       * `getCommentsBefore` also returns comments that are right after code,
+       * filter those out
+       */
+      let tokenBeforeComment = source.getTokenBefore(comment)
+      return tokenBeforeComment?.loc.end.line !== comment.loc.end.line
+    })
+
+let isShebangComment = (comment: TSESTree.Comment): boolean =>
+  comment.type === ('Shebang' as unknown as 'Block')
