@@ -62,17 +62,6 @@ import { complete } from '../utils/complete'
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-let defaultGroups = [
-  'type-import',
-  ['value-builtin', 'value-external'],
-  'type-internal',
-  'value-internal',
-  ['type-parent', 'type-sibling', 'type-index'],
-  ['value-parent', 'value-sibling', 'value-index'],
-  'ts-equals-import',
-  'unknown',
-]
-
 export type MESSAGE_ID =
   | 'unexpectedImportsDependencyOrder'
   | 'missedSpacingBetweenImports'
@@ -80,29 +69,43 @@ export type MESSAGE_ID =
   | 'extraSpacingBetweenImports'
   | 'unexpectedImportsOrder'
 
+let defaultOptions: Required<
+  Omit<Options[0], 'tsconfigRootDir' | 'maxLineLength'>
+> &
+  Pick<Options[0], 'tsconfigRootDir' | 'maxLineLength'> = {
+  groups: [
+    'type-import',
+    ['value-builtin', 'value-external'],
+    'type-internal',
+    'value-internal',
+    ['type-parent', 'type-sibling', 'type-index'],
+    ['value-parent', 'value-sibling', 'value-index'],
+    'ts-equals-import',
+    'unknown',
+  ],
+  internalPattern: ['^~/.+', '^@/.+'],
+  fallbackSort: { type: 'unsorted' },
+  partitionByComment: false,
+  partitionByNewLine: false,
+  newlinesBetween: 'always',
+  specialCharacters: 'keep',
+  sortSideEffects: false,
+  type: 'alphabetical',
+  environment: 'node',
+  customGroups: [],
+  ignoreCase: true,
+  locales: 'en-US',
+  alphabet: '',
+  order: 'asc',
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
     let settings = getSettings(context.settings)
 
     let userOptions = context.options.at(0)
     let options = getOptionsWithCleanGroups(
-      complete(userOptions, settings, {
-        internalPattern: ['^~/.+', '^@/.+'],
-        fallbackSort: { type: 'unsorted' },
-        partitionByComment: false,
-        partitionByNewLine: false,
-        newlinesBetween: 'always',
-        specialCharacters: 'keep',
-        sortSideEffects: false,
-        groups: defaultGroups,
-        type: 'alphabetical',
-        environment: 'node',
-        customGroups: [],
-        ignoreCase: true,
-        locales: 'en-US',
-        alphabet: '',
-        order: 'asc',
-      } as const),
+      complete(userOptions, settings, defaultOptions),
     )
 
     validateGeneratedGroupsConfiguration({
@@ -486,24 +489,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     type: 'suggestion',
     fixable: 'code',
   },
-  defaultOptions: [
-    {
-      customGroups: { value: {}, type: {} },
-      internalPattern: ['^~/.+', '^@/.+'],
-      partitionByComment: false,
-      partitionByNewLine: false,
-      specialCharacters: 'keep',
-      newlinesBetween: 'always',
-      sortSideEffects: false,
-      groups: defaultGroups,
-      type: 'alphabetical',
-      environment: 'node',
-      ignoreCase: true,
-      locales: 'en-US',
-      alphabet: '',
-      order: 'asc',
-    },
-  ],
+  defaultOptions: [defaultOptions],
   name: 'sort-imports',
 })
 
