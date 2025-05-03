@@ -55,98 +55,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
         sourceCode,
       })
 
-      let extractDependencies = (init: TSESTree.Expression): string[] => {
-        let dependencies: string[] = []
-
-        let checkNode = (nodeValue: TSESTree.Node): void => {
-          /**
-           * No need to check the body of functions and arrow functions
-           */
-          if (
-            nodeValue.type === 'ArrowFunctionExpression' ||
-            nodeValue.type === 'FunctionExpression'
-          ) {
-            return
-          }
-
-          if (nodeValue.type === 'Identifier') {
-            dependencies.push(nodeValue.name)
-          }
-
-          if (nodeValue.type === 'Property') {
-            traverseNode(nodeValue.key)
-            traverseNode(nodeValue.value)
-          }
-
-          if (nodeValue.type === 'ConditionalExpression') {
-            traverseNode(nodeValue.test)
-            traverseNode(nodeValue.consequent)
-            traverseNode(nodeValue.alternate)
-          }
-
-          if (
-            'expression' in nodeValue &&
-            typeof nodeValue.expression !== 'boolean'
-          ) {
-            traverseNode(nodeValue.expression)
-          }
-
-          if ('object' in nodeValue) {
-            traverseNode(nodeValue.object)
-          }
-
-          if ('callee' in nodeValue) {
-            traverseNode(nodeValue.callee)
-          }
-
-          if ('left' in nodeValue) {
-            traverseNode(nodeValue.left)
-          }
-
-          if ('right' in nodeValue) {
-            traverseNode(nodeValue.right as TSESTree.Node)
-          }
-
-          if ('elements' in nodeValue) {
-            let elements = nodeValue.elements.filter(
-              currentNode => currentNode !== null,
-            )
-
-            for (let element of elements) {
-              traverseNode(element)
-            }
-          }
-
-          if ('argument' in nodeValue && nodeValue.argument) {
-            traverseNode(nodeValue.argument)
-          }
-
-          if ('arguments' in nodeValue) {
-            for (let argument of nodeValue.arguments) {
-              traverseNode(argument)
-            }
-          }
-
-          if ('properties' in nodeValue) {
-            for (let property of nodeValue.properties) {
-              traverseNode(property)
-            }
-          }
-
-          if ('expressions' in nodeValue) {
-            for (let nodeExpression of nodeValue.expressions) {
-              traverseNode(nodeExpression)
-            }
-          }
-        }
-
-        let traverseNode = (nodeValue: TSESTree.Node): void => {
-          checkNode(nodeValue)
-        }
-
-        traverseNode(init)
-        return dependencies
-      }
       let formattedMembers = node.declarations.reduce(
         (accumulator: SortingNodeWithDependencies[][], declaration) => {
           let name
@@ -255,3 +163,96 @@ export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-variable-declarations',
   defaultOptions: [defaultOptions],
 })
+
+let extractDependencies = (init: TSESTree.Expression): string[] => {
+  let dependencies: string[] = []
+
+  let checkNode = (nodeValue: TSESTree.Node): void => {
+    /**
+     * No need to check the body of functions and arrow functions
+     */
+    if (
+      nodeValue.type === 'ArrowFunctionExpression' ||
+      nodeValue.type === 'FunctionExpression'
+    ) {
+      return
+    }
+
+    if (nodeValue.type === 'Identifier') {
+      dependencies.push(nodeValue.name)
+    }
+
+    if (nodeValue.type === 'Property') {
+      traverseNode(nodeValue.key)
+      traverseNode(nodeValue.value)
+    }
+
+    if (nodeValue.type === 'ConditionalExpression') {
+      traverseNode(nodeValue.test)
+      traverseNode(nodeValue.consequent)
+      traverseNode(nodeValue.alternate)
+    }
+
+    if (
+      'expression' in nodeValue &&
+      typeof nodeValue.expression !== 'boolean'
+    ) {
+      traverseNode(nodeValue.expression)
+    }
+
+    if ('object' in nodeValue) {
+      traverseNode(nodeValue.object)
+    }
+
+    if ('callee' in nodeValue) {
+      traverseNode(nodeValue.callee)
+    }
+
+    if ('left' in nodeValue) {
+      traverseNode(nodeValue.left)
+    }
+
+    if ('right' in nodeValue) {
+      traverseNode(nodeValue.right as TSESTree.Node)
+    }
+
+    if ('elements' in nodeValue) {
+      let elements = nodeValue.elements.filter(
+        currentNode => currentNode !== null,
+      )
+
+      for (let element of elements) {
+        traverseNode(element)
+      }
+    }
+
+    if ('argument' in nodeValue && nodeValue.argument) {
+      traverseNode(nodeValue.argument)
+    }
+
+    if ('arguments' in nodeValue) {
+      for (let argument of nodeValue.arguments) {
+        traverseNode(argument)
+      }
+    }
+
+    if ('properties' in nodeValue) {
+      for (let property of nodeValue.properties) {
+        traverseNode(property)
+      }
+    }
+
+    if ('expressions' in nodeValue) {
+      for (let nodeExpression of nodeValue.expressions) {
+        traverseNode(nodeExpression)
+      }
+    }
+  }
+
+  let traverseNode = (nodeValue: TSESTree.Node): void => {
+    checkNode(nodeValue)
+  }
+
+  traverseNode(init)
+  return dependencies
+}
