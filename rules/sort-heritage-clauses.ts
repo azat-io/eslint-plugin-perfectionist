@@ -118,7 +118,7 @@ let sortHeritageClauses = (
     sourceCode,
   })
 
-  let nodes: SortingNode[] = heritageClauses!.map(heritageClause => {
+  let nodes: SortingNode[] = heritageClauses.map(heritageClause => {
     let name = getHeritageClauseExpressionName(heritageClause.expression)
 
     let group = computeGroup({
