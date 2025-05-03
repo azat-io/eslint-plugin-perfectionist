@@ -1,5 +1,6 @@
 import type {
   PartitionByCommentOption,
+  NewlinesBetweenOption,
   CommonOptions,
   GroupsOptions,
 } from '../../types/common-options'
@@ -7,6 +8,7 @@ import type {
 export type Options = Partial<
   {
     partitionByComment: PartitionByCommentOption
+    newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
   } & CommonOptions

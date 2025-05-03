@@ -88,7 +88,7 @@ Specifies the sorting method.
 - `'natural'` — Sort items in a [natural](https://github.com/yobacca/natural-orderby) order (e.g., “item2” < “item10”).
 - `'line-length'` — Sort items by code line length (shorter lines first).
 - `'custom'` — Sort items using the alphabet specified in the [`alphabet`](#alphabet) option.
-- `'unsorted'` — Do not sort items.
+- `'unsorted'` — Do not sort items. [`grouping`](#groups) and [`newlines behavior`](#newlinesbetween) are still enforced.
 
 ### order
 
@@ -196,6 +196,22 @@ const
 
 Each group of variables (separated by empty lines) is treated independently, and the order within each group is preserved.
 
+### newlinesBetween
+
+<sub>default: `'ignore'`</sub>
+
+Specifies how to handle new lines between groups.
+
+- `ignore` — Do not report errors related to new lines.
+- `always` — Enforce one new line between each group, and forbid new lines inside a group.
+- `never` — No new lines are allowed.
+
+You can also enforce the newline behavior between two specific groups through the `groups` options.
+
+See the [`groups`](#newlines-between-groups) option.
+
+This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
+
 ### groups
 
 <sub>
@@ -219,6 +235,25 @@ Predefined groups are characterized by a selector.
 
 - `initialized` — Initialized declarations.
 - `uninitialized` — Uninitialized declarations.
+
+#### Newlines between groups
+
+You may place `newlinesBetween` objects between your groups to enforce the newline behavior between two specific groups.
+
+See the [`newlinesBetween`](#newlinesbetween) option.
+
+This feature is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
+
+```ts
+{
+  newlinesBetween: 'always',
+  groups: [
+    'a',
+    { newlinesBetween: 'never' }, // Overrides the global newlinesBetween option
+    'b',
+  ]
+}
+```
 
 ## Usage
 
@@ -245,6 +280,7 @@ Predefined groups are characterized by a selector.
                   specialCharacters: 'keep',
                   partitionByNewLine: false,
                   partitionByComment: false,
+                  newlinesBetween: 'ignore',
                   groups: [],
                 },
               ],
@@ -273,6 +309,7 @@ Predefined groups are characterized by a selector.
                 specialCharacters: 'keep',
                 partitionByNewLine: false,
                 partitionByComment: false,
+                newlinesBetween: 'ignore',
                 groups: [],
               },
             ],

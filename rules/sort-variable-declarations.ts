@@ -6,14 +6,18 @@ import type { Selector, Options } from './sort-variable-declarations/types'
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
+  newlinesBetweenJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
 import {
   DEPENDENCY_ORDER_ERROR,
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
@@ -35,6 +39,8 @@ import { complete } from '../utils/complete'
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 type MESSAGE_ID =
+  | 'missedSpacingBetweenVariableDeclarationsMembers'
+  | 'extraSpacingBetweenVariableDeclarationsMembers'
   | 'unexpectedVariableDeclarationsDependencyOrder'
   | 'unexpectedVariableDeclarationsGroupOrder'
   | 'unexpectedVariableDeclarationsOrder'
@@ -44,6 +50,7 @@ let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   partitionByNewLine: false,
   partitionByComment: false,
+  newlinesBetween: 'ignore',
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',
@@ -61,7 +68,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
+
       validateCustomSortConfiguration(options)
+      validateNewlinesAndPartitionConfiguration(options)
 
       let { sourceCode, id } = context
       let eslintDisabledLines = getEslintDisabledLines({
@@ -153,6 +162,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       reportAllErrors<MESSAGE_ID>({
         availableMessageIds: {
+          missedSpacingBetweenMembers:
+            'missedSpacingBetweenVariableDeclarationsMembers',
+          extraSpacingBetweenMembers:
+            'extraSpacingBetweenVariableDeclarationsMembers',
           unexpectedDependencyOrder:
             'unexpectedVariableDeclarationsDependencyOrder',
           unexpectedGroupOrder: 'unexpectedVariableDeclarationsGroupOrder',
@@ -167,23 +180,26 @@ export default createEslintRule<Options, MESSAGE_ID>({
     },
   }),
   meta: {
+    messages: {
+      missedSpacingBetweenVariableDeclarationsMembers: MISSED_SPACING_ERROR,
+      unexpectedVariableDeclarationsDependencyOrder: DEPENDENCY_ORDER_ERROR,
+      extraSpacingBetweenVariableDeclarationsMembers: EXTRA_SPACING_ERROR,
+      unexpectedVariableDeclarationsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedVariableDeclarationsOrder: ORDER_ERROR,
+    },
     schema: [
       {
         properties: {
           ...commonJsonSchemas,
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
           groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
       },
     ],
-    messages: {
-      unexpectedVariableDeclarationsDependencyOrder: DEPENDENCY_ORDER_ERROR,
-      unexpectedVariableDeclarationsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedVariableDeclarationsOrder: ORDER_ERROR,
-    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-variable-declarations',
       description: 'Enforce sorted variable declarations.',
