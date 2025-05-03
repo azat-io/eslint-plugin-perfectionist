@@ -48,6 +48,7 @@
     "test:css": "stylelint \"docs/**/*.{astro,svelte,css}\"",
     "test:format": "prettier --check \"**/*.{astro,svelte,js,ts,json,md,yml}\"",
     "test:js": "eslint .",
+    "test:packages": "pnpm dedupe --check",
     "test:performance": "ENABLE_PERFORMANCE_BENCHMARK=true vitest --run",
     "test:spelling": "cspell \"**/*\"",
     "test:svelte": "svelte-check",
