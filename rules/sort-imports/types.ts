@@ -32,14 +32,14 @@ export type Options = Partial<{
   specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   newlinesBetween: NewlinesBetweenOption
+  tsconfigRootDir: undefined | string
+  maxLineLength: undefined | number
   fallbackSort: FallbackSortOption
   internalPattern: RegexOption[]
   groups: GroupsOptions<Group>
   environment: 'node' | 'bun'
   partitionByNewLine: boolean
   sortSideEffects: boolean
-  tsconfigRootDir?: string
-  maxLineLength?: number
   ignoreCase: boolean
   order: OrderOption
   type: TypeOption
