@@ -1,10 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  PartitionByCommentOption,
-  CommonOptions,
-} from '../types/common-options'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
+import type { Options } from './sort-variable-declarations/types'
 
 import {
   partitionByCommentJsonSchema,
@@ -24,15 +21,6 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
-
-type Options = [
-  Partial<
-    {
-      partitionByComment: PartitionByCommentOption
-      partitionByNewLine: boolean
-    } & CommonOptions
-  >,
-]
 
 type MESSAGE_ID =
   | 'unexpectedVariableDeclarationsDependencyOrder'
