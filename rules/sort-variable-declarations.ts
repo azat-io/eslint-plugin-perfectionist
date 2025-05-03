@@ -7,23 +7,29 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   commonJsonSchemas,
+  groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  DEPENDENCY_ORDER_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
-import { DEPENDENCY_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 
 type MESSAGE_ID =
   | 'unexpectedVariableDeclarationsDependencyOrder'
+  | 'unexpectedVariableDeclarationsGroupOrder'
   | 'unexpectedVariableDeclarationsOrder'
 
 let defaultOptions: Required<Options[0]> = {
@@ -36,6 +42,7 @@ let defaultOptions: Required<Options[0]> = {
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
+  groups: [],
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
@@ -106,19 +113,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
       let sortNodesExcludingEslintDisabled = (
         ignoreEslintDisabledNodes: boolean,
-      ): SortingNodeWithDependencies[] =>
-        sortNodesByDependencies(
-          formattedMembers.flatMap(nodes =>
-            sortNodes({
-              ignoreEslintDisabledNodes,
-              options,
-              nodes,
-            }),
-          ),
-          {
+      ): SortingNodeWithDependencies[] => {
+        let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
+          sortNodesByGroups({
+            getOptionsByGroupNumber: () => ({ options }),
             ignoreEslintDisabledNodes,
-          },
+            groups: options.groups,
+            nodes,
+          }),
         )
+
+        return sortNodesByDependencies(nodesSortedByGroups, {
+          ignoreEslintDisabledNodes,
+        })
+      }
 
       let nodes = formattedMembers.flat()
 
@@ -126,6 +134,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         availableMessageIds: {
           unexpectedDependencyOrder:
             'unexpectedVariableDeclarationsDependencyOrder',
+          unexpectedGroupOrder: 'unexpectedVariableDeclarationsGroupOrder',
           unexpectedOrder: 'unexpectedVariableDeclarationsOrder',
         },
         sortNodesExcludingEslintDisabled,
@@ -143,19 +152,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ...commonJsonSchemas,
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
+          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
       },
     ],
+    messages: {
+      unexpectedVariableDeclarationsDependencyOrder: DEPENDENCY_ORDER_ERROR,
+      unexpectedVariableDeclarationsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedVariableDeclarationsOrder: ORDER_ERROR,
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-variable-declarations',
       description: 'Enforce sorted variable declarations.',
       recommended: true,
-    },
-    messages: {
-      unexpectedVariableDeclarationsDependencyOrder: DEPENDENCY_ORDER_ERROR,
-      unexpectedVariableDeclarationsOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',
