@@ -51,4 +51,5 @@ let getRelevantCommentsBeforeNodeOrToken = (
     })
 
 let isShebangComment = (comment: TSESTree.Comment): boolean =>
-  comment.type === ('Shebang' as unknown as 'Block')
+  comment.type === ('Shebang' as unknown) ||
+  comment.type === ('Hashbang' as unknown)
