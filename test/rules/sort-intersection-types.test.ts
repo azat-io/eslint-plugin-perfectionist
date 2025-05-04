@@ -1463,6 +1463,457 @@ describe(ruleName, () => {
         valid: [],
       },
     )
+
+    describe(`${ruleName}: custom groups`, () => {
+      ruleTester.run(`${ruleName}: filters on selector`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'namedElements',
+                  leftGroup: 'unknown',
+                  left: 'null',
+                  right: 'a',
+                },
+                messageId: 'unexpectedIntersectionTypesGroupOrder',
+              },
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'namedElements',
+                    selector: 'named',
+                  },
+                ],
+                groups: ['namedElements', 'unknown'],
+              },
+            ],
+            output: dedent`
+              type T =
+                & a
+                & null
+            `,
+            code: dedent`
+              type T =
+                & null
+                & a
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      for (let elementNamePattern of [
+        'hello',
+        ['noMatch', 'hello'],
+        { pattern: 'HELLO', flags: 'i' },
+        ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'namedStartingWithHello',
+                      elementNamePattern,
+                      selector: 'named',
+                    },
+                  ],
+                  groups: ['namedStartingWithHello', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'namedStartingWithHello',
+                    leftGroup: 'unknown',
+                    right: 'helloNamed',
+                    left: 'undefined',
+                  },
+                  messageId: 'unexpectedIntersectionTypesGroupOrder',
+                },
+              ],
+              output: dedent`
+                type Type =
+                  & helloNamed
+                  & null
+                  & undefined
+              `,
+              code: dedent`
+                type Type =
+                  & null
+                  & undefined
+                  & helloNamed
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'ccc',
+                    left: 'bb',
+                  },
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                },
+                {
+                  data: {
+                    right: 'dddd',
+                    left: 'ccc',
+                  },
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'reversedNamedByLineLength',
+                    leftGroup: 'unknown',
+                    right: 'eee',
+                    left: "'m'",
+                  },
+                  messageId: 'unexpectedIntersectionTypesGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'reversedNamedByLineLength',
+                      type: 'line-length',
+                      selector: 'named',
+                      order: 'desc',
+                    },
+                  ],
+                  groups: ['reversedNamedByLineLength', 'unknown'],
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                type T =
+                  & dddd
+                  & ccc
+                  & eee
+                  & bb
+                  & ff
+                  & a
+                  & g
+                  & 'm'
+                  & 'o'
+                  & 'p'
+              `,
+              code: dedent`
+                type T =
+                  & a
+                  & bb
+                  & ccc
+                  & dddd
+                  & 'm'
+                  & eee
+                  & ff
+                  & g
+                  & 'o'
+                  & 'p'
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'fallbackSort'`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      fallbackSort: {
+                        type: 'alphabetical',
+                        order: 'asc',
+                      },
+                      elementNamePattern: '^foo',
+                      type: 'line-length',
+                      groupName: 'foo',
+                      order: 'desc',
+                    },
+                  ],
+                  type: 'alphabetical',
+                  groups: ['foo'],
+                  order: 'asc',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'fooBar',
+                    left: 'fooZar',
+                  },
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                },
+              ],
+              output: dedent`
+                type T =
+                  & fooBar
+                  & fooZar
+              `,
+              code: dedent`
+                type T =
+                  & fooZar
+                  & fooBar
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: does not sort custom groups with 'unsorted' type`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'unsortedNamed',
+                      selector: 'named',
+                      type: 'unsorted',
+                    },
+                  ],
+                  groups: ['unsortedNamed', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unsortedNamed',
+                    leftGroup: 'unknown',
+                    left: "'m'",
+                    right: 'c',
+                  },
+                  messageId: 'unexpectedIntersectionTypesGroupOrder',
+                },
+              ],
+              output: dedent`
+                type T =
+                  & b
+                  & a
+                  & d
+                  & e
+                  & c
+                  & 'm'
+              `,
+              code: dedent`
+                type T =
+                  & b
+                  & a
+                  & d
+                  & e
+                  & 'm'
+                  & c
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    anyOf: [
+                      {
+                        elementNamePattern: 'foo|Foo',
+                        selector: 'named',
+                      },
+                      {
+                        elementNamePattern: 'foo|Foo',
+                        selector: 'literal',
+                      },
+                    ],
+                    groupName: 'elementsIncludingFoo',
+                  },
+                ],
+                groups: ['elementsIncludingFoo', 'unknown'],
+                newlinesBetween: 'always',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'elementsIncludingFoo',
+                  leftGroup: 'unknown',
+                  right: "'foo'",
+                  left: 'null',
+                },
+                messageId: 'unexpectedIntersectionTypesGroupOrder',
+              },
+            ],
+            output: dedent`
+              type T =
+                & 'foo'
+                & cFoo
+
+                & null
+            `,
+            code: dedent`
+              type T =
+                & null
+                & 'foo'
+                & cFoo
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: allows to use regex for element names in custom groups`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: '^(?!.*Foo).*$',
+                      groupName: 'elementsWithoutFoo',
+                    },
+                  ],
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                  type: 'alphabetical',
+                },
+              ],
+              code: dedent`
+                type T =
+                  iHaveFooInMyName
+                  meTooIHaveFoo
+                  a
+                  b
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
+    describe('newlinesInside', () => {
+      ruleTester.run(
+        `${ruleName}: allows to use newlinesInside: always`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      newlinesInside: 'always',
+                      groupName: 'group1',
+                      selector: 'named',
+                    },
+                  ],
+                  groups: ['group1'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'missedSpacingBetweenIntersectionTypes',
+                },
+              ],
+              output: dedent`
+                type T =
+                  & a
+
+                  & b
+              `,
+              code: dedent`
+                type T =
+                  & a
+                  & b
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: allows to use newlinesInside: never`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    newlinesInside: 'never',
+                    groupName: 'group1',
+                    selector: 'named',
+                  },
+                ],
+                type: 'alphabetical',
+                groups: ['group1'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'extraSpacingBetweenIntersectionTypes',
+              },
+            ],
+            output: dedent`
+              type T =
+                & a
+                & b
+            `,
+            code: dedent`
+              type T =
+                & a
+
+                & b
+            `,
+          },
+        ],
+        valid: [],
+      })
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

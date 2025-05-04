@@ -1,4 +1,4 @@
-import type { Options as SortUnionTypesOptions } from './sort-union-types'
+import type { Options as SortUnionTypesOptions } from './sort-union-types/types'
 
 import {
   MISSED_SPACING_ERROR,
@@ -26,6 +26,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',
+  customGroups: [],
   alphabet: '',
   order: 'asc',
   groups: [],
