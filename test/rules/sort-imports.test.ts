@@ -3934,6 +3934,34 @@ describe(ruleName, () => {
         },
       )
     })
+
+    ruleTester.run(`${ruleName}(${type}): ignores shebang comments`, rule, {
+      invalid: [
+        {
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+          ],
+          output: dedent`
+            #!/usr/bin/node
+            import { a } from 'a'
+            import { b } from 'b'
+          `,
+          code: dedent`
+            #!/usr/bin/node
+            import { b } from 'b'
+            import { a } from 'a'
+          `,
+          options: [options],
+        },
+      ],
+      valid: [],
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
