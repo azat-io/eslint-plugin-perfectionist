@@ -105,6 +105,14 @@ describe('common-json-schemas', () => {
             }),
           ).toBeFalsy()
         })
+
+        it('should not allow the empty object', () => {
+          expect(
+            commonJsonSchemaValidator({
+              fallbackSort: {},
+            }),
+          ).toBeFalsy()
+        })
       })
 
       describe('order', () => {
@@ -205,6 +213,10 @@ describe('common-json-schemas', () => {
         ).toBeFalsy()
       })
     })
+
+    it('should not allow the empty object', () => {
+      expect(groupsJsonSchemaValidator(['group1', {}, 'group2'])).toBeFalsy()
+    })
   })
 
   describe('customGroups', () => {
@@ -241,6 +253,16 @@ describe('common-json-schemas', () => {
         ]),
       ).toBeTruthy()
     })
+
+    it("should enforce 'groupName'", () => {
+      expect(
+        customGroupsJsonSchema([
+          {
+            customGroupProperty: 'value',
+          },
+        ]),
+      ).toBeFalsy()
+    })
   })
 
   describe('partitionByComment', () => {
@@ -260,6 +282,10 @@ describe('common-json-schemas', () => {
         ).toBeTruthy()
       },
     )
+
+    it('should not allow the empty object', () => {
+      expect(partitionByCommentJsonSchemaValidator({})).toBeFalsy()
+    })
   })
 
   describe('regex', () => {
@@ -292,6 +318,10 @@ describe('common-json-schemas', () => {
           pattern: 'pattern',
         }),
       ).toBeFalsy()
+    })
+
+    it('should not allow the empty object', () => {
+      expect(regexJsonSchemaValidator({})).toBeFalsy()
     })
   })
 })
