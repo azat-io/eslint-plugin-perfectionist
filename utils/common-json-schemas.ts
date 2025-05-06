@@ -58,6 +58,7 @@ let buildFallbackSortJsonSchema = ({
   },
   description: 'Fallback sort order.',
   additionalProperties: false,
+  minProperties: 1,
   type: 'object',
 })
 
@@ -102,6 +103,7 @@ export let groupsJsonSchema: JSONSchema4 = {
         properties: {
           newlinesBetween: newlinesBetweenJsonSchema,
         },
+        required: ['newlinesBetween'],
         additionalProperties: false,
         type: 'object',
       },
@@ -143,6 +145,7 @@ let singleRegexJsonSchema: JSONSchema4 = {
         },
       },
       additionalProperties: false,
+      required: ['pattern'],
       // https://github.com/azat-io/eslint-plugin-perfectionist/pull/490#issuecomment-2720969705
       // Uncomment the code below in the next major version (v5)
       // To uncomment: required: ['pattern'],
@@ -187,6 +190,7 @@ export let partitionByCommentJsonSchema: JSONSchema4 = {
         },
       },
       additionalProperties: false,
+      minProperties: 1,
       type: 'object',
     },
   ],
@@ -265,6 +269,7 @@ export let buildCustomGroupsArrayJsonSchema = ({
         },
         description: 'Custom group block.',
         additionalProperties: false,
+        required: ['groupName'],
         type: 'object',
       },
       {
@@ -276,6 +281,7 @@ export let buildCustomGroupsArrayJsonSchema = ({
         },
         description: 'Custom group.',
         additionalProperties: false,
+        required: ['groupName'],
         type: 'object',
       },
     ],
