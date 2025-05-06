@@ -20,6 +20,14 @@ export interface CommonOptions {
   type: TypeOption
 }
 
+export type GroupsOptions<T> = (
+  | (GroupNewlinesBetweenOption & GroupCommentAboveOption)
+  | GroupNewlinesBetweenOption
+  | GroupCommentAboveOption
+  | T[]
+  | T
+)[]
+
 export type PartitionByCommentOption =
   | {
       block?: RegexOption | boolean
@@ -34,13 +42,6 @@ export type TypeOption =
   | 'unsorted'
   | 'natural'
   | 'custom'
-
-export type GroupsOptions<T> = (
-  | { newlinesBetween: NewlinesBetweenOption }
-  | T[]
-  | T
-)[]
-
 export interface AnyOfCustomGroup<SingleCustomGroup> {
   anyOf: SingleCustomGroup[]
 }
@@ -66,3 +67,11 @@ type SingleRegexOption =
       flags?: string
     }
   | string
+
+interface GroupNewlinesBetweenOption {
+  newlinesBetween: NewlinesBetweenOption
+}
+
+interface GroupCommentAboveOption {
+  commentAbove: string
+}

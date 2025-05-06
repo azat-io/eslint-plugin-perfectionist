@@ -1,16 +1,17 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
-import type { NewlinesBetweenValueGetter } from './get-newlines-errors'
+import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
 import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
+import { getCommentAboveThatShouldExist } from './get-comment-above-that-should-exist'
 import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
+import { getNewlinesBetweenErrors } from './get-newlines-between-errors'
 import { createNodeIndexMap } from './create-node-index-map'
-import { getNewlinesErrors } from './get-newlines-errors'
-import { getGroupNumber } from './get-group-number'
+import { getGroupIndex } from './get-group-index'
 import { reportErrors } from './report-errors'
 import { pairwise } from './pairwise'
 
@@ -23,6 +24,7 @@ interface ReportAllErrorsParameters<
     extraSpacingBetweenMembers?: MessageIds
     unexpectedDependencyOrder?: MessageIds
     unexpectedGroupOrder?: MessageIds
+    missedCommentAbove?: MessageIds
     unexpectedOrder: MessageIds
   }
   options: {
@@ -61,10 +63,18 @@ export let reportAllErrors = <
       : new Set<SortingNodeWithDependencies>()
 
   pairwise(nodes, (left, right) => {
-    let leftNumber = options.groups ? getGroupNumber(options.groups, left) : 0
-    let rightNumber = options.groups ? getGroupNumber(options.groups, right) : 0
+    let leftInfo = left
+      ? {
+          groupIndex: options.groups
+            ? getGroupIndex(options.groups, left)
+            : null,
+          index: nodeIndexMap.get(left)!,
+        }
+      : null
 
-    let leftIndex = nodeIndexMap.get(left)!
+    let rightGroupIndex = options.groups
+      ? getGroupIndex(options.groups, right)
+      : null
     let rightIndex = nodeIndexMap.get(right)!
 
     let indexOfRightExcludingEslintDisabled =
@@ -82,16 +92,17 @@ export let reportAllErrors = <
     }
 
     if (
-      firstUnorderedNodeDependentOnRight ||
-      leftIndex > rightIndex ||
-      (left.isEslintDisabled &&
-        leftIndex >= indexOfRightExcludingEslintDisabled)
+      leftInfo &&
+      (firstUnorderedNodeDependentOnRight ||
+        leftInfo.index > rightIndex ||
+        (left?.isEslintDisabled &&
+          leftInfo.index >= indexOfRightExcludingEslintDisabled))
     ) {
       if (firstUnorderedNodeDependentOnRight) {
         messageIds.push(availableMessageIds.unexpectedDependencyOrder!)
       } else {
         messageIds.push(
-          leftNumber === rightNumber ||
+          leftInfo.groupIndex === rightGroupIndex ||
             !availableMessageIds.unexpectedGroupOrder
             ? availableMessageIds.unexpectedOrder
             : availableMessageIds.unexpectedGroupOrder,
@@ -100,6 +111,7 @@ export let reportAllErrors = <
     }
 
     if (
+      left &&
       options.newlinesBetween &&
       options.groups &&
       availableMessageIds.missedSpacingBetweenMembers &&
@@ -107,7 +119,7 @@ export let reportAllErrors = <
     ) {
       messageIds = [
         ...messageIds,
-        ...getNewlinesErrors({
+        ...getNewlinesBetweenErrors({
           options: {
             ...options,
             newlinesBetween: options.newlinesBetween,
@@ -115,9 +127,9 @@ export let reportAllErrors = <
           },
           missedSpacingError: availableMessageIds.missedSpacingBetweenMembers,
           extraSpacingError: availableMessageIds.extraSpacingBetweenMembers,
+          leftGroupIndex: leftInfo!.groupIndex!,
+          rightGroupIndex: rightGroupIndex!,
           newlinesBetweenValueGetter,
-          rightNum: rightNumber,
-          leftNum: leftNumber,
           sourceCode,
           right,
           left,
@@ -125,11 +137,30 @@ export let reportAllErrors = <
       ]
     }
 
+    let commentAboveMissing: undefined | string
+    if (options.groups && availableMessageIds.missedCommentAbove) {
+      let commentAboveThatShouldExist = getCommentAboveThatShouldExist({
+        options: {
+          ...options,
+          groups: options.groups,
+        },
+        leftGroupIndex: leftInfo?.groupIndex ?? null,
+        rightGroupIndex: rightGroupIndex!,
+        sortingNode: right,
+        sourceCode,
+      })
+      if (commentAboveThatShouldExist && !commentAboveThatShouldExist.exists) {
+        commentAboveMissing = commentAboveThatShouldExist.comment
+        messageIds = [...messageIds, availableMessageIds.missedCommentAbove]
+      }
+    }
+
     reportErrors({
       sortedNodes: sortedNodesExcludingEslintDisabled,
       ignoreFirstNodeHighestBlockComment,
       firstUnorderedNodeDependentOnRight,
       newlinesBetweenValueGetter,
+      commentAboveMissing,
       messageIds,
       sourceCode,
       options,
