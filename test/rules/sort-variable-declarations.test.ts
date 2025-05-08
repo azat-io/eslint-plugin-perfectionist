@@ -311,266 +311,270 @@ describe(ruleName, () => {
           ],
         },
       )
-    })
 
-    ruleTester.run(
-      `${ruleName}(${type}) detects function expression dependencies`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = () => 1,
-              a = b();
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let b = function() { return 1 },
-              a = b();
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let b = () => 1,
-              a = a.map(b);
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects dependencies in objects`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = 1,
-              a = {x: b};
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let b = 1,
-              a = {[b]: 0};
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(`${ruleName}(${type}) detects chained dependencies`, rule, {
-      valid: [
+      ruleTester.run(
+        `${ruleName}(${type}) detects function expression dependencies`,
+        rule,
         {
-          code: dedent`
-            let b = {x: 1},
-            a = b.x;
-          `,
-          options: [options],
+          valid: [
+            {
+              code: dedent`
+                let b = () => 1,
+                a = b();
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = function() { return 1 },
+                a = b();
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = () => 1,
+                a = a.map(b);
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
         },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in objects`,
+        rule,
         {
-          code: dedent`
-            let b = new Subject(),
-            a = b.asObservable();
-          `,
-          options: [options],
+          valid: [
+            {
+              code: dedent`
+                let b = 1,
+                a = {x: b};
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = 1,
+                a = {[b]: 0};
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
         },
-      ],
-      invalid: [],
-    })
+      )
 
-    ruleTester.run(
-      `${ruleName}(${type}) detects optional chained dependencies`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = {x: 1},
-              a = b?.x;
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects non-null asserted dependencies`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = 1,
-              a = b!;
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(`${ruleName}(${type}) detects unary dependencies`, rule, {
-      valid: [
+      ruleTester.run(
+        `${ruleName}(${type}) detects chained dependencies`,
+        rule,
         {
-          code: dedent`
-            let b = true,
-            a = !b;
-          `,
-          options: [options],
+          valid: [
+            {
+              code: dedent`
+                let b = {x: 1},
+                a = b.x;
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = new Subject(),
+                a = b.asObservable();
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
         },
-      ],
-      invalid: [],
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects optional chained dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = {x: 1},
+                a = b?.x;
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects non-null asserted dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = 1,
+                a = b!;
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}(${type}) detects unary dependencies`, rule, {
+        valid: [
+          {
+            code: dedent`
+              let b = true,
+              a = !b;
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects spread elements dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = {x: 1},
+                a = {...b};
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = [1]
+                a = [...b];
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in conditional expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = 0,
+                a = b ? 1 : 0;
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = 0,
+                a = x ? b : 0;
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = 0,
+                a = x ? 0 : b;
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in 'as' expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = 'b',
+                a = b as any;
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in type assertion expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = 'b',
+                a = <any>b;
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in template literal expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = 'b',
+                a = \`\${b}\`
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) ignores function body dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let a = () => b,
+                b = 1;
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let a = function() { return b },
+                b = 1;
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let a = () => {return b},
+                b = 1;
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
     })
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects spread elements dependencies`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = {x: 1},
-              a = {...b};
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let b = [1]
-              a = [...b];
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects dependencies in conditional expressions`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = 0,
-              a = b ? 1 : 0;
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let b = 0,
-              a = x ? b : 0;
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let b = 0,
-              a = x ? 0 : b;
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects dependencies in 'as' expressions`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = 'b',
-              a = b as any;
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects dependencies in type assertion expressions`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = 'b',
-              a = <any>b;
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects dependencies in template literal expressions`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = 'b',
-              a = \`\${b}\`
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) ignores function body dependencies`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let a = () => b,
-              b = 1;
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let a = function() { return b },
-              b = 1;
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let a = () => {return b},
-              b = 1;
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
 
     ruleTester.run(
       `${ruleName}(${type}): allows to use new line as partition`,
