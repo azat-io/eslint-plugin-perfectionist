@@ -574,6 +574,117 @@ describe(ruleName, () => {
           invalid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over group configuration`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      groupName: 'variablesStartingWithA',
+                      elementNamePattern: 'a',
+                    },
+                    {
+                      groupName: 'variablesStartingWithB',
+                      elementNamePattern: 'b',
+                    },
+                  ],
+                  groups: ['variablesStartingWithA', 'variablesStartingWithB'],
+                },
+              ],
+              code: dedent`
+                let
+                  b,
+                  a = b,
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByComment`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'a',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  partitionByComment: '^Part',
+                },
+              ],
+              output: dedent`
+                let
+                  a = 0,
+                  // Part: 1
+                  b = a,
+              `,
+              code: dedent`
+                let
+                  b = a,
+                  // Part: 1
+                  a = 0,
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByNewLine`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'a',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: true,
+                },
+              ],
+              output: dedent`
+                let
+                  a = 0,
+
+                  b = a,
+              `,
+              code: dedent`
+                let
+                  b = a,
+
+                  a = 0,
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     ruleTester.run(
@@ -1141,6 +1252,45 @@ describe(ruleName, () => {
                 b = 'b', a = 'a',
             `,
             options: [options],
+          },
+        ],
+        valid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use predefined groups`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  leftGroup: 'uninitialized',
+                  rightGroup: 'initialized',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedVariableDeclarationsGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['initialized', 'uninitialized'],
+              },
+            ],
+            output: dedent`
+              let
+                b ='b',
+                a,
+            `,
+            code: dedent`
+              let
+                a,
+                b ='b',
+            `,
           },
         ],
         valid: [],

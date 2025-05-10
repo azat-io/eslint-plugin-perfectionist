@@ -12,4 +12,10 @@ export type Options = Partial<
   } & CommonOptions
 >[]
 
-type Group = 'unknown' | string
+export type Selector = UninitializedSelector | InitializedSelector
+
+type UninitializedSelector = 'uninitialized'
+
+type Group = 'unknown' | Selector | string
+
+type InitializedSelector = 'initialized'

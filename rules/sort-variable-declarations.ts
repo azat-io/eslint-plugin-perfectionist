@@ -1,7 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { Options } from './sort-variable-declarations/types'
+import type { Selector, Options } from './sort-variable-declarations/types'
 
 import {
   partitionByCommentJsonSchema,
@@ -15,6 +15,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -22,10 +23,16 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
+
+/**
+ * Cache computed groups by modifiers and selectors for performance
+ */
+let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 type MESSAGE_ID =
   | 'unexpectedVariableDeclarationsDependencyOrder'
@@ -75,10 +82,20 @@ export default createEslintRule<Options, MESSAGE_ID>({
             ;({ name } = declaration.id)
           }
 
+          let selector: Selector
+
           let dependencies: string[] = []
           if (declaration.init) {
             dependencies = extractDependencies(declaration.init)
+            selector = 'initialized'
+          } else {
+            selector = 'uninitialized'
           }
+          let predefinedGroups = generatePredefinedGroups({
+            cache: cachedGroupsByModifiersAndSelectors,
+            selectors: [selector],
+            modifiers: [],
+          })
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
           let sortingNode: SortingNodeWithDependencies = {
@@ -86,6 +103,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               declaration,
               eslintDisabledLines,
             ),
+            group: computeGroup({
+              predefinedGroups,
+              options,
+            }),
             size: rangeToDiff(declaration, sourceCode),
             dependencyNames: [name],
             node: declaration,

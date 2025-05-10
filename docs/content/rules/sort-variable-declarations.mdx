@@ -196,6 +196,30 @@ const
 
 Each group of variables (separated by empty lines) is treated independently, and the order within each group is preserved.
 
+### groups
+
+<sub>
+  type: `Array<string | string[]>`
+</sub>
+<sub>default: `[]`</sub>
+
+Specifies a list of groups for sorting. Groups help organize elements into categories.
+
+Each element will be assigned a single group specified in the `groups` option (or the `unknown` group if no match is found).
+The order of items in the `groups` option determines how groups are ordered.
+
+Within a given group, members will be sorted according to the `type`, `order`, `ignoreCase`, etc. options.
+
+Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
+All members of the groups in the array will be sorted together as if they were part of a single group.
+
+Predefined groups are characterized by a selector.
+
+##### List of selectors
+
+- `initialized` — Initialized declarations.
+- `uninitialized` — Uninitialized declarations.
+
 ## Usage
 
 <CodeTabs
@@ -221,6 +245,7 @@ Each group of variables (separated by empty lines) is treated independently, and
                   specialCharacters: 'keep',
                   partitionByNewLine: false,
                   partitionByComment: false,
+                  groups: [],
                 },
               ],
             },
@@ -248,6 +273,7 @@ Each group of variables (separated by empty lines) is treated independently, and
                 specialCharacters: 'keep',
                 partitionByNewLine: false,
                 partitionByComment: false,
+                groups: [],
               },
             ],
           },
