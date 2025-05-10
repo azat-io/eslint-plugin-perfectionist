@@ -15,12 +15,15 @@ import type { Options } from '../../rules/sort-imports/types'
 import type { MESSAGE_ID } from '../../rules/sort-imports'
 
 import * as readClosestTsConfigUtilities from '../../rules/sort-imports/read-closest-ts-config-by-path'
+import { RuleTesterWithPerformanceBenchmark } from '../utils/rule-tester-with-performance-benchmark'
 import * as getTypescriptImportUtilities from '../../rules/sort-imports/get-typescript-import'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-imports'
 
 let ruleName = 'sort-imports'
+
+let MAX_MS_DURATION_FOR_TSCONFIG = 27500
 
 describe(ruleName, () => {
   RuleTester.describeSkip = describe.skip
@@ -30,7 +33,9 @@ describe(ruleName, () => {
   RuleTester.itSkip = it.skip
   RuleTester.it = it
 
-  let ruleTester = new RuleTester()
+  let ruleTester = new RuleTesterWithPerformanceBenchmark({
+    defaultMaxMsDuration: 300,
+  })
   let eslintRuleTester = new EslintRuleTester()
 
   describe(`${ruleName}: sorting by alphabetical order`, () => {
@@ -2872,7 +2877,7 @@ describe(ruleName, () => {
           },
         )
 
-        ruleTester.run(
+        ruleTester.runWithCustomBenchmarkOptions(
           `${ruleName}(${type}): prioritizes "style" over any other non-type "selector"`,
           rule,
           {
@@ -2941,6 +2946,7 @@ describe(ruleName, () => {
             ],
             valid: [],
           },
+          { maxMsDuration: MAX_MS_DURATION_FOR_TSCONFIG },
         )
 
         ruleTester.run(
@@ -7353,7 +7359,7 @@ describe(ruleName, () => {
     })
 
     describe(`${ruleName}: handles tsconfig.json`, () => {
-      ruleTester.run(
+      ruleTester.runWithCustomBenchmarkOptions(
         `${ruleName}: marks internal imports as 'internal'`,
         rule,
         {
@@ -7379,9 +7385,10 @@ describe(ruleName, () => {
           ],
           invalid: [],
         },
+        { maxMsDuration: MAX_MS_DURATION_FOR_TSCONFIG },
       )
 
-      ruleTester.run(
+      ruleTester.runWithCustomBenchmarkOptions(
         `${ruleName}: marks external imports as 'external'`,
         rule,
         {
@@ -7407,9 +7414,10 @@ describe(ruleName, () => {
           ],
           invalid: [],
         },
+        { maxMsDuration: MAX_MS_DURATION_FOR_TSCONFIG },
       )
 
-      ruleTester.run(
+      ruleTester.runWithCustomBenchmarkOptions(
         `${ruleName}: marks non-resolved imports as 'external'`,
         rule,
         {
@@ -7435,9 +7443,10 @@ describe(ruleName, () => {
           ],
           invalid: [],
         },
+        { maxMsDuration: MAX_MS_DURATION_FOR_TSCONFIG },
       )
 
-      ruleTester.run(
+      ruleTester.runWithCustomBenchmarkOptions(
         `${ruleName}: uses the fallback algorithm if typescript is not present`,
         rule,
         {
@@ -7465,6 +7474,7 @@ describe(ruleName, () => {
           ],
           invalid: [],
         },
+        { maxMsDuration: MAX_MS_DURATION_FOR_TSCONFIG },
       )
     })
 

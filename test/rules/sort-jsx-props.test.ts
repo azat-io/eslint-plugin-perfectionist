@@ -4,6 +4,7 @@ import { afterAll, describe, expect, it } from 'vitest'
 import path from 'node:path'
 import dedent from 'dedent'
 
+import { RuleTesterWithPerformanceBenchmark } from '../utils/rule-tester-with-performance-benchmark'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-jsx-props'
@@ -18,19 +19,24 @@ describe(ruleName, () => {
   RuleTester.itSkip = it.skip
   RuleTester.it = it
 
-  let ruleTester = new RuleTester({
-    languageOptions: {
-      parserOptions: {
-        tsconfigRootDir: path.join(__dirname, '../fixtures'),
-        extraFileExtensions: ['.svelte', '.astro', '.vue'],
-        ecmaFeatures: {
-          jsx: true,
+  let ruleTester = new RuleTesterWithPerformanceBenchmark(
+    {
+      defaultMaxMsDuration: 250,
+    },
+    {
+      languageOptions: {
+        parserOptions: {
+          tsconfigRootDir: path.join(__dirname, '../fixtures'),
+          extraFileExtensions: ['.svelte', '.astro', '.vue'],
+          ecmaFeatures: {
+            jsx: true,
+          },
+          project: './tsconfig.json',
+          parser: typescriptParser,
         },
-        project: './tsconfig.json',
-        parser: typescriptParser,
       },
     },
-  })
+  )
 
   describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
@@ -41,60 +47,67 @@ describe(ruleName, () => {
       order: 'asc',
     } as const
 
-    ruleTester.run(`${ruleName}(${type}): sorts jsx props`, rule, {
-      invalid: [
-        {
-          output: dedent`
-            let Component = () => (
-              <Element
-                a="aaa"
-                b="bb"
-                c="c"
-              >
-                Value
-              </Element>
-            )
-          `,
-          code: dedent`
-            let Component = () => (
-              <Element
-                a="aaa"
-                c="c"
-                b="bb"
-              >
-                Value
-              </Element>
-            )
-          `,
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    ruleTester.runWithCustomBenchmarkOptions(
+      `${ruleName}(${type}): sorts jsx props`,
+      rule,
+      {
+        invalid: [
+          {
+            output: dedent`
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  b="bb"
+                  c="c"
+                >
+                  Value
+                </Element>
+              )
+            `,
+            code: dedent`
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  c="c"
+                  b="bb"
+                >
+                  Value
+                </Element>
+              )
+            `,
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'c',
+                },
+                messageId: 'unexpectedJSXPropsOrder',
               },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-          ],
-          options: [options],
-        },
-      ],
-      valid: [
-        {
-          code: dedent`
-            let Component = () => (
-              <Element
-                a="aaa"
-                b="bb"
-                c="c"
-              >
-                Value
-              </Element>
-            )
-          `,
-          options: [options],
-        },
-      ],
-    })
+            ],
+            options: [options],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              let Component = () => (
+                <Element
+                  a="aaa"
+                  b="bb"
+                  c="c"
+                >
+                  Value
+                </Element>
+              )
+            `,
+            options: [options],
+          },
+        ],
+      },
+      {
+        maxMsDuration: Infinity, // The first test takes much longer than others
+      },
+    )
 
     ruleTester.run(
       `${ruleName}(${type}): sorts jsx props with namespaced names`,
