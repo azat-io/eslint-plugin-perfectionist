@@ -28,10 +28,19 @@ export type Options = Partial<{
         type?: DeprecatedCustomGroupsOption
       }
     | CustomGroupsOption<SingleCustomGroup>
+  tsconfig:
+    | {
+        filename?: string
+        rootDir: string
+      }
+    | undefined
   partitionByComment: PartitionByCommentOption
   specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   newlinesBetween: NewlinesBetweenOption
+  /**
+   * @deprecated for `tsconfig`
+   */
   tsconfigRootDir: undefined | string
   maxLineLength: undefined | number
   fallbackSort: FallbackSortOption
