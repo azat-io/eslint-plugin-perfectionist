@@ -22,10 +22,12 @@ export let contentCacheByPath = new Map<
 >()
 
 export let readClosestTsConfigByPath = ({
+  tsconfigFilename,
   tsconfigRootDir,
   contextCwd,
   filePath,
 }: {
+  tsconfigFilename: string
   tsconfigRootDir: string
   contextCwd: string
   filePath: string
@@ -39,7 +41,7 @@ export let readClosestTsConfigByPath = ({
   let checkedDirectories = [directory]
 
   do {
-    let tsconfigPath = path.join(directory, 'tsconfig.json')
+    let tsconfigPath = path.join(directory, tsconfigFilename)
     let cachedDirectory = directoryCacheByPath.get(directory)
     if (!cachedDirectory && fs.existsSync(tsconfigPath)) {
       cachedDirectory = tsconfigPath
