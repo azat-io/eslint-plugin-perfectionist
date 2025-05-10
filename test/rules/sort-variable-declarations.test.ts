@@ -446,14 +446,14 @@ describe(ruleName, () => {
             {
               code: dedent`
                 let b = {x: 1},
-                a = {...b};
+                a = {b = 'b',};
               `,
               options: [options],
             },
             {
               code: dedent`
                 let b = [1]
-                a = [...b];
+                a = [b = 'b',];
               `,
               options: [options],
             },
@@ -1296,6 +1296,369 @@ describe(ruleName, () => {
         valid: [],
       },
     )
+
+    describe(`${ruleName}: custom groups`, () => {
+      ruleTester.run(`${ruleName}: filters on selector`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'uninitializedElements',
+                  leftGroup: 'unknown',
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedVariableDeclarationsGroupOrder',
+              },
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'uninitializedElements',
+                    selector: 'uninitialized',
+                  },
+                ],
+                groups: ['uninitializedElements', 'unknown'],
+              },
+            ],
+            output: dedent`
+              let
+                a,
+                b = 'b',
+            `,
+            code: dedent`
+              let
+                b = 'b',
+                a,
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      for (let elementNamePattern of [
+        'hello',
+        ['noMatch', 'hello'],
+        { pattern: 'HELLO', flags: 'i' },
+        ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'uninitializedStartingWithHello',
+                      selector: 'uninitialized',
+                      elementNamePattern,
+                    },
+                  ],
+                  groups: ['uninitializedStartingWithHello', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'uninitializedStartingWithHello',
+                    right: 'helloUninitialized',
+                    leftGroup: 'unknown',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsGroupOrder',
+                },
+              ],
+              output: dedent`
+                let
+                  helloUninitialized,
+                  a,
+                  b,
+              `,
+              code: dedent`
+                let
+                  a,
+                  b,
+                  helloUninitialized,
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+                {
+                  data: {
+                    right: 'ccc',
+                    left: 'bb',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+                {
+                  data: {
+                    right: 'dddd',
+                    left: 'ccc',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'reversedUninitializedByLineLength',
+                    leftGroup: 'unknown',
+                    right: 'eee',
+                    left: 'm',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'reversedUninitializedByLineLength',
+                      selector: 'uninitialized',
+                      type: 'line-length',
+                      order: 'desc',
+                    },
+                  ],
+                  groups: ['reversedUninitializedByLineLength', 'unknown'],
+                  type: 'alphabetical',
+
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                let
+                  dddd,
+                  ccc,
+                  eee,
+                  bb,
+                  ff,
+                  a,
+                  g,
+                  m = 'm',
+                  o = 'o',
+                  p = 'p',
+              `,
+              code: dedent`
+                let
+                  a,
+                  bb,
+                  ccc,
+                  dddd,
+                  m = 'm',
+                  eee,
+                  ff,
+                  g,
+                  o = 'o',
+                  p = 'p',
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'fallbackSort'`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      fallbackSort: {
+                        type: 'alphabetical',
+                        order: 'asc',
+                      },
+                      elementNamePattern: '^foo',
+                      type: 'line-length',
+                      groupName: 'foo',
+                      order: 'desc',
+                    },
+                  ],
+                  type: 'alphabetical',
+                  groups: ['foo'],
+                  order: 'asc',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'fooBar',
+                    left: 'fooZar',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+              ],
+              output: dedent`
+                let
+                  fooBar,
+                  fooZar,
+              `,
+              code: dedent`
+                let
+                  fooZar,
+                  fooBar,
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: does not sort custom groups with 'unsorted' type`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'unsortedUninitialized',
+                      selector: 'uninitialized',
+                      type: 'unsorted',
+                    },
+                  ],
+                  groups: ['unsortedUninitialized', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unsortedUninitialized',
+                    leftGroup: 'unknown',
+                    right: 'c',
+                    left: 'm',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsGroupOrder',
+                },
+              ],
+              output: dedent`
+                let
+                  b,
+                  a,
+                  d,
+                  e,
+                  c,
+                  m = 'm',
+              `,
+              code: dedent`
+                let
+                  b,
+                  a,
+                  d,
+                  e,
+                  m = 'm',
+                  c,
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    anyOf: [
+                      {
+                        elementNamePattern: 'foo|Foo',
+                        selector: 'uninitialized',
+                      },
+                      {
+                        elementNamePattern: 'foo|Foo',
+                        selector: 'initialized',
+                      },
+                    ],
+                    groupName: 'elementsIncludingFoo',
+                  },
+                ],
+                groups: ['elementsIncludingFoo', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'elementsIncludingFoo',
+                  leftGroup: 'unknown',
+                  right: 'cFoo',
+                  left: 'a',
+                },
+                messageId: 'unexpectedVariableDeclarationsGroupOrder',
+              },
+            ],
+            output: dedent`
+              let
+                cFoo,
+                foo = 'foo',
+                a,
+            `,
+            code: dedent`
+              let
+                a,
+                cFoo,
+                foo = 'foo',
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: allows to use regex for element names in custom groups`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: '^(?!.*Foo).*$',
+                      groupName: 'elementsWithoutFoo',
+                    },
+                  ],
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                  type: 'alphabetical',
+                },
+              ],
+              code: dedent`
+                let
+                  iHaveFooInMyName,
+                  meTooIHaveFoo,
+                  a,
+                  b,
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
 
     describe(`${ruleName}: newlinesBetween`, () => {
       ruleTester.run(

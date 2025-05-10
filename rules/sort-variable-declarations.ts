@@ -4,6 +4,7 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import type { Selector, Options } from './sort-variable-declarations/types'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
@@ -18,11 +19,14 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { singleCustomGroupJsonSchema } from './sort-variable-declarations/types'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
+import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -52,6 +56,7 @@ let defaultOptions: Required<Options[0]> = {
   partitionByComment: false,
   newlinesBetween: 'ignore',
   type: 'alphabetical',
+  customGroups: [],
   ignoreCase: true,
   locales: 'en-US',
   alphabet: '',
@@ -108,14 +113,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
           let sortingNode: SortingNodeWithDependencies = {
+            group: computeGroup({
+              customGroupMatcher: customGroup =>
+                doesCustomGroupMatch({
+                  selectors: [selector],
+                  elementName: name,
+                  modifiers: [],
+                  customGroup,
+                }),
+              predefinedGroups,
+              options,
+            }),
             isEslintDisabled: isNodeEslintDisabled(
               declaration,
               eslintDisabledLines,
             ),
-            group: computeGroup({
-              predefinedGroups,
-              options,
-            }),
             size: rangeToDiff(declaration, sourceCode),
             dependencyNames: [name],
             node: declaration,
@@ -146,7 +158,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ): SortingNodeWithDependencies[] => {
         let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
           sortNodesByGroups({
-            getOptionsByGroupNumber: () => ({ options }),
+            getOptionsByGroupNumber:
+              buildGetCustomGroupOverriddenOptionsFunction(options),
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes,
@@ -180,17 +193,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
     },
   }),
   meta: {
-    messages: {
-      missedSpacingBetweenVariableDeclarationsMembers: MISSED_SPACING_ERROR,
-      unexpectedVariableDeclarationsDependencyOrder: DEPENDENCY_ORDER_ERROR,
-      extraSpacingBetweenVariableDeclarationsMembers: EXTRA_SPACING_ERROR,
-      unexpectedVariableDeclarationsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedVariableDeclarationsOrder: ORDER_ERROR,
-    },
     schema: [
       {
         properties: {
           ...commonJsonSchemas,
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
@@ -200,6 +209,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
         type: 'object',
       },
     ],
+    messages: {
+      missedSpacingBetweenVariableDeclarationsMembers: MISSED_SPACING_ERROR,
+      unexpectedVariableDeclarationsDependencyOrder: DEPENDENCY_ORDER_ERROR,
+      extraSpacingBetweenVariableDeclarationsMembers: EXTRA_SPACING_ERROR,
+      unexpectedVariableDeclarationsGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedVariableDeclarationsOrder: ORDER_ERROR,
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-variable-declarations',
       description: 'Enforce sorted variable declarations.',

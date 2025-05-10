@@ -255,6 +255,66 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 }
 ```
 
+### customGroups
+
+<sub>
+  type: `Array<CustomGroupDefinition | CustomGroupAnyOfDefinition>`
+</sub>
+<sub>default: `[]`</sub>
+
+Defines custom groups to match specific object type members.
+
+A custom group definition may follow one of the two following interfaces:
+
+```ts
+interface CustomGroupDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  newlinesInside?: 'always' | 'never'
+  selector?: string
+  elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+}
+
+```
+A declaration will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+
+or:
+
+```ts
+interface CustomGroupAnyOfDefinition {
+  groupName: string
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  newlinesInside?: 'always' | 'never'
+  anyOf: Array<{
+      selector?: string
+      elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+  }>
+}
+```
+
+A declaration will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+
+#### Attributes
+
+- `groupName` — The group's name, which needs to be put in the [`groups`](#groups) option.
+- `selector` — Filter on the `selector` of the element.
+- `elementNamePattern` — If entered, will check that the name of the element matches the pattern entered.
+- `type` — Overrides the [`type`](#type) option for that custom group. `unsorted` will not sort the group.
+- `order` — Overrides the [`order`](#order) option for that custom group.
+- `fallbackSort` — Overrides the [`fallbackSort`](#fallbacksort) option for that custom group.
+- `newlinesInside` — Enforces a specific newline behavior between elements of the group.
+
+#### Match importance
+
+The `customGroups` list is ordered:
+The first custom group definition that matches an element will be used.
+
+Custom groups have a higher priority than any predefined group.
+
 ## Usage
 
 <CodeTabs
@@ -282,6 +342,7 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
                   partitionByComment: false,
                   newlinesBetween: 'ignore',
                   groups: [],
+                  customGroups: [],
                 },
               ],
             },
@@ -311,6 +372,7 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
                 partitionByComment: false,
                 newlinesBetween: 'ignore',
                 groups: [],
+                customGroups: [],
               },
             ],
           },
