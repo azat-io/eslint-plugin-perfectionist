@@ -128,6 +128,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let tsConfigOutput = options.tsconfigRootDir
       ? readClosestTsConfigByPath({
           tsconfigRootDir: options.tsconfigRootDir,
+          tsconfigFilenames: ['tsconfig.json'],
           filePath: context.physicalFilename,
           contextCwd: context.cwd,
         })
