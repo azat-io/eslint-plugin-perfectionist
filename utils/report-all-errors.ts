@@ -22,11 +22,11 @@ interface ReportAllErrorsParameters<
     missedSpacingBetweenMembers?: MessageIds
     extraSpacingBetweenMembers?: MessageIds
     unexpectedDependencyOrder?: MessageIds
-    unexpectedGroupOrder?: MessageIds
+    unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
   options: {
-    groups?: GroupsOptions<string>
+    groups: GroupsOptions<string>
   } & MakeFixesParameters<T>['options']
   sortNodesExcludingEslintDisabled(ignoreEslintDisabledNodes: boolean): T[]
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
@@ -61,8 +61,8 @@ export let reportAllErrors = <
       : new Set<SortingNodeWithDependencies>()
 
   pairwise(nodes, (left, right) => {
-    let leftNumber = options.groups ? getGroupNumber(options.groups, left) : 0
-    let rightNumber = options.groups ? getGroupNumber(options.groups, right) : 0
+    let leftNumber = getGroupNumber(options.groups, left)
+    let rightNumber = getGroupNumber(options.groups, right)
 
     let leftIndex = nodeIndexMap.get(left)!
     let rightIndex = nodeIndexMap.get(right)!
@@ -101,7 +101,6 @@ export let reportAllErrors = <
 
     if (
       options.newlinesBetween &&
-      options.groups &&
       availableMessageIds.missedSpacingBetweenMembers &&
       availableMessageIds.extraSpacingBetweenMembers
     ) {
@@ -111,7 +110,6 @@ export let reportAllErrors = <
           options: {
             ...options,
             newlinesBetween: options.newlinesBetween,
-            groups: options.groups,
           },
           missedSpacingError: availableMessageIds.missedSpacingBetweenMembers,
           extraSpacingError: availableMessageIds.extraSpacingBetweenMembers,
