@@ -311,266 +311,381 @@ describe(ruleName, () => {
           ],
         },
       )
-    })
 
-    ruleTester.run(
-      `${ruleName}(${type}) detects function expression dependencies`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = () => 1,
-              a = b();
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let b = function() { return 1 },
-              a = b();
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let b = () => 1,
-              a = a.map(b);
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects dependencies in objects`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = 1,
-              a = {x: b};
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let b = 1,
-              a = {[b]: 0};
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(`${ruleName}(${type}) detects chained dependencies`, rule, {
-      valid: [
+      ruleTester.run(
+        `${ruleName}(${type}) detects function expression dependencies`,
+        rule,
         {
-          code: dedent`
-            let b = {x: 1},
-            a = b.x;
-          `,
-          options: [options],
+          valid: [
+            {
+              code: dedent`
+                let b = () => 1,
+                a = b();
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = function() { return 1 },
+                a = b();
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = () => 1,
+                a = a.map(b);
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
         },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in objects`,
+        rule,
         {
-          code: dedent`
-            let b = new Subject(),
-            a = b.asObservable();
-          `,
-          options: [options],
+          valid: [
+            {
+              code: dedent`
+                let b = 1,
+                a = {x: b};
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = 1,
+                a = {[b]: 0};
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
         },
-      ],
-      invalid: [],
-    })
+      )
 
-    ruleTester.run(
-      `${ruleName}(${type}) detects optional chained dependencies`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = {x: 1},
-              a = b?.x;
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects non-null asserted dependencies`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = 1,
-              a = b!;
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(`${ruleName}(${type}) detects unary dependencies`, rule, {
-      valid: [
+      ruleTester.run(
+        `${ruleName}(${type}) detects chained dependencies`,
+        rule,
         {
-          code: dedent`
-            let b = true,
-            a = !b;
-          `,
-          options: [options],
+          valid: [
+            {
+              code: dedent`
+                let b = {x: 1},
+                a = b.x;
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = new Subject(),
+                a = b.asObservable();
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
         },
-      ],
-      invalid: [],
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects optional chained dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = {x: 1},
+                a = b?.x;
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects non-null asserted dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = 1,
+                a = b!;
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}(${type}) detects unary dependencies`, rule, {
+        valid: [
+          {
+            code: dedent`
+              let b = true,
+              a = !b;
+            `,
+            options: [options],
+          },
+        ],
+        invalid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects spread elements dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = {x: 1},
+                a = {b = 'b',};
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = [1]
+                a = [b = 'b',];
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in conditional expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = 0,
+                a = b ? 1 : 0;
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = 0,
+                a = x ? b : 0;
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let b = 0,
+                a = x ? 0 : b;
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in 'as' expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = 'b',
+                a = b as any;
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in type assertion expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = 'b',
+                a = <any>b;
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in template literal expressions`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let b = 'b',
+                a = \`\${b}\`
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) ignores function body dependencies`,
+        rule,
+        {
+          valid: [
+            {
+              code: dedent`
+                let a = () => b,
+                b = 1;
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let a = function() { return b },
+                b = 1;
+              `,
+              options: [options],
+            },
+            {
+              code: dedent`
+                let a = () => {return b},
+                b = 1;
+              `,
+              options: [options],
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over group configuration`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      groupName: 'variablesStartingWithA',
+                      elementNamePattern: 'a',
+                    },
+                    {
+                      groupName: 'variablesStartingWithB',
+                      elementNamePattern: 'b',
+                    },
+                  ],
+                  groups: ['variablesStartingWithA', 'variablesStartingWithB'],
+                },
+              ],
+              code: dedent`
+                let
+                  b,
+                  a = b,
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByComment`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'a',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  partitionByComment: '^Part',
+                },
+              ],
+              output: dedent`
+                let
+                  a = 0,
+                  // Part: 1
+                  b = a,
+              `,
+              code: dedent`
+                let
+                  b = a,
+                  // Part: 1
+                  a = 0,
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): prioritizes dependencies over partitionByNewLine`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'b',
+                    right: 'a',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  partitionByNewLine: true,
+                },
+              ],
+              output: dedent`
+                let
+                  a = 0,
+
+                  b = a,
+              `,
+              code: dedent`
+                let
+                  b = a,
+
+                  a = 0,
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects spread elements dependencies`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = {x: 1},
-              a = {...b};
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let b = [1]
-              a = [...b];
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects dependencies in conditional expressions`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = 0,
-              a = b ? 1 : 0;
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let b = 0,
-              a = x ? b : 0;
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let b = 0,
-              a = x ? 0 : b;
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects dependencies in 'as' expressions`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = 'b',
-              a = b as any;
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects dependencies in type assertion expressions`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = 'b',
-              a = <any>b;
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) detects dependencies in template literal expressions`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let b = 'b',
-              a = \`\${b}\`
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
-
-    ruleTester.run(
-      `${ruleName}(${type}) ignores function body dependencies`,
-      rule,
-      {
-        valid: [
-          {
-            code: dedent`
-              let a = () => b,
-              b = 1;
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let a = function() { return b },
-              b = 1;
-            `,
-            options: [options],
-          },
-          {
-            code: dedent`
-              let a = () => {return b},
-              b = 1;
-            `,
-            options: [options],
-          },
-        ],
-        invalid: [],
-      },
-    )
 
     ruleTester.run(
       `${ruleName}(${type}): allows to use new line as partition`,
@@ -1142,6 +1257,873 @@ describe(ruleName, () => {
         valid: [],
       },
     )
+
+    ruleTester.run(
+      `${ruleName}(${type}): allows to use predefined groups`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  leftGroup: 'uninitialized',
+                  rightGroup: 'initialized',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedVariableDeclarationsGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['initialized', 'uninitialized'],
+              },
+            ],
+            output: dedent`
+              let
+                b ='b',
+                a,
+            `,
+            code: dedent`
+              let
+                a,
+                b ='b',
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
+
+    describe(`${ruleName}: custom groups`, () => {
+      ruleTester.run(`${ruleName}: filters on selector`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'uninitializedElements',
+                  leftGroup: 'unknown',
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedVariableDeclarationsGroupOrder',
+              },
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'uninitializedElements',
+                    selector: 'uninitialized',
+                  },
+                ],
+                groups: ['uninitializedElements', 'unknown'],
+              },
+            ],
+            output: dedent`
+              let
+                a,
+                b = 'b',
+            `,
+            code: dedent`
+              let
+                b = 'b',
+                a,
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      for (let elementNamePattern of [
+        'hello',
+        ['noMatch', 'hello'],
+        { pattern: 'HELLO', flags: 'i' },
+        ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+      ]) {
+        ruleTester.run(`${ruleName}: filters on elementNamePattern`, rule, {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'uninitializedStartingWithHello',
+                      selector: 'uninitialized',
+                      elementNamePattern,
+                    },
+                  ],
+                  groups: ['uninitializedStartingWithHello', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'uninitializedStartingWithHello',
+                    right: 'helloUninitialized',
+                    leftGroup: 'unknown',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsGroupOrder',
+                },
+              ],
+              output: dedent`
+                let
+                  helloUninitialized,
+                  a,
+                  b,
+              `,
+              code: dedent`
+                let
+                  a,
+                  b,
+                  helloUninitialized,
+              `,
+            },
+          ],
+          valid: [],
+        })
+      }
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'type' and 'order'`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'bb',
+                    left: 'a',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+                {
+                  data: {
+                    right: 'ccc',
+                    left: 'bb',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+                {
+                  data: {
+                    right: 'dddd',
+                    left: 'ccc',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+                {
+                  data: {
+                    rightGroup: 'reversedUninitializedByLineLength',
+                    leftGroup: 'unknown',
+                    right: 'eee',
+                    left: 'm',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsGroupOrder',
+                },
+              ],
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'reversedUninitializedByLineLength',
+                      selector: 'uninitialized',
+                      type: 'line-length',
+                      order: 'desc',
+                    },
+                  ],
+                  groups: ['reversedUninitializedByLineLength', 'unknown'],
+                  type: 'alphabetical',
+
+                  order: 'asc',
+                },
+              ],
+              output: dedent`
+                let
+                  dddd,
+                  ccc,
+                  eee,
+                  bb,
+                  ff,
+                  a,
+                  g,
+                  m = 'm',
+                  o = 'o',
+                  p = 'p',
+              `,
+              code: dedent`
+                let
+                  a,
+                  bb,
+                  ccc,
+                  dddd,
+                  m = 'm',
+                  eee,
+                  ff,
+                  g,
+                  o = 'o',
+                  p = 'p',
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: sort custom groups by overriding 'fallbackSort'`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      fallbackSort: {
+                        type: 'alphabetical',
+                        order: 'asc',
+                      },
+                      elementNamePattern: '^foo',
+                      type: 'line-length',
+                      groupName: 'foo',
+                      order: 'desc',
+                    },
+                  ],
+                  type: 'alphabetical',
+                  groups: ['foo'],
+                  order: 'asc',
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'fooBar',
+                    left: 'fooZar',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+              ],
+              output: dedent`
+                let
+                  fooBar,
+                  fooZar,
+              `,
+              code: dedent`
+                let
+                  fooZar,
+                  fooBar,
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}: does not sort custom groups with 'unsorted' type`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      groupName: 'unsortedUninitialized',
+                      selector: 'uninitialized',
+                      type: 'unsorted',
+                    },
+                  ],
+                  groups: ['unsortedUninitialized', 'unknown'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unsortedUninitialized',
+                    leftGroup: 'unknown',
+                    right: 'c',
+                    left: 'm',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsGroupOrder',
+                },
+              ],
+              output: dedent`
+                let
+                  b,
+                  a,
+                  d,
+                  e,
+                  c,
+                  m = 'm',
+              `,
+              code: dedent`
+                let
+                  b,
+                  a,
+                  d,
+                  e,
+                  m = 'm',
+                  c,
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(`${ruleName}: sort custom group blocks`, rule, {
+        invalid: [
+          {
+            options: [
+              {
+                customGroups: [
+                  {
+                    anyOf: [
+                      {
+                        elementNamePattern: 'foo|Foo',
+                        selector: 'uninitialized',
+                      },
+                      {
+                        elementNamePattern: 'foo|Foo',
+                        selector: 'initialized',
+                      },
+                    ],
+                    groupName: 'elementsIncludingFoo',
+                  },
+                ],
+                groups: ['elementsIncludingFoo', 'unknown'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'elementsIncludingFoo',
+                  leftGroup: 'unknown',
+                  right: 'cFoo',
+                  left: 'a',
+                },
+                messageId: 'unexpectedVariableDeclarationsGroupOrder',
+              },
+            ],
+            output: dedent`
+              let
+                cFoo,
+                foo = 'foo',
+                a,
+            `,
+            code: dedent`
+              let
+                a,
+                cFoo,
+                foo = 'foo',
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}: allows to use regex for element names in custom groups`,
+        rule,
+        {
+          valid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: '^(?!.*Foo).*$',
+                      groupName: 'elementsWithoutFoo',
+                    },
+                  ],
+                  groups: ['unknown', 'elementsWithoutFoo'],
+                  type: 'alphabetical',
+                },
+              ],
+              code: dedent`
+                let
+                  iHaveFooInMyName,
+                  meTooIHaveFoo,
+                  a,
+                  b,
+              `,
+            },
+          ],
+          invalid: [],
+        },
+      )
+    })
+
+    describe(`${ruleName}: newlinesBetween`, () => {
+      ruleTester.run(
+        `${ruleName}(${type}): removes newlines when never`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'y',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'z',
+                  },
+                  messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                  ],
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                },
+              ],
+              code: dedent`
+                let
+                  a,
+
+
+                 y,
+                z,
+
+                    b,
+              `,
+              output: dedent`
+                let
+                  a,
+                 b,
+                y,
+                    z,
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}): keeps one newline when always`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    right: 'z',
+                    left: 'a',
+                  },
+                  messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+                },
+                {
+                  data: {
+                    right: 'y',
+                    left: 'z',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsOrder',
+                },
+                {
+                  data: {
+                    right: 'b',
+                    left: 'y',
+                  },
+                  messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                    {
+                      elementNamePattern: 'b',
+                      groupName: 'b',
+                    },
+                  ],
+                  groups: ['a', 'unknown', 'b'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              output: dedent`
+                let
+                  a,
+
+                 y,
+                z,
+
+                    b,
+              `,
+              code: dedent`
+                let
+                  a,
+
+
+                 z,
+                y,
+                    b,
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
+        ruleTester.run(
+          `${ruleName}(${type}): handles "newlinesBetween" between consecutive groups`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      'a',
+                      { newlinesBetween: 'always' },
+                      'b',
+                      { newlinesBetween: 'always' },
+                      'c',
+                      { newlinesBetween: 'never' },
+                      'd',
+                      { newlinesBetween: 'ignore' },
+                      'e',
+                    ],
+                    customGroups: [
+                      { elementNamePattern: 'a', groupName: 'a' },
+                      { elementNamePattern: 'b', groupName: 'b' },
+                      { elementNamePattern: 'c', groupName: 'c' },
+                      { elementNamePattern: 'd', groupName: 'd' },
+                      { elementNamePattern: 'e', groupName: 'e' },
+                    ],
+                    newlinesBetween: 'always',
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId:
+                      'missedSpacingBetweenVariableDeclarationsMembers',
+                  },
+                  {
+                    data: {
+                      right: 'c',
+                      left: 'b',
+                    },
+                    messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+                  },
+                  {
+                    data: {
+                      right: 'd',
+                      left: 'c',
+                    },
+                    messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+                  },
+                ],
+                output: dedent`
+                  let
+                    a,
+
+                    b,
+
+                    c,
+                    d,
+
+
+                    e
+                `,
+                code: dedent`
+                  let
+                    a,
+                    b,
+
+
+                    c,
+
+                    d,
+
+
+                    e
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+
+        describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
+          for (let [globalNewlinesBetween, groupNewlinesBetween] of [
+            ['always', 'never'] as const,
+            ['always', 'ignore'] as const,
+            ['never', 'always'] as const,
+            ['ignore', 'always'] as const,
+          ]) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        groups: [
+                          'a',
+                          'unusedGroup',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'b',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'b',
+                          left: 'a',
+                        },
+                        messageId:
+                          'missedSpacingBetweenVariableDeclarationsMembers',
+                      },
+                    ],
+                    output: dedent`
+                      let
+                        a,
+
+                        b,
+                    `,
+                    code: dedent`
+                      let
+                        a,
+                        b,
+                    `,
+                  },
+                ],
+                valid: [],
+              },
+            )
+          }
+
+          for (let globalNewlinesBetween of [
+            'always',
+            'ignore',
+            'never',
+          ] as const) {
+            ruleTester.run(
+              `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
+              rule,
+              {
+                invalid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        groups: [
+                          'a',
+                          { newlinesBetween: 'never' },
+                          'unusedGroup',
+                          { newlinesBetween: 'never' },
+                          'b',
+                          { newlinesBetween: 'always' },
+                          'c',
+                        ],
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { elementNamePattern: 'c', groupName: 'c' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    errors: [
+                      {
+                        data: {
+                          right: 'b',
+                          left: 'a',
+                        },
+                        messageId:
+                          'extraSpacingBetweenVariableDeclarationsMembers',
+                      },
+                    ],
+                    output: dedent`
+                      let
+                        a,
+                        b,
+                    `,
+                    code: dedent`
+                      let
+                        a,
+
+                        b,
+                    `,
+                  },
+                ],
+                valid: [],
+              },
+            )
+          }
+
+          for (let [globalNewlinesBetween, groupNewlinesBetween] of [
+            ['ignore', 'never'] as const,
+            ['never', 'ignore'] as const,
+          ]) {
+            ruleTester.run(
+              `${ruleName}(${type}): does not enforce a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              rule,
+              {
+                valid: [
+                  {
+                    options: [
+                      {
+                        ...options,
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        groups: [
+                          'a',
+                          'unusedGroup',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'b',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    code: dedent`
+                      let
+                        a,
+
+                        b,
+                    `,
+                  },
+                  {
+                    options: [
+                      {
+                        ...options,
+                        customGroups: [
+                          { elementNamePattern: 'a', groupName: 'a' },
+                          { elementNamePattern: 'b', groupName: 'b' },
+                          { groupName: 'unusedGroup', elementNamePattern: 'X' },
+                        ],
+                        groups: [
+                          'a',
+                          'unusedGroup',
+                          { newlinesBetween: groupNewlinesBetween },
+                          'b',
+                        ],
+                        newlinesBetween: globalNewlinesBetween,
+                      },
+                    ],
+                    code: dedent`
+                      let
+                        a,
+                        b,
+                    `,
+                  },
+                ],
+                invalid: [],
+              },
+            )
+          }
+        })
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): handles newlines and comment after fixes`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  customGroups: [
+                    {
+                      elementNamePattern: 'b|c',
+                      groupName: 'b|c',
+                    },
+                  ],
+                  groups: ['unknown', 'b|c'],
+                  newlinesBetween: 'always',
+                },
+              ],
+              output: [
+                dedent`
+                  let
+                    a, // Comment after
+                    b,
+
+                    c
+                `,
+                dedent`
+                  let
+                    a, // Comment after
+
+                    b,
+                    c
+                `,
+              ],
+              errors: [
+                {
+                  data: {
+                    rightGroup: 'unknown',
+                    leftGroup: 'b|c',
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedVariableDeclarationsGroupOrder',
+                },
+              ],
+              code: dedent`
+                let
+                  b,
+                  a, // Comment after
+
+                  c
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -1643,6 +2625,51 @@ describe(ruleName, () => {
         },
       ],
       invalid: [],
+    })
+
+    ruleTester.run(`${ruleName}(${type}): enforces newlines between`, rule, {
+      invalid: [
+        {
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              newlinesBetween: 'always',
+              groups: ['b', 'a'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+            },
+          ],
+          output: dedent`
+            let
+              b,
+
+              a,
+          `,
+          code: dedent`
+            let
+              b,
+              a,
+          `,
+        },
+      ],
+      valid: [],
     })
 
     ruleTester.run(`${ruleName}(${type}): enforces dependency sorting`, rule, {

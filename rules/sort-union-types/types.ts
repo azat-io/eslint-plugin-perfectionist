@@ -14,17 +14,15 @@ import {
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
 
-export type Options = [
-  Partial<
-    {
-      customGroups: CustomGroupsOption<SingleCustomGroup>
-      partitionByComment: PartitionByCommentOption
-      newlinesBetween: NewlinesBetweenOption
-      groups: GroupsOptions<Group>
-      partitionByNewLine: boolean
-    } & CommonOptions
-  >,
-]
+export type Options = Partial<
+  {
+    customGroups: CustomGroupsOption<SingleCustomGroup>
+    partitionByComment: PartitionByCommentOption
+    newlinesBetween: NewlinesBetweenOption
+    groups: GroupsOptions<Group>
+    partitionByNewLine: boolean
+  } & CommonOptions
+>[]
 
 export type Selector =
   | IntersectionSelector
