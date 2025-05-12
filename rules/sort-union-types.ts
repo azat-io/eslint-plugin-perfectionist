@@ -65,18 +65,22 @@ let defaultOptions: Required<Options[0]> = {
 }
 
 export let jsonSchema: JSONSchema4 = {
-  properties: {
-    ...commonJsonSchemas,
-    customGroups: buildCustomGroupsArrayJsonSchema({
-      singleCustomGroupJsonSchema,
-    }),
-    partitionByComment: partitionByCommentJsonSchema,
-    partitionByNewLine: partitionByNewLineJsonSchema,
-    newlinesBetween: newlinesBetweenJsonSchema,
-    groups: groupsJsonSchema,
+  items: {
+    properties: {
+      ...commonJsonSchemas,
+      customGroups: buildCustomGroupsArrayJsonSchema({
+        singleCustomGroupJsonSchema,
+      }),
+      partitionByComment: partitionByCommentJsonSchema,
+      partitionByNewLine: partitionByNewLineJsonSchema,
+      newlinesBetween: newlinesBetweenJsonSchema,
+      groups: groupsJsonSchema,
+    },
+    additionalProperties: false,
+    type: 'object',
   },
-  additionalProperties: false,
-  type: 'object',
+  uniqueItems: true,
+  type: 'array',
 }
 
 export default createEslintRule<Options, MESSAGE_ID>({
@@ -107,7 +111,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       description: 'Enforce sorted union types.',
       recommended: true,
     },
-    schema: [jsonSchema],
+    schema: jsonSchema,
     type: 'suggestion',
     fixable: 'code',
   },
