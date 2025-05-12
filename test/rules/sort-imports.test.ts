@@ -3962,6 +3962,43 @@ describe(ruleName, () => {
       ],
       valid: [],
     })
+
+    ruleTester.run(
+      `${ruleName}(${type}): use pattern @ as internal import`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: '@/a',
+                  left: 'b',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['external', 'internal'],
+                newlinesBetween: 'always',
+              },
+            ],
+            output: dedent`
+              import { b } from 'b'
+
+              import { a } from '@/a'
+            `,
+            code: dedent`
+              import { b } from 'b'
+              import { a } from '@/a'
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {
@@ -5236,6 +5273,43 @@ describe(ruleName, () => {
             ],
           },
         ],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): use pattern @ as internal import`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: '@/a',
+                  left: 'b',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['external', 'internal'],
+                newlinesBetween: 'always',
+              },
+            ],
+            output: dedent`
+              import { b } from 'b'
+
+              import { a } from '@/a'
+            `,
+            code: dedent`
+              import { b } from 'b'
+              import { a } from '@/a'
+            `,
+          },
+        ],
+        valid: [],
       },
     )
   })
@@ -6702,6 +6776,43 @@ describe(ruleName, () => {
               import { c } from 'c'
               import { bb } from 'bb'
               import { a } from 'a'
+            `,
+          },
+        ],
+        valid: [],
+      },
+    )
+
+    ruleTester.run(
+      `${ruleName}(${type}): use pattern @ as internal import`,
+      rule,
+      {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  right: '@/a',
+                  left: 'b',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: ['external', 'internal'],
+                newlinesBetween: 'always',
+              },
+            ],
+            output: dedent`
+              import { b } from 'b'
+
+              import { a } from '@/a'
+            `,
+            code: dedent`
+              import { b } from 'b'
+              import { a } from '@/a'
             `,
           },
         ],
