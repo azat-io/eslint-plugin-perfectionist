@@ -87,8 +87,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let userOptions = context.options.at(0)
     let options = getOptionsWithCleanGroups(
       complete(userOptions, settings, {
+        internalPattern: ['^~/.+', '^@/.+'],
         fallbackSort: { type: 'unsorted' },
-        internalPattern: ['^~/.+'],
         partitionByComment: false,
         partitionByNewLine: false,
         newlinesBetween: 'always',
@@ -489,7 +489,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [
     {
       customGroups: { value: {}, type: {} },
-      internalPattern: ['^~/.+'],
+      internalPattern: ['^~/.+', '^@/.+'],
       partitionByComment: false,
       partitionByNewLine: false,
       specialCharacters: 'keep',
