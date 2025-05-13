@@ -1,22 +1,22 @@
 import type { GroupsOptions } from '../types/common-options'
 
-import { isNewlinesBetweenOption } from './is-newlines-between-option'
-
 export let validateObjectsInsideGroups = ({
   groups,
 }: {
   groups: GroupsOptions<string>
 }): void => {
-  let isPreviousElementNewlinesBetween = false
-  for (let groupElement of groups) {
-    if (!isNewlinesBetweenOption(groupElement)) {
-      isPreviousElementNewlinesBetween = false
+  let isPreviousElementObject = false
+  for (let group of groups) {
+    if (typeof group === 'string' || Array.isArray(group)) {
+      isPreviousElementObject = false
       continue
     }
-    // There should not be two consecutive `newlinesBetween` objects
-    if (isPreviousElementNewlinesBetween) {
-      throw new Error("Consecutive 'newlinesBetween' objects are not allowed")
+
+    if (isPreviousElementObject) {
+      throw new Error(
+        'Consecutive objects (`newlinesBetween` or `commentAbove` are not allowed: merge them into a single object',
+      )
     }
-    isPreviousElementNewlinesBetween = true
+    isPreviousElementObject = true
   }
 }
