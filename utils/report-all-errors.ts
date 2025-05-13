@@ -7,6 +7,7 @@ import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
 import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
+import { getCommentAboveThatShouldExist } from './get-comment-above-that-should-exist'
 import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
 import { getNewlinesBetweenErrors } from './get-newlines-between-errors'
 import { createNodeIndexMap } from './create-node-index-map'
@@ -23,6 +24,7 @@ interface ReportAllErrorsParameters<
     extraSpacingBetweenMembers?: MessageIds
     unexpectedDependencyOrder?: MessageIds
     unexpectedGroupOrder: MessageIds
+    missedCommentAbove?: MessageIds
     unexpectedOrder: MessageIds
   }
   options: {
@@ -129,11 +131,27 @@ export let reportAllErrors = <
       ]
     }
 
+    let commentAboveMissing: undefined | string
+    if (availableMessageIds.missedCommentAbove) {
+      let commentAboveThatShouldExist = getCommentAboveThatShouldExist({
+        leftGroupIndex: leftInfo?.groupIndex ?? null,
+        sortingNode: right,
+        rightGroupIndex,
+        sourceCode,
+        options,
+      })
+      if (commentAboveThatShouldExist && !commentAboveThatShouldExist.exists) {
+        commentAboveMissing = commentAboveThatShouldExist.comment
+        messageIds = [...messageIds, availableMessageIds.missedCommentAbove]
+      }
+    }
+
     reportErrors({
       sortedNodes: sortedNodesExcludingEslintDisabled,
       ignoreFirstNodeHighestBlockComment,
       firstUnorderedNodeDependentOnRight,
       newlinesBetweenValueGetter,
+      commentAboveMissing,
       messageIds,
       sourceCode,
       options,
