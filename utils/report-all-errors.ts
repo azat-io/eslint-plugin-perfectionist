@@ -61,10 +61,14 @@ export let reportAllErrors = <
       : new Set<SortingNodeWithDependencies>()
 
   pairwise(nodes, (left, right) => {
-    let leftGroupIndex = getGroupIndex(options.groups, left)
-    let rightGroupIndex = getGroupIndex(options.groups, right)
+    let leftInfo = left
+      ? {
+          groupIndex: getGroupIndex(options.groups, left),
+          index: nodeIndexMap.get(left)!,
+        }
+      : null
 
-    let leftIndex = nodeIndexMap.get(left)!
+    let rightGroupIndex = getGroupIndex(options.groups, right)
     let rightIndex = nodeIndexMap.get(right)!
 
     let indexOfRightExcludingEslintDisabled =
@@ -82,16 +86,17 @@ export let reportAllErrors = <
     }
 
     if (
-      firstUnorderedNodeDependentOnRight ||
-      leftIndex > rightIndex ||
-      (left.isEslintDisabled &&
-        leftIndex >= indexOfRightExcludingEslintDisabled)
+      leftInfo &&
+      (firstUnorderedNodeDependentOnRight ||
+        leftInfo.index > rightIndex ||
+        (left?.isEslintDisabled &&
+          leftInfo.index >= indexOfRightExcludingEslintDisabled))
     ) {
       if (firstUnorderedNodeDependentOnRight) {
         messageIds.push(availableMessageIds.unexpectedDependencyOrder!)
       } else {
         messageIds.push(
-          leftGroupIndex === rightGroupIndex ||
+          leftInfo.groupIndex === rightGroupIndex ||
             !availableMessageIds.unexpectedGroupOrder
             ? availableMessageIds.unexpectedOrder
             : availableMessageIds.unexpectedGroupOrder,
@@ -100,6 +105,7 @@ export let reportAllErrors = <
     }
 
     if (
+      left &&
       options.newlinesBetween &&
       availableMessageIds.missedSpacingBetweenMembers &&
       availableMessageIds.extraSpacingBetweenMembers
@@ -113,9 +119,9 @@ export let reportAllErrors = <
           },
           missedSpacingError: availableMessageIds.missedSpacingBetweenMembers,
           extraSpacingError: availableMessageIds.extraSpacingBetweenMembers,
+          leftGroupIndex: leftInfo!.groupIndex,
           newlinesBetweenValueGetter,
           rightGroupIndex,
-          leftGroupIndex,
           sourceCode,
           right,
           left,

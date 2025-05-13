@@ -97,6 +97,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let nodeIndexMap = createNodeIndexMap(sortedCaseNameSortingNodes)
 
         pairwise(caseNodesSortingNodeGroup, (left, right) => {
+          if (!left) {
+            return
+          }
+
           let leftIndex = nodeIndexMap.get(left)!
           let rightIndex = nodeIndexMap.get(right)!
 
@@ -230,6 +234,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       let sortingNodeGroupsForBlockSortFlat =
         sortingNodeGroupsForBlockSort.flat()
       pairwise(sortingNodeGroupsForBlockSortFlat, (left, right) => {
+        if (!left) {
+          return
+        }
+
         let indexOfLeft = sortedSortingNodeGroupsForBlockSort.indexOf(left)
         let indexOfRight = sortedSortingNodeGroupsForBlockSort.indexOf(right)
         if (indexOfLeft < indexOfRight) {

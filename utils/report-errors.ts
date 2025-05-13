@@ -35,9 +35,9 @@ interface ReportErrorsParameters<
   sourceCode: TSESLint.SourceCode
   messageIds: MessageIds[]
   sortedNodes: T[]
+  left: null | T
   nodes: T[]
   right: T
-  left: T
 }
 
 export let reportErrors = <MessageIds extends string, T extends SortingNode>({
