@@ -1,6 +1,7 @@
 import type { GroupsOptions } from '../types/common-options'
 
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
+import { isCommentAboveOption } from './is-comment-above-option'
 
 /**
  * Throws an error if a group is specified more than once
@@ -18,7 +19,7 @@ export let validateNoDuplicatedGroups = ({
   let duplicatedGroups = new Set<string>()
 
   for (let group of flattenGroups) {
-    if (isNewlinesBetweenOption(group)) {
+    if (isNewlinesBetweenOption(group) || isCommentAboveOption(group)) {
       continue
     }
     if (seenGroups.has(group)) {
