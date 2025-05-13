@@ -35,11 +35,9 @@ export type TypeOption =
   | 'natural'
   | 'custom'
 
-export type GroupsOptions<T> = (
-  | { newlinesBetween: NewlinesBetweenOption }
-  | T[]
-  | T
-)[]
+export interface GroupNewlinesBetweenOption {
+  newlinesBetween: NewlinesBetweenOption
+}
 
 export interface AnyOfCustomGroup<SingleCustomGroup> {
   anyOf: SingleCustomGroup[]
@@ -51,6 +49,8 @@ export interface FallbackSortOption {
 }
 
 export type DeprecatedCustomGroupsOption = Record<string, string[] | string>
+
+export type GroupsOptions<T> = (GroupNewlinesBetweenOption | T[] | T)[]
 
 export type RegexOption = SingleRegexOption[] | SingleRegexOption
 
