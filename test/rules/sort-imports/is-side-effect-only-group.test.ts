@@ -11,6 +11,14 @@ describe('is-side-effect-only-group', () => {
     ).toBeFalsy()
   })
 
+  it('should return false if option is a commentAbove option', () => {
+    expect(
+      isSideEffectOnlyGroup({
+        commentAbove: 'foo',
+      }),
+    ).toBeFalsy()
+  })
+
   it.each(['side-effect', 'side-effect-style'])(
     'should return true if option `%s`',
     group => {
