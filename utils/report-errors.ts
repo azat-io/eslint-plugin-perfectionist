@@ -4,7 +4,6 @@ import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
-import { toSingleLine } from './to-single-line'
 import { makeFixes } from './make-fixes'
 
 const NODE_DEPENDENT_ON_RIGHT = 'nodeDependentOnRight'
@@ -78,3 +77,6 @@ export let reportErrors = <MessageIds extends string, T extends SortingNode>({
     })
   }
 }
+
+let toSingleLine = (string: string): string =>
+  string.replaceAll(/\s{2,}/gu, ' ').trim()
