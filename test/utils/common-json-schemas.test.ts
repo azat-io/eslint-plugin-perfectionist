@@ -214,6 +214,38 @@ describe('common-json-schemas', () => {
       })
     })
 
+    describe('commentAbove', () => {
+      it("should allow 'commentAbove'", () => {
+        expect(
+          groupsJsonSchemaValidator([
+            'group1',
+            { commentAbove: 'foo' },
+            'group2',
+          ]),
+        ).toBeTruthy()
+      })
+
+      it('should not allow additional properties', () => {
+        expect(
+          groupsJsonSchemaValidator([
+            'group1',
+            { something: 'something', commentAbove: 'foo' },
+            'group2',
+          ]),
+        ).toBeFalsy()
+      })
+    })
+
+    it("should allow 'newlinesBetween' and 'commentAbove'", () => {
+      expect(
+        groupsJsonSchemaValidator([
+          'group1',
+          { newlinesBetween: 'always', commentAbove: 'foo' },
+          'group2',
+        ]),
+      ).toBeTruthy()
+    })
+
     it('should not allow the empty object', () => {
       expect(groupsJsonSchemaValidator(['group1', {}, 'group2'])).toBeFalsy()
     })
