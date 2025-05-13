@@ -1,5 +1,26 @@
 # Changelog
 
+## v4.13.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.12.3...v4.13.0)
+
+### 🚀 Features
+
+- **sort-union-types:** Migrate groups to new api ([28d2170](https://github.com/azat-io/eslint-plugin-perfectionist/commit/28d2170))
+- **sort-variable-declarations:** Add groups and custom groups ([911e6fa](https://github.com/azat-io/eslint-plugin-perfectionist/commit/911e6fa))
+- Use @/ as internal import pattern by default ([cbc91e0](https://github.com/azat-io/eslint-plugin-perfectionist/commit/cbc91e0))
+
+### 🐞 Bug Fixes
+
+- **sort-imports:** Fix weak json schema typings generated ([45306fa](https://github.com/azat-io/eslint-plugin-perfectionist/commit/45306fa))
+- Strengthen json schemas ([c7f62a0](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c7f62a0))
+- Ignore shebang comments ([d08e071](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d08e071))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](https://github.com/azat-io))
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v4.12.3
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.12.2...v4.12.3)
