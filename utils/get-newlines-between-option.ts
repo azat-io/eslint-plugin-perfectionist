@@ -7,7 +7,7 @@ import type {
 import type { SortingNode } from '../types/sorting-node'
 
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
-import { getGroupNumber } from './get-group-number'
+import { getGroupIndex } from './get-group-index'
 
 export interface GetNewlinesBetweenOptionParameters {
   options: {
@@ -37,8 +37,8 @@ export let getNewlinesBetweenOption = ({
   sortingNode,
   options,
 }: GetNewlinesBetweenOptionParameters): NewlinesBetweenOption => {
-  let nodeGroupNumber = getGroupNumber(options.groups, sortingNode)
-  let nextNodeGroupNumber = getGroupNumber(options.groups, nextSortingNode)
+  let nodeGroupNumber = getGroupIndex(options.groups, sortingNode)
+  let nextNodeGroupNumber = getGroupIndex(options.groups, nextSortingNode)
   let globalNewlinesBetweenOption = getGlobalNewlinesBetweenOption({
     newlinesBetween: options.newlinesBetween,
     nextNodeGroupNumber,

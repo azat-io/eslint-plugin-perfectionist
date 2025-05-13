@@ -1,9 +1,10 @@
 import type { TSESLint } from '@typescript-eslint/utils'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import type { PartitionByCommentOption } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
-import { hasPartitionComment } from './has-partition-comment'
+import { isPartitionComment } from './is-partition-comment'
 import { getCommentsBefore } from './get-comments-before'
 import { getLinesBetween } from './get-lines-between'
 
@@ -45,3 +46,17 @@ export let shouldPartition = ({
     getLinesBetween(sourceCode, lastSortingNode, sortingNode)
   )
 }
+
+let hasPartitionComment = ({
+  partitionByComment,
+  comments,
+}: {
+  partitionByComment: PartitionByCommentOption
+  comments: TSESTree.Comment[]
+}): boolean =>
+  comments.some(comment =>
+    isPartitionComment({
+      partitionByComment,
+      comment,
+    }),
+  )

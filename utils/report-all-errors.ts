@@ -1,16 +1,16 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
-import type { NewlinesBetweenValueGetter } from './get-newlines-errors'
+import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
 import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
 import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
+import { getNewlinesBetweenErrors } from './get-newlines-between-errors'
 import { createNodeIndexMap } from './create-node-index-map'
-import { getNewlinesErrors } from './get-newlines-errors'
-import { getGroupNumber } from './get-group-number'
+import { getGroupIndex } from './get-group-index'
 import { reportErrors } from './report-errors'
 import { pairwise } from './pairwise'
 
@@ -61,8 +61,8 @@ export let reportAllErrors = <
       : new Set<SortingNodeWithDependencies>()
 
   pairwise(nodes, (left, right) => {
-    let leftNumber = getGroupNumber(options.groups, left)
-    let rightNumber = getGroupNumber(options.groups, right)
+    let leftGroupIndex = getGroupIndex(options.groups, left)
+    let rightGroupIndex = getGroupIndex(options.groups, right)
 
     let leftIndex = nodeIndexMap.get(left)!
     let rightIndex = nodeIndexMap.get(right)!
@@ -91,7 +91,7 @@ export let reportAllErrors = <
         messageIds.push(availableMessageIds.unexpectedDependencyOrder!)
       } else {
         messageIds.push(
-          leftNumber === rightNumber ||
+          leftGroupIndex === rightGroupIndex ||
             !availableMessageIds.unexpectedGroupOrder
             ? availableMessageIds.unexpectedOrder
             : availableMessageIds.unexpectedGroupOrder,
@@ -106,7 +106,7 @@ export let reportAllErrors = <
     ) {
       messageIds = [
         ...messageIds,
-        ...getNewlinesErrors({
+        ...getNewlinesBetweenErrors({
           options: {
             ...options,
             newlinesBetween: options.newlinesBetween,
@@ -114,8 +114,8 @@ export let reportAllErrors = <
           missedSpacingError: availableMessageIds.missedSpacingBetweenMembers,
           extraSpacingError: availableMessageIds.extraSpacingBetweenMembers,
           newlinesBetweenValueGetter,
-          rightNum: rightNumber,
-          leftNum: leftNumber,
+          rightGroupIndex,
+          leftGroupIndex,
           sourceCode,
           right,
           left,

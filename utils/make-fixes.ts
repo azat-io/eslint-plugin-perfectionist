@@ -7,11 +7,11 @@ import type {
   CustomGroupsOption,
   GroupsOptions,
 } from '../types/common-options'
-import type { NewlinesBetweenValueGetter } from './get-newlines-errors'
+import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { SortingNode } from '../types/sorting-node'
 
+import { makeNewlinesBetweenFixes } from './make-newlines-between-fixes'
 import { makeCommentAfterFixes } from './make-comment-after-fixes'
-import { makeNewlinesFixes } from './make-newlines-fixes'
 import { makeOrderFixes } from './make-order-fixes'
 
 export interface MakeFixesParameters<T extends SortingNode> {
@@ -61,7 +61,7 @@ export let makeFixes = <T extends SortingNode>({
     return [...orderFixes, ...commentAfterFixes]
   }
 
-  let newlinesFixes = makeNewlinesFixes({
+  let newlinesFixes = makeNewlinesBetweenFixes({
     options: {
       ...options,
       newlinesBetween: options.newlinesBetween,

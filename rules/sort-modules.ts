@@ -45,8 +45,8 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getDecoratorName } from '../utils/get-decorator-name'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { getGroupNumber } from '../utils/get-group-number'
 import { getEnumMembers } from '../utils/get-enum-members'
+import { getGroupIndex } from '../utils/get-group-index'
 import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -339,7 +339,7 @@ let analyzeModule = ({
     let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
       sortNodesByGroups({
         isNodeIgnored: sortingNode =>
-          getGroupNumber(options.groups, sortingNode) === options.groups.length,
+          getGroupIndex(options.groups, sortingNode) === options.groups.length,
         getOptionsByGroupNumber:
           buildGetCustomGroupOverriddenOptionsFunction(options),
         ignoreEslintDisabledNodes,
