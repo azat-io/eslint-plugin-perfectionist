@@ -2,7 +2,7 @@ import type { GroupsOptions } from '../types/common-options'
 
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
 
-export let validateNewlinesBetweenInsideGroups = ({
+export let validateObjectsInsideGroups = ({
   groups,
 }: {
   groups: GroupsOptions<string>
