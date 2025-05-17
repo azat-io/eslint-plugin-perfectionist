@@ -7487,6 +7487,9 @@ describe(ruleName, () => {
 
                   import { a } from './a';
                 `,
+                after: () => {
+                  vi.resetAllMocks()
+                },
               },
             ],
             invalid: [],
@@ -7514,6 +7517,9 @@ describe(ruleName, () => {
                   mockReadClosestTsConfigByPathWith({
                     baseUrl: '.',
                   })
+                },
+                after: () => {
+                  vi.resetAllMocks()
                 },
               },
             ],
@@ -7543,6 +7549,9 @@ describe(ruleName, () => {
 
                   import { a } from './a';
                 `,
+                after: () => {
+                  vi.resetAllMocks()
+                },
               },
             ],
             invalid: [],
@@ -7556,7 +7565,6 @@ describe(ruleName, () => {
             valid: [
               {
                 before: () => {
-                  mockReadClosestTsConfigByPathWith(null)
                   vi.spyOn(
                     getTypescriptImportUtilities,
                     'getTypescriptImport',
@@ -7573,6 +7581,9 @@ describe(ruleName, () => {
 
                   import { a } from './a';
                 `,
+                after: () => {
+                  vi.resetAllMocks()
+                },
               },
             ],
             invalid: [],
@@ -7907,22 +7918,18 @@ describe(ruleName, () => {
   })
 
   let mockReadClosestTsConfigByPathWith = (
-    compilerOptions: CompilerOptions | null,
+    compilerOptions: CompilerOptions,
   ): void => {
     vi.spyOn(
       readClosestTsConfigUtilities,
       'readClosestTsConfigByPath',
-    ).mockReturnValue(
-      compilerOptions
-        ? {
-            cache: createModuleResolutionCache(
-              '.',
-              filename => filename,
-              compilerOptions,
-            ),
-            compilerOptions,
-          }
-        : null,
-    )
+    ).mockReturnValue({
+      cache: createModuleResolutionCache(
+        '.',
+        filename => filename,
+        compilerOptions,
+      ),
+      compilerOptions,
+    })
   }
 })
