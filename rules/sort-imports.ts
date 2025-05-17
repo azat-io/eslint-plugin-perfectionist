@@ -70,9 +70,9 @@ export type MESSAGE_ID =
   | 'unexpectedImportsOrder'
 
 let defaultOptions: Required<
-  Omit<Options[0], 'tsconfigRootDir' | 'maxLineLength'>
+  Omit<Options[0], 'tsconfigRootDir' | 'maxLineLength' | 'tsconfig'>
 > &
-  Pick<Options[0], 'tsconfigRootDir' | 'maxLineLength'> = {
+  Pick<Options[0], 'tsconfigRootDir' | 'maxLineLength' | 'tsconfig'> = {
   groups: [
     'type-import',
     ['value-builtin', 'value-external'],
@@ -125,12 +125,23 @@ export default createEslintRule<Options, MESSAGE_ID>({
     validateNewlinesAndPartitionConfiguration(options)
     validateSideEffectsConfiguration(options)
 
-    let tsConfigOutput = options.tsconfigRootDir
+    let tsconfigFilenames = ['tsconfig.json']
+    if (options.tsconfig?.filename) {
+      if (typeof options.tsconfig.filename === 'string') {
+        tsconfigFilenames = [options.tsconfig.filename]
+      } else {
+        tsconfigFilenames = options.tsconfig.filename
+      }
+    }
+
+    let tsconfigRootDirectory =
+      options.tsconfig?.rootDir ?? options.tsconfigRootDir
+    let tsConfigOutput = tsconfigRootDirectory
       ? readClosestTsConfigByPath({
-          tsconfigRootDir: options.tsconfigRootDir,
-          tsconfigFilenames: ['tsconfig.json'],
+          tsconfigRootDir: tsconfigRootDirectory,
           filePath: context.physicalFilename,
           contextCwd: context.cwd,
+          tsconfigFilenames,
         })
       : null
 
@@ -443,6 +454,31 @@ export default createEslintRule<Options, MESSAGE_ID>({
               buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
             ],
           },
+          tsconfig: {
+            properties: {
+              filename: {
+                oneOf: [
+                  {
+                    type: 'string',
+                  },
+                  {
+                    items: {
+                      type: 'string',
+                    },
+                    type: 'array',
+                  },
+                ],
+                description: 'Specifies the tsConfig filename.',
+              },
+              rootDir: {
+                description: 'Specifies the tsConfig root directory.',
+                type: 'string',
+              },
+            },
+            additionalProperties: false,
+            required: ['rootDir'],
+            type: 'object',
+          },
           maxLineLength: {
             description: 'Specifies the maximum line length.',
             exclusiveMinimum: true,
@@ -581,7 +617,7 @@ let computeGroupExceptUnknown = ({
 }: {
   options: Omit<
     Required<Options[0]>,
-    'tsconfigRootDir' | 'maxLineLength' | 'customGroups'
+    'tsconfigRootDir' | 'maxLineLength' | 'customGroups' | 'tsconfig'
   >
   customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption | undefined
   selectors?: Selector[]
