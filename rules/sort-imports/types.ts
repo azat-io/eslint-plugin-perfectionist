@@ -28,18 +28,27 @@ export type Options = Partial<{
         type?: DeprecatedCustomGroupsOption
       }
     | CustomGroupsOption<SingleCustomGroup>
+  tsconfig:
+    | {
+        filename?: string
+        rootDir: string
+      }
+    | undefined
   partitionByComment: PartitionByCommentOption
   specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   newlinesBetween: NewlinesBetweenOption
+  /**
+   * @deprecated for `tsconfig`
+   */
+  tsconfigRootDir: undefined | string
+  maxLineLength: undefined | number
   fallbackSort: FallbackSortOption
   internalPattern: RegexOption[]
   groups: GroupsOptions<Group>
   environment: 'node' | 'bun'
   partitionByNewLine: boolean
   sortSideEffects: boolean
-  tsconfigRootDir?: string
-  maxLineLength?: number
   ignoreCase: boolean
   order: OrderOption
   type: TypeOption

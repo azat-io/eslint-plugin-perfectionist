@@ -267,13 +267,31 @@ Specifies a maximum line length for sorting imports. When the line length exceed
 
 This option is only available when the type is set to `'line-length'`.
 
-### tsconfigRootDir
+### tsconfig
+
+<sub>
+  type: `{ rootDir: string; filename?: string }`
+</sub>
+<sub>default: undefined</sub>
+
+- `rootDir` — Specifies the directory of the root `tsconfig.json` file (ex: `.`). This is used in [`groups`](#groups) for:
+  - Marking aliased imports as `internal`.
+  - Marking imports matching [tsconfig paths](https://www.typescriptlang.org/tsconfig/#paths) as `tsconfig-path`.
+- `filename` — Specifies the `tsconfig` filename to search for (by default: `tsconfig.json`).
+
+If this option is not set, the rule will not search for a `tsconfig.json` file.
+
+### [DEPRECATED] tsconfigRootDir
 
 <sub>default: `undefined`</sub>
+
+Use the [tsconfig](#tsconfig) option with the `rootDir` attribute.
 
 Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is used in [`groups`](#groups) for:
 - Marking aliased imports as `internal`.
 - Marking imports matching [tsconfig paths](https://www.typescriptlang.org/tsconfig/#paths) as `tsconfig-path`.
+
+If this option is not set, the rule will not search for a `tsconfig.json` file.
 
 ### groups
 
