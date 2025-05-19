@@ -11,6 +11,7 @@ export const RIGHT = 'right'
 const RIGHT_GROUP = 'rightGroup'
 export const LEFT = 'left'
 const LEFT_GROUP = 'leftGroup'
+const MISSED_COMMENT_ABOVE = 'missedCommentAbove'
 
 export const ORDER_ERROR =
   `Expected "{{${RIGHT}}}" to come before "{{${LEFT}}}".` as const
@@ -22,6 +23,8 @@ export const EXTRA_SPACING_ERROR =
   `Extra spacing between "{{${LEFT}}}" and "{{${RIGHT}}}" objects.` as const
 export const MISSED_SPACING_ERROR =
   `Missed spacing between "{{${LEFT}}}" and "{{${RIGHT}}}".` as const
+export const MISSED_COMMENT_ABOVE_ERROR =
+  `Missed comment "{{${MISSED_COMMENT_ABOVE}}}" above "{{${RIGHT}}}".` as const
 
 interface ReportErrorsParameters<
   MessageIds extends string,
@@ -33,17 +36,19 @@ interface ReportErrorsParameters<
   options?: MakeFixesParameters<T>['options']
   firstUnorderedNodeDependentOnRight?: T
   sourceCode: TSESLint.SourceCode
+  commentAboveMissing?: string
   messageIds: MessageIds[]
   sortedNodes: T[]
+  left: null | T
   nodes: T[]
   right: T
-  left: T
 }
 
 export let reportErrors = <MessageIds extends string, T extends SortingNode>({
   firstUnorderedNodeDependentOnRight,
   ignoreFirstNodeHighestBlockComment,
   newlinesBetweenValueGetter,
+  commentAboveMissing,
   sortedNodes,
   messageIds,
   sourceCode,
@@ -55,8 +60,17 @@ export let reportErrors = <MessageIds extends string, T extends SortingNode>({
 }: ReportErrorsParameters<MessageIds, T>): void => {
   for (let messageId of messageIds) {
     context.report({
+      data: {
+        [NODE_DEPENDENT_ON_RIGHT]: firstUnorderedNodeDependentOnRight?.name,
+        [MISSED_COMMENT_ABOVE]: commentAboveMissing,
+        [LEFT]: toSingleLine(left?.name ?? ''),
+        [RIGHT]: toSingleLine(right.name),
+        [RIGHT_GROUP]: right.group,
+        [LEFT_GROUP]: left?.group,
+      },
       fix: (fixer: TSESLint.RuleFixer) =>
         makeFixes({
+          hasCommentAboveMissing: !!commentAboveMissing,
           ignoreFirstNodeHighestBlockComment,
           newlinesBetweenValueGetter,
           sortedNodes,
@@ -65,13 +79,6 @@ export let reportErrors = <MessageIds extends string, T extends SortingNode>({
           fixer,
           nodes,
         }),
-      data: {
-        [NODE_DEPENDENT_ON_RIGHT]: firstUnorderedNodeDependentOnRight?.name,
-        [RIGHT]: toSingleLine(right.name),
-        [LEFT]: toSingleLine(left.name),
-        [RIGHT_GROUP]: right.group,
-        [LEFT_GROUP]: left.group,
-      },
       node: right.node,
       messageId,
     })

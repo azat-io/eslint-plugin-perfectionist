@@ -7,6 +7,7 @@ import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
 import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
+import { getCommentAboveThatShouldExist } from './get-comment-above-that-should-exist'
 import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
 import { getNewlinesBetweenErrors } from './get-newlines-between-errors'
 import { createNodeIndexMap } from './create-node-index-map'
@@ -23,6 +24,7 @@ interface ReportAllErrorsParameters<
     extraSpacingBetweenMembers?: MessageIds
     unexpectedDependencyOrder?: MessageIds
     unexpectedGroupOrder: MessageIds
+    missedCommentAbove?: MessageIds
     unexpectedOrder: MessageIds
   }
   options: {
@@ -61,10 +63,14 @@ export let reportAllErrors = <
       : new Set<SortingNodeWithDependencies>()
 
   pairwise(nodes, (left, right) => {
-    let leftGroupIndex = getGroupIndex(options.groups, left)
-    let rightGroupIndex = getGroupIndex(options.groups, right)
+    let leftInfo = left
+      ? {
+          groupIndex: getGroupIndex(options.groups, left),
+          index: nodeIndexMap.get(left)!,
+        }
+      : null
 
-    let leftIndex = nodeIndexMap.get(left)!
+    let rightGroupIndex = getGroupIndex(options.groups, right)
     let rightIndex = nodeIndexMap.get(right)!
 
     let indexOfRightExcludingEslintDisabled =
@@ -82,16 +88,17 @@ export let reportAllErrors = <
     }
 
     if (
-      firstUnorderedNodeDependentOnRight ||
-      leftIndex > rightIndex ||
-      (left.isEslintDisabled &&
-        leftIndex >= indexOfRightExcludingEslintDisabled)
+      leftInfo &&
+      (firstUnorderedNodeDependentOnRight ||
+        leftInfo.index > rightIndex ||
+        (left?.isEslintDisabled &&
+          leftInfo.index >= indexOfRightExcludingEslintDisabled))
     ) {
       if (firstUnorderedNodeDependentOnRight) {
         messageIds.push(availableMessageIds.unexpectedDependencyOrder!)
       } else {
         messageIds.push(
-          leftGroupIndex === rightGroupIndex ||
+          leftInfo.groupIndex === rightGroupIndex ||
             !availableMessageIds.unexpectedGroupOrder
             ? availableMessageIds.unexpectedOrder
             : availableMessageIds.unexpectedGroupOrder,
@@ -100,6 +107,7 @@ export let reportAllErrors = <
     }
 
     if (
+      left &&
       options.newlinesBetween &&
       availableMessageIds.missedSpacingBetweenMembers &&
       availableMessageIds.extraSpacingBetweenMembers
@@ -113,9 +121,9 @@ export let reportAllErrors = <
           },
           missedSpacingError: availableMessageIds.missedSpacingBetweenMembers,
           extraSpacingError: availableMessageIds.extraSpacingBetweenMembers,
+          leftGroupIndex: leftInfo!.groupIndex,
           newlinesBetweenValueGetter,
           rightGroupIndex,
-          leftGroupIndex,
           sourceCode,
           right,
           left,
@@ -123,11 +131,27 @@ export let reportAllErrors = <
       ]
     }
 
+    let commentAboveMissing: undefined | string
+    if (availableMessageIds.missedCommentAbove) {
+      let commentAboveThatShouldExist = getCommentAboveThatShouldExist({
+        leftGroupIndex: leftInfo?.groupIndex ?? null,
+        sortingNode: right,
+        rightGroupIndex,
+        sourceCode,
+        options,
+      })
+      if (commentAboveThatShouldExist && !commentAboveThatShouldExist.exists) {
+        commentAboveMissing = commentAboveThatShouldExist.comment
+        messageIds = [...messageIds, availableMessageIds.missedCommentAbove]
+      }
+    }
+
     reportErrors({
       sortedNodes: sortedNodesExcludingEslintDisabled,
       ignoreFirstNodeHighestBlockComment,
       firstUnorderedNodeDependentOnRight,
       newlinesBetweenValueGetter,
+      commentAboveMissing,
       messageIds,
       sourceCode,
       options,
