@@ -62,17 +62,6 @@ import { complete } from '../utils/complete'
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-let defaultGroups = [
-  'type-import',
-  ['value-builtin', 'value-external'],
-  'type-internal',
-  'value-internal',
-  ['type-parent', 'type-sibling', 'type-index'],
-  ['value-parent', 'value-sibling', 'value-index'],
-  'ts-equals-import',
-  'unknown',
-]
-
 export type MESSAGE_ID =
   | 'unexpectedImportsDependencyOrder'
   | 'missedSpacingBetweenImports'
@@ -80,29 +69,43 @@ export type MESSAGE_ID =
   | 'extraSpacingBetweenImports'
   | 'unexpectedImportsOrder'
 
+let defaultOptions: Required<
+  Omit<Options[0], 'tsconfigRootDir' | 'maxLineLength' | 'tsconfig'>
+> &
+  Pick<Options[0], 'tsconfigRootDir' | 'maxLineLength' | 'tsconfig'> = {
+  groups: [
+    'type-import',
+    ['value-builtin', 'value-external'],
+    'type-internal',
+    'value-internal',
+    ['type-parent', 'type-sibling', 'type-index'],
+    ['value-parent', 'value-sibling', 'value-index'],
+    'ts-equals-import',
+    'unknown',
+  ],
+  internalPattern: ['^~/.+', '^@/.+'],
+  fallbackSort: { type: 'unsorted' },
+  partitionByComment: false,
+  partitionByNewLine: false,
+  newlinesBetween: 'always',
+  specialCharacters: 'keep',
+  sortSideEffects: false,
+  type: 'alphabetical',
+  environment: 'node',
+  customGroups: [],
+  ignoreCase: true,
+  locales: 'en-US',
+  alphabet: '',
+  order: 'asc',
+}
+
 export default createEslintRule<Options, MESSAGE_ID>({
   create: context => {
     let settings = getSettings(context.settings)
 
     let userOptions = context.options.at(0)
     let options = getOptionsWithCleanGroups(
-      complete(userOptions, settings, {
-        internalPattern: ['^~/.+', '^@/.+'],
-        fallbackSort: { type: 'unsorted' },
-        partitionByComment: false,
-        partitionByNewLine: false,
-        newlinesBetween: 'always',
-        specialCharacters: 'keep',
-        sortSideEffects: false,
-        groups: defaultGroups,
-        type: 'alphabetical',
-        environment: 'node',
-        customGroups: [],
-        ignoreCase: true,
-        locales: 'en-US',
-        alphabet: '',
-        order: 'asc',
-      } as const),
+      complete(userOptions, settings, defaultOptions),
     )
 
     validateGeneratedGroupsConfiguration({
@@ -122,11 +125,23 @@ export default createEslintRule<Options, MESSAGE_ID>({
     validateNewlinesAndPartitionConfiguration(options)
     validateSideEffectsConfiguration(options)
 
-    let tsConfigOutput = options.tsconfigRootDir
+    let tsconfigFilenames = ['tsconfig.json']
+    if (options.tsconfig?.filename) {
+      if (typeof options.tsconfig.filename === 'string') {
+        tsconfigFilenames = [options.tsconfig.filename]
+      } else {
+        tsconfigFilenames = options.tsconfig.filename
+      }
+    }
+
+    let tsconfigRootDirectory =
+      options.tsconfig?.rootDir ?? options.tsconfigRootDir
+    let tsConfigOutput = tsconfigRootDirectory
       ? readClosestTsConfigByPath({
-          tsconfigRootDir: options.tsconfigRootDir,
+          tsconfigRootDir: tsconfigRootDirectory,
           filePath: context.physicalFilename,
           contextCwd: context.cwd,
+          tsconfigFilenames,
         })
       : null
 
@@ -439,6 +454,31 @@ export default createEslintRule<Options, MESSAGE_ID>({
               buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
             ],
           },
+          tsconfig: {
+            properties: {
+              filename: {
+                oneOf: [
+                  {
+                    type: 'string',
+                  },
+                  {
+                    items: {
+                      type: 'string',
+                    },
+                    type: 'array',
+                  },
+                ],
+                description: 'Specifies the tsConfig filename.',
+              },
+              rootDir: {
+                description: 'Specifies the tsConfig root directory.',
+                type: 'string',
+              },
+            },
+            additionalProperties: false,
+            required: ['rootDir'],
+            type: 'object',
+          },
           maxLineLength: {
             description: 'Specifies the maximum line length.',
             exclusiveMinimum: true,
@@ -486,24 +526,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
     type: 'suggestion',
     fixable: 'code',
   },
-  defaultOptions: [
-    {
-      customGroups: { value: {}, type: {} },
-      internalPattern: ['^~/.+', '^@/.+'],
-      partitionByComment: false,
-      partitionByNewLine: false,
-      specialCharacters: 'keep',
-      newlinesBetween: 'always',
-      sortSideEffects: false,
-      groups: defaultGroups,
-      type: 'alphabetical',
-      environment: 'node',
-      ignoreCase: true,
-      locales: 'en-US',
-      alphabet: '',
-      order: 'asc',
-    },
-  ],
+  defaultOptions: [defaultOptions],
   name: 'sort-imports',
 })
 
@@ -594,7 +617,7 @@ let computeGroupExceptUnknown = ({
 }: {
   options: Omit<
     Required<Options[0]>,
-    'tsconfigRootDir' | 'maxLineLength' | 'customGroups'
+    'tsconfigRootDir' | 'maxLineLength' | 'customGroups' | 'tsconfig'
   >
   customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption | undefined
   selectors?: Selector[]

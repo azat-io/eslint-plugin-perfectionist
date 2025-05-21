@@ -15,56 +15,56 @@ export interface ReadClosestTsConfigByPathValue {
   cache: ts.ModuleResolutionCache
 }
 
-interface ReadClosestTsConfigByPathParameters {
-  tsconfigRootDir: string
-  contextCwd: string
-  filePath: string
-}
-
 export let directoryCacheByPath = new Map<string, string>()
 export let contentCacheByPath = new Map<
   string,
   ReadClosestTsConfigByPathValue
 >()
 
-export let readClosestTsConfigByPath = (
-  input: ReadClosestTsConfigByPathParameters,
-): ReadClosestTsConfigByPathValue | null => {
+export let readClosestTsConfigByPath = ({
+  tsconfigFilenames,
+  tsconfigRootDir,
+  contextCwd,
+  filePath,
+}: {
+  tsconfigFilenames: string[]
+  tsconfigRootDir: string
+  contextCwd: string
+  filePath: string
+}): ReadClosestTsConfigByPathValue | null => {
   let typescriptImport = getTypescriptImport()
   if (!typescriptImport) {
     return null
   }
 
-  let directory = path.dirname(input.filePath)
+  let directory = path.dirname(filePath)
   let checkedDirectories = [directory]
 
   do {
-    let tsconfigPath = path.join(directory, 'tsconfig.json')
     let cachedDirectory = directoryCacheByPath.get(directory)
-    if (!cachedDirectory && fs.existsSync(tsconfigPath)) {
-      cachedDirectory = tsconfigPath
+    if (!cachedDirectory) {
+      for (let tsconfigFilename of tsconfigFilenames) {
+        let tsconfigPath = path.join(directory, tsconfigFilename)
+        if (fs.existsSync(tsconfigPath)) {
+          cachedDirectory = tsconfigPath
+          break
+        }
+      }
     }
 
     if (cachedDirectory) {
       for (let checkedDirectory of checkedDirectories) {
         directoryCacheByPath.set(checkedDirectory, cachedDirectory)
       }
-      return getCompilerOptions(
-        typescriptImport,
-        input.contextCwd,
-        cachedDirectory,
-      )
+      return getCompilerOptions(typescriptImport, contextCwd, cachedDirectory)
     }
 
     directory = path.dirname(directory)
     checkedDirectories.push(directory)
-  } while (
-    directory.length > 1 &&
-    directory.length >= input.tsconfigRootDir.length
-  )
+  } while (directory.length > 1 && directory.length >= tsconfigRootDir.length)
 
   throw new Error(
-    `Couldn't find any tsconfig.json relative to '${input.filePath}' within '${input.tsconfigRootDir}'.`,
+    `Couldn't find any tsconfig.json relative to '${filePath}' within '${tsconfigRootDir}'.`,
   )
 }
 
