@@ -236,7 +236,7 @@ describe('readClosestTsConfigByPath', () => {
         )
       })
 
-      it('throws when searching hits.', () => {
+      it('throws when searching fails.', () => {
         mockExistsSync.mockReturnValue(false)
         mockReadConfigFileReturnValue()
         mockParseJsonConfigFileContentReturnValue()

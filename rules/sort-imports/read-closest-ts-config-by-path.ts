@@ -59,7 +59,7 @@ export let readClosestTsConfigByPath = ({
   } while (directory.length > 1 && directory.length >= tsconfigRootDir.length)
 
   throw new Error(
-    `Couldn't find any tsconfig.json relative to '${filePath}' within '${tsconfigRootDir}'.`,
+    `Couldn't find any ${tsconfigFilename} relative to '${filePath}' within '${tsconfigRootDir}'.`,
   )
 }
 
