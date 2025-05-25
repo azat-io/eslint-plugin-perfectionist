@@ -47,6 +47,7 @@ vi.mock('../../../rules/sort-imports/get-typescript-import', () => ({
 let testInput = {
   filePath: '../../repos/repo/packages/package/file.ts',
   tsconfigRootDir: '../../repos/repo',
+  tsconfigFilename: 'tsconfig.json',
   contextCwd: '../../../',
 }
 
@@ -146,6 +147,7 @@ describe('readClosestTsConfigByPath', () => {
 
         // This should call to fs.existsSync three times: c, b, a.
         readClosestTsConfigByPath({
+          tsconfigFilename: 'tsconfig.json',
           filePath: './a/b/c/d.ts',
           tsconfigRootDir: './a',
           contextCwd: '../../',
@@ -156,6 +158,7 @@ describe('readClosestTsConfigByPath', () => {
          * from cache, pointing to a.
          */
         let actual = readClosestTsConfigByPath({
+          tsconfigFilename: 'tsconfig.json',
           filePath: './a/b/c/e/f.ts',
           tsconfigRootDir: './a',
           contextCwd: './',
@@ -179,6 +182,7 @@ describe('readClosestTsConfigByPath', () => {
          * This should call to fs.existsSync 4 times: d, c, b, a
          */
         readClosestTsConfigByPath({
+          tsconfigFilename: 'tsconfig.json',
           filePath: './a/b/c/d/e.ts',
           tsconfigRootDir: './a',
           contextCwd: '../../',
@@ -189,6 +193,7 @@ describe('readClosestTsConfigByPath', () => {
          * Then it should retrieve b from cache, pointing to a
          */
         let actual = readClosestTsConfigByPath({
+          tsconfigFilename: 'tsconfig.json',
           filePath: './a/b/f/g/h.ts',
           tsconfigRootDir: './a',
           contextCwd: '../../',

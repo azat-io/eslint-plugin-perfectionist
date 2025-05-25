@@ -129,6 +129,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ? readClosestTsConfigByPath({
           tsconfigRootDir: options.tsconfigRootDir,
           filePath: context.physicalFilename,
+          tsconfigFilename: 'tsconfig.json',
           contextCwd: context.cwd,
         })
       : null
