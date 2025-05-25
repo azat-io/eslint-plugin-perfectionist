@@ -24,6 +24,27 @@ jobs:
       - name: Test
         run: pnpm test:astro
 
+  benchmark:
+    name: Benchmark
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Tools
+        uses: ./.github/actions/install-tools
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      - name: Test
+        run: pnpm test:benchmark
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   css:
     name: CSS
     runs-on: ubuntu-latest
