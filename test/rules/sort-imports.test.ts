@@ -7464,119 +7464,271 @@ describe(ruleName, () => {
     })
 
     describe(`${ruleName}: handles tsconfig.json`, () => {
-      ruleTester.run(
-        `${ruleName}: marks internal imports as 'internal'`,
-        rule,
-        {
-          valid: [
-            {
-              options: [
-                {
-                  groups: ['internal', 'unknown'],
-                  tsconfigRootDir: '.',
+      describe('tsconfigRootDir option', () => {
+        ruleTester.run(
+          `${ruleName}: marks internal imports as 'internal'`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    groups: ['internal', 'unknown'],
+                    tsconfigRootDir: '.',
+                  },
+                ],
+                before: () => {
+                  mockReadClosestTsConfigByPathWith({
+                    baseUrl: './rules/',
+                  })
                 },
-              ],
-              before: () => {
-                mockReadClosestTsConfigByPathWith({
-                  baseUrl: './rules/',
-                })
-              },
-              code: dedent`
-                import { x } from 'sort-imports'
+                code: dedent`
+                  import { x } from 'sort-imports'
 
-                import { a } from './a';
-              `,
-            },
-          ],
-          invalid: [],
-        },
-      )
-
-      ruleTester.run(
-        `${ruleName}: marks external imports as 'external'`,
-        rule,
-        {
-          valid: [
-            {
-              options: [
-                {
-                  groups: ['external', 'unknown'],
-                  tsconfigRootDir: '.',
+                  import { a } from './a';
+                `,
+                after: () => {
+                  vi.resetAllMocks()
                 },
-              ],
-              code: dedent`
-                import type { ParsedCommandLine } from 'typescript'
-
-                import { a } from './a';
-              `,
-              before: () => {
-                mockReadClosestTsConfigByPathWith({
-                  baseUrl: '.',
-                })
               },
-            },
-          ],
-          invalid: [],
-        },
-      )
+            ],
+            invalid: [],
+          },
+        )
 
-      ruleTester.run(
-        `${ruleName}: marks non-resolved imports as 'external'`,
-        rule,
-        {
-          valid: [
-            {
-              options: [
-                {
-                  groups: ['external', 'unknown'],
-                  tsconfigRootDir: '.',
+        ruleTester.run(
+          `${ruleName}: marks external imports as 'external'`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    groups: ['external', 'unknown'],
+                    tsconfigRootDir: '.',
+                  },
+                ],
+                code: dedent`
+                  import type { ParsedCommandLine } from 'typescript'
+
+                  import { a } from './a';
+                `,
+                before: () => {
+                  mockReadClosestTsConfigByPathWith({
+                    baseUrl: '.',
+                  })
                 },
-              ],
-              before: () => {
-                mockReadClosestTsConfigByPathWith({
-                  baseUrl: '.',
-                })
-              },
-              code: dedent`
-                import { b } from 'b'
-
-                import { a } from './a';
-              `,
-            },
-          ],
-          invalid: [],
-        },
-      )
-
-      ruleTester.run(
-        `${ruleName}: uses the fallback algorithm if typescript is not present`,
-        rule,
-        {
-          valid: [
-            {
-              before: () => {
-                mockReadClosestTsConfigByPathWith(null)
-                vi.spyOn(
-                  getTypescriptImportUtilities,
-                  'getTypescriptImport',
-                ).mockReturnValue(null)
-              },
-              options: [
-                {
-                  groups: ['external', 'unknown'],
-                  tsconfigRootDir: '.',
+                after: () => {
+                  vi.resetAllMocks()
                 },
-              ],
-              code: dedent`
-                import { b } from 'b'
+              },
+            ],
+            invalid: [],
+          },
+        )
 
-                import { a } from './a';
-              `,
-            },
-          ],
-          invalid: [],
-        },
-      )
+        ruleTester.run(
+          `${ruleName}: marks non-resolved imports as 'external'`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    groups: ['external', 'unknown'],
+                    tsconfigRootDir: '.',
+                  },
+                ],
+                before: () => {
+                  mockReadClosestTsConfigByPathWith({
+                    baseUrl: '.',
+                  })
+                },
+                code: dedent`
+                  import { b } from 'b'
+
+                  import { a } from './a';
+                `,
+                after: () => {
+                  vi.resetAllMocks()
+                },
+              },
+            ],
+            invalid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}: uses the fallback algorithm if typescript is not present`,
+          rule,
+          {
+            valid: [
+              {
+                before: () => {
+                  vi.spyOn(
+                    getTypescriptImportUtilities,
+                    'getTypescriptImport',
+                  ).mockReturnValue(null)
+                },
+                options: [
+                  {
+                    groups: ['external', 'unknown'],
+                    tsconfigRootDir: '.',
+                  },
+                ],
+                code: dedent`
+                  import { b } from 'b'
+
+                  import { a } from './a';
+                `,
+                after: () => {
+                  vi.resetAllMocks()
+                },
+              },
+            ],
+            invalid: [],
+          },
+        )
+      })
+
+      describe('tsconfig option', () => {
+        ruleTester.run(
+          `${ruleName}: marks internal imports as 'internal'`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    tsconfig: {
+                      filename: 'tsconfig.json',
+                      rootDir: '.',
+                    },
+                    groups: ['internal', 'unknown'],
+                  },
+                ],
+                before: () => {
+                  mockReadClosestTsConfigByPathWith({
+                    baseUrl: './rules/',
+                  })
+                },
+                code: dedent`
+                  import { x } from 'sort-imports'
+
+                  import { a } from './a';
+                `,
+                after: () => {
+                  vi.resetAllMocks()
+                },
+              },
+            ],
+            invalid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}: marks external imports as 'external'`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    tsconfig: {
+                      filename: 'tsconfig.json',
+                      rootDir: '.',
+                    },
+                    groups: ['external', 'unknown'],
+                  },
+                ],
+                code: dedent`
+                  import type { ParsedCommandLine } from 'typescript'
+
+                  import { a } from './a';
+                `,
+                before: () => {
+                  mockReadClosestTsConfigByPathWith({
+                    baseUrl: '.',
+                  })
+                },
+                after: () => {
+                  vi.resetAllMocks()
+                },
+              },
+            ],
+            invalid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}: marks non-resolved imports as 'external'`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    tsconfig: {
+                      filename: 'tsconfig.json',
+                      rootDir: '.',
+                    },
+                    groups: ['external', 'unknown'],
+                  },
+                ],
+                before: () => {
+                  mockReadClosestTsConfigByPathWith({
+                    baseUrl: '.',
+                  })
+                },
+                code: dedent`
+                  import { b } from 'b'
+
+                  import { a } from './a';
+                `,
+                after: () => {
+                  vi.resetAllMocks()
+                },
+              },
+            ],
+            invalid: [],
+          },
+        )
+
+        ruleTester.run(
+          `${ruleName}: uses the fallback algorithm if typescript is not present`,
+          rule,
+          {
+            valid: [
+              {
+                options: [
+                  {
+                    tsconfig: {
+                      filename: 'tsconfig.json',
+                      rootDir: '.',
+                    },
+                    groups: ['external', 'unknown'],
+                  },
+                ],
+                before: () => {
+                  vi.spyOn(
+                    getTypescriptImportUtilities,
+                    'getTypescriptImport',
+                  ).mockReturnValue(null)
+                },
+                code: dedent`
+                  import { b } from 'b'
+
+                  import { a } from './a';
+                `,
+                after: () => {
+                  vi.resetAllMocks()
+                },
+              },
+            ],
+            invalid: [],
+          },
+        )
+      })
     })
 
     let eslintDisableRuleTesterName = `${ruleName}: supports 'eslint-disable' for individual nodes`
@@ -7901,22 +8053,18 @@ describe(ruleName, () => {
   })
 
   let mockReadClosestTsConfigByPathWith = (
-    compilerOptions: CompilerOptions | null,
+    compilerOptions: CompilerOptions,
   ): void => {
     vi.spyOn(
       readClosestTsConfigUtilities,
       'readClosestTsConfigByPath',
-    ).mockReturnValue(
-      compilerOptions
-        ? {
-            cache: createModuleResolutionCache(
-              '.',
-              filename => filename,
-              compilerOptions,
-            ),
-            compilerOptions,
-          }
-        : null,
-    )
+    ).mockReturnValue({
+      cache: createModuleResolutionCache(
+        '.',
+        filename => filename,
+        compilerOptions,
+      ),
+      compilerOptions,
+    })
   }
 })
