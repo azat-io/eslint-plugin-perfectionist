@@ -1,6 +1,6 @@
 {
+  "exclude": ["node_modules", "coverage", "benchmark/**/*"],
   "include": ["**/*.svelte", "**/*.astro", "**/*.ts"],
-  "exclude": ["node_modules", "coverage"],
   "compilerOptions": {
     "noPropertyAccessFromIndexSignature": true,
     "forceConsistentCasingInFileNames": true,
