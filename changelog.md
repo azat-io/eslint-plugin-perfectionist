@@ -1,5 +1,23 @@
 # Changelog
 
+## v4.14.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.13.0...v4.14.0)
+
+### 🚀 Features
+
+- **sort-imports:** Allow to find alternate tsconfig file ([54b8a42](https://github.com/azat-io/eslint-plugin-perfectionist/commit/54b8a42))
+- Enforce group comments ([1a02538](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1a02538))
+
+### 🐞 Bug Fixes
+
+- Correctly identify node builtin modules with subpaths ([de0cbb3](https://github.com/azat-io/eslint-plugin-perfectionist/commit/de0cbb3))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](https://github.com/azat-io))
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v4.13.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.12.3...v4.13.0)
