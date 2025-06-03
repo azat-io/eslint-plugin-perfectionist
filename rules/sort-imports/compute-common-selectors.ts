@@ -102,12 +102,27 @@ let bunModules = new Set([
 let nodeBuiltinModules = new Set(builtinModules)
 let builtinPrefixOnlyModules = new Set(['node:sqlite', 'node:test', 'node:sea'])
 let isCoreModule = (value: string, environment: 'node' | 'bun'): boolean => {
-  let valueToCheck = value.startsWith('node:') ? value.split('node:')[1] : value
-  return (
-    (!!valueToCheck && nodeBuiltinModules.has(valueToCheck)) ||
+  let clean = (string_: string): string =>
+    string_.replace(/^(?:node:){1,2}/u, '')
+  let [basePath] = value.split('/')
+
+  let cleanValue = clean(value)
+  let cleanBase = clean(basePath!)
+
+  if (nodeBuiltinModules.has(cleanValue) || nodeBuiltinModules.has(cleanBase)) {
+    return true
+  }
+
+  if (
     builtinPrefixOnlyModules.has(value) ||
-    (environment === 'bun' ? bunModules.has(value) : false)
-  )
+    builtinPrefixOnlyModules.has(`node:${cleanValue}`) ||
+    builtinPrefixOnlyModules.has(basePath!) ||
+    builtinPrefixOnlyModules.has(`node:${cleanBase}`)
+  ) {
+    return true
+  }
+
+  return environment === 'bun' && bunModules.has(value)
 }
 
 let isParent = (value: string): boolean => value.startsWith('..')
