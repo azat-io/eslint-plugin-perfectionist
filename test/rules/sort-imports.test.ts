@@ -3999,6 +3999,351 @@ describe(ruleName, () => {
         valid: [],
       },
     )
+
+    describe(`${ruleName}(${type}): "commentAbove" inside groups`, () => {
+      ruleTester.run(`${ruleName}(${type}): reports missing comments`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  missedCommentAbove: 'Comment above a',
+                  right: 'a',
+                },
+                messageId: 'missedCommentAboveImport',
+              },
+              {
+                data: {
+                  missedCommentAbove: 'Comment above b',
+                  right: './b',
+                },
+                messageId: 'missedCommentAboveImport',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: [
+                  { commentAbove: 'Comment above a' },
+                  'external',
+                  { commentAbove: 'Comment above b' },
+                  'unknown',
+                ],
+              },
+            ],
+            output: dedent`
+              // Comment above a
+              import { a } from "a";
+
+              // Comment above b
+              import { b } from "./b";
+            `,
+            code: dedent`
+              import { a } from "a";
+
+              import { b } from "./b";
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): ignores shebangs and comments at the top of the file`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    missedCommentAbove: 'Comment above',
+                    right: 'b',
+                  },
+                  messageId: 'missedCommentAboveImport',
+                },
+                {
+                  data: {
+                    right: 'a',
+                    left: 'b',
+                  },
+                  messageId: 'unexpectedImportsOrder',
+                },
+              ],
+              output: [
+                dedent`
+                  #!/usr/bin/node
+                  // Some disclaimer
+
+                  import a from "a";
+                  import b from "b";
+                `,
+                dedent`
+                  #!/usr/bin/node
+                  // Some disclaimer
+
+                  // Comment above
+                  import a from "a";
+                  import b from "b";
+                `,
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: [{ commentAbove: 'Comment above' }, 'external'],
+                },
+              ],
+              code: dedent`
+                #!/usr/bin/node
+                // Some disclaimer
+
+                import b from "b";
+                import a from "a";
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      describe('comment detection', () => {
+        for (let comment of [
+          '//   Comment above  ',
+          '//   comment above  ',
+          `/**
+            * Comment above
+            */`,
+          `/**
+            * Something before
+            * CoMmEnT ABoVe
+            * Something after
+            */`,
+        ]) {
+          ruleTester.run(
+            `${ruleName}(${type}): detects existing comments correctly`,
+            rule,
+            {
+              valid: [
+                {
+                  options: [
+                    {
+                      ...options,
+                      groups: [
+                        'external',
+                        { commentAbove: 'Comment above' },
+                        'unknown',
+                      ],
+                    },
+                  ],
+                  code: dedent`
+                    import a from "a";
+
+                    ${comment}
+                    import b from "./b";
+                  `,
+                },
+              ],
+              invalid: [],
+            },
+          )
+        }
+
+        ruleTester.run(
+          `${ruleName}(${type}): deletes invalid auto-added comments`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      missedCommentAbove: 'internal',
+                      right: '~/d',
+                    },
+                    messageId: 'missedCommentAboveImport',
+                  },
+                  {
+                    data: {
+                      right: '~/c',
+                      left: '~/d',
+                    },
+                    messageId: 'unexpectedImportsOrder',
+                  },
+                  {
+                    data: {
+                      rightGroup: 'sibling',
+                      leftGroup: 'internal',
+                      right: './b',
+                      left: '~/c',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                  {
+                    data: {
+                      rightGroup: 'external',
+                      leftGroup: 'sibling',
+                      left: './b',
+                      right: 'a',
+                    },
+                    messageId: 'unexpectedImportsGroupOrder',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      { commentAbove: 'external' },
+                      'external',
+                      { commentAbove: 'sibling' },
+                      'sibling',
+                      { commentAbove: 'internal' },
+                      'internal',
+                    ],
+                  },
+                ],
+                output: dedent`
+                  // external
+                  import a from "a";
+
+                  // sibling
+                  import b from './b';
+
+                  // internal
+                  import c from '~/c';
+                  import d from '~/d';
+                `,
+                code: dedent`
+                  import d from '~/d';
+                  // internal
+                  import c from '~/c';
+
+                  // sibling
+                  import b from './b';
+
+                  // external
+                  import a from "a";
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
+
+      ruleTester.run(`${ruleName}(${type}): works with other errors`, rule, {
+        invalid: [
+          {
+            output: [
+              dedent`
+                #!/usr/bin/node
+                // Some disclaimer
+
+                // Comment above a
+                // internal or sibling
+                import a from "a"; // Comment after a
+                // Comment above c
+                // external
+                import c from './c'; // Comment after c
+                // Comment above b
+                // external
+                import b from '~/b'; // Comment after b
+              `,
+              dedent`
+                #!/usr/bin/node
+                // Some disclaimer
+
+                // Comment above a
+                // internal or sibling
+                import a from "a"; // Comment after a
+
+                // Comment above c
+                // external
+                import c from './c'; // Comment after c
+                // Comment above b
+                // external
+                import b from '~/b'; // Comment after b
+              `,
+              dedent`
+                #!/usr/bin/node
+                // Some disclaimer
+
+                // Comment above a
+                // external
+                import a from "a"; // Comment after a
+
+                // internal or sibling
+                // Comment above c
+                import c from './c'; // Comment after c
+                // Comment above b
+                import b from '~/b'; // Comment after b
+              `,
+            ],
+            errors: [
+              {
+                data: {
+                  missedCommentAbove: 'internal or sibling',
+                  right: './c',
+                },
+                messageId: 'missedCommentAboveImport',
+              },
+              {
+                data: {
+                  rightGroup: 'external',
+                  leftGroup: 'sibling',
+                  left: './c',
+                  right: 'a',
+                },
+                messageId: 'unexpectedImportsGroupOrder',
+              },
+              {
+                data: {
+                  right: '~/b',
+                  left: 'a',
+                },
+                messageId: 'missedSpacingBetweenImports',
+              },
+              {
+                data: {
+                  missedCommentAbove: 'internal or sibling',
+                  right: '~/b',
+                },
+                messageId: 'missedCommentAboveImport',
+              },
+            ],
+            code: dedent`
+              #!/usr/bin/node
+              // Some disclaimer
+
+              // Comment above c
+              // external
+              import c from './c'; // Comment after c
+              // Comment above a
+              // internal or sibling
+              import a from "a"; // Comment after a
+              // Comment above b
+              // external
+              import b from '~/b'; // Comment after b
+            `,
+            options: [
+              {
+                ...options,
+                groups: [
+                  { commentAbove: 'external' },
+                  'external',
+                  {
+                    commentAbove: 'internal or sibling',
+                    newlinesBetween: 'always',
+                  },
+                  ['internal', 'sibling'],
+                ],
+                newlinesBetween: 'never',
+              },
+            ],
+          },
+        ],
+        valid: [],
+      })
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

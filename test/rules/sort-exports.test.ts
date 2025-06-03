@@ -1647,6 +1647,316 @@ describe(ruleName, () => {
         },
       )
     })
+
+    describe(`${ruleName}(${type}): "commentAbove" inside groups`, () => {
+      ruleTester.run(`${ruleName}(${type}): reports missing comments`, rule, {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  missedCommentAbove: 'Type exports',
+                  right: './a',
+                },
+                messageId: 'missedCommentAboveExport',
+              },
+              {
+                data: {
+                  missedCommentAbove: 'Other exports',
+                  right: './b',
+                },
+                messageId: 'missedCommentAboveExport',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: [
+                  { commentAbove: 'Type exports' },
+                  'type-export',
+                  { commentAbove: 'Other exports' },
+                  'unknown',
+                ],
+              },
+            ],
+            output: dedent`
+              // Type exports
+              export type { a } from "./a";
+
+              // Other exports
+              export { b } from "./b";
+            `,
+            code: dedent`
+              export type { a } from "./a";
+
+              export { b } from "./b";
+            `,
+          },
+        ],
+        valid: [],
+      })
+
+      ruleTester.run(
+        `${ruleName}(${type}): ignores shebangs and comments at the top of the file`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    missedCommentAbove: 'Comment above',
+                    right: './b',
+                  },
+                  messageId: 'missedCommentAboveExport',
+                },
+                {
+                  data: {
+                    right: './a',
+                    left: './b',
+                  },
+                  messageId: 'unexpectedExportsOrder',
+                },
+              ],
+              output: [
+                dedent`
+                  #!/usr/bin/node
+                  // Some disclaimer
+
+                  export { a } from "./a";
+                  export { b } from "./b";
+                `,
+                dedent`
+                  #!/usr/bin/node
+                  // Some disclaimer
+
+                  // Comment above
+                  export { a } from "./a";
+                  export { b } from "./b";
+                `,
+              ],
+              code: dedent`
+                #!/usr/bin/node
+                // Some disclaimer
+
+                export { b } from "./b";
+                export { a } from "./a";
+              `,
+              options: [
+                {
+                  ...options,
+                  groups: [{ commentAbove: 'Comment above' }, 'unknown'],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      describe('comment detection', () => {
+        for (let comment of [
+          '//   Comment above  ',
+          '//   comment above  ',
+          `/**
+            * Comment above
+            */`,
+          `/**
+            * Something before
+            * CoMmEnT ABoVe
+            * Something after
+            */`,
+        ]) {
+          ruleTester.run(
+            `${ruleName}(${type}): detects existing comments correctly`,
+            rule,
+            {
+              valid: [
+                {
+                  options: [
+                    {
+                      ...options,
+                      groups: [
+                        'value-export',
+                        { commentAbove: 'Comment above' },
+                        'unknown',
+                      ],
+                    },
+                  ],
+                  code: dedent`
+                    export { a } from "a";
+
+                    ${comment}
+                    export type { b } from "./b";
+                  `,
+                },
+              ],
+              invalid: [],
+            },
+          )
+        }
+
+        ruleTester.run(
+          `${ruleName}(${type}): deletes invalid auto-added comments`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      missedCommentAbove: 'Type exports',
+                      right: './c',
+                    },
+                    messageId: 'missedCommentAboveExport',
+                  },
+                  {
+                    data: {
+                      right: './b',
+                      left: './c',
+                    },
+                    messageId: 'unexpectedExportsOrder',
+                  },
+                  {
+                    data: {
+                      rightGroup: 'value-export',
+                      leftGroup: 'type-export',
+                      right: './a',
+                      left: './b',
+                    },
+                    messageId: 'unexpectedExportsGroupOrder',
+                  },
+                ],
+                output: [
+                  dedent`
+                    // Type exports
+                    export { a } from './a';
+                    // Value exports
+                    export type { b } from './b';
+                    export type { c } from './c';
+                  `,
+                  dedent`
+                    // Value exports
+                    export { a } from './a';
+                    // Type exports
+                    export type { b } from './b';
+                    export type { c } from './c';
+                  `,
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: [
+                      { commentAbove: 'Value exports' },
+                      'value-export',
+                      { commentAbove: 'Type exports' },
+                      'type-export',
+                    ],
+                  },
+                ],
+                code: dedent`
+                  export type { c } from './c';
+                  // Value exports
+                  export type { b } from './b';
+                  // Type exports
+                  export { a } from './a';
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      })
+
+      ruleTester.run(`${ruleName}(${type}): works with other errors`, rule, {
+        invalid: [
+          {
+            output: [
+              dedent`
+                #!/usr/bin/node
+                // Some disclaimer
+
+                // Comment above a
+                // Type exports
+                export { a } from "./a"; // Comment after a
+                // Comment above b
+                // Value exports
+                export type { b } from './b'; // Comment after b
+              `,
+              dedent`
+                #!/usr/bin/node
+                // Some disclaimer
+
+                // Comment above a
+                // Type exports
+                export { a } from "./a"; // Comment after a
+
+                // Comment above b
+                // Value exports
+                export type { b } from './b'; // Comment after b
+              `,
+              dedent`
+                #!/usr/bin/node
+                // Some disclaimer
+
+                // Comment above a
+                // Value exports
+                export { a } from "./a"; // Comment after a
+
+                // Type exports
+                // Comment above b
+                export type { b } from './b'; // Comment after b
+              `,
+            ],
+            errors: [
+              {
+                data: {
+                  missedCommentAbove: 'Type exports',
+                  right: './b',
+                },
+                messageId: 'missedCommentAboveExport',
+              },
+              {
+                data: {
+                  rightGroup: 'value-export',
+                  leftGroup: 'type-export',
+                  right: './a',
+                  left: './b',
+                },
+                messageId: 'unexpectedExportsGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: [
+                  { commentAbove: 'Value exports' },
+                  'value-export',
+                  {
+                    commentAbove: 'Type exports',
+                    newlinesBetween: 'always',
+                  },
+                  ['type-export'],
+                ],
+                newlinesBetween: 'never',
+              },
+            ],
+            code: dedent`
+              #!/usr/bin/node
+              // Some disclaimer
+
+              // Comment above b
+              // Value exports
+              export type { b } from './b'; // Comment after b
+              // Comment above a
+              // Type exports
+              export { a } from "./a"; // Comment after a
+            `,
+          },
+        ],
+        valid: [],
+      })
+    })
   })
 
   describe(`${ruleName}: sorting by natural order`, () => {

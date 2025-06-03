@@ -12,6 +12,7 @@ import {
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
 import {
+  MISSED_COMMENT_ABOVE_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
@@ -41,18 +42,19 @@ import { complete } from '../utils/complete'
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+type MESSAGE_ID =
+  | 'unexpectedExportsGroupOrder'
+  | 'missedSpacingBetweenExports'
+  | 'extraSpacingBetweenExports'
+  | 'missedCommentAboveExport'
+  | 'unexpectedExportsOrder'
+
 interface SortExportsSortingNode
   extends SortingNode<
     TSESTree.ExportNamedDeclarationWithSource | TSESTree.ExportAllDeclaration
   > {
   groupKind: 'value' | 'type'
 }
-
-type MESSAGE_ID =
-  | 'unexpectedExportsGroupOrder'
-  | 'missedSpacingBetweenExports'
-  | 'extraSpacingBetweenExports'
-  | 'unexpectedExportsOrder'
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
@@ -184,6 +186,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               missedSpacingBetweenMembers: 'missedSpacingBetweenExports',
               extraSpacingBetweenMembers: 'extraSpacingBetweenExports',
               unexpectedGroupOrder: 'unexpectedExportsGroupOrder',
+              missedCommentAbove: 'missedCommentAboveExport',
               unexpectedOrder: 'unexpectedExportsOrder',
             },
             sortNodesExcludingEslintDisabled,
@@ -227,6 +230,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       type: 'array',
     },
     messages: {
+      missedCommentAboveExport: MISSED_COMMENT_ABOVE_ERROR,
       missedSpacingBetweenExports: MISSED_SPACING_ERROR,
       extraSpacingBetweenExports: EXTRA_SPACING_ERROR,
       unexpectedExportsGroupOrder: GROUP_ORDER_ERROR,

@@ -277,6 +277,30 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 }
 ```
 
+#### Comment above groups
+
+You may place `commentAbove` objects between above your groups to enforce the presence of a comment containing the
+content of `commentAbove`.
+
+`newlinesBetween` and `commentAbove` objects can be combined together.
+
+```ts
+{
+  groups: [
+    { commentAbove: 'Type exports' },
+    'type-export',
+    { commentAbove: 'Value exports' },
+    'value-export',
+  ]
+}
+```
+
+- An error will be raised if no comment containing the content of `commentAbove` is found above the top element of the
+group.
+- Auto-fixing will add a comment containing the content of `commentAbove` above the top element of the group.
+- Auto-fixing will also remove invalid auto-added comments (only comments existing in `commentAbove`
+objects are considered as auto-removable).
+
 ### customGroups
 
 <sub>
