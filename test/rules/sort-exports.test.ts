@@ -1697,6 +1697,40 @@ describe(ruleName, () => {
       })
 
       ruleTester.run(
+        `${ruleName}(${type}): reports missing comments for single nodes`,
+        rule,
+        {
+          invalid: [
+            {
+              errors: [
+                {
+                  data: {
+                    missedCommentAbove: 'Comment above',
+                    right: 'a',
+                  },
+                  messageId: 'missedCommentAboveExport',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: [{ commentAbove: 'Comment above' }, 'unknown'],
+                },
+              ],
+              output: dedent`
+                // Comment above
+                export { a } from "a";
+              `,
+              code: dedent`
+                export { a } from "a";
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}): ignores shebangs and comments at the top of the file`,
         rule,
         {
