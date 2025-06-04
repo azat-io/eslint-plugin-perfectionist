@@ -1,10 +1,8 @@
-import { isSortable } from './is-sortable'
-
 export let pairwise = <T>(
   nodes: T[],
   callback: (left: null | T, right: T) => void,
 ): void => {
-  if (!isSortable(nodes)) {
+  if (nodes.length === 0) {
     return
   }
 
