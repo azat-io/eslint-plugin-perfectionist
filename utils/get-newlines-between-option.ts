@@ -116,7 +116,7 @@ let getGlobalNewlinesBetweenOption = ({
   newlinesBetween: NewlinesBetweenOption
   nextNodeGroupNumber: number
   nodeGroupNumber: number
-}): 'always' | 'ignore' | 'never' => {
+}): NewlinesBetweenOption => {
   if (newlinesBetween === 'ignore') {
     return 'ignore'
   }
