@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
 import type { GetNewlinesBetweenOptionParameters } from '../../utils/get-newlines-between-option'
+import type { NewlinesBetweenOption } from '../../types/common-options'
 
 import { getNewlinesBetweenOption } from '../../utils/get-newlines-between-option'
+import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 
 describe('get-newlines-between-option', () => {
   describe('global "newlinesBetween" option', () => {
@@ -15,7 +17,7 @@ describe('get-newlines-between-option', () => {
               newlinesBetween,
             }),
           ),
-        ).toBe(newlinesBetween)
+        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
       },
     )
 
@@ -29,7 +31,7 @@ describe('get-newlines-between-option', () => {
               newlinesBetween,
             }),
           ),
-        ).toBe(newlinesBetween)
+        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
       },
     )
 
@@ -42,11 +44,25 @@ describe('get-newlines-between-option', () => {
               newlinesBetween,
             }),
           ),
-        ).toBe(newlinesBetween)
+        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
       },
     )
 
-    it('should return "always" if "newlinesBetween" is "always" and nodeGroupIndex !== nextNodeGroupIndex', () => {
+    it('should return 1 if "newlinesBetween" is "always" and nodeGroupNumber !== nextNodeGroupNumber', () => {
+      let groups = ['group1', 'group2']
+      expect(
+        getNewlinesBetweenOption({
+          options: {
+            groups: ['group1', 'group2'],
+            newlinesBetween: 'always',
+          },
+          nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group2'),
+          nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+        }),
+      ).toBe(1)
+    })
+
+    it('should return 1 if "newlinesBetween" is "always" and nodeGroupIndex !== nextNodeGroupIndex', () => {
       let groups = ['group1', 'group2']
       expect(
         getNewlinesBetweenOption({
@@ -57,10 +73,10 @@ describe('get-newlines-between-option', () => {
           nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group2'),
           nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
         }),
-      ).toBe('always')
+      ).toBe(1)
     })
 
-    it('should return "never" if "newlinesBetween" is "always" and nodeGroupIndex === nextNodeGroupIndex', () => {
+    it('should return 0 if "newlinesBetween" is "always" and nodeGroupNumber === nextNodeGroupNumber', () => {
       let groups = ['group1']
       expect(
         getNewlinesBetweenOption({
@@ -71,7 +87,7 @@ describe('get-newlines-between-option', () => {
           nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
           nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
         }),
-      ).toBe('never')
+      ).toBe(0)
     })
 
     it.each(['always', 'ignore', 'never'] as const)(
@@ -89,7 +105,7 @@ describe('get-newlines-between-option', () => {
               newlinesBetween,
             }),
           ),
-        ).toBe(newlinesBetween)
+        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
       },
     )
 
@@ -108,7 +124,7 @@ describe('get-newlines-between-option', () => {
               newlinesBetween,
             }),
           ),
-        ).toBe(newlinesBetween)
+        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
       },
     )
   })
@@ -142,7 +158,7 @@ describe('get-newlines-between-option', () => {
                 newlinesBetween: 'never',
               }),
             ),
-          ).toBe(newlinesInside)
+          ).toBe(convertNewlinesBetweenOptionToNumber(newlinesInside))
         },
       )
 
@@ -161,7 +177,7 @@ describe('get-newlines-between-option', () => {
                 newlinesBetween,
               }),
             ),
-          ).toBe(newlinesBetween)
+          ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
         },
       )
     })
@@ -184,7 +200,7 @@ describe('get-newlines-between-option', () => {
                 newlinesBetween,
               }),
             ),
-          ).toBe(newlinesBetween)
+          ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
         },
       )
     })
@@ -210,13 +226,13 @@ describe('get-newlines-between-option', () => {
                 newlinesBetween: globalNewlinesBetween,
               }),
             ),
-          ).toBe(newlinesBetween)
+          ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
         },
       )
 
       describe('non-adjacent groups', () => {
         it.each(['always', 'ignore', 'never'] as const)(
-          'should return `always` if the global option is `always`',
+          'should return 1 if the global option is `always`',
           newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
@@ -230,12 +246,12 @@ describe('get-newlines-between-option', () => {
                   newlinesBetween: 'always',
                 }),
               ),
-            ).toBe('always')
+            ).toBe(1)
           },
         )
 
         it.each(['always', 'ignore', 'never'] as const)(
-          'should return `always` if `always` exists between the groups and global option is `%s`',
+          'should return 1 if `always` exists between the groups and global option is `%s`',
           newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
@@ -249,7 +265,7 @@ describe('get-newlines-between-option', () => {
                   newlinesBetween,
                 }),
               ),
-            ).toBe('always')
+            ).toBe(1)
           },
         )
 
@@ -275,7 +291,7 @@ describe('get-newlines-between-option', () => {
         )
 
         it.each(['always', 'ignore', 'never'] as const)(
-          'should return `never` if there are only `never` between all groups and global option is `%s`',
+          'should return 0 if there are only `never` between all groups and global option is `%s`',
           newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
@@ -291,7 +307,7 @@ describe('get-newlines-between-option', () => {
                   newlinesBetween,
                 }),
               ),
-            ).toBe('never')
+            ).toBe(0)
           },
         )
 
@@ -312,7 +328,7 @@ describe('get-newlines-between-option', () => {
                   newlinesBetween,
                 }),
               ),
-            ).toBe(newlinesBetween)
+            ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
           },
         )
       })
@@ -355,3 +371,18 @@ describe('get-newlines-between-option', () => {
     group: string,
   ): number => groups.indexOf(group)
 })
+
+let convertNewlinesBetweenOptionToNumber = (
+  newlinesBetween: NewlinesBetweenOption,
+): 'ignore' | 0 | 1 => {
+  switch (newlinesBetween) {
+    case 'ignore':
+      return 'ignore'
+    case 'always':
+      return 1
+    case 'never':
+      return 0
+    default:
+      throw new UnreachableCaseError(newlinesBetween)
+  }
+}

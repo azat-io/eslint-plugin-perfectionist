@@ -96,11 +96,11 @@ export let makeNewlinesBetweenFixes = <T extends SortingNode>({
     )
 
     let rangeReplacement: undefined | string
-    if (newlinesBetween === 'never' && linesBetweenMembers !== 0) {
+    if (newlinesBetween === 0 && linesBetweenMembers !== 0) {
       rangeReplacement = getStringWithoutInvalidNewlines(textBetweenNodes)
     }
 
-    if (newlinesBetween === 'always' && linesBetweenMembers !== 1) {
+    if (newlinesBetween === 1 && linesBetweenMembers !== 1) {
       rangeReplacement = addNewlineBeforeFirstNewline(
         linesBetweenMembers > 1
           ? getStringWithoutInvalidNewlines(textBetweenNodes)
