@@ -2,7 +2,7 @@ export type CustomGroupsOption<
   SingleCustomGroup = object,
   AdditionalOptions = Record<never, never>,
 > = ({
-  newlinesInside?: 'always' | 'never'
+  newlinesInside?: 'always' | 'never' | 1 | 0
   fallbackSort?: FallbackSortOption
   order?: OrderOption
   groupName: string
@@ -58,13 +58,13 @@ export interface FallbackSortOption {
 
 export type DeprecatedCustomGroupsOption = Record<string, string[] | string>
 
+export type NewlinesBetweenOption = 'ignore' | 'always' | 'never' | 1 | 0
+
 export interface GroupCommentAboveOption {
   commentAbove: string
 }
 
 export type RegexOption = SingleRegexOption[] | SingleRegexOption
-
-export type NewlinesBetweenOption = 'ignore' | 'always' | 'never'
 
 export type SpecialCharactersOption = 'remove' | 'trim' | 'keep'
 
