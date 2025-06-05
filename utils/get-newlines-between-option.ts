@@ -6,6 +6,7 @@ import type {
 } from '../types/common-options'
 
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
+import { UnreachableCaseError } from './unreachable-case-error'
 
 export interface GetNewlinesBetweenOptionParameters {
   options: {
@@ -34,7 +35,7 @@ export let getNewlinesBetweenOption = ({
   nextNodeGroupIndex,
   nodeGroupIndex,
   options,
-}: GetNewlinesBetweenOptionParameters): NewlinesBetweenOption => {
+}: GetNewlinesBetweenOptionParameters): 'ignore' | 0 | 1 => {
   let globalNewlinesBetweenOption = getGlobalNewlinesBetweenOption({
     newlinesBetween: options.newlinesBetween,
     nextNodeGroupIndex,
@@ -63,7 +64,12 @@ export let getNewlinesBetweenOption = ({
       nextNodeCustomGroup &&
       nodeCustomGroup.groupName === nextNodeCustomGroup.groupName
     ) {
-      return nodeCustomGroup.newlinesInside ?? globalNewlinesBetweenOption
+      if (nodeCustomGroup.newlinesInside !== undefined) {
+        return convertNewlinesBetweenOptionToNumber(
+          nodeCustomGroup.newlinesInside,
+        )
+      }
+      return globalNewlinesBetweenOption
     }
   }
 
@@ -72,7 +78,9 @@ export let getNewlinesBetweenOption = ({
     if (nextNodeGroupIndex === nodeGroupIndex + 2) {
       let groupBetween = options.groups[nodeGroupIndex + 1]!
       if (isNewlinesBetweenOption(groupBetween)) {
-        return groupBetween.newlinesBetween
+        return convertNewlinesBetweenOptionToNumber(
+          groupBetween.newlinesBetween,
+        )
       }
     } else {
       let relevantGroups = options.groups.slice(
@@ -90,13 +98,13 @@ export let getNewlinesBetweenOption = ({
       )
 
       if (newlinesBetweenOptions.has('always')) {
-        return 'always'
+        return 1
       }
       if (newlinesBetweenOptions.has('ignore')) {
         return 'ignore'
       }
       if (newlinesBetweenOptions.has('never')) {
-        return 'never'
+        return 0
       }
     }
   }
@@ -112,20 +120,23 @@ let getGlobalNewlinesBetweenOption = ({
   newlinesBetween: NewlinesBetweenOption
   nextNodeGroupIndex: number
   nodeGroupIndex: number
-}): NewlinesBetweenOption => {
+}): 'ignore' | 0 | 1 => {
   if (newlinesBetween === 'ignore') {
     return 'ignore'
   }
   if (newlinesBetween === 'never') {
-    return 'never'
+    return 0
   }
   return nodeGroupIndex === nextNodeGroupIndex ? 'never' : 'always'
 }
 
 let buildGroupsWithAllNewlinesBetween = (
   groups: GroupsOptions<string>,
-  globalNewlinesBetweenOption: NewlinesBetweenOption,
+  globalNewlinesBetweenOption: 'ignore' | 0 | 1,
 ): GroupsOptions<string> => {
+  let convertedGlobalNewlinesBetweenOptionNumber =
+    convertNewlinesBetweenNumberToOption(globalNewlinesBetweenOption)
+
   let returnValue: GroupsOptions<string> = []
   for (let i = 0; i < groups.length; i++) {
     let group = groups[i]!
@@ -133,11 +144,44 @@ let buildGroupsWithAllNewlinesBetween = (
     if (!isNewlinesBetweenOption(group)) {
       let previousGroup = groups[i - 1]
       if (previousGroup && !isNewlinesBetweenOption(previousGroup)) {
-        returnValue.push({ newlinesBetween: globalNewlinesBetweenOption })
+        returnValue.push({
+          newlinesBetween: convertedGlobalNewlinesBetweenOptionNumber,
+        })
       }
     }
 
     returnValue.push(group)
   }
   return returnValue
+}
+
+let convertNewlinesBetweenNumberToOption = (
+  newlinesBetween: 'ignore' | 0 | 1,
+): NewlinesBetweenOption => {
+  switch (newlinesBetween) {
+    case 'ignore':
+      return 'ignore'
+    case 0:
+      return 'never'
+    case 1:
+      return 'always'
+    default:
+      throw new UnreachableCaseError(newlinesBetween)
+  }
+}
+
+let convertNewlinesBetweenOptionToNumber = (
+  newlinesBetween: NewlinesBetweenOption,
+): 'ignore' | 0 | 1 => {
+  switch (newlinesBetween) {
+    case 'ignore':
+      return 'ignore'
+    case 'always':
+      return 1
+    case 'never':
+      return 0
+    /* v8 ignore next 2 */
+    default:
+      throw new UnreachableCaseError(newlinesBetween)
+  }
 }

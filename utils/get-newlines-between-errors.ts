@@ -9,14 +9,13 @@ import type {
 import type { SortingNode } from '../types/sorting-node'
 
 import { getNewlinesBetweenOption } from './get-newlines-between-option'
-import { UnreachableCaseError } from './unreachable-case-error'
 import { getLinesBetween } from './get-lines-between'
 
 export type NewlinesBetweenValueGetter<T extends SortingNode> = (props: {
-  computedNewlinesBetween: NewlinesBetweenOption
+  computedNewlinesBetween: 'ignore' | 0 | 1
   right: T
   left: T
-}) => NewlinesBetweenOption
+}) => 'ignore' | 0 | 1
 
 interface GetNewlinesBetweenErrorsParameters<
   MessageIds extends string,
@@ -71,20 +70,15 @@ export let getNewlinesBetweenErrors = <
     }) ?? newlinesBetween
 
   let numberOfEmptyLinesBetween = getLinesBetween(sourceCode, left, right)
-  switch (newlinesBetween) {
-    case 'ignore':
-      return []
-    case 'always':
-      if (numberOfEmptyLinesBetween === 0) {
-        return [missedSpacingError]
-      } else if (numberOfEmptyLinesBetween > 1) {
-        return [extraSpacingError]
-      }
-      return []
-    case 'never':
-      return numberOfEmptyLinesBetween > 0 ? [extraSpacingError] : []
-    /* v8 ignore next 2 */
-    default:
-      throw new UnreachableCaseError(newlinesBetween)
+  if (newlinesBetween === 'ignore') {
+    return []
   }
+
+  if (numberOfEmptyLinesBetween < newlinesBetween) {
+    return [missedSpacingError]
+  }
+  if (numberOfEmptyLinesBetween > newlinesBetween) {
+    return [extraSpacingError]
+  }
+  return []
 }
