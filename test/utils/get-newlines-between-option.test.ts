@@ -7,7 +7,7 @@ import { getNewlinesBetweenOption } from '../../utils/get-newlines-between-optio
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 
 const NEVER_OPTIONS = [0, 'never'] as const
-const ALWAYS_OPTIONS = [1, 'always'] as const
+const ALWAYS_OPTIONS = [1, 2, 'always'] as const
 
 describe('get-newlines-between-option', () => {
   describe('global "newlinesBetween" option', () => {
@@ -52,7 +52,7 @@ describe('get-newlines-between-option', () => {
     )
 
     it.each(ALWAYS_OPTIONS)(
-      'should return 1 if "newlinesBetween" is "%s" and nodeGroupNumber !== nextNodeGroupNumber',
+      'should return the entered newlinesBetween ("%s") if nodeGroupNumber !== nextNodeGroupNumber',
       newlinesBetween => {
         let groups = ['group1', 'group2']
         expect(
@@ -64,7 +64,7 @@ describe('get-newlines-between-option', () => {
             nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group2'),
             nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
           }),
-        ).toBe(1)
+        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
       },
     )
 
@@ -244,8 +244,8 @@ describe('get-newlines-between-option', () => {
       )
 
       describe('non-adjacent groups', () => {
-        it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
-          'should return 1 if the global option is `always`',
+        it.each(['always', 1, 'ignore', ...NEVER_OPTIONS] as const)(
+          'should return 1 if the global option is `always` and `%s` exists between the groups',
           newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
@@ -263,7 +263,7 @@ describe('get-newlines-between-option', () => {
           },
         )
 
-        it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
+        it.each([1, 'always', 'ignore', ...NEVER_OPTIONS] as const)(
           'should return 1 if `always` exists between the groups and global option is `%s`',
           newlinesBetween => {
             expect(
@@ -279,6 +279,26 @@ describe('get-newlines-between-option', () => {
                 }),
               ),
             ).toBe(1)
+          },
+        )
+
+        it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
+          'should return the maximum of the newlinesBetween options if the global option is `%s`',
+          newlinesBetween => {
+            expect(
+              getNewlinesBetweenOption(
+                buildParameters({
+                  groups: [
+                    'group1',
+                    { newlinesBetween: 4 },
+                    'someOtherGroup',
+                    { newlinesBetween: 3 },
+                    'group2',
+                  ],
+                  newlinesBetween,
+                }),
+              ),
+            ).toBe(4)
           },
         )
 
@@ -387,15 +407,16 @@ describe('get-newlines-between-option', () => {
 
 let convertNewlinesBetweenOptionToNumber = (
   newlinesBetween: NewlinesBetweenOption,
-): 'ignore' | 0 | 1 => {
+): 'ignore' | number => {
+  if (typeof newlinesBetween === 'number') {
+    return newlinesBetween
+  }
   switch (newlinesBetween) {
     case 'ignore':
       return 'ignore'
     case 'always':
-    case 1:
       return 1
     case 'never':
-    case 0:
       return 0
     default:
       throw new UnreachableCaseError(newlinesBetween)

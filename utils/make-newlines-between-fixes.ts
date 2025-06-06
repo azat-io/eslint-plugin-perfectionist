@@ -80,6 +80,16 @@ export let makeNewlinesBetweenFixes = <T extends SortingNode>({
       node: nextSortingNode.node,
       sourceCode,
     }).at(0)!
+
+    let linesBetweenMembers = getLinesBetween(
+      sourceCode,
+      sortingNode,
+      nextSortingNode,
+    )
+    if (linesBetweenMembers === newlinesBetween) {
+      continue
+    }
+
     let rangeToReplace: [number, number] = [
       currentNodeRange.at(1)!,
       nextNodeRangeStart,
@@ -89,37 +99,44 @@ export let makeNewlinesBetweenFixes = <T extends SortingNode>({
       nextNodeRangeStart,
     )
 
-    let linesBetweenMembers = getLinesBetween(
-      sourceCode,
-      sortingNode,
-      nextSortingNode,
-    )
-
-    let rangeReplacement: undefined | string
-    if (newlinesBetween === 0 && linesBetweenMembers !== 0) {
-      rangeReplacement = getStringWithoutInvalidNewlines(textBetweenNodes)
-    }
-
-    if (newlinesBetween === 1 && linesBetweenMembers !== 1) {
-      rangeReplacement = addNewlineBeforeFirstNewline(
-        linesBetweenMembers > 1
-          ? getStringWithoutInvalidNewlines(textBetweenNodes)
-          : textBetweenNodes,
-      )
-      let isOnSameLine =
-        linesBetweenMembers === 0 &&
-        sortingNode.node.loc.end.line === nextSortingNode.node.loc.start.line
-      if (isOnSameLine) {
-        rangeReplacement = addNewlineBeforeFirstNewline(rangeReplacement)
-      }
-    }
-
+    let rangeReplacement = computeRangeReplacement({
+      isOnSameLine:
+        sortingNode.node.loc.end.line === nextSortingNode.node.loc.start.line,
+      textBetweenNodes,
+      newlinesBetween,
+    })
     if (rangeReplacement) {
       fixes.push(fixer.replaceTextRange(rangeToReplace, rangeReplacement))
     }
   }
 
   return fixes
+}
+
+let computeRangeReplacement = ({
+  textBetweenNodes,
+  newlinesBetween,
+  isOnSameLine,
+}: {
+  textBetweenNodes: string
+  newlinesBetween: number
+  isOnSameLine: boolean
+}): undefined | string => {
+  let textBetweenNodesWithoutInvalidNewlines =
+    getStringWithoutInvalidNewlines(textBetweenNodes)
+
+  if (newlinesBetween === 0) {
+    return textBetweenNodesWithoutInvalidNewlines
+  }
+
+  let rangeReplacement = textBetweenNodesWithoutInvalidNewlines
+  for (let index = 0; index < newlinesBetween; index++) {
+    rangeReplacement = addNewlineBeforeFirstNewline(rangeReplacement)
+  }
+  if (!isOnSameLine) {
+    return rangeReplacement
+  }
+  return addNewlineBeforeFirstNewline(rangeReplacement)
 }
 
 let getStringWithoutInvalidNewlines = (value: string): string =>

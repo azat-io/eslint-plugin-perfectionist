@@ -12,10 +12,10 @@ import { getNewlinesBetweenOption } from './get-newlines-between-option'
 import { getLinesBetween } from './get-lines-between'
 
 export type NewlinesBetweenValueGetter<T extends SortingNode> = (props: {
-  computedNewlinesBetween: 'ignore' | 0 | 1
+  computedNewlinesBetween: 'ignore' | number
   right: T
   left: T
-}) => 'ignore' | 0 | 1
+}) => 'ignore' | number
 
 interface GetNewlinesBetweenErrorsParameters<
   MessageIds extends string,

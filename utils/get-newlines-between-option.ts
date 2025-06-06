@@ -35,7 +35,7 @@ export let getNewlinesBetweenOption = ({
   nextNodeGroupIndex,
   nodeGroupIndex,
   options,
-}: GetNewlinesBetweenOptionParameters): 'ignore' | 0 | 1 => {
+}: GetNewlinesBetweenOptionParameters): 'ignore' | number => {
   let globalNewlinesBetweenOption = getGlobalNewlinesBetweenOption({
     newlinesBetween: options.newlinesBetween,
     nextNodeGroupIndex,
@@ -98,13 +98,20 @@ export let getNewlinesBetweenOption = ({
           .map(convertNewlinesBetweenOptionToNumber),
       )
 
-      if (newlinesBetweenOptions.has(1)) {
-        return 1
+      let numberNewlinesBetween = [...newlinesBetweenOptions].filter(
+        option => typeof option === 'number',
+      )
+      let maxNewlinesBetween =
+        numberNewlinesBetween.length > 0
+          ? Math.max(...numberNewlinesBetween)
+          : null
+      if (maxNewlinesBetween !== null && maxNewlinesBetween >= 1) {
+        return maxNewlinesBetween
       }
       if (newlinesBetweenOptions.has('ignore')) {
         return 'ignore'
       }
-      if (newlinesBetweenOptions.has(0)) {
+      if (maxNewlinesBetween === 0) {
         return 0
       }
     }
@@ -121,22 +128,22 @@ let getGlobalNewlinesBetweenOption = ({
   newlinesBetween: NewlinesBetweenOption
   nextNodeGroupIndex: number
   nodeGroupIndex: number
-}): 'ignore' | 0 | 1 => {
+}): 'ignore' | number => {
   let numberNewlinesBetween =
     convertNewlinesBetweenOptionToNumber(newlinesBetween)
 
   if (numberNewlinesBetween === 'ignore') {
     return 'ignore'
   }
-  if (numberNewlinesBetween === 0) {
+  if (nodeGroupIndex === nextNodeGroupIndex) {
     return 0
   }
-  return nodeGroupIndex === nextNodeGroupIndex ? 'never' : 'always'
+  return numberNewlinesBetween
 }
 
 let buildGroupsWithAllNewlinesBetween = (
   groups: GroupsOptions<string>,
-  globalNewlinesBetweenOption: 'ignore' | 0 | 1,
+  globalNewlinesBetweenOption: 'ignore' | number,
 ): GroupsOptions<string> => {
   let returnValue: GroupsOptions<string> = []
   for (let i = 0; i < groups.length; i++) {
@@ -158,15 +165,16 @@ let buildGroupsWithAllNewlinesBetween = (
 
 let convertNewlinesBetweenOptionToNumber = (
   newlinesBetween: NewlinesBetweenOption,
-): 'ignore' | 0 | 1 => {
+): 'ignore' | number => {
+  if (typeof newlinesBetween === 'number') {
+    return newlinesBetween
+  }
   switch (newlinesBetween) {
     case 'ignore':
       return 'ignore'
     case 'always':
-    case 1:
       return 1
     case 'never':
-    case 0:
       return 0
     /* v8 ignore next 2 */
     default:

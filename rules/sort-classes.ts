@@ -617,7 +617,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           computedNewlinesBetween,
           right,
           left,
-        }): 'ignore' | 0 | 1 => {
+        }): 'ignore' | number => {
           if (
             left.overloadSignaturesGroupId !== null &&
             left.overloadSignaturesGroupId === right.overloadSignaturesGroupId
