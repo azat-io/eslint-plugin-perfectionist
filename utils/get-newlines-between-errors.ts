@@ -12,10 +12,10 @@ import { getNewlinesBetweenOption } from './get-newlines-between-option'
 import { getLinesBetween } from './get-lines-between'
 
 export type NewlinesBetweenValueGetter<T extends SortingNode> = (props: {
-  computedNewlinesBetween: NewlinesBetweenOption
+  computedNewlinesBetween: 'ignore' | number
   right: T
   left: T
-}) => NewlinesBetweenOption
+}) => 'ignore' | number
 
 interface GetNewlinesBetweenErrorsParameters<
   MessageIds extends string,
@@ -64,18 +64,17 @@ export let getNewlinesBetweenErrors = <
   if (leftGroupIndex > rightGroupIndex) {
     return []
   }
+
   let numberOfEmptyLinesBetween = getLinesBetween(sourceCode, left, right)
-  switch (newlinesBetween) {
-    case 'ignore':
-      return []
-    case 'never':
-      return numberOfEmptyLinesBetween > 0 ? [extraSpacingError] : []
-    case 'always':
-      if (numberOfEmptyLinesBetween === 0) {
-        return [missedSpacingError]
-      } else if (numberOfEmptyLinesBetween > 1) {
-        return [extraSpacingError]
-      }
+  if (newlinesBetween === 'ignore') {
+    return []
+  }
+
+  if (numberOfEmptyLinesBetween < newlinesBetween) {
+    return [missedSpacingError]
+  }
+  if (numberOfEmptyLinesBetween > newlinesBetween) {
+    return [extraSpacingError]
   }
   return []
 }

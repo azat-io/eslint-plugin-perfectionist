@@ -7,6 +7,7 @@ import type {
 import type { SortingNode } from '../types/sorting-node'
 
 import { convertBooleanToSign } from './convert-boolean-to-sign'
+import { UnreachableCaseError } from './unreachable-case-error'
 
 export type NodeValueGetterFunction<T extends SortingNode> = (node: T) => string
 
@@ -87,6 +88,9 @@ let computeCompareValue = <T extends SortingNode>({
     case 'custom':
       sortingFunction = getCustomSortingFunction(options, nodeValueGetter)
       break
+    /* v8 ignore next 2 */
+    default:
+      throw new UnreachableCaseError(options.type)
   }
 
   return convertBooleanToSign(options.order === 'asc') * sortingFunction(a, b)
@@ -212,6 +216,11 @@ let getFormatStringFunction =
           '',
         )
         break
+      case 'keep':
+        break
+      /* v8 ignore next 2 */
+      default:
+        throw new UnreachableCaseError(specialCharacters)
     }
     return valueToCompare.replaceAll(/\s/gu, '')
   }
