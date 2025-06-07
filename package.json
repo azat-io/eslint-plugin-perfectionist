@@ -70,6 +70,8 @@
     "@azat-io/stylelint-config": "^0.1.1",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
+    "@humanwhocodes/crosspost": "^0.12.0",
+    "@humanwhocodes/social-changelog": "^0.4.0",
     "@nanostores/persistent": "^1.0.0",
     "@poppanator/sveltekit-svg": "5.0.1",
     "@shikijs/langs": "^3.4.2",
