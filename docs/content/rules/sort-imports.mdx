@@ -245,13 +245,14 @@ import { c } from 'c'
 
 ### newlinesBetween
 
-<sub>default: `'always'`</sub>
+<sub>type: `number | 'ignore'`</sub>
+<sub>default: `1`</sub>
 
-Specifies how to handle new lines between import groups.
+Specifies how to handle newlines between groups.
 
-- `ignore` — Do not report errors related to new lines between import groups.
-- `always` — Enforce one new line between each group, and forbid new lines inside a group.
-- `never` — No new lines are allowed in the entire import section.
+- `'ignore'` — Do not report errors related to newlines.
+- `0` — No newlines are allowed.
+- Any other number — Enforce this number of newlines between each group, and forbid newlines inside groups.
 
 You can also enforce the newline behavior between two specific groups through the `groups` options.
 
@@ -456,10 +457,10 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 
 ```ts
 {
-  newlinesBetween: 'always',
+  newlinesBetween: 1,
   groups: [
     'a',
-    { newlinesBetween: 'never' }, // Overrides the global newlinesBetween option
+    { newlinesBetween: 0 }, // Overrides the global newlinesBetween option
     'b',
   ]
 }
@@ -550,7 +551,7 @@ interface CustomGroupDefinition {
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
-  newlinesInside?: 'always' | 'never'
+  newlinesInside?: number
   selector?: string
   modifiers?: string[]
   elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
@@ -566,7 +567,7 @@ interface CustomGroupAnyOfDefinition {
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
-  newlinesInside?: 'always' | 'never'
+  newlinesInside?: number
   anyOf: Array<{
       selector?: string
       modifiers?: string[]
@@ -656,7 +657,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   internalPattern: ['^~/.+', '^@/.+'],
                   partitionByComment: false,
                   partitionByNewLine: false,
-                  newlinesBetween: 'always',
+                  newlinesBetween: 1,
                   maxLineLength: undefined,
                   groups: [
                     'type-import',
@@ -698,7 +699,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                 internalPattern: ['^~/.+', '^@/.+'],
                 partitionByComment: false,
                 partitionByNewLine: false,
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
                 maxLineLength: undefined,
                 groups: [
                   'type-import',
