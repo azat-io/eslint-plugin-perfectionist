@@ -78,7 +78,7 @@ let computeCompareValue = <T extends SortingNode>({
       sortingFunction = getAlphabeticalSortingFunction(options, nodeValueGetter)
       break
     case 'line-length':
-      sortingFunction = getLineLengthSortingFunction(options, nodeValueGetter)
+      sortingFunction = getLineLengthSortingFunction()
       break
     case 'unsorted':
       return 0
@@ -172,27 +172,10 @@ let getCustomSortingFunction = <T extends SortingNode>(
 }
 
 let getLineLengthSortingFunction =
-  <T extends SortingNode>(
-    { maxLineLength }: { maxLineLength?: number },
-    nodeValueGetter: NodeValueGetterFunction<T>,
-  ): SortingFunction<T> =>
+  <T extends SortingNode>(): SortingFunction<T> =>
   (aNode: T, bNode: T) => {
     let aSize = aNode.size
     let bSize = bNode.size
-
-    if (maxLineLength) {
-      let isTooLong = (size: number, node: T): undefined | boolean =>
-        size > maxLineLength && node.hasMultipleImportDeclarations
-
-      if (isTooLong(aSize, aNode)) {
-        aSize = nodeValueGetter(aNode).length + 10
-      }
-
-      if (isTooLong(bSize, bNode)) {
-        bSize = nodeValueGetter(bNode).length + 10
-      }
-    }
-
     return aSize - bSize
   }
 

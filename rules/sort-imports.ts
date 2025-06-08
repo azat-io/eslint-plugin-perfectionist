@@ -271,6 +271,17 @@ export default createEslintRule<Options, MESSAGE_ID>({
           name,
         }) ?? 'unknown'
 
+      let hasMultipleImportDeclarations = isSortable(
+        (node as TSESTree.ImportDeclaration).specifiers,
+      )
+      let size = rangeToDiff(node, sourceCode)
+      if (
+        hasMultipleImportDeclarations &&
+        options.maxLineLength &&
+        size > options.maxLineLength
+      ) {
+        size = name.length + 10
+      }
       sortingNodes.push({
         isIgnored:
           !options.sortSideEffects &&
@@ -280,17 +291,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         dependencyNames: computeDependencyNames({ sourceCode, node }),
         dependencies: computeDependencies(node),
-        size: rangeToDiff(node, sourceCode),
         addSafetySemicolonWhenInline: true,
         group,
+        size,
         name,
         node,
-        ...(options.type === 'line-length' &&
-          options.maxLineLength && {
-            hasMultipleImportDeclarations: isSortable(
-              (node as TSESTree.ImportDeclaration).specifiers,
-            ),
-          }),
       })
     }
 
