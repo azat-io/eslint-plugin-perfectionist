@@ -48,6 +48,9 @@ export let makeNewlinesBetweenFixes = <T extends SortingNode>({
       options.groups,
       nextSortedSortingNode,
     )
+    if (nodeGroupIndex > nextNodeGroupIndex) {
+      continue
+    }
 
     let newlinesBetween = getNewlinesBetweenOption({
       nextNodeGroupIndex,
