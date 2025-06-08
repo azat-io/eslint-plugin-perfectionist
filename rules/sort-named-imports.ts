@@ -188,7 +188,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         ): SortNamedImportsSortingNode[] =>
           filteredGroupKindNodes.flatMap(groupedNodes =>
             sortNodesByGroups({
-              getOptionsByGroupNumber:
+              getOptionsByGroupIndex:
                 buildGetCustomGroupOverriddenOptionsFunction(options),
               ignoreEslintDisabledNodes,
               groups: options.groups,

@@ -13,7 +13,7 @@ interface SortNodesByGroupsParameters<
   Options extends BaseSortNodesByGroupsOptions,
   T extends SortingNode,
 > {
-  getOptionsByGroupNumber(groupNumber: number): {
+  getOptionsByGroupIndex(groupIndex: number): {
     fallbackSortNodeValueGetter?: NodeValueGetterFunction<T> | null
     nodeValueGetter?: NodeValueGetterFunction<T> | null
     options: Options
@@ -30,13 +30,13 @@ export let sortNodesByGroups = <
   Options extends BaseSortNodesByGroupsOptions,
 >({
   ignoreEslintDisabledNodes,
-  getOptionsByGroupNumber,
+  getOptionsByGroupIndex,
   isNodeIgnoredForGroup,
   isNodeIgnored,
   groups,
   nodes,
 }: SortNodesByGroupsParameters<Options, T>): T[] => {
-  let nodesByNonIgnoredGroupNumber: Record<number, T[]> = {}
+  let nodesByNonIgnoredGroupIndex: Record<number, T[]> = {}
   let ignoredNodeIndices: number[] = []
   for (let [index, sortingNode] of nodes.entries()) {
     if (
@@ -46,18 +46,18 @@ export let sortNodesByGroups = <
       ignoredNodeIndices.push(index)
       continue
     }
-    let groupNumber = getGroupIndex(groups, sortingNode)
-    nodesByNonIgnoredGroupNumber[groupNumber] ??= []
-    nodesByNonIgnoredGroupNumber[groupNumber].push(sortingNode)
+    let groupIndex = getGroupIndex(groups, sortingNode)
+    nodesByNonIgnoredGroupIndex[groupIndex] ??= []
+    nodesByNonIgnoredGroupIndex[groupIndex].push(sortingNode)
   }
 
   let sortedNodes: T[] = []
-  for (let groupNumber of Object.keys(nodesByNonIgnoredGroupNumber).sort(
+  for (let groupIndex of Object.keys(nodesByNonIgnoredGroupIndex).sort(
     (a, b) => Number(a) - Number(b),
   )) {
     let { fallbackSortNodeValueGetter, nodeValueGetter, options } =
-      getOptionsByGroupNumber(Number(groupNumber))
-    let nodesToPush = nodesByNonIgnoredGroupNumber[Number(groupNumber)]!
+      getOptionsByGroupIndex(Number(groupIndex))
+    let nodesToPush = nodesByNonIgnoredGroupIndex[Number(groupIndex)]!
 
     let groupIgnoredNodes = new Set(
       nodesToPush.filter(node => isNodeIgnoredForGroup?.(node, options)),

@@ -47,7 +47,7 @@ describe('get-newlines-between-option', () => {
       },
     )
 
-    it('should return "always" if "newlinesBetween" is "always" and nodeGroupNumber !== nextNodeGroupNumber', () => {
+    it('should return "always" if "newlinesBetween" is "always" and nodeGroupIndex !== nextNodeGroupIndex', () => {
       expect(
         getNewlinesBetweenOption({
           options: {
@@ -60,7 +60,7 @@ describe('get-newlines-between-option', () => {
       ).toBe('always')
     })
 
-    it('should return "never" if "newlinesBetween" is "always" and nodeGroupNumber === nextNodeGroupNumber', () => {
+    it('should return "never" if "newlinesBetween" is "always" and nodeGroupIndex === nextNodeGroupIndex', () => {
       expect(
         getNewlinesBetweenOption({
           options: {

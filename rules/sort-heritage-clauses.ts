@@ -142,7 +142,7 @@ let sortHeritageClauses = (
     ignoreEslintDisabledNodes: boolean,
   ): SortingNode[] =>
     sortNodesByGroups({
-      getOptionsByGroupNumber: () => ({ options }),
+      getOptionsByGroupIndex: () => ({ options }),
       ignoreEslintDisabledNodes,
       groups: options.groups,
       nodes,

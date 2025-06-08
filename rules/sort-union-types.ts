@@ -267,7 +267,7 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
       ignoreEslintDisabledNodes: boolean,
     ): SortingNode[] =>
       sortNodesByGroups({
-        getOptionsByGroupNumber:
+        getOptionsByGroupIndex:
           buildGetCustomGroupOverriddenOptionsFunction(options),
         ignoreEslintDisabledNodes,
         groups: options.groups,

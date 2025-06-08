@@ -279,7 +279,7 @@ export let sortArray = <MessageIds extends string>({
     ): SortArrayIncludesSortingNode[] =>
       filteredGroupKindNodes.flatMap(groupedNodes =>
         sortNodesByGroups({
-          getOptionsByGroupNumber:
+          getOptionsByGroupIndex:
             buildGetCustomGroupOverriddenOptionsFunction(options),
           ignoreEslintDisabledNodes,
           groups: options.groups,

@@ -11,7 +11,7 @@ type InputOptions = Pick<
 
 export let getCustomGroupsCompareOptions = (
   options: InputOptions,
-  groupNumber: number,
+  groupIndex: number,
 ): {
   options: Pick<
     Required<Options[0]>,
@@ -22,13 +22,13 @@ export let getCustomGroupsCompareOptions = (
 } => {
   let baseCompareOptions = baseGetCustomGroupsCompareOptions(
     options,
-    groupNumber,
+    groupIndex,
   )
 
   let { fallbackSort, customGroups, sortBy, groups } = options
   let fallbackSortBy = fallbackSort.sortBy
   if (Array.isArray(customGroups)) {
-    let group = groups[groupNumber]
+    let group = groups[groupIndex]
     let customGroup =
       typeof group === 'string'
         ? customGroups.find(currentGroup => group === currentGroup.groupName)

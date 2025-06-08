@@ -37,16 +37,16 @@ export let getNewlinesBetweenOption = ({
   sortingNode,
   options,
 }: GetNewlinesBetweenOptionParameters): NewlinesBetweenOption => {
-  let nodeGroupNumber = getGroupIndex(options.groups, sortingNode)
-  let nextNodeGroupNumber = getGroupIndex(options.groups, nextSortingNode)
+  let nodeGroupIndex = getGroupIndex(options.groups, sortingNode)
+  let nextNodeGroupIndex = getGroupIndex(options.groups, nextSortingNode)
   let globalNewlinesBetweenOption = getGlobalNewlinesBetweenOption({
     newlinesBetween: options.newlinesBetween,
-    nextNodeGroupNumber,
-    nodeGroupNumber,
+    nextNodeGroupIndex,
+    nodeGroupIndex,
   })
 
-  let nodeGroup = options.groups[nodeGroupNumber]
-  let nextNodeGroup = options.groups[nextNodeGroupNumber]
+  let nodeGroup = options.groups[nodeGroupIndex]
+  let nextNodeGroup = options.groups[nextNodeGroupIndex]
 
   // NewlinesInside check
   if (
@@ -72,16 +72,16 @@ export let getNewlinesBetweenOption = ({
   }
 
   // Check if a specific newlinesBetween is defined between the two groups
-  if (nextNodeGroupNumber >= nodeGroupNumber + 2) {
-    if (nextNodeGroupNumber === nodeGroupNumber + 2) {
-      let groupBetween = options.groups[nodeGroupNumber + 1]!
+  if (nextNodeGroupIndex >= nodeGroupIndex + 2) {
+    if (nextNodeGroupIndex === nodeGroupIndex + 2) {
+      let groupBetween = options.groups[nodeGroupIndex + 1]!
       if (isNewlinesBetweenOption(groupBetween)) {
         return groupBetween.newlinesBetween
       }
     } else {
       let relevantGroups = options.groups.slice(
-        nodeGroupNumber,
-        nextNodeGroupNumber + 1,
+        nodeGroupIndex,
+        nextNodeGroupIndex + 1,
       )
       let groupsWithAllNewlinesBetween = buildGroupsWithAllNewlinesBetween(
         relevantGroups,
@@ -109,13 +109,13 @@ export let getNewlinesBetweenOption = ({
 }
 
 let getGlobalNewlinesBetweenOption = ({
-  nextNodeGroupNumber,
+  nextNodeGroupIndex,
   newlinesBetween,
-  nodeGroupNumber,
+  nodeGroupIndex,
 }: {
   newlinesBetween: NewlinesBetweenOption
-  nextNodeGroupNumber: number
-  nodeGroupNumber: number
+  nextNodeGroupIndex: number
+  nodeGroupIndex: number
 }): NewlinesBetweenOption => {
   if (newlinesBetween === 'ignore') {
     return 'ignore'
@@ -123,7 +123,7 @@ let getGlobalNewlinesBetweenOption = ({
   if (newlinesBetween === 'never') {
     return 'never'
   }
-  return nodeGroupNumber === nextNodeGroupNumber ? 'never' : 'always'
+  return nodeGroupIndex === nextNodeGroupIndex ? 'never' : 'always'
 }
 
 let buildGroupsWithAllNewlinesBetween = (

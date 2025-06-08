@@ -221,10 +221,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ): SortEnumsSortingNode[] => {
         let nodesSortedByGroups = formattedMembers.flatMap(sortingNodes =>
           sortNodesByGroups({
-            getOptionsByGroupNumber: groupNumber => ({
+            getOptionsByGroupIndex: groupIndex => ({
               options: getCustomGroupOverriddenOptions({
                 options: overriddenOptions,
-                groupNumber,
+                groupIndex,
               }),
               nodeValueGetter,
             }),
