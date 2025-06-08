@@ -4,7 +4,7 @@ export interface SortingNode<Node extends TSESTree.Node = TSESTree.Node> {
   hasMultipleImportDeclarations?: boolean
   addSafetySemicolonWhenInline?: boolean
   isEslintDisabled: boolean
-  group?: string
+  group: string
   name: string
   size: number
   node: Node
