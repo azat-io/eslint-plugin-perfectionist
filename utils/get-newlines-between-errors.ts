@@ -50,6 +50,10 @@ export let getNewlinesBetweenErrors = <
   right,
   left,
 }: GetNewlinesBetweenErrorsParameters<MessageIds, T>): MessageIds[] => {
+  if (leftGroupIndex > rightGroupIndex) {
+    return []
+  }
+
   let newlinesBetween = getNewlinesBetweenOption({
     nextSortingNode: right,
     sortingNode: left,
@@ -61,9 +65,7 @@ export let getNewlinesBetweenErrors = <
       right,
       left,
     }) ?? newlinesBetween
-  if (leftGroupIndex > rightGroupIndex) {
-    return []
-  }
+
   let numberOfEmptyLinesBetween = getLinesBetween(sourceCode, left, right)
   switch (newlinesBetween) {
     case 'ignore':
