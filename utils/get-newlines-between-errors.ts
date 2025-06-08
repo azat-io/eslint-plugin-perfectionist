@@ -56,8 +56,8 @@ export let getNewlinesBetweenErrors = <
   }
 
   let newlinesBetween = getNewlinesBetweenOption({
-    nextSortingNode: right,
-    sortingNode: left,
+    nextNodeGroupIndex: rightGroupIndex,
+    nodeGroupIndex: leftGroupIndex,
     options,
   })
   newlinesBetween =

@@ -11,6 +11,7 @@ import type { SortingNode } from '../types/sorting-node'
 
 import { getNewlinesBetweenOption } from './get-newlines-between-option'
 import { getLinesBetween } from './get-lines-between'
+import { getGroupIndex } from './get-group-index'
 import { getNodeRange } from './get-node-range'
 
 interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
@@ -42,9 +43,15 @@ export let makeNewlinesBetweenFixes = <T extends SortingNode>({
     let sortedSortingNode = sortedNodes.at(i)!
     let nextSortedSortingNode = sortedNodes.at(i + 1)!
 
+    let nodeGroupIndex = getGroupIndex(options.groups, sortedSortingNode)
+    let nextNodeGroupIndex = getGroupIndex(
+      options.groups,
+      nextSortedSortingNode,
+    )
+
     let newlinesBetween = getNewlinesBetweenOption({
-      nextSortingNode: nextSortedSortingNode,
-      sortingNode: sortedSortingNode,
+      nextNodeGroupIndex,
+      nodeGroupIndex,
       options,
     })
     newlinesBetween =

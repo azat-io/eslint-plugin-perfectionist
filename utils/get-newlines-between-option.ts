@@ -4,10 +4,8 @@ import type {
   CustomGroupsOption,
   GroupsOptions,
 } from '../types/common-options'
-import type { SortingNode } from '../types/sorting-node'
 
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
-import { getGroupIndex } from './get-group-index'
 
 export interface GetNewlinesBetweenOptionParameters {
   options: {
@@ -15,8 +13,8 @@ export interface GetNewlinesBetweenOptionParameters {
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<string>
   }
-  nextSortingNode: SortingNode
-  sortingNode: SortingNode
+  nextNodeGroupIndex: number
+  nodeGroupIndex: number
 }
 
 /**
@@ -26,19 +24,17 @@ export interface GetNewlinesBetweenOptionParameters {
  * - If the two nodes are in the same custom group, the `newlinesInside` option
  * of the group is used.
  * @param {GetNewlinesBetweenOptionParameters} props - The function arguments
- * @param {SortingNode} props.nextSortingNode - The next node to sort
- * @param {SortingNode} props.sortingNode - The current node to sort
+ * @param {number} props.nextNodeGroupIndex - The next node index to sort
+ * @param {number} props.nodeGroupIndex - The current node index to sort
  * @param {GetNewlinesBetweenOptionParameters['options']} props.options - Newlines between related options
  * @returns {NewlinesBetweenOption} - The `newlinesBetween` option to
  * use
  */
 export let getNewlinesBetweenOption = ({
-  nextSortingNode,
-  sortingNode,
+  nextNodeGroupIndex,
+  nodeGroupIndex,
   options,
 }: GetNewlinesBetweenOptionParameters): NewlinesBetweenOption => {
-  let nodeGroupIndex = getGroupIndex(options.groups, sortingNode)
-  let nextNodeGroupIndex = getGroupIndex(options.groups, nextSortingNode)
   let globalNewlinesBetweenOption = getGlobalNewlinesBetweenOption({
     newlinesBetween: options.newlinesBetween,
     nextNodeGroupIndex,
