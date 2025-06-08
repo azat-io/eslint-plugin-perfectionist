@@ -1362,6 +1362,46 @@ describe(ruleName, () => {
         {
           invalid: [
             {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'A',
+                      groupName: 'a',
+                    },
+                    {
+                      elementNamePattern: 'B',
+                      groupName: 'b',
+                    },
+                  ],
+                  newlinesBetween: 'always',
+                  groups: ['a', 'b'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'B',
+                    left: 'A',
+                  },
+                  messageId: 'missedSpacingBetweenEnumsMembers',
+                },
+              ],
+              output: dedent`
+                enum Enum {
+                  A = 'A', 
+
+                B = 'B',
+                }
+              `,
+              code: dedent`
+                enum Enum {
+                  A = 'A', B = 'B',
+                }
+              `,
+            },
+            {
               errors: [
                 {
                   data: {

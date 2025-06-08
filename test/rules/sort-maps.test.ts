@@ -1191,6 +1191,46 @@ describe(ruleName, () => {
         {
           invalid: [
             {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                    {
+                      elementNamePattern: 'b',
+                      groupName: 'b',
+                    },
+                  ],
+                  newlinesBetween: 'always',
+                  groups: ['a', 'b'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'missedSpacingBetweenMapElementsMembers',
+                },
+              ],
+              output: dedent`
+                new Map([
+                  [a, 'a'], 
+
+                [b, 'b'],
+                ])
+              `,
+              code: dedent`
+                new Map([
+                  [a, 'a'], [b, 'b'],
+                ])
+              `,
+            },
+            {
               errors: [
                 {
                   data: {

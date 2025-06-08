@@ -2127,6 +2127,46 @@ describe(ruleName, () => {
         {
           invalid: [
             {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                    {
+                      elementNamePattern: 'b',
+                      groupName: 'b',
+                    },
+                  ],
+                  newlinesBetween: 'always',
+                  groups: ['a', 'b'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'missedSpacingBetweenObjectMembers',
+                },
+              ],
+              output: dedent`
+                let obj = {
+                  a, 
+
+                b,
+                }
+              `,
+              code: dedent`
+                let obj = {
+                  a, b,
+                }
+              `,
+            },
+            {
               errors: [
                 {
                   data: {
