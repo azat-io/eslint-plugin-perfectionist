@@ -335,7 +335,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           ): SortImportsSortingNode[] => {
             let nodesSortedByGroups = sortingNodeGroups.flatMap(nodes =>
               sortNodesByGroups({
-                getOptionsByGroupNumber: groupNumber => {
+                getOptionsByGroupIndex: groupIndex => {
                   let customGroupOverriddenOptions =
                     getCustomGroupOverriddenOptions({
                       options: {
@@ -344,7 +344,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                           ? options.customGroups
                           : [],
                       },
-                      groupNumber,
+                      groupIndex,
                     })
 
                   if (options.sortSideEffects) {
@@ -363,9 +363,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
                     options: {
                       ...overriddenOptions,
                       type:
-                        overriddenOptions.groups[groupNumber] &&
+                        overriddenOptions.groups[groupIndex] &&
                         isSideEffectOnlyGroup(
-                          overriddenOptions.groups[groupNumber],
+                          overriddenOptions.groups[groupIndex],
                         )
                           ? 'unsorted'
                           : overriddenOptions.type,

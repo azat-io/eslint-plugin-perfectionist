@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
 import type { GetNewlinesBetweenOptionParameters } from '../../utils/get-newlines-between-option'
-import type { SortingNode } from '../../types/sorting-node'
 
 import { getNewlinesBetweenOption } from '../../utils/get-newlines-between-option'
 
@@ -47,28 +46,30 @@ describe('get-newlines-between-option', () => {
       },
     )
 
-    it('should return "always" if "newlinesBetween" is "always" and nodeGroupNumber !== nextNodeGroupNumber', () => {
+    it('should return "always" if "newlinesBetween" is "always" and nodeGroupIndex !== nextNodeGroupIndex', () => {
+      let groups = ['group1', 'group2']
       expect(
         getNewlinesBetweenOption({
           options: {
-            groups: ['group1', 'group2'],
             newlinesBetween: 'always',
+            groups,
           },
-          nextSortingNode: generateSortingNodeWithGroup('group1'),
-          sortingNode: generateSortingNodeWithGroup('group2'),
+          nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group2'),
+          nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
         }),
       ).toBe('always')
     })
 
-    it('should return "never" if "newlinesBetween" is "always" and nodeGroupNumber === nextNodeGroupNumber', () => {
+    it('should return "never" if "newlinesBetween" is "always" and nodeGroupIndex === nextNodeGroupIndex', () => {
+      let groups = ['group1']
       expect(
         getNewlinesBetweenOption({
           options: {
             newlinesBetween: 'always',
-            groups: ['group1'],
+            groups,
           },
-          nextSortingNode: generateSortingNodeWithGroup('group1'),
-          sortingNode: generateSortingNodeWithGroup('group1'),
+          nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+          nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
         }),
       ).toBe('never')
     })
@@ -121,7 +122,7 @@ describe('get-newlines-between-option', () => {
             groupName: 'group1',
           },
         ],
-        nextSortingNodeGroup: 'group1',
+        nextNodeGroupIndexGroup: 'group1',
         sortingNodeGroup: 'group1',
       } as const
 
@@ -319,7 +320,7 @@ describe('get-newlines-between-option', () => {
   })
 
   let buildParameters = ({
-    nextSortingNodeGroup,
+    nextNodeGroupIndexGroup,
     sortingNodeGroup,
     newlinesBetween,
     customGroups,
@@ -328,22 +329,29 @@ describe('get-newlines-between-option', () => {
     newlinesBetween: GetNewlinesBetweenOptionParameters['options']['newlinesBetween']
     customGroups?: GetNewlinesBetweenOptionParameters['options']['customGroups']
     groups?: GetNewlinesBetweenOptionParameters['options']['groups']
-    nextSortingNodeGroup?: string
+    nextNodeGroupIndexGroup?: string
     sortingNodeGroup?: string
-  }): GetNewlinesBetweenOptionParameters => ({
-    options: {
-      groups: groups ?? ['group1', 'group2'],
-      newlinesBetween,
-      customGroups,
-    },
-    nextSortingNode: generateSortingNodeWithGroup(
-      nextSortingNodeGroup ?? 'group2',
-    ),
-    sortingNode: generateSortingNodeWithGroup(sortingNodeGroup ?? 'group1'),
-  })
+  }): GetNewlinesBetweenOptionParameters => {
+    let finalGroups = groups ?? ['group1', 'group2']
+    return {
+      nextNodeGroupIndex: generateNodeGroupIndex(
+        finalGroups,
+        nextNodeGroupIndexGroup ?? 'group2',
+      ),
+      nodeGroupIndex: generateNodeGroupIndex(
+        finalGroups,
+        sortingNodeGroup ?? 'group1',
+      ),
+      options: {
+        groups: finalGroups,
+        newlinesBetween,
+        customGroups,
+      },
+    }
+  }
 
-  let generateSortingNodeWithGroup = (group: string): SortingNode =>
-    ({
-      group,
-    }) as SortingNode
+  let generateNodeGroupIndex = (
+    groups: GetNewlinesBetweenOptionParameters['options']['groups'],
+    group: string,
+  ): number => groups.indexOf(group)
 })

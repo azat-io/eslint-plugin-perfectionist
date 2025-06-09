@@ -243,7 +243,7 @@ let sortDecorators = (
   ): SortDecoratorsSortingNode[] =>
     formattedMembers.flatMap(nodes =>
       sortNodesByGroups({
-        getOptionsByGroupNumber: () => ({ options }),
+        getOptionsByGroupIndex: () => ({ options }),
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes,

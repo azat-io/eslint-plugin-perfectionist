@@ -348,12 +348,12 @@ export let sortObjectTypeElements = <MessageIds extends string>({
     ): SortObjectTypesSortingNode[] =>
       filteredGroupKindNodes.flatMap(groupedNodes =>
         sortNodesByGroups({
-          getOptionsByGroupNumber: groupNumber => {
+          getOptionsByGroupIndex: groupIndex => {
             let {
               fallbackSortNodeValueGetter,
               options: overriddenOptions,
               nodeValueGetter,
-            } = getCustomGroupsCompareOptions(options, groupNumber)
+            } = getCustomGroupsCompareOptions(options, groupIndex)
             return {
               options: {
                 ...options,

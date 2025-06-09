@@ -4,10 +4,8 @@ import type {
   CustomGroupsOption,
   GroupsOptions,
 } from '../types/common-options'
-import type { SortingNode } from '../types/sorting-node'
 
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
-import { getGroupIndex } from './get-group-index'
 
 export interface GetNewlinesBetweenOptionParameters {
   options: {
@@ -15,8 +13,8 @@ export interface GetNewlinesBetweenOptionParameters {
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<string>
   }
-  nextSortingNode: SortingNode
-  sortingNode: SortingNode
+  nextNodeGroupIndex: number
+  nodeGroupIndex: number
 }
 
 /**
@@ -26,27 +24,25 @@ export interface GetNewlinesBetweenOptionParameters {
  * - If the two nodes are in the same custom group, the `newlinesInside` option
  * of the group is used.
  * @param {GetNewlinesBetweenOptionParameters} props - The function arguments
- * @param {SortingNode} props.nextSortingNode - The next node to sort
- * @param {SortingNode} props.sortingNode - The current node to sort
+ * @param {number} props.nextNodeGroupIndex - The next node index to sort
+ * @param {number} props.nodeGroupIndex - The current node index to sort
  * @param {GetNewlinesBetweenOptionParameters['options']} props.options - Newlines between related options
  * @returns {NewlinesBetweenOption} - The `newlinesBetween` option to
  * use
  */
 export let getNewlinesBetweenOption = ({
-  nextSortingNode,
-  sortingNode,
+  nextNodeGroupIndex,
+  nodeGroupIndex,
   options,
 }: GetNewlinesBetweenOptionParameters): NewlinesBetweenOption => {
-  let nodeGroupNumber = getGroupIndex(options.groups, sortingNode)
-  let nextNodeGroupNumber = getGroupIndex(options.groups, nextSortingNode)
   let globalNewlinesBetweenOption = getGlobalNewlinesBetweenOption({
     newlinesBetween: options.newlinesBetween,
-    nextNodeGroupNumber,
-    nodeGroupNumber,
+    nextNodeGroupIndex,
+    nodeGroupIndex,
   })
 
-  let nodeGroup = options.groups[nodeGroupNumber]
-  let nextNodeGroup = options.groups[nextNodeGroupNumber]
+  let nodeGroup = options.groups[nodeGroupIndex]
+  let nextNodeGroup = options.groups[nextNodeGroupIndex]
 
   // NewlinesInside check
   if (
@@ -72,16 +68,16 @@ export let getNewlinesBetweenOption = ({
   }
 
   // Check if a specific newlinesBetween is defined between the two groups
-  if (nextNodeGroupNumber >= nodeGroupNumber + 2) {
-    if (nextNodeGroupNumber === nodeGroupNumber + 2) {
-      let groupBetween = options.groups[nodeGroupNumber + 1]!
+  if (nextNodeGroupIndex >= nodeGroupIndex + 2) {
+    if (nextNodeGroupIndex === nodeGroupIndex + 2) {
+      let groupBetween = options.groups[nodeGroupIndex + 1]!
       if (isNewlinesBetweenOption(groupBetween)) {
         return groupBetween.newlinesBetween
       }
     } else {
       let relevantGroups = options.groups.slice(
-        nodeGroupNumber,
-        nextNodeGroupNumber + 1,
+        nodeGroupIndex,
+        nextNodeGroupIndex + 1,
       )
       let groupsWithAllNewlinesBetween = buildGroupsWithAllNewlinesBetween(
         relevantGroups,
@@ -109,21 +105,21 @@ export let getNewlinesBetweenOption = ({
 }
 
 let getGlobalNewlinesBetweenOption = ({
-  nextNodeGroupNumber,
+  nextNodeGroupIndex,
   newlinesBetween,
-  nodeGroupNumber,
+  nodeGroupIndex,
 }: {
   newlinesBetween: NewlinesBetweenOption
-  nextNodeGroupNumber: number
-  nodeGroupNumber: number
-}): 'always' | 'ignore' | 'never' => {
+  nextNodeGroupIndex: number
+  nodeGroupIndex: number
+}): NewlinesBetweenOption => {
   if (newlinesBetween === 'ignore') {
     return 'ignore'
   }
   if (newlinesBetween === 'never') {
     return 'never'
   }
-  return nodeGroupNumber === nextNodeGroupNumber ? 'never' : 'always'
+  return nodeGroupIndex === nextNodeGroupIndex ? 'never' : 'always'
 }
 
 let buildGroupsWithAllNewlinesBetween = (

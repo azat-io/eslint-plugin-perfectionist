@@ -15,7 +15,7 @@ describe('sort-nodes-by-groups', () => {
     order: 'asc',
     alphabet: '',
   } as const
-  let getOptionsByGroupNumber: () => {
+  let getOptionsByGroupIndex: () => {
     options: BaseSortNodesByGroupsOptions
   } = () => ({ options })
 
@@ -29,7 +29,7 @@ describe('sort-nodes-by-groups', () => {
         nodes: [nodeD, nodeC, nodeB, nodeA],
         ignoreEslintDisabledNodes: false,
         groups: ['group1', 'group2'],
-        getOptionsByGroupNumber,
+        getOptionsByGroupIndex,
       }),
     ).toStrictEqual([nodeB, nodeD, nodeA, nodeC])
   })
@@ -50,7 +50,7 @@ describe('sort-nodes-by-groups', () => {
           nodes: [nodeD, nodeC, nodeB, nodeA],
           ignoreEslintDisabledNodes: true,
           groups: ['group1', 'group2'],
-          getOptionsByGroupNumber,
+          getOptionsByGroupIndex,
         }),
       ).toStrictEqual([nodeB, nodeC, nodeD, nodeA])
     })
@@ -61,7 +61,7 @@ describe('sort-nodes-by-groups', () => {
           nodes: [nodeD, nodeC, nodeB, nodeA],
           ignoreEslintDisabledNodes: false,
           groups: ['group1', 'group2'],
-          getOptionsByGroupNumber,
+          getOptionsByGroupIndex,
         }),
       ).toStrictEqual([nodeB, nodeD, nodeA, nodeC])
     })
@@ -79,7 +79,7 @@ describe('sort-nodes-by-groups', () => {
           nodes: [nodeD, nodeC, nodeB, nodeA],
           ignoreEslintDisabledNodes: false,
           groups: ['group1', 'group2'],
-          getOptionsByGroupNumber,
+          getOptionsByGroupIndex,
         }),
       ).toStrictEqual([nodeB, nodeC, nodeD, nodeA])
     })
@@ -99,7 +99,7 @@ describe('sort-nodes-by-groups', () => {
           isNodeIgnoredForGroup: node => node === nodeB,
           ignoreEslintDisabledNodes: false,
           groups: ['group1', 'group2'],
-          getOptionsByGroupNumber,
+          getOptionsByGroupIndex,
         }),
       ).toStrictEqual([nodeD, nodeF, nodeB, nodeA, nodeC, nodeE])
     })
@@ -116,7 +116,7 @@ describe('sort-nodes-by-groups', () => {
     )
     expect(
       sortNodesByGroups({
-        getOptionsByGroupNumber: () => ({
+        getOptionsByGroupIndex: () => ({
           nodeValueGetter: node => node.actualValue,
           options,
         }),
@@ -138,7 +138,7 @@ describe('sort-nodes-by-groups', () => {
     )
     expect(
       sortNodesByGroups({
-        getOptionsByGroupNumber: () => ({
+        getOptionsByGroupIndex: () => ({
           options: {
             ...options,
             fallbackSort: {

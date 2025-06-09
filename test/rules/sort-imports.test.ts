@@ -1544,7 +1544,6 @@ describe(ruleName, () => {
               ],
               output: dedent`
                 import "./z-side-effect";
-
                 import './b-side-effect.scss'
                 import './a-side-effect.css'
 
@@ -3757,7 +3756,6 @@ describe(ruleName, () => {
               ],
               output: dedent`
                 import aImport from "b";
-
                 import a = aImport.a1.a2;
               `,
               code: dedent`

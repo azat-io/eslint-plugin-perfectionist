@@ -1292,6 +1292,46 @@ describe(ruleName, () => {
         {
           invalid: [
             {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                    {
+                      elementNamePattern: 'b',
+                      groupName: 'b',
+                    },
+                  ],
+                  newlinesBetween: 'always',
+                  groups: ['a', 'b'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'missedSpacingBetweenNamedExports',
+                },
+              ],
+              output: dedent`
+                export {
+                  a, 
+
+                b
+                } from 'module'
+              `,
+              code: dedent`
+                export {
+                  a, b
+                } from 'module'
+              `,
+            },
+            {
               errors: [
                 {
                   data: {

@@ -386,7 +386,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 nodes,
               })
             : sortNodesByGroups({
-                getOptionsByGroupNumber:
+                getOptionsByGroupIndex:
                   buildGetCustomGroupOverriddenOptionsFunction(options),
                 ignoreEslintDisabledNodes,
                 groups: options.groups,

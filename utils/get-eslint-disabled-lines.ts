@@ -1,6 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import { getEslintDisabledRules } from './get-eslint-disabled-rules'
+import { UnreachableCaseError } from './unreachable-case-error'
 
 export let getEslintDisabledLines = (props: {
   sourceCode: TSESLint.SourceCode
@@ -11,13 +12,19 @@ export let getEslintDisabledLines = (props: {
   let lineRulePermanentlyDisabled: number | null = null
   for (let comment of sourceCode.getAllComments()) {
     let eslintDisabledRules = getEslintDisabledRules(comment.value)
+    if (!eslintDisabledRules) {
+      continue
+    }
+
     let includesRule =
-      eslintDisabledRules?.rules === 'all' ||
-      eslintDisabledRules?.rules.includes(ruleName)
+      eslintDisabledRules.rules === 'all' ||
+      eslintDisabledRules.rules.includes(ruleName)
+    /* v8 ignore next 3 */
     if (!includesRule) {
       continue
     }
-    switch (eslintDisabledRules?.eslintDisableDirective) {
+
+    switch (eslintDisabledRules.eslintDisableDirective) {
       case 'eslint-disable-next-line':
         returnValue.push(comment.loc.end.line + 1)
         continue
@@ -40,6 +47,11 @@ export let getEslintDisabledLines = (props: {
         )
         lineRulePermanentlyDisabled = null
         break
+      /* v8 ignore next 4 */
+      default:
+        throw new UnreachableCaseError(
+          eslintDisabledRules.eslintDisableDirective,
+        )
     }
   }
   return returnValue

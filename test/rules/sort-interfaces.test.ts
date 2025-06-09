@@ -2478,6 +2478,46 @@ describe(ruleName, () => {
         {
           invalid: [
             {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                    {
+                      elementNamePattern: 'b',
+                      groupName: 'b',
+                    },
+                  ],
+                  newlinesBetween: 'always',
+                  groups: ['a', 'b'],
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'a',
+                  },
+                  messageId: 'missedSpacingBetweenInterfaceMembers',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  a; 
+
+                b;
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  a; b;
+                }
+              `,
+            },
+            {
               errors: [
                 {
                   data: {

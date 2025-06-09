@@ -25,18 +25,18 @@ interface OverridableOptions {
  * `null` if the group should not be sorted.
  * @param {GroupRelatedOptions & OverridableOptions} options - The sorting options, including groups and
  * custom groups.
- * @param {number} groupNumber - The index of the group to retrieve compare
+ * @param {number} groupIndex - The index of the group to retrieve compare
  * options for.
  * @returns {object} The options for the group
  */
 export let getCustomGroupsCompareOptions = (
   options: GroupRelatedOptions & OverridableOptions,
-  groupNumber: number,
+  groupIndex: number,
 ): OverridableOptions => {
   let { customGroups, fallbackSort, groups, order, type } = options
 
   if (Array.isArray(customGroups)) {
-    let group = groups[groupNumber]
+    let group = groups[groupIndex]
     let customGroup =
       typeof group === 'string'
         ? customGroups.find(currentGroup => group === currentGroup.groupName)
@@ -65,23 +65,23 @@ export let getCustomGroupsCompareOptions = (
 export let buildGetCustomGroupOverriddenOptionsFunction =
   (
     options: BaseSortNodesByGroupsOptions & GroupRelatedOptions,
-  ): ((groupNumber: number) => {
+  ): ((groupIndex: number) => {
     options: BaseSortNodesByGroupsOptions
   }) =>
-  (groupNumber: number) => ({
+  (groupIndex: number) => ({
     options: getCustomGroupOverriddenOptions({
-      groupNumber,
+      groupIndex,
       options,
     }),
   })
 
 export let getCustomGroupOverriddenOptions = ({
-  groupNumber,
+  groupIndex,
   options,
 }: {
   options: BaseSortNodesByGroupsOptions & GroupRelatedOptions
-  groupNumber: number
+  groupIndex: number
 }): BaseSortNodesByGroupsOptions => ({
   ...options,
-  ...getCustomGroupsCompareOptions(options, groupNumber),
+  ...getCustomGroupsCompareOptions(options, groupIndex),
 })
