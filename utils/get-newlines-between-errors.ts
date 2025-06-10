@@ -51,7 +51,10 @@ export let getNewlinesBetweenErrors = <
   right,
   left,
 }: GetNewlinesBetweenErrorsParameters<MessageIds, T>): MessageIds[] => {
-  if (leftGroupIndex > rightGroupIndex) {
+  if (
+    leftGroupIndex > rightGroupIndex ||
+    left.partitionId !== right.partitionId
+  ) {
     return []
   }
 
