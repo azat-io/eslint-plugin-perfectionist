@@ -302,6 +302,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
         groupKind: isMemberOptional(typeElement) ? 'optional' : 'required',
         size: rangeToDiff(typeElement, sourceCode),
         addSafetySemicolonWhenInline: true,
+        partitionId: accumulator.length,
         node: typeElement,
         group,
         value,

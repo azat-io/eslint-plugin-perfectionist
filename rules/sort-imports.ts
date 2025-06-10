@@ -143,7 +143,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ruleName: id,
       sourceCode,
     })
-    let sortingNodes: SortImportsSortingNode[] = []
+    let sortingNodesWithoutPartitionId: Omit<
+      SortImportsSortingNode,
+      'partitionId'
+    >[] = []
 
     let flatGroups = new Set(options.groups.flat())
     let shouldRegroupSideEffectNodes = flatGroups.has('side-effect')
@@ -282,7 +285,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ) {
         size = name.length + 10
       }
-      sortingNodes.push({
+      sortingNodesWithoutPartitionId.push({
         isIgnored:
           !options.sortSideEffects &&
           isSideEffect &&
@@ -304,7 +307,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let contentSeparatedSortingNodeGroups: SortImportsSortingNode[][][] = [
           [[]],
         ]
-        for (let sortingNode of sortingNodes) {
+        for (let sortingNodeWithoutPartitionId of sortingNodesWithoutPartitionId) {
           let lastGroupWithNoContentBetween =
             contentSeparatedSortingNodeGroups.at(-1)!
           let lastGroup = lastGroupWithNoContentBetween.at(-1)!
@@ -312,7 +315,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           if (
             lastSortingNode &&
-            hasContentBetweenNodes(sourceCode, lastSortingNode, sortingNode)
+            hasContentBetweenNodes(
+              sourceCode,
+              lastSortingNode,
+              sortingNodeWithoutPartitionId,
+            )
           ) {
             lastGroup = []
             lastGroupWithNoContentBetween = [lastGroup]
@@ -321,8 +328,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             )
           } else if (
             shouldPartition({
+              sortingNode: sortingNodeWithoutPartitionId,
               lastSortingNode,
-              sortingNode,
               sourceCode,
               options,
             })
@@ -331,7 +338,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             lastGroupWithNoContentBetween.push(lastGroup)
           }
 
-          lastGroup.push(sortingNode)
+          lastGroup.push({
+            ...sortingNodeWithoutPartitionId,
+            partitionId: lastGroupWithNoContentBetween.length,
+          })
         }
 
         for (let sortingNodeGroups of contentSeparatedSortingNodeGroups) {

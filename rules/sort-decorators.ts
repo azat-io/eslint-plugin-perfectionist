@@ -211,7 +211,7 @@ let sortDecorators = (
         name,
       })
 
-      let sortingNode: SortDecoratorsSortingNode = {
+      let sortingNode: Omit<SortDecoratorsSortingNode, 'partitionId'> = {
         isEslintDisabled: isNodeEslintDisabled(decorator, eslintDisabledLines),
         size: rangeToDiff(decorator, sourceCode),
         node: decorator,
@@ -231,7 +231,10 @@ let sortDecorators = (
         accumulator.push([])
       }
 
-      accumulator.at(-1)!.push(sortingNode)
+      accumulator.at(-1)!.push({
+        ...sortingNode,
+        partitionId: accumulator.length,
+      })
 
       return accumulator
     },

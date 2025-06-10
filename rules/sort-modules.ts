@@ -307,7 +307,7 @@ let analyzeModule = ({
       options,
     })
 
-    let sortingNode: SortingNodeWithDependencies = {
+    let sortingNode: Omit<SortingNodeWithDependencies, 'partitionId'> = {
       isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
       size: rangeToDiff(node, sourceCode),
       addSafetySemicolonWhenInline,
@@ -330,7 +330,10 @@ let analyzeModule = ({
       formattedNodes.push([])
     }
 
-    formattedNodes.at(-1)?.push(sortingNode)
+    formattedNodes.at(-1)?.push({
+      ...sortingNode,
+      partitionId: formattedNodes.length,
+    })
   }
 
   let sortNodesExcludingEslintDisabled = (

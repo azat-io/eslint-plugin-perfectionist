@@ -67,6 +67,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             accumulator.at(-1)!.push({
               size: rangeToDiff(caseNode.test, sourceCode),
               name: getCaseName(sourceCode, caseNode),
+              partitionId: accumulator.length,
               isEslintDisabled: false,
               node: caseNode.test,
               group: 'unknown',
@@ -131,6 +132,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           isDefaultClause: !caseNode.test,
           isEslintDisabled: false,
           group: 'unknown',
+          partitionId: 0,
           node: caseNode,
         }),
       )

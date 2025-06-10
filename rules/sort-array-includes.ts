@@ -229,7 +229,7 @@ export let sortArray = <MessageIds extends string>({
         options,
       })
 
-      let sortingNode: SortArrayIncludesSortingNode = {
+      let sortingNode: Omit<SortArrayIncludesSortingNode, 'partitionId'> = {
         isEslintDisabled: isNodeEslintDisabled(element, eslintDisabledLines),
         size: rangeToDiff(element, sourceCode),
         node: element,
@@ -250,7 +250,10 @@ export let sortArray = <MessageIds extends string>({
         accumulator.push([])
       }
 
-      accumulator.at(-1)!.push(sortingNode)
+      accumulator.at(-1)!.push({
+        ...sortingNode,
+        partitionId: accumulator.length,
+      })
 
       return accumulator
     },

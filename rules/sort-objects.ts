@@ -336,18 +336,19 @@ export default createEslintRule<Options, MESSAGE_ID>({
               dependencyName = property.value.name
             }
 
-            let sortingNode: SortingNodeWithDependencies = {
-              isEslintDisabled: isNodeEslintDisabled(
-                property,
-                eslintDisabledLines,
-              ),
-              size: rangeToDiff(property, sourceCode),
-              dependencyNames: [dependencyName],
-              node: property,
-              dependencies,
-              group,
-              name,
-            }
+            let sortingNode: Omit<SortingNodeWithDependencies, 'partitionId'> =
+              {
+                isEslintDisabled: isNodeEslintDisabled(
+                  property,
+                  eslintDisabledLines,
+                ),
+                size: rangeToDiff(property, sourceCode),
+                dependencyNames: [dependencyName],
+                node: property,
+                dependencies,
+                group,
+                name,
+              }
 
             if (
               shouldPartition({
@@ -360,7 +361,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               accumulator.push([])
             }
 
-            accumulator.at(-1)!.push(sortingNode)
+            accumulator.at(-1)!.push({
+              ...sortingNode,
+              partitionId: accumulator.length,
+            })
 
             return accumulator
           },

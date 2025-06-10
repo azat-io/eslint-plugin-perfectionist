@@ -133,6 +133,7 @@ let sortHeritageClauses = (
       ),
       size: rangeToDiff(heritageClause, sourceCode),
       node: heritageClause,
+      partitionId: 0,
       group,
       name,
     }

@@ -125,7 +125,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         options,
       })
 
-      let sortingNode: SortExportsSortingNode = {
+      let sortingNode: Omit<SortExportsSortingNode, 'partitionId'> = {
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         groupKind: node.exportKind === 'value' ? 'value' : 'type',
         size: rangeToDiff(node, sourceCode),
@@ -147,7 +147,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
         formattedMembers.push([])
       }
 
-      formattedMembers.at(-1)!.push(sortingNode)
+      formattedMembers.at(-1)!.push({
+        ...sortingNode,
+        partitionId: formattedMembers.length,
+      })
     }
 
     return {
