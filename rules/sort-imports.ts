@@ -522,8 +522,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
 let hasContentBetweenNodes = (
   sourceCode: TSESLint.SourceCode,
-  left: SortImportsSortingNode,
-  right: SortImportsSortingNode,
+  left: Pick<SortImportsSortingNode, 'node'>,
+  right: Pick<SortImportsSortingNode, 'node'>,
 ): boolean =>
   sourceCode.getTokensBetween(left.node, right.node, {
     includeComments: false,

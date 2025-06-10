@@ -4,8 +4,8 @@ import type { SortingNode } from '../types/sorting-node'
 
 export let getLinesBetween = (
   source: TSESLint.SourceCode,
-  left: SortingNode,
-  right: SortingNode,
+  left: Pick<SortingNode, 'node'>,
+  right: Pick<SortingNode, 'node'>,
 ): number => {
   let linesBetween = source.lines.slice(
     left.node.loc.end.line,
