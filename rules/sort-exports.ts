@@ -134,11 +134,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
         name,
         node,
       }
-      let lastNode = formattedMembers.at(-1)?.at(-1)
+      let lastSortingNode = formattedMembers.at(-1)?.at(-1)
 
       if (
         shouldPartition({
-          lastSortingNode: lastNode,
+          lastSortingNode,
           sortingNode,
           sourceCode,
           options,
