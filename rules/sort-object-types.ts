@@ -89,14 +89,15 @@ export let jsonSchema: JSONSchema4 = {
           sortBy: sortByJsonSchema,
         },
       }),
+      useConfigurationIf: buildUseConfigurationIfJsonSchema({
+        additionalProperties: {
+          declarationCommentMatchesPattern: regexJsonSchema,
+          declarationMatchesPattern: regexJsonSchema,
+        },
+      }),
       customGroups: buildCustomGroupsArrayJsonSchema({
         additionalFallbackSortProperties: { sortBy: sortByJsonSchema },
         singleCustomGroupJsonSchema,
-      }),
-      useConfigurationIf: buildUseConfigurationIfJsonSchema({
-        additionalProperties: {
-          declarationMatchesPattern: regexJsonSchema,
-        },
       }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
@@ -183,16 +184,32 @@ export function sortObjectTypeElements<MessageIds extends string>({
       return true
     }
 
-    if (!parentNode) {
-      return false
-    }
-
     if (options.useConfigurationIf.declarationMatchesPattern) {
+      if (!parentNode) {
+        return false
+      }
+
       return matches(
         parentNode.id.name,
         options.useConfigurationIf.declarationMatchesPattern,
       )
     }
+
+    let { declarationCommentMatchesPattern } = options.useConfigurationIf
+    if (declarationCommentMatchesPattern) {
+      if (!parentNode) {
+        return false
+      }
+
+      let parentComment = sourceCode.getCommentsBefore(parentNode)
+      let hasMatchingComment = parentComment.some(comment =>
+        matches(comment.value, declarationCommentMatchesPattern),
+      )
+      if (!hasMatchingComment) {
+        return false
+      }
+    }
+
     return true
   })
   let options = complete(matchedContextOptions, settings, defaultOptions)

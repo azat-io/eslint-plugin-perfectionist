@@ -284,6 +284,7 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
   {
     allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
     declarationMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+    declarationCommentMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
   }
   ```
 </sub>
@@ -338,6 +339,26 @@ Example configuration:
       type: 'unsorted', // Do not sort Metadata types
       useConfigurationIf: {
         declarationMatchesPattern: '*Metadata$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `declarationCommentMatchesPattern` — A regexp pattern to specify which comments above the type declaration should match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-object-types': [
+    'error',
+    {
+      type: 'unsorted', // Don't sort object types with a "do not sort" comment
+      useConfigurationIf: {
+        declarationCommentMatchesPattern: '^do not sort$',
       },
     },
     {

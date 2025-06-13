@@ -33,6 +33,12 @@ export type Options = Partial<
      */
     useConfigurationIf: {
       /**
+       * Regular expression pattern to match against the comment declaration.
+       * The rule is only applied to declaration comments with matching names.
+       */
+      declarationCommentMatchesPattern?: RegexOption
+
+      /**
        * Regular expression pattern to match against the type declaration name.
        * The rule is only applied to declarations with matching names.
        */

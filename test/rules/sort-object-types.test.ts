@@ -2367,6 +2367,63 @@ describe('sort-object-types', () => {
       })
     })
 
+    it('detects declaration comment by pattern', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          // Ignore me
+          type Type = {
+            b: string
+            c: string
+            a: string
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+        ],
+        output: dedent`
+          // Do NOT ignore me
+          type Type = {
+            a: string
+            b: string
+          }
+        `,
+        code: dedent`
+          // Do NOT ignore me
+          type Type = {
+            b: string
+            a: string
+          }
+        `,
+      })
+    })
+
     it('allows sorting by value', async () => {
       await invalid({
         errors: [
