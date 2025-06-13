@@ -20,6 +20,7 @@ import {
 export type Options = Partial<
   {
     useConfigurationIf: {
+      declarationCommentMatchesPattern?: RegexOption
       callingFunctionNamePattern?: RegexOption
       allNamesMatchPattern?: RegexOption
     }
