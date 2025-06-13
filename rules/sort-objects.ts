@@ -128,6 +128,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
           )
         }
 
+        let { declarationCommentMatchesPattern } = options.useConfigurationIf
+        if (declarationCommentMatchesPattern) {
+          let parentToCheck =
+            objectParent.node.type === 'VariableDeclarator'
+              ? objectParent.node.parent
+              : objectParent.node
+          let parentComment = sourceCode.getCommentsBefore(parentToCheck)
+          let hasMatchingComment = parentComment.some(comment =>
+            matches(comment.value, declarationCommentMatchesPattern),
+          )
+          if (!hasMatchingComment) {
+            return false
+          }
+        }
+
         return true
       })
 
