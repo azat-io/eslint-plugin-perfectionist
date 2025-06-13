@@ -8,7 +8,7 @@ interface Options {
   }
 }
 
-export function getMatchingContextOptions<T extends Options>({
+export function filterOptionsByAllNamesMatch<T extends Options>({
   contextOptions,
   nodeNames,
 }: {
