@@ -122,10 +122,8 @@ export default createEslintRule<Options, MessageId>({
           unexpectedGroupOrder: 'unexpectedObjectTypesGroupOrder',
           unexpectedOrder: 'unexpectedObjectTypesOrder',
         },
-        parentNodeName:
-          node.parent.type === 'TSTypeAliasDeclaration'
-            ? node.parent.id.name
-            : null,
+        parentNode:
+          node.parent.type === 'TSTypeAliasDeclaration' ? node.parent : null,
         elements: node.members,
         context,
       }),
@@ -152,7 +150,7 @@ export default createEslintRule<Options, MessageId>({
 
 export function sortObjectTypeElements<MessageIds extends string>({
   availableMessageIds,
-  parentNodeName,
+  parentNode,
   elements,
   context,
 }: {
@@ -162,9 +160,12 @@ export function sortObjectTypeElements<MessageIds extends string>({
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
+  parentNode:
+    | TSESTree.TSTypeAliasDeclaration
+    | TSESTree.TSInterfaceDeclaration
+    | null
   context: RuleContext<MessageIds, Options>
   elements: TSESTree.TypeElement[]
-  parentNodeName: string | null
 }): void {
   if (!isSortable(elements)) {
     return
@@ -178,16 +179,21 @@ export function sortObjectTypeElements<MessageIds extends string>({
     ),
     contextOptions: context.options,
   }).find(options => {
-    if (!options.useConfigurationIf?.declarationMatchesPattern) {
+    if (!options.useConfigurationIf) {
       return true
     }
-    if (!parentNodeName) {
+
+    if (!parentNode) {
       return false
     }
-    return matches(
-      parentNodeName,
-      options.useConfigurationIf.declarationMatchesPattern,
-    )
+
+    if (options.useConfigurationIf.declarationMatchesPattern) {
+      return matches(
+        parentNode.id.name,
+        options.useConfigurationIf.declarationMatchesPattern,
+      )
+    }
+    return true
   })
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
@@ -198,7 +204,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
   })
   validateNewlinesAndPartitionConfiguration(options)
 
-  if (parentNodeName && matches(parentNodeName, options.ignorePattern)) {
+  if (parentNode && matches(parentNode.id.name, options.ignorePattern)) {
     return
   }
 
