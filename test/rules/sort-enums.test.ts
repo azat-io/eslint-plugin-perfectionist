@@ -1803,6 +1803,61 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): ignores newline fixes between different partitions`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'A',
+                      groupName: 'A',
+                    },
+                  ],
+                  groups: ['A', 'unknown'],
+                  newlinesBetween: 'never',
+                  partitionByComment: true,
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'B',
+                    left: 'C',
+                  },
+                  messageId: 'unexpectedEnumsOrder',
+                },
+              ],
+              output: dedent`
+                enum Enum {
+                  A = 'A',
+
+                  // Partition comment
+
+                  B = 'B',
+                  C = 'C',
+                }
+              `,
+              code: dedent`
+                enum Enum {
+                  A = 'A',
+
+                  // Partition comment
+
+                  C = 'C',
+                  B = 'B',
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
   })
 

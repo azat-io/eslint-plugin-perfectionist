@@ -2148,20 +2148,18 @@ describe(ruleName, () => {
               output: dedent`
                 import a from 'a';
 
-                // Siblings
+                // Partition comment
 
                 import { b } from './b';
                 import { c } from './c';
-
               `,
               code: dedent`
                 import a from 'a';
 
-                // Siblings
+                // Partition comment
 
                 import { c } from './c';
                 import { b } from './b';
-
               `,
             },
           ],

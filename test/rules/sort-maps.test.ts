@@ -1632,6 +1632,61 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): ignores newline fixes between different partitions`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                  ],
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                  partitionByComment: true,
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedMapElementsOrder',
+                },
+              ],
+              output: dedent`
+                new Map([
+                  [a, 'a'],
+
+                  // Partition comment
+
+                  [b, 'b'],
+                  [c, 'c'],
+                ])
+              `,
+              code: dedent`
+                new Map([
+                  [a, 'a'],
+
+                  // Partition comment
+
+                  [c, 'c'],
+                  [b, 'b'],
+                ])
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     describe(`${ruleName}(${type}): allows to use 'useConfigurationIf'`, () => {
