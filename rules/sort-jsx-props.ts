@@ -23,7 +23,7 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getMatchingContextOptions } from '../utils/get-matching-context-options'
+import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -75,7 +75,7 @@ export default createEslintRule<Options, MessageId>({
 
       let settings = getSettings(context.settings)
       let { sourceCode, id } = context
-      let matchedContextOptions = getMatchingContextOptions({
+      let matchedContextOptions = filterOptionsByAllNamesMatch({
         nodeNames: node.openingElement.attributes
           .filter(
             attribute =>

@@ -33,7 +33,7 @@ import {
 } from './sort-objects/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getFirstNodeParentWithType } from './sort-objects/get-first-node-parent-with-type'
-import { getMatchingContextOptions } from '../utils/get-matching-context-options'
+import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -100,7 +100,7 @@ export default createEslintRule<Options, MessageId>({
         node: nodeObject,
         sourceCode,
       })
-      let matchedContextOptions = getMatchingContextOptions({
+      let matchedContextOptions = filterOptionsByAllNamesMatch({
         nodeNames: nodeObject.properties
           .filter(
             property =>

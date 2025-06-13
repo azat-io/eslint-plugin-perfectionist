@@ -46,7 +46,7 @@ interface Options {
  *   ]
  *
  *   const nodeNames = ['getName', 'getAge', 'getEmail']
- *   getMatchingContextOptions({ contextOptions, nodeNames })
+ *   filterOptionsByAllNamesMatch({ contextOptions, nodeNames })
  *   // Returns: [
  *   //   {
  *   //     type: 'natural',
@@ -59,7 +59,7 @@ interface Options {
  *
  * @example
  *   const nodeNames = ['setName', 'setAge']
- *   getMatchingContextOptions({ contextOptions, nodeNames })
+ *   filterOptionsByAllNamesMatch({ contextOptions, nodeNames })
  *   // Returns: [
  *   //   {
  *   //     type: 'alphabetical',
@@ -77,7 +77,7 @@ interface Options {
  * @param params.nodeNames - Array of node names to test against patterns.
  * @returns Array of context options that match the conditions.
  */
-export function getMatchingContextOptions<T extends Options>({
+export function filterOptionsByAllNamesMatch<T extends Options>({
   contextOptions,
   nodeNames,
 }: {

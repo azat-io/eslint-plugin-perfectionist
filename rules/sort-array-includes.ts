@@ -29,7 +29,7 @@ import {
   singleCustomGroupJsonSchema,
   allSelectors,
 } from './sort-array-includes/types'
-import { getMatchingContextOptions } from '../utils/get-matching-context-options'
+import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -162,7 +162,7 @@ export function sortArray<MessageIds extends string>({
   let { sourceCode, id } = context
   let settings = getSettings(context.settings)
 
-  let matchedContextOptions = getMatchingContextOptions({
+  let matchedContextOptions = filterOptionsByAllNamesMatch({
     nodeNames: elements
       .filter(element => element !== null)
       .map(element => getNodeName({ sourceCode, element })),
