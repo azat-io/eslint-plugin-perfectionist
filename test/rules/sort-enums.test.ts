@@ -1289,184 +1289,188 @@ describe(ruleName, () => {
     })
 
     describe(`${ruleName}: newlinesBetween`, () => {
-      ruleTester.run(
-        `${ruleName}(${type}): removes newlines when never`,
-        rule,
-        {
-          invalid: [
-            {
-              errors: [
-                {
-                  data: {
-                    right: 'Y',
-                    left: 'A',
-                  },
-                  messageId: 'extraSpacingBetweenEnumsMembers',
-                },
-                {
-                  data: {
-                    right: 'B',
-                    left: 'Z',
-                  },
-                  messageId: 'unexpectedEnumsOrder',
-                },
-                {
-                  data: {
-                    right: 'B',
-                    left: 'Z',
-                  },
-                  messageId: 'extraSpacingBetweenEnumsMembers',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: 'A',
-                      groupName: 'a',
+      for (let newlinesBetween of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): removes newlines when "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'Y',
+                      left: 'A',
                     },
-                  ],
-                  groups: ['a', 'unknown'],
-                  newlinesBetween: 'never',
-                },
-              ],
-              code: dedent`
-                enum Enum {
-                  A = null,
-
-
-                 Y = null,
-                Z = null,
-
-                    B = null,
-                }
-              `,
-              output: dedent`
-                enum Enum {
-                  A = null,
-                 B = null,
-                Y = null,
-                    Z = null,
-                }
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
-
-      ruleTester.run(
-        `${ruleName}(${type}): keeps one newline when always`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: 'A',
-                      groupName: 'a',
-                    },
-                    {
-                      elementNamePattern: 'B',
-                      groupName: 'b',
-                    },
-                  ],
-                  newlinesBetween: 'always',
-                  groups: ['a', 'b'],
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'B',
-                    left: 'A',
+                    messageId: 'extraSpacingBetweenEnumsMembers',
                   },
-                  messageId: 'missedSpacingBetweenEnumsMembers',
-                },
-              ],
-              output: dedent`
-                enum Enum {
-                  A = 'A', 
-
-                B = 'B',
-                }
-              `,
-              code: dedent`
-                enum Enum {
-                  A = 'A', B = 'B',
-                }
-              `,
-            },
-            {
-              errors: [
-                {
-                  data: {
-                    right: 'Z',
-                    left: 'A',
-                  },
-                  messageId: 'extraSpacingBetweenEnumsMembers',
-                },
-                {
-                  data: {
-                    right: 'Y',
-                    left: 'Z',
-                  },
-                  messageId: 'unexpectedEnumsOrder',
-                },
-                {
-                  data: {
-                    right: 'B',
-                    left: 'Y',
-                  },
-                  messageId: 'missedSpacingBetweenEnumsMembers',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: 'A',
-                      groupName: 'a',
+                  {
+                    data: {
+                      right: 'B',
+                      left: 'Z',
                     },
-                    {
-                      elementNamePattern: 'B',
-                      groupName: 'b',
+                    messageId: 'unexpectedEnumsOrder',
+                  },
+                  {
+                    data: {
+                      right: 'B',
+                      left: 'Z',
                     },
-                  ],
-                  groups: ['a', 'unknown', 'b'],
-                  newlinesBetween: 'always',
-                },
-              ],
-              output: dedent`
-                enum Enum {
-                  A = null,
+                    messageId: 'extraSpacingBetweenEnumsMembers',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: 'A',
+                        groupName: 'a',
+                      },
+                    ],
+                    groups: ['a', 'unknown'],
+                    newlinesBetween,
+                  },
+                ],
+                code: dedent`
+                  enum Enum {
+                    A = null,
 
-                 Y = null,
-                Z = null,
 
-                    B = null,
-                }
-              `,
-              code: dedent`
-                enum Enum {
-                  A = null,
+                   Y = null,
+                  Z = null,
+
+                      B = null,
+                  }
+                `,
+                output: dedent`
+                  enum Enum {
+                    A = null,
+                   B = null,
+                  Y = null,
+                      Z = null,
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
+
+      for (let newlinesBetween of ['always', 1] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): keeps one newline when "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: 'A',
+                        groupName: 'a',
+                      },
+                      {
+                        elementNamePattern: 'B',
+                        groupName: 'b',
+                      },
+                    ],
+                    groups: ['a', 'b'],
+                    newlinesBetween,
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'B',
+                      left: 'A',
+                    },
+                    messageId: 'missedSpacingBetweenEnumsMembers',
+                  },
+                ],
+                output: dedent`
+                  enum Enum {
+                    A = 'A', 
+
+                  B = 'B',
+                  }
+                `,
+                code: dedent`
+                  enum Enum {
+                    A = 'A', B = 'B',
+                  }
+                `,
+              },
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'Z',
+                      left: 'A',
+                    },
+                    messageId: 'extraSpacingBetweenEnumsMembers',
+                  },
+                  {
+                    data: {
+                      right: 'Y',
+                      left: 'Z',
+                    },
+                    messageId: 'unexpectedEnumsOrder',
+                  },
+                  {
+                    data: {
+                      right: 'B',
+                      left: 'Y',
+                    },
+                    messageId: 'missedSpacingBetweenEnumsMembers',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: 'A',
+                        groupName: 'a',
+                      },
+                      {
+                        elementNamePattern: 'B',
+                        groupName: 'b',
+                      },
+                    ],
+                    groups: ['a', 'unknown', 'b'],
+                    newlinesBetween,
+                  },
+                ],
+                output: dedent`
+                  enum Enum {
+                    A = null,
+
+                   Y = null,
+                  Z = null,
+
+                      B = null,
+                  }
+                `,
+                code: dedent`
+                  enum Enum {
+                    A = null,
 
 
-                 Z = null,
-                Y = null,
-                    B = null,
-                }
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                   Z = null,
+                  Y = null,
+                      B = null,
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
 
       describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
         ruleTester.run(
@@ -1558,8 +1562,10 @@ describe(ruleName, () => {
         describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
             ['always', 'never'],
+            ['always', 0],
             ['always', 'ignore'],
             ['never', 'always'],
+            [0, 'always'],
             ['ignore', 'always'],
           ] as const) {
             ruleTester.run(
@@ -1616,8 +1622,10 @@ describe(ruleName, () => {
 
           for (let globalNewlinesBetween of [
             'always',
+            1,
             'ignore',
             'never',
+            0,
           ] as const) {
             ruleTester.run(
               `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
@@ -1677,7 +1685,9 @@ describe(ruleName, () => {
 
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
             ['ignore', 'never'] as const,
+            ['ignore', 0] as const,
             ['never', 'ignore'] as const,
+            [0, 'ignore'] as const,
           ]) {
             ruleTester.run(
               `${ruleName}(${type}): does not enforce a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
@@ -1804,60 +1814,62 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): ignores newline fixes between different partitions`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: 'A',
-                      groupName: 'A',
-                    },
-                  ],
-                  groups: ['A', 'unknown'],
-                  newlinesBetween: 'never',
-                  partitionByComment: true,
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'B',
-                    left: 'C',
+      for (let newlinesBetween of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): ignores newline fixes between different partitions (${newlinesBetween})`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: 'A',
+                        groupName: 'A',
+                      },
+                    ],
+                    groups: ['A', 'unknown'],
+                    partitionByComment: true,
+                    newlinesBetween,
                   },
-                  messageId: 'unexpectedEnumsOrder',
-                },
-              ],
-              output: dedent`
-                enum Enum {
-                  A = 'A',
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'B',
+                      left: 'C',
+                    },
+                    messageId: 'unexpectedEnumsOrder',
+                  },
+                ],
+                output: dedent`
+                  enum Enum {
+                    A = 'A',
 
-                  // Partition comment
+                    // Partition comment
 
-                  B = 'B',
-                  C = 'C',
-                }
-              `,
-              code: dedent`
-                enum Enum {
-                  A = 'A',
+                    B = 'B',
+                    C = 'C',
+                  }
+                `,
+                code: dedent`
+                  enum Enum {
+                    A = 'A',
 
-                  // Partition comment
+                    // Partition comment
 
-                  C = 'C',
-                  B = 'B',
-                }
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                    C = 'C',
+                    B = 'B',
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
     })
   })
 

@@ -2060,172 +2060,176 @@ describe(ruleName, () => {
     )
 
     describe(`${ruleName}: newlinesBetween`, () => {
-      ruleTester.run(
-        `${ruleName}(${type}): removes newlines when never`,
-        rule,
-        {
-          invalid: [
-            {
-              errors: [
-                {
-                  data: {
-                    right: 'y',
-                    left: 'a',
-                  },
-                  messageId: 'extraSpacingBetweenObjectMembers',
-                },
-                {
-                  data: {
-                    right: 'b',
-                    left: 'z',
-                  },
-                  messageId: 'unexpectedObjectsOrder',
-                },
-                {
-                  data: {
-                    right: 'b',
-                    left: 'z',
-                  },
-                  messageId: 'extraSpacingBetweenObjectMembers',
-                },
-              ],
-              code: dedent`
-                let Obj = {
-                  a: () => null,
-
-
-                 y: "y",
-                z: "z",
-
-                    b: "b",
-                }
-              `,
-              output: dedent`
-                let Obj = {
-                  a: () => null,
-                 b: "b",
-                y: "y",
-                    z: "z",
-                }
-              `,
-              options: [
-                {
-                  ...options,
-                  groups: ['method', 'unknown'],
-                  newlinesBetween: 'never',
-                },
-              ],
-            },
-          ],
-          valid: [],
-        },
-      )
-
-      ruleTester.run(
-        `${ruleName}(${type}): keeps one newline when always`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: 'a',
-                      groupName: 'a',
+      for (let newlinesBetween of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): removes newlines when "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'y',
+                      left: 'a',
                     },
-                    {
-                      elementNamePattern: 'b',
-                      groupName: 'b',
+                    messageId: 'extraSpacingBetweenObjectMembers',
+                  },
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'z',
                     },
-                  ],
-                  newlinesBetween: 'always',
-                  groups: ['a', 'b'],
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'a',
+                    messageId: 'unexpectedObjectsOrder',
                   },
-                  messageId: 'missedSpacingBetweenObjectMembers',
-                },
-              ],
-              output: dedent`
-                let obj = {
-                  a, 
-
-                b,
-                }
-              `,
-              code: dedent`
-                let obj = {
-                  a, b,
-                }
-              `,
-            },
-            {
-              errors: [
-                {
-                  data: {
-                    right: 'z',
-                    left: 'a',
-                  },
-                  messageId: 'extraSpacingBetweenObjectMembers',
-                },
-                {
-                  data: {
-                    right: 'y',
-                    left: 'z',
-                  },
-                  messageId: 'unexpectedObjectsOrder',
-                },
-                {
-                  data: {
-                    right: 'b',
-                    left: 'y',
-                  },
-                  messageId: 'missedSpacingBetweenObjectMembers',
-                },
-              ],
-              output: dedent`
-                let Obj = {
-                  a: () => null,
-
-                 y: "y",
-                z: "z",
-
-                    b: {
-                      // Newline stuff
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'z',
                     },
-                }
-              `,
-              code: dedent`
-                let Obj = {
-                  a: () => null,
+                    messageId: 'extraSpacingBetweenObjectMembers',
+                  },
+                ],
+                code: dedent`
+                  let Obj = {
+                    a: () => null,
 
 
-                 z: "z",
-                y: "y",
-                    b: {
-                      // Newline stuff
+                   y: "y",
+                  z: "z",
+
+                      b: "b",
+                  }
+                `,
+                output: dedent`
+                  let Obj = {
+                    a: () => null,
+                   b: "b",
+                  y: "y",
+                      z: "z",
+                  }
+                `,
+                options: [
+                  {
+                    ...options,
+                    groups: ['method', 'unknown'],
+                    newlinesBetween,
+                  },
+                ],
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
+
+      for (let newlinesBetween of ['always', 1] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): keeps one newline when "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: 'a',
+                        groupName: 'a',
+                      },
+                      {
+                        elementNamePattern: 'b',
+                        groupName: 'b',
+                      },
+                    ],
+                    groups: ['a', 'b'],
+                    newlinesBetween,
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
                     },
-                }
-              `,
-              options: [
-                {
-                  ...options,
-                  groups: ['method', 'unknown', 'multiline'],
-                  newlinesBetween: 'always',
-                },
-              ],
-            },
-          ],
-          valid: [],
-        },
-      )
+                    messageId: 'missedSpacingBetweenObjectMembers',
+                  },
+                ],
+                output: dedent`
+                  let obj = {
+                    a, 
+
+                  b,
+                  }
+                `,
+                code: dedent`
+                  let obj = {
+                    a, b,
+                  }
+                `,
+              },
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'z',
+                      left: 'a',
+                    },
+                    messageId: 'extraSpacingBetweenObjectMembers',
+                  },
+                  {
+                    data: {
+                      right: 'y',
+                      left: 'z',
+                    },
+                    messageId: 'unexpectedObjectsOrder',
+                  },
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'y',
+                    },
+                    messageId: 'missedSpacingBetweenObjectMembers',
+                  },
+                ],
+                output: dedent`
+                  let Obj = {
+                    a: () => null,
+
+                   y: "y",
+                  z: "z",
+
+                      b: {
+                        // Newline stuff
+                      },
+                  }
+                `,
+                code: dedent`
+                  let Obj = {
+                    a: () => null,
+
+
+                   z: "z",
+                  y: "y",
+                      b: {
+                        // Newline stuff
+                      },
+                  }
+                `,
+                options: [
+                  {
+                    ...options,
+                    groups: ['method', 'unknown', 'multiline'],
+                    newlinesBetween,
+                  },
+                ],
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
 
       describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
         ruleTester.run(
@@ -2317,8 +2321,10 @@ describe(ruleName, () => {
         describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
             ['always', 'never'],
+            ['always', 0],
             ['always', 'ignore'],
             ['never', 'always'],
+            [0, 'always'],
             ['ignore', 'always'],
           ] as const) {
             ruleTester.run(
@@ -2375,8 +2381,10 @@ describe(ruleName, () => {
 
           for (let globalNewlinesBetween of [
             'always',
+            1,
             'ignore',
             'never',
+            0,
           ] as const) {
             ruleTester.run(
               `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
@@ -2436,7 +2444,9 @@ describe(ruleName, () => {
 
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
             ['ignore', 'never'] as const,
+            ['ignore', 0] as const,
             ['never', 'ignore'] as const,
+            [0, 'ignore'] as const,
           ]) {
             ruleTester.run(
               `${ruleName}(${type}): does not enforce a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
@@ -2557,60 +2567,62 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): ignores newline fixes between different partitions`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: 'a',
-                      groupName: 'a',
-                    },
-                  ],
-                  groups: ['a', 'unknown'],
-                  newlinesBetween: 'never',
-                  partitionByComment: true,
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'c',
+      for (let newlinesBetween of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): ignores newline fixes between different partitions (${newlinesBetween})`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: 'a',
+                        groupName: 'a',
+                      },
+                    ],
+                    groups: ['a', 'unknown'],
+                    partitionByComment: true,
+                    newlinesBetween,
                   },
-                  messageId: 'unexpectedObjectsOrder',
-                },
-              ],
-              output: dedent`
-                let obj = {
-                  a,
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'c',
+                    },
+                    messageId: 'unexpectedObjectsOrder',
+                  },
+                ],
+                output: dedent`
+                  let obj = {
+                    a,
 
-                  // Partition comment
+                    // Partition comment
 
-                  b,
-                  c,
-                }
-              `,
-              code: dedent`
-                let obj = {
-                  a,
+                    b,
+                    c,
+                  }
+                `,
+                code: dedent`
+                  let obj = {
+                    a,
 
-                  // Partition comment
+                    // Partition comment
 
-                  c,
-                  b,
-                }
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                    c,
+                    b,
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
     })
 
     ruleTester.run(
@@ -3318,98 +3330,102 @@ describe(ruleName, () => {
       )
 
       describe('newlinesInside', () => {
-        ruleTester.run(
-          `${ruleName}: allows to use newlinesInside: always`,
-          rule,
-          {
-            invalid: [
-              {
-                options: [
-                  {
-                    customGroups: [
-                      {
-                        newlinesInside: 'always',
-                        selector: 'property',
-                        groupName: 'group1',
-                      },
-                    ],
-                    groups: ['group1'],
-                  },
-                ],
-                errors: [
-                  {
-                    data: {
-                      right: 'b',
-                      left: 'a',
+        for (let newlinesInside of ['always', 1] as const) {
+          ruleTester.run(
+            `${ruleName}: allows to use newlinesInside: "${newlinesInside}"`,
+            rule,
+            {
+              invalid: [
+                {
+                  options: [
+                    {
+                      customGroups: [
+                        {
+                          selector: 'property',
+                          groupName: 'group1',
+                          newlinesInside,
+                        },
+                      ],
+                      groups: ['group1'],
                     },
-                    messageId: 'missedSpacingBetweenObjectMembers',
-                  },
-                ],
-                output: dedent`
-                  let obj = {
-                    a,
-
-                    b,
-                  }
-                `,
-                code: dedent`
-                  let obj = {
-                    a,
-                    b,
-                  }
-                `,
-              },
-            ],
-            valid: [],
-          },
-        )
-
-        ruleTester.run(
-          `${ruleName}: allows to use newlinesInside: never`,
-          rule,
-          {
-            invalid: [
-              {
-                options: [
-                  {
-                    customGroups: [
-                      {
-                        newlinesInside: 'never',
-                        selector: 'property',
-                        groupName: 'group1',
+                  ],
+                  errors: [
+                    {
+                      data: {
+                        right: 'b',
+                        left: 'a',
                       },
-                    ],
-                    type: 'alphabetical',
-                    groups: ['group1'],
-                  },
-                ],
-                errors: [
-                  {
-                    data: {
-                      right: 'b',
-                      left: 'a',
+                      messageId: 'missedSpacingBetweenObjectMembers',
                     },
-                    messageId: 'extraSpacingBetweenObjectMembers',
-                  },
-                ],
-                output: dedent`
-                  let obj = {
-                    a,
-                    b,
-                  }
-                `,
-                code: dedent`
-                  let obj = {
-                    a,
+                  ],
+                  output: dedent`
+                    let obj = {
+                      a,
 
-                    b,
-                  }
-                `,
-              },
-            ],
-            valid: [],
-          },
-        )
+                      b,
+                    }
+                  `,
+                  code: dedent`
+                    let obj = {
+                      a,
+                      b,
+                    }
+                  `,
+                },
+              ],
+              valid: [],
+            },
+          )
+        }
+
+        for (let newlinesInside of ['never', 0] as const) {
+          ruleTester.run(
+            `${ruleName}: allows to use newlinesInside: "${newlinesInside}"`,
+            rule,
+            {
+              invalid: [
+                {
+                  options: [
+                    {
+                      customGroups: [
+                        {
+                          selector: 'property',
+                          groupName: 'group1',
+                          newlinesInside,
+                        },
+                      ],
+                      type: 'alphabetical',
+                      groups: ['group1'],
+                    },
+                  ],
+                  errors: [
+                    {
+                      data: {
+                        right: 'b',
+                        left: 'a',
+                      },
+                      messageId: 'extraSpacingBetweenObjectMembers',
+                    },
+                  ],
+                  output: dedent`
+                    let obj = {
+                      a,
+                      b,
+                    }
+                  `,
+                  code: dedent`
+                    let obj = {
+                      a,
+
+                      b,
+                    }
+                  `,
+                },
+              ],
+              valid: [],
+            },
+          )
+        }
       })
 
       ruleTester.run(
