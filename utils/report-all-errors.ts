@@ -108,7 +108,7 @@ export let reportAllErrors = <
 
     if (
       left &&
-      options.newlinesBetween &&
+      options.newlinesBetween !== undefined &&
       availableMessageIds.missedSpacingBetweenMembers &&
       availableMessageIds.extraSpacingBetweenMembers
     ) {
