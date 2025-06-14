@@ -164,7 +164,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               name,
             })
 
-            let sortingNode: SortingNode = {
+            let sortingNode: Omit<SortingNode, 'partitionId'> = {
               isEslintDisabled: isNodeEslintDisabled(
                 attribute,
                 eslintDisabledLines,
@@ -187,7 +187,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               accumulator.push([])
             }
 
-            accumulator.at(-1)!.push(sortingNode)
+            accumulator.at(-1)!.push({
+              ...sortingNode,
+              partitionId: accumulator.length,
+            })
 
             return accumulator
           },

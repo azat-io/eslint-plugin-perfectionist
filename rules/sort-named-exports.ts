@@ -139,7 +139,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           options,
         })
 
-        let sortingNode: SortNamedExportsSortingNode = {
+        let sortingNode: Omit<SortNamedExportsSortingNode, 'partitionId'> = {
           isEslintDisabled: isNodeEslintDisabled(
             specifier,
             eslintDisabledLines,
@@ -163,7 +163,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           formattedMembers.push([])
         }
 
-        formattedMembers.at(-1)!.push(sortingNode)
+        formattedMembers.at(-1)!.push({
+          ...sortingNode,
+          partitionId: formattedMembers.length,
+        })
       }
 
       let groupKindOrder

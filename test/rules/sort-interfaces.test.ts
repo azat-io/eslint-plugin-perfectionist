@@ -2907,6 +2907,61 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): ignores newline fixes between different partitions`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                  ],
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                  partitionByComment: true,
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedInterfacePropertiesOrder',
+                },
+              ],
+              output: dedent`
+                interface Interface {
+                  a
+
+                  // Partition comment
+
+                  b
+                  c
+                }
+              `,
+              code: dedent`
+                interface Interface {
+                  a
+
+                  // Partition comment
+
+                  c
+                  b
+                }
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     ruleTester.run(

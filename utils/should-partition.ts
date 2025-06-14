@@ -13,10 +13,10 @@ interface ShouldPartitionParameters {
     partitionByComment?: PartitionByCommentOption
     partitionByNewLine?: boolean
   }
-  lastSortingNode: SortingNode | undefined
+  lastSortingNode: Pick<SortingNode, 'node'> | undefined
+  sortingNode: Pick<SortingNode, 'node'>
   tokenValueToIgnoreBefore?: string
   sourceCode: TSESLint.SourceCode
-  sortingNode: SortingNode
 }
 
 export let shouldPartition = ({

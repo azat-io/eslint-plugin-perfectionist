@@ -112,7 +112,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           })
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
-          let sortingNode: SortingNodeWithDependencies = {
+          let sortingNode: Omit<SortingNodeWithDependencies, 'partitionId'> = {
             group: computeGroup({
               customGroupMatcher: customGroup =>
                 doesCustomGroupMatch({
@@ -146,7 +146,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             accumulator.push([])
           }
 
-          accumulator.at(-1)?.push(sortingNode)
+          accumulator.at(-1)?.push({
+            ...sortingNode,
+            partitionId: accumulator.length,
+          })
 
           return accumulator
         },

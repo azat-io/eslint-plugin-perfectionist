@@ -235,7 +235,7 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
 
       let lastGroup = accumulator.at(-1)
       let lastSortingNode = lastGroup?.at(-1)
-      let sortingNode: SortingNode = {
+      let sortingNode: Omit<SortingNode, 'partitionId'> = {
         isEslintDisabled: isNodeEslintDisabled(type, eslintDisabledLines),
         size: rangeToDiff(type, sourceCode),
         node: type,
@@ -256,7 +256,10 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
         accumulator.push(lastGroup)
       }
 
-      lastGroup?.push(sortingNode)
+      lastGroup?.push({
+        ...sortingNode,
+        partitionId: accumulator.length,
+      })
       return accumulator
     },
     [[]],

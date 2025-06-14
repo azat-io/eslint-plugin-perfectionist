@@ -2115,6 +2115,57 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): ignores newline fixes between different partitions`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                  ],
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                  partitionByComment: true,
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: './b',
+                    left: './c',
+                  },
+                  messageId: 'unexpectedImportsOrder',
+                },
+              ],
+              output: dedent`
+                import a from 'a';
+
+                // Partition comment
+
+                import { b } from './b';
+                import { c } from './c';
+              `,
+              code: dedent`
+                import a from 'a';
+
+                // Partition comment
+
+                import { c } from './c';
+                import { b } from './b';
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     ruleTester.run(
@@ -3812,17 +3863,18 @@ describe(ruleName, () => {
                 // Part: 1
                 import a = aImport.a1.a2;
               `,
+              code: dedent`
+                import a = aImport.a1.a2;
+
+                // Part: 1
+                import aImport from "b";
+              `,
               options: [
                 {
                   ...options,
                   partitionByComment: '^Part',
                 },
               ],
-              code: dedent`
-                import a = aImport.a1.a2;
-                // Part: 1
-                import aImport from "b";
-              `,
             },
           ],
           valid: [],

@@ -1449,6 +1449,59 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): ignores newline fixes between different partitions`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                  ],
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                  partitionByComment: true,
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedIntersectionTypesOrder',
+                },
+              ],
+              output: dedent`
+                type Type =
+                  & a
+
+                  // Partition comment
+
+                  & b
+                  & c
+              `,
+              code: dedent`
+                type Type =
+                  & a
+
+                  // Partition comment
+
+                  & c
+                  & b
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     ruleTester.run(

@@ -1733,6 +1733,61 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): ignores newline fixes between different partitions`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                  ],
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                  partitionByComment: true,
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedNamedExportsOrder',
+                },
+              ],
+              output: dedent`
+                export {
+                  a,
+
+                  // Partition comment
+
+                  b,
+                  c,
+                } from 'module'
+              `,
+              code: dedent`
+                export {
+                  a,
+
+                  // Partition comment
+
+                  c,
+                  b,
+                } from 'module'
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
   })
 

@@ -2551,6 +2551,57 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): ignores newline fixes between different partitions`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                  ],
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                  partitionByComment: true,
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedModulesOrder',
+                },
+              ],
+              output: dedent`
+                function a() {}
+
+                // Partition comment
+
+                function b() {}
+                function c() {}
+              `,
+              code: dedent`
+                function a() {}
+
+                // Partition comment
+
+                function c() {}
+                function b() {}
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     describe(`${ruleName}(${type}): sorts inline elements correctly`, () => {

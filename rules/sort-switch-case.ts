@@ -67,8 +67,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             accumulator.at(-1)!.push({
               size: rangeToDiff(caseNode.test, sourceCode),
               name: getCaseName(sourceCode, caseNode),
+              partitionId: accumulator.length,
               isEslintDisabled: false,
               node: caseNode.test,
+              group: 'unknown',
             })
           }
           if (
@@ -120,7 +122,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         })
       }
 
-      let sortingNodes = switchNode.cases.map(
+      let sortingNodes: SortSwitchCaseSortingNode[] = switchNode.cases.map(
         (caseNode: TSESTree.SwitchCase) => ({
           size: caseNode.test
             ? rangeToDiff(caseNode.test, sourceCode)
@@ -129,6 +131,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           addSafetySemicolonWhenInline: true,
           isDefaultClause: !caseNode.test,
           isEslintDisabled: false,
+          group: 'unknown',
+          partitionId: 0,
           node: caseNode,
         }),
       )

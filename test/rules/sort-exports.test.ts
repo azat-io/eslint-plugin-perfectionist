@@ -1682,6 +1682,57 @@ describe(ruleName, () => {
           valid: [],
         },
       )
+
+      ruleTester.run(
+        `${ruleName}(${type}): ignores newline fixes between different partitions`,
+        rule,
+        {
+          invalid: [
+            {
+              options: [
+                {
+                  ...options,
+                  customGroups: [
+                    {
+                      elementNamePattern: 'a',
+                      groupName: 'a',
+                    },
+                  ],
+                  groups: ['a', 'unknown'],
+                  newlinesBetween: 'never',
+                  partitionByComment: true,
+                },
+              ],
+              errors: [
+                {
+                  data: {
+                    right: 'b',
+                    left: 'c',
+                  },
+                  messageId: 'unexpectedExportsOrder',
+                },
+              ],
+              output: dedent`
+                export { a } from 'a'
+
+                // Partition comment
+
+                export { b } from 'b'
+                export { c } from 'c'
+              `,
+              code: dedent`
+                export { a } from 'a'
+
+                // Partition comment
+
+                export { c } from 'c'
+                export { b } from 'b'
+              `,
+            },
+          ],
+          valid: [],
+        },
+      )
     })
 
     describe(`${ruleName}(${type}): "commentAbove" inside groups`, () => {

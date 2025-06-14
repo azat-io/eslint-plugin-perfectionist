@@ -161,7 +161,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           })
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
-          let sortingNode: SortEnumsSortingNode = {
+          let sortingNode: Omit<SortEnumsSortingNode, 'partitionId'> = {
             numericValue: member.initializer
               ? getExpressionNumberValue(
                   member.initializer,
@@ -191,7 +191,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             accumulator.push([])
           }
 
-          accumulator.at(-1)!.push(sortingNode)
+          accumulator.at(-1)!.push({
+            ...sortingNode,
+            partitionId: accumulator.length,
+          })
           return accumulator
         },
         [[]],

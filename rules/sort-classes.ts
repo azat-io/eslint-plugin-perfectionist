@@ -542,7 +542,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           let overloadSignatureGroupMember =
             overloadSignatureGroups[overloadSignatureGroupMemberIndex]?.at(-1)
 
-          let sortingNode: SortClassSortingNodes = {
+          let sortingNode: Omit<SortClassSortingNodes, 'partitionId'> = {
             dependencyNames: [
               getDependencyName({
                 nodeNameWithoutStartingHash: name.startsWith('#')
@@ -580,7 +580,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             accumulator.push([])
           }
 
-          accumulator.at(-1)!.push(sortingNode)
+          accumulator.at(-1)!.push({
+            ...sortingNode,
+            partitionId: accumulator.length,
+          })
 
           return accumulator
         },

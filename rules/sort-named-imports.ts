@@ -136,7 +136,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           options,
         })
 
-        let sortingNode: SortNamedImportsSortingNode = {
+        let sortingNode: Omit<SortNamedImportsSortingNode, 'partitionId'> = {
           groupKind:
             specifier.type === 'ImportSpecifier' &&
             specifier.importKind === 'type'
@@ -164,7 +164,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
           formattedMembers.push([])
         }
 
-        formattedMembers.at(-1)!.push(sortingNode)
+        formattedMembers.at(-1)!.push({
+          ...sortingNode,
+          partitionId: formattedMembers.length,
+        })
       }
 
       let groupKindOrder

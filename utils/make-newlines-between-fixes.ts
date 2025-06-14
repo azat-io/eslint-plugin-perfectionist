@@ -43,6 +43,10 @@ export let makeNewlinesBetweenFixes = <T extends SortingNode>({
     let sortedSortingNode = sortedNodes.at(i)!
     let nextSortedSortingNode = sortedNodes.at(i + 1)!
 
+    if (sortedSortingNode.partitionId !== nextSortedSortingNode.partitionId) {
+      continue
+    }
+
     let nodeGroupIndex = getGroupIndex(options.groups, sortedSortingNode)
     let nextNodeGroupIndex = getGroupIndex(
       options.groups,

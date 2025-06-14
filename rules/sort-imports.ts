@@ -143,7 +143,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
       ruleName: id,
       sourceCode,
     })
-    let sortingNodes: SortImportsSortingNode[] = []
+    let sortingNodesWithoutPartitionId: Omit<
+      SortImportsSortingNode,
+      'partitionId'
+    >[] = []
 
     let flatGroups = new Set(options.groups.flat())
     let shouldRegroupSideEffectNodes = flatGroups.has('side-effect')
@@ -271,7 +274,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
           name,
         }) ?? 'unknown'
 
-      sortingNodes.push({
+      let hasMultipleImportDeclarations = isSortable(
+        (node as TSESTree.ImportDeclaration).specifiers,
+      )
+      let size = rangeToDiff(node, sourceCode)
+      if (
+        hasMultipleImportDeclarations &&
+        options.maxLineLength &&
+        size > options.maxLineLength
+      ) {
+        size = name.length + 10
+      }
+      sortingNodesWithoutPartitionId.push({
         isIgnored:
           !options.sortSideEffects &&
           isSideEffect &&
@@ -280,17 +294,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         dependencyNames: computeDependencyNames({ sourceCode, node }),
         dependencies: computeDependencies(node),
-        size: rangeToDiff(node, sourceCode),
         addSafetySemicolonWhenInline: true,
         group,
+        size,
         name,
         node,
-        ...(options.type === 'line-length' &&
-          options.maxLineLength && {
-            hasMultipleImportDeclarations: isSortable(
-              (node as TSESTree.ImportDeclaration).specifiers,
-            ),
-          }),
       })
     }
 
@@ -299,7 +307,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let contentSeparatedSortingNodeGroups: SortImportsSortingNode[][][] = [
           [[]],
         ]
-        for (let sortingNode of sortingNodes) {
+        for (let sortingNodeWithoutPartitionId of sortingNodesWithoutPartitionId) {
           let lastGroupWithNoContentBetween =
             contentSeparatedSortingNodeGroups.at(-1)!
           let lastGroup = lastGroupWithNoContentBetween.at(-1)!
@@ -307,7 +315,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           if (
             lastSortingNode &&
-            hasContentBetweenNodes(sourceCode, lastSortingNode, sortingNode)
+            hasContentBetweenNodes(
+              sourceCode,
+              lastSortingNode,
+              sortingNodeWithoutPartitionId,
+            )
           ) {
             lastGroup = []
             lastGroupWithNoContentBetween = [lastGroup]
@@ -316,8 +328,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
             )
           } else if (
             shouldPartition({
+              sortingNode: sortingNodeWithoutPartitionId,
               lastSortingNode,
-              sortingNode,
               sourceCode,
               options,
             })
@@ -326,7 +338,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
             lastGroupWithNoContentBetween.push(lastGroup)
           }
 
-          lastGroup.push(sortingNode)
+          lastGroup.push({
+            ...sortingNodeWithoutPartitionId,
+            partitionId: lastGroupWithNoContentBetween.length,
+          })
         }
 
         for (let sortingNodeGroups of contentSeparatedSortingNodeGroups) {
@@ -517,8 +532,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
 let hasContentBetweenNodes = (
   sourceCode: TSESLint.SourceCode,
-  left: SortImportsSortingNode,
-  right: SortImportsSortingNode,
+  left: Pick<SortImportsSortingNode, 'node'>,
+  right: Pick<SortImportsSortingNode, 'node'>,
 ): boolean =>
   sourceCode.getTokensBetween(left.node, right.node, {
     includeComments: false,
