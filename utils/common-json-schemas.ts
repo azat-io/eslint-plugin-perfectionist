@@ -84,7 +84,7 @@ export let commonJsonSchemas: Record<string, JSONSchema4> =
 export let newlinesBetweenJsonSchema: JSONSchema4 = {
   oneOf: [
     {
-      description: 'Specifies how to handle new lines between groups.',
+      description: 'Specifies how to handle newlines between groups.',
       enum: ['ignore', 'always', 'never'],
       type: 'string',
     },
@@ -242,7 +242,7 @@ let buildCommonCustomGroupJsonSchemas = ({
     oneOf: [
       {
         description:
-          'Specifies how to handle new lines between members of the custom group.',
+          'Specifies how to handle newlines between members of the custom group.',
         enum: ['always', 'never'],
         type: 'string',
       },
