@@ -82,9 +82,17 @@ export let commonJsonSchemas: Record<string, JSONSchema4> =
   buildCommonJsonSchemas()
 
 export let newlinesBetweenJsonSchema: JSONSchema4 = {
-  description: 'Specifies how to handle new lines between groups.',
-  enum: ['ignore', 'always', 'never'],
-  type: 'string',
+  oneOf: [
+    {
+      description: 'Specifies how to handle newlines between groups.',
+      enum: ['ignore', 'always', 'never'],
+      type: 'string',
+    },
+    {
+      type: 'number',
+      minimum: 0,
+    },
+  ],
 }
 
 let commentAboveJsonSchema: JSONSchema4 = {
@@ -231,10 +239,18 @@ let buildCommonCustomGroupJsonSchemas = ({
   additionalFallbackSortProperties?: Record<string, JSONSchema4>
 } = {}): Record<string, JSONSchema4> => ({
   newlinesInside: {
-    description:
-      'Specifies how to handle new lines between members of the custom group.',
-    enum: ['always', 'never'],
-    type: 'string',
+    oneOf: [
+      {
+        description:
+          'Specifies how to handle newlines between members of the custom group.',
+        enum: ['always', 'never'],
+        type: 'string',
+      },
+      {
+        type: 'number',
+        minimum: 0,
+      },
+    ],
   },
   fallbackSort: buildFallbackSortJsonSchema({
     additionalProperties: additionalFallbackSortProperties,

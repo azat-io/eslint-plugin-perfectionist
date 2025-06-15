@@ -920,90 +920,94 @@ describe(ruleName, () => {
       )
 
       describe('newlinesInside', () => {
-        ruleTester.run(
-          `${ruleName}: allows to use newlinesInside: always`,
-          rule,
-          {
-            invalid: [
-              {
-                options: [
-                  {
-                    customGroups: [
-                      {
-                        newlinesInside: 'always',
-                        groupName: 'group1',
-                        selector: 'type',
-                      },
-                    ],
-                    groups: ['group1'],
-                  },
-                ],
-                errors: [
-                  {
-                    data: {
-                      right: 'B',
-                      left: 'A',
+        for (let newlinesInside of ['always', 1] as const) {
+          ruleTester.run(
+            `${ruleName}: allows to use newlinesInside: "${newlinesInside}"`,
+            rule,
+            {
+              invalid: [
+                {
+                  options: [
+                    {
+                      customGroups: [
+                        {
+                          groupName: 'group1',
+                          selector: 'type',
+                          newlinesInside,
+                        },
+                      ],
+                      groups: ['group1'],
                     },
-                    messageId: 'missedSpacingBetweenModulesMembers',
-                  },
-                ],
-                output: dedent`
-                  type A = {}
-
-                  type B = {}
-                `,
-                code: dedent`
-                  type A = {}
-                  type B = {}
-                `,
-              },
-            ],
-            valid: [],
-          },
-        )
-
-        ruleTester.run(
-          `${ruleName}: allows to use newlinesInside: never`,
-          rule,
-          {
-            invalid: [
-              {
-                options: [
-                  {
-                    customGroups: [
-                      {
-                        newlinesInside: 'never',
-                        groupName: 'group1',
-                        selector: 'type',
+                  ],
+                  errors: [
+                    {
+                      data: {
+                        right: 'B',
+                        left: 'A',
                       },
-                    ],
-                    type: 'alphabetical',
-                    groups: ['group1'],
-                  },
-                ],
-                errors: [
-                  {
-                    data: {
-                      right: 'B',
-                      left: 'A',
+                      messageId: 'missedSpacingBetweenModulesMembers',
                     },
-                    messageId: 'extraSpacingBetweenModulesMembers',
-                  },
-                ],
-                output: dedent`
-                  type A = {}
-                  type B = {}
-                `,
-                code: dedent`
-                  type A = {}
+                  ],
+                  output: dedent`
+                    type A = {}
 
-                  type B = {}
-                `,
-              },
-            ],
-            valid: [],
-          },
-        )
+                    type B = {}
+                  `,
+                  code: dedent`
+                    type A = {}
+                    type B = {}
+                  `,
+                },
+              ],
+              valid: [],
+            },
+          )
+        }
+
+        for (let newlinesInside of ['never', 0] as const) {
+          ruleTester.run(
+            `${ruleName}: allows to use newlinesInside: "${newlinesInside}"`,
+            rule,
+            {
+              invalid: [
+                {
+                  options: [
+                    {
+                      customGroups: [
+                        {
+                          groupName: 'group1',
+                          selector: 'type',
+                          newlinesInside,
+                        },
+                      ],
+                      type: 'alphabetical',
+                      groups: ['group1'],
+                    },
+                  ],
+                  errors: [
+                    {
+                      data: {
+                        right: 'B',
+                        left: 'A',
+                      },
+                      messageId: 'extraSpacingBetweenModulesMembers',
+                    },
+                  ],
+                  output: dedent`
+                    type A = {}
+                    type B = {}
+                  `,
+                  code: dedent`
+                    type A = {}
+
+                    type B = {}
+                  `,
+                },
+              ],
+              valid: [],
+            },
+          )
+        }
       })
     })
 
@@ -2091,158 +2095,162 @@ describe(ruleName, () => {
     })
 
     describe(`${ruleName}: newlinesBetween`, () => {
-      ruleTester.run(
-        `${ruleName}(${type}): removes newlines when never`,
-        rule,
-        {
-          invalid: [
-            {
-              errors: [
-                {
-                  data: {
-                    leftGroup: 'interface',
-                    rightGroup: 'unknown',
-                    right: 'y',
-                    left: 'A',
+      for (let newlinesBetween of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): removes newlines when "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      leftGroup: 'interface',
+                      rightGroup: 'unknown',
+                      right: 'y',
+                      left: 'A',
+                    },
+                    messageId: 'unexpectedModulesGroupOrder',
                   },
-                  messageId: 'unexpectedModulesGroupOrder',
-                },
-                {
-                  data: {
-                    right: 'b',
-                    left: 'z',
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'z',
+                    },
+                    messageId: 'unexpectedModulesOrder',
                   },
-                  messageId: 'unexpectedModulesOrder',
-                },
-                {
-                  data: {
-                    right: 'b',
-                    left: 'z',
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'z',
+                    },
+                    messageId: 'extraSpacingBetweenModulesMembers',
                   },
-                  messageId: 'extraSpacingBetweenModulesMembers',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  groups: ['unknown', 'interface'],
-                  newlinesBetween: 'never',
-                },
-              ],
-              code: dedent`
-                  interface A {}
-
-
-                 function y() {}
-                function z() {}
-
-                    function b() {}
-              `,
-              output: dedent`
-                  function b() {}
-                 function y() {}
-                function z() {}
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['unknown', 'interface'],
+                    newlinesBetween,
+                  },
+                ],
+                code: dedent`
                     interface A {}
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
 
-      ruleTester.run(
-        `${ruleName}(${type}): keeps one newline when always`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: 'a',
-                      groupName: 'a',
+
+                   function y() {}
+                  function z() {}
+
+                      function b() {}
+                `,
+                output: dedent`
+                    function b() {}
+                   function y() {}
+                  function z() {}
+                      interface A {}
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
+
+      for (let newlinesBetween of ['always', 1] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): keeps one newline when "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: 'a',
+                        groupName: 'a',
+                      },
+                      {
+                        elementNamePattern: 'b',
+                        groupName: 'b',
+                      },
+                    ],
+                    groups: ['a', 'b'],
+                    newlinesBetween,
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
                     },
-                    {
-                      elementNamePattern: 'b',
-                      groupName: 'b',
+                    messageId: 'missedSpacingBetweenModulesMembers',
+                  },
+                ],
+                output: dedent`
+                  function a() {};
+
+                  function b() {}
+                `,
+                code: dedent`
+                  function a() {};function b() {}
+                `,
+              },
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'z',
+                      left: 'A',
                     },
-                  ],
-                  newlinesBetween: 'always',
-                  groups: ['a', 'b'],
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'a',
+                    messageId: 'extraSpacingBetweenModulesMembers',
                   },
-                  messageId: 'missedSpacingBetweenModulesMembers',
-                },
-              ],
-              output: dedent`
-                function a() {};
-
-                function b() {}
-              `,
-              code: dedent`
-                function a() {};function b() {}
-              `,
-            },
-            {
-              errors: [
-                {
-                  data: {
-                    right: 'z',
-                    left: 'A',
+                  {
+                    data: {
+                      right: 'y',
+                      left: 'z',
+                    },
+                    messageId: 'unexpectedModulesOrder',
                   },
-                  messageId: 'extraSpacingBetweenModulesMembers',
-                },
-                {
-                  data: {
-                    right: 'y',
-                    left: 'z',
+                  {
+                    data: {
+                      right: 'B',
+                      left: 'y',
+                    },
+                    messageId: 'missedSpacingBetweenModulesMembers',
                   },
-                  messageId: 'unexpectedModulesOrder',
-                },
-                {
-                  data: {
-                    right: 'B',
-                    left: 'y',
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['interface', 'unknown', 'class'],
+                    newlinesBetween,
                   },
-                  messageId: 'missedSpacingBetweenModulesMembers',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  groups: ['interface', 'unknown', 'class'],
-                  newlinesBetween: 'always',
-                },
-              ],
-              output: dedent`
-                  interface A {}
+                ],
+                output: dedent`
+                    interface A {}
 
-                 function y() {}
-                function z() {}
+                   function y() {}
+                  function z() {}
 
-                    class B {}
-              `,
-              code: dedent`
-                  interface A {}
+                      class B {}
+                `,
+                code: dedent`
+                    interface A {}
 
 
-                 function z() {}
-                function y() {}
-                    class B {}
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                   function z() {}
+                  function y() {}
+                      class B {}
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
 
       describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
         ruleTester.run(
@@ -2329,13 +2337,15 @@ describe(ruleName, () => {
 
         describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
-            ['always', 'never'] as const,
-            ['always', 'ignore'] as const,
-            ['never', 'always'] as const,
-            ['ignore', 'always'] as const,
-          ]) {
+            [2, 'never'],
+            [2, 0],
+            [2, 'ignore'],
+            ['never', 2],
+            [0, 2],
+            ['ignore', 2],
+          ] as const) {
             ruleTester.run(
-              `${ruleName}(${type}): enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              `${ruleName}(${type}): enforces newlines if the global option is ${globalNewlinesBetween} and the group option is "${groupNewlinesBetween}"`,
               rule,
               {
                 invalid: [
@@ -2369,6 +2379,7 @@ describe(ruleName, () => {
                     output: dedent`
                       function a() {}
 
+
                       function b() {}
                     `,
                     code: dedent`
@@ -2384,8 +2395,10 @@ describe(ruleName, () => {
 
           for (let globalNewlinesBetween of [
             'always',
+            2,
             'ignore',
             'never',
+            0,
           ] as const) {
             ruleTester.run(
               `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
@@ -2441,7 +2454,9 @@ describe(ruleName, () => {
 
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
             ['ignore', 'never'] as const,
+            ['ignore', 0] as const,
             ['never', 'ignore'] as const,
+            [0, 'ignore'] as const,
           ]) {
             ruleTester.run(
               `${ruleName}(${type}): does not enforce a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
@@ -2552,56 +2567,58 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): ignores newline fixes between different partitions`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: 'a',
-                      groupName: 'a',
-                    },
-                  ],
-                  groups: ['a', 'unknown'],
-                  newlinesBetween: 'never',
-                  partitionByComment: true,
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'c',
+      for (let newlinesBetween of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): ignores newline fixes between different partitions (${newlinesBetween})`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: 'a',
+                        groupName: 'a',
+                      },
+                    ],
+                    groups: ['a', 'unknown'],
+                    partitionByComment: true,
+                    newlinesBetween,
                   },
-                  messageId: 'unexpectedModulesOrder',
-                },
-              ],
-              output: dedent`
-                function a() {}
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'c',
+                    },
+                    messageId: 'unexpectedModulesOrder',
+                  },
+                ],
+                output: dedent`
+                  function a() {}
 
-                // Partition comment
+                  // Partition comment
 
-                function b() {}
-                function c() {}
-              `,
-              code: dedent`
-                function a() {}
+                  function b() {}
+                  function c() {}
+                `,
+                code: dedent`
+                  function a() {}
 
-                // Partition comment
+                  // Partition comment
 
-                function c() {}
-                function b() {}
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                  function c() {}
+                  function b() {}
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
     })
 
     describe(`${ruleName}(${type}): sorts inline elements correctly`, () => {

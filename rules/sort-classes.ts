@@ -6,7 +6,6 @@ import type {
   Selector,
 } from './sort-classes/types'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { NewlinesBetweenOption } from '../types/common-options'
 
 import {
   buildCustomGroupsArrayJsonSchema,
@@ -618,12 +617,12 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           computedNewlinesBetween,
           right,
           left,
-        }): NewlinesBetweenOption => {
+        }): 'ignore' | number => {
           if (
             left.overloadSignaturesGroupId !== null &&
             left.overloadSignaturesGroupId === right.overloadSignaturesGroupId
           ) {
-            return 'never'
+            return 0
           }
           return computedNewlinesBetween
         },

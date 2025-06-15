@@ -60,7 +60,7 @@ export let makeFixes = <T extends SortingNode>({
     return [...orderFixes, ...commentAfterFixes]
   }
 
-  if (options?.groups && options.newlinesBetween) {
+  if (options?.groups && options.newlinesBetween !== undefined) {
     let newlinesFixes = makeNewlinesBetweenFixes({
       options: {
         ...options,

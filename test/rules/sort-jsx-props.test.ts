@@ -1117,133 +1117,137 @@ describe(ruleName, () => {
     )
 
     describe(`${ruleName}: newlinesBetween`, () => {
-      ruleTester.run(
-        `${ruleName}(${type}): removes newlines when never`,
-        rule,
-        {
-          invalid: [
-            {
-              errors: [
-                {
-                  data: {
-                    right: 'y',
-                    left: 'a',
+      for (let newlinesBetween of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): removes newlines when "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'y',
+                      left: 'a',
+                    },
+                    messageId: 'extraSpacingBetweenJSXPropsMembers',
                   },
-                  messageId: 'extraSpacingBetweenJSXPropsMembers',
-                },
-                {
-                  data: {
-                    right: 'b',
-                    left: 'z',
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'z',
+                    },
+                    messageId: 'unexpectedJSXPropsOrder',
                   },
-                  messageId: 'unexpectedJSXPropsOrder',
-                },
-                {
-                  data: {
-                    right: 'b',
-                    left: 'z',
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'z',
+                    },
+                    messageId: 'extraSpacingBetweenJSXPropsMembers',
                   },
-                  messageId: 'extraSpacingBetweenJSXPropsMembers',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  customGroups: { a: 'a' },
-                  groups: ['a', 'unknown'],
-                  newlinesBetween: 'never',
-                },
-              ],
-              code: dedent`
-                <Component
-                  a
-
-
-                 y
-                z
-
-                    b
-                />
-              `,
-              output: dedent`
-                <Component
-                  a
-                 b
-                y
-                    z
-                />
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
-
-      ruleTester.run(
-        `${ruleName}(${type}): keeps one newline when always`,
-        rule,
-        {
-          invalid: [
-            {
-              errors: [
-                {
-                  data: {
-                    right: 'z',
-                    left: 'a',
+                ],
+                options: [
+                  {
+                    ...options,
+                    customGroups: { a: 'a' },
+                    groups: ['a', 'unknown'],
+                    newlinesBetween,
                   },
-                  messageId: 'extraSpacingBetweenJSXPropsMembers',
-                },
-                {
-                  data: {
-                    right: 'y',
-                    left: 'z',
+                ],
+                code: dedent`
+                  <Component
+                    a
+
+
+                   y
+                  z
+
+                      b
+                  />
+                `,
+                output: dedent`
+                  <Component
+                    a
+                   b
+                  y
+                      z
+                  />
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
+
+      for (let newlinesBetween of ['always', 1] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): keeps one newline when "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'z',
+                      left: 'a',
+                    },
+                    messageId: 'extraSpacingBetweenJSXPropsMembers',
                   },
-                  messageId: 'unexpectedJSXPropsOrder',
-                },
-                {
-                  data: {
-                    right: 'b',
-                    left: 'y',
+                  {
+                    data: {
+                      right: 'y',
+                      left: 'z',
+                    },
+                    messageId: 'unexpectedJSXPropsOrder',
                   },
-                  messageId: 'missedSpacingBetweenJSXPropsMembers',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  customGroups: {
-                    a: 'a',
-                    b: 'b',
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'y',
+                    },
+                    messageId: 'missedSpacingBetweenJSXPropsMembers',
                   },
-                  groups: ['a', 'unknown', 'b'],
-                  newlinesBetween: 'always',
-                },
-              ],
-              output: dedent`
-                <Component
-                  a
+                ],
+                options: [
+                  {
+                    ...options,
+                    customGroups: {
+                      a: 'a',
+                      b: 'b',
+                    },
+                    groups: ['a', 'unknown', 'b'],
+                    newlinesBetween,
+                  },
+                ],
+                output: dedent`
+                  <Component
+                    a
 
-                 y
-                z
+                   y
+                  z
 
-                    b
-                />
-              `,
-              code: dedent`
-                <Component
-                  a
+                      b
+                  />
+                `,
+                code: dedent`
+                  <Component
+                    a
 
 
-                 z
-                y
-                    b
-                />
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                   z
+                  y
+                      b
+                  />
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
 
       describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
         ruleTester.run(
@@ -1334,13 +1338,15 @@ describe(ruleName, () => {
 
         describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
-            ['always', 'never'] as const,
-            ['always', 'ignore'] as const,
-            ['never', 'always'] as const,
-            ['ignore', 'always'] as const,
-          ]) {
+            [2, 'never'],
+            [2, 0],
+            [2, 'ignore'],
+            ['never', 2],
+            [0, 2],
+            ['ignore', 2],
+          ] as const) {
             ruleTester.run(
-              `${ruleName}(${type}): enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              `${ruleName}(${type}): enforces newlines if the global option is ${globalNewlinesBetween} and the group option is "${groupNewlinesBetween}"`,
               rule,
               {
                 invalid: [
@@ -1375,6 +1381,7 @@ describe(ruleName, () => {
                       <Component
                         a
 
+
                         b
                       />
                     `,
@@ -1393,8 +1400,10 @@ describe(ruleName, () => {
 
           for (let globalNewlinesBetween of [
             'always',
+            2,
             'ignore',
             'never',
+            0,
           ] as const) {
             ruleTester.run(
               `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
@@ -1454,7 +1463,9 @@ describe(ruleName, () => {
 
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
             ['ignore', 'never'] as const,
+            ['ignore', 0] as const,
             ['never', 'ignore'] as const,
+            [0, 'ignore'] as const,
           ]) {
             ruleTester.run(
               `${ruleName}(${type}): does not enforce a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,

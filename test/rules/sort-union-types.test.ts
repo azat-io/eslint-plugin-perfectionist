@@ -1007,162 +1007,166 @@ describe(ruleName, () => {
     })
 
     describe(`${ruleName}: newlinesBetween`, () => {
-      ruleTester.run(
-        `${ruleName}(${type}): removes newlines when never`,
-        rule,
-        {
-          invalid: [
-            {
-              errors: [
-                {
-                  data: {
-                    left: '() => null',
-                    right: 'Y',
-                  },
-                  messageId: 'extraSpacingBetweenUnionTypes',
-                },
-                {
-                  data: {
-                    right: 'B',
-                    left: 'Z',
-                  },
-                  messageId: 'unexpectedUnionTypesOrder',
-                },
-                {
-                  data: {
-                    right: 'B',
-                    left: 'Z',
-                  },
-                  messageId: 'extraSpacingBetweenUnionTypes',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  groups: ['function', 'unknown'],
-                  newlinesBetween: 'never',
-                },
-              ],
-              code: dedent`
-                type T =
-                  (() => null)
-
-
-                 | Y
-                | Z
-
-                    | B
-              `,
-              output: dedent`
-                type T =
-                  (() => null)
-                 | B
-                | Y
-                    | Z
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
-
-      ruleTester.run(
-        `${ruleName}(${type}): keeps one newline when always`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: 'a',
-                      groupName: 'a',
+      for (let newlinesBetween of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): removes newlines when "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      left: '() => null',
+                      right: 'Y',
                     },
-                    {
-                      elementNamePattern: 'b',
-                      groupName: 'b',
+                    messageId: 'extraSpacingBetweenUnionTypes',
+                  },
+                  {
+                    data: {
+                      right: 'B',
+                      left: 'Z',
                     },
-                  ],
-                  newlinesBetween: 'always',
-                  groups: ['a', 'b'],
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'a',
+                    messageId: 'unexpectedUnionTypesOrder',
                   },
-                  messageId: 'missedSpacingBetweenUnionTypes',
-                },
-              ],
-              output: dedent`
-                type Type =
-                  | a | 
-
-                b
-              `,
-              code: dedent`
-                type Type =
-                  | a | b
-              `,
-            },
-            {
-              errors: [
-                {
-                  data: {
-                    left: '() => null',
-                    right: 'Z',
+                  {
+                    data: {
+                      right: 'B',
+                      left: 'Z',
+                    },
+                    messageId: 'extraSpacingBetweenUnionTypes',
                   },
-                  messageId: 'extraSpacingBetweenUnionTypes',
-                },
-                {
-                  data: {
-                    right: 'Y',
-                    left: 'Z',
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['function', 'unknown'],
+                    newlinesBetween,
                   },
-                  messageId: 'unexpectedUnionTypesOrder',
-                },
-                {
-                  data: {
-                    right: '"A"',
-                    left: 'Y',
+                ],
+                code: dedent`
+                  type T =
+                    (() => null)
+
+
+                   | Y
+                  | Z
+
+                      | B
+                `,
+                output: dedent`
+                  type T =
+                    (() => null)
+                   | B
+                  | Y
+                      | Z
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
+
+      for (let newlinesBetween of ['always', 1] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): keeps one newline when "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: 'a',
+                        groupName: 'a',
+                      },
+                      {
+                        elementNamePattern: 'b',
+                        groupName: 'b',
+                      },
+                    ],
+                    groups: ['a', 'b'],
+                    newlinesBetween,
                   },
-                  messageId: 'missedSpacingBetweenUnionTypes',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  groups: ['function', 'unknown', 'literal'],
-                  newlinesBetween: 'always',
-                },
-              ],
-              output: dedent`
-                type T =
-                  (() => null)
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'missedSpacingBetweenUnionTypes',
+                  },
+                ],
+                output: dedent`
+                  type Type =
+                    | a | 
 
-                 | Y
-                | Z
+                  b
+                `,
+                code: dedent`
+                  type Type =
+                    | a | b
+                `,
+              },
+              {
+                errors: [
+                  {
+                    data: {
+                      left: '() => null',
+                      right: 'Z',
+                    },
+                    messageId: 'extraSpacingBetweenUnionTypes',
+                  },
+                  {
+                    data: {
+                      right: 'Y',
+                      left: 'Z',
+                    },
+                    messageId: 'unexpectedUnionTypesOrder',
+                  },
+                  {
+                    data: {
+                      right: '"A"',
+                      left: 'Y',
+                    },
+                    messageId: 'missedSpacingBetweenUnionTypes',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['function', 'unknown', 'literal'],
+                    newlinesBetween,
+                  },
+                ],
+                output: dedent`
+                  type T =
+                    (() => null)
 
-                    | "A"
-              `,
-              code: dedent`
-                type T =
-                  (() => null)
+                   | Y
+                  | Z
+
+                      | "A"
+                `,
+                code: dedent`
+                  type T =
+                    (() => null)
 
 
-                 | Z
-                | Y
-                    | "A"
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                   | Z
+                  | Y
+                      | "A"
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
 
       describe(`${ruleName}(${type}): "newlinesBetween" inside groups`, () => {
         ruleTester.run(
@@ -1244,13 +1248,15 @@ describe(ruleName, () => {
 
         describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
-            ['always', 'never'] as const,
-            ['always', 'ignore'] as const,
-            ['never', 'always'] as const,
-            ['ignore', 'always'] as const,
-          ]) {
+            [2, 'never'],
+            [2, 0],
+            [2, 'ignore'],
+            ['never', 2],
+            [0, 2],
+            ['ignore', 2],
+          ] as const) {
             ruleTester.run(
-              `${ruleName}(${type}): enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              `${ruleName}(${type}): enforces newlines if the global option is ${globalNewlinesBetween} and the group option is "${groupNewlinesBetween}"`,
               rule,
               {
                 invalid: [
@@ -1280,6 +1286,7 @@ describe(ruleName, () => {
                       type T =
                         A |
 
+
                         null
                     `,
                     code: dedent`
@@ -1296,8 +1303,10 @@ describe(ruleName, () => {
 
           for (let globalNewlinesBetween of [
             'always',
+            2,
             'ignore',
             'never',
+            0,
           ] as const) {
             ruleTester.run(
               `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
@@ -1347,7 +1356,9 @@ describe(ruleName, () => {
 
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
             ['ignore', 'never'] as const,
+            ['ignore', 0] as const,
             ['never', 'ignore'] as const,
+            [0, 'ignore'] as const,
           ]) {
             ruleTester.run(
               `${ruleName}(${type}): does not enforce a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
@@ -1453,58 +1464,60 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): ignores newline fixes between different partitions`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: 'a',
-                      groupName: 'a',
-                    },
-                  ],
-                  groups: ['a', 'unknown'],
-                  newlinesBetween: 'never',
-                  partitionByComment: true,
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'c',
+      for (let newlinesBetween of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): ignores newline fixes between different partitions (${newlinesBetween})`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: 'a',
+                        groupName: 'a',
+                      },
+                    ],
+                    groups: ['a', 'unknown'],
+                    partitionByComment: true,
+                    newlinesBetween,
                   },
-                  messageId: 'unexpectedUnionTypesOrder',
-                },
-              ],
-              output: dedent`
-                type Type =
-                  | a
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'c',
+                    },
+                    messageId: 'unexpectedUnionTypesOrder',
+                  },
+                ],
+                output: dedent`
+                  type Type =
+                    | a
 
-                  // Partition comment
+                    // Partition comment
 
-                  | b
-                  | c
-              `,
-              code: dedent`
-                type Type =
-                  | a
+                    | b
+                    | c
+                `,
+                code: dedent`
+                  type Type =
+                    | a
 
-                  // Partition comment
+                    // Partition comment
 
-                  | c
-                  | b
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                    | c
+                    | b
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
     })
 
     ruleTester.run(
@@ -1922,90 +1935,98 @@ describe(ruleName, () => {
     })
 
     describe('newlinesInside', () => {
-      ruleTester.run(
-        `${ruleName}: allows to use newlinesInside: always`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  customGroups: [
-                    {
-                      newlinesInside: 'always',
-                      groupName: 'group1',
-                      selector: 'named',
-                    },
-                  ],
-                  groups: ['group1'],
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'a',
-                  },
-                  messageId: 'missedSpacingBetweenUnionTypes',
-                },
-              ],
-              output: dedent`
-                type T =
-                  | a
-
-                  | b
-              `,
-              code: dedent`
-                type T =
-                  | a
-                  | b
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
-
-      ruleTester.run(`${ruleName}: allows to use newlinesInside: never`, rule, {
-        invalid: [
+      for (let newlinesInside of ['always', 1] as const) {
+        ruleTester.run(
+          `${ruleName}: allows to use newlinesInside: "${newlinesInside}"`,
+          rule,
           {
-            options: [
+            invalid: [
               {
-                customGroups: [
+                options: [
                   {
-                    newlinesInside: 'never',
-                    groupName: 'group1',
-                    selector: 'named',
+                    customGroups: [
+                      {
+                        groupName: 'group1',
+                        selector: 'named',
+                        newlinesInside,
+                      },
+                    ],
+                    groups: ['group1'],
                   },
                 ],
-                type: 'alphabetical',
-                groups: ['group1'],
-              },
-            ],
-            errors: [
-              {
-                data: {
-                  right: 'b',
-                  left: 'a',
-                },
-                messageId: 'extraSpacingBetweenUnionTypes',
-              },
-            ],
-            output: dedent`
-              type T =
-                | a
-                | b
-            `,
-            code: dedent`
-              type T =
-                | a
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'missedSpacingBetweenUnionTypes',
+                  },
+                ],
+                output: dedent`
+                  type T =
+                    | a
 
-                | b
-            `,
+                    | b
+                `,
+                code: dedent`
+                  type T =
+                    | a
+                    | b
+                `,
+              },
+            ],
+            valid: [],
           },
-        ],
-        valid: [],
-      })
+        )
+      }
+
+      for (let newlinesInside of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}: allows to use newlinesInside: "${newlinesInside}"`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        groupName: 'group1',
+                        selector: 'named',
+                        newlinesInside,
+                      },
+                    ],
+                    type: 'alphabetical',
+                    groups: ['group1'],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'extraSpacingBetweenUnionTypes',
+                  },
+                ],
+                output: dedent`
+                  type T =
+                    | a
+                    | b
+                `,
+                code: dedent`
+                  type T =
+                    | a
+
+                    | b
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
     })
   })
 

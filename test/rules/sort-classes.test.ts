@@ -4298,170 +4298,180 @@ describe(ruleName, () => {
     })
 
     describe(`${ruleName}: newlinesBetween`, () => {
-      ruleTester.run(
-        `${ruleName}(${type}): removes newlines when never`,
-        rule,
-        {
-          invalid: [
-            {
-              errors: [
-                {
-                  data: {
-                    right: 'y',
-                    left: 'a',
-                  },
-                  messageId: 'extraSpacingBetweenClassMembers',
-                },
-                {
-                  data: {
-                    right: 'b',
-                    left: 'z',
-                  },
-                  messageId: 'unexpectedClassesOrder',
-                },
-                {
-                  data: {
-                    right: 'b',
-                    left: 'z',
-                  },
-                  messageId: 'extraSpacingBetweenClassMembers',
-                },
-              ],
-              code: dedent`
-                class Class {
-                  a = () => null
-
-
-                 y = "y"
-                z = "z"
-
-                    b = "b"
-                }
-              `,
-              output: dedent`
-                class Class {
-                  a = () => null
-                 b = "b"
-                y = "y"
-                    z = "z"
-                }
-              `,
-              options: [
-                {
-                  ...options,
-                  groups: ['method', 'unknown'],
-                  newlinesBetween: 'never',
-                },
-              ],
-            },
-          ],
-          valid: [],
-        },
-      )
-
-      ruleTester.run(
-        `${ruleName}(${type}): keeps one newline when always`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: 'a',
-                      groupName: 'a',
+      for (let newlinesBetween of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): removes newlines when "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'y',
+                      left: 'a',
                     },
-                    {
-                      elementNamePattern: 'b',
-                      groupName: 'b',
+                    messageId: 'extraSpacingBetweenClassMembers',
+                  },
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'z',
                     },
-                  ],
-                  newlinesBetween: 'always',
-                  groups: ['a', 'b'],
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'a',
+                    messageId: 'unexpectedClassesOrder',
                   },
-                  messageId: 'missedSpacingBetweenClassMembers',
-                },
-              ],
-              output: dedent`
-                class Class {
-                  a; 
-
-                b;
-                }
-              `,
-              code: dedent`
-                class Class {
-                  a; b;
-                }
-              `,
-            },
-            {
-              errors: [
-                {
-                  data: {
-                    right: 'z',
-                    left: 'a',
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'z',
+                    },
+                    messageId: 'extraSpacingBetweenClassMembers',
                   },
-                  messageId: 'extraSpacingBetweenClassMembers',
-                },
-                {
-                  data: {
-                    right: 'y',
-                    left: 'z',
+                ],
+                code: dedent`
+                  class Class {
+                    a = () => null
+
+
+                   y = "y"
+                  z = "z"
+
+                      b = "b"
+                  }
+                `,
+                output: dedent`
+                  class Class {
+                    a = () => null
+                   b = "b"
+                  y = "y"
+                      z = "z"
+                  }
+                `,
+                options: [
+                  {
+                    ...options,
+                    groups: ['method', 'unknown'],
+                    newlinesBetween,
                   },
-                  messageId: 'unexpectedClassesOrder',
-                },
-                {
-                  data: {
-                    right: 'b',
-                    left: 'y',
+                ],
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
+
+      for (let newlinesBetween of ['always', 1] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): keeps one newline when "${newlinesBetween}"`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: 'a',
+                        groupName: 'a',
+                      },
+                      {
+                        elementNamePattern: 'b',
+                        groupName: 'b',
+                      },
+                    ],
+                    groups: ['a', 'b'],
+                    newlinesBetween,
                   },
-                  messageId: 'missedSpacingBetweenClassMembers',
-                },
-              ],
-              options: [
-                {
-                  ...options,
-                  groups: ['function-property', 'unknown', 'method'],
-                  newlinesBetween: 'always',
-                },
-              ],
-              output: dedent`
-                class Class {
-                  a = () => null
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'a',
+                    },
+                    messageId: 'missedSpacingBetweenClassMembers',
+                  },
+                ],
+                output: dedent`
+                  class Class {
+                    a; 
 
-                 y = "y"
-                z = "z"
+                  b;
+                  }
+                `,
+                code: dedent`
+                  class Class {
+                    a; b;
+                  }
+                `,
+              },
+              {
+                errors: [
+                  {
+                    data: {
+                      right: 'z',
+                      left: 'a',
+                    },
+                    messageId: 'extraSpacingBetweenClassMembers',
+                  },
+                  {
+                    data: {
+                      right: 'y',
+                      left: 'z',
+                    },
+                    messageId: 'unexpectedClassesOrder',
+                  },
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'y',
+                    },
+                    messageId: 'missedSpacingBetweenClassMembers',
+                  },
+                ],
+                options: [
+                  {
+                    ...options,
+                    groups: ['function-property', 'unknown', 'method'],
+                    newlinesBetween,
+                  },
+                ],
+                output: dedent`
+                  class Class {
+                    a = () => null
 
-                    b() {}
-                }
-              `,
-              code: dedent`
-                class Class {
-                  a = () => null
+                   y = "y"
+                  z = "z"
+
+                      b() {}
+                  }
+                `,
+                code: dedent`
+                  class Class {
+                    a = () => null
 
 
-                 z = "z"
-                y = "y"
-                    b() {}
-                }
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                   z = "z"
+                  y = "y"
+                      b() {}
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
 
-      for (let newlinesBetween of ['always', 'ignore', 'never'] as const) {
+      for (let newlinesBetween of [
+        'always',
+        1,
+        'ignore',
+        'never',
+        0,
+      ] as const) {
         ruleTester.run(
           `${ruleName}: enforces no newline between overload signatures when newlinesBetween is "${newlinesBetween}"`,
           rule,
@@ -4601,13 +4611,15 @@ describe(ruleName, () => {
 
         describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
-            ['always', 'never'] as const,
-            ['always', 'ignore'] as const,
-            ['never', 'always'] as const,
-            ['ignore', 'always'] as const,
-          ]) {
+            [2, 'never'],
+            [2, 0],
+            [2, 'ignore'],
+            ['never', 2],
+            [0, 2],
+            ['ignore', 2],
+          ] as const) {
             ruleTester.run(
-              `${ruleName}(${type}): enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              `${ruleName}(${type}): enforces newlines if the global option is ${globalNewlinesBetween} and the group option is "${groupNewlinesBetween}"`,
               rule,
               {
                 invalid: [
@@ -4642,6 +4654,7 @@ describe(ruleName, () => {
                       class Class {
                         a: string
 
+
                         b: string
                       }
                     `,
@@ -4660,8 +4673,10 @@ describe(ruleName, () => {
 
           for (let globalNewlinesBetween of [
             'always',
+            2,
             'ignore',
             'never',
+            0,
           ] as const) {
             ruleTester.run(
               `${ruleName}(${type}): enforces no newline if the global option is "${globalNewlinesBetween}" and "newlinesBetween: never" exists between all groups`,
@@ -4721,7 +4736,9 @@ describe(ruleName, () => {
 
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
             ['ignore', 'never'] as const,
+            ['ignore', 0] as const,
             ['never', 'ignore'] as const,
+            [0, 'ignore'] as const,
           ]) {
             ruleTester.run(
               `${ruleName}(${type}): does not enforce a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
@@ -4842,60 +4859,62 @@ describe(ruleName, () => {
         },
       )
 
-      ruleTester.run(
-        `${ruleName}(${type}): ignores newline fixes between different partitions`,
-        rule,
-        {
-          invalid: [
-            {
-              options: [
-                {
-                  ...options,
-                  customGroups: [
-                    {
-                      elementNamePattern: 'a',
-                      groupName: 'a',
-                    },
-                  ],
-                  groups: ['a', 'unknown'],
-                  newlinesBetween: 'never',
-                  partitionByComment: true,
-                },
-              ],
-              errors: [
-                {
-                  data: {
-                    right: 'b',
-                    left: 'c',
+      for (let newlinesBetween of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}(${type}): ignores newline fixes between different partitions (${newlinesBetween})`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    ...options,
+                    customGroups: [
+                      {
+                        elementNamePattern: 'a',
+                        groupName: 'a',
+                      },
+                    ],
+                    groups: ['a', 'unknown'],
+                    partitionByComment: true,
+                    newlinesBetween,
                   },
-                  messageId: 'unexpectedClassesOrder',
-                },
-              ],
-              output: dedent`
-                class Class {
-                  a
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'b',
+                      left: 'c',
+                    },
+                    messageId: 'unexpectedClassesOrder',
+                  },
+                ],
+                output: dedent`
+                  class Class {
+                    a
 
-                  // Partition comment
+                    // Partition comment
 
-                  b
-                  c
-                }
-              `,
-              code: dedent`
-                class Class {
-                  a
+                    b
+                    c
+                  }
+                `,
+                code: dedent`
+                  class Class {
+                    a
 
-                  // Partition comment
+                    // Partition comment
 
-                  c
-                  b
-                }
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
+                    c
+                    b
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
     })
 
     describe(`${ruleName}(${type}): sorts inline elements correctly`, () => {
@@ -8476,113 +8495,121 @@ describe(ruleName, () => {
     )
 
     describe('newlinesInside', () => {
-      ruleTester.run(
-        `${ruleName}: allows to use newlinesInside: always`,
-        rule,
-        {
-          invalid: [
-            {
-              errors: [
-                {
-                  data: {
-                    right: 'c',
-                    left: 'b',
-                  },
-                  messageId: 'missedSpacingBetweenClassMembers',
-                },
-                {
-                  data: {
-                    right: 'd',
-                    left: 'c',
-                  },
-                  messageId: 'extraSpacingBetweenClassMembers',
-                },
-              ],
-              options: [
-                {
-                  customGroups: [
-                    {
-                      groupName: 'methodsWithNewlinesInside',
-                      newlinesInside: 'always',
-                      selector: 'method',
-                    },
-                  ],
-                  groups: ['unknown', 'methodsWithNewlinesInside'],
-                },
-              ],
-              output: dedent`
-                class Class {
-                  a
-                  b() {}
-
-                  c() {}
-
-                  d() {}
-                }
-              `,
-              code: dedent`
-                class Class {
-                  a
-                  b() {}
-                  c() {}
-
-
-                  d() {}
-                }
-              `,
-            },
-          ],
-          valid: [],
-        },
-      )
-
-      ruleTester.run(`${ruleName}: allows to use newlinesInside: never`, rule, {
-        invalid: [
+      for (let newlinesInside of ['always', 1] as const) {
+        ruleTester.run(
+          `${ruleName}: allows to use newlinesInside: "${newlinesInside}"`,
+          rule,
           {
-            options: [
+            invalid: [
               {
-                customGroups: [
+                errors: [
                   {
-                    groupName: 'methodsWithoutNewlinesInside',
-                    newlinesInside: 'never',
-                    selector: 'method',
+                    data: {
+                      right: 'c',
+                      left: 'b',
+                    },
+                    messageId: 'missedSpacingBetweenClassMembers',
+                  },
+                  {
+                    data: {
+                      right: 'd',
+                      left: 'c',
+                    },
+                    messageId: 'extraSpacingBetweenClassMembers',
                   },
                 ],
-                groups: ['unknown', 'methodsWithoutNewlinesInside'],
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        groupName: 'methodsWithNewlinesInside',
+                        selector: 'method',
+                        newlinesInside,
+                      },
+                    ],
+                    groups: ['unknown', 'methodsWithNewlinesInside'],
+                  },
+                ],
+                output: dedent`
+                  class Class {
+                    a
+                    b() {}
+
+                    c() {}
+
+                    d() {}
+                  }
+                `,
+                code: dedent`
+                  class Class {
+                    a
+                    b() {}
+                    c() {}
+
+
+                    d() {}
+                  }
+                `,
               },
             ],
-            errors: [
-              {
-                data: {
-                  right: 'd',
-                  left: 'c',
-                },
-                messageId: 'extraSpacingBetweenClassMembers',
-              },
-            ],
-            output: dedent`
-              class Class {
-                a
-
-                c() {}
-                d() {}
-              }
-            `,
-            code: dedent`
-              class Class {
-                a
-
-                c() {}
-
-                d() {}
-              }
-            `,
+            valid: [],
           },
-        ],
-        valid: [],
-      })
+        )
+      }
 
-      for (let newlinesInside of ['always', 'never'] as const) {
+      for (let newlinesInside of ['never', 0] as const) {
+        ruleTester.run(
+          `${ruleName}: allows to use newlinesInside: "${newlinesInside}"`,
+          rule,
+          {
+            invalid: [
+              {
+                options: [
+                  {
+                    customGroups: [
+                      {
+                        groupName: 'methodsWithoutNewlinesInside',
+                        selector: 'method',
+                        newlinesInside,
+                      },
+                    ],
+                    groups: ['unknown', 'methodsWithoutNewlinesInside'],
+                  },
+                ],
+                errors: [
+                  {
+                    data: {
+                      right: 'd',
+                      left: 'c',
+                    },
+                    messageId: 'extraSpacingBetweenClassMembers',
+                  },
+                ],
+                output: dedent`
+                  class Class {
+                    a
+
+                    c() {}
+                    d() {}
+                  }
+                `,
+                code: dedent`
+                  class Class {
+                    a
+
+                    c() {}
+
+                    d() {}
+                  }
+                `,
+              },
+            ],
+            valid: [],
+          },
+        )
+      }
+
+      for (let newlinesInside of ['always', 1, 'never', 0] as const) {
         ruleTester.run(
           `${ruleName}: enforces no newline between overload signatures when newlinesBetween is "${newlinesInside}"`,
           rule,
