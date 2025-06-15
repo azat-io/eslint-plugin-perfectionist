@@ -1491,15 +1491,15 @@ describe(ruleName, () => {
 
         describe(`${ruleName}(${type}): "newlinesBetween" between non-consecutive groups`, () => {
           for (let [globalNewlinesBetween, groupNewlinesBetween] of [
-            ['always', 'never'],
-            ['always', 0],
-            ['always', 'ignore'],
-            ['never', 'always'],
-            [0, 'always'],
-            ['ignore', 'always'],
+            [2, 'never'],
+            [2, 0],
+            [2, 'ignore'],
+            ['never', 2],
+            [0, 2],
+            ['ignore', 2],
           ] as const) {
             ruleTester.run(
-              `${ruleName}(${type}): enforces a newline if the global option is "${globalNewlinesBetween}" and the group option is "${groupNewlinesBetween}"`,
+              `${ruleName}(${type}): enforces newlines if the global option is ${globalNewlinesBetween} and the group option is "${groupNewlinesBetween}"`,
               rule,
               {
                 invalid: [
@@ -1534,6 +1534,7 @@ describe(ruleName, () => {
                       export {
                         a,
 
+
                         b,
                       }
                     `,
@@ -1552,7 +1553,7 @@ describe(ruleName, () => {
 
           for (let globalNewlinesBetween of [
             'always',
-            1,
+            2,
             'ignore',
             'never',
             0,
