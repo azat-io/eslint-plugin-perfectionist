@@ -1,5 +1,25 @@
 # Changelog
 
+## v4.15.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.14.0...v4.15.0)
+
+### 🚀 Features
+
+- Add main and types fields for npm compatibility ([b12950a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b12950a))
+- Allow newlines between to support number ([2f5a58a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2f5a58a))
+
+### 🐞 Bug Fixes
+
+- **sort-imports:** Allow single imports to be linted for comment above ([f0fae7c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f0fae7c))
+- Don't enforce new lines between behavior in unordered groups ([05b4797](https://github.com/azat-io/eslint-plugin-perfectionist/commit/05b4797))
+- Prevent newlines fixes between different partitions ([b14fd3f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b14fd3f))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+- Azat S. ([@azat-io](https://github.com/azat-io))
+
 ## v4.14.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.13.0...v4.14.0)
