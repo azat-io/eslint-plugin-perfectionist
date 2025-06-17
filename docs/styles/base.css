@@ -19,9 +19,9 @@ html {
 
 body {
   margin: 0;
+  container-type: inline-size;
   font: var(--font-s);
   color: var(--color-content-primary);
-  container-type: inline-size;
 }
 
 h1 {
