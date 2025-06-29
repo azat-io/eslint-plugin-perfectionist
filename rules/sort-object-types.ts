@@ -36,7 +36,7 @@ import {
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { getCustomGroupsCompareOptions } from './sort-object-types/get-custom-groups-compare-options'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getMatchingContextOptions } from '../utils/get-matching-context-options'
+import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isMemberOptional } from './sort-object-types/is-member-optional'
@@ -102,16 +102,17 @@ export let jsonSchema: JSONSchema4 = {
           }),
         ],
       },
+      useConfigurationIf: buildUseConfigurationIfJsonSchema({
+        additionalProperties: {
+          declarationCommentMatchesPattern: regexJsonSchema,
+          declarationMatchesPattern: regexJsonSchema,
+        },
+      }),
       groupKind: {
         description: '[DEPRECATED] Specifies top-level groups.',
         enum: ['mixed', 'required-first', 'optional-first'],
         type: 'string',
       },
-      useConfigurationIf: buildUseConfigurationIfJsonSchema({
-        additionalProperties: {
-          declarationMatchesPattern: regexJsonSchema,
-        },
-      }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,
@@ -136,10 +137,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
           unexpectedGroupOrder: 'unexpectedObjectTypesGroupOrder',
           unexpectedOrder: 'unexpectedObjectTypesOrder',
         },
-        parentNodeName:
-          node.parent.type === 'TSTypeAliasDeclaration'
-            ? node.parent.id.name
-            : null,
+        parentNode:
+          node.parent.type === 'TSTypeAliasDeclaration' ? node.parent : null,
         elements: node.members,
         context,
       }),
@@ -166,7 +165,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
 export let sortObjectTypeElements = <MessageIds extends string>({
   availableMessageIds,
-  parentNodeName,
+  parentNode,
   elements,
   context,
 }: {
@@ -176,9 +175,12 @@ export let sortObjectTypeElements = <MessageIds extends string>({
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
+  parentNode:
+    | TSESTree.TSTypeAliasDeclaration
+    | TSESTree.TSInterfaceDeclaration
+    | null
   context: RuleContext<MessageIds, Options>
   elements: TSESTree.TypeElement[]
-  parentNodeName: string | null
 }): void => {
   if (!isSortable(elements)) {
     return
@@ -186,22 +188,35 @@ export let sortObjectTypeElements = <MessageIds extends string>({
 
   let settings = getSettings(context.settings)
   let { sourceCode, id } = context
-  let matchedContextOptions = getMatchingContextOptions({
+  let matchedContextOptions = filterOptionsByAllNamesMatch({
     nodeNames: elements.map(node =>
       getNodeName({ typeElement: node, sourceCode }),
     ),
     contextOptions: context.options,
   }).find(options => {
-    if (!options.useConfigurationIf?.declarationMatchesPattern) {
+    if (!parentNode || !options.useConfigurationIf) {
       return true
     }
-    if (!parentNodeName) {
-      return false
+
+    if (options.useConfigurationIf.declarationMatchesPattern) {
+      return matches(
+        parentNode.id.name,
+        options.useConfigurationIf.declarationMatchesPattern,
+      )
     }
-    return matches(
-      parentNodeName,
-      options.useConfigurationIf.declarationMatchesPattern,
-    )
+
+    let { declarationCommentMatchesPattern } = options.useConfigurationIf
+    if (declarationCommentMatchesPattern) {
+      let parentComment = sourceCode.getCommentsBefore(parentNode)
+      let hasMatchingComment = parentComment.some(comment =>
+        matches(comment.value, declarationCommentMatchesPattern),
+      )
+      if (!hasMatchingComment) {
+        return false
+      }
+    }
+
+    return true
   })
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
@@ -212,7 +227,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
   })
   validateNewlinesAndPartitionConfiguration(options)
 
-  if (parentNodeName && matches(parentNodeName, options.ignorePattern)) {
+  if (parentNode && matches(parentNode.id.name, options.ignorePattern)) {
     return
   }
 

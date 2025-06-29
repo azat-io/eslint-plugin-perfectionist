@@ -31,6 +31,7 @@ export type Options = Partial<
         >
       | DeprecatedCustomGroupsOption
     useConfigurationIf: {
+      declarationCommentMatchesPattern?: RegexOption
       declarationMatchesPattern?: RegexOption
       allNamesMatchPattern?: RegexOption
     }
