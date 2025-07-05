@@ -7858,7 +7858,7 @@ describe(ruleName, () => {
 
     describe(`${ruleName}: checks compatibility between 'sortSideEffects' and 'groups'`, () => {
       let createRule = (
-        groups: Options[0]['groups'],
+        groups: Options[number]['groups'],
         sortSideEffects: boolean = false,
       ): RuleListener =>
         rule.create({

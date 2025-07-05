@@ -53,7 +53,7 @@ type MESSAGE_ID =
   | 'unexpectedJSXPropsGroupOrder'
   | 'unexpectedJSXPropsOrder'
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',

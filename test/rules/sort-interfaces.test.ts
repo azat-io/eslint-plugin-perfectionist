@@ -23,7 +23,7 @@ describe(ruleName, () => {
   describe(`${ruleName}: sorting by alphabetical order`, () => {
     let type = 'alphabetical-order'
 
-    let options: Options[0] = {
+    let options: Options[number] = {
       type: 'alphabetical',
       ignoreCase: true,
       order: 'asc',

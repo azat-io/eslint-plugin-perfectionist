@@ -60,7 +60,7 @@ interface SortArrayIncludesSortingNode
   groupKind: 'literal' | 'spread'
 }
 
-export let defaultOptions: Required<Options[0]> = {
+export let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   groupKind: 'literals-first',
   specialCharacters: 'keep',
