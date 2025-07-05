@@ -64,7 +64,7 @@ type MESSAGE_ID =
   | 'unexpectedClassesGroupOrder'
   | 'unexpectedClassesOrder'
 
-let defaultOptions: Required<SortClassesOptions[0]> = {
+let defaultOptions: Required<SortClassesOptions[number]> = {
   groups: [
     'index-signature',
     ['static-property', 'static-accessor-property'],

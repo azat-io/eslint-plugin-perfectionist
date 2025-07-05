@@ -5,7 +5,7 @@ import { getCustomGroupsCompareOptions as baseGetCustomGroupsCompareOptions } fr
 import { buildNodeValueGetter } from './build-node-value-getter'
 
 type InputOptions = Pick<
-  Required<Options[0]>,
+  Required<Options[number]>,
   'fallbackSort' | 'customGroups' | 'sortBy' | 'groups' | 'order' | 'type'
 >
 
@@ -14,7 +14,7 @@ export let getCustomGroupsCompareOptions = (
   groupIndex: number,
 ): {
   options: Pick<
-    Required<Options[0]>,
+    Required<Options[number]>,
     'fallbackSort' | 'sortBy' | 'order' | 'type'
   >
   fallbackSortNodeValueGetter?: NodeValueGetterFunction<SortObjectTypesSortingNode> | null
