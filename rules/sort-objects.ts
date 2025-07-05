@@ -25,6 +25,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
@@ -99,7 +100,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         onlyFirstParent: true,
         node: nodeObject,
       })
-      let matchedContextOptions = filterOptionsByAllNamesMatch({
+      let filteredContextOptions = filterOptionsByAllNamesMatch({
         nodeNames: nodeObject.properties
           .filter(
             property =>
@@ -108,7 +109,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
           )
           .map(property => getNodeName({ sourceCode, property })),
         contextOptions: context.options,
-      }).find(options => {
+      })
+      let parentNodeForDeclarationComment = null
+      if (objectParent) {
+        parentNodeForDeclarationComment =
+          objectParent.type === 'VariableDeclarator'
+            ? objectParent.node.parent
+            : objectParent.node
+      }
+      filteredContextOptions = filterOptionsByDeclarationCommentMatches({
+        parentNode: parentNodeForDeclarationComment,
+        contextOptions: filteredContextOptions,
+        sourceCode,
+      })
+
+      let matchedContextOptions = filteredContextOptions.find(options => {
         if (!options.useConfigurationIf) {
           return true
         }
@@ -127,24 +142,6 @@ export default createEslintRule<Options, MESSAGE_ID>({
             objectParent.name,
             options.useConfigurationIf.callingFunctionNamePattern,
           )
-        }
-
-        let { declarationCommentMatchesPattern } = options.useConfigurationIf
-        if (declarationCommentMatchesPattern) {
-          if (!objectParent) {
-            return false
-          }
-          let parentToCheck =
-            objectParent.node.type === 'VariableDeclarator'
-              ? objectParent.node.parent
-              : objectParent.node
-          let parentComment = sourceCode.getCommentsBefore(parentToCheck)
-          let hasMatchingComment = parentComment.some(comment =>
-            matches(comment.value, declarationCommentMatchesPattern),
-          )
-          if (!hasMatchingComment) {
-            return false
-          }
         }
 
         return true
