@@ -28,6 +28,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
@@ -186,12 +187,19 @@ export function sortObjectTypeElements<MessageIds extends string>({
 
   let settings = getSettings(context.settings)
   let { sourceCode, id } = context
-  let matchedContextOptions = filterOptionsByAllNamesMatch({
+  let filteredContextOptions = filterOptionsByAllNamesMatch({
     nodeNames: elements.map(node =>
       getNodeName({ typeElement: node, sourceCode }),
     ),
     contextOptions: context.options,
-  }).find(options => {
+  })
+  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
+    contextOptions: filteredContextOptions,
+    parentNode,
+    sourceCode,
+  })
+
+  let matchedContextOptions = filteredContextOptions.find(options => {
     if (!options.useConfigurationIf) {
       return true
     }
@@ -205,21 +213,6 @@ export function sortObjectTypeElements<MessageIds extends string>({
         parentNode.id.name,
         options.useConfigurationIf.declarationMatchesPattern,
       )
-    }
-
-    let { declarationCommentMatchesPattern } = options.useConfigurationIf
-    if (declarationCommentMatchesPattern) {
-      if (!parentNode) {
-        return false
-      }
-
-      let parentComment = sourceCode.getCommentsBefore(parentNode)
-      let hasMatchingComment = parentComment.some(comment =>
-        matches(comment.value, declarationCommentMatchesPattern),
-      )
-      if (!hasMatchingComment) {
-        return false
-      }
     }
 
     return true
