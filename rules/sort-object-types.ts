@@ -251,7 +251,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       }
 
       if (
-        !(<Selector[]>['index-signature', 'method']).some(selector =>
+        !(['index-signature', 'method'] as Selector[]).some(selector =>
           selectors.includes(selector),
         )
       ) {

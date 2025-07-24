@@ -91,7 +91,7 @@ let toc = buildToc(headings)
       { root: null, rootMargin: '0px', threshold: [1] },
     )
     let sectionHeadings = document.querySelectorAll('article h2, article h3')
-    for (let heading of sectionHeadings) {
+    for (let heading of Array.from(sectionHeadings)) {
       observer.observe(heading)
     }
   }

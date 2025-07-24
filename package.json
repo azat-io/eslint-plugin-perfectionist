@@ -68,6 +68,7 @@
     "@astrojs/svelte": "^7.1.0",
     "@azat-io/eslint-config": "^2.35.0",
     "@azat-io/stylelint-config": "^0.1.1",
+    "@azat-io/typescript-config": "^1.1.1",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@humanwhocodes/crosspost": "^0.12.0",
