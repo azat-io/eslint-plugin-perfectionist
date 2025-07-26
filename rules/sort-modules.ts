@@ -400,6 +400,10 @@ let extractDependencies = (
       return
     }
 
+    if ('decorators' in nodeValue) {
+      traverseNode(nodeValue.decorators)
+    }
+
     if (
       nodeValue.type === 'NewExpression' &&
       nodeValue.callee.type === 'Identifier'

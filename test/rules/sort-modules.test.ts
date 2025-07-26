@@ -1844,6 +1844,57 @@ describe(ruleName, () => {
       )
 
       ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in decorators`,
+        rule,
+        {
+          invalid: [
+            {
+              output: dedent`
+                enum B {}
+
+                class A {
+                  @SomeDecorator({
+                    a: {
+                      b: c.concat([B])
+                    }
+                  })
+                  property
+                }
+              `,
+              code: dedent`
+                class A {
+                  @SomeDecorator({
+                    a: {
+                      b: c.concat([B])
+                    }
+                  })
+                  property
+                }
+
+                enum B {}
+              `,
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'A',
+                    right: 'B',
+                  },
+                  messageId: 'unexpectedModulesDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: [],
+                },
+              ],
+            },
+          ],
+          valid: [],
+        },
+      )
+
+      ruleTester.run(
         `${ruleName}(${type}) detects and ignores circular dependencies`,
         rule,
         {
