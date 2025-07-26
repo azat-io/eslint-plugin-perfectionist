@@ -1811,7 +1811,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  groups: [],
+                  groups: ['unknown'],
                 },
               ],
             },
@@ -1829,7 +1829,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  groups: [],
+                  groups: ['unknown'],
                 },
               ],
               code: dedent`
@@ -1885,7 +1885,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  groups: [],
+                  groups: ['unknown'],
                 },
               ],
             },
