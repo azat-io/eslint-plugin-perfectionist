@@ -1811,7 +1811,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  groups: [],
+                  groups: ['unknown'],
                 },
               ],
             },
@@ -1829,7 +1829,7 @@ describe(ruleName, () => {
               options: [
                 {
                   ...options,
-                  groups: [],
+                  groups: ['unknown'],
                 },
               ],
               code: dedent`
@@ -1840,6 +1840,57 @@ describe(ruleName, () => {
             },
           ],
           invalid: [],
+        },
+      )
+
+      ruleTester.run(
+        `${ruleName}(${type}) detects dependencies in decorators`,
+        rule,
+        {
+          invalid: [
+            {
+              output: dedent`
+                enum B {}
+
+                class A {
+                  @SomeDecorator({
+                    a: {
+                      b: c.concat([B])
+                    }
+                  })
+                  property
+                }
+              `,
+              code: dedent`
+                class A {
+                  @SomeDecorator({
+                    a: {
+                      b: c.concat([B])
+                    }
+                  })
+                  property
+                }
+
+                enum B {}
+              `,
+              errors: [
+                {
+                  data: {
+                    nodeDependentOnRight: 'A',
+                    right: 'B',
+                  },
+                  messageId: 'unexpectedModulesDependencyOrder',
+                },
+              ],
+              options: [
+                {
+                  ...options,
+                  groups: ['unknown'],
+                },
+              ],
+            },
+          ],
+          valid: [],
         },
       )
 

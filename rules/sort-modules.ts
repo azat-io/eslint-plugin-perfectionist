@@ -378,18 +378,6 @@ let extractDependencies = (
 ): string[] => {
   let dependencies: string[] = []
 
-  let isPropertyOrAccessor = (
-    node: TSESTree.Node,
-  ): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty =>
-    node.type === 'PropertyDefinition' || node.type === 'AccessorProperty'
-
-  let isArrowFunction = (
-    node: TSESTree.Node,
-  ): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty =>
-    isPropertyOrAccessor(node) &&
-    node.value !== null &&
-    node.value.type === 'ArrowFunctionExpression'
-
   /**
    * Search static methods only if there is a static block or a static property
    * that is not an arrow function
@@ -410,6 +398,10 @@ let extractDependencies = (
       (!nodeValue.static || !searchStaticMethodsAndFunctionProperties)
     ) {
       return
+    }
+
+    if ('decorators' in nodeValue) {
+      traverseNode(nodeValue.decorators)
     }
 
     if (
@@ -525,3 +517,15 @@ let extractDependencies = (
   checkNode(expression)
   return dependencies
 }
+
+let isPropertyOrAccessor = (
+  node: TSESTree.Node,
+): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty =>
+  node.type === 'PropertyDefinition' || node.type === 'AccessorProperty'
+
+let isArrowFunction = (
+  node: TSESTree.Node,
+): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty =>
+  isPropertyOrAccessor(node) &&
+  node.value !== null &&
+  node.value.type === 'ArrowFunctionExpression'
