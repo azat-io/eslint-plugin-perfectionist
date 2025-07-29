@@ -8,7 +8,7 @@ interface Options {
   }
 }
 
-export let getMatchingContextOptions = <T extends Options>({
+export let filterOptionsByAllNamesMatch = <T extends Options>({
   contextOptions,
   nodeNames,
 }: {
