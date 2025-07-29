@@ -1,17 +1,21 @@
-# Node.js
-node_modules/
-.nvmrc
+# AI
+.claude/
+.serena/
+
+# Astro
+.astro/
 
 # Build
 dist/
 
 # Editor
-.vscode/
-.vim/
 .idea/
+.vim/
+.vscode/
 
-# Astro
-.astro/
+# Node.js
+node_modules/
+.nvmrc
 
 # Test
 coverage/
