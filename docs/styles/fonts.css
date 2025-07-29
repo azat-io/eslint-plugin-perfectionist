@@ -1,13 +1,13 @@
 @font-face {
   font-family: Inter;
-  font-weight: 400;
+  font-weight: normal;
   src: url('/fonts/inter-regular.woff2');
   font-display: swap;
 }
 
 @font-face {
   font-family: Inter;
-  font-weight: 700;
+  font-weight: bold;
   src: url('/fonts/inter-bold.woff2');
   font-display: swap;
 }
@@ -21,14 +21,14 @@
 
 @font-face {
   font-family: 'Space Grotesk';
-  font-weight: 700;
+  font-weight: bold;
   src: url('/fonts/space-grotesk-bold.woff2');
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Mono Punctuators';
-  font-weight: 400;
+  font-weight: normal;
   src: url('/fonts/consolas.woff2');
   font-display: swap;
   unicode-range: U+40, U+7B, U+7D, U+28, U+29;
@@ -43,7 +43,7 @@
 @font-face {
   font-family: 'Inter Fallback';
   font-style: normal;
-  font-weight: 400;
+  font-weight: normal;
   src: local('Arial');
   size-adjust: 107.64%;
   ascent-override: 90%;
@@ -54,7 +54,7 @@
 @font-face {
   font-family: 'Space Grotesk Fallback';
   font-style: normal;
-  font-weight: 400;
+  font-weight: normal;
   src: local('Arial');
   size-adjust: 110.89%;
   ascent-override: 88.74%;
@@ -65,7 +65,7 @@
 @font-face {
   font-family: 'Space Mono Fallback';
   font-style: normal;
-  font-weight: 400;
+  font-weight: normal;
   src: local('Courier New');
   size-adjust: 101.98%;
   ascent-override: 109.82%;
@@ -76,9 +76,8 @@
 :root {
   --font-family-base: 'Inter', 'Inter Fallback', sans-serif;
   --font-family-title: 'Space Grotesk', 'Space Grotesk Fallback', sans-serif;
-  --font-family-code: 'Mono Punctuators', 'Space Mono', 'Space Mono Fallback',
-    monospace;
-
+  --font-family-code:
+    'Mono Punctuators', 'Space Mono', 'Space Mono Fallback', monospace;
   --font-size-2xs: 0.95rem;
   --font-size-xs: clamp(1.03rem, -0.15vi + 1.07rem, 0.95rem);
   --font-size-s: clamp(1.06rem, -0.12vi + 1.09rem, 1rem);
@@ -89,7 +88,6 @@
   --font-size-3xl: clamp(1.5rem, 1.2vi + 1.2rem, 2.16rem);
   --font-size-4xl: clamp(2.06rem, 1.29vi + 1.74rem, 2.76rem);
   --font-size-code: clamp(0.88rem, 0.11vi + 0.85rem, 0.94rem);
-
   --font-xs: 400 var(--font-size-xs) / 1.65 var(--font-family-base);
   --font-s: 400 var(--font-size-s) / 1.75 var(--font-family-base);
   --font-m: 400 var(--font-size-m) / 1.75 var(--font-family-base);

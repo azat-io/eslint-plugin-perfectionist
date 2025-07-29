@@ -128,16 +128,16 @@
       background: var(--color-overlay-brand);
       box-shadow: 0 0 0 3px var(--color-border-brand);
     }
-  }
 
-  .tab:first-child {
-    border-inline-start: 1px solid var(--color-border-primary);
-    border-start-start-radius: var(--border-radius);
-  }
+    &:first-child {
+      border-inline-start: 1px solid var(--color-border-primary);
+      border-start-start-radius: var(--border-radius);
+    }
 
-  .tab:last-child {
-    border-inline-end: 1px solid var(--color-border-primary);
-    border-start-end-radius: var(--border-radius);
+    &:last-child {
+      border-inline-end: 1px solid var(--color-border-primary);
+      border-start-end-radius: var(--border-radius);
+    }
   }
 
   .active-tab {
@@ -149,10 +149,10 @@
   .code-wrapper {
     position: relative;
     margin-block-end: var(--space-m);
-  }
 
-  .code-wrapper :global(.code) {
-    border-start-start-radius: 0;
+    & :global(.code) {
+      border-start-start-radius: 0;
+    }
   }
 
   .copy-button {

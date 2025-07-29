@@ -41,7 +41,7 @@
   }
 
   .button-primary {
-    color: oklch(100% 0 0);
+    color: oklch(100% 0 0deg);
     background: var(--color-background-brand);
 
     &:focus-visible {
