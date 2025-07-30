@@ -9,9 +9,7 @@ interface Character {
   value: string
 }
 
-/**
- * Utility class to build alphabets
- */
+/** Utility class to build alphabets */
 export class Alphabet {
   private _characters: Character[] = []
 
@@ -21,7 +19,9 @@ export class Alphabet {
 
   /**
    * Generates an alphabet from the given characters.
-   * @param {string|string[]} values - The characters to generate the alphabet from
+   *
+   * @param {string | string[]} values - The characters to generate the alphabet
+   *   from
    * @returns {Alphabet} - The wrapped alphabet
    */
   public static generateFrom(values: string[] | string): Alphabet {
@@ -42,6 +42,7 @@ export class Alphabet {
   /**
    * Generates an alphabet containing relevant characters from the Unicode
    * standard. Contains the Unicode planes 0 and 1.
+   *
    * @returns {Alphabet} - The generated alphabet
    */
   public static generateRecommendedAlphabet(): Alphabet {
@@ -50,8 +51,9 @@ export class Alphabet {
 
   /**
    * Generates an alphabet containing all characters from the Unicode standard
-   * except for irrelevant Unicode planes.
-   * Contains the Unicode planes 0, 1, 2 and 3.
+   * except for irrelevant Unicode planes. Contains the Unicode planes 0, 1, 2
+   * and 3.
+   *
    * @returns {Alphabet} - The generated alphabet
    */
   public static generateCompleteAlphabet(): Alphabet {
@@ -81,8 +83,9 @@ export class Alphabet {
   /**
    * Generates an alphabet containing relevant characters from the Unicode
    * standard.
+   *
    * @param {number} maxCodePoint - The maximum code point to generate the
-   * alphabet to
+   *   alphabet to
    * @returns {Alphabet} - The generated alphabet
    */
   private static _generateAlphabetToRange(maxCodePoint: number): Alphabet {
@@ -94,13 +97,14 @@ export class Alphabet {
   }
 
   /**
-   * For each character with a lower and upper case, permutes the two cases
-   * so that the alphabet is ordered by the case priority entered.
+   * For each character with a lower and upper case, permutes the two cases so
+   * that the alphabet is ordered by the case priority entered.
+   *
+   * @example
+   *   Alphabet.generateFrom('aAbBcdCD').prioritizeCase('uppercase') // Returns 'AaBbCDcd'.
+   *
    * @param {string} casePriority - The case to prioritize
    * @returns {Alphabet} - The same alphabet instance with the cases prioritized
-   * @example
-   * Alphabet.generateFrom('aAbBcdCD')
-   * .prioritizeCase('uppercase') // Returns 'AaBbCDcd'.
    */
   public prioritizeCase(casePriority: 'lowercase' | 'uppercase'): this {
     let charactersWithCase = this._getCharactersWithCase()
@@ -151,13 +155,14 @@ export class Alphabet {
 
   /**
    * Adds specific characters to the end of the alphabet.
-   * @param {string|string[]} values - The characters to push to the alphabet
-   * @returns {Alphabet} - The same alphabet instance without the specified
-   * characters
+   *
    * @example
-   * Alphabet.generateFrom('ab')
-   * .pushCharacters('cd')
-   * // Returns 'abcd'
+   *   Alphabet.generateFrom('ab').pushCharacters('cd')
+   *   // Returns 'abcd'
+   *
+   * @param {string | string[]} values - The characters to push to the alphabet
+   * @returns {Alphabet} - The same alphabet instance without the specified
+   *   characters
    */
   public pushCharacters(values: string[] | string): this {
     let arrayValues = typeof values === 'string' ? [...values] : values
@@ -187,10 +192,11 @@ export class Alphabet {
   /**
    * Permutes characters with cases so that all characters with the entered case
    * are put before the other characters.
+   *
    * @param {string} caseToComeFirst - The case to put before the other
-   * characters
+   *   characters
    * @returns {Alphabet} - The same alphabet instance with all characters with
-   * case before all the characters with the other case
+   *   case before all the characters with the other case
    */
   public placeAllWithCaseBeforeAllWithOtherCase(
     caseToComeFirst: 'uppercase' | 'lowercase',
@@ -216,16 +222,20 @@ export class Alphabet {
 
   /**
    * Places a specific character right before another character in the alphabet.
+   *
+   * @example
+   *   Alphabet.generateFrom('ab-cd/').placeCharacterBefore({
+   *     characterBefore: '/',
+   *     characterAfter: '-',
+   *   })
+   *   // Returns 'ab/-cd'
+   *
    * @param {object} params - The parameters for the operation
    * @param {string} params.characterBefore - The character to come before
-   * characterAfter
+   *   characterAfter
    * @param {string} params.characterAfter - The target character
    * @returns {Alphabet} - The same alphabet instance with the specific
-   * character prioritized
-   * @example
-   * Alphabet.generateFrom('ab-cd/')
-   * .placeCharacterBefore({ characterBefore: '/', characterAfter: '-' })
-   * // Returns 'ab/-cd'
+   *   character prioritized
    */
   public placeCharacterBefore({
     characterBefore,
@@ -243,16 +253,20 @@ export class Alphabet {
 
   /**
    * Places a specific character right after another character in the alphabet.
+   *
+   * @example
+   *   Alphabet.generateFrom('ab-cd/').placeCharacterAfter({
+   *     characterBefore: '/',
+   *     characterAfter: '-',
+   *   })
+   *   // Returns 'abcd/-'
+   *
    * @param {object} params - The parameters for the operation
    * @param {string} params.characterBefore - The target character
    * @param {string} params.characterAfter - The character to come after
-   * characterBefore
+   *   characterBefore
    * @returns {Alphabet} - The same alphabet instance with the specific
-   * character prioritized
-   * @example
-   * Alphabet.generateFrom('ab-cd/')
-   * .placeCharacterAfter({ characterBefore: '/', characterAfter: '-' })
-   * // Returns 'abcd/-'
+   *   character prioritized
    */
   public placeCharacterAfter({
     characterBefore,
@@ -270,11 +284,12 @@ export class Alphabet {
 
   /**
    * Removes specific characters from the alphabet by their range.
+   *
    * @param {object} range - The Unicode range to remove characters from
    * @param {number} range.start - The starting Unicode codepoint
    * @param {number} range.end - The ending Unicode codepoint
    * @returns {Alphabet} - The same alphabet instance without the characters
-   * from the specified range
+   *   from the specified range
    */
   public removeUnicodeRange({
     start,
@@ -291,8 +306,10 @@ export class Alphabet {
 
   /**
    * Sorts the alphabet by the sorting function provided.
+   *
    * @param {Function} sortingFunction - The sorting function to use
-   * @returns {Alphabet} - The same alphabet instance sorted by the sorting function provided
+   * @returns {Alphabet} - The same alphabet instance sorted by the sorting
+   *   function provided
    */
   public sortBy(
     sortingFunction: (characterA: string, characterB: string) => number,
@@ -303,14 +320,15 @@ export class Alphabet {
 
   /**
    * Removes specific characters from the alphabet.
-   * @param {string|string[]} values - The characters to remove from the
-   * alphabet
-   * @returns {Alphabet} - The same alphabet instance without the specified
-   * characters
+   *
    * @example
-   * Alphabet.generateFrom('abcd')
-   * .removeCharacters('dcc')
-   * // Returns 'ab'
+   *   Alphabet.generateFrom('abcd').removeCharacters('dcc')
+   *   // Returns 'ab'
+   *
+   * @param {string | string[]} values - The characters to remove from the
+   *   alphabet
+   * @returns {Alphabet} - The same alphabet instance without the specified
+   *   characters
    */
   public removeCharacters(values: string[] | string): this {
     this._characters = this._characters.filter(
@@ -322,9 +340,10 @@ export class Alphabet {
   /**
    * Sorts the alphabet by the natural order of the characters using
    * `natural-orderby`.
+   *
    * @param {string} locale - The locale to use for sorting
    * @returns {Alphabet} - The same alphabet instance sorted by the natural
-   * order of the characters
+   *   order of the characters
    */
   public sortByNaturalSort(locale?: string): this {
     let naturalCompare = createNaturalCompare({
@@ -335,8 +354,9 @@ export class Alphabet {
 
   /**
    * Sorts the alphabet by the character code point.
+   *
    * @returns {Alphabet} - The same alphabet instance sorted by the character
-   * code point
+   *   code point
    */
   public sortByCharCodeAt(): this {
     return this.sortBy((a, b) =>
@@ -346,9 +366,10 @@ export class Alphabet {
 
   /**
    * Sorts the alphabet by the locale order of the characters.
+   *
    * @param {Intl.LocalesArgument} locales - The locales to use for sorting
-   * @returns {Alphabet} - The same alphabet instance sorted by the locale
-   * order of the characters
+   * @returns {Alphabet} - The same alphabet instance sorted by the locale order
+   *   of the characters
    */
   public sortByLocaleCompare(locales?: Intl.LocalesArgument): this {
     return this.sortBy((a, b) => a.localeCompare(b, locales))
@@ -356,6 +377,7 @@ export class Alphabet {
 
   /**
    * Retrieves the characters from the alphabet.
+   *
    * @returns {string} The characters from the alphabet
    */
   public getCharacters(): string {

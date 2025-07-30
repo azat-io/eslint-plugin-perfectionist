@@ -5,8 +5,10 @@ import { isCommentAboveOption } from './is-comment-above-option'
 
 /**
  * Throws an error if a group is specified more than once
+ *
  * @param {object} parameters - Parameters object.
- * @param {GroupsOptions} parameters.groups - The groups to check for duplicates.
+ * @param {GroupsOptions} parameters.groups - The groups to check for
+ *   duplicates.
  * @throws Error Will throw an error if duplicated groups are found.
  */
 export function validateNoDuplicatedGroups({

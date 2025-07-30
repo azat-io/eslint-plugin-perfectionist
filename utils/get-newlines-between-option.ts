@@ -19,17 +19,19 @@ export interface GetNewlinesBetweenOptionParameters {
 }
 
 /**
- * Get the `newlinesBetween` option to use between two consecutive nodes.
- * The result is based on the global `newlinesBetween` option and the custom
- * groups, which can override the global option.
- * - If the two nodes are in the same custom group, the `newlinesInside` option
- * of the group is used.
+ * Get the `newlinesBetween` option to use between two consecutive nodes. The
+ * result is based on the global `newlinesBetween` option and the custom groups,
+ * which can override the global option.
+ *
+ * - If the two nodes are in the same custom group, the `newlinesInside` option of
+ *   the group is used.
+ *
  * @param {GetNewlinesBetweenOptionParameters} props - The function arguments
  * @param {number} props.nextNodeGroupIndex - The next node index to sort
  * @param {number} props.nodeGroupIndex - The current node index to sort
- * @param {GetNewlinesBetweenOptionParameters['options']} props.options - Newlines between related options
- * @returns {NewlinesBetweenOption} - The `newlinesBetween` option to
- * use
+ * @param {GetNewlinesBetweenOptionParameters['options']} props.options -
+ *   Newlines between related options
+ * @returns {NewlinesBetweenOption} - The `newlinesBetween` option to use
  */
 export function getNewlinesBetweenOption({
   nextNodeGroupIndex,

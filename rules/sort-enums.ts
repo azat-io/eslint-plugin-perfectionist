@@ -392,8 +392,8 @@ function computeOptionType({
   isNumericEnum: boolean
 }): TypeOption {
   /**
-   * If the enum is numeric, and we sort by value, always use the
-   * `natural` sort type, which will correctly sort them.
+   * If the enum is numeric, and we sort by value, always use the `natural` sort
+   * type, which will correctly sort them.
    */
   return isNumericEnum && (options.forceNumericSort || options.sortByValue)
     ? 'natural'

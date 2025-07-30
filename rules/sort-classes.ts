@@ -52,9 +52,7 @@ import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
-/**
- * Cache computed groups by modifiers and selectors for performance
- */
+/** Cache computed groups by modifiers and selectors for performance */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 type MESSAGE_ID =
@@ -139,8 +137,8 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         return `${props.isStatic ? 'static ' : ''}${props.isPrivateHash ? '#' : ''}${props.nodeNameWithoutStartingHash}`
       }
       /**
-       * Class methods should not be considered as dependencies
-       * because they can be put in any order without causing a reference error.
+       * Class methods should not be considered as dependencies because they can
+       * be put in any order without causing a reference error.
        */
       let classMethodsDependencyNames = new Set(
         node.body
@@ -335,9 +333,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             case 'TSAbstractPropertyDefinition':
             case 'PropertyDefinition':
               /**
-               * Member is necessarily a property similarly to above for methods,
-               * prioritize 'static', 'declare', 'decorated', 'abstract',
-               * 'override' and 'readonly' over accessibility modifiers.
+               * Member is necessarily a property similarly to above for
+               * methods, prioritize 'static', 'declare', 'decorated',
+               * 'abstract', 'override' and 'readonly' over accessibility
+               * modifiers.
                */
               if ('static' in member && member.static) {
                 modifiers.push('static')
@@ -401,11 +400,10 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
             case 'TSAbstractMethodDefinition':
             case 'MethodDefinition':
               /**
-               * By putting the static modifier before accessibility modifiers, we
-               * prioritize 'static' over those in cases like:
-               * config: ['static-method', 'public-method']
-               * element: public static method();
-               * Element will be classified as 'static-method' before
+               * By putting the static modifier before accessibility modifiers,
+               * we prioritize 'static' over those in cases like: config:
+               * ['static-method', 'public-method'] element: public static
+               * method(); Element will be classified as 'static-method' before
                * 'public-method'.
                */
               if (member.static) {

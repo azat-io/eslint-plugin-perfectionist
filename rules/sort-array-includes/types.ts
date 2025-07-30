@@ -19,9 +19,7 @@ export type Options = Partial<
     useConfigurationIf: {
       allNamesMatchPattern?: RegexOption
     }
-    /**
-     * @deprecated for {@link `groups`}
-     */
+    /** @deprecated For {@link `groups`} */
     groupKind: 'literals-first' | 'spreads-first' | 'mixed'
     customGroups: CustomGroupsOption<SingleCustomGroup>
     partitionByComment: PartitionByCommentOption

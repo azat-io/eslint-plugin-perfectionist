@@ -23,10 +23,11 @@ interface OverridableOptions {
  * Retrieves the compare options used to sort a given group. If the group is a
  * custom group, its options will be favored over the default options. Returns
  * `null` if the group should not be sorted.
- * @param {GroupRelatedOptions & OverridableOptions} options - The sorting options, including groups and
- * custom groups.
+ *
+ * @param {GroupRelatedOptions & OverridableOptions} options - The sorting
+ *   options, including groups and custom groups.
  * @param {number} groupIndex - The index of the group to retrieve compare
- * options for.
+ *   options for.
  * @returns {object} The options for the group
  */
 export function getCustomGroupsCompareOptions(

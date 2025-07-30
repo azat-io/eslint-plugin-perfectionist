@@ -35,7 +35,8 @@ export type Options = Partial<
     ignorePattern: RegexOption
     styledComponents: boolean
     /**
-     * @deprecated for {@link `destructuredObjects`} and {@link `objectDeclarations`}
+     * @deprecated For {@link `destructuredObjects`} and
+     *   {@link `objectDeclarations`}
      */
     destructureOnly: boolean
   } & CommonOptions
@@ -59,9 +60,7 @@ export type Selector =
 
 export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
 
-/**
- * Only used in code as well
- */
+/** Only used in code as well */
 interface AllowedModifiersPerSelector {
   property: MultilineModifier | OptionalModifier | RequiredModifier
   member: MultilineModifier | OptionalModifier | RequiredModifier
@@ -87,9 +86,7 @@ type MethodGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineModifier, MethodSelector]
 >
 
-/**
- * Only used in code, so I don't know if it's worth maintaining this.
- */
+/** Only used in code, so I don't know if it's worth maintaining this. */
 type Group =
   | MultilineGroup
   | PropertyGroup
@@ -98,16 +95,12 @@ type Group =
   | 'unknown'
   | string
 
-/**
- * @deprecated For {@link `MultilineModifier`}
- */
+/** @deprecated For {@link `MultilineModifier`} */
 type MultilineGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineSelector]
 >
 
-/**
- * @deprecated For {@link `MultilineModifier`}
- */
+/** @deprecated For {@link `MultilineModifier`} */
 type MultilineSelector = 'multiline'
 
 type MultilineModifier = 'multiline'
@@ -132,8 +125,8 @@ export let allSelectors: Selector[] = [
 export let allModifiers: Modifier[] = ['optional', 'required', 'multiline']
 
 /**
- * Ideally, we should generate as many schemas as there are selectors, and ensure
- * that users do not enter invalid modifiers for a given selector
+ * Ideally, we should generate as many schemas as there are selectors, and
+ * ensure that users do not enter invalid modifiers for a given selector
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
