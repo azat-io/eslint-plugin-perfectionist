@@ -2,11 +2,11 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNode } from '../types/sorting-node'
 
-export let getLinesBetween = (
+export function getLinesBetween(
   source: TSESLint.SourceCode,
   left: Pick<SortingNode, 'node'>,
   right: Pick<SortingNode, 'node'>,
-): number => {
+): number {
   let linesBetween = source.lines.slice(
     left.node.loc.end.line,
     right.node.loc.start.line - 1,

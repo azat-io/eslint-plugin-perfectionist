@@ -152,12 +152,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let shouldRegroupSideEffectNodes = flatGroups.has('side-effect')
     let shouldRegroupSideEffectStyleNodes = flatGroups.has('side-effect-style')
 
-    let registerNode = (
+    function registerNode(
       node:
         | TSESTree.TSImportEqualsDeclaration
         | TSESTree.VariableDeclaration
         | TSESTree.ImportDeclaration,
-    ): void => {
+    ): void {
       let name = getNodeName({
         sourceCode,
         node,
@@ -345,58 +345,62 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
 
         for (let sortingNodeGroups of contentSeparatedSortingNodeGroups) {
-          let sortNodesExcludingEslintDisabled = (
-            ignoreEslintDisabledNodes: boolean,
-          ): SortImportsSortingNode[] => {
-            let nodesSortedByGroups = sortingNodeGroups.flatMap(nodes =>
-              sortNodesByGroups({
-                getOptionsByGroupIndex: groupIndex => {
-                  let customGroupOverriddenOptions =
-                    getCustomGroupOverriddenOptions({
-                      options: {
-                        ...options,
-                        customGroups: Array.isArray(options.customGroups)
-                          ? options.customGroups
-                          : [],
-                      },
-                      groupIndex,
-                    })
+          function createSortNodesExcludingEslintDisabled(
+            nodeGroups: SortImportsSortingNode[][],
+          ) {
+            return function (
+              ignoreEslintDisabledNodes: boolean,
+            ): SortImportsSortingNode[] {
+              let nodesSortedByGroups = nodeGroups.flatMap(nodes =>
+                sortNodesByGroups({
+                  getOptionsByGroupIndex: groupIndex => {
+                    let customGroupOverriddenOptions =
+                      getCustomGroupOverriddenOptions({
+                        options: {
+                          ...options,
+                          customGroups: Array.isArray(options.customGroups)
+                            ? options.customGroups
+                            : [],
+                        },
+                        groupIndex,
+                      })
 
-                  if (options.sortSideEffects) {
+                    if (options.sortSideEffects) {
+                      return {
+                        options: {
+                          ...options,
+                          ...customGroupOverriddenOptions,
+                        },
+                      }
+                    }
+                    let overriddenOptions = {
+                      ...options,
+                      ...customGroupOverriddenOptions,
+                    }
                     return {
                       options: {
-                        ...options,
-                        ...customGroupOverriddenOptions,
+                        ...overriddenOptions,
+                        type:
+                          overriddenOptions.groups[groupIndex] &&
+                          isSideEffectOnlyGroup(
+                            overriddenOptions.groups[groupIndex],
+                          )
+                            ? 'unsorted'
+                            : overriddenOptions.type,
                       },
                     }
-                  }
-                  let overriddenOptions = {
-                    ...options,
-                    ...customGroupOverriddenOptions,
-                  }
-                  return {
-                    options: {
-                      ...overriddenOptions,
-                      type:
-                        overriddenOptions.groups[groupIndex] &&
-                        isSideEffectOnlyGroup(
-                          overriddenOptions.groups[groupIndex],
-                        )
-                          ? 'unsorted'
-                          : overriddenOptions.type,
-                    },
-                  }
-                },
-                isNodeIgnored: node => node.isIgnored,
-                ignoreEslintDisabledNodes,
-                groups: options.groups,
-                nodes,
-              }),
-            )
+                  },
+                  isNodeIgnored: node => node.isIgnored,
+                  ignoreEslintDisabledNodes,
+                  groups: options.groups,
+                  nodes,
+                }),
+              )
 
-            return sortNodesByDependencies(nodesSortedByGroups, {
-              ignoreEslintDisabledNodes,
-            })
+              return sortNodesByDependencies(nodesSortedByGroups, {
+                ignoreEslintDisabledNodes,
+              })
+            }
           }
 
           let nodes = sortingNodeGroups.flat()
@@ -416,7 +420,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
                 ? options.customGroups
                 : [],
             },
-            sortNodesExcludingEslintDisabled,
+            sortNodesExcludingEslintDisabled:
+              createSortNodesExcludingEslintDisabled(sortingNodeGroups),
             sourceCode,
             context,
             nodes,
@@ -530,16 +535,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-imports',
 })
 
-let hasContentBetweenNodes = (
-  sourceCode: TSESLint.SourceCode,
-  left: Pick<SortImportsSortingNode, 'node'>,
-  right: Pick<SortImportsSortingNode, 'node'>,
-): boolean =>
-  sourceCode.getTokensBetween(left.node, right.node, {
-    includeComments: false,
-  }).length > 0
-
-let hasSpecifier = (
+function hasSpecifier(
   node:
     | TSESTree.TSImportEqualsDeclaration
     | TSESTree.VariableDeclaration
@@ -548,9 +544,24 @@ let hasSpecifier = (
     | 'ImportNamespaceSpecifier'
     | 'ImportDefaultSpecifier'
     | 'ImportSpecifier',
-): boolean =>
-  node.type === 'ImportDeclaration' &&
-  node.specifiers.some(nodeSpecifier => nodeSpecifier.type === specifier)
+): boolean {
+  return (
+    node.type === 'ImportDeclaration' &&
+    node.specifiers.some(nodeSpecifier => nodeSpecifier.type === specifier)
+  )
+}
+
+function hasContentBetweenNodes(
+  sourceCode: TSESLint.SourceCode,
+  left: Pick<SortImportsSortingNode, 'node'>,
+  right: Pick<SortImportsSortingNode, 'node'>,
+): boolean {
+  return (
+    sourceCode.getTokensBetween(left.node, right.node, {
+      includeComments: false,
+    }).length > 0
+  )
+}
 
 let styleExtensions = [
   '.less',
@@ -561,54 +572,7 @@ let styleExtensions = [
   '.css',
   '.sss',
 ]
-let isStyle = (value: string): boolean => {
-  let [cleanedValue] = value.split('?')
-  return styleExtensions.some(extension => cleanedValue?.endsWith(extension))
-}
-
-let isSideEffectImport = ({
-  sourceCode,
-  node,
-}: {
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration
-  sourceCode: TSESLint.SourceCode
-}): boolean =>
-  node.type === 'ImportDeclaration' &&
-  node.specifiers.length === 0 &&
-  /* Avoid matching on named imports without specifiers */
-  !/\}\s*from\s+/u.test(sourceCode.getText(node))
-
-let getNodeName = ({
-  sourceCode,
-  node,
-}: {
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration
-  sourceCode: TSESLint.SourceCode
-}): string => {
-  if (node.type === 'ImportDeclaration') {
-    return node.source.value
-  }
-
-  if (node.type === 'TSImportEqualsDeclaration') {
-    if (node.moduleReference.type === 'TSExternalModuleReference') {
-      return node.moduleReference.expression.value
-    }
-
-    return sourceCode.getText(node.moduleReference)
-  }
-
-  let callExpression = node.declarations[0].init as TSESTree.CallExpression
-  let { value } = callExpression.arguments[0] as TSESTree.Literal
-  return value!.toString()
-}
-
-let computeGroupExceptUnknown = ({
+function computeGroupExceptUnknown({
   customGroups,
   selectors,
   modifiers,
@@ -623,7 +587,7 @@ let computeGroupExceptUnknown = ({
   selectors?: Selector[]
   modifiers?: Modifier[]
   name: string
-}): string | null => {
+}): string | null {
   let predefinedGroups =
     modifiers && selectors
       ? generatePredefinedGroups({
@@ -653,40 +617,7 @@ let computeGroupExceptUnknown = ({
   return computedCustomGroup
 }
 
-let computeDependencies = (
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration,
-): string[] => {
-  if (node.type !== 'TSImportEqualsDeclaration') {
-    return []
-  }
-  if (node.moduleReference.type !== 'TSQualifiedName') {
-    return []
-  }
-  let qualifiedName = getQualifiedNameDependencyName(node.moduleReference)
-  /* v8 ignore next 3 - Unsure how we can reach that case */
-  if (!qualifiedName) {
-    return []
-  }
-  return [qualifiedName]
-}
-
-let getQualifiedNameDependencyName = (
-  node: TSESTree.EntityName,
-): string | null => {
-  switch (node.type) {
-    case 'TSQualifiedName':
-      return getQualifiedNameDependencyName(node.left)
-    case 'Identifier':
-      return node.name
-    /* v8 ignore next 3 - Unsure how we can reach that case */
-  }
-  return null
-}
-
-let computeDependencyNames = ({
+function computeDependencyNames({
   sourceCode,
   node,
 }: {
@@ -695,7 +626,7 @@ let computeDependencyNames = ({
     | TSESTree.VariableDeclaration
     | TSESTree.ImportDeclaration
   sourceCode: TSESLint.SourceCode
-}): string[] => {
+}): string[] {
   if (node.type === 'VariableDeclaration') {
     return []
   }
@@ -721,15 +652,98 @@ let computeDependencyNames = ({
   return returnValue
 }
 
-let isNonExternalReferenceTsImportEquals = (
+function getNodeName({
+  sourceCode,
+  node,
+}: {
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration
+  sourceCode: TSESLint.SourceCode
+}): string {
+  if (node.type === 'ImportDeclaration') {
+    return node.source.value
+  }
+
+  if (node.type === 'TSImportEqualsDeclaration') {
+    if (node.moduleReference.type === 'TSExternalModuleReference') {
+      return node.moduleReference.expression.value
+    }
+
+    return sourceCode.getText(node.moduleReference)
+  }
+
+  let callExpression = node.declarations[0].init as TSESTree.CallExpression
+  let { value } = callExpression.arguments[0] as TSESTree.Literal
+  return value!.toString()
+}
+
+function computeDependencies(
   node:
     | TSESTree.TSImportEqualsDeclaration
     | TSESTree.VariableDeclaration
     | TSESTree.ImportDeclaration,
-): node is TSESTree.TSImportEqualsDeclaration => {
+): string[] {
+  if (node.type !== 'TSImportEqualsDeclaration') {
+    return []
+  }
+  if (node.moduleReference.type !== 'TSQualifiedName') {
+    return []
+  }
+  let qualifiedName = getQualifiedNameDependencyName(node.moduleReference)
+  /* v8 ignore next 3 - Unsure how we can reach that case */
+  if (!qualifiedName) {
+    return []
+  }
+  return [qualifiedName]
+}
+
+function isSideEffectImport({
+  sourceCode,
+  node,
+}: {
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration
+  sourceCode: TSESLint.SourceCode
+}): boolean {
+  return (
+    node.type === 'ImportDeclaration' &&
+    node.specifiers.length === 0 &&
+    /* Avoid matching on named imports without specifiers */
+    !/\}\s*from\s+/u.test(sourceCode.getText(node))
+  )
+}
+
+function isNonExternalReferenceTsImportEquals(
+  node:
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration,
+): node is TSESTree.TSImportEqualsDeclaration {
   if (node.type !== 'TSImportEqualsDeclaration') {
     return false
   }
 
   return node.moduleReference.type !== 'TSExternalModuleReference'
+}
+
+function getQualifiedNameDependencyName(
+  node: TSESTree.EntityName,
+): string | null {
+  switch (node.type) {
+    case 'TSQualifiedName':
+      return getQualifiedNameDependencyName(node.left)
+    case 'Identifier':
+      return node.name
+    /* v8 ignore next 3 - Unsure how we can reach that case */
+  }
+  return null
+}
+
+function isStyle(value: string): boolean {
+  let [cleanedValue] = value.split('?')
+  return styleExtensions.some(extension => cleanedValue?.endsWith(extension))
 }

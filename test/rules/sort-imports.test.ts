@@ -7857,11 +7857,11 @@ describe(ruleName, () => {
     })
 
     describe(`${ruleName}: checks compatibility between 'sortSideEffects' and 'groups'`, () => {
-      let createRule = (
+      function createRule(
         groups: Options[0]['groups'],
         sortSideEffects: boolean = false,
-      ): RuleListener =>
-        rule.create({
+      ): RuleListener {
+        return rule.create({
           options: [
             {
               sortSideEffects,
@@ -7869,6 +7869,7 @@ describe(ruleName, () => {
             },
           ],
         } as Readonly<RuleContext<MESSAGE_ID, Options>>)
+      }
       let expectedThrownError =
         "Side effect groups cannot be nested with non side effect groups when 'sortSideEffects' is 'false'."
 
@@ -8498,9 +8499,9 @@ describe(ruleName, () => {
     )
   })
 
-  let mockReadClosestTsConfigByPathWith = (
+  function mockReadClosestTsConfigByPathWith(
     compilerOptions: CompilerOptions,
-  ): void => {
+  ): void {
     vi.spyOn(
       readClosestTsConfigUtilities,
       'readClosestTsConfigByPath',

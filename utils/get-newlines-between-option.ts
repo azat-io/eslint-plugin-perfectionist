@@ -31,11 +31,11 @@ export interface GetNewlinesBetweenOptionParameters {
  * @returns {NewlinesBetweenOption} - The `newlinesBetween` option to
  * use
  */
-export let getNewlinesBetweenOption = ({
+export function getNewlinesBetweenOption({
   nextNodeGroupIndex,
   nodeGroupIndex,
   options,
-}: GetNewlinesBetweenOptionParameters): 'ignore' | number => {
+}: GetNewlinesBetweenOptionParameters): 'ignore' | number {
   let globalNewlinesBetweenOption = getGlobalNewlinesBetweenOption({
     newlinesBetween: options.newlinesBetween,
     nextNodeGroupIndex,
@@ -120,31 +120,10 @@ export let getNewlinesBetweenOption = ({
   return globalNewlinesBetweenOption
 }
 
-let getGlobalNewlinesBetweenOption = ({
-  nextNodeGroupIndex,
-  newlinesBetween,
-  nodeGroupIndex,
-}: {
-  newlinesBetween: NewlinesBetweenOption
-  nextNodeGroupIndex: number
-  nodeGroupIndex: number
-}): 'ignore' | number => {
-  let numberNewlinesBetween =
-    convertNewlinesBetweenOptionToNumber(newlinesBetween)
-
-  if (numberNewlinesBetween === 'ignore') {
-    return 'ignore'
-  }
-  if (nodeGroupIndex === nextNodeGroupIndex) {
-    return 0
-  }
-  return numberNewlinesBetween
-}
-
-let buildGroupsWithAllNewlinesBetween = (
+function buildGroupsWithAllNewlinesBetween(
   groups: GroupsOptions<string>,
   globalNewlinesBetweenOption: 'ignore' | number,
-): GroupsOptions<string> => {
+): GroupsOptions<string> {
   let returnValue: GroupsOptions<string> = []
   for (let i = 0; i < groups.length; i++) {
     let group = groups[i]!
@@ -163,9 +142,30 @@ let buildGroupsWithAllNewlinesBetween = (
   return returnValue
 }
 
-let convertNewlinesBetweenOptionToNumber = (
+function getGlobalNewlinesBetweenOption({
+  nextNodeGroupIndex,
+  newlinesBetween,
+  nodeGroupIndex,
+}: {
+  newlinesBetween: NewlinesBetweenOption
+  nextNodeGroupIndex: number
+  nodeGroupIndex: number
+}): 'ignore' | number {
+  let numberNewlinesBetween =
+    convertNewlinesBetweenOptionToNumber(newlinesBetween)
+
+  if (numberNewlinesBetween === 'ignore') {
+    return 'ignore'
+  }
+  if (nodeGroupIndex === nextNodeGroupIndex) {
+    return 0
+  }
+  return numberNewlinesBetween
+}
+
+function convertNewlinesBetweenOptionToNumber(
   newlinesBetween: NewlinesBetweenOption,
-): 'ignore' | number => {
+): 'ignore' | number {
   if (typeof newlinesBetween === 'number') {
     return newlinesBetween
   }

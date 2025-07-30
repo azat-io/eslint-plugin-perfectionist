@@ -8,12 +8,12 @@ interface MakeSingleNodeCommentAfterFixesParameters {
   fixer: TSESLint.RuleFixer
 }
 
-export let makeSingleNodeCommentAfterFixes = ({
+export function makeSingleNodeCommentAfterFixes({
   sortedNode,
   sourceCode,
   fixer,
   node,
-}: MakeSingleNodeCommentAfterFixesParameters): TSESLint.RuleFix[] => {
+}: MakeSingleNodeCommentAfterFixesParameters): TSESLint.RuleFix[] {
   let commentAfter = getCommentAfter(sortedNode, sourceCode)
   let areNodesOnSameLine = node.loc.start.line === sortedNode.loc.end.line
   if (!commentAfter || areNodesOnSameLine) {
@@ -43,10 +43,10 @@ export let makeSingleNodeCommentAfterFixes = ({
   return fixes
 }
 
-let getCommentAfter = (
+function getCommentAfter(
   node: TSESTree.Token | TSESTree.Node,
   source: TSESLint.SourceCode,
-): TSESTree.Comment | null => {
+): TSESTree.Comment | null {
   let token = source.getTokenAfter(node, {
     filter: ({ value, type }) =>
       type !== 'Punctuator' || ![',', ';', ':'].includes(value),

@@ -41,7 +41,7 @@ describe('getTypescriptImport', () => {
     let result = getTypescriptImport()
 
     expect(result).toBeNull()
-    expect(mockCreateRequire).toHaveBeenCalledTimes(1)
+    expect(mockCreateRequire).toHaveBeenCalledOnce()
   })
 
   it('loads typescript once if typescript exists', () => {
@@ -51,6 +51,6 @@ describe('getTypescriptImport', () => {
     let result = getTypescriptImport()
 
     expect(result).toEqual(ts)
-    expect(mockCreateRequire).toHaveBeenCalledTimes(1)
+    expect(mockCreateRequire).toHaveBeenCalledOnce()
   })
 })

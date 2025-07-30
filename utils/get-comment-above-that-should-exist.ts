@@ -21,7 +21,7 @@ interface GetCommentAboveMissingParameters<T extends SortingNode> {
   sortingNode: T
 }
 
-export let getCommentAboveThatShouldExist = <T extends SortingNode>({
+export function getCommentAboveThatShouldExist<T extends SortingNode>({
   rightGroupIndex,
   leftGroupIndex,
   sortingNode,
@@ -30,7 +30,7 @@ export let getCommentAboveThatShouldExist = <T extends SortingNode>({
 }: GetCommentAboveMissingParameters<T>): {
   comment: string
   exists: boolean
-} | null => {
+} | null {
   if (leftGroupIndex !== null && leftGroupIndex >= rightGroupIndex) {
     return null
   }
@@ -52,5 +52,6 @@ export let getCommentAboveThatShouldExist = <T extends SortingNode>({
   }
 }
 
-let commentMatches = (comment: string, expected: string): boolean =>
-  comment.toLowerCase().includes(expected.toLowerCase().trim())
+function commentMatches(comment: string, expected: string): boolean {
+  return comment.toLowerCase().includes(expected.toLowerCase().trim())
+}

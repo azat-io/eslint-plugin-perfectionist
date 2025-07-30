@@ -2,7 +2,7 @@ import { ImageResponse } from '@vercel/og'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-export let openGraph = async (title: string): Promise<ImageResponse> => {
+export async function openGraph(title: string): Promise<ImageResponse> {
   let [inter, spaceGrotesk] = (await Promise.all(
     ['inter-regular', 'space-grotesk-bold'].map(
       async font =>

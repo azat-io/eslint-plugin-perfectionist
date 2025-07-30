@@ -20,7 +20,7 @@ type CommonSelector = Extract<
   | 'index'
 >
 
-export let computeCommonSelectors = ({
+export function computeCommonSelectors({
   tsConfigOutput,
   filename,
   options,
@@ -33,9 +33,10 @@ export let computeCommonSelectors = ({
   tsConfigOutput: ReadClosestTsConfigByPathValue | null
   filename: string
   name: string
-}): CommonSelector[] => {
-  let matchesInternalPattern = (value: string): boolean | number =>
-    options.internalPattern.some(pattern => matches(value, pattern))
+}): CommonSelector[] {
+  function matchesInternalPattern(value: string): boolean | number {
+    return options.internalPattern.some(pattern => matches(value, pattern))
+  }
 
   let internalExternalGroup = matchesInternalPattern(name)
     ? 'internal'
@@ -101,48 +102,7 @@ let bunModules = new Set([
 ])
 let nodeBuiltinModules = new Set(builtinModules)
 let builtinPrefixOnlyModules = new Set(['node:sqlite', 'node:test', 'node:sea'])
-let isCoreModule = (value: string, environment: 'node' | 'bun'): boolean => {
-  let clean = (string_: string): string =>
-    string_.replace(/^(?:node:){1,2}/u, '')
-  let [basePath] = value.split('/')
-
-  let cleanValue = clean(value)
-  let cleanBase = clean(basePath!)
-
-  if (nodeBuiltinModules.has(cleanValue) || nodeBuiltinModules.has(cleanBase)) {
-    return true
-  }
-
-  if (
-    builtinPrefixOnlyModules.has(value) ||
-    builtinPrefixOnlyModules.has(`node:${cleanValue}`) ||
-    builtinPrefixOnlyModules.has(basePath!) ||
-    builtinPrefixOnlyModules.has(`node:${cleanBase}`)
-  ) {
-    return true
-  }
-
-  return environment === 'bun' && bunModules.has(value)
-}
-
-let isParent = (value: string): boolean => value.startsWith('..')
-
-let isSibling = (value: string): boolean => value.startsWith('./')
-
-let isSubpath = (value: string): boolean => value.startsWith('#')
-
-let isIndex = (value: string): boolean =>
-  [
-    './index.d.js',
-    './index.d.ts',
-    './index.js',
-    './index.ts',
-    './index',
-    './',
-    '.',
-  ].includes(value)
-
-let getInternalOrExternalGroup = ({
+function getInternalOrExternalGroup({
   tsConfigOutput,
   filename,
   name,
@@ -150,7 +110,7 @@ let getInternalOrExternalGroup = ({
   tsConfigOutput: ReadClosestTsConfigByPathValue | null
   filename: string
   name: string
-}): 'internal' | 'external' | null => {
+}): 'internal' | 'external' | null {
   let typescriptImport = getTypescriptImport()
   if (!typescriptImport) {
     return !name.startsWith('.') && !name.startsWith('/') ? 'external' : null
@@ -179,4 +139,53 @@ let getInternalOrExternalGroup = ({
   return resolution.resolvedModule.isExternalLibraryImport
     ? 'external'
     : 'internal'
+}
+
+function isCoreModule(value: string, environment: 'node' | 'bun'): boolean {
+  function clean(string_: string): string {
+    return string_.replace(/^(?:node:){1,2}/u, '')
+  }
+  let [basePath] = value.split('/')
+
+  let cleanValue = clean(value)
+  let cleanBase = clean(basePath!)
+
+  if (nodeBuiltinModules.has(cleanValue) || nodeBuiltinModules.has(cleanBase)) {
+    return true
+  }
+
+  if (
+    builtinPrefixOnlyModules.has(value) ||
+    builtinPrefixOnlyModules.has(`node:${cleanValue}`) ||
+    builtinPrefixOnlyModules.has(basePath!) ||
+    builtinPrefixOnlyModules.has(`node:${cleanBase}`)
+  ) {
+    return true
+  }
+
+  return environment === 'bun' && bunModules.has(value)
+}
+
+function isIndex(value: string): boolean {
+  return [
+    './index.d.js',
+    './index.d.ts',
+    './index.js',
+    './index.ts',
+    './index',
+    './',
+    '.',
+  ].includes(value)
+}
+
+function isSibling(value: string): boolean {
+  return value.startsWith('./')
+}
+
+function isParent(value: string): boolean {
+  return value.startsWith('..')
+}
+
+function isSubpath(value: string): boolean {
+  return value.startsWith('#')
 }

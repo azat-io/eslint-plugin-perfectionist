@@ -2,7 +2,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 type NodeOfType<Type> = { type: Type } & TSESTree.Node
 
-export let getFirstNodeParentWithType = <
+export function getFirstNodeParentWithType<
   NodeType extends TSESTree.AST_NODE_TYPES,
 >({
   onlyFirstParent,
@@ -12,7 +12,7 @@ export let getFirstNodeParentWithType = <
   allowedTypes: NodeType[]
   onlyFirstParent: boolean
   node: TSESTree.Node
-}): NodeOfType<NodeType> | null => {
+}): NodeOfType<NodeType> | null {
   let { parent } = node
   if (onlyFirstParent) {
     return parent && (allowedTypes as string[]).includes(parent.type)

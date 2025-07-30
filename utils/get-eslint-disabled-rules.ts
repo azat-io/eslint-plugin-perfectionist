@@ -7,12 +7,10 @@ let eslintDisableDirectives = [
 
 export type EslintDisableDirective = (typeof eslintDisableDirectives)[number]
 
-export let getEslintDisabledRules = (
-  comment: string,
-): {
+export function getEslintDisabledRules(comment: string): {
   eslintDisableDirective: EslintDisableDirective
   rules: string[] | 'all'
-} | null => {
+} | null {
   for (let eslintDisableDirective of eslintDisableDirectives) {
     let disabledRules = getEslintDisabledRulesByType(
       comment,
@@ -28,10 +26,10 @@ export let getEslintDisabledRules = (
   return null
 }
 
-let getEslintDisabledRulesByType = (
+function getEslintDisabledRulesByType(
   comment: string,
   eslintDisableDirective: EslintDisableDirective,
-): string[] | 'all' | null => {
+): string[] | 'all' | null {
   let trimmedCommentValue = comment.trim()
   if (eslintDisableDirective === trimmedCommentValue) {
     return 'all' as const

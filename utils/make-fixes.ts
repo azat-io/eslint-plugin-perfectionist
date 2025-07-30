@@ -31,7 +31,7 @@ export interface MakeFixesParameters<T extends SortingNode> {
   nodes: T[]
 }
 
-export let makeFixes = <T extends SortingNode>({
+export function makeFixes<T extends SortingNode>({
   ignoreFirstNodeHighestBlockComment,
   newlinesBetweenValueGetter,
   hasCommentAboveMissing,
@@ -40,7 +40,7 @@ export let makeFixes = <T extends SortingNode>({
   options,
   fixer,
   nodes,
-}: MakeFixesParameters<T>): TSESLint.RuleFix[] => {
+}: MakeFixesParameters<T>): TSESLint.RuleFix[] {
   let orderFixes = makeOrderFixes({
     ignoreFirstNodeHighestBlockComment,
     sortedNodes,

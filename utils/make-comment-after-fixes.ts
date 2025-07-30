@@ -11,12 +11,12 @@ interface MakeCommentAfterFixesParameters {
   nodes: SortingNode[]
 }
 
-export let makeCommentAfterFixes = ({
+export function makeCommentAfterFixes({
   sortedNodes,
   sourceCode,
   fixer,
   nodes,
-}: MakeCommentAfterFixesParameters): TSESLint.RuleFix[] => {
+}: MakeCommentAfterFixesParameters): TSESLint.RuleFix[] {
   let fixes: TSESLint.RuleFix[] = []
   for (let max = nodes.length, i = 0; i < max; i++) {
     let sortingNode = nodes.at(i)!

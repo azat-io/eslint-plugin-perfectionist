@@ -27,7 +27,7 @@
 
   $: ({ highlighter, theme } = $shiki)
 
-  let copyCode = async (): Promise<void> => {
+  async function copyCode(): Promise<void> {
     let codeSource = code.find(
       ({ value }) => value === codeSettings.get()[type],
     )?.source

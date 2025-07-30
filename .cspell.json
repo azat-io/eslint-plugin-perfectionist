@@ -17,7 +17,6 @@
     "changelogen",
     "changelogithub",
     "crosspost",
-    "execa",
     "grotesk",
     "humanwhocodes",
     "joshuakgoldberg",
@@ -37,6 +36,7 @@
     "sonarjs",
     "specv",
     "styl",
+    "tinyexec",
     "tses",
     "undici",
     "vimrc"

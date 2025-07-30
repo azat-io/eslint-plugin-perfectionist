@@ -32,10 +32,11 @@ describe('matches-tsconfig-paths', () => {
     ).toBeFalsy()
   })
 
-  let createTsConfig = (paths: string[]): ReadClosestTsConfigByPathValue =>
-    ({
+  function createTsConfig(paths: string[]): ReadClosestTsConfigByPathValue {
+    return {
       compilerOptions: {
         paths: Object.fromEntries(paths.map(path => [path, ['*']])),
       },
-    }) as ReadClosestTsConfigByPathValue
+    } as ReadClosestTsConfigByPathValue
+  }
 })

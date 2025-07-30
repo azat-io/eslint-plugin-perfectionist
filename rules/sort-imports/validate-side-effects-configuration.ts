@@ -3,13 +3,13 @@ import type { Group } from './types'
 
 import { isSideEffectOnlyGroup } from './is-side-effect-only-group'
 
-export let validateSideEffectsConfiguration = ({
+export function validateSideEffectsConfiguration({
   sortSideEffects,
   groups,
 }: {
   groups: GroupsOptions<Group>
   sortSideEffects: boolean
-}): void => {
+}): void {
   if (sortSideEffects) {
     return
   }

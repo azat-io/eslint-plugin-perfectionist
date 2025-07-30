@@ -186,10 +186,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
               groupKind === 'any' || currentNode.groupKind === groupKind,
           ),
         )
-        let sortNodesExcludingEslintDisabled = (
+        function sortNodesExcludingEslintDisabled(
           ignoreEslintDisabledNodes: boolean,
-        ): SortNamedImportsSortingNode[] =>
-          filteredGroupKindNodes.flatMap(groupedNodes =>
+        ): SortNamedImportsSortingNode[] {
+          return filteredGroupKindNodes.flatMap(groupedNodes =>
             sortNodesByGroups({
               getOptionsByGroupIndex:
                 buildGetCustomGroupOverriddenOptionsFunction(options),
@@ -198,6 +198,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
               nodes: groupedNodes,
             }),
           )
+        }
 
         reportAllErrors<MESSAGE_ID>({
           availableMessageIds: {

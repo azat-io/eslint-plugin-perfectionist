@@ -36,7 +36,7 @@ interface GetNewlinesBetweenErrorsParameters<
   left: T
 }
 
-export let getNewlinesBetweenErrors = <
+export function getNewlinesBetweenErrors<
   MessageIds extends string,
   T extends SortingNode,
 >({
@@ -49,7 +49,7 @@ export let getNewlinesBetweenErrors = <
   options,
   right,
   left,
-}: GetNewlinesBetweenErrorsParameters<MessageIds, T>): MessageIds[] => {
+}: GetNewlinesBetweenErrorsParameters<MessageIds, T>): MessageIds[] {
   if (
     leftGroupIndex > rightGroupIndex ||
     left.partitionId !== right.partitionId

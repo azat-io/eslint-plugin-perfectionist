@@ -38,11 +38,13 @@ describe('get-matching-context-options', () => {
     })
   })
 
-  let buildContextOptions = (
-    allNamesMatchPattern?: RegexOption,
-  ): { useConfigurationIf: { allNamesMatchPattern?: RegexOption } } => ({
-    useConfigurationIf: {
-      ...(allNamesMatchPattern ? { allNamesMatchPattern } : {}),
-    },
-  })
+  function buildContextOptions(allNamesMatchPattern?: RegexOption): {
+    useConfigurationIf: { allNamesMatchPattern?: RegexOption }
+  } {
+    return {
+      useConfigurationIf: {
+        ...(allNamesMatchPattern ? { allNamesMatchPattern } : {}),
+      },
+    }
+  }
 })

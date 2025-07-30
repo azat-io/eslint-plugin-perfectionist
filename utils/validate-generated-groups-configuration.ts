@@ -16,11 +16,11 @@ interface ValidateGenerateGroupsConfigurationParameters {
   modifiers: string[]
 }
 
-export let validateGeneratedGroupsConfiguration = ({
+export function validateGeneratedGroupsConfiguration({
   selectors,
   modifiers,
   options,
-}: ValidateGenerateGroupsConfigurationParameters): void => {
+}: ValidateGenerateGroupsConfigurationParameters): void {
   let availableCustomGroupNames = new Set(
     Array.isArray(options.customGroups)
       ? options.customGroups.map(customGroup => customGroup.groupName)
@@ -41,11 +41,11 @@ export let validateGeneratedGroupsConfiguration = ({
   validateObjectsInsideGroups(options)
 }
 
-let isPredefinedGroup = (
+function isPredefinedGroup(
   allSelectors: string[],
   allModifiers: string[],
   input: string,
-): boolean => {
+): boolean {
   if (input === 'unknown') {
     return true
   }
@@ -88,14 +88,14 @@ let isPredefinedGroup = (
   return true
 }
 
-let computeLongestAllowedWord = ({
+function computeLongestAllowedWord({
   elementsSeparatedWithDash,
   allowedValues,
 }: {
   elementsSeparatedWithDash: string[]
   allowedValues: string[]
   allowThreeWord: boolean
-}): { wordCount: number; word: string } | null => {
+}): { wordCount: number; word: string } | null {
   let match = [
     { word: elementsSeparatedWithDash.slice(-3).join('-'), wordCount: 3 },
     { word: elementsSeparatedWithDash.slice(-2).join('-'), wordCount: 2 },

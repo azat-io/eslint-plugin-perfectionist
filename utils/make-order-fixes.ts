@@ -16,14 +16,14 @@ interface MakeOrderFixesParameters {
   nodes: SortingNode[]
 }
 
-export let makeOrderFixes = ({
+export function makeOrderFixes({
   ignoreFirstNodeHighestBlockComment,
   sortedNodes,
   sourceCode,
   options,
   fixer,
   nodes,
-}: MakeOrderFixesParameters): TSESLint.RuleFix[] => {
+}: MakeOrderFixesParameters): TSESLint.RuleFix[] {
   let fixes: TSESLint.RuleFix[] = []
 
   for (let max = nodes.length, i = 0; i < max; i++) {

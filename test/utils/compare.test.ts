@@ -471,16 +471,17 @@ describe('compare', () => {
     })
   })
 
-  let createTestNode = ({
+  function createTestNode({
     additionalProperties,
     name,
   }: {
     additionalProperties?: object
     name: string
-  }): SortingNode =>
-    ({
+  }): SortingNode {
+    return {
       size: name.length,
       name,
       ...additionalProperties,
-    }) as SortingNode
+    } as SortingNode
+  }
 })

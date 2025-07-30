@@ -9,11 +9,11 @@ import { isCommentAboveOption } from './is-comment-above-option'
  * @param {GroupsOptions} parameters.groups - The groups to check for duplicates.
  * @throws Error Will throw an error if duplicated groups are found.
  */
-export let validateNoDuplicatedGroups = ({
+export function validateNoDuplicatedGroups({
   groups,
 }: {
   groups: GroupsOptions<string>
-}): void => {
+}): void {
   let flattenGroups = groups.flat()
   let seenGroups = new Set<string>()
   let duplicatedGroups = new Set<string>()

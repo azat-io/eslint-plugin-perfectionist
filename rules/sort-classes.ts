@@ -131,12 +131,13 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         sourceCode,
       })
       let className = node.parent.id?.name
-      let getDependencyName = (props: {
+      function getDependencyName(props: {
         nodeNameWithoutStartingHash: string
         isPrivateHash: boolean
         isStatic: boolean
-      }): string =>
-        `${props.isStatic ? 'static ' : ''}${props.isPrivateHash ? '#' : ''}${props.nodeNameWithoutStartingHash}`
+      }): string {
+        return `${props.isStatic ? 'static ' : ''}${props.isPrivateHash ? '#' : ''}${props.nodeNameWithoutStartingHash}`
+      }
       /**
        * Class methods should not be considered as dependencies
        * because they can be put in any order without causing a reference error.
@@ -159,13 +160,13 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           })
           .filter(Boolean),
       )
-      let extractDependencies = (
+      function extractDependencies(
         expression: TSESTree.StaticBlock | TSESTree.Expression,
         isMemberStatic: boolean,
-      ): string[] => {
+      ): string[] {
         let dependencies: string[] = []
 
-        let checkNode = (nodeValue: TSESTree.Node): void => {
+        function checkNode(nodeValue: TSESTree.Node): void {
           if (
             nodeValue.type === 'MemberExpression' &&
             (nodeValue.object.type === 'ThisExpression' ||
@@ -279,9 +280,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
           }
         }
 
-        let traverseNode = (
+        function traverseNode(
           nodeValue: TSESTree.Node[] | TSESTree.Node,
-        ): void => {
+        ): void {
           if (Array.isArray(nodeValue)) {
             for (let nodeItem of nodeValue) {
               traverseNode(nodeItem)
@@ -589,9 +590,9 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
         [[]],
       )
 
-      let sortNodesExcludingEslintDisabled = (
+      function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
-      ): SortClassSortingNodes[] => {
+      ): SortClassSortingNodes[] {
         let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
           sortNodesByGroups({
             isNodeIgnored: sortingNode =>

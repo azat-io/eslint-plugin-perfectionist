@@ -1,10 +1,10 @@
 import type { GroupsOptions } from '../types/common-options'
 
-export let validateObjectsInsideGroups = ({
+export function validateObjectsInsideGroups({
   groups,
 }: {
   groups: GroupsOptions<string>
-}): void => {
+}): void {
   let isPreviousElementObject = false
   for (let group of groups) {
     if (typeof group === 'string' || Array.isArray(group)) {

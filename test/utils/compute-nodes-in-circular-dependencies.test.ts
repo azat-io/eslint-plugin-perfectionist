@@ -34,15 +34,16 @@ describe('computeNodesInCircularDependencies', () => {
     ).toEqual(new Set([nodeA, nodeB, nodeC, nodeH]))
   })
 
-  let createTestNode = (name: string): SortingNodeWithDependencies =>
-    ({
+  function createTestNode(name: string): SortingNodeWithDependencies {
+    return {
       dependencies: [] as string[],
       dependencyNames: [name],
       name,
-    }) as SortingNodeWithDependencies
+    } as SortingNodeWithDependencies
+  }
 })
 
-let linkNodes = (linkedNodes: SortingNodeWithDependencies[]): void => {
+function linkNodes(linkedNodes: SortingNodeWithDependencies[]): void {
   for (let i = 0; i < linkedNodes.length - 1; i++) {
     let node = linkedNodes[i]!
     let nextNode = linkedNodes[i + 1]!

@@ -97,25 +97,30 @@ let plugin = {
   },
 } as unknown as ESLint.Plugin
 
-let getRules = (options: BaseOptions): Linter.RulesRecord =>
-  Object.fromEntries(
+function getRules(options: BaseOptions): Linter.RulesRecord {
+  return Object.fromEntries(
     Object.keys(plugin.rules!).map(ruleName => [
       `${pluginName}/${ruleName}`,
       ['error', options],
     ]),
   )
+}
 
-let createConfig = (options: BaseOptions): Linter.Config => ({
-  plugins: {
-    [pluginName]: plugin,
-  },
-  rules: getRules(options),
-})
+function createConfig(options: BaseOptions): Linter.Config {
+  return {
+    plugins: {
+      [pluginName]: plugin,
+    },
+    rules: getRules(options),
+  }
+}
 
-let createLegacyConfig = (options: BaseOptions): Linter.LegacyConfig => ({
-  rules: getRules(options),
-  plugins: [pluginName],
-})
+function createLegacyConfig(options: BaseOptions): Linter.LegacyConfig {
+  return {
+    rules: getRules(options),
+    plugins: [pluginName],
+  }
+}
 
 export default {
   ...plugin,

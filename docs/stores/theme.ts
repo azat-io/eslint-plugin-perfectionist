@@ -10,7 +10,7 @@ let systemTheme: Theme = globalThis.matchMedia('(prefers-color-scheme: dark)')
 
 export let theme = persistentAtom<Theme>('theme', systemTheme)
 
-export let toggleTheme = (): void => {
+export function toggleTheme(): void {
   theme.set(theme.get() === 'light' ? 'dark' : 'light')
 }
 

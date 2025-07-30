@@ -1,9 +1,9 @@
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 
-export let isNodeDependentOnOtherNode = (
+export function isNodeDependentOnOtherNode(
   sortingNode1: SortingNodeWithDependencies,
   sortingNode2: SortingNodeWithDependencies,
-): boolean => {
+): boolean {
   if (sortingNode1 === sortingNode2) {
     return false
   }

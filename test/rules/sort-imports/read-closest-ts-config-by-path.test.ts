@@ -134,7 +134,7 @@ describe('readClosestTsConfigByPath', () => {
         expect(actual?.compilerOptions).toEqual(
           tsConfigContent.raw.config.compilerOptions,
         )
-        expect(mockExistsSync).toHaveBeenCalledTimes(1)
+        expect(mockExistsSync).toHaveBeenCalledOnce()
       })
 
       it('returns a nearby parent tsconfig.json when it was previously cached by a different directory search', () => {
@@ -261,17 +261,17 @@ describe('readClosestTsConfigByPath', () => {
       })
     })
 
-    let mockReadConfigFileReturnValue = (
+    function mockReadConfigFileReturnValue(
       value: ReturnType<typeof ts.readConfigFile> = {},
-    ): void => {
+    ): void {
       mockReadConfigFile.mockReturnValue(value as ts.ParsedCommandLine)
     }
 
-    let mockParseJsonConfigFileContentReturnValue = (): void => {
+    function mockParseJsonConfigFileContentReturnValue(): void {
       mockParseJsonConfigFileContent.mockReturnValue(tsConfigContent)
     }
 
-    let mockConvertCompilerOptionsFromJsonReturnValue = (): void => {
+    function mockConvertCompilerOptionsFromJsonReturnValue(): void {
       mockConvertCompilerOptionsFromJson.mockReturnValue({
         options: tsConfigContent.raw.config.compilerOptions,
         errors: [],

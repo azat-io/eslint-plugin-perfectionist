@@ -5,10 +5,10 @@ interface Options {
   alphabet: string
 }
 
-export let validateCustomSortConfiguration = ({
+export function validateCustomSortConfiguration({
   alphabet,
   type,
-}: Options): void => {
+}: Options): void {
   if (type !== 'custom') {
     return
   }

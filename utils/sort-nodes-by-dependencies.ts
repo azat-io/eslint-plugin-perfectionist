@@ -23,16 +23,16 @@ interface ExtraOptions {
  * @returns {SortingNodeWithDependencies[]} The nodes sorted in topological
  * order.
  */
-export let sortNodesByDependencies = <T extends SortingNodeWithDependencies>(
+export function sortNodesByDependencies<T extends SortingNodeWithDependencies>(
   nodes: T[],
   extraOptions: ExtraOptions,
-): T[] => {
+): T[] {
   let nodesInCircularDependencies = computeNodesInCircularDependencies(nodes)
 
   let result: T[] = []
   let visitedNodes = new Set<T>()
 
-  let visitNode = (sortingNode: T): void => {
+  function visitNode(sortingNode: T): void {
     if (visitedNodes.has(sortingNode)) {
       return
     }

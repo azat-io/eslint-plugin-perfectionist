@@ -3,7 +3,7 @@ import type { SortingNode } from '../types/sorting-node'
 
 type Group = GroupsOptions<string>[number]
 
-export let getGroupIndex = (groups: Group[], node: SortingNode): number => {
+export function getGroupIndex(groups: Group[], node: SortingNode): number {
   for (let max = groups.length, i = 0; i < max; i++) {
     let currentGroup = groups[i]
 

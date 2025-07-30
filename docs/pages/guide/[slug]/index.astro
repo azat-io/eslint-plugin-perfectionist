@@ -11,7 +11,7 @@ let guide = Astro.props
 
 let { headings, Content } = await render(guide)
 
-export let getStaticPaths = async () => {
+export async function getStaticPaths() {
   let guides = await getCollection('guide')
   return guides.map(currentGuide => ({
     params: {

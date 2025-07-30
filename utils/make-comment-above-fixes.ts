@@ -23,12 +23,12 @@ interface MakeCommentAboveFixesParameters {
   fixer: TSESLint.RuleFixer
 }
 
-export let makeCommentAboveFixes = ({
+export function makeCommentAboveFixes({
   sortedNodes,
   sourceCode,
   options,
   fixer,
-}: MakeCommentAboveFixesParameters): TSESLint.RuleFix[] => {
+}: MakeCommentAboveFixesParameters): TSESLint.RuleFix[] {
   let allAutoAddedComments = new Set(
     options.groups
       .filter(group => isCommentAboveOption(group))
@@ -65,7 +65,7 @@ export let makeCommentAboveFixes = ({
   return fixes
 }
 
-let makeCommentAboveFix = ({
+function makeCommentAboveFix({
   nextSortedSortingNode,
   allAutoAddedComments,
   sortedSortingNode,
@@ -79,7 +79,7 @@ let makeCommentAboveFix = ({
 } & Pick<
   MakeCommentAboveFixesParameters,
   'sourceCode' | 'options' | 'fixer'
->): TSESLint.RuleFix[] => {
+>): TSESLint.RuleFix[] {
   let leftGroupIndex = sortedSortingNode
     ? getGroupIndex(options.groups, sortedSortingNode)
     : -1

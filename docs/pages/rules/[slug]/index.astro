@@ -11,7 +11,7 @@ let rule = Astro.props
 
 let { headings, Content } = await render(rule)
 
-export let getStaticPaths = async () => {
+export async function getStaticPaths() {
   let rules = await getCollection('rules')
   return rules.map(currentRule => ({
     params: {

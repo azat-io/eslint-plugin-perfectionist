@@ -38,7 +38,7 @@ interface ReportAllErrorsParameters<
   nodes: T[]
 }
 
-export let reportAllErrors = <
+export function reportAllErrors<
   MessageIds extends string,
   T extends SortingNode = SortingNode,
 >({
@@ -50,7 +50,7 @@ export let reportAllErrors = <
   context,
   options,
   nodes,
-}: ReportAllErrorsParameters<MessageIds, T>): void => {
+}: ReportAllErrorsParameters<MessageIds, T>): void {
   let sortedNodes = sortNodesExcludingEslintDisabled(false)
   let sortedNodesExcludingEslintDisabled =
     sortNodesExcludingEslintDisabled(true)
@@ -163,7 +163,9 @@ export let reportAllErrors = <
   })
 }
 
-let getFirstUnorderedNodeDependentOn = <T extends SortingNodeWithDependencies>({
+function getFirstUnorderedNodeDependentOn<
+  T extends SortingNodeWithDependencies,
+>({
   nodesInCircularDependencies,
   nodes,
   node,
@@ -171,7 +173,7 @@ let getFirstUnorderedNodeDependentOn = <T extends SortingNodeWithDependencies>({
   nodesInCircularDependencies: Set<T>
   nodes: T[]
   node: T
-}): undefined | T => {
+}): undefined | T {
   let nodesDependentOnNode = nodes.filter(
     currentlyOrderedNode =>
       !nodesInCircularDependencies.has(currentlyOrderedNode) &&

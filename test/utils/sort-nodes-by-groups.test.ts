@@ -154,16 +154,17 @@ describe('sort-nodes-by-groups', () => {
     ).toStrictEqual([nodeB, nodeA])
   })
 
-  let createTestNode = <T extends object>(
+  function createTestNode<T extends object>(
     node: {
       isEslintDisabled?: boolean
       group: string
       name: string
     },
     additionalParameters?: T,
-  ): SortingNode & T =>
-    ({
+  ): SortingNode & T {
+    return {
       ...node,
       ...additionalParameters,
-    }) as SortingNode & T
+    } as SortingNode & T
+  }
 })

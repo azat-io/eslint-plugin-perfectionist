@@ -197,17 +197,18 @@ export default createEslintRule<Options, MESSAGE_ID>({
           [[]],
         )
 
-      for (let nodes of formattedMembers) {
-        let sortNodesExcludingEslintDisabled = (
-          ignoreEslintDisabledNodes: boolean,
-        ): SortingNode[] =>
-          sortNodesByGroups({
-            getOptionsByGroupIndex:
-              buildGetCustomGroupOverriddenOptionsFunction(options),
-            ignoreEslintDisabledNodes,
-            groups: options.groups,
-            nodes,
-          })
+      for (let currentNodes of formattedMembers) {
+        function createSortNodesExcludingEslintDisabled(nodes: SortingNode[]) {
+          return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
+            return sortNodesByGroups({
+              getOptionsByGroupIndex:
+                buildGetCustomGroupOverriddenOptionsFunction(options),
+              ignoreEslintDisabledNodes,
+              groups: options.groups,
+              nodes,
+            })
+          }
+        }
 
         reportAllErrors<MESSAGE_ID>({
           availableMessageIds: {
@@ -216,11 +217,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
             unexpectedGroupOrder: 'unexpectedJSXPropsGroupOrder',
             unexpectedOrder: 'unexpectedJSXPropsOrder',
           },
-          sortNodesExcludingEslintDisabled,
+          sortNodesExcludingEslintDisabled:
+            createSortNodesExcludingEslintDisabled(currentNodes),
+          nodes: currentNodes,
           sourceCode,
           options,
           context,
-          nodes,
         })
       }
     },
@@ -272,11 +274,12 @@ export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-jsx-props',
 })
 
-let getNodeName = ({
+function getNodeName({
   attribute,
 }: {
   attribute: TSESTree.JSXAttribute
-}): string =>
-  attribute.name.type === TSESTree.AST_NODE_TYPES.JSXNamespacedName
+}): string {
+  return attribute.name.type === TSESTree.AST_NODE_TYPES.JSXNamespacedName
     ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
     : attribute.name.name
+}

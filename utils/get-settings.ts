@@ -28,14 +28,14 @@ export type Settings = Partial<{
   alphabet: string
 }>
 
-export let getSettings = (
+export function getSettings(
   settings: TSESLint.SharedConfigurationSettings = {},
-): Settings => {
+): Settings {
   if (!settings['perfectionist']) {
     return {}
   }
 
-  let getInvalidOptions = (object: Record<string, unknown>): string[] => {
+  function getInvalidOptions(object: Record<string, unknown>): string[] {
     let allowedOptions = new Set<keyof Settings>([
       'partitionByComment',
       'partitionByNewLine',

@@ -46,37 +46,41 @@ let specialCharactersJsonSchema: JSONSchema4 = {
   type: 'string',
 }
 
-let buildFallbackSortJsonSchema = ({
-  additionalProperties,
-}: {
-  additionalProperties?: Record<string, JSONSchema4>
-} = {}): JSONSchema4 => ({
-  properties: {
-    order: orderJsonSchema,
-    type: typeJsonSchema,
-    ...additionalProperties,
-  },
-  description: 'Fallback sort order.',
-  additionalProperties: false,
-  minProperties: 1,
-  type: 'object',
-})
-
-export let buildCommonJsonSchemas = ({
+export function buildCommonJsonSchemas({
   additionalFallbackSortProperties,
 }: {
   additionalFallbackSortProperties?: Record<string, JSONSchema4>
-} = {}): Record<string, JSONSchema4> => ({
-  fallbackSort: buildFallbackSortJsonSchema({
-    additionalProperties: additionalFallbackSortProperties,
-  }),
-  specialCharacters: specialCharactersJsonSchema,
-  ignoreCase: ignoreCaseJsonSchema,
-  alphabet: alphabetJsonSchema,
-  locales: localesJsonSchema,
-  order: orderJsonSchema,
-  type: typeJsonSchema,
-})
+} = {}): Record<string, JSONSchema4> {
+  return {
+    fallbackSort: buildFallbackSortJsonSchema({
+      additionalProperties: additionalFallbackSortProperties,
+    }),
+    specialCharacters: specialCharactersJsonSchema,
+    ignoreCase: ignoreCaseJsonSchema,
+    alphabet: alphabetJsonSchema,
+    locales: localesJsonSchema,
+    order: orderJsonSchema,
+    type: typeJsonSchema,
+  }
+}
+
+function buildFallbackSortJsonSchema({
+  additionalProperties,
+}: {
+  additionalProperties?: Record<string, JSONSchema4>
+} = {}): JSONSchema4 {
+  return {
+    properties: {
+      order: orderJsonSchema,
+      type: typeJsonSchema,
+      ...additionalProperties,
+    },
+    description: 'Fallback sort order.',
+    additionalProperties: false,
+    minProperties: 1,
+    type: 'object',
+  }
+}
 
 export let commonJsonSchemas: Record<string, JSONSchema4> =
   buildCommonJsonSchemas()
@@ -218,115 +222,125 @@ export let partitionByNewLineJsonSchema: JSONSchema4 = {
   type: 'boolean',
 }
 
-export let buildUseConfigurationIfJsonSchema = ({
-  additionalProperties,
-}: {
-  additionalProperties?: Record<string, JSONSchema4>
-} = {}): JSONSchema4 => ({
-  description:
-    'Specifies filters to match a particular options configuration for a given element to sort.',
-  properties: {
-    allNamesMatchPattern: regexJsonSchema,
-    ...additionalProperties,
-  },
-  additionalProperties: false,
-  type: 'object',
-})
-
-let buildCommonCustomGroupJsonSchemas = ({
-  additionalFallbackSortProperties,
-}: {
-  additionalFallbackSortProperties?: Record<string, JSONSchema4>
-} = {}): Record<string, JSONSchema4> => ({
-  newlinesInside: {
-    oneOf: [
-      {
-        description:
-          'Specifies how to handle newlines between members of the custom group.',
-        enum: ['always', 'never'],
-        type: 'string',
-      },
-      {
-        type: 'number',
-        minimum: 0,
-      },
-    ],
-  },
-  fallbackSort: buildFallbackSortJsonSchema({
-    additionalProperties: additionalFallbackSortProperties,
-  }),
-  groupName: {
-    description: 'Custom group name.',
-    type: 'string',
-  },
-  order: orderJsonSchema,
-  type: typeJsonSchema,
-})
-
-export let buildCustomGroupsArrayJsonSchema = ({
+export function buildCustomGroupsArrayJsonSchema({
   additionalFallbackSortProperties,
   singleCustomGroupJsonSchema,
 }: {
   additionalFallbackSortProperties?: Record<string, JSONSchema4>
   singleCustomGroupJsonSchema?: Record<string, JSONSchema4>
-}): JSONSchema4 => ({
-  items: {
-    oneOf: [
-      {
-        properties: {
-          ...buildCommonCustomGroupJsonSchemas({
-            additionalFallbackSortProperties,
-          }),
-          anyOf: {
-            items: {
-              properties: {
-                ...singleCustomGroupJsonSchema,
+}): JSONSchema4 {
+  return {
+    items: {
+      oneOf: [
+        {
+          properties: {
+            ...buildCommonCustomGroupJsonSchemas({
+              additionalFallbackSortProperties,
+            }),
+            anyOf: {
+              items: {
+                properties: {
+                  ...singleCustomGroupJsonSchema,
+                },
+                description: 'Custom group.',
+                additionalProperties: false,
+                type: 'object',
               },
-              description: 'Custom group.',
-              additionalProperties: false,
-              type: 'object',
+              type: 'array',
             },
-            type: 'array',
           },
+          description: 'Custom group block.',
+          additionalProperties: false,
+          required: ['groupName'],
+          type: 'object',
         },
-        description: 'Custom group block.',
-        additionalProperties: false,
-        required: ['groupName'],
-        type: 'object',
-      },
-      {
-        properties: {
-          ...buildCommonCustomGroupJsonSchemas({
-            additionalFallbackSortProperties,
-          }),
-          ...singleCustomGroupJsonSchema,
+        {
+          properties: {
+            ...buildCommonCustomGroupJsonSchemas({
+              additionalFallbackSortProperties,
+            }),
+            ...singleCustomGroupJsonSchema,
+          },
+          description: 'Custom group.',
+          additionalProperties: false,
+          required: ['groupName'],
+          type: 'object',
         },
-        description: 'Custom group.',
-        additionalProperties: false,
-        required: ['groupName'],
-        type: 'object',
-      },
-    ],
-  },
-  description: 'Defines custom groups to match specific members.',
-  type: 'array',
-})
+      ],
+    },
+    description: 'Defines custom groups to match specific members.',
+    type: 'array',
+  }
+}
 
-export let buildCustomGroupModifiersJsonSchema = (
+export function buildUseConfigurationIfJsonSchema({
+  additionalProperties,
+}: {
+  additionalProperties?: Record<string, JSONSchema4>
+} = {}): JSONSchema4 {
+  return {
+    description:
+      'Specifies filters to match a particular options configuration for a given element to sort.',
+    properties: {
+      allNamesMatchPattern: regexJsonSchema,
+      ...additionalProperties,
+    },
+    additionalProperties: false,
+    type: 'object',
+  }
+}
+
+export function buildCustomGroupModifiersJsonSchema(
   modifiers: string[],
-): JSONSchema4 => ({
-  items: {
-    enum: modifiers,
-    type: 'string',
-  },
-  description: 'Modifier filters.',
-  type: 'array',
-})
+): JSONSchema4 {
+  return {
+    items: {
+      enum: modifiers,
+      type: 'string',
+    },
+    description: 'Modifier filters.',
+    type: 'array',
+  }
+}
 
-export let buildCustomGroupSelectorJsonSchema = (
+export function buildCustomGroupSelectorJsonSchema(
   selectors: string[],
-): JSONSchema4 => ({
-  description: 'Selector filter.',
-  enum: selectors,
-  type: 'string',
-})
+): JSONSchema4 {
+  return {
+    description: 'Selector filter.',
+    enum: selectors,
+    type: 'string',
+  }
+}
+
+function buildCommonCustomGroupJsonSchemas({
+  additionalFallbackSortProperties,
+}: {
+  additionalFallbackSortProperties?: Record<string, JSONSchema4>
+} = {}): Record<string, JSONSchema4> {
+  return {
+    newlinesInside: {
+      oneOf: [
+        {
+          description:
+            'Specifies how to handle newlines between members of the custom group.',
+          enum: ['always', 'never'],
+          type: 'string',
+        },
+        {
+          type: 'number',
+          minimum: 0,
+        },
+      ],
+    },
+    fallbackSort: buildFallbackSortJsonSchema({
+      additionalProperties: additionalFallbackSortProperties,
+    }),
+    groupName: {
+      description: 'Custom group name.',
+      type: 'string',
+    },
+    order: orderJsonSchema,
+    type: typeJsonSchema,
+  }
+}

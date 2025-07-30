@@ -1,6 +1,8 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-export let isNodeEslintDisabled = (
+export function isNodeEslintDisabled(
   node: TSESTree.Node,
   eslintDisabledLines: number[],
-): boolean => eslintDisabledLines.includes(node.loc.start.line)
+): boolean {
+  return eslintDisabledLines.includes(node.loc.start.line)
+}

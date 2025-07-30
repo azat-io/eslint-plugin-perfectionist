@@ -150,7 +150,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-array-includes',
 })
 
-export let sortArray = <MessageIds extends string>({
+export function sortArray<MessageIds extends string>({
   availableMessageIds,
   elements,
   context,
@@ -163,7 +163,7 @@ export let sortArray = <MessageIds extends string>({
   }
   elements: (TSESTree.SpreadElement | TSESTree.Expression | null)[]
   context: Readonly<RuleContext<MessageIds, Options>>
-}): void => {
+}): void {
   if (!isSortable(elements)) {
     return
   }
@@ -277,10 +277,10 @@ export let sortArray = <MessageIds extends string>({
       ),
     )
 
-    let sortNodesExcludingEslintDisabled = (
+    function sortNodesExcludingEslintDisabled(
       ignoreEslintDisabledNodes: boolean,
-    ): SortArrayIncludesSortingNode[] =>
-      filteredGroupKindNodes.flatMap(groupedNodes =>
+    ): SortArrayIncludesSortingNode[] {
+      return filteredGroupKindNodes.flatMap(groupedNodes =>
         sortNodesByGroups({
           getOptionsByGroupIndex:
             buildGetCustomGroupOverriddenOptionsFunction(options),
@@ -289,6 +289,7 @@ export let sortArray = <MessageIds extends string>({
           nodes: groupedNodes,
         }),
       )
+    }
 
     reportAllErrors<MessageIds>({
       sortNodesExcludingEslintDisabled,
@@ -301,11 +302,14 @@ export let sortArray = <MessageIds extends string>({
   }
 }
 
-let getNodeName = ({
+function getNodeName({
   sourceCode,
   element,
 }: {
   element: TSESTree.SpreadElement | TSESTree.Expression
   sourceCode: TSESLint.SourceCode
-}): string =>
-  element.type === 'Literal' ? `${element.value}` : sourceCode.getText(element)
+}): string {
+  return element.type === 'Literal'
+    ? `${element.value}`
+    : sourceCode.getText(element)
+}

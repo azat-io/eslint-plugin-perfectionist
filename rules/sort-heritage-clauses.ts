@@ -101,14 +101,14 @@ export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-heritage-clauses',
 })
 
-let sortHeritageClauses = (
+function sortHeritageClauses(
   context: Readonly<RuleContext<MESSAGE_ID, Options>>,
   options: Required<Options[0]>,
   heritageClauses:
     | TSESTree.TSInterfaceHeritage[]
     | TSESTree.TSClassImplements[]
     | undefined,
-): void => {
+): void {
   if (!isSortable(heritageClauses)) {
     return
   }
@@ -139,15 +139,16 @@ let sortHeritageClauses = (
     }
   })
 
-  let sortNodesExcludingEslintDisabled = (
+  function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
-  ): SortingNode[] =>
-    sortNodesByGroups({
+  ): SortingNode[] {
+    return sortNodesByGroups({
       getOptionsByGroupIndex: () => ({ options }),
       ignoreEslintDisabledNodes,
       groups: options.groups,
       nodes,
     })
+  }
 
   reportAllErrors<MESSAGE_ID>({
     availableMessageIds: {
@@ -162,9 +163,9 @@ let sortHeritageClauses = (
   })
 }
 
-let getHeritageClauseExpressionName = (
+function getHeritageClauseExpressionName(
   expression: TSESTree.PrivateIdentifier | TSESTree.Expression,
-): string => {
+): string {
   if (expression.type === 'Identifier') {
     return expression.name
   }

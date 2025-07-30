@@ -16,7 +16,7 @@ interface Props {
 
 let { headings } = Astro.props
 
-let buildToc = (headingsValues?: Heading[]): HeadingWithSubheadings[] => {
+function buildToc(headingsValues?: Heading[]): HeadingWithSubheadings[] {
   if (!headingsValues) {
     return []
   }

@@ -18,13 +18,13 @@ interface BaseSingleCustomGroup {
   selector?: string
 }
 
-export let doesCustomGroupMatch = <
+export function doesCustomGroupMatch<
   SingleCustomGroup extends BaseSingleCustomGroup,
 >(
   props: {
     customGroup: AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup
   } & DoesCustomGroupMatchParameters,
-): boolean => {
+): boolean {
   if ('anyOf' in props.customGroup) {
     return props.customGroup.anyOf.some(subgroup =>
       doesSingleCustomGroupMatch({
@@ -40,7 +40,7 @@ export let doesCustomGroupMatch = <
   })
 }
 
-let doesSingleCustomGroupMatch = ({
+function doesSingleCustomGroupMatch({
   elementValue,
   customGroup,
   elementName,
@@ -54,7 +54,7 @@ let doesSingleCustomGroupMatch = ({
   selectors?: string[]
   modifiers?: string[]
   elementName: string
-}): boolean => {
+}): boolean {
   if (customGroup.selector && !selectors?.includes(customGroup.selector)) {
     return false
   }

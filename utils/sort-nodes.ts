@@ -13,14 +13,14 @@ interface SortNodesParameters<T extends SortingNode> {
   nodes: T[]
 }
 
-export let sortNodes = <T extends SortingNode>({
+export function sortNodes<T extends SortingNode>({
   fallbackSortNodeValueGetter,
   ignoreEslintDisabledNodes,
   nodeValueGetter,
   isNodeIgnored,
   options,
   nodes,
-}: SortNodesParameters<T>): T[] => {
+}: SortNodesParameters<T>): T[] {
   let nonIgnoredNodes: T[] = []
   let ignoredNodeIndices: number[] = []
   for (let [index, sortingNode] of nodes.entries()) {

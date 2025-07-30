@@ -161,7 +161,7 @@ export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
   name: 'sort-modules',
 })
 
-let analyzeModule = ({
+function analyzeModule({
   eslintDisabledLines,
   sourceCode,
   options,
@@ -173,7 +173,7 @@ let analyzeModule = ({
   options: Required<SortModulesOptions[0]>
   sourceCode: TSESLint.SourceCode
   eslintDisabledLines: number[]
-}): void => {
+}): void {
   let formattedNodes: SortingNodeWithDependencies[][] = [[]]
   for (let node of program.body) {
     let selector: undefined | Selector
@@ -183,13 +183,12 @@ let analyzeModule = ({
     let decorators: string[] = []
     let addSafetySemicolonWhenInline: boolean = false
 
-    /* eslint-disable typescript/no-loop-func */
-    let parseNode = (
+    function parseNode(
       nodeToParse:
         | TSESTree.DefaultExportDeclarations
         | TSESTree.NamedExportDeclarations
         | TSESTree.ProgramStatement,
-    ): void => {
+    ): void {
       if ('declare' in nodeToParse && nodeToParse.declare) {
         modifiers.push('declare')
       }
@@ -273,7 +272,7 @@ let analyzeModule = ({
         default:
       }
     }
-    /* eslint-enable typescript/no-loop-func */
+
     parseNode(node)
 
     if (!selector || !name) {
@@ -336,9 +335,9 @@ let analyzeModule = ({
     })
   }
 
-  let sortNodesExcludingEslintDisabled = (
+  function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
-  ): SortingNodeWithDependencies[] => {
+  ): SortingNodeWithDependencies[] {
     let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
       sortNodesByGroups({
         isNodeIgnored: sortingNode =>
@@ -373,9 +372,9 @@ let analyzeModule = ({
   })
 }
 
-let extractDependencies = (
+function extractDependencies(
   expression: TSESTree.TSEnumMember | TSESTree.ClassBody,
-): string[] => {
+): string[] {
   let dependencies: string[] = []
 
   /**
@@ -392,7 +391,7 @@ let extractDependencies = (
           !isArrowFunction(classElement)),
     )
 
-  let checkNode = (nodeValue: TSESTree.Node): void => {
+  function checkNode(nodeValue: TSESTree.Node): void {
     if (
       (nodeValue.type === 'MethodDefinition' || isArrowFunction(nodeValue)) &&
       (!nodeValue.static || !searchStaticMethodsAndFunctionProperties)
@@ -504,7 +503,7 @@ let extractDependencies = (
     }
   }
 
-  let traverseNode = (nodeValue: TSESTree.Node[] | TSESTree.Node): void => {
+  function traverseNode(nodeValue: TSESTree.Node[] | TSESTree.Node): void {
     if (Array.isArray(nodeValue)) {
       for (let nodeItem of nodeValue) {
         traverseNode(nodeItem)
@@ -518,14 +517,18 @@ let extractDependencies = (
   return dependencies
 }
 
-let isPropertyOrAccessor = (
+function isArrowFunction(
   node: TSESTree.Node,
-): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty =>
-  node.type === 'PropertyDefinition' || node.type === 'AccessorProperty'
+): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty {
+  return (
+    isPropertyOrAccessor(node) &&
+    node.value !== null &&
+    node.value.type === 'ArrowFunctionExpression'
+  )
+}
 
-let isArrowFunction = (
+function isPropertyOrAccessor(
   node: TSESTree.Node,
-): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty =>
-  isPropertyOrAccessor(node) &&
-  node.value !== null &&
-  node.value.type === 'ArrowFunctionExpression'
+): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty {
+  return node.type === 'PropertyDefinition' || node.type === 'AccessorProperty'
+}

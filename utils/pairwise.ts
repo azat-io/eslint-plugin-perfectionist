@@ -1,7 +1,7 @@
-export let pairwise = <T>(
+export function pairwise<T>(
   nodes: T[],
   callback: (left: null | T, right: T) => void,
-): void => {
+): void {
   if (nodes.length === 0) {
     return
   }

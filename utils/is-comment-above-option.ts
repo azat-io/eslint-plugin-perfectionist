@@ -3,7 +3,8 @@ import type {
   GroupsOptions,
 } from '../types/common-options'
 
-export let isCommentAboveOption = (
+export function isCommentAboveOption(
   groupOption: GroupsOptions<string>[number],
-): groupOption is GroupCommentAboveOption =>
-  typeof groupOption === 'object' && 'commentAbove' in groupOption
+): groupOption is GroupCommentAboveOption {
+  return typeof groupOption === 'object' && 'commentAbove' in groupOption
+}

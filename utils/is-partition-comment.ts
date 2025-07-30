@@ -15,10 +15,10 @@ interface IsPartitionCommentParameters {
   comment: TSESTree.Comment
 }
 
-export let isPartitionComment = ({
+export function isPartitionComment({
   partitionByComment,
   comment,
-}: IsPartitionCommentParameters): boolean => {
+}: IsPartitionCommentParameters): boolean {
   if (getEslintDisabledRules(comment.value) || !partitionByComment) {
     return false
   }
@@ -53,13 +53,13 @@ export let isPartitionComment = ({
   )
 }
 
-let isTrimmedCommentPartitionComment = ({
+function isTrimmedCommentPartitionComment({
   partitionByComment,
   trimmedComment,
 }: {
   partitionByComment: RegexOption | boolean
   trimmedComment: string
-}): boolean => {
+}): boolean {
   if (typeof partitionByComment === 'boolean') {
     return partitionByComment
   }

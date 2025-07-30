@@ -4,13 +4,13 @@
  * @param {number} number - The number of elements in each combination.
  * @returns {string[][]} An array containing all possible combinations.
  */
-export let getArrayCombinations = (
+export function getArrayCombinations(
   array: string[],
   number: number,
-): string[][] => {
+): string[][] {
   let result: string[][] = []
 
-  let backtrack = (start: number, comb: string[]): void => {
+  function backtrack(start: number, comb: string[]): void {
     if (comb.length === number) {
       result.push([...comb])
       return

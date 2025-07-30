@@ -21,17 +21,17 @@ interface GetGroupParameters<SingleCustomGroup> {
   name?: string
 }
 
-export let computeGroup = <SingleCustomGroup>({
+export function computeGroup<SingleCustomGroup>({
   customGroupMatcher,
   predefinedGroups,
   options,
   name,
-}: GetGroupParameters<SingleCustomGroup>): 'unknown' | string => {
+}: GetGroupParameters<SingleCustomGroup>): 'unknown' | string {
   let group: undefined | string
   // For lookup performance.
   let groupsSet = new Set(options.groups.flat())
 
-  let defineGroup = (value: string[] | string): boolean => {
+  function defineGroup(value: string[] | string): boolean {
     if (Array.isArray(value)) {
       return value.some(defineGroup)
     }

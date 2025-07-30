@@ -5132,10 +5132,12 @@ describe(ruleName, () => {
   })
 })
 
-let duplicate5Times = (
+function duplicate5Times(
   errors: TestCaseError<
     'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
   >[],
 ): TestCaseError<
   'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
->[] => Array.from({ length: 5 }, () => errors).flat()
+>[] {
+  return Array.from({ length: 5 }, () => errors).flat()
+}

@@ -98,10 +98,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
         sourceCode,
       })
 
-      let extractDependencies = (
+      function extractDependencies(
         expression: TSESTree.Expression,
         enumName: string,
-      ): string[] => {
+      ): string[] {
         let dependencies: string[] = []
         let stack: TSESTree.Node[] = [expression]
 
@@ -219,9 +219,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
           options,
         }),
       }
-      let sortNodesExcludingEslintDisabled = (
+      function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
-      ): SortEnumsSortingNode[] => {
+      ): SortEnumsSortingNode[] {
         let nodesSortedByGroups = formattedMembers.flatMap(sortingNodes =>
           sortNodesByGroups({
             getOptionsByGroupIndex: groupIndex => ({
@@ -306,51 +306,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-enums',
 })
 
-let getExpressionNumberValue = (expression: TSESTree.Node): number => {
-  switch (expression.type) {
-    case 'BinaryExpression':
-      return getBinaryExpressionNumberValue(
-        expression.left,
-        expression.right,
-        expression.operator,
-      )
-    case 'UnaryExpression':
-      return getUnaryExpressionNumberValue(
-        expression.argument,
-        expression.operator,
-      )
-    case 'Literal':
-      return typeof expression.value === 'number'
-        ? expression.value
-        : Number.NaN
-    default:
-      return Number.NaN
-  }
-}
-
-let getUnaryExpressionNumberValue = (
-  argumentExpression: TSESTree.Expression,
-  operator: string,
-): number => {
-  let argument = getExpressionNumberValue(argumentExpression)
-  switch (operator) {
-    case '+':
-      return argument
-    case '-':
-      return -argument
-    case '~':
-      return ~argument
-    /* v8 ignore next 2 - Unsure if we can reach it */
-    default:
-      return Number.NaN
-  }
-}
-
-let getBinaryExpressionNumberValue = (
+function getBinaryExpressionNumberValue(
   leftExpression: TSESTree.PrivateIdentifier | TSESTree.Expression,
   rightExpression: TSESTree.Expression,
   operator: string,
-): number => {
+): number {
   let left = getExpressionNumberValue(leftExpression)
   let right = getExpressionNumberValue(rightExpression)
   switch (operator) {
@@ -382,15 +342,36 @@ let getBinaryExpressionNumberValue = (
   }
 }
 
-let computeNodeValueGetter = ({
+function getExpressionNumberValue(expression: TSESTree.Node): number {
+  switch (expression.type) {
+    case 'BinaryExpression':
+      return getBinaryExpressionNumberValue(
+        expression.left,
+        expression.right,
+        expression.operator,
+      )
+    case 'UnaryExpression':
+      return getUnaryExpressionNumberValue(
+        expression.argument,
+        expression.operator,
+      )
+    case 'Literal':
+      return typeof expression.value === 'number'
+        ? expression.value
+        : Number.NaN
+    default:
+      return Number.NaN
+  }
+}
+
+function computeNodeValueGetter({
   isNumericEnum,
   options,
 }: {
   options: Pick<Required<Options[0]>, 'forceNumericSort' | 'sortByValue'>
   isNumericEnum: boolean
-}): NodeValueGetterFunction<SortEnumsSortingNode> | null =>
-  // Get the enum value rather than the name if needed.
-  options.sortByValue || (isNumericEnum && options.forceNumericSort)
+}): NodeValueGetterFunction<SortEnumsSortingNode> | null {
+  return options.sortByValue || (isNumericEnum && options.forceNumericSort)
     ? sortingNode => {
         if (isNumericEnum) {
           return sortingNode.numericValue!.toString()
@@ -398,8 +379,9 @@ let computeNodeValueGetter = ({
         return sortingNode.value ?? ''
       }
     : null
+}
 
-let computeOptionType = ({
+function computeOptionType({
   isNumericEnum,
   options,
 }: {
@@ -408,11 +390,30 @@ let computeOptionType = ({
     'forceNumericSort' | 'sortByValue' | 'type'
   >
   isNumericEnum: boolean
-}): TypeOption =>
+}): TypeOption {
   /**
    * If the enum is numeric, and we sort by value, always use the
    * `natural` sort type, which will correctly sort them.
    */
-  isNumericEnum && (options.forceNumericSort || options.sortByValue)
+  return isNumericEnum && (options.forceNumericSort || options.sortByValue)
     ? 'natural'
     : options.type
+}
+
+function getUnaryExpressionNumberValue(
+  argumentExpression: TSESTree.Expression,
+  operator: string,
+): number {
+  let argument = getExpressionNumberValue(argumentExpression)
+  switch (operator) {
+    case '+':
+      return argument
+    case '-':
+      return -argument
+    case '~':
+      return ~argument
+    /* v8 ignore next 2 - Unsure if we can reach it */
+    default:
+      return Number.NaN
+  }
+}

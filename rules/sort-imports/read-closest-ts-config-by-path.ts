@@ -21,7 +21,7 @@ export let contentCacheByPath = new Map<
   ReadClosestTsConfigByPathValue
 >()
 
-export let readClosestTsConfigByPath = ({
+export function readClosestTsConfigByPath({
   tsconfigFilename,
   tsconfigRootDir,
   contextCwd,
@@ -31,7 +31,7 @@ export let readClosestTsConfigByPath = ({
   tsconfigRootDir: string
   contextCwd: string
   filePath: string
-}): ReadClosestTsConfigByPathValue | null => {
+}): ReadClosestTsConfigByPathValue | null {
   let typescriptImport = getTypescriptImport()
   if (!typescriptImport) {
     return null
@@ -63,11 +63,11 @@ export let readClosestTsConfigByPath = ({
   )
 }
 
-let getCompilerOptions = (
+function getCompilerOptions(
   typescriptImport: typeof ts,
   contextCwd: string,
   filePath: string,
-): ReadClosestTsConfigByPathValue => {
+): ReadClosestTsConfigByPathValue {
   if (contentCacheByPath.has(filePath)) {
     return contentCacheByPath.get(filePath)!
   }

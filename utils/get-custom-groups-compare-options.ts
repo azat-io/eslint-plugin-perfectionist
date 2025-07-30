@@ -29,10 +29,10 @@ interface OverridableOptions {
  * options for.
  * @returns {object} The options for the group
  */
-export let getCustomGroupsCompareOptions = (
+export function getCustomGroupsCompareOptions(
   options: GroupRelatedOptions & OverridableOptions,
   groupIndex: number,
-): OverridableOptions => {
+): OverridableOptions {
   let { customGroups, fallbackSort, groups, order, type } = options
 
   if (Array.isArray(customGroups)) {
@@ -62,26 +62,28 @@ export let getCustomGroupsCompareOptions = (
   }
 }
 
-export let buildGetCustomGroupOverriddenOptionsFunction =
-  (
-    options: BaseSortNodesByGroupsOptions & GroupRelatedOptions,
-  ): ((groupIndex: number) => {
-    options: BaseSortNodesByGroupsOptions
-  }) =>
-  (groupIndex: number) => ({
+export function buildGetCustomGroupOverriddenOptionsFunction(
+  options: BaseSortNodesByGroupsOptions & GroupRelatedOptions,
+): (groupIndex: number) => {
+  options: BaseSortNodesByGroupsOptions
+} {
+  return (groupIndex: number) => ({
     options: getCustomGroupOverriddenOptions({
       groupIndex,
       options,
     }),
   })
+}
 
-export let getCustomGroupOverriddenOptions = ({
+export function getCustomGroupOverriddenOptions({
   groupIndex,
   options,
 }: {
   options: BaseSortNodesByGroupsOptions & GroupRelatedOptions
   groupIndex: number
-}): BaseSortNodesByGroupsOptions => ({
-  ...options,
-  ...getCustomGroupsCompareOptions(options, groupIndex),
-})
+}): BaseSortNodesByGroupsOptions {
+  return {
+    ...options,
+    ...getCustomGroupsCompareOptions(options, groupIndex),
+  }
+}

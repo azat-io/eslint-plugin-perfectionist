@@ -156,9 +156,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         [[]],
       )
 
-      let sortNodesExcludingEslintDisabled = (
+      function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
-      ): SortingNodeWithDependencies[] => {
+      ): SortingNodeWithDependencies[] {
         let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
           sortNodesByGroups({
             getOptionsByGroupIndex:
@@ -231,10 +231,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
   defaultOptions: [defaultOptions],
 })
 
-let extractDependencies = (init: TSESTree.Expression): string[] => {
+function extractDependencies(init: TSESTree.Expression): string[] {
   let dependencies: string[] = []
 
-  let checkNode = (nodeValue: TSESTree.Node): void => {
+  function checkNode(nodeValue: TSESTree.Node): void {
     /**
      * No need to check the body of functions and arrow functions
      */
@@ -316,7 +316,7 @@ let extractDependencies = (init: TSESTree.Expression): string[] => {
     }
   }
 
-  let traverseNode = (nodeValue: TSESTree.Node): void => {
+  function traverseNode(nodeValue: TSESTree.Node): void {
     checkNode(nodeValue)
   }
 

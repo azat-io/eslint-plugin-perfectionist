@@ -165,16 +165,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
         }
 
         for (let nodes of formattedMembers) {
-          let sortNodesExcludingEslintDisabled = (
-            ignoreEslintDisabledNodes: boolean,
-          ): SortingNode[] =>
-            sortNodesByGroups({
-              getOptionsByGroupIndex:
-                buildGetCustomGroupOverriddenOptionsFunction(options),
-              ignoreEslintDisabledNodes,
-              groups: options.groups,
-              nodes,
-            })
+          function createSortNodesExcludingEslintDisabled(
+            sortingNodes: SortingNode[],
+          ) {
+            return function (
+              ignoreEslintDisabledNodes: boolean,
+            ): SortingNode[] {
+              return sortNodesByGroups({
+                getOptionsByGroupIndex:
+                  buildGetCustomGroupOverriddenOptionsFunction(options),
+                ignoreEslintDisabledNodes,
+                groups: options.groups,
+                nodes: sortingNodes,
+              })
+            }
+          }
 
           reportAllErrors<MESSAGE_ID>({
             availableMessageIds: {
@@ -185,7 +190,8 @@ export default createEslintRule<Options, MESSAGE_ID>({
               unexpectedGroupOrder: 'unexpectedMapElementsGroupOrder',
               unexpectedOrder: 'unexpectedMapElementsOrder',
             },
-            sortNodesExcludingEslintDisabled,
+            sortNodesExcludingEslintDisabled:
+              createSortNodesExcludingEslintDisabled(nodes),
             sourceCode,
             options,
             context,
@@ -233,13 +239,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-maps',
 })
 
-let getNodeName = ({
+function getNodeName({
   sourceCode,
   element,
 }: {
   sourceCode: TSESLint.SourceCode
   element: TSESTree.Expression
-}): string => {
+}): string {
   if (element.type === 'ArrayExpression') {
     let [left] = element.elements
 

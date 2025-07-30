@@ -1,13 +1,13 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-export let getDecoratorName = ({
+export function getDecoratorName({
   sourceCode,
   decorator,
 }: {
   sourceCode: TSESLint.SourceCode
   decorator: TSESTree.Decorator
-}): string => {
+}): string {
   let fullName = sourceCode.getText(decorator)
   if (fullName.startsWith('@')) {
     fullName = fullName.slice(1)

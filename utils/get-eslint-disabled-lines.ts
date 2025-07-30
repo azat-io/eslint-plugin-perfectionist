@@ -3,10 +3,10 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 import { UnreachableCaseError } from './unreachable-case-error'
 
-export let getEslintDisabledLines = (props: {
+export function getEslintDisabledLines(props: {
   sourceCode: TSESLint.SourceCode
   ruleName: string
-}): number[] => {
+}): number[] {
   let { sourceCode, ruleName } = props
   let returnValue: number[] = []
   let lineRulePermanentlyDisabled: number | null = null
@@ -57,5 +57,6 @@ export let getEslintDisabledLines = (props: {
   return returnValue
 }
 
-let createArrayFromTo = (i: number, index: number): number[] =>
-  Array.from({ length: index - i + 1 }, (_, item) => i + item)
+function createArrayFromTo(i: number, index: number): number[] {
+  return Array.from({ length: index - i + 1 }, (_, item) => i + item)
+}

@@ -1,2 +1,3 @@
-export let isSortable = (node: unknown): node is unknown[] =>
-  Array.isArray(node) && node.length > 1
+export function isSortable(node: unknown): node is unknown[] {
+  return Array.isArray(node) && node.length > 1
+}

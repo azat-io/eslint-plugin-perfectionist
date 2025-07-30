@@ -24,13 +24,13 @@ type SortingFunction<T extends SortingNode> = (a: T, b: T) => number
 type IndexByCharacters = Map<string, number>
 let alphabetCache = new Map<string, IndexByCharacters>()
 
-export let compare = <T extends SortingNode>({
+export function compare<T extends SortingNode>({
   fallbackSortNodeValueGetter,
   nodeValueGetter,
   options,
   a,
   b,
-}: CompareParameters<T>): number => {
+}: CompareParameters<T>): number {
   if (options.type === 'unsorted') {
     return 0
   }
@@ -60,85 +60,14 @@ export let compare = <T extends SortingNode>({
   })
 }
 
-let computeCompareValue = <T extends SortingNode>({
-  nodeValueGetter,
-  options,
-  a,
-  b,
-}: {
-  options: { maxLineLength?: number } & CommonOptions
-  nodeValueGetter: NodeValueGetterFunction<T>
-  a: T
-  b: T
-}): number => {
-  let sortingFunction: SortingFunction<T>
-
-  switch (options.type) {
-    case 'alphabetical':
-      sortingFunction = getAlphabeticalSortingFunction(options, nodeValueGetter)
-      break
-    case 'line-length':
-      sortingFunction = getLineLengthSortingFunction()
-      break
-    case 'unsorted':
-      return 0
-    case 'natural':
-      sortingFunction = getNaturalSortingFunction(options, nodeValueGetter)
-      break
-    case 'custom':
-      sortingFunction = getCustomSortingFunction(options, nodeValueGetter)
-      break
-    /* v8 ignore next 2 */
-    default:
-      throw new UnreachableCaseError(options.type)
-  }
-
-  return convertBooleanToSign(options.order === 'asc') * sortingFunction(a, b)
-}
-
-let getAlphabeticalSortingFunction = <T extends SortingNode>(
-  {
-    specialCharacters,
-    ignoreCase,
-    locales,
-  }: Pick<CommonOptions, 'specialCharacters' | 'ignoreCase' | 'locales'>,
-  nodeValueGetter: NodeValueGetterFunction<T>,
-): SortingFunction<T> => {
-  let formatString = getFormatStringFunction(ignoreCase, specialCharacters)
-  return (aNode: T, bNode: T) =>
-    formatString(nodeValueGetter(aNode)).localeCompare(
-      formatString(nodeValueGetter(bNode)),
-      locales,
-    )
-}
-
-let getNaturalSortingFunction = <T extends SortingNode>(
-  {
-    specialCharacters,
-    ignoreCase,
-    locales,
-  }: Pick<CommonOptions, 'specialCharacters' | 'ignoreCase' | 'locales'>,
-  nodeValueGetter: NodeValueGetterFunction<T>,
-): SortingFunction<T> => {
-  let naturalCompare = createNaturalCompare({
-    locale: locales.toString(),
-  })
-  let formatString = getFormatStringFunction(ignoreCase, specialCharacters)
-  return (aNode: T, bNode: T) =>
-    naturalCompare(
-      formatString(nodeValueGetter(aNode)),
-      formatString(nodeValueGetter(bNode)),
-    )
-}
-
-let getCustomSortingFunction = <T extends SortingNode>(
+function getCustomSortingFunction<T extends SortingNode>(
   {
     specialCharacters,
     ignoreCase,
     alphabet,
   }: Pick<CommonOptions, 'specialCharacters' | 'ignoreCase' | 'alphabet'>,
   nodeValueGetter: NodeValueGetterFunction<T>,
-): SortingFunction<T> => {
+): SortingFunction<T> {
   let formatString = getFormatStringFunction(ignoreCase, specialCharacters)
   let indexByCharacters = alphabetCache.get(alphabet)
   if (!indexByCharacters) {
@@ -171,17 +100,47 @@ let getCustomSortingFunction = <T extends SortingNode>(
   }
 }
 
-let getLineLengthSortingFunction =
-  <T extends SortingNode>(): SortingFunction<T> =>
-  (aNode: T, bNode: T) => {
-    let aSize = aNode.size
-    let bSize = bNode.size
-    return aSize - bSize
+function computeCompareValue<T extends SortingNode>({
+  nodeValueGetter,
+  options,
+  a,
+  b,
+}: {
+  options: { maxLineLength?: number } & CommonOptions
+  nodeValueGetter: NodeValueGetterFunction<T>
+  a: T
+  b: T
+}): number {
+  let sortingFunction: SortingFunction<T>
+
+  switch (options.type) {
+    case 'alphabetical':
+      sortingFunction = getAlphabeticalSortingFunction(options, nodeValueGetter)
+      break
+    case 'line-length':
+      sortingFunction = getLineLengthSortingFunction()
+      break
+    case 'unsorted':
+      return 0
+    case 'natural':
+      sortingFunction = getNaturalSortingFunction(options, nodeValueGetter)
+      break
+    case 'custom':
+      sortingFunction = getCustomSortingFunction(options, nodeValueGetter)
+      break
+    /* v8 ignore next 2 */
+    default:
+      throw new UnreachableCaseError(options.type)
   }
 
-let getFormatStringFunction =
-  (ignoreCase: boolean, specialCharacters: SpecialCharactersOption) =>
-  (value: string) => {
+  return convertBooleanToSign(options.order === 'asc') * sortingFunction(a, b)
+}
+
+function getFormatStringFunction(
+  ignoreCase: boolean,
+  specialCharacters: SpecialCharactersOption,
+) {
+  return (value: string) => {
     let valueToCompare = value
     if (ignoreCase) {
       valueToCompare = valueToCompare.toLowerCase()
@@ -207,3 +166,49 @@ let getFormatStringFunction =
     }
     return valueToCompare.replaceAll(/\s/gu, '')
   }
+}
+
+function getNaturalSortingFunction<T extends SortingNode>(
+  {
+    specialCharacters,
+    ignoreCase,
+    locales,
+  }: Pick<CommonOptions, 'specialCharacters' | 'ignoreCase' | 'locales'>,
+  nodeValueGetter: NodeValueGetterFunction<T>,
+): SortingFunction<T> {
+  let naturalCompare = createNaturalCompare({
+    locale: locales.toString(),
+  })
+  let formatString = getFormatStringFunction(ignoreCase, specialCharacters)
+  return (aNode: T, bNode: T) =>
+    naturalCompare(
+      formatString(nodeValueGetter(aNode)),
+      formatString(nodeValueGetter(bNode)),
+    )
+}
+
+function getAlphabeticalSortingFunction<T extends SortingNode>(
+  {
+    specialCharacters,
+    ignoreCase,
+    locales,
+  }: Pick<CommonOptions, 'specialCharacters' | 'ignoreCase' | 'locales'>,
+  nodeValueGetter: NodeValueGetterFunction<T>,
+): SortingFunction<T> {
+  let formatString = getFormatStringFunction(ignoreCase, specialCharacters)
+  return (aNode: T, bNode: T) =>
+    formatString(nodeValueGetter(aNode)).localeCompare(
+      formatString(nodeValueGetter(bNode)),
+      locales,
+    )
+}
+
+function getLineLengthSortingFunction<
+  T extends SortingNode,
+>(): SortingFunction<T> {
+  return (aNode: T, bNode: T) => {
+    let aSize = aNode.size
+    let bSize = bNode.size
+    return aSize - bSize
+  }
+}

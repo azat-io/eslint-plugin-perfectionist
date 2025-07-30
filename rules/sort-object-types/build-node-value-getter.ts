@@ -1,7 +1,8 @@
 import type { NodeValueGetterFunction } from '../../utils/compare'
 import type { SortObjectTypesSortingNode } from './types'
 
-export let buildNodeValueGetter = (
+export function buildNodeValueGetter(
   sortBy: 'value' | 'name',
-): NodeValueGetterFunction<SortObjectTypesSortingNode> | null =>
-  sortBy === 'value' ? node => node.value ?? '' : null
+): NodeValueGetterFunction<SortObjectTypesSortingNode> | null {
+  return sortBy === 'value' ? node => node.value ?? '' : null
+}

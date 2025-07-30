@@ -100,15 +100,16 @@ describe('sort-nodes', () => {
     ).toStrictEqual([nodeB, nodeA])
   })
 
-  let createTestNode = <T extends object>(
+  function createTestNode<T extends object>(
     node: {
       isEslintDisabled?: boolean
       name: string
     },
     additionalParameters?: T,
-  ): SortingNode & T =>
-    ({
+  ): SortingNode & T {
+    return {
       ...node,
       ...additionalParameters,
-    }) as SortingNode & T
+    } as SortingNode & T
+  }
 })

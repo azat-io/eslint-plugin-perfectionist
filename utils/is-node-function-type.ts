@@ -1,6 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-export let isNodeFunctionType = (node: TSESTree.Node): boolean => {
+export function isNodeFunctionType(node: TSESTree.Node): boolean {
   if (node.type === 'TSMethodSignature' || node.type === 'TSFunctionType') {
     return true
   }

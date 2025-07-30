@@ -44,7 +44,7 @@ interface ReportErrorsParameters<
   right: T
 }
 
-export let reportErrors = <MessageIds extends string, T extends SortingNode>({
+export function reportErrors<MessageIds extends string, T extends SortingNode>({
   firstUnorderedNodeDependentOnRight,
   ignoreFirstNodeHighestBlockComment,
   newlinesBetweenValueGetter,
@@ -57,7 +57,7 @@ export let reportErrors = <MessageIds extends string, T extends SortingNode>({
   nodes,
   right,
   left,
-}: ReportErrorsParameters<MessageIds, T>): void => {
+}: ReportErrorsParameters<MessageIds, T>): void {
   for (let messageId of messageIds) {
     context.report({
       data: {
@@ -85,5 +85,6 @@ export let reportErrors = <MessageIds extends string, T extends SortingNode>({
   }
 }
 
-let toSingleLine = (string: string): string =>
-  string.replaceAll(/\s{2,}/gu, ' ').trim()
+function toSingleLine(string: string): string {
+  return string.replaceAll(/\s{2,}/gu, ' ').trim()
+}

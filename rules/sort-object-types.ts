@@ -164,7 +164,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-object-types',
 })
 
-export let sortObjectTypeElements = <MessageIds extends string>({
+export function sortObjectTypeElements<MessageIds extends string>({
   availableMessageIds,
   parentNodeName,
   elements,
@@ -179,7 +179,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
   context: RuleContext<MessageIds, Options>
   elements: TSESTree.TypeElement[]
   parentNodeName: string | null
-}): void => {
+}): void {
   if (!isSortable(elements)) {
     return
   }
@@ -344,10 +344,10 @@ export let sortObjectTypeElements = <MessageIds extends string>({
       ),
     )
 
-    let sortNodesExcludingEslintDisabled = (
+    function sortNodesExcludingEslintDisabled(
       ignoreEslintDisabledNodes: boolean,
-    ): SortObjectTypesSortingNode[] =>
-      filteredGroupKindNodes.flatMap(groupedNodes =>
+    ): SortObjectTypesSortingNode[] {
+      return filteredGroupKindNodes.flatMap(groupedNodes =>
         sortNodesByGroups({
           getOptionsByGroupIndex: groupIndex => {
             let {
@@ -375,6 +375,7 @@ export let sortObjectTypeElements = <MessageIds extends string>({
           nodes: groupedNodes,
         }),
       )
+    }
 
     reportAllErrors<MessageIds>({
       sortNodesExcludingEslintDisabled,
@@ -387,16 +388,18 @@ export let sortObjectTypeElements = <MessageIds extends string>({
   }
 }
 
-let getNodeName = ({
+function getNodeName({
   typeElement,
   sourceCode,
 }: {
   typeElement: TSESTree.TypeElement
   sourceCode: TSESLint.SourceCode
-}): string => {
+}): string {
   let name: string
 
-  let formatName = (value: string): string => value.replace(/[,;]$/u, '')
+  function formatName(value: string): string {
+    return value.replace(/[,;]$/u, '')
+  }
 
   if (typeElement.type === 'TSPropertySignature') {
     if (typeElement.key.type === 'Identifier') {

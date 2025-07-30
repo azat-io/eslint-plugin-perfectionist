@@ -293,23 +293,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-switch-case',
 })
 
-let getCaseName = (
-  sourceCode: TSESLint.SourceCode,
-  caseNode: TSESTree.SwitchCase,
-): string => {
-  if (caseNode.test?.type === 'Literal') {
-    return `${caseNode.test.value}`
-  } else if (caseNode.test === null) {
-    return 'default'
-  }
-  return sourceCode.getText(caseNode.test)
-}
-
-let reduceCaseSortingNodes = (
+function reduceCaseSortingNodes(
   caseNodes: SortSwitchCaseSortingNode[],
   endsBlock: (caseNode: SortSwitchCaseSortingNode) => boolean,
-): SortSwitchCaseSortingNode[][] =>
-  caseNodes.reduce(
+): SortSwitchCaseSortingNode[][] {
+  return caseNodes.reduce(
     (
       accumulator: SortSwitchCaseSortingNode[][],
       caseNode: SortSwitchCaseSortingNode,
@@ -323,8 +311,21 @@ let reduceCaseSortingNodes = (
     },
     [[]],
   )
+}
 
-let caseHasBreakOrReturn = (caseNode: TSESTree.SwitchCase): boolean => {
+function getCaseName(
+  sourceCode: TSESLint.SourceCode,
+  caseNode: TSESTree.SwitchCase,
+): string {
+  if (caseNode.test?.type === 'Literal') {
+    return `${caseNode.test.value}`
+  } else if (caseNode.test === null) {
+    return 'default'
+  }
+  return sourceCode.getText(caseNode.test)
+}
+
+function caseHasBreakOrReturn(caseNode: TSESTree.SwitchCase): boolean {
   let statements =
     caseNode.consequent[0]?.type === 'BlockStatement'
       ? caseNode.consequent[0].body
@@ -333,7 +334,10 @@ let caseHasBreakOrReturn = (caseNode: TSESTree.SwitchCase): boolean => {
   return statements.some(statementIsBreakOrReturn)
 }
 
-let statementIsBreakOrReturn = (
+function statementIsBreakOrReturn(
   statement: TSESTree.Statement,
-): statement is TSESTree.ReturnStatement | TSESTree.BreakStatement =>
-  statement.type === 'BreakStatement' || statement.type === 'ReturnStatement'
+): statement is TSESTree.ReturnStatement | TSESTree.BreakStatement {
+  return (
+    statement.type === 'BreakStatement' || statement.type === 'ReturnStatement'
+  )
+}

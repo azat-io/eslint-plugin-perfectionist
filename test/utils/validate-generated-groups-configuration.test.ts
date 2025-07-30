@@ -128,7 +128,7 @@ describe('validate-generated-groups-configuration', () => {
   )
 })
 
-let getAllNonEmptyCombinations = (array: string[]): string[][] => {
+function getAllNonEmptyCombinations(array: string[]): string[][] {
   let result: string[][] = []
   for (let i = 1; i < array.length; i++) {
     result = [...result, ...getArrayCombinations(array, i)]

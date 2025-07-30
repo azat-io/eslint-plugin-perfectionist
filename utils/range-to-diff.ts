@@ -1,10 +1,10 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-export let rangeToDiff = (
+export function rangeToDiff(
   node: TSESTree.Node,
   sourceCode: TSESLint.SourceCode,
-): number => {
+): number {
   let nodeText = sourceCode.getText(node)
   let endsWithCommaOrSemicolon =
     nodeText.endsWith(';') || nodeText.endsWith(',')

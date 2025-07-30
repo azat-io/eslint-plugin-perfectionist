@@ -201,7 +201,7 @@ describe('compute-common-selector', () => {
     })
   })
 
-  let buildParameters = ({
+  function buildParameters({
     internalPattern,
     environment,
     tsConfig,
@@ -213,31 +213,33 @@ describe('compute-common-selector', () => {
     environment?: 'node' | 'bun'
     internalPattern?: string[]
     name: string
-  }): Parameters<typeof computeCommonSelectors>[0] => ({
-    tsConfigOutput: tsConfig
-      ? ({
-          compilerOptions: {
-            paths: Object.fromEntries(
-              (tsConfig.paths ?? []).map(path => [path, ['*']]),
-            ),
-          },
-        } as ReadClosestTsConfigByPathValue)
-      : null,
-    options: {
-      internalPattern: internalPattern ?? [],
-      environment: environment ?? 'node',
-    },
-    filename: '',
-    name,
-  })
+  }): Parameters<typeof computeCommonSelectors>[0] {
+    return {
+      tsConfigOutput: tsConfig
+        ? ({
+            compilerOptions: {
+              paths: Object.fromEntries(
+                (tsConfig.paths ?? []).map(path => [path, ['*']]),
+              ),
+            },
+          } as ReadClosestTsConfigByPathValue)
+        : null,
+      options: {
+        internalPattern: internalPattern ?? [],
+        environment: environment ?? 'node',
+      },
+      filename: '',
+      name,
+    }
+  }
 
-  let mockGetTypescriptImportReturnValue = ({
+  function mockGetTypescriptImportReturnValue({
     isExternalModuleNameRelative,
     resolveModuleName,
   }: {
     resolveModuleName?: { isExternalLibraryImport: boolean }
     isExternalModuleNameRelative: boolean
-  }): void => {
+  }): void {
     mockGetTypescriptImport.mockReturnValueOnce({
       resolveModuleName: () => ({
         resolvedModule: {

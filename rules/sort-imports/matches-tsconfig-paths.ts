@@ -2,13 +2,13 @@ import type { ReadClosestTsConfigByPathValue } from './read-closest-ts-config-by
 
 let regexByTsconfigPathCache = new Map<string, RegExp>()
 
-export let matchesTsconfigPaths = ({
+export function matchesTsconfigPaths({
   tsConfigOutput,
   name,
 }: {
   tsConfigOutput: ReadClosestTsConfigByPathValue
   name: string
-}): boolean => {
+}): boolean {
   if (!tsConfigOutput.compilerOptions.paths) {
     return false
   }
@@ -18,7 +18,7 @@ export let matchesTsconfigPaths = ({
   )
 }
 
-let getRegexByTsconfigPath = (path: string): RegExp => {
+function getRegexByTsconfigPath(path: string): RegExp {
   let existingRegex = regexByTsconfigPathCache.get(path)
   if (existingRegex) {
     return existingRegex
@@ -28,5 +28,6 @@ let getRegexByTsconfigPath = (path: string): RegExp => {
   return regex
 }
 
-let escapeRegExp = (value: string): string =>
-  value.replaceAll(/[$+.?[\\\]]/gu, String.raw`\$&`)
+function escapeRegExp(value: string): string {
+  return value.replaceAll(/[$+.?[\\\]]/gu, String.raw`\$&`)
+}

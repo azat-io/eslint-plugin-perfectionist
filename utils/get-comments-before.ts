@@ -17,11 +17,11 @@ interface GetCommentsBeforeParameters {
  * directly precede the node.
  * @returns {TSESTree.Comment[]} An array of comments before the given node.
  */
-export let getCommentsBefore = ({
+export function getCommentsBefore({
   tokenValueToIgnoreBefore,
   sourceCode,
   node,
-}: GetCommentsBeforeParameters): TSESTree.Comment[] => {
+}: GetCommentsBeforeParameters): TSESTree.Comment[] {
   let commentsBefore = getRelevantCommentsBeforeNodeOrToken(sourceCode, node)
   let tokenBeforeNode = sourceCode.getTokenBefore(node)
   if (
@@ -34,11 +34,11 @@ export let getCommentsBefore = ({
   return getRelevantCommentsBeforeNodeOrToken(sourceCode, tokenBeforeNode)
 }
 
-let getRelevantCommentsBeforeNodeOrToken = (
+function getRelevantCommentsBeforeNodeOrToken(
   source: TSESLint.SourceCode,
   node: TSESTree.Token | TSESTree.Node,
-): TSESTree.Comment[] =>
-  source
+): TSESTree.Comment[] {
+  return source
     .getCommentsBefore(node)
     .filter(comment => !isShebangComment(comment))
     .filter(comment => {
@@ -49,7 +49,11 @@ let getRelevantCommentsBeforeNodeOrToken = (
       let tokenBeforeComment = source.getTokenBefore(comment)
       return tokenBeforeComment?.loc.end.line !== comment.loc.end.line
     })
+}
 
-let isShebangComment = (comment: TSESTree.Comment): boolean =>
-  comment.type === ('Shebang' as unknown) ||
-  comment.type === ('Hashbang' as unknown)
+function isShebangComment(comment: TSESTree.Comment): boolean {
+  return (
+    comment.type === ('Shebang' as unknown) ||
+    comment.type === ('Hashbang' as unknown)
+  )
+}

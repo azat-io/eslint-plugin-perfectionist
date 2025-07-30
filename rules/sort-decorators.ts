@@ -184,11 +184,11 @@ export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-decorators',
 })
 
-let sortDecorators = (
+function sortDecorators(
   context: Readonly<RuleContext<MESSAGE_ID, Options>>,
   options: Required<Options[0]>,
   decorators: TSESTree.Decorator[],
-): void => {
+): void {
   if (!isSortable(decorators)) {
     return
   }
@@ -241,10 +241,10 @@ let sortDecorators = (
     [[]],
   )
 
-  let sortNodesExcludingEslintDisabled = (
+  function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
-  ): SortDecoratorsSortingNode[] =>
-    formattedMembers.flatMap(nodes =>
+  ): SortDecoratorsSortingNode[] {
+    return formattedMembers.flatMap(nodes =>
       sortNodesByGroups({
         getOptionsByGroupIndex: () => ({ options }),
         ignoreEslintDisabledNodes,
@@ -252,6 +252,7 @@ let sortDecorators = (
         nodes,
       }),
     )
+  }
   let nodes = formattedMembers.flat()
 
   reportAllErrors<MESSAGE_ID>({

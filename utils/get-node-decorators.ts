@@ -8,8 +8,10 @@ type NodeWithDecorator = {
  * Projects without typescript-eslint parser will not have the `decorators`
  * property on the node, so add a fallback.
  */
-export let getNodeDecorators = (
+export function getNodeDecorators(
   node: NodeWithDecorator,
+): TSESTree.Decorator[] {
   /* v8 ignore next 2 */
   // eslint-disable-next-line typescript/no-unnecessary-condition
-): TSESTree.Decorator[] => node.decorators ?? []
+  return node.decorators ?? []
+}

@@ -20,7 +20,7 @@ let hasTriedLoadingTypescript: boolean = false
  * @returns {typeof ts | null} The TypeScript module or null if it's not
  * available.
  */
-export let getTypescriptImport = (): typeof ts | null => {
+export function getTypescriptImport(): typeof ts | null {
   if (cachedImport) {
     return cachedImport
   }

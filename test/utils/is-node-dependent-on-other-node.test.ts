@@ -27,15 +27,16 @@ describe('isNodeDependentOnOtherNode', () => {
     expect(isNodeDependentOnOtherNode(node1, node2)).toBeTruthy()
   })
 
-  let createNodeWithDependencies = ({
+  function createNodeWithDependencies({
     dependencyNames,
     dependencies,
   }: {
     dependencyNames: string[]
     dependencies: string[]
-  }): SortingNodeWithDependencies =>
-    ({
+  }): SortingNodeWithDependencies {
+    return {
       dependencyNames,
       dependencies,
-    }) as SortingNodeWithDependencies
+    } as SortingNodeWithDependencies
+  }
 })

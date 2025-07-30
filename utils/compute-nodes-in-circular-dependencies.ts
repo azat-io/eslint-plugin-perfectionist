@@ -1,15 +1,13 @@
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 
-export let computeNodesInCircularDependencies = <
+export function computeNodesInCircularDependencies<
   T extends SortingNodeWithDependencies,
->(
-  elements: T[],
-): Set<T> => {
+>(elements: T[]): Set<T> {
   let elementsInCycles = new Set<T>()
   let visitingElements = new Set<T>()
   let visitedElements = new Set<T>()
 
-  let depthFirstSearch = (element: T, path: T[]): void => {
+  function depthFirstSearch(element: T, path: T[]): void {
     if (visitedElements.has(element)) {
       return
     }

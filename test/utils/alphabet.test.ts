@@ -146,10 +146,18 @@ describe('alphabet', () => {
     })
 
     describe('misc utilities', () => {
+      it('allows getting characters as array', () => {
+        let alphabet = Alphabet.generateFrom('abc')
+        let characters = [...alphabet.getCharacters()]
+        expect(characters).toEqual(['a', 'b', 'c'])
+      })
+
       it('allows reversing the alphabet', () => {
-        expect(Alphabet.generateFrom('abc').reverse().getCharacters()).toBe(
-          'cba',
-        )
+        expect(
+          [...Alphabet.generateFrom('abc').getCharacters()]
+            .toReversed()
+            .join(''),
+        ).toBe('cba')
       })
 
       describe('prioritizeCase', () => {

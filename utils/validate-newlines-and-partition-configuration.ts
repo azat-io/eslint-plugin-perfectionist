@@ -11,11 +11,11 @@ interface Options {
   partitionByNewLine: boolean
 }
 
-export let validateNewlinesAndPartitionConfiguration = ({
+export function validateNewlinesAndPartitionConfiguration({
   partitionByNewLine,
   newlinesBetween,
   groups,
-}: Options): void => {
+}: Options): void {
   if (!partitionByNewLine) {
     return
   }

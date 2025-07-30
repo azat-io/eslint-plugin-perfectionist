@@ -19,13 +19,13 @@ interface ShouldPartitionParameters {
   sourceCode: TSESLint.SourceCode
 }
 
-export let shouldPartition = ({
+export function shouldPartition({
   tokenValueToIgnoreBefore,
   lastSortingNode,
   sortingNode,
   sourceCode,
   options,
-}: ShouldPartitionParameters): boolean => {
+}: ShouldPartitionParameters): boolean {
   let shouldPartitionByComment =
     options.partitionByComment &&
     hasPartitionComment({
@@ -47,16 +47,17 @@ export let shouldPartition = ({
   )
 }
 
-let hasPartitionComment = ({
+function hasPartitionComment({
   partitionByComment,
   comments,
 }: {
   partitionByComment: PartitionByCommentOption
   comments: TSESTree.Comment[]
-}): boolean =>
-  comments.some(comment =>
+}): boolean {
+  return comments.some(comment =>
     isPartitionComment({
       partitionByComment,
       comment,
     }),
   )
+}

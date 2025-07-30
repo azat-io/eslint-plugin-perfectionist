@@ -1,6 +1,6 @@
 import type { RegexOption } from '../types/common-options'
 
-export let matches = (value: string, regexOption: RegexOption): boolean => {
+export function matches(value: string, regexOption: RegexOption): boolean {
   if (Array.isArray(regexOption)) {
     return regexOption.some(opt => matches(value, opt))
   }

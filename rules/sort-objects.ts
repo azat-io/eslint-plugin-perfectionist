@@ -90,9 +90,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
     let settings = getSettings(context.settings)
     let { sourceCode, id } = context
 
-    let sortObject = (
+    function sortObject(
       nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
-    ): void => {
+    ): void {
       if (!isSortable(nodeObject.properties)) {
         return
       }
@@ -172,10 +172,10 @@ export default createEslintRule<Options, MESSAGE_ID>({
         sourceCode,
       })
 
-      let extractDependencies = (init: TSESTree.Expression): string[] => {
+      function extractDependencies(init: TSESTree.Expression): string[] {
         let dependencies: string[] = []
 
-        let checkNode = (nodeValue: TSESTree.Node): void => {
+        function checkNode(nodeValue: TSESTree.Node): void {
           /**
            * No need to check the body of functions and arrow functions
            */
@@ -257,21 +257,21 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
         }
 
-        let traverseNode = (nodeValue: TSESTree.Node): void => {
+        function traverseNode(nodeValue: TSESTree.Node): void {
           checkNode(nodeValue)
         }
 
         traverseNode(init)
         return dependencies
       }
-      let formatProperties = (
+      function formatProperties(
         props: (
           | TSESTree.ObjectLiteralElement
           | TSESTree.RestElement
           | TSESTree.Property
         )[],
-      ): SortingNodeWithDependencies[][] =>
-        props.reduce(
+      ): SortingNodeWithDependencies[][] {
+        return props.reduce(
           (accumulator: SortingNodeWithDependencies[][], property) => {
             if (
               property.type === 'SpreadElement' ||
@@ -370,6 +370,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           },
           [[]],
         )
+      }
       let formattedMembers = formatProperties(nodeObject.properties)
 
       let sortingOptions: BaseSortNodesByGroupsOptions = options
@@ -379,9 +380,9 @@ export default createEslintRule<Options, MESSAGE_ID>({
         !options.destructuredObjects.groups
           ? ('sortNodes' as const)
           : ('sortNodesByGroups' as const)
-      let sortNodesExcludingEslintDisabled = (
+      function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
-      ): SortingNodeWithDependencies[] => {
+      ): SortingNodeWithDependencies[] {
         let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
           nodesSortingFunction === 'sortNodes'
             ? sortNodes({
@@ -504,87 +505,13 @@ export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-objects',
 })
 
-let getNodeName = ({
-  sourceCode,
-  property,
-}: {
-  sourceCode: TSESLint.SourceCode
-  property: TSESTree.Property
-}): string => {
-  if (property.key.type === 'Identifier') {
-    return property.key.name
-  } else if (property.key.type === 'Literal') {
-    return `${property.key.value}`
-  }
-  return sourceCode.getText(property.key)
-}
-
-let getNodeValue = ({
-  sourceCode,
-  property,
-}: {
-  sourceCode: TSESLint.SourceCode
-  property: TSESTree.Property
-}): string | null => {
-  if (
-    property.value.type === 'ArrowFunctionExpression' ||
-    property.value.type === 'FunctionExpression'
-  ) {
-    return null
-  }
-  return sourceCode.getText(property.value)
-}
-
-let getObjectParent = ({
+function getVariableParentName({
   onlyFirstParent,
   node,
 }: {
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
   onlyFirstParent: boolean
-}): {
-  type: 'VariableDeclarator' | 'CallExpression'
-  name: string
-} | null => {
-  let variableParentName = getVariableParentName({ onlyFirstParent, node })
-  if (variableParentName) {
-    return {
-      type: 'VariableDeclarator',
-      name: variableParentName,
-    }
-  }
-  let callParentName = getCallExpressionParentName({
-    onlyFirstParent,
-    node,
-  })
-  if (callParentName) {
-    return {
-      type: 'CallExpression',
-      name: callParentName,
-    }
-  }
-  return null
-}
-
-let getRootObject = (
-  node: TSESTree.ObjectExpression,
-): TSESTree.ObjectExpression => {
-  let objectRoot = node
-  while (
-    objectRoot.parent.type === 'Property' &&
-    objectRoot.parent.parent.type === 'ObjectExpression'
-  ) {
-    objectRoot = objectRoot.parent.parent
-  }
-  return objectRoot
-}
-
-let getVariableParentName = ({
-  onlyFirstParent,
-  node,
-}: {
-  node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
-  onlyFirstParent: boolean
-}): string | null => {
+}): string | null {
   let variableParent = getFirstNodeParentWithType({
     allowedTypes: [
       TSESTree.AST_NODE_TYPES.VariableDeclarator,
@@ -609,32 +536,37 @@ let getVariableParentName = ({
   return parentId.type === 'Identifier' ? parentId.name : null
 }
 
-let getCallExpressionParentName = ({
+function getObjectParent({
   onlyFirstParent,
   node,
 }: {
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
   onlyFirstParent: boolean
-}): string | null => {
-  let callParent = getFirstNodeParentWithType({
-    allowedTypes: [TSESTree.AST_NODE_TYPES.CallExpression],
+}): {
+  type: 'VariableDeclarator' | 'CallExpression'
+  name: string
+} | null {
+  let variableParentName = getVariableParentName({ onlyFirstParent, node })
+  if (variableParentName) {
+    return {
+      type: 'VariableDeclarator',
+      name: variableParentName,
+    }
+  }
+  let callParentName = getCallExpressionParentName({
     onlyFirstParent,
     node,
   })
-  if (!callParent) {
-    return null
+  if (callParentName) {
+    return {
+      type: 'CallExpression',
+      name: callParentName,
+    }
   }
-
-  return callParent.callee.type === 'Identifier' ? callParent.callee.name : null
+  return null
 }
 
-let isStyledCallExpression = (identifier: TSESTree.Expression): boolean =>
-  identifier.type === 'Identifier' && identifier.name === 'styled'
-
-let isCssCallExpression = (identifier: TSESTree.Expression): boolean =>
-  identifier.type === 'Identifier' && identifier.name === 'css'
-
-let isStyledComponents = (styledNode: TSESTree.Node): boolean => {
+function isStyledComponents(styledNode: TSESTree.Node): boolean {
   if (
     styledNode.type === 'JSXExpressionContainer' &&
     styledNode.parent.type === 'JSXAttribute' &&
@@ -654,4 +586,75 @@ let isStyledComponents = (styledNode: TSESTree.Node): boolean => {
     (styledNode.callee.type === 'CallExpression' &&
       isStyledCallExpression(styledNode.callee.callee))
   )
+}
+
+function getCallExpressionParentName({
+  onlyFirstParent,
+  node,
+}: {
+  node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  onlyFirstParent: boolean
+}): string | null {
+  let callParent = getFirstNodeParentWithType({
+    allowedTypes: [TSESTree.AST_NODE_TYPES.CallExpression],
+    onlyFirstParent,
+    node,
+  })
+  if (!callParent) {
+    return null
+  }
+
+  return callParent.callee.type === 'Identifier' ? callParent.callee.name : null
+}
+
+function getNodeName({
+  sourceCode,
+  property,
+}: {
+  sourceCode: TSESLint.SourceCode
+  property: TSESTree.Property
+}): string {
+  if (property.key.type === 'Identifier') {
+    return property.key.name
+  } else if (property.key.type === 'Literal') {
+    return `${property.key.value}`
+  }
+  return sourceCode.getText(property.key)
+}
+
+function getNodeValue({
+  sourceCode,
+  property,
+}: {
+  sourceCode: TSESLint.SourceCode
+  property: TSESTree.Property
+}): string | null {
+  if (
+    property.value.type === 'ArrowFunctionExpression' ||
+    property.value.type === 'FunctionExpression'
+  ) {
+    return null
+  }
+  return sourceCode.getText(property.value)
+}
+
+function getRootObject(
+  node: TSESTree.ObjectExpression,
+): TSESTree.ObjectExpression {
+  let objectRoot = node
+  while (
+    objectRoot.parent.type === 'Property' &&
+    objectRoot.parent.parent.type === 'ObjectExpression'
+  ) {
+    objectRoot = objectRoot.parent.parent
+  }
+  return objectRoot
+}
+
+function isStyledCallExpression(identifier: TSESTree.Expression): boolean {
+  return identifier.type === 'Identifier' && identifier.name === 'styled'
+}
+
+function isCssCallExpression(identifier: TSESTree.Expression): boolean {
+  return identifier.type === 'Identifier' && identifier.name === 'css'
 }

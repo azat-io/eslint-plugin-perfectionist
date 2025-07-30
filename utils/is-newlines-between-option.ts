@@ -3,7 +3,8 @@ import type {
   GroupsOptions,
 } from '../types/common-options'
 
-export let isNewlinesBetweenOption = (
+export function isNewlinesBetweenOption(
   groupOption: GroupsOptions<string>[number],
-): groupOption is GroupNewlinesBetweenOption =>
-  typeof groupOption === 'object' && 'newlinesBetween' in groupOption
+): groupOption is GroupNewlinesBetweenOption {
+  return typeof groupOption === 'object' && 'newlinesBetween' in groupOption
+}

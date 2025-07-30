@@ -119,7 +119,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
   name: 'sort-union-types',
 })
 
-export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
+export function sortUnionOrIntersectionTypes<MessageIds extends string>({
   tokenValueToIgnoreBefore,
   availableMessageIds,
   context,
@@ -134,7 +134,7 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
   node: TSESTree.TSIntersectionType | TSESTree.TSUnionType
   context: Readonly<RuleContext<MessageIds, Options>>
   tokenValueToIgnoreBefore: string
-}): void => {
+}): void {
   let settings = getSettings(context.settings)
 
   let options = complete(context.options.at(0), settings, defaultOptions)
@@ -266,19 +266,23 @@ export let sortUnionOrIntersectionTypes = <MessageIds extends string>({
   )
 
   for (let nodes of formattedMembers) {
-    let sortNodesExcludingEslintDisabled = (
-      ignoreEslintDisabledNodes: boolean,
-    ): SortingNode[] =>
-      sortNodesByGroups({
-        getOptionsByGroupIndex:
-          buildGetCustomGroupOverriddenOptionsFunction(options),
-        ignoreEslintDisabledNodes,
-        groups: options.groups,
-        nodes,
-      })
+    function createSortNodesExcludingEslintDisabled(
+      sortingNodes: SortingNode[],
+    ) {
+      return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
+        return sortNodesByGroups({
+          getOptionsByGroupIndex:
+            buildGetCustomGroupOverriddenOptionsFunction(options),
+          ignoreEslintDisabledNodes,
+          groups: options.groups,
+          nodes: sortingNodes,
+        })
+      }
+    }
 
     reportAllErrors<MessageIds>({
-      sortNodesExcludingEslintDisabled,
+      sortNodesExcludingEslintDisabled:
+        createSortNodesExcludingEslintDisabled(nodes),
       availableMessageIds,
       sourceCode,
       options,

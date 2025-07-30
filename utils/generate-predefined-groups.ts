@@ -20,11 +20,11 @@ interface GeneratePredefinedGroupsParameters {
  * @param {Map<string, string[]>} props.cache - Cache to store computed groups.
  * @returns {string[]} An array of generated group names.
  */
-export let generatePredefinedGroups = ({
+export function generatePredefinedGroups({
   selectors,
   modifiers,
   cache,
-}: GeneratePredefinedGroupsParameters): string[] => {
+}: GeneratePredefinedGroupsParameters): string[] {
   let modifiersAndSelectorsKey = `${modifiers.join('&')}/${selectors.join('&')}`
   let cachedValue = cache.get(modifiersAndSelectorsKey)
   if (cachedValue) {
@@ -67,9 +67,9 @@ export let generatePredefinedGroups = ({
  * @returns {string[][]} An array containing all permutations of the input
  * elements.
  */
-let getPermutations = (elements: string[]): string[][] => {
+function getPermutations(elements: string[]): string[][] {
   let result: string[][] = []
-  let backtrack = (first: number): void => {
+  function backtrack(first: number): void {
     if (first === elements.length) {
       result.push([...elements])
       return

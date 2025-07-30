@@ -27,14 +27,14 @@ interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
   nodes: T[]
 }
 
-export let makeNewlinesBetweenFixes = <T extends SortingNode>({
+export function makeNewlinesBetweenFixes<T extends SortingNode>({
   newlinesBetweenValueGetter,
   sortedNodes,
   sourceCode,
   options,
   fixer,
   nodes,
-}: MakeNewlinesBetweenFixesParameters<T>): TSESLint.RuleFix[] => {
+}: MakeNewlinesBetweenFixesParameters<T>): TSESLint.RuleFix[] {
   let fixes: TSESLint.RuleFix[] = []
 
   for (let i = 0; i < sortedNodes.length - 1; i++) {
@@ -113,7 +113,7 @@ export let makeNewlinesBetweenFixes = <T extends SortingNode>({
   return fixes
 }
 
-let computeRangeReplacement = ({
+function computeRangeReplacement({
   textBetweenNodes,
   newlinesBetween,
   isOnSameLine,
@@ -121,7 +121,7 @@ let computeRangeReplacement = ({
   textBetweenNodes: string
   newlinesBetween: number
   isOnSameLine: boolean
-}): undefined | string => {
+}): undefined | string {
   let textBetweenNodesWithoutInvalidNewlines =
     getStringWithoutInvalidNewlines(textBetweenNodes)
 
@@ -139,13 +139,14 @@ let computeRangeReplacement = ({
   return addNewlineBeforeFirstNewline(rangeReplacement)
 }
 
-let getStringWithoutInvalidNewlines = (value: string): string =>
-  value.replaceAll(/\n\s*\n/gu, '\n').replaceAll(/\n+/gu, '\n')
-
-let addNewlineBeforeFirstNewline = (value: string): string => {
+function addNewlineBeforeFirstNewline(value: string): string {
   let firstNewlineIndex = value.indexOf('\n')
   if (firstNewlineIndex === -1) {
     return `${value}\n`
   }
   return `${value.slice(0, firstNewlineIndex)}\n${value.slice(firstNewlineIndex)}`
+}
+
+function getStringWithoutInvalidNewlines(value: string): string {
+  return value.replaceAll(/\n\s*\n/gu, '\n').replaceAll(/\n+/gu, '\n')
 }

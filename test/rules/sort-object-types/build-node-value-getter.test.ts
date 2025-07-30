@@ -22,12 +22,13 @@ describe('build-node-value-getter', () => {
     })
   })
 
-  let createTestNode = ({
+  function createTestNode({
     value,
   }: {
     value: string | null
-  }): SortObjectTypesSortingNode =>
-    ({
+  }): SortObjectTypesSortingNode {
+    return {
       value,
-    }) as SortObjectTypesSortingNode
+    } as SortObjectTypesSortingNode
+  }
 })

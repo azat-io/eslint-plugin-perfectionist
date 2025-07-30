@@ -17,10 +17,10 @@ describe('validate-objects-inside-groups', () => {
   )
 })
 
-let buildAllPossibleCases = (): {
+function buildAllPossibleCases(): {
   second: (typeof cases)[number]
   first: (typeof cases)[number]
-}[] => {
+}[] {
   let cases = [
     { newlinesBetween: 'always' },
     { commentAbove: 'comment' },

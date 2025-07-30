@@ -1,1 +1,3 @@
-export let convertBooleanToSign = (value: boolean): -1 | 1 => (value ? 1 : -1)
+export function convertBooleanToSign(value: boolean): -1 | 1 {
+  return value ? 1 : -1
+}

@@ -9,7 +9,7 @@ type InputOptions = Pick<
   'fallbackSort' | 'customGroups' | 'sortBy' | 'groups' | 'order' | 'type'
 >
 
-export let getCustomGroupsCompareOptions = (
+export function getCustomGroupsCompareOptions(
   options: InputOptions,
   groupIndex: number,
 ): {
@@ -19,7 +19,7 @@ export let getCustomGroupsCompareOptions = (
   >
   fallbackSortNodeValueGetter?: NodeValueGetterFunction<SortObjectTypesSortingNode> | null
   nodeValueGetter?: NodeValueGetterFunction<SortObjectTypesSortingNode> | null
-} => {
+} {
   let baseCompareOptions = baseGetCustomGroupsCompareOptions(
     options,
     groupIndex,

@@ -5,9 +5,9 @@ import Ajv from 'ajv-draft-04'
 
 import { commonJsonSchemas } from '../../utils/common-json-schemas'
 
-export let validateRuleJsonSchema = async (
+export async function validateRuleJsonSchema(
   schemaOrSchemas: readonly JSONSchema4[] | JSONSchema4,
-): Promise<void> => {
+): Promise<void> {
   if (Array.isArray(schemaOrSchemas)) {
     for (let schema of schemaOrSchemas) {
       // eslint-disable-next-line no-await-in-loop
@@ -18,19 +18,7 @@ export let validateRuleJsonSchema = async (
   await validateJsonSchema(schemaOrSchemas as JSONSchema4)
 }
 
-let validateJsonSchema = async (schema: JSONSchema4): Promise<void> => {
-  new Ajv().compile(schema)
-  await validateTsJsonSchema(schema)
-}
-
-let validateTsJsonSchema = async (schema: JSONSchema4): Promise<void> => {
-  let generatedTypescript = await compileSchemaForTs(schema, 'id')
-
-  assertGeneratedTsSeemsCorrect(generatedTypescript)
-  assertNoWeakIndexSignature(generatedTypescript)
-}
-
-let assertGeneratedTsSeemsCorrect = (generatedTypescript: string): void => {
+function assertGeneratedTsSeemsCorrect(generatedTypescript: string): void {
   for (let [commonJsonSchemaKey, commonJsonSchema] of Object.entries(
     commonJsonSchemas,
   )) {
@@ -45,10 +33,22 @@ let assertGeneratedTsSeemsCorrect = (generatedTypescript: string): void => {
   }
 }
 
-let assertNoWeakIndexSignature = (generatedTypescript: string): void => {
+function assertNoWeakIndexSignature(generatedTypescript: string): void {
   if (generatedTypescript.includes('[k: string]: unknown')) {
     throw new Error(
       `Weak TypeScript generated from JSON schema: '[k: string]: unknown' index signature found:\n${generatedTypescript}`,
     )
   }
+}
+
+async function validateTsJsonSchema(schema: JSONSchema4): Promise<void> {
+  let generatedTypescript = await compileSchemaForTs(schema, 'id')
+
+  assertGeneratedTsSeemsCorrect(generatedTypescript)
+  assertNoWeakIndexSignature(generatedTypescript)
+}
+
+async function validateJsonSchema(schema: JSONSchema4): Promise<void> {
+  new Ajv().compile(schema)
+  await validateTsJsonSchema(schema)
 }

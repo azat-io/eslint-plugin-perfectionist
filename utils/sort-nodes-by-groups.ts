@@ -25,7 +25,7 @@ interface SortNodesByGroupsParameters<
   nodes: T[]
 }
 
-export let sortNodesByGroups = <
+export function sortNodesByGroups<
   T extends SortingNode,
   Options extends BaseSortNodesByGroupsOptions,
 >({
@@ -35,7 +35,7 @@ export let sortNodesByGroups = <
   isNodeIgnored,
   groups,
   nodes,
-}: SortNodesByGroupsParameters<Options, T>): T[] => {
+}: SortNodesByGroupsParameters<Options, T>): T[] {
   let nodesByNonIgnoredGroupIndex: Record<number, T[]> = {}
   let ignoredNodeIndices: number[] = []
   for (let [index, sortingNode] of nodes.entries()) {

@@ -368,7 +368,7 @@ describe('get-newlines-between-option', () => {
     })
   })
 
-  let buildParameters = ({
+  function buildParameters({
     nextNodeGroupIndexGroup,
     sortingNodeGroup,
     newlinesBetween,
@@ -380,7 +380,7 @@ describe('get-newlines-between-option', () => {
     groups?: GetNewlinesBetweenOptionParameters['options']['groups']
     nextNodeGroupIndexGroup?: string
     sortingNodeGroup?: string
-  }): GetNewlinesBetweenOptionParameters => {
+  }): GetNewlinesBetweenOptionParameters {
     let finalGroups = groups ?? ['group1', 'group2']
     return {
       nextNodeGroupIndex: generateNodeGroupIndex(
@@ -399,15 +399,17 @@ describe('get-newlines-between-option', () => {
     }
   }
 
-  let generateNodeGroupIndex = (
+  function generateNodeGroupIndex(
     groups: GetNewlinesBetweenOptionParameters['options']['groups'],
     group: string,
-  ): number => groups.indexOf(group)
+  ): number {
+    return groups.indexOf(group)
+  }
 })
 
-let convertNewlinesBetweenOptionToNumber = (
+function convertNewlinesBetweenOptionToNumber(
   newlinesBetween: NewlinesBetweenOption,
-): 'ignore' | number => {
+): 'ignore' | number {
   if (typeof newlinesBetween === 'number') {
     return newlinesBetween
   }

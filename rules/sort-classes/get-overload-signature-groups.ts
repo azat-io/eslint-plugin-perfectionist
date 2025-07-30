@@ -8,9 +8,9 @@ import { isSortable } from '../../utils/is-sortable'
  * @returns {TSESTree.ClassElement[][]} An array of groups of overload
  * signatures.
  */
-export let getOverloadSignatureGroups = (
+export function getOverloadSignatureGroups(
   members: TSESTree.ClassElement[],
-): TSESTree.ClassElement[][] => {
+): TSESTree.ClassElement[][] {
   let methods = members
     .filter(
       member =>

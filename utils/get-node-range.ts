@@ -18,12 +18,12 @@ interface GetNodeRangeParameters {
   node: TSESTree.Node
 }
 
-export let getNodeRange = ({
+export function getNodeRange({
   ignoreHighestBlockComment,
   sourceCode,
   options,
   node,
-}: GetNodeRangeParameters): TSESTree.Range => {
+}: GetNodeRangeParameters): TSESTree.Range {
   let start = node.range.at(0)!
   let end = node.range.at(1)!
 
