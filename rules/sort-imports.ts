@@ -70,9 +70,9 @@ export type MessageId =
   | 'unexpectedImportsOrder'
 
 let defaultOptions: Required<
-  Omit<Options[0], 'tsconfigRootDir' | 'maxLineLength' | 'tsconfig'>
+  Omit<Options[number], 'tsconfigRootDir' | 'maxLineLength' | 'tsconfig'>
 > &
-  Pick<Options[0], 'tsconfigRootDir' | 'maxLineLength' | 'tsconfig'> = {
+  Pick<Options[number], 'tsconfigRootDir' | 'maxLineLength' | 'tsconfig'> = {
   groups: [
     'type-import',
     ['value-builtin', 'value-external'],
@@ -578,7 +578,7 @@ function computeGroupExceptUnknown({
   name,
 }: {
   options: Omit<
-    Required<Options[0]>,
+    Required<Options[number]>,
     'tsconfigRootDir' | 'maxLineLength' | 'customGroups' | 'tsconfig'
   >
   customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption | undefined

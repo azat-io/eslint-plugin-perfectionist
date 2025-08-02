@@ -42,7 +42,7 @@ type MessageId =
 
 type Group = 'unknown' | string
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   type: 'alphabetical',
@@ -103,7 +103,7 @@ export default createEslintRule<Options, MessageId>({
 
 function sortHeritageClauses(
   context: Readonly<RuleContext<MessageId, Options>>,
-  options: Required<Options[0]>,
+  options: Required<Options[number]>,
   heritageClauses:
     | TSESTree.TSInterfaceHeritage[]
     | TSESTree.TSClassImplements[]
