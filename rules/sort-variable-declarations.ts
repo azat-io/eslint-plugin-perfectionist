@@ -47,7 +47,7 @@ type MESSAGE_ID =
   | 'unexpectedVariableDeclarationsGroupOrder'
   | 'unexpectedVariableDeclarationsOrder'
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByNewLine: false,

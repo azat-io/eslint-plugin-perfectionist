@@ -53,7 +53,7 @@ type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
 type Group = 'unknown' | string
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByComment: false,
@@ -186,7 +186,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
 function sortDecorators(
   context: Readonly<RuleContext<MESSAGE_ID, Options>>,
-  options: Required<Options[0]>,
+  options: Required<Options[number]>,
   decorators: TSESTree.Decorator[],
 ): void {
   if (!isSortable(decorators)) {

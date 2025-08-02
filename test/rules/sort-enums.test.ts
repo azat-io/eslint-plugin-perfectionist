@@ -3217,7 +3217,7 @@ describe(ruleName, () => {
       invalid: [],
     })
 
-    let sortTypes: Options[0]['type'][] = [
+    let sortTypes: Options[number]['type'][] = [
       'alphabetical',
       'line-length',
       'natural',
