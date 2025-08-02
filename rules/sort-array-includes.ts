@@ -175,7 +175,6 @@ export function sortArray<MessageIds extends string>({
       .map(element => getNodeName({ sourceCode, element })),
     contextOptions: context.options,
   })
-
   let options = complete(matchedContextOptions[0], settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGeneratedGroupsConfiguration({
