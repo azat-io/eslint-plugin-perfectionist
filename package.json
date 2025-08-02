@@ -95,6 +95,7 @@
     "dedent": "^1.6.0",
     "eslint": "^9.32.0",
     "eslint-plugin-eslint-plugin": "^6.5.0",
+    "eslint-vitest-rule-tester": "^2.2.1",
     "json-schema-to-typescript-lite": "^15.0.0",
     "keyux": "^0.11.3",
     "lightningcss": "^1.30.1",
