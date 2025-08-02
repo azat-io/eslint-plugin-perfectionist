@@ -1,3 +1,5 @@
+import type { TSESLint } from '@typescript-eslint/utils'
+
 import { TSESTree } from '@typescript-eslint/types'
 
 import type { Modifier, Selector } from './sort-jsx-props/types'
@@ -75,22 +77,11 @@ export default createEslintRule<Options, MessageId>({
 
       let settings = getSettings(context.settings)
       let { sourceCode, id } = context
-      let matchedContextOptions = filterOptionsByAllNamesMatch({
-        nodeNames: node.openingElement.attributes
-          .filter(
-            attribute =>
-              attribute.type !== TSESTree.AST_NODE_TYPES.JSXSpreadAttribute,
-          )
-          .map(attribute => getNodeName({ attribute })),
-        contextOptions: context.options,
-      }).find(options => {
-        if (!options.useConfigurationIf?.tagMatchesPattern) {
-          return true
-        }
-        return matches(
-          sourceCode.getText(node.openingElement.name),
-          options.useConfigurationIf.tagMatchesPattern,
-        )
+
+      let matchedContextOptions = computeMatchedContextOptions({
+        sourceCode,
+        context,
+        node,
       })
       let options = complete(matchedContextOptions, settings, defaultOptions)
       validateCustomSortConfiguration(options)
@@ -262,6 +253,34 @@ export default createEslintRule<Options, MessageId>({
   defaultOptions: [defaultOptions],
   name: 'sort-jsx-props',
 })
+
+function computeMatchedContextOptions({
+  sourceCode,
+  context,
+  node,
+}: {
+  context: TSESLint.RuleContext<string, Options>
+  sourceCode: TSESLint.SourceCode
+  node: TSESTree.JSXElement
+}): Options[number] | undefined {
+  return filterOptionsByAllNamesMatch({
+    nodeNames: node.openingElement.attributes
+      .filter(
+        attribute =>
+          attribute.type !== TSESTree.AST_NODE_TYPES.JSXSpreadAttribute,
+      )
+      .map(attribute => getNodeName({ attribute })),
+    contextOptions: context.options,
+  }).find(options => {
+    if (!options.useConfigurationIf?.tagMatchesPattern) {
+      return true
+    }
+    return matches(
+      sourceCode.getText(node.openingElement.name),
+      options.useConfigurationIf.tagMatchesPattern,
+    )
+  })
+}
 
 function getNodeName({
   attribute,

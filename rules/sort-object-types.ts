@@ -175,35 +175,12 @@ export function sortObjectTypeElements<MessageIds extends string>({
 
   let settings = getSettings(context.settings)
   let { sourceCode, id } = context
-  let filteredContextOptions = filterOptionsByAllNamesMatch({
-    nodeNames: elements.map(node =>
-      getNodeName({ typeElement: node, sourceCode }),
-    ),
-    contextOptions: context.options,
-  })
-  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
-    contextOptions: filteredContextOptions,
+
+  let matchedContextOptions = computeMatchedContextOptions({
     parentNode,
     sourceCode,
-  })
-
-  let matchedContextOptions = filteredContextOptions.find(options => {
-    if (!options.useConfigurationIf) {
-      return true
-    }
-
-    if (options.useConfigurationIf.declarationMatchesPattern) {
-      if (!parentNode) {
-        return false
-      }
-
-      return matches(
-        parentNode.id.name,
-        options.useConfigurationIf.declarationMatchesPattern,
-      )
-    }
-
-    return true
+    elements,
+    context,
   })
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
@@ -406,4 +383,50 @@ function getNodeName({
     )
   }
   return name
+}
+
+function computeMatchedContextOptions({
+  sourceCode,
+  parentNode,
+  elements,
+  context,
+}: {
+  parentNode:
+    | TSESTree.TSTypeAliasDeclaration
+    | TSESTree.TSInterfaceDeclaration
+    | null
+  context: TSESLint.RuleContext<string, Options>
+  elements: TSESTree.TypeElement[]
+  sourceCode: TSESLint.SourceCode
+}): Options[number] | undefined {
+  let filteredContextOptions = filterOptionsByAllNamesMatch({
+    nodeNames: elements.map(node =>
+      getNodeName({ typeElement: node, sourceCode }),
+    ),
+    contextOptions: context.options,
+  })
+  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
+    contextOptions: filteredContextOptions,
+    parentNode,
+    sourceCode,
+  })
+
+  return filteredContextOptions.find(options => {
+    if (!options.useConfigurationIf) {
+      return true
+    }
+
+    if (options.useConfigurationIf.declarationMatchesPattern) {
+      if (!parentNode) {
+        return false
+      }
+
+      return matches(
+        parentNode.id.name,
+        options.useConfigurationIf.declarationMatchesPattern,
+      )
+    }
+
+    return true
+  })
 }

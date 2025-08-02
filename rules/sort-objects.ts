@@ -96,58 +96,11 @@ export default createEslintRule<Options, MessageId>({
         return
       }
 
-      let objectParent = getObjectParent({
-        onlyFirstParent: true,
-        node: nodeObject,
+      let matchedContextOptions = computeMatchedContextOptions({
+        nodeObject,
         sourceCode,
+        context,
       })
-      let filteredContextOptions = filterOptionsByAllNamesMatch({
-        nodeNames: nodeObject.properties
-          .filter(
-            property =>
-              property.type !== 'SpreadElement' &&
-              property.type !== 'RestElement',
-          )
-          .map(property => getNodeName({ sourceCode, property })),
-        contextOptions: context.options,
-      })
-      let parentNodeForDeclarationComment = null
-      if (objectParent) {
-        parentNodeForDeclarationComment =
-          objectParent.type === 'VariableDeclarator'
-            ? objectParent.node.parent
-            : objectParent.node
-      }
-      filteredContextOptions = filterOptionsByDeclarationCommentMatches({
-        parentNode: parentNodeForDeclarationComment,
-        contextOptions: filteredContextOptions,
-        sourceCode,
-      })
-
-      let matchedContextOptions = filteredContextOptions.find(options => {
-        if (!options.useConfigurationIf) {
-          return true
-        }
-
-        if (options.useConfigurationIf.callingFunctionNamePattern) {
-          if (!objectParent) {
-            return false
-          }
-          if (
-            objectParent.type === 'VariableDeclarator' ||
-            !objectParent.name
-          ) {
-            return false
-          }
-          return matches(
-            objectParent.name,
-            options.useConfigurationIf.callingFunctionNamePattern,
-          )
-        }
-
-        return true
-      })
-
       let options = complete(matchedContextOptions, settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGeneratedGroupsConfiguration({
@@ -522,6 +475,65 @@ export default createEslintRule<Options, MessageId>({
   defaultOptions: [defaultOptions],
   name: 'sort-objects',
 })
+
+function computeMatchedContextOptions({
+  sourceCode,
+  nodeObject,
+  context,
+}: {
+  nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  context: TSESLint.RuleContext<MessageId, Options>
+  sourceCode: TSESLint.SourceCode
+}): Options[number] | undefined {
+  let objectParent = getObjectParent({
+    onlyFirstParent: true,
+    node: nodeObject,
+    sourceCode,
+  })
+  let filteredContextOptions = filterOptionsByAllNamesMatch({
+    nodeNames: nodeObject.properties
+      .filter(
+        property =>
+          property.type !== 'SpreadElement' && property.type !== 'RestElement',
+      )
+      .map(property => getNodeName({ sourceCode, property })),
+    contextOptions: context.options,
+  })
+
+  let parentNodeForDeclarationComment = null
+  if (objectParent) {
+    parentNodeForDeclarationComment =
+      objectParent.type === 'VariableDeclarator'
+        ? objectParent.node.parent
+        : objectParent.node
+  }
+  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
+    parentNode: parentNodeForDeclarationComment,
+    contextOptions: filteredContextOptions,
+    sourceCode,
+  })
+
+  return filteredContextOptions.find(options => {
+    if (!options.useConfigurationIf) {
+      return true
+    }
+
+    if (options.useConfigurationIf.callingFunctionNamePattern) {
+      if (!objectParent) {
+        return false
+      }
+      if (objectParent.type === 'VariableDeclarator' || !objectParent.name) {
+        return false
+      }
+      return matches(
+        objectParent.name,
+        options.useConfigurationIf.callingFunctionNamePattern,
+      )
+    }
+
+    return true
+  })
+}
 
 function getObjectParent({
   onlyFirstParent,
