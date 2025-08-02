@@ -19,7 +19,7 @@ import {
 export type Options = Partial<
   {
     customGroups: CustomGroupsOption<SingleCustomGroup>
-    /** @deprecated For {@link `groups`} */
+    /** @deprecated For {@link `groups`}. */
     groupKind: 'values-first' | 'types-first' | 'mixed'
     partitionByComment: PartitionByCommentOption
     newlinesBetween: NewlinesBetweenOption

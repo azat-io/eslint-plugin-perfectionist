@@ -4,11 +4,10 @@ import { isNewlinesBetweenOption } from './is-newlines-between-option'
 import { isCommentAboveOption } from './is-comment-above-option'
 
 /**
- * Throws an error if a group is specified more than once
+ * Throws an error if a group is specified more than once.
  *
- * @param {object} parameters - Parameters object.
- * @param {GroupsOptions} parameters.groups - The groups to check for
- *   duplicates.
+ * @param parameters - Parameters object.
+ * @param parameters.groups - The groups to check for duplicates.
  * @throws Error Will throw an error if duplicated groups are found.
  */
 export function validateNoDuplicatedGroups({

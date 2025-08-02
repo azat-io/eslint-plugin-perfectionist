@@ -54,7 +54,7 @@ export type Modifier =
   | ExportModifier
   | AsyncModifier
 
-/** Only used in code as well */
+/** Only used in code as well. */
 interface AllowedModifiersPerSelector {
   function: DeclareModifier | DefaultModifier | ExportModifier | AsyncModifier
   interface: DeclareModifier | DefaultModifier | ExportModifier
@@ -159,7 +159,7 @@ export let allModifiers: Modifier[] = [
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and
- * ensure that users do not enter invalid modifiers for a given selector
+ * ensure that users do not enter invalid modifiers for a given selector.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),

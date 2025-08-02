@@ -38,7 +38,7 @@ import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { complete } from '../utils/complete'
 
-/** Cache computed groups by modifiers and selectors for performance */
+/** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 type MESSAGE_ID =

@@ -5,9 +5,8 @@ import { isSortable } from '../../utils/is-sortable'
 /**
  * Returns a list of groups of overload signatures.
  *
- * @param {TSESTree.ClassElement[]} members - The class elements to process.
- * @returns {TSESTree.ClassElement[][]} An array of groups of overload
- *   signatures.
+ * @param members - The class elements to process.
+ * @returns An array of groups of overload signatures.
  */
 export function getOverloadSignatureGroups(
   members: TSESTree.ClassElement[],

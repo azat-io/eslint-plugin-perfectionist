@@ -1,9 +1,9 @@
 /**
  * Generates all possible combinations of a specific size from an array.
  *
- * @param {string[]} array - The array of strings to generate combinations from.
- * @param {number} number - The number of elements in each combination.
- * @returns {string[][]} An array containing all possible combinations.
+ * @param array - The array of strings to generate combinations from.
+ * @param number - The number of elements in each combination.
+ * @returns An array containing all possible combinations.
  */
 export function getArrayCombinations(
   array: string[],

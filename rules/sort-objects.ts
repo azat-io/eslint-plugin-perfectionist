@@ -52,7 +52,7 @@ import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
-/** Cache computed groups by modifiers and selectors for performance */
+/** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 type MESSAGE_ID =
@@ -174,7 +174,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
         let dependencies: string[] = []
 
         function checkNode(nodeValue: TSESTree.Node): void {
-          /** No need to check the body of functions and arrow functions */
+          /** No need to check the body of functions and arrow functions. */
           if (
             nodeValue.type === 'ArrowFunctionExpression' ||
             nodeValue.type === 'FunctionExpression'

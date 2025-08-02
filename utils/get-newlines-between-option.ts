@@ -26,12 +26,11 @@ export interface GetNewlinesBetweenOptionParameters {
  * - If the two nodes are in the same custom group, the `newlinesInside` option of
  *   the group is used.
  *
- * @param {GetNewlinesBetweenOptionParameters} props - The function arguments
- * @param {number} props.nextNodeGroupIndex - The next node index to sort
- * @param {number} props.nodeGroupIndex - The current node index to sort
- * @param {GetNewlinesBetweenOptionParameters['options']} props.options -
- *   Newlines between related options
- * @returns {NewlinesBetweenOption} - The `newlinesBetween` option to use
+ * @param props - The function arguments.
+ * @param props.nextNodeGroupIndex - The next node index to sort.
+ * @param props.nodeGroupIndex - The current node index to sort.
+ * @param props.options - Newlines between related options.
+ * @returns - The `newlinesBetween` option to use.
  */
 export function getNewlinesBetweenOption({
   nextNodeGroupIndex,

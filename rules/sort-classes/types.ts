@@ -137,7 +137,7 @@ export type ConstructorGroup = JoinWithDash<
   [PublicOrProtectedOrPrivateModifier, ConstructorSelector]
 >
 
-/** Only used in code as well */
+/** Only used in code as well. */
 interface AllowedModifiersPerSelector {
   property:
     | PublicOrProtectedOrPrivateModifier
@@ -182,7 +182,7 @@ interface AllowedModifiersPerSelector {
 }
 
 /**
- * Some invalid combinations are still handled by this type, such as
+ * Some invalid combinations are still handled by this type, such as.
  *
  * - Private abstract X
  * - Abstract decorated X Only used in code, so I don't know if it's worth
@@ -291,7 +291,7 @@ export let allModifiers: Modifier[] = [
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and
- * ensure that users do not enter invalid modifiers for a given selector
+ * ensure that users do not enter invalid modifiers for a given selector.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),

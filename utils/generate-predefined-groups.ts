@@ -14,12 +14,11 @@ interface GeneratePredefinedGroupsParameters {
  * override get fields();` should prioritize the `'get-method'` group over the
  * `'protected-abstract-override-method'` group.
  *
- * @param {GeneratePredefinedGroupsParameters} props - The properties including
- *   selectors, modifiers, and cache.
- * @param {string[]} props.selectors - The list of selectors.
- * @param {string[]} props.modifiers - The list of modifiers.
- * @param {Map<string, string[]>} props.cache - Cache to store computed groups.
- * @returns {string[]} An array of generated group names.
+ * @param props - The properties including selectors, modifiers, and cache.
+ * @param props.selectors - The list of selectors.
+ * @param props.modifiers - The list of modifiers.
+ * @param props.cache - Cache to store computed groups.
+ * @returns An array of generated group names.
  */
 export function generatePredefinedGroups({
   selectors,
@@ -65,9 +64,8 @@ export function generatePredefinedGroups({
  * performance issues if too many modifiers are entered at once (e.g., 8
  * modifiers result in 40,320 permutations, 9 in 362,880).
  *
- * @param {string[]} elements - The array of elements to permute.
- * @returns {string[][]} An array containing all permutations of the input
- *   elements.
+ * @param elements - The array of elements to permute.
+ * @returns An array containing all permutations of the input elements.
  */
 function getPermutations(elements: string[]): string[][] {
   let result: string[][] = []

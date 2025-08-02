@@ -28,7 +28,7 @@ export type Options = Partial<
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
-    /** @deprecated For {@link `useConfigurationIf.tagMatchesPattern`} */
+    /** @deprecated For {@link `useConfigurationIf.tagMatchesPattern`}. */
     ignorePattern: RegexOption
   } & CommonOptions
 >[]
@@ -56,16 +56,16 @@ type Group =
   | 'unknown'
   | string
 
-/** @deprecated For {@link `MultilineModifier`} */
+/** @deprecated For {@link `MultilineModifier`}. */
 type MultilineGroup = JoinWithDash<[MultilineSelector]>
 
-/** @deprecated For {@link `ShorthandModifier`} */
+/** @deprecated For {@link `ShorthandModifier`}. */
 type ShorthandGroup = JoinWithDash<[ShorthandSelector]>
 
-/** @deprecated For {@link `ShorthandModifier`} */
+/** @deprecated For {@link `ShorthandModifier`}. */
 type ShorthandSelector = 'shorthand'
 
-/** @deprecated For {@link `MultilineModifier`} */
+/** @deprecated For {@link `MultilineModifier`}. */
 type MultilineSelector = 'multiline'
 
 type MultilineModifier = 'multiline'

@@ -36,7 +36,7 @@ export type Options = Partial<
     styledComponents: boolean
     /**
      * @deprecated For {@link `destructuredObjects`} and
-     *   {@link `objectDeclarations`}
+     *   {@link `objectDeclarations`}.
      */
     destructureOnly: boolean
   } & CommonOptions
@@ -60,7 +60,7 @@ export type Selector =
 
 export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
 
-/** Only used in code as well */
+/** Only used in code as well. */
 interface AllowedModifiersPerSelector {
   property: MultilineModifier | OptionalModifier | RequiredModifier
   member: MultilineModifier | OptionalModifier | RequiredModifier
@@ -95,12 +95,12 @@ type Group =
   | 'unknown'
   | string
 
-/** @deprecated For {@link `MultilineModifier`} */
+/** @deprecated For {@link `MultilineModifier`}. */
 type MultilineGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineSelector]
 >
 
-/** @deprecated For {@link `MultilineModifier`} */
+/** @deprecated For {@link `MultilineModifier`}. */
 type MultilineSelector = 'multiline'
 
 type MultilineModifier = 'multiline'
@@ -126,7 +126,7 @@ export let allModifiers: Modifier[] = ['optional', 'required', 'multiline']
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and
- * ensure that users do not enter invalid modifiers for a given selector
+ * ensure that users do not enter invalid modifiers for a given selector.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),

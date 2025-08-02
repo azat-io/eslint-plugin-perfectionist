@@ -37,7 +37,7 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-/** Cache computed groups by modifiers and selectors for performance */
+/** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 type MESSAGE_ID =
@@ -233,7 +233,7 @@ function extractDependencies(init: TSESTree.Expression): string[] {
   let dependencies: string[] = []
 
   function checkNode(nodeValue: TSESTree.Node): void {
-    /** No need to check the body of functions and arrow functions */
+    /** No need to check the body of functions and arrow functions. */
     if (
       nodeValue.type === 'ArrowFunctionExpression' ||
       nodeValue.type === 'FunctionExpression'

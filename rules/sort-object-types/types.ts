@@ -35,13 +35,13 @@ export type Options = Partial<
       allNamesMatchPattern?: RegexOption
     }
     fallbackSort: { sortBy?: 'value' | 'name' } & FallbackSortOption
-    /** @deprecated For {@link `groups`} */
+    /** @deprecated For {@link `groups`}. */
     groupKind: 'required-first' | 'optional-first' | 'mixed'
     partitionByComment: PartitionByCommentOption
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>
     partitionByNewLine: boolean
-    /** @deprecated For {@link `useConfigurationIf.declarationMatchesPattern`} */
+    /** @deprecated For {@link `useConfigurationIf.declarationMatchesPattern`}. */
     ignorePattern: RegexOption
     sortBy: 'value' | 'name'
   } & Omit<CommonOptions, 'fallbackSort'>
@@ -68,7 +68,7 @@ export type Selector =
 
 export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
 
-/** Only used in code as well */
+/** Only used in code as well. */
 interface AllowedModifiersPerSelector {
   property: MultilineModifier | OptionalModifier | RequiredModifier
   member: MultilineModifier | OptionalModifier | RequiredModifier
@@ -113,7 +113,7 @@ type MethodGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineModifier, MethodSelector]
 >
 
-/** @deprecated For {@link `MultilineModifier`} */
+/** @deprecated For {@link `MultilineModifier`}. */
 type MultilineGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineSelector]
 >
@@ -124,7 +124,7 @@ interface ElementNamePatternFilterCustomGroup {
 
 type IndexSignatureSelector = 'index-signature'
 
-/** @deprecated For {@link `MultilineModifier`} */
+/** @deprecated For {@link `MultilineModifier`}. */
 type MultilineSelector = 'multiline'
 
 type MultilineModifier = 'multiline'
@@ -156,7 +156,7 @@ export let sortByJsonSchema: JSONSchema4 = {
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and
- * ensure that users do not enter invalid modifiers for a given selector
+ * ensure that users do not enter invalid modifiers for a given selector.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),

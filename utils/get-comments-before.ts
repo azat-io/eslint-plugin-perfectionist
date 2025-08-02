@@ -11,12 +11,12 @@ interface GetCommentsBeforeParameters {
  * Returns a list of comments before a given node, excluding ones that are right
  * after code. Includes comment blocks, ignore shebang comments.
  *
- * @param {object} params - Parameters object.
- * @param {TSESTree.Node} params.node - The node to get comments before.
- * @param {TSESLint.SourceCode} params.sourceCode - The source code object.
- * @param {string} [params.tokenValueToIgnoreBefore] - Allows the following
- *   token to directly precede the node.
- * @returns {TSESTree.Comment[]} An array of comments before the given node.
+ * @param params - Parameters object.
+ * @param params.node - The node to get comments before.
+ * @param params.sourceCode - The source code object.
+ * @param [params.tokenValueToIgnoreBefore] - Allows the following token to
+ *   directly precede the node.
+ * @returns An array of comments before the given node.
  */
 export function getCommentsBefore({
   tokenValueToIgnoreBefore,
@@ -45,7 +45,7 @@ function getRelevantCommentsBeforeNodeOrToken(
     .filter(comment => {
       /**
        * `getCommentsBefore` also returns comments that are right after code,
-       * filter those out
+       * filter those out.
        */
       let tokenBeforeComment = source.getTokenBefore(comment)
       return tokenBeforeComment?.loc.end.line !== comment.loc.end.line

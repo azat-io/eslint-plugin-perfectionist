@@ -53,7 +53,7 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-/** Cache computed groups by modifiers and selectors for performance */
+/** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 type MESSAGE_ID =
@@ -377,7 +377,7 @@ function extractDependencies(
 
   /**
    * Search static methods only if there is a static block or a static property
-   * that is not an arrow function
+   * that is not an arrow function.
    */
   let searchStaticMethodsAndFunctionProperties =
     expression.type === 'ClassBody' &&

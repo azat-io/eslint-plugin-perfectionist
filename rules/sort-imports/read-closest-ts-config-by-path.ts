@@ -7,7 +7,7 @@ import { getTypescriptImport } from './get-typescript-import'
 
 /**
  * Heavily inspired from:
- * https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/src/parseSettings/getProjectConfigFiles.ts
+ * https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/src/parseSettings/getProjectConfigFiles.ts.
  */
 
 export interface ReadClosestTsConfigByPathValue {

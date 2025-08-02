@@ -51,7 +51,7 @@ export function getNodeRange({
   /**
    * Iterate on all comments starting from the bottom until we reach the last of
    * the comments, a newline between comments, a partition comment, or a
-   * eslint-disable comment
+   * eslint-disable comment.
    */
   let relevantTopComment: TSESTree.Comment | undefined
   for (let i = comments.length - 1; i >= 0; i--) {

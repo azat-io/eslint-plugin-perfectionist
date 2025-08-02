@@ -38,7 +38,7 @@ export type Options = Partial<{
   specialCharacters: SpecialCharactersOption
   locales: NonNullable<Intl.LocalesArgument>
   newlinesBetween: NewlinesBetweenOption
-  /** @deprecated For `tsconfig` */
+  /** @deprecated For `tsconfig`. */
   tsconfigRootDir: undefined | string
   maxLineLength: undefined | number
   fallbackSort: FallbackSortOption
@@ -102,30 +102,30 @@ type TypeGroup = JoinWithDash<[TypeModifier, Selector]>
 
 type SideEffectStyleSelector = 'side-effect-style'
 
-/** @deprecated For the modifier and selector */
+/** @deprecated For the modifier and selector. */
 type InternalTypeSelector = 'internal-type'
 
-/** @deprecated For the modifier and selector */
+/** @deprecated For the modifier and selector. */
 type ExternalTypeSelector = 'external-type'
 
 type TsconfigPathSelector = 'tsconfig-path'
 
 type ValueGroup = JoinWithDash<[Selector]>
 
-/** @deprecated For the modifier and selector */
+/** @deprecated For the modifier and selector. */
 type SiblingTypeSelector = 'sibling-type'
 
-/** @deprecated For the modifier and selector */
+/** @deprecated For the modifier and selector. */
 type BuiltinTypeSelector = 'builtin-type'
 
 type SideEffectSelector = 'side-effect'
 
-/** @deprecated For the modifier and selector */
+/** @deprecated For the modifier and selector. */
 type ParentTypeSelector = 'parent-type'
 
 type SideEffectModifier = 'side-effect'
 
-/** @deprecated For the modifier and selector */
+/** @deprecated For the modifier and selector. */
 type IndexTypeSelector = 'index-type'
 
 type TsEqualsModifier = 'ts-equals'
@@ -148,7 +148,7 @@ type RequireModifier = 'require'
 
 type ParentSelector = 'parent'
 
-/** @deprecated This selector is never matched */
+/** @deprecated This selector is never matched. */
 type ObjectSelector = 'object'
 
 type ImportSelector = 'import'
@@ -204,7 +204,7 @@ export let allModifiers: Modifier[] = [
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and
- * ensure that users do not enter invalid modifiers for a given selector
+ * ensure that users do not enter invalid modifiers for a given selector.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),

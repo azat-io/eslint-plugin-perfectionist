@@ -19,10 +19,9 @@ interface ExtraOptions {
 /**
  * Returns nodes topologically sorted by their dependencies.
  *
- * @param {SortingNodeWithDependencies[]} nodes - The nodes to sort.
- * @param {ExtraOptions} [extraOptions] - Additional sorting options.
- * @returns {SortingNodeWithDependencies[]} The nodes sorted in topological
- *   order.
+ * @param nodes - The nodes to sort.
+ * @param [extraOptions] - Additional sorting options.
+ * @returns The nodes sorted in topological order.
  */
 export function sortNodesByDependencies<T extends SortingNodeWithDependencies>(
   nodes: T[],
