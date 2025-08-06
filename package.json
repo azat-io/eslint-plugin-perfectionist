@@ -81,7 +81,6 @@
     "@types/node": "^24.1.0",
     "@types/unist": "^3.0.3",
     "@typescript-eslint/parser": "^8.38.0",
-    "@typescript-eslint/rule-tester": "^8.38.0",
     "@typescript-eslint/types": "^6.13.0",
     "@vercel/og": "^0.8.5",
     "@vitest/coverage-v8": "^3.2.4",
