@@ -5,12 +5,96 @@ import type {
 
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
 
+/** Options for validating newlines and partition configuration. */
 interface Options {
+  /** Controls automatic newline insertion between groups. */
   newlinesBetween: NewlinesBetweenOption
+
+  /** Group configuration that may contain newlinesBetween objects. */
   groups: GroupsOptions<string>
+
+  /** Whether to create partitions based on existing newlines. */
   partitionByNewLine: boolean
 }
 
+/**
+ * Validates that newline-related options don't conflict with each other.
+ *
+ * Ensures mutual exclusivity between partition-based and newline-insertion
+ * approaches to managing spacing. These options conflict because:
+ *
+ * - `partitionByNewLine` preserves existing newlines as partition boundaries
+ * - `newlinesBetween` actively manages newlines between groups.
+ *
+ * Using both would create ambiguous behavior where the plugin doesn't know
+ * whether to preserve or modify existing newlines.
+ *
+ * @example
+ *   // Valid: Using partitionByNewLine alone
+ *   validateNewlinesAndPartitionConfiguration({
+ *     partitionByNewLine: true,
+ *     newlinesBetween: 'ignore', // Must be 'ignore' with partitions
+ *     groups: ['external', 'internal'],
+ *   })
+ *   // Preserves existing blank lines as boundaries
+ *
+ * @example
+ *   // Invalid: Conflicting options
+ *   validateNewlinesAndPartitionConfiguration({
+ *     partitionByNewLine: true,
+ *     newlinesBetween: 'always', // Conflicts with partitionByNewLine
+ *     groups: ['react', 'external', 'internal'],
+ *   })
+ *   // Throws: The 'partitionByNewLine' and 'newlinesBetween' options cannot be used together
+ *
+ * @example
+ *   // Invalid: newlinesBetween in groups with partitions
+ *   validateNewlinesAndPartitionConfiguration({
+ *     partitionByNewLine: true,
+ *     newlinesBetween: 'ignore',
+ *     groups: [
+ *       'external',
+ *       { newlinesBetween: 'always' }, // Can't use with partitions
+ *       'internal',
+ *     ],
+ *   })
+ *   // Throws: 'newlinesBetween' objects can not be used in 'groups' alongside 'partitionByNewLine'
+ *
+ * @example
+ *   // Valid: Using newlinesBetween without partitions
+ *   validateNewlinesAndPartitionConfiguration({
+ *     partitionByNewLine: false,
+ *     newlinesBetween: 'always',
+ *     groups: [
+ *       'react',
+ *       { newlinesBetween: 'always' },
+ *       'external',
+ *       { newlinesBetween: 'always' },
+ *       'internal',
+ *     ],
+ *   })
+ *   // Actively manages spacing between import groups
+ *
+ * @example
+ *   // Real-world React imports configuration
+ *   // Option 1: Preserve developer's spacing
+ *   validateNewlinesAndPartitionConfiguration({
+ *     partitionByNewLine: true,
+ *     newlinesBetween: 'ignore',
+ *     groups: ['react', 'external', '@company', 'internal', 'relative'],
+ *   })
+ *
+ *   // Option 2: Enforce consistent spacing
+ *   validateNewlinesAndPartitionConfiguration({
+ *     partitionByNewLine: false,
+ *     newlinesBetween: 'always',
+ *     groups: ['react', 'external', '@company', 'internal', 'relative'],
+ *   })
+ *   // Choose one approach, not both
+ *
+ * @param options - Configuration options to validate.
+ * @throws {Error} If partitionByNewLine and newlinesBetween conflict.
+ */
 export function validateNewlinesAndPartitionConfiguration({
   partitionByNewLine,
   newlinesBetween,

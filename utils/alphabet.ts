@@ -2,19 +2,52 @@ import { compare as createNaturalCompare } from 'natural-orderby'
 
 import { convertBooleanToSign } from './convert-boolean-to-sign'
 
+/**
+ * Represents a character in the alphabet with its Unicode properties.
+ *
+ * Stores the character value and its code point, along with optional uppercase
+ * and lowercase variations for case-sensitive operations.
+ */
 interface Character {
+  /** The Unicode code point of the uppercase variant of the character. */
   uppercaseCharacterCodePoint?: number
+
+  /** The Unicode code point of the lowercase variant of the character. */
   lowercaseCharacterCodePoint?: number
+
+  /** The Unicode code point of the character. */
   codePoint: number
+
+  /** The character itself. */
   value: string
 }
 
-/** Utility class to build alphabets. */
+/**
+ * Manages a customizable alphabet for sorting operations.
+ *
+ * Provides methods to generate, modify, and sort alphabets based on various
+ * criteria including Unicode ranges, case prioritization, and locale-specific
+ * ordering. Used by the 'custom' sort type to define character precedence.
+ *
+ * The class supports:
+ *
+ * - Generating alphabets from strings or Unicode ranges
+ * - Case prioritization and manipulation
+ * - Character positioning and removal
+ * - Multiple sorting strategies (natural, locale, char code).
+ *
+ * @example
+ *   // Create a custom alphabet with specific character order
+ *   const alphabet = Alphabet.generateFrom('aAbBcC')
+ *     .prioritizeCase('uppercase')
+ *     .getCharacters()
+ *   // Returns: 'AaBbCc'
+ */
 export class Alphabet {
-  private _characters: Character[] = []
+  private characters: Character[] = []
 
   private constructor(characters: Character[]) {
-    this._characters = characters
+    this.characters = characters
   }
 
   /**
@@ -33,7 +66,7 @@ export class Alphabet {
     }
     return new Alphabet(
       arrayValues.map(value =>
-        Alphabet._convertCodepointToCharacter(value.codePointAt(0)!),
+        Alphabet.getCharactersWithCase(value.codePointAt(0)!),
       ),
     )
   }
@@ -45,7 +78,7 @@ export class Alphabet {
    * @returns - The generated alphabet.
    */
   public static generateRecommendedAlphabet(): Alphabet {
-    return Alphabet._generateAlphabetToRange(0x1ffff + 1)
+    return Alphabet.generateAlphabetToRange(0x1ffff + 1)
   }
 
   /**
@@ -56,10 +89,10 @@ export class Alphabet {
    * @returns - The generated alphabet.
    */
   public static generateCompleteAlphabet(): Alphabet {
-    return Alphabet._generateAlphabetToRange(0x3ffff + 1)
+    return Alphabet.generateAlphabetToRange(0x3ffff + 1)
   }
 
-  private static _convertCodepointToCharacter(codePoint: number): Character {
+  private static getCharactersWithCase(codePoint: number): Character {
     let character = String.fromCodePoint(codePoint)
     let lowercaseCharacter = character.toLowerCase()
     let uppercaseCharacter = character.toUpperCase()
@@ -86,10 +119,10 @@ export class Alphabet {
    * @param maxCodePoint - The maximum code point to generate the alphabet to.
    * @returns - The generated alphabet.
    */
-  private static _generateAlphabetToRange(maxCodePoint: number): Alphabet {
+  private static generateAlphabetToRange(maxCodePoint: number): Alphabet {
     let totalCharacters: Character[] = Array.from(
       { length: maxCodePoint },
-      (_, i) => Alphabet._convertCodepointToCharacter(i),
+      (_, i) => Alphabet.getCharactersWithCase(i),
     )
     return new Alphabet(totalCharacters)
   }
@@ -105,10 +138,10 @@ export class Alphabet {
    * @returns - The same alphabet instance with the cases prioritized.
    */
   public prioritizeCase(casePriority: 'lowercase' | 'uppercase'): this {
-    let charactersWithCase = this._getCharactersWithCase()
-    // Permutes each uppercase character with its lowercase one.
+    let charactersWithCase = this.getCharactersWithCase()
+    /* Permutes each uppercase character with its lowercase one. */
     let parsedIndexes = new Set<number>()
-    let indexByCodePoints = this._characters.reduce<
+    let indexByCodePoints = this.characters.reduce<
       Record<number, undefined | number>
     >((indexByCodePoint, character, index) => {
       indexByCodePoint[character.codePoint] = index
@@ -145,8 +178,8 @@ export class Alphabet {
           continue
         }
       }
-      this._characters[index] = this._characters[otherCharacterIndex]!
-      this._characters[otherCharacterIndex] = character
+      this.characters[index] = this.characters[otherCharacterIndex]!
+      this.characters[otherCharacterIndex] = character
     }
     return this
   }
@@ -164,7 +197,7 @@ export class Alphabet {
   public pushCharacters(values: string[] | string): this {
     let arrayValues = typeof values === 'string' ? [...values] : values
     let valuesSet = new Set(arrayValues)
-    let valuesAlreadyExisting = this._characters.filter(({ value }) =>
+    let valuesAlreadyExisting = this.characters.filter(({ value }) =>
       valuesSet.has(value),
     )
     if (valuesAlreadyExisting.length > 0) {
@@ -178,9 +211,9 @@ export class Alphabet {
     if (arrayValues.some(value => value.length !== 1)) {
       throw new Error('Only single characters may be pushed')
     }
-    this._characters.push(
+    this.characters.push(
       ...[...valuesSet].map(value =>
-        Alphabet._convertCodepointToCharacter(value.codePointAt(0)!),
+        Alphabet.getCharactersWithCase(value.codePointAt(0)!),
       ),
     )
     return this
@@ -197,7 +230,7 @@ export class Alphabet {
   public placeAllWithCaseBeforeAllWithOtherCase(
     caseToComeFirst: 'uppercase' | 'lowercase',
   ): this {
-    let charactersWithCase = this._getCharactersWithCase()
+    let charactersWithCase = this.getCharactersWithCase()
     let orderedCharacters = [
       ...charactersWithCase.filter(character =>
         caseToComeFirst === 'uppercase'
@@ -211,7 +244,7 @@ export class Alphabet {
       ),
     ]
     for (let [i, element] of charactersWithCase.entries()) {
-      this._characters[element.index] = orderedCharacters[i]!.character
+      this.characters[element.index] = orderedCharacters[i]!.character
     }
     return this
   }
@@ -240,7 +273,7 @@ export class Alphabet {
     characterBefore: string
     characterAfter: string
   }): this {
-    return this._placeCharacterBeforeOrAfter({
+    return this.placeCharacterBeforeOrAfter({
       characterBefore,
       characterAfter,
       type: 'before',
@@ -270,7 +303,7 @@ export class Alphabet {
     characterBefore: string
     characterAfter: string
   }): this {
-    return this._placeCharacterBeforeOrAfter({
+    return this.placeCharacterBeforeOrAfter({
       characterBefore,
       characterAfter,
       type: 'after',
@@ -293,7 +326,7 @@ export class Alphabet {
     start: number
     end: number
   }): this {
-    this._characters = this._characters.filter(
+    this.characters = this.characters.filter(
       ({ codePoint }) => codePoint < start || codePoint > end,
     )
     return this
@@ -309,24 +342,7 @@ export class Alphabet {
   public sortBy(
     sortingFunction: (characterA: string, characterB: string) => number,
   ): this {
-    this._characters.sort((a, b) => sortingFunction(a.value, b.value))
-    return this
-  }
-
-  /**
-   * Removes specific characters from the alphabet.
-   *
-   * @example
-   *   Alphabet.generateFrom('abcd').removeCharacters('dcc')
-   *   // Returns 'ab'
-   *
-   * @param values - The characters to remove from the alphabet.
-   * @returns - The same alphabet instance without the specified characters.
-   */
-  public removeCharacters(values: string[] | string): this {
-    this._characters = this._characters.filter(
-      ({ value }) => !values.includes(value),
-    )
+    this.characters.sort((a, b) => sortingFunction(a.value, b.value))
     return this
   }
 
@@ -343,6 +359,23 @@ export class Alphabet {
       locale,
     })
     return this.sortBy((a, b) => naturalCompare(a, b))
+  }
+
+  /**
+   * Removes specific characters from the alphabet.
+   *
+   * @example
+   *   Alphabet.generateFrom('abcd').removeCharacters('dcc')
+   *   // Returns 'ab'
+   *
+   * @param values - The characters to remove from the alphabet.
+   * @returns - The same alphabet instance without the specified characters.
+   */
+  public removeCharacters(values: string[] | string): this {
+    this.characters = this.characters.filter(
+      ({ value }) => !values.includes(value),
+    )
+    return this
   }
 
   /**
@@ -373,10 +406,10 @@ export class Alphabet {
    * @returns The characters from the alphabet.
    */
   public getCharacters(): string {
-    return this._characters.map(({ value }) => value).join('')
+    return this.characters.map(({ value }) => value).join('')
   }
 
-  private _placeCharacterBeforeOrAfter({
+  private placeCharacterBeforeOrAfter({
     characterBefore,
     characterAfter,
     type,
@@ -385,10 +418,10 @@ export class Alphabet {
     characterBefore: string
     characterAfter: string
   }): this {
-    let indexOfCharacterAfter = this._characters.findIndex(
+    let indexOfCharacterAfter = this.characters.findIndex(
       ({ value }) => value === characterAfter,
     )
-    let indexOfCharacterBefore = this._characters.findIndex(
+    let indexOfCharacterBefore = this.characters.findIndex(
       ({ value }) => value === characterBefore,
     )
     if (indexOfCharacterAfter === -1) {
@@ -401,22 +434,22 @@ export class Alphabet {
       return this
     }
 
-    this._characters.splice(
+    this.characters.splice(
       type === 'before' ? indexOfCharacterAfter : indexOfCharacterBefore + 1,
       0,
-      this._characters[
+      this.characters[
         type === 'before' ? indexOfCharacterBefore : indexOfCharacterAfter
       ]!,
     )
-    this._characters.splice(
+    this.characters.splice(
       type === 'before' ? indexOfCharacterBefore + 1 : indexOfCharacterAfter,
       1,
     )
     return this
   }
 
-  private _getCharactersWithCase(): { character: Character; index: number }[] {
-    return this._characters
+  private getCharactersWithCase(): { character: Character; index: number }[] {
+    return this.characters
       .map((character, index) => {
         if (
           !character.uppercaseCharacterCodePoint &&

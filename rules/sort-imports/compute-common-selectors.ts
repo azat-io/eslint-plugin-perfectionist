@@ -8,6 +8,13 @@ import { matchesTsconfigPaths } from './matches-tsconfig-paths'
 import { getTypescriptImport } from './get-typescript-import'
 import { matches } from '../../utils/matches'
 
+/**
+ * Common import selector types that categorize imports by their
+ * characteristics.
+ *
+ * These selectors are used to identify and group imports based on their module
+ * path patterns and resolution characteristics.
+ */
 type CommonSelector = Extract<
   Selector,
   | 'tsconfig-path'
@@ -20,6 +27,22 @@ type CommonSelector = Extract<
   | 'index'
 >
 
+/**
+ * Computes all applicable selectors for an import based on its module path.
+ *
+ * Analyzes an import's module specifier to determine which categories it
+ * belongs to, such as external package, internal module, relative import, or
+ * Node.js builtin. These selectors are used for grouping and sorting imports
+ * according to user configuration.
+ *
+ * @param options - Configuration options.
+ * @param options.tsConfigOutput - TypeScript configuration for path resolution.
+ * @param options.filename - Current file path for relative import resolution.
+ * @param options.options - Rule options including internal patterns and
+ *   environment.
+ * @param options.name - Import module specifier to analyze.
+ * @returns Array of matching selectors for the import.
+ */
 export function computeCommonSelectors({
   tsConfigOutput,
   filename,
@@ -100,8 +123,26 @@ let bunModules = new Set([
   'bun',
   'ws',
 ])
+
 let nodeBuiltinModules = new Set(builtinModules)
+
 let builtinPrefixOnlyModules = new Set(['node:sqlite', 'node:test', 'node:sea'])
+
+/**
+ * Determines whether an import is internal or external to the project.
+ *
+ * Uses TypeScript's module resolution to accurately classify imports based on
+ * whether they resolve to external libraries (node_modules) or internal project
+ * files. Falls back to path-based heuristics when TypeScript is unavailable.
+ *
+ * @param options - Options for determining the group.
+ * @param options.tsConfigOutput - TypeScript configuration for module
+ *   resolution.
+ * @param options.filename - Current file path for resolution context.
+ * @param options.name - Import module specifier to classify.
+ * @returns 'internal' for project modules, 'external' for dependencies, null
+ *   for relative imports.
+ */
 function getInternalOrExternalGroup({
   tsConfigOutput,
   filename,
@@ -141,6 +182,17 @@ function getInternalOrExternalGroup({
     : 'internal'
 }
 
+/**
+ * Checks if a module is a Node.js or Bun builtin module.
+ *
+ * Handles various formats including 'node:' prefixed modules and subpath
+ * imports (e.g., 'fs/promises'). Also supports Bun-specific modules when in Bun
+ * environment.
+ *
+ * @param value - Module specifier to check.
+ * @param environment - Runtime environment ('node' or 'bun').
+ * @returns True if the module is a builtin module.
+ */
 function isCoreModule(value: string, environment: 'node' | 'bun'): boolean {
   function clean(string_: string): string {
     return string_.replace(/^(?:node:){1,2}/u, '')
@@ -166,6 +218,12 @@ function isCoreModule(value: string, environment: 'node' | 'bun'): boolean {
   return environment === 'bun' && bunModules.has(value)
 }
 
+/**
+ * Checks if an import is an index file import.
+ *
+ * @param value - Import path to check.
+ * @returns True if importing an index file.
+ */
 function isIndex(value: string): boolean {
   return [
     './index.d.js',
@@ -178,14 +236,34 @@ function isIndex(value: string): boolean {
   ].includes(value)
 }
 
+/**
+ * Checks if an import is a sibling module (same directory).
+ *
+ * @param value - Import path to check.
+ * @returns True if importing from the same directory.
+ */
 function isSibling(value: string): boolean {
   return value.startsWith('./')
 }
 
+/**
+ * Checks if an import is from a parent directory.
+ *
+ * @param value - Import path to check.
+ * @returns True if importing from a parent directory.
+ */
 function isParent(value: string): boolean {
   return value.startsWith('..')
 }
 
+/**
+ * Checks if an import is a Node.js subpath import.
+ *
+ * Subpath imports start with '#' and are defined in package.json imports field.
+ *
+ * @param value - Import path to check.
+ * @returns True if using subpath import syntax.
+ */
 function isSubpath(value: string): boolean {
   return value.startsWith('#')
 }

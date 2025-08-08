@@ -16,6 +16,62 @@ import {
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
 
+/**
+ * Configuration options for the sort-classes rule.
+ *
+ * This rule enforces consistent ordering of class members (properties, methods,
+ * constructors, etc.) to improve code readability and maintainability.
+ */
+export type SortClassesOptions = [
+  Partial<
+    {
+      /**
+       * Custom groups for organizing class members. Allows defining groups
+       * based on member selectors, modifiers, and name patterns.
+       */
+      customGroups: CustomGroupsOption<SingleCustomGroup>
+
+      /**
+       * Pattern to identify callback dependencies that should be ignored during
+       * sorting. Methods matching this pattern won't affect the
+       * dependency-based sorting order.
+       */
+      ignoreCallbackDependenciesPatterns: RegexOption
+
+      /**
+       * Partition class members by comment delimiters. Members separated by
+       * specific comments are sorted independently.
+       */
+      partitionByComment: PartitionByCommentOption
+
+      /**
+       * Controls the placement of newlines between different groups of class
+       * members.
+       */
+      newlinesBetween: NewlinesBetweenOption
+
+      /**
+       * Defines the order and grouping of class members. Members are sorted
+       * within their groups and groups are ordered as specified.
+       */
+      groups: GroupsOptions<Group>
+
+      /**
+       * Whether to partition class members by newlines. When true, members
+       * separated by empty lines are sorted independently.
+       */
+      partitionByNewLine: boolean
+    } & CommonOptions
+  >,
+]
+
+/**
+ * Defines a custom group configuration for class members.
+ *
+ * Allows categorizing class members based on their selector type (method,
+ * property, etc.) and various patterns matching their names, values, or
+ * decorators.
+ */
 export type SingleCustomGroup =
   | AdvancedSingleCustomGroup<FunctionPropertySelector>
   | AdvancedSingleCustomGroup<AccessorPropertySelector>
@@ -27,19 +83,10 @@ export type SingleCustomGroup =
   | BaseSingleCustomGroup<ConstructorSelector>
   | AdvancedSingleCustomGroup<MethodSelector>
 
-export type SortClassesOptions = [
-  Partial<
-    {
-      customGroups: CustomGroupsOption<SingleCustomGroup>
-      ignoreCallbackDependenciesPatterns: RegexOption
-      partitionByComment: PartitionByCommentOption
-      newlinesBetween: NewlinesBetweenOption
-      groups: GroupsOptions<Group>
-      partitionByNewLine: boolean
-    } & CommonOptions
-  >,
-]
-
+/**
+ * Represents all possible group combinations for non-declare properties.
+ * Combines modifiers with the property selector using dash notation.
+ */
 export type NonDeclarePropertyGroup = JoinWithDash<
   [
     PublicOrProtectedOrPrivateModifier,
@@ -52,6 +99,10 @@ export type NonDeclarePropertyGroup = JoinWithDash<
   ]
 >
 
+/**
+ * Union type of all available class member selectors. Used to identify and
+ * categorize different types of class members.
+ */
 export type Selector =
   | AccessorPropertySelector
   | FunctionPropertySelector
@@ -63,6 +114,10 @@ export type Selector =
   | PropertySelector
   | MethodSelector
 
+/**
+ * Represents all possible group combinations for function properties. Combines
+ * modifiers with the function-property selector using dash notation.
+ */
 export type FunctionPropertyGroup = JoinWithDash<
   [
     PublicOrProtectedOrPrivateModifier,
@@ -75,6 +130,10 @@ export type FunctionPropertyGroup = JoinWithDash<
   ]
 >
 
+/**
+ * Represents all possible group combinations for methods. Combines modifiers
+ * with the method selector using dash notation.
+ */
 export type MethodGroup = JoinWithDash<
   [
     PublicOrProtectedOrPrivateModifier,
@@ -87,6 +146,10 @@ export type MethodGroup = JoinWithDash<
   ]
 >
 
+/**
+ * Union type of all available class member modifiers. Includes access
+ * modifiers, async, static, abstract, and other TypeScript modifiers.
+ */
 export type Modifier =
   | PublicOrProtectedOrPrivateModifier
   | DecoratedModifier
@@ -98,6 +161,10 @@ export type Modifier =
   | StaticModifier
   | AsyncModifier
 
+/**
+ * Represents all possible group combinations for declare properties. Combines
+ * modifiers with the property selector using dash notation.
+ */
 export type DeclarePropertyGroup = JoinWithDash<
   [
     DeclareModifier,
@@ -109,6 +176,11 @@ export type DeclarePropertyGroup = JoinWithDash<
   ]
 >
 
+/**
+ * Represents all possible group combinations for getter and setter methods.
+ * Combines modifiers with get-method or set-method selectors using dash
+ * notation.
+ */
 export type GetMethodOrSetMethodGroup = JoinWithDash<
   [
     PublicOrProtectedOrPrivateModifier,
@@ -119,6 +191,10 @@ export type GetMethodOrSetMethodGroup = JoinWithDash<
   ]
 >
 
+/**
+ * Represents all possible group combinations for accessor properties. Combines
+ * modifiers with the accessor-property selector using dash notation.
+ */
 export type AccessorPropertyGroup = JoinWithDash<
   [
     PublicOrProtectedOrPrivateModifier,
@@ -129,16 +205,32 @@ export type AccessorPropertyGroup = JoinWithDash<
   ]
 >
 
+/**
+ * Represents all possible group combinations for index signatures. Combines
+ * modifiers with the index-signature selector using dash notation.
+ */
 export type IndexSignatureGroup = JoinWithDash<
   [StaticModifier, ReadonlyModifier, IndexSignatureSelector]
 >
 
+/**
+ * Represents all possible group combinations for constructors. Combines access
+ * modifiers with the constructor selector using dash notation.
+ */
 export type ConstructorGroup = JoinWithDash<
   [PublicOrProtectedOrPrivateModifier, ConstructorSelector]
 >
 
-/** Only used in code as well. */
+/**
+ * Maps each selector type to its allowed modifiers.
+ *
+ * Defines which modifiers are valid for each type of class member, ensuring
+ * type safety when configuring custom groups.
+ *
+ * @internal
+ */
 interface AllowedModifiersPerSelector {
+  /** Valid modifiers for property members. */
   property:
     | PublicOrProtectedOrPrivateModifier
     | DecoratedModifier
@@ -148,6 +240,8 @@ interface AllowedModifiersPerSelector {
     | OptionalModifier
     | DeclareModifier
     | StaticModifier
+
+  /** Valid modifiers for method members. */
   method:
     | PublicOrProtectedOrPrivateModifier
     | DecoratedModifier
@@ -156,6 +250,8 @@ interface AllowedModifiersPerSelector {
     | OptionalModifier
     | StaticModifier
     | AsyncModifier
+
+  /** Valid modifiers for function properties (arrow functions as properties). */
   'function-property':
     | PublicOrProtectedOrPrivateModifier
     | DecoratedModifier
@@ -163,30 +259,63 @@ interface AllowedModifiersPerSelector {
     | ReadonlyModifier
     | StaticModifier
     | AsyncModifier
+
+  /** Valid modifiers for accessor properties (auto-accessors). */
   'accessor-property':
     | PublicOrProtectedOrPrivateModifier
     | DecoratedModifier
     | AbstractModifier
     | OverrideModifier
     | StaticModifier
+
+  /** Valid modifiers for setter methods. */
   'set-method':
     | PublicOrProtectedOrPrivateModifier
     | DecoratedModifier
     | AbstractModifier
     | OverrideModifier
     | StaticModifier
+
+  /** Valid modifiers for getter methods (same as setter methods). */
   'get-method': AllowedModifiersPerSelector['set-method']
+
+  /** Valid modifiers for index signatures. */
   'index-signature': ReadonlyModifier | StaticModifier
+
+  /** Valid modifiers for constructors. */
   constructor: PublicOrProtectedOrPrivateModifier
+
+  /** Static blocks don't support any modifiers. */
   'static-block': never
 }
 
 /**
- * Some invalid combinations are still handled by this type, such as.
+ * Extended custom group configuration with pattern matching capabilities.
  *
- * - Private abstract X
- * - Abstract decorated X Only used in code, so I don't know if it's worth
- *   maintaining this.
+ * @template T - The selector type this group applies to.
+ */
+type AdvancedSingleCustomGroup<T extends Selector> = {
+  /** Pattern to match decorator names (e.g., '@Component'). */
+  decoratorNamePattern?: RegexOption
+
+  /**
+   * Pattern to match the value of the member (for properties with
+   * initializers).
+   */
+  elementValuePattern?: RegexOption
+
+  /** Pattern to match the member name. */
+  elementNamePattern?: RegexOption
+} & BaseSingleCustomGroup<T>
+
+/**
+ * Represents all possible group identifiers for class members.
+ *
+ * Groups can be predefined combinations of modifiers and selectors, 'unknown'
+ * for uncategorized members, or custom group names.
+ *
+ * Note: Some invalid modifier combinations (e.g., private abstract) are still
+ * technically allowed by this type but will be rejected at runtime.
  */
 type Group =
   | GetMethodOrSetMethodGroup
@@ -201,68 +330,97 @@ type Group =
   | 'unknown'
   | string
 
-type AdvancedSingleCustomGroup<T extends Selector> = {
-  decoratorNamePattern?: RegexOption
-  elementValuePattern?: RegexOption
-  elementNamePattern?: RegexOption
-} & BaseSingleCustomGroup<T>
-
+/**
+ * Base configuration for a custom group.
+ *
+ * @template T - The selector type this group applies to.
+ */
 interface BaseSingleCustomGroup<T extends Selector> {
+  /** List of modifiers that members must have to be included in this group. */
   modifiers?: AllowedModifiersPerSelector[T][]
+  /** The type of class member this group applies to. */
   selector?: T
 }
 
+/** Union type for access level modifiers. */
 type PublicOrProtectedOrPrivateModifier =
   | ProtectedModifier
   | PrivateModifier
   | PublicModifier
 
+/** Union type for getter and setter method selectors. */
 type GetMethodOrSetMethodSelector = GetMethodSelector | SetMethodSelector
 
+/** Union type for static and abstract modifiers. */
 type StaticOrAbstractModifier = AbstractModifier | StaticModifier
 
+/** Selector for function properties (arrow functions assigned to properties). */
 type FunctionPropertySelector = 'function-property'
 
+/** Selector for accessor properties (auto-accessors with 'accessor' keyword). */
 type AccessorPropertySelector = 'accessor-property'
 
+/** Selector for index signatures. */
 type IndexSignatureSelector = 'index-signature'
 
+/** Group identifier for static blocks. */
 type StaticBlockGroup = StaticBlockSelector
 
+/** Selector for static initialization blocks. */
 type StaticBlockSelector = 'static-block'
 
+/** Selector for class constructors. */
 type ConstructorSelector = 'constructor'
 
+/** Selector for getter methods. */
 type GetMethodSelector = 'get-method'
 
+/** Selector for setter methods. */
 type SetMethodSelector = 'set-method'
 
+/** Modifier for protected members. */
 type ProtectedModifier = 'protected'
 
+/** Modifier for decorated members (having decorators). */
 type DecoratedModifier = 'decorated'
 
+/** Modifier for abstract members. */
 type AbstractModifier = 'abstract'
 
+/** Modifier for overridden members. */
 type OverrideModifier = 'override'
 
+/** Modifier for readonly members. */
 type ReadonlyModifier = 'readonly'
 
+/** Modifier for optional members. */
 type OptionalModifier = 'optional'
 
+/** Selector for regular properties. */
 type PropertySelector = 'property'
 
+/** Modifier for private members. */
 type PrivateModifier = 'private'
 
+/** Modifier for ambient declarations. */
 type DeclareModifier = 'declare'
 
+/** Modifier for public members. */
 type PublicModifier = 'public'
 
+/** Modifier for static members. */
 type StaticModifier = 'static'
 
+/** Selector for regular methods. */
 type MethodSelector = 'method'
 
+/** Modifier for async methods and function properties. */
 type AsyncModifier = 'async'
 
+/**
+ * Complete list of available class member selectors. Used for validation and
+ * JSON schema generation.
+ */
 export let allSelectors: Selector[] = [
   'accessor-property',
   'index-signature',
@@ -275,6 +433,10 @@ export let allSelectors: Selector[] = [
   'method',
 ]
 
+/**
+ * Complete list of available class member modifiers. Used for validation and
+ * JSON schema generation.
+ */
 export let allModifiers: Modifier[] = [
   'async',
   'protected',
@@ -290,7 +452,10 @@ export let allModifiers: Modifier[] = [
 ]
 
 /**
- * Ideally, we should generate as many schemas as there are selectors, and
+ * JSON schema definition for validating single custom group configurations.
+ * Used by ESLint to validate rule options at configuration time.
+ *
+ * Note: Ideally, we should generate as many schemas as there are selectors, and
  * ensure that users do not enter invalid modifiers for a given selector.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {

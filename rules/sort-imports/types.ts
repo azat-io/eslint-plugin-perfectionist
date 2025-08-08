@@ -21,38 +21,145 @@ import {
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
 
+/**
+ * Configuration options for the sort-imports rule.
+ *
+ * This rule enforces consistent ordering of import statements to improve code
+ * organization, readability, and maintainability.
+ */
 export type Options = Partial<{
+  /**
+   * TypeScript configuration for resolving module paths. Enables path alias
+   * resolution based on tsconfig.json paths configuration.
+   */
+  tsconfig:
+    | {
+        /**
+         * Optional filename of the TypeScript config file. @default
+         * tsconfig.json'.
+         */
+        filename?: string
+        /** Root directory where to search for the TypeScript config file. */
+        rootDir: string
+      }
+    | undefined
+
+  /**
+   * Custom groups for organizing imports. Can be an array of group
+   * configurations or separate configurations for value and type imports
+   * (deprecated).
+   */
   customGroups:
     | {
         value?: DeprecatedCustomGroupsOption
         type?: DeprecatedCustomGroupsOption
       }
     | CustomGroupsOption<SingleCustomGroup>
-  tsconfig:
-    | {
-        filename?: string
-        rootDir: string
-      }
-    | undefined
+
+  /**
+   * Partition imports by comment delimiters. Imports separated by specific
+   * comments are sorted independently.
+   */
   partitionByComment: PartitionByCommentOption
+
+  /**
+   * Controls how special characters in import names are handled during sorting.
+   * Options: 'keep' (default), 'trim', or 'remove'.
+   */
   specialCharacters: SpecialCharactersOption
+
+  /**
+   * Locale(s) to use for string comparison. Affects how characters are sorted
+   * in different languages.
+   */
   locales: NonNullable<Intl.LocalesArgument>
+
+  /** Controls the placement of newlines between different groups of imports. */
   newlinesBetween: NewlinesBetweenOption
-  /** @deprecated For `tsconfig`. */
+
+  /**
+   * @deprecated Since v4.14.0. Will be removed in v5.0.0. Use
+   *   {@link tsconfig.rootDir} instead.
+   */
   tsconfigRootDir: undefined | string
+
+  /**
+   * Maximum line length for imports. When exceeded, import names are used for
+   * sorting instead of the entire line.
+   */
   maxLineLength: undefined | number
+
+  /**
+   * Fallback sorting configuration for imports with the same primary sort
+   * value. Used to break ties in sorting.
+   */
   fallbackSort: FallbackSortOption
+
+  /**
+   * Patterns to identify internal imports. Imports matching these patterns are
+   * categorized as 'internal'.
+   */
   internalPattern: RegexOption[]
+
+  /**
+   * Defines the order and grouping of imports. Imports are sorted within their
+   * groups and groups are ordered as specified.
+   */
   groups: GroupsOptions<Group>
+
+  /**
+   * Runtime environment for resolving built-in modules. Determines which
+   * modules are considered built-in.
+   *
+   * @default 'node'
+   */
   environment: 'node' | 'bun'
+
+  /**
+   * Whether to partition imports by newlines. When true, imports separated by
+   * empty lines are sorted independently.
+   */
   partitionByNewLine: boolean
+
+  /**
+   * Controls whether side-effect imports should be sorted. When false,
+   * side-effect imports remain in their original positions.
+   *
+   * @default false
+   */
   sortSideEffects: boolean
+
+  /**
+   * Whether to perform case-insensitive sorting.
+   *
+   * @default true
+   */
   ignoreCase: boolean
+
+  /**
+   * Sort direction.
+   *
+   * @default 'asc'
+   */
   order: OrderOption
+
+  /**
+   * Algorithm to use for sorting. Options: 'alphabetical', 'natural',
+   * 'line-length', 'custom', or 'unsorted'.
+   */
   type: TypeOption
+
+  /**
+   * Custom alphabet for sorting when using 'custom' type. Characters are sorted
+   * according to their order in this string.
+   */
   alphabet: string
 }>[]
 
+/**
+ * Union type of all available import selectors. Used to categorize different
+ * types of import statements.
+ */
 export type Selector =
   | SideEffectStyleSelector
   | InternalTypeSelector
@@ -75,6 +182,49 @@ export type Selector =
   | StyleSelector
   | TypeSelector
 
+/**
+ * Defines a custom group for import categorization.
+ *
+ * Custom groups allow fine-grained control over how imports are grouped and
+ * sorted based on their module names, selectors, and modifiers.
+ *
+ * @example
+ *   {
+ *     "modifiers": ["type"],
+ *     "selector": "external",
+ *     "elementNamePattern": "^@company/"
+ *   }
+ */
+export type SingleCustomGroup = {
+  /** List of modifiers that imports must have to be included in this group. */
+  modifiers?: Modifier[]
+
+  /** The selector type that imports must match to be included in this group. */
+  selector?: Selector
+} & {
+  /**
+   * Regular expression pattern to match import module names. Imports from
+   * modules matching this pattern will be included in this custom group.
+   */
+  elementNamePattern?: RegexOption
+}
+
+/**
+ * Represents a sorting node for an import statement. Extends the base sorting
+ * node with dependency information and ignore flag.
+ */
+export interface SortImportsSortingNode extends SortingNodeWithDependencies {
+  /**
+   * Whether this import should be ignored during sorting. Typically true for
+   * side-effect imports when sortSideEffects is false.
+   */
+  isIgnored: boolean
+}
+
+/**
+ * Union type of all available import modifiers. Used to identify specific
+ * characteristics of import statements.
+ */
 export type Modifier =
   | SideEffectModifier
   | WildcardModifier
@@ -85,86 +235,115 @@ export type Modifier =
   | NamedModifier
   | TypeModifier
 
-export type SingleCustomGroup = {
-  modifiers?: Modifier[]
-  selector?: Selector
-} & {
-  elementNamePattern?: RegexOption
-}
-
-export interface SortImportsSortingNode extends SortingNodeWithDependencies {
-  isIgnored: boolean
-}
-
+/**
+ * Represents a group identifier for import categorization. Can be a predefined
+ * group, 'unknown' for uncategorized imports, or a custom group name.
+ */
 export type Group = ValueGroup | TypeGroup | 'unknown' | string
 
+/**
+ * Represents type import groups. Combines the type modifier with selectors
+ * using dash notation.
+ */
 type TypeGroup = JoinWithDash<[TypeModifier, Selector]>
 
+/** Selector for side-effect imports that are style files (CSS, SCSS, etc.). */
 type SideEffectStyleSelector = 'side-effect-style'
 
-/** @deprecated For the modifier and selector. */
+/** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
 type InternalTypeSelector = 'internal-type'
 
-/** @deprecated For the modifier and selector. */
+/** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
 type ExternalTypeSelector = 'external-type'
 
+/** Selector for imports using TypeScript path aliases defined in tsconfig.json. */
 type TsconfigPathSelector = 'tsconfig-path'
 
+/**
+ * Represents value import groups. Uses selectors directly without additional
+ * modifiers.
+ */
 type ValueGroup = JoinWithDash<[Selector]>
 
-/** @deprecated For the modifier and selector. */
+/** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
 type SiblingTypeSelector = 'sibling-type'
 
-/** @deprecated For the modifier and selector. */
+/** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
 type BuiltinTypeSelector = 'builtin-type'
 
+/** Selector for side-effect imports (imports without bindings). */
 type SideEffectSelector = 'side-effect'
 
-/** @deprecated For the modifier and selector. */
+/** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
 type ParentTypeSelector = 'parent-type'
 
+/** Modifier for side-effect imports. */
 type SideEffectModifier = 'side-effect'
 
-/** @deprecated For the modifier and selector. */
+/** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
 type IndexTypeSelector = 'index-type'
 
+/** Modifier for TypeScript import-equals declarations. */
 type TsEqualsModifier = 'ts-equals'
 
+/** Modifier for namespace/wildcard imports (`import * as ...`). */
 type WildcardModifier = 'wildcard'
 
+/** Selector for external module imports (from node_modules). */
 type ExternalSelector = 'external'
 
+/** Selector for internal module imports (matching internalPattern). */
 type InternalSelector = 'internal'
 
+/**
+ * Selector for subpath imports (modules with internal paths like
+ * 'lodash/merge').
+ */
 type SubpathSelector = 'subpath'
 
+/** Selector for built-in module imports (Node.js/Bun core modules). */
 type BuiltinSelector = 'builtin'
 
+/** Selector for sibling module imports (same directory). */
 type SiblingSelector = 'sibling'
 
+/** Modifier for default imports. */
 type DefaultModifier = 'default'
 
+/** Modifier for CommonJS require() imports. */
 type RequireModifier = 'require'
 
+/** Selector for parent module imports (from parent directories). */
 type ParentSelector = 'parent'
 
-/** @deprecated This selector is never matched. */
+/** @deprecated This selector is never matched. Will be removed in v5.0.0. */
 type ObjectSelector = 'object'
 
+/** Base selector for all import statements. */
 type ImportSelector = 'import'
 
+/** Selector for index file imports. */
 type IndexSelector = 'index'
 
+/** Selector for style file imports (CSS, SCSS, etc.). */
 type StyleSelector = 'style'
 
+/** Modifier for value imports (non-type imports). */
 type ValueModifier = 'value'
 
+/** Modifier for named imports. */
 type NamedModifier = 'named'
 
+/** Modifier for type-only imports. */
 type TypeModifier = 'type'
 
+/** Selector for type-only import statements. */
 type TypeSelector = 'type'
 
+/**
+ * Complete list of available active import selectors. Used for validation and
+ * JSON schema generation.
+ */
 export let allSelectors: Selector[] = [
   'side-effect-style',
   'tsconfig-path',
@@ -181,6 +360,12 @@ export let allSelectors: Selector[] = [
   'type',
 ]
 
+/**
+ * List of deprecated import selectors. Maintained for backward compatibility
+ * but should not be used in new configurations.
+ *
+ * Will be removed in v5.0.0.
+ */
 export let allDeprecatedSelectors: Selector[] = [
   'internal-type',
   'external-type',
@@ -191,6 +376,10 @@ export let allDeprecatedSelectors: Selector[] = [
   'object',
 ]
 
+/**
+ * Complete list of available import modifiers. Used for validation and JSON
+ * schema generation.
+ */
 export let allModifiers: Modifier[] = [
   'default',
   'named',

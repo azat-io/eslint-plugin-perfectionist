@@ -8,13 +8,35 @@ import type {
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
 import { UnreachableCaseError } from './unreachable-case-error'
 
+/**
+ * Parameters for determining newlines requirement between nodes.
+ *
+ * Contains group indices and configuration options needed to calculate the
+ * required number of newlines between two nodes.
+ */
 export interface GetNewlinesBetweenOptionParameters {
+  /** Configuration options for newlines and groups. */
   options: {
+    /**
+     * Optional custom groups configuration with possible newlinesInside
+     * settings.
+     */
     customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
+
+    /**
+     * Global newlines configuration: 'always', 'never', 'ignore', or numeric
+     * value.
+     */
     newlinesBetween: NewlinesBetweenOption
+
+    /** Groups configuration that may include inline newlines settings. */
     groups: GroupsOptions<string>
   }
+
+  /** Group index of the next/second node. */
   nextNodeGroupIndex: number
+
+  /** Group index of the current/first node. */
   nodeGroupIndex: number
 }
 
@@ -46,7 +68,7 @@ export function getNewlinesBetweenOption({
   let nodeGroup = options.groups[nodeGroupIndex]
   let nextNodeGroup = options.groups[nextNodeGroupIndex]
 
-  // NewlinesInside check
+  /* NewlinesInside check. */
   if (
     Array.isArray(options.customGroups) &&
     typeof nodeGroup === 'string' &&
@@ -74,7 +96,7 @@ export function getNewlinesBetweenOption({
     }
   }
 
-  // Check if a specific newlinesBetween is defined between the two groups
+  /* Check if a specific newlinesBetween is defined between the two groups. */
   if (nextNodeGroupIndex >= nodeGroupIndex + 2) {
     if (nextNodeGroupIndex === nodeGroupIndex + 2) {
       let groupBetween = options.groups[nodeGroupIndex + 1]!
@@ -121,6 +143,31 @@ export function getNewlinesBetweenOption({
   return globalNewlinesBetweenOption
 }
 
+/**
+ * Inserts newlines settings between groups that don't already have them.
+ *
+ * Fills in missing newlines settings between adjacent groups using the global
+ * newlines option. This ensures every transition between groups has an explicit
+ * newlines setting for consistent calculation.
+ *
+ * @example
+ *   buildGroupsWithAllNewlinesBetween(
+ *     ['imports', 'types', { newlinesBetween: 2 }, 'functions'],
+ *     1,
+ *   )
+ *   // Returns: [
+ *   //   'imports',
+ *   //   { newlinesBetween: 1 },  // Added
+ *   //   'types',
+ *   //   { newlinesBetween: 2 },  // Already existed
+ *   //   'functions'
+ *   // ]
+ *
+ * @param groups - Array of groups with optional inline newlines settings.
+ * @param globalNewlinesBetweenOption - Default newlines to use for missing
+ *   settings.
+ * @returns Groups array with newlines settings filled in between all groups.
+ */
 function buildGroupsWithAllNewlinesBetween(
   groups: GroupsOptions<string>,
   globalNewlinesBetweenOption: 'ignore' | number,
@@ -143,6 +190,20 @@ function buildGroupsWithAllNewlinesBetween(
   return returnValue
 }
 
+/**
+ * Calculates the global newlines requirement based on group indices.
+ *
+ * Applies the global newlines setting with special handling for nodes in the
+ * same group (always returns 0 regardless of global setting). This ensures
+ * elements within the same group are not separated by newlines unless
+ * explicitly configured otherwise.
+ *
+ * @param params - Parameters for calculation.
+ * @param params.newlinesBetween - Global newlines configuration.
+ * @param params.nextNodeGroupIndex - Index of the next/second group.
+ * @param params.nodeGroupIndex - Index of the current/first group.
+ * @returns Number of required newlines or 'ignore'.
+ */
 function getGlobalNewlinesBetweenOption({
   nextNodeGroupIndex,
   newlinesBetween,
@@ -164,6 +225,20 @@ function getGlobalNewlinesBetweenOption({
   return numberNewlinesBetween
 }
 
+/**
+ * Converts newlines configuration value to a numeric value or 'ignore'.
+ *
+ * Transforms string configuration values to their numeric equivalents:
+ *
+ * - 'always' → 1 (one newline required)
+ * - 'never' → 0 (no newlines allowed)
+ * - 'ignore' → 'ignore' (skip checking)
+ * - Number → number (exact count required).
+ *
+ * @param newlinesBetween - Configuration value to convert.
+ * @returns Numeric newlines requirement or 'ignore'.
+ * @throws {UnreachableCaseError} If an unknown configuration value is provided.
+ */
 function convertNewlinesBetweenOptionToNumber(
   newlinesBetween: NewlinesBetweenOption,
 ): 'ignore' | number {
