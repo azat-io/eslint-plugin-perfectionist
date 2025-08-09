@@ -40,7 +40,7 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-type MESSAGE_ID =
+type MessageId =
   | 'unexpectedExportsGroupOrder'
   | 'missedSpacingBetweenExports'
   | 'extraSpacingBetweenExports'
@@ -70,7 +70,7 @@ let defaultOptions: Required<Options[0]> = {
   groups: [],
 }
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options, MessageId>({
   create: context => {
     let settings = getSettings(context.settings)
 
@@ -183,7 +183,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
             )
           }
 
-          reportAllErrors<MESSAGE_ID>({
+          reportAllErrors<MessageId>({
             availableMessageIds: {
               missedSpacingBetweenMembers: 'missedSpacingBetweenExports',
               extraSpacingBetweenMembers: 'extraSpacingBetweenExports',

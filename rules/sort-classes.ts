@@ -55,7 +55,7 @@ import { matches } from '../utils/matches'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-type MESSAGE_ID =
+type MessageId =
   | 'unexpectedClassesDependencyOrder'
   | 'missedSpacingBetweenClassMembers'
   | 'extraSpacingBetweenClassMembers'
@@ -106,7 +106,7 @@ interface SortClassSortingNodes
   overloadSignaturesGroupId: number | null
 }
 
-export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
+export default createEslintRule<SortClassesOptions, MessageId>({
   create: context => ({
     ClassBody: node => {
       if (!isSortable(node.body)) {
@@ -611,7 +611,7 @@ export default createEslintRule<SortClassesOptions, MESSAGE_ID>({
 
       let nodes = formattedNodes.flat()
 
-      reportAllErrors<MESSAGE_ID, SortClassSortingNodes>({
+      reportAllErrors<MessageId, SortClassSortingNodes>({
         newlinesBetweenValueGetter: ({
           computedNewlinesBetween,
           right,

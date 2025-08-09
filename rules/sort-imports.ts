@@ -61,7 +61,7 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-export type MESSAGE_ID =
+export type MessageId =
   | 'unexpectedImportsDependencyOrder'
   | 'missedSpacingBetweenImports'
   | 'unexpectedImportsGroupOrder'
@@ -99,7 +99,7 @@ let defaultOptions: Required<
   order: 'asc',
 }
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options, MessageId>({
   create: context => {
     let settings = getSettings(context.settings)
 
@@ -403,7 +403,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 
           let nodes = sortingNodeGroups.flat()
 
-          reportAllErrors<MESSAGE_ID>({
+          reportAllErrors<MessageId>({
             availableMessageIds: {
               unexpectedDependencyOrder: 'unexpectedImportsDependencyOrder',
               missedSpacingBetweenMembers: 'missedSpacingBetweenImports',

@@ -11,7 +11,7 @@ import { describe, expect, it, vi } from 'vitest'
 import dedent from 'dedent'
 
 import type { Options } from '../../rules/sort-imports/types'
-import type { MESSAGE_ID } from '../../rules/sort-imports'
+import type { MessageId } from '../../rules/sort-imports'
 
 import * as readClosestTsConfigUtilities from '../../rules/sort-imports/read-closest-ts-config-by-path'
 import * as getTypescriptImportUtilities from '../../rules/sort-imports/get-typescript-import'
@@ -11979,7 +11979,7 @@ describe('sort-imports', () => {
               groups,
             },
           ],
-        } as Readonly<RuleContext<MESSAGE_ID, Options>>)
+        } as Readonly<RuleContext<MessageId, Options>>)
       }
 
       let expectedThrownError =

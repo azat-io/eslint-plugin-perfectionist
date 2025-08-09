@@ -42,7 +42,7 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-type MESSAGE_ID =
+type MessageId =
   | 'unexpectedNamedExportsGroupOrder'
   | 'missedSpacingBetweenNamedExports'
   | 'extraSpacingBetweenNamedExports'
@@ -68,7 +68,7 @@ let defaultOptions: Required<Options[0]> = {
   groups: [],
 }
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options, MessageId>({
   create: context => ({
     ExportNamedDeclaration: node => {
       if (!isSortable(node.specifiers)) {
@@ -197,7 +197,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           )
         }
 
-        reportAllErrors<MESSAGE_ID>({
+        reportAllErrors<MessageId>({
           availableMessageIds: {
             missedSpacingBetweenMembers: 'missedSpacingBetweenNamedExports',
             extraSpacingBetweenMembers: 'extraSpacingBetweenNamedExports',

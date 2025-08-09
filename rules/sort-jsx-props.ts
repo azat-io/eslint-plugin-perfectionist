@@ -45,7 +45,7 @@ import { matches } from '../utils/matches'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-type MESSAGE_ID =
+type MessageId =
   | 'missedSpacingBetweenJSXPropsMembers'
   | 'extraSpacingBetweenJSXPropsMembers'
   | 'unexpectedJSXPropsGroupOrder'
@@ -67,7 +67,7 @@ let defaultOptions: Required<Options[0]> = {
   groups: [],
 }
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options, MessageId>({
   create: context => ({
     JSXElement: node => {
       if (!isSortable(node.openingElement.attributes)) {
@@ -208,7 +208,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           }
         }
 
-        reportAllErrors<MESSAGE_ID>({
+        reportAllErrors<MessageId>({
           availableMessageIds: {
             missedSpacingBetweenMembers: 'missedSpacingBetweenJSXPropsMembers',
             extraSpacingBetweenMembers: 'extraSpacingBetweenJSXPropsMembers',
