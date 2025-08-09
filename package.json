@@ -11,7 +11,7 @@
   "repository": "azat-io/eslint-plugin-perfectionist",
   "license": "MIT",
   "author": "Azat S. <to@azat.io>",
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
