@@ -104,17 +104,20 @@ export type Modifier =
  * Defines which modifiers are valid for each type of module member, ensuring
  * type safety when configuring custom groups.
  *
+ * Note: The 'decorated' modifier is included for class to support decorated
+ * classes, aligning with the group types and allModifiers definitions.
+ *
  * @internal
  */
 interface AllowedModifiersPerSelector {
+  /** Valid modifiers for class declarations (including decorated classes). */
+  class: DecoratedModifier | DeclareModifier | DefaultModifier | ExportModifier
+
   /** Valid modifiers for function declarations. */
   function: DeclareModifier | DefaultModifier | ExportModifier | AsyncModifier
 
   /** Valid modifiers for interface declarations. */
   interface: DeclareModifier | DefaultModifier | ExportModifier
-
-  /** Valid modifiers for class declarations. */
-  class: DeclareModifier | DefaultModifier | ExportModifier
 
   /** Valid modifiers for namespace declarations. */
   namespace: DeclareModifier | ExportModifier

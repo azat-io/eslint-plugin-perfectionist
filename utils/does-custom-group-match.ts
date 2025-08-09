@@ -14,21 +14,25 @@ export interface DoesCustomGroupMatchParameters {
    * elementValuePattern in custom groups.
    */
   elementValue?: string | null
+
   /**
    * Optional list of decorator names applied to the element. Used for matching
    * against decoratorNamePattern in custom groups.
    */
   decorators?: string[]
+
   /**
    * List of modifiers applied to the element (e.g., 'static', 'private',
    * 'async'). Must include all modifiers specified in the custom group.
    */
   modifiers: string[]
+
   /**
    * List of selectors that describe the element type. Used for matching against
    * the selector field in custom groups.
    */
   selectors: string[]
+
   /**
    * Name of the element. Used for matching against elementNamePattern in custom
    * groups.
@@ -49,21 +53,22 @@ interface BaseSingleCustomGroup {
    * decorator matching this pattern.
    */
   decoratorNamePattern?: RegexOption
+
   /**
    * Pattern to match against the element's value. Used for matching literal
    * values, initializers, or expressions.
    */
   elementValuePattern?: RegexOption
-  /**
-   * Pattern to match against the element's name. Supports glob patterns and
-   * regular expressions.
-   */
+
+  /** Pattern to match against the element's name. Supports regular expressions. */
   elementNamePattern?: RegexOption
+
   /**
    * List of required modifiers. Element must have ALL specified modifiers to
    * match.
    */
   modifiers?: string[]
+
   /** Required selector type. Element must have this exact selector to match. */
   selector?: string
 }

@@ -3,10 +3,12 @@ import type { TSESTree } from '@typescript-eslint/types'
 /**
  * Retrieves enum members from a TypeScript enum declaration node.
  *
- * Handles both current and deprecated AST structures for enum declarations to
- * ensure compatibility across different versions of the TypeScript ESLint
- * parser. In newer versions, members are nested under a body property, while in
- * older versions they are directly on the enum node.
+ * Handles AST shape changes in TS-ESTree @typescript-eslint/types:
+ *
+ * - Versions < 8.0.0 store enum members under `body.members`.
+ * - Versions ≥ 8.0.0 expose members directly on the enum node as `members`. The
+ *   fallback `body?.members` ensures backward compatibility with older parser
+ *   releases.
  *
  * @example
  *   enum Color {

@@ -32,9 +32,9 @@ export type SortClassesOptions = [
       customGroups: CustomGroupsOption<SingleCustomGroup>
 
       /**
-       * Pattern to identify callback dependencies that should be ignored during
-       * sorting. Methods matching this pattern won't affect the
-       * dependency-based sorting order.
+       * Regex patterns for function names whose callback argument dependencies
+       * are ignored during class-member sorting. Dependencies inside these
+       * callbacks won't influence the ordering.
        */
       ignoreCallbackDependenciesPatterns: RegexOption
 
