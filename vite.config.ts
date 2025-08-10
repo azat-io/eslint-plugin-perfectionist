@@ -7,8 +7,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: [
-        path.resolve(__dirname, 'index.ts'),
-        path.resolve(__dirname, 'utils', 'alphabet.ts'),
+        path.resolve(import.meta.dirname, 'index.ts'),
+        path.resolve(import.meta.dirname, 'utils', 'alphabet.ts'),
       ],
       fileName: (_format, entryName) => `${entryName}.js`,
       name: 'eslint-plugin-perfectionist',
@@ -26,10 +26,10 @@ export default defineConfig({
   plugins: [
     dts({
       include: [
-        path.join(__dirname, 'index.ts'),
-        path.join(__dirname, 'types'),
-        path.join(__dirname, 'rules'),
-        path.join(__dirname, 'utils'),
+        path.join(import.meta.dirname, 'index.ts'),
+        path.join(import.meta.dirname, 'types'),
+        path.join(import.meta.dirname, 'rules'),
+        path.join(import.meta.dirname, 'utils'),
       ],
       insertTypesEntry: true,
       copyDtsFiles: true,
