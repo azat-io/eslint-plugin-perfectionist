@@ -11,7 +11,7 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 
 export type Options = SortObjectTypesOptions
 
-type MESSAGE_ID =
+type MessageId =
   | 'unexpectedInterfacePropertiesGroupOrder'
   | 'missedSpacingBetweenInterfaceMembers'
   | 'extraSpacingBetweenInterfaceMembers'
@@ -36,10 +36,10 @@ let defaultOptions: Required<Options[0]> = {
   groups: [],
 }
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options, MessageId>({
   create: context => ({
     TSInterfaceDeclaration: node =>
-      sortObjectTypeElements<MESSAGE_ID>({
+      sortObjectTypeElements<MessageId>({
         availableMessageIds: {
           missedSpacingBetweenMembers: 'missedSpacingBetweenInterfaceMembers',
           extraSpacingBetweenMembers: 'extraSpacingBetweenInterfaceMembers',

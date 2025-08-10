@@ -58,7 +58,7 @@ import { matches } from '../utils/matches'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-type MESSAGE_ID =
+type MessageId =
   | 'missedSpacingBetweenObjectTypeMembers'
   | 'extraSpacingBetweenObjectTypeMembers'
   | 'unexpectedObjectTypesGroupOrder'
@@ -124,10 +124,10 @@ export let jsonSchema: JSONSchema4 = {
   type: 'array',
 }
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options, MessageId>({
   create: context => ({
     TSTypeLiteral: node =>
-      sortObjectTypeElements<MESSAGE_ID>({
+      sortObjectTypeElements<MessageId>({
         availableMessageIds: {
           missedSpacingBetweenMembers: 'missedSpacingBetweenObjectTypeMembers',
           extraSpacingBetweenMembers: 'extraSpacingBetweenObjectTypeMembers',

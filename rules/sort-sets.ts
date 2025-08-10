@@ -9,13 +9,13 @@ import {
 import { defaultOptions, jsonSchema, sortArray } from './sort-array-includes'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
-type MESSAGE_ID =
+type MessageId =
   | 'missedSpacingBetweenSetsMembers'
   | 'extraSpacingBetweenSetsMembers'
   | 'unexpectedSetsGroupOrder'
   | 'unexpectedSetsOrder'
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options, MessageId>({
   create: context => ({
     NewExpression: node => {
       if (
@@ -31,7 +31,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           node.arguments[0].type === 'ArrayExpression'
             ? node.arguments[0].elements
             : node.arguments[0].arguments
-        sortArray<MESSAGE_ID>({
+        sortArray<MessageId>({
           availableMessageIds: {
             missedSpacingBetweenMembers: 'missedSpacingBetweenSetsMembers',
             extraSpacingBetweenMembers: 'extraSpacingBetweenSetsMembers',

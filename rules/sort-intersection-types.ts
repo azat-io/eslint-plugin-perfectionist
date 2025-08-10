@@ -9,7 +9,7 @@ import {
 import { sortUnionOrIntersectionTypes, jsonSchema } from './sort-union-types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
-type MESSAGE_ID =
+type MessageId =
   | 'missedSpacingBetweenIntersectionTypes'
   | 'unexpectedIntersectionTypesGroupOrder'
   | 'extraSpacingBetweenIntersectionTypes'
@@ -32,7 +32,7 @@ let defaultOptions: Required<Options[0]> = {
   groups: [],
 }
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options, MessageId>({
   meta: {
     messages: {
       missedSpacingBetweenIntersectionTypes: MISSED_SPACING_ERROR,

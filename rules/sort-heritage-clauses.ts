@@ -36,7 +36,7 @@ export type Options = [
   >,
 ]
 
-type MESSAGE_ID =
+type MessageId =
   | 'unexpectedHeritageClausesGroupOrder'
   | 'unexpectedHeritageClausesOrder'
 
@@ -54,7 +54,7 @@ let defaultOptions: Required<Options[0]> = {
   groups: [],
 }
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options, MessageId>({
   meta: {
     schema: [
       {
@@ -102,7 +102,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 })
 
 function sortHeritageClauses(
-  context: Readonly<RuleContext<MESSAGE_ID, Options>>,
+  context: Readonly<RuleContext<MessageId, Options>>,
   options: Required<Options[0]>,
   heritageClauses:
     | TSESTree.TSInterfaceHeritage[]
@@ -150,7 +150,7 @@ function sortHeritageClauses(
     })
   }
 
-  reportAllErrors<MESSAGE_ID>({
+  reportAllErrors<MessageId>({
     availableMessageIds: {
       unexpectedGroupOrder: 'unexpectedHeritageClausesGroupOrder',
       unexpectedOrder: 'unexpectedHeritageClausesOrder',

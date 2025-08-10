@@ -47,7 +47,7 @@ export type Options = [
   >,
 ]
 
-type MESSAGE_ID = 'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
+type MessageId = 'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
 
 type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
@@ -71,7 +71,7 @@ let defaultOptions: Required<Options[0]> = {
   groups: [],
 }
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options, MessageId>({
   create: context => {
     let settings = getSettings(context.settings)
 
@@ -185,7 +185,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
 })
 
 function sortDecorators(
-  context: Readonly<RuleContext<MESSAGE_ID, Options>>,
+  context: Readonly<RuleContext<MessageId, Options>>,
   options: Required<Options[0]>,
   decorators: TSESTree.Decorator[],
 ): void {
@@ -255,7 +255,7 @@ function sortDecorators(
   }
   let nodes = formattedMembers.flat()
 
-  reportAllErrors<MESSAGE_ID>({
+  reportAllErrors<MessageId>({
     availableMessageIds: {
       unexpectedGroupOrder: 'unexpectedDecoratorsGroupOrder',
       unexpectedOrder: 'unexpectedDecoratorsOrder',

@@ -23,7 +23,7 @@ interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
 }
 
-type MESSAGE_ID = 'unexpectedSwitchCaseOrder'
+type MessageId = 'unexpectedSwitchCaseOrder'
 
 type Options = [Partial<CommonOptions>]
 
@@ -37,7 +37,7 @@ let defaultOptions: Required<Options[0]> = {
   order: 'asc',
 }
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options, MessageId>({
   create: context => ({
     SwitchStatement: switchNode => {
       if (!isSortable(switchNode.cases)) {

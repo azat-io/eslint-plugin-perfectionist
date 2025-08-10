@@ -18,28 +18,33 @@ export function getOverloadSignatureGroups(
         member.type === 'TSAbstractMethodDefinition',
     )
     .filter(member => member.kind === 'method')
-  // Static and non-static overload signatures can coexist with the same name
+
+  /* Static and non-static overload signatures can coexist with the same name. */
   let staticOverloadSignaturesByName = new Map<
     string,
     TSESTree.ClassElement[]
   >()
   let overloadSignaturesByName = new Map<string, TSESTree.ClassElement[]>()
+
   for (let method of methods) {
     if (method.key.type !== 'Identifier') {
       continue
     }
+
     let { name } = method.key
     let mapToUse = method.static
       ? staticOverloadSignaturesByName
       : overloadSignaturesByName
     let signatureOverloadsGroup = mapToUse.get(name)
+
     if (!signatureOverloadsGroup) {
       signatureOverloadsGroup = []
       mapToUse.set(name, signatureOverloadsGroup)
     }
     signatureOverloadsGroup.push(method)
   }
-  // Ignore groups that only have one method
+
+  /* Ignore groups that only have one method. */
   return [
     ...overloadSignaturesByName.values(),
     ...staticOverloadSignaturesByName.values(),

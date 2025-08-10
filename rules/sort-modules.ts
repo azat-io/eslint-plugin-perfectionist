@@ -56,7 +56,7 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-type MESSAGE_ID =
+type MessageId =
   | 'missedSpacingBetweenModulesMembers'
   | 'extraSpacingBetweenModulesMembers'
   | 'unexpectedModulesDependencyOrder'
@@ -91,7 +91,7 @@ let defaultOptions: Required<SortModulesOptions[0]> = {
   order: 'asc',
 }
 
-export default createEslintRule<SortModulesOptions, MESSAGE_ID>({
+export default createEslintRule<SortModulesOptions, MessageId>({
   meta: {
     schema: [
       {
@@ -166,7 +166,7 @@ function analyzeModule({
   program,
   context,
 }: {
-  context: TSESLint.RuleContext<MESSAGE_ID, SortModulesOptions>
+  context: TSESLint.RuleContext<MessageId, SortModulesOptions>
   program: TSESTree.TSModuleBlock | TSESTree.Program
   options: Required<SortModulesOptions[0]>
   sourceCode: TSESLint.SourceCode
@@ -354,7 +354,7 @@ function analyzeModule({
   }
   let nodes = formattedNodes.flat()
 
-  reportAllErrors<MESSAGE_ID>({
+  reportAllErrors<MessageId>({
     availableMessageIds: {
       missedSpacingBetweenMembers: 'missedSpacingBetweenModulesMembers',
       extraSpacingBetweenMembers: 'extraSpacingBetweenModulesMembers',

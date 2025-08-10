@@ -47,7 +47,7 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-type MESSAGE_ID =
+type MessageId =
   | 'missedSpacingBetweenArrayIncludesMembers'
   | 'extraSpacingBetweenArrayIncludesMembers'
   | 'unexpectedArrayIncludesGroupOrder'
@@ -100,7 +100,7 @@ export let jsonSchema: JSONSchema4 = {
   type: 'array',
 }
 
-export default createEslintRule<Options, MESSAGE_ID>({
+export default createEslintRule<Options, MessageId>({
   create: context => ({
     MemberExpression: node => {
       if (
@@ -113,7 +113,7 @@ export default createEslintRule<Options, MESSAGE_ID>({
           node.object.type === 'ArrayExpression'
             ? node.object.elements
             : node.object.arguments
-        sortArray<MESSAGE_ID>({
+        sortArray<MessageId>({
           availableMessageIds: {
             missedSpacingBetweenMembers:
               'missedSpacingBetweenArrayIncludesMembers',
