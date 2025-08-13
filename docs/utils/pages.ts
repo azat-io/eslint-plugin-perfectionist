@@ -1,10 +1,12 @@
 import { getCollection } from 'astro:content'
 
 let rules = await getCollection('rules')
-let rulesLinks = rules.map(({ data: { title }, id }) => ({
-  url: `/rules/${id}`,
-  title,
-}))
+let rulesLinks = rules
+  .map(({ data: { title }, id }) => ({
+    url: `/rules/${id}`,
+    title,
+  }))
+  .toSorted(({ title: a }, { title: b }) => a.localeCompare(b))
 
 interface Page {
   redirect?: boolean
