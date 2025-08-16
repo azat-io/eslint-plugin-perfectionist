@@ -954,7 +954,7 @@ describe('sort-maps', () => {
     it.each([
       ['never', 'never'],
       ['0', 0],
-    ])(
+    ] as const)(
       'removes extra newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -1103,7 +1103,7 @@ describe('sort-maps', () => {
       ['never globally with 2 spaces in group', 'never', 2],
       ['0 globally with 2 spaces in group', 0, 2],
       ['ignore globally with 2 spaces in group', 'ignore', 2],
-    ])(
+    ] as const)(
       'adds newlines between groups when %s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -1157,7 +1157,7 @@ describe('sort-maps', () => {
       ['ignore', 'ignore'],
       ['never', 'never'],
       ['0', 0],
-    ])(
+    ] as const)(
       'removes newlines when never is between groups despite %s global setting',
       async (_description, globalNewlinesBetween) => {
         await invalid({
@@ -1213,7 +1213,7 @@ describe('sort-maps', () => {
       ['ignore globally with 0 in group', 'ignore', 0],
       ['never globally with ignore in group', 'never', 'ignore'],
       ['0 globally with ignore in group', 0, 'ignore'],
-    ])(
+    ] as const)(
       'allows any spacing when %s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
         await valid({
@@ -1318,7 +1318,7 @@ describe('sort-maps', () => {
     it.each([
       ['never', 'never'],
       ['0', 0],
-    ])(
+    ] as const)(
       'preserves partition boundaries when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -2389,7 +2389,7 @@ describe('sort-maps', () => {
     it.each([
       ['never', 'never'],
       ['0', 0],
-    ])(
+    ] as const)(
       'removes extra newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -2538,7 +2538,7 @@ describe('sort-maps', () => {
       ['never globally with 2 spaces in group', 'never', 2],
       ['0 globally with 2 spaces in group', 0, 2],
       ['ignore globally with 2 spaces in group', 'ignore', 2],
-    ])(
+    ] as const)(
       'adds newlines between groups when %s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -2592,7 +2592,7 @@ describe('sort-maps', () => {
       ['ignore', 'ignore'],
       ['never', 'never'],
       ['0', 0],
-    ])(
+    ] as const)(
       'removes newlines when never is between groups despite %s global setting',
       async (_description, globalNewlinesBetween) => {
         await invalid({
@@ -2648,7 +2648,7 @@ describe('sort-maps', () => {
       ['ignore globally with 0 in group', 'ignore', 0],
       ['never globally with ignore in group', 'never', 'ignore'],
       ['0 globally with ignore in group', 0, 'ignore'],
-    ])(
+    ] as const)(
       'allows any spacing when %s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
         await valid({
@@ -2753,7 +2753,7 @@ describe('sort-maps', () => {
     it.each([
       ['never', 'never'],
       ['0', 0],
-    ])(
+    ] as const)(
       'preserves partition boundaries when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -3824,7 +3824,7 @@ describe('sort-maps', () => {
     it.each([
       ['never', 'never'],
       ['0', 0],
-    ])(
+    ] as const)(
       'removes extra newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -3973,7 +3973,7 @@ describe('sort-maps', () => {
       ['never globally with 2 spaces in group', 'never', 2],
       ['0 globally with 2 spaces in group', 0, 2],
       ['ignore globally with 2 spaces in group', 'ignore', 2],
-    ])(
+    ] as const)(
       'adds newlines between groups when %s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -4027,7 +4027,7 @@ describe('sort-maps', () => {
       ['ignore', 'ignore'],
       ['never', 'never'],
       ['0', 0],
-    ])(
+    ] as const)(
       'removes newlines when never is between groups despite %s global setting',
       async (_description, globalNewlinesBetween) => {
         await invalid({
@@ -4083,7 +4083,7 @@ describe('sort-maps', () => {
       ['ignore globally with 0 in group', 'ignore', 0],
       ['never globally with ignore in group', 'never', 'ignore'],
       ['0 globally with ignore in group', 0, 'ignore'],
-    ])(
+    ] as const)(
       'allows any spacing when %s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
         await valid({
@@ -4188,7 +4188,7 @@ describe('sort-maps', () => {
     it.each([
       ['never', 'never'],
       ['0', 0],
-    ])(
+    ] as const)(
       'preserves partition boundaries when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
