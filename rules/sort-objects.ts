@@ -99,6 +99,7 @@ export default createEslintRule<Options, MessageId>({
       let objectParent = getObjectParent({
         onlyFirstParent: true,
         node: nodeObject,
+        sourceCode,
       })
       let matchedContextOptions = getMatchingContextOptions({
         nodeNames: nodeObject.properties
@@ -146,6 +147,7 @@ export default createEslintRule<Options, MessageId>({
       let objectParentForIgnorePattern = getObjectParent({
         onlyFirstParent: false,
         node: nodeObject,
+        sourceCode,
       })
       if (
         objectParentForIgnorePattern?.name &&
@@ -538,15 +540,20 @@ function getVariableParentName({
 
 function getObjectParent({
   onlyFirstParent,
+  sourceCode,
   node,
 }: {
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  sourceCode: TSESLint.SourceCode
   onlyFirstParent: boolean
 }): {
   type: 'VariableDeclarator' | 'CallExpression'
   name: string
 } | null {
-  let variableParentName = getVariableParentName({ onlyFirstParent, node })
+  let variableParentName = getVariableParentName({
+    onlyFirstParent,
+    node,
+  })
   if (variableParentName) {
     return {
       type: 'VariableDeclarator',
@@ -555,6 +562,7 @@ function getObjectParent({
   }
   let callParentName = getCallExpressionParentName({
     onlyFirstParent,
+    sourceCode,
     node,
   })
   if (callParentName) {
@@ -590,9 +598,11 @@ function isStyledComponents(styledNode: TSESTree.Node): boolean {
 
 function getCallExpressionParentName({
   onlyFirstParent,
+  sourceCode,
   node,
 }: {
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  sourceCode: TSESLint.SourceCode
   onlyFirstParent: boolean
 }): string | null {
   let callParent = getFirstNodeParentWithType({
@@ -604,7 +614,7 @@ function getCallExpressionParentName({
     return null
   }
 
-  return callParent.callee.type === 'Identifier' ? callParent.callee.name : null
+  return sourceCode.getText(callParent.callee)
 }
 
 function getNodeName({
