@@ -1,13 +1,13 @@
-import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
 import { describe, it } from 'vitest'
 import dedent from 'dedent'
 
+import { createTypedRuleTester } from './create-typed-rule-tester'
 import rule from '../../rules/sort-object-types'
 import { Alphabet } from '../../utils/alphabet'
 
 describe('sort-object-types', () => {
-  let { invalid, valid } = createRuleTester({
+  let { invalid, valid } = createTypedRuleTester({
     name: 'sort-object-types',
     parser: typescriptParser,
     rule,

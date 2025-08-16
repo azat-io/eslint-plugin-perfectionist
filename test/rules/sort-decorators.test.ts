@@ -1,16 +1,16 @@
 import type { TestCaseError } from 'eslint-vitest-rule-tester'
 
-import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { createTypedRuleTester } from './create-typed-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-decorators'
 
 describe('sort-decorators', () => {
-  let { invalid, valid } = createRuleTester({
+  let { invalid, valid } = createTypedRuleTester({
     parser: typescriptParser,
     name: 'sort-decorators',
     rule,

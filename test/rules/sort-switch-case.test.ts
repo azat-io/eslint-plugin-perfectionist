@@ -1,14 +1,14 @@
-import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { createTypedRuleTester } from './create-typed-rule-tester'
 import rule from '../../rules/sort-switch-case'
 import { Alphabet } from '../../utils/alphabet'
 
 describe('sort-switch-case', () => {
-  let { invalid, valid } = createRuleTester({
+  let { invalid, valid } = createTypedRuleTester({
     name: 'sort-switch-case',
     parser: typescriptParser,
     rule,

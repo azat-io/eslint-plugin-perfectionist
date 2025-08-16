@@ -4,7 +4,6 @@ import type {
 } from '@typescript-eslint/utils/ts-eslint'
 import type { CompilerOptions } from 'typescript'
 
-import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
 import { createModuleResolutionCache } from 'typescript'
 import { describe, expect, it, vi } from 'vitest'
@@ -16,11 +15,12 @@ import type { MessageId } from '../../rules/sort-imports'
 import * as readClosestTsConfigUtilities from '../../rules/sort-imports/read-closest-ts-config-by-path'
 import * as getTypescriptImportUtilities from '../../rules/sort-imports/get-typescript-import'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { createTypedRuleTester } from './create-typed-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-imports'
 
 describe('sort-imports', () => {
-  let { invalid, valid } = createRuleTester({
+  let { invalid, valid } = createTypedRuleTester({
     parser: typescriptParser,
     name: 'sort-imports',
     rule,

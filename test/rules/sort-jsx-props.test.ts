@@ -1,15 +1,15 @@
-import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import path from 'node:path'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { createTypedRuleTester } from './create-typed-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-jsx-props'
 
 describe('sort-jsx-props', () => {
-  let { invalid, valid } = createRuleTester({
+  let { invalid, valid } = createTypedRuleTester({
     languageOptions: {
       parserOptions: {
         tsconfigRootDir: path.join(import.meta.dirname, '../fixtures'),
