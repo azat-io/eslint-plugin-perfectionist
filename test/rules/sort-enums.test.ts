@@ -4927,7 +4927,7 @@ describe('sort-enums', () => {
       })
     })
 
-    it.each(['alphabetical', 'line-length', 'natural'])(
+    it.each(['alphabetical', 'line-length', 'natural'] as const)(
       'sorts numeric enums by value when sortByValue is enabled (type: %s)',
       async type => {
         await invalid({
@@ -4971,7 +4971,7 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each(['alphabetical', 'line-length', 'natural'])(
+    it.each(['alphabetical', 'line-length', 'natural'] as const)(
       'forces numeric sorting when forceNumericSort is enabled (type: %s)',
       async type => {
         await invalid({
