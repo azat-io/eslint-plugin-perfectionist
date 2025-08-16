@@ -30,6 +30,8 @@ export type Options = Partial<
      * rule only when specific conditions are met.
      */
     useConfigurationIf: {
+      declarationCommentMatchesPattern?: RegexOption
+
       /**
        * Regular expression pattern to match against the name of the function
        * that contains this object. Useful for applying different sorting rules

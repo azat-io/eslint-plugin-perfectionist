@@ -11969,7 +11969,7 @@ describe('sort-imports', () => {
 
     describe('validates compatibility between sortSideEffects and groups configuration', () => {
       function createRule(
-        groups: Options[0]['groups'],
+        groups: Options[number]['groups'],
         sortSideEffects: boolean = false,
       ): RuleListener {
         return rule.create({

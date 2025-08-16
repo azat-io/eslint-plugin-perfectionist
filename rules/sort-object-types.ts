@@ -28,6 +28,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
@@ -36,7 +37,7 @@ import {
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { getCustomGroupsCompareOptions } from './sort-object-types/get-custom-groups-compare-options'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getMatchingContextOptions } from '../utils/get-matching-context-options'
+import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isMemberOptional } from './sort-object-types/is-member-optional'
@@ -64,7 +65,7 @@ type MessageId =
   | 'unexpectedObjectTypesGroupOrder'
   | 'unexpectedObjectTypesOrder'
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted', sortBy: 'name' },
   partitionByComment: false,
   partitionByNewLine: false,
@@ -100,16 +101,17 @@ export let jsonSchema: JSONSchema4 = {
           }),
         ],
       },
+      useConfigurationIf: buildUseConfigurationIfJsonSchema({
+        additionalProperties: {
+          declarationCommentMatchesPattern: regexJsonSchema,
+          declarationMatchesPattern: regexJsonSchema,
+        },
+      }),
       groupKind: {
         description: '[DEPRECATED] Specifies top-level groups.',
         enum: ['mixed', 'required-first', 'optional-first'],
         type: 'string',
       },
-      useConfigurationIf: buildUseConfigurationIfJsonSchema({
-        additionalProperties: {
-          declarationMatchesPattern: regexJsonSchema,
-        },
-      }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,
@@ -134,10 +136,8 @@ export default createEslintRule<Options, MessageId>({
           unexpectedGroupOrder: 'unexpectedObjectTypesGroupOrder',
           unexpectedOrder: 'unexpectedObjectTypesOrder',
         },
-        parentNodeName:
-          node.parent.type === 'TSTypeAliasDeclaration'
-            ? node.parent.id.name
-            : null,
+        parentNode:
+          node.parent.type === 'TSTypeAliasDeclaration' ? node.parent : null,
         elements: node.members,
         context,
       }),
@@ -164,7 +164,7 @@ export default createEslintRule<Options, MessageId>({
 
 export function sortObjectTypeElements<MessageIds extends string>({
   availableMessageIds,
-  parentNodeName,
+  parentNode,
   elements,
   context,
 }: {
@@ -174,9 +174,12 @@ export function sortObjectTypeElements<MessageIds extends string>({
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
+  parentNode:
+    | TSESTree.TSTypeAliasDeclaration
+    | TSESTree.TSInterfaceDeclaration
+    | null
   context: RuleContext<MessageIds, Options>
   elements: TSESTree.TypeElement[]
-  parentNodeName: string | null
 }): void {
   if (!isSortable(elements)) {
     return
@@ -184,22 +187,12 @@ export function sortObjectTypeElements<MessageIds extends string>({
 
   let settings = getSettings(context.settings)
   let { sourceCode, id } = context
-  let matchedContextOptions = getMatchingContextOptions({
-    nodeNames: elements.map(node =>
-      getNodeName({ typeElement: node, sourceCode }),
-    ),
-    contextOptions: context.options,
-  }).find(options => {
-    if (!options.useConfigurationIf?.declarationMatchesPattern) {
-      return true
-    }
-    if (!parentNodeName) {
-      return false
-    }
-    return matches(
-      parentNodeName,
-      options.useConfigurationIf.declarationMatchesPattern,
-    )
+
+  let matchedContextOptions = computedMatchedContextOptions({
+    parentNode,
+    sourceCode,
+    elements,
+    context,
   })
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
@@ -210,7 +203,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
   })
   validateNewlinesAndPartitionConfiguration(options)
 
-  if (parentNodeName && matches(parentNodeName, options.ignorePattern)) {
+  if (parentNode && matches(parentNode.id.name, options.ignorePattern)) {
     return
   }
 
@@ -249,7 +242,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
       }
 
       if (
-        !(['index-signature', 'method'] as Selector[]).some(selector =>
+        !(['index-signature', 'method'] as const).some(selector =>
           selectors.includes(selector),
         )
       ) {
@@ -427,4 +420,50 @@ function getNodeName({
     )
   }
   return name
+}
+
+function computedMatchedContextOptions({
+  sourceCode,
+  parentNode,
+  elements,
+  context,
+}: {
+  parentNode:
+    | TSESTree.TSTypeAliasDeclaration
+    | TSESTree.TSInterfaceDeclaration
+    | null
+  context: TSESLint.RuleContext<string, Options>
+  elements: TSESTree.TypeElement[]
+  sourceCode: TSESLint.SourceCode
+}): Options[number] | undefined {
+  let filteredContextOptions = filterOptionsByAllNamesMatch({
+    nodeNames: elements.map(node =>
+      getNodeName({ typeElement: node, sourceCode }),
+    ),
+    contextOptions: context.options,
+  })
+  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
+    contextOptions: filteredContextOptions,
+    parentNode,
+    sourceCode,
+  })
+
+  return filteredContextOptions.find(options => {
+    if (!options.useConfigurationIf) {
+      return true
+    }
+
+    if (options.useConfigurationIf.declarationMatchesPattern) {
+      if (!parentNode) {
+        return false
+      }
+
+      return matches(
+        parentNode.id.name,
+        options.useConfigurationIf.declarationMatchesPattern,
+      )
+    }
+
+    return true
+  })
 }
