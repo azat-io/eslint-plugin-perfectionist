@@ -1,14 +1,14 @@
-import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { createTypedRuleTester } from './create-typed-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-enums'
 
 describe('sort-enums', () => {
-  let { invalid, valid } = createRuleTester({
+  let { invalid, valid } = createTypedRuleTester({
     parser: typescriptParser,
     name: 'sort-enums',
     rule,
@@ -4927,7 +4927,7 @@ describe('sort-enums', () => {
       })
     })
 
-    it.each(['alphabetical', 'line-length', 'natural'])(
+    it.each(['alphabetical', 'line-length', 'natural'] as const)(
       'sorts numeric enums by value when sortByValue is enabled (type: %s)',
       async type => {
         await invalid({
@@ -4971,7 +4971,7 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each(['alphabetical', 'line-length', 'natural'])(
+    it.each(['alphabetical', 'line-length', 'natural'] as const)(
       'forces numeric sorting when forceNumericSort is enabled (type: %s)',
       async type => {
         await invalid({

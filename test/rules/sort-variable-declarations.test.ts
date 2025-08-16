@@ -1,14 +1,14 @@
-import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { createTypedRuleTester } from './create-typed-rule-tester'
 import rule from '../../rules/sort-variable-declarations'
 import { Alphabet } from '../../utils/alphabet'
 
 describe('sort-variable-declarations', () => {
-  let { invalid, valid } = createRuleTester({
+  let { invalid, valid } = createTypedRuleTester({
     name: 'sort-variable-declarations',
     parser: typescriptParser,
     rule,

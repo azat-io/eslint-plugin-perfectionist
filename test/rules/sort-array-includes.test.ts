@@ -1,14 +1,16 @@
-import { createRuleTester } from 'eslint-vitest-rule-tester'
+import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { createTypedRuleTester } from './create-typed-rule-tester'
 import rule from '../../rules/sort-array-includes'
 import { Alphabet } from '../../utils/alphabet'
 
 describe('sort-array-includes', () => {
-  let { invalid, valid } = createRuleTester({
+  let { invalid, valid } = createTypedRuleTester({
     name: 'sort-array-includes',
+    parser: typescriptParser,
     rule,
   })
 
@@ -171,7 +173,7 @@ describe('sort-array-includes', () => {
           ...options,
           groupKind: 'literals-first',
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -249,7 +251,7 @@ describe('sort-array-includes', () => {
           ...options,
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -351,7 +353,7 @@ describe('sort-array-includes', () => {
           groupKind: 'spreads-first',
           partitionByNewLine: true,
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -399,7 +401,7 @@ describe('sort-array-includes', () => {
           groupKind: 'spreads-first',
           partitionByNewLine: true,
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -552,7 +554,7 @@ describe('sort-array-includes', () => {
           partitionByComment: '^Part:',
           groupKind: 'spreads-first',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -963,7 +965,7 @@ describe('sort-array-includes', () => {
           groups: ['literalElements', 'unknown'],
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -1013,7 +1015,7 @@ describe('sort-array-includes', () => {
             groups: ['literalsStartingWithHello', 'unknown'],
             groupKind: 'mixed',
           },
-        ]
+        ] as const
 
         await invalid({
           errors: [
@@ -1062,7 +1064,7 @@ describe('sort-array-includes', () => {
           groupKind: 'mixed',
           order: 'asc',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -1148,7 +1150,7 @@ describe('sort-array-includes', () => {
           groups: ['foo'],
           order: 'asc',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -1189,7 +1191,7 @@ describe('sort-array-includes', () => {
           groups: ['unsortedLiterals', 'unknown'],
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -1564,7 +1566,7 @@ describe('sort-array-includes', () => {
           ],
           newlinesBetween: 'always',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -1707,7 +1709,7 @@ describe('sort-array-includes', () => {
             ],
             newlinesBetween: globalNewlinesBetween,
           },
-        ]
+        ] as const
 
         await invalid({
           errors: [
@@ -1798,7 +1800,7 @@ describe('sort-array-includes', () => {
           groups: ['unknown', 'b|c'],
           newlinesBetween: 'always',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -2049,7 +2051,7 @@ describe('sort-array-includes', () => {
           ...options,
           groupKind: 'literals-first',
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -2127,7 +2129,7 @@ describe('sort-array-includes', () => {
           ...options,
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -2229,7 +2231,7 @@ describe('sort-array-includes', () => {
           groupKind: 'spreads-first',
           partitionByNewLine: true,
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -2277,7 +2279,7 @@ describe('sort-array-includes', () => {
           groupKind: 'spreads-first',
           partitionByNewLine: true,
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -2430,7 +2432,7 @@ describe('sort-array-includes', () => {
           partitionByComment: '^Part:',
           groupKind: 'spreads-first',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -2841,7 +2843,7 @@ describe('sort-array-includes', () => {
           groups: ['literalElements', 'unknown'],
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -2891,7 +2893,7 @@ describe('sort-array-includes', () => {
             groups: ['literalsStartingWithHello', 'unknown'],
             groupKind: 'mixed',
           },
-        ]
+        ] as const
 
         await invalid({
           errors: [
@@ -2940,7 +2942,7 @@ describe('sort-array-includes', () => {
           groupKind: 'mixed',
           order: 'asc',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -3026,7 +3028,7 @@ describe('sort-array-includes', () => {
           groups: ['foo'],
           order: 'asc',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -3067,7 +3069,7 @@ describe('sort-array-includes', () => {
           groups: ['unsortedLiterals', 'unknown'],
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -3442,7 +3444,7 @@ describe('sort-array-includes', () => {
           ],
           newlinesBetween: 'always',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -3585,7 +3587,7 @@ describe('sort-array-includes', () => {
             ],
             newlinesBetween: globalNewlinesBetween,
           },
-        ]
+        ] as const
 
         await invalid({
           errors: [
@@ -3676,7 +3678,7 @@ describe('sort-array-includes', () => {
           groups: ['unknown', 'b|c'],
           newlinesBetween: 'always',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -3908,7 +3910,7 @@ describe('sort-array-includes', () => {
           ...options,
           groupKind: 'literals-first',
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -3986,7 +3988,7 @@ describe('sort-array-includes', () => {
           ...options,
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -4088,7 +4090,7 @@ describe('sort-array-includes', () => {
           groupKind: 'spreads-first',
           partitionByNewLine: true,
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -4136,7 +4138,7 @@ describe('sort-array-includes', () => {
           groupKind: 'spreads-first',
           partitionByNewLine: true,
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -4289,7 +4291,7 @@ describe('sort-array-includes', () => {
           partitionByComment: '^Part:',
           groupKind: 'spreads-first',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -4700,7 +4702,7 @@ describe('sort-array-includes', () => {
           groups: ['literalElements', 'unknown'],
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -4750,7 +4752,7 @@ describe('sort-array-includes', () => {
             groups: ['literalsStartingWithHello', 'unknown'],
             groupKind: 'mixed',
           },
-        ]
+        ] as const
 
         await invalid({
           errors: [
@@ -4799,7 +4801,7 @@ describe('sort-array-includes', () => {
           groupKind: 'mixed',
           order: 'asc',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -4885,7 +4887,7 @@ describe('sort-array-includes', () => {
           groups: ['foo'],
           order: 'asc',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -4926,7 +4928,7 @@ describe('sort-array-includes', () => {
           groups: ['unsortedLiterals', 'unknown'],
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -5301,7 +5303,7 @@ describe('sort-array-includes', () => {
           ],
           newlinesBetween: 'always',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -5444,7 +5446,7 @@ describe('sort-array-includes', () => {
             ],
             newlinesBetween: globalNewlinesBetween,
           },
-        ]
+        ] as const
 
         await invalid({
           errors: [
@@ -5535,7 +5537,7 @@ describe('sort-array-includes', () => {
           groups: ['unknown', 'b|c'],
           newlinesBetween: 'always',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
