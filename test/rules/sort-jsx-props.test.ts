@@ -1410,7 +1410,7 @@ describe('sort-jsx-props', () => {
             type: 'unsorted',
           },
           options,
-        ]
+        ] as const
 
         await valid({
           code: dedent`
@@ -2836,7 +2836,7 @@ describe('sort-jsx-props', () => {
             type: 'unsorted',
           },
           options,
-        ]
+        ] as const
 
         await valid({
           code: dedent`
@@ -4262,7 +4262,7 @@ describe('sort-jsx-props', () => {
             type: 'unsorted',
           },
           options,
-        ]
+        ] as const
 
         await valid({
           code: dedent`
