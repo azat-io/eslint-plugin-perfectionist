@@ -6,6 +6,8 @@ import type { RuleModule } from '@typescript-eslint/utils/ts-eslint'
 
 import { createRuleTester } from 'eslint-vitest-rule-tester'
 
+import type { ReadonlyDeep } from '../../types/readonly-deep'
+
 /**
  * Wrapper for `eslint-vitest-rule-tester` to type-check options.
  *
@@ -19,6 +21,6 @@ export function createTypedRuleTester<
   options: {
     rule: RuleModule<MessageId, Options>
   } & RuleTesterInitOptions,
-): RuleTester<Options, MessageId> {
+): RuleTester<ReadonlyDeep<Options> | Options, MessageId> {
   return createRuleTester(options)
 }
