@@ -1,4 +1,5 @@
 import { createRuleTester } from 'eslint-vitest-rule-tester'
+import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
@@ -9,6 +10,7 @@ import { Alphabet } from '../../utils/alphabet'
 describe('sort-array-includes', () => {
   let { invalid, valid } = createRuleTester({
     name: 'sort-array-includes',
+    parser: typescriptParser,
     rule,
   })
 
