@@ -40,6 +40,7 @@ import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -98,6 +99,7 @@ export default createEslintRule<Options, MessageId>({
       let objectParent = getObjectParent({
         onlyFirstParent: true,
         node: nodeObject,
+        sourceCode,
       })
       let matchedContextOptions = getMatchingContextOptions({
         nodeNames: nodeObject.properties
@@ -145,6 +147,7 @@ export default createEslintRule<Options, MessageId>({
       let objectParentForIgnorePattern = getObjectParent({
         onlyFirstParent: false,
         node: nodeObject,
+        sourceCode,
       })
       if (
         objectParentForIgnorePattern?.name &&
@@ -520,13 +523,16 @@ function getVariableParentName({
     return null
   }
   let parentId
-  if (variableParent.type === 'VariableDeclarator') {
-    parentId = variableParent.id
-  } else if ('key' in variableParent) {
-    parentId = variableParent.key
-    /* v8 ignore next 3 - Unsure if we can reach it */
-  } else {
-    return null
+  switch (variableParent.type) {
+    case TSESTree.AST_NODE_TYPES.VariableDeclarator:
+      parentId = variableParent.id
+      break
+    case TSESTree.AST_NODE_TYPES.Property:
+      parentId = variableParent.key
+      break
+    /* v8 ignore next 2 */
+    default:
+      throw new UnreachableCaseError(variableParent)
   }
 
   return parentId.type === 'Identifier' ? parentId.name : null
@@ -534,15 +540,20 @@ function getVariableParentName({
 
 function getObjectParent({
   onlyFirstParent,
+  sourceCode,
   node,
 }: {
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  sourceCode: TSESLint.SourceCode
   onlyFirstParent: boolean
 }): {
   type: 'VariableDeclarator' | 'CallExpression'
   name: string
 } | null {
-  let variableParentName = getVariableParentName({ onlyFirstParent, node })
+  let variableParentName = getVariableParentName({
+    onlyFirstParent,
+    node,
+  })
   if (variableParentName) {
     return {
       type: 'VariableDeclarator',
@@ -551,6 +562,7 @@ function getObjectParent({
   }
   let callParentName = getCallExpressionParentName({
     onlyFirstParent,
+    sourceCode,
     node,
   })
   if (callParentName) {
@@ -586,9 +598,11 @@ function isStyledComponents(styledNode: TSESTree.Node): boolean {
 
 function getCallExpressionParentName({
   onlyFirstParent,
+  sourceCode,
   node,
 }: {
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  sourceCode: TSESLint.SourceCode
   onlyFirstParent: boolean
 }): string | null {
   let callParent = getFirstNodeParentWithType({
@@ -600,7 +614,7 @@ function getCallExpressionParentName({
     return null
   }
 
-  return callParent.callee.type === 'Identifier' ? callParent.callee.name : null
+  return sourceCode.getText(callParent.callee)
 }
 
 function getNodeName({

@@ -2325,6 +2325,21 @@ describe('sort-objects', () => {
           })
         `,
       })
+
+      await valid({
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              callingFunctionNamePattern: '^Schema.index$',
+            },
+            type: 'unsorted',
+          },
+        ],
+        code: dedent`
+          Schema.index({ b: 1, a: 1 });
+        `,
+      })
     })
 
     it('filters custom groups by selector and modifiers', async () => {
