@@ -143,7 +143,7 @@ describe('sort-sets', () => {
           ...options,
           groupKind: 'literals-first',
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -221,7 +221,7 @@ describe('sort-sets', () => {
           ...options,
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -323,7 +323,7 @@ describe('sort-sets', () => {
           groupKind: 'spreads-first',
           partitionByNewLine: true,
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -762,7 +762,7 @@ describe('sort-sets', () => {
           groups: ['literalElements', 'unknown'],
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -812,7 +812,7 @@ describe('sort-sets', () => {
             groups: ['literalsStartingWithHello', 'unknown'],
             groupKind: 'mixed',
           },
-        ]
+        ] as const
 
         await invalid({
           errors: [
@@ -861,7 +861,7 @@ describe('sort-sets', () => {
           groupKind: 'mixed',
           order: 'asc',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -947,7 +947,7 @@ describe('sort-sets', () => {
           groups: ['foo'],
           order: 'asc',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -988,7 +988,7 @@ describe('sort-sets', () => {
           groups: ['unsortedLiterals', 'unknown'],
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -1296,7 +1296,7 @@ describe('sort-sets', () => {
           ],
           newlinesBetween: 'always',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -1439,7 +1439,7 @@ describe('sort-sets', () => {
             ],
             newlinesBetween: globalNewlinesBetween,
           },
-        ]
+        ] as const
 
         await invalid({
           errors: [
@@ -1530,7 +1530,7 @@ describe('sort-sets', () => {
           groups: ['unknown', 'b|c'],
           newlinesBetween: 'always',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -1751,7 +1751,7 @@ describe('sort-sets', () => {
           ...options,
           groupKind: 'literals-first',
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -1829,7 +1829,7 @@ describe('sort-sets', () => {
           ...options,
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -1931,7 +1931,7 @@ describe('sort-sets', () => {
           groupKind: 'spreads-first',
           partitionByNewLine: true,
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -2370,7 +2370,7 @@ describe('sort-sets', () => {
           groups: ['literalElements', 'unknown'],
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -2420,7 +2420,7 @@ describe('sort-sets', () => {
             groups: ['literalsStartingWithHello', 'unknown'],
             groupKind: 'mixed',
           },
-        ]
+        ] as const
 
         await invalid({
           errors: [
@@ -2469,7 +2469,7 @@ describe('sort-sets', () => {
           groupKind: 'mixed',
           order: 'asc',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -2555,7 +2555,7 @@ describe('sort-sets', () => {
           groups: ['foo'],
           order: 'asc',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -2596,7 +2596,7 @@ describe('sort-sets', () => {
           groups: ['unsortedLiterals', 'unknown'],
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -2904,7 +2904,7 @@ describe('sort-sets', () => {
           ],
           newlinesBetween: 'always',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -3047,7 +3047,7 @@ describe('sort-sets', () => {
             ],
             newlinesBetween: globalNewlinesBetween,
           },
-        ]
+        ] as const
 
         await invalid({
           errors: [
@@ -3138,7 +3138,7 @@ describe('sort-sets', () => {
           groups: ['unknown', 'b|c'],
           newlinesBetween: 'always',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -3359,7 +3359,7 @@ describe('sort-sets', () => {
           ...options,
           groupKind: 'literals-first',
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -3437,7 +3437,7 @@ describe('sort-sets', () => {
           ...options,
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await valid({
         code: dedent`
@@ -3539,7 +3539,7 @@ describe('sort-sets', () => {
           groupKind: 'spreads-first',
           partitionByNewLine: true,
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -3978,7 +3978,7 @@ describe('sort-sets', () => {
           groups: ['literalElements', 'unknown'],
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -4028,7 +4028,7 @@ describe('sort-sets', () => {
             groups: ['literalsStartingWithHello', 'unknown'],
             groupKind: 'mixed',
           },
-        ]
+        ] as const
 
         await invalid({
           errors: [
@@ -4077,7 +4077,7 @@ describe('sort-sets', () => {
           groupKind: 'mixed',
           order: 'asc',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -4163,7 +4163,7 @@ describe('sort-sets', () => {
           groups: ['foo'],
           order: 'asc',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -4204,7 +4204,7 @@ describe('sort-sets', () => {
           groups: ['unsortedLiterals', 'unknown'],
           groupKind: 'mixed',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -4512,7 +4512,7 @@ describe('sort-sets', () => {
           ],
           newlinesBetween: 'always',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -4655,7 +4655,7 @@ describe('sort-sets', () => {
             ],
             newlinesBetween: globalNewlinesBetween,
           },
-        ]
+        ] as const
 
         await invalid({
           errors: [
@@ -4746,7 +4746,7 @@ describe('sort-sets', () => {
           groups: ['unknown', 'b|c'],
           newlinesBetween: 'always',
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
@@ -4979,7 +4979,7 @@ describe('sort-sets', () => {
           newlinesBetween: 'always',
           groups: ['b', 'a'],
         },
-      ]
+      ] as const
 
       await invalid({
         errors: [
