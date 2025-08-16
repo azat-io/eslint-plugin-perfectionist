@@ -1495,7 +1495,7 @@ describe('sort-imports', () => {
     it.each([
       ['removes newlines with never option', 'never'],
       ['removes newlines with 0 option', 0],
-    ])('%s', async (_description, newlinesBetween) => {
+    ] as const)('%s', async (_description, newlinesBetween) => {
       await invalid({
         errors: [
           {
@@ -1644,7 +1644,7 @@ describe('sort-imports', () => {
         'ignore',
         2,
       ],
-    ])(
+    ] as const)(
       '%s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -1711,7 +1711,7 @@ describe('sort-imports', () => {
         'removes spacing when never option exists between groups regardless of global setting 0',
         0,
       ],
-    ])('%s', async (_description, globalNewlinesBetween) => {
+    ] as const)('%s', async (_description, globalNewlinesBetween) => {
       await invalid({
         options: [
           {
@@ -1778,7 +1778,7 @@ describe('sort-imports', () => {
         0,
         'ignore',
       ],
-    ])(
+    ] as const)(
       '%s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
         await valid({
@@ -1876,7 +1876,7 @@ describe('sort-imports', () => {
         'never',
       ],
       ['ignores newline fixes between different partitions with 0 option', 0],
-    ])('%s', async (_description, newlinesBetween) => {
+    ] as const)('%s', async (_description, newlinesBetween) => {
       await invalid({
         options: [
           {
@@ -3100,7 +3100,7 @@ describe('sort-imports', () => {
         'always',
       ],
       ['adds spacing inside custom groups when 1 option is used', 1],
-    ])('%s', async (_description, newlinesInside) => {
+    ] as const)('%s', async (_description, newlinesInside) => {
       await invalid({
         options: [
           {
@@ -3141,7 +3141,7 @@ describe('sort-imports', () => {
         'never',
       ],
       ['removes spacing inside custom groups when 0 option is used', 0],
-    ])('%s', async (_description, newlinesInside) => {
+    ] as const)('%s', async (_description, newlinesInside) => {
       await invalid({
         options: [
           {
@@ -5299,7 +5299,7 @@ describe('sort-imports', () => {
     it.each([
       ['removes newlines with never option', 'never'],
       ['removes newlines with 0 option', 0],
-    ])('%s', async (_description, newlinesBetween) => {
+    ] as const)('%s', async (_description, newlinesBetween) => {
       await invalid({
         errors: [
           {
@@ -5448,7 +5448,7 @@ describe('sort-imports', () => {
         'ignore',
         2,
       ],
-    ])(
+    ] as const)(
       '%s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -5515,7 +5515,7 @@ describe('sort-imports', () => {
         'removes spacing when never option exists between groups regardless of global setting 0',
         0,
       ],
-    ])('%s', async (_description, globalNewlinesBetween) => {
+    ] as const)('%s', async (_description, globalNewlinesBetween) => {
       await invalid({
         options: [
           {
@@ -5582,7 +5582,7 @@ describe('sort-imports', () => {
         0,
         'ignore',
       ],
-    ])(
+    ] as const)(
       '%s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
         await valid({
@@ -5680,7 +5680,7 @@ describe('sort-imports', () => {
         'never',
       ],
       ['ignores newline fixes between different partitions with 0 option', 0],
-    ])('%s', async (_description, newlinesBetween) => {
+    ] as const)('%s', async (_description, newlinesBetween) => {
       await invalid({
         options: [
           {
@@ -9034,7 +9034,7 @@ describe('sort-imports', () => {
     it.each([
       ['removes newlines with never option', 'never'],
       ['removes newlines with 0 option', 0],
-    ])('%s', async (_description, newlinesBetween) => {
+    ] as const)('%s', async (_description, newlinesBetween) => {
       await invalid({
         errors: [
           {
@@ -9183,7 +9183,7 @@ describe('sort-imports', () => {
         'ignore',
         2,
       ],
-    ])(
+    ] as const)(
       '%s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -9250,7 +9250,7 @@ describe('sort-imports', () => {
         'removes spacing when never option exists between groups regardless of global setting 0',
         0,
       ],
-    ])('%s', async (_description, globalNewlinesBetween) => {
+    ] as const)('%s', async (_description, globalNewlinesBetween) => {
       await invalid({
         options: [
           {
@@ -9317,7 +9317,7 @@ describe('sort-imports', () => {
         0,
         'ignore',
       ],
-    ])(
+    ] as const)(
       '%s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
         await valid({
@@ -9415,7 +9415,7 @@ describe('sort-imports', () => {
         'never',
       ],
       ['ignores newline fixes between different partitions with 0 option', 0],
-    ])('%s', async (_description, newlinesBetween) => {
+    ] as const)('%s', async (_description, newlinesBetween) => {
       await invalid({
         options: [
           {
