@@ -133,6 +133,10 @@ pre {
     box-shadow: 0 0 0 3px var(--color-border-brand);
     transition: box-shadow 200ms;
   }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 h2,
