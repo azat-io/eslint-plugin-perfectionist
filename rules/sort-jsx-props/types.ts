@@ -1,7 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
-  DeprecatedCustomGroupsOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
   CommonOptions,
@@ -46,9 +45,7 @@ export type Options = Partial<
      * Custom groups for organizing JSX props. Allows defining groups based on
      * prop names, values, and characteristics.
      */
-    customGroups:
-      | CustomGroupsOption<SingleCustomGroup>
-      | DeprecatedCustomGroupsOption
+    customGroups: CustomGroupsOption<SingleCustomGroup>
 
     /** Controls the placement of newlines between different groups of JSX props. */
     newlinesBetween: NewlinesBetweenOption

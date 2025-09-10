@@ -1,11 +1,8 @@
 import type {
-  DeprecatedCustomGroupsOption,
   CustomGroupsOption,
   AnyOfCustomGroup,
   GroupsOptions,
 } from '../types/common-options'
-
-import { matches } from './matches'
 
 /**
  * Parameters for computing the group of an element.
@@ -15,13 +12,8 @@ import { matches } from './matches'
 interface GetGroupParameters<SingleCustomGroup> {
   /** Configuration options for grouping. */
   options: {
-    /**
-     * Custom group definitions. Can be either array-based (with matchers) or
-     * object-based (with patterns).
-     */
-    customGroups?:
-      | CustomGroupsOption<SingleCustomGroup>
-      | DeprecatedCustomGroupsOption
+    /** Custom group definitions. */
+    customGroups: CustomGroupsOption<SingleCustomGroup>
 
     /**
      * Available groups and their order. Can be a flat array or nested arrays
@@ -31,8 +23,7 @@ interface GetGroupParameters<SingleCustomGroup> {
   }
 
   /**
-   * Optional function to test if an element matches a custom group. Used with
-   * array-based custom groups configuration.
+   * Optional function to test if an element matches a custom group.
    *
    * @param customGroup - Custom group configuration to test against.
    * @returns True if the element matches the custom group.
@@ -46,12 +37,6 @@ interface GetGroupParameters<SingleCustomGroup> {
    * after custom groups as a fallback.
    */
   predefinedGroups: string[]
-
-  /**
-   * Optional name of the element. Used for pattern matching with object-based
-   * custom groups.
-   */
-  name?: string
 }
 
 /**
@@ -64,15 +49,9 @@ interface GetGroupParameters<SingleCustomGroup> {
  * 2. Predefined groups - checked as fallback
  * 3. Returns 'unknown' if no matching group is found.
  *
- * Custom groups can be configured in two ways:
- *
- * - Array-based: Uses the customGroupMatcher function to test each group
- * - Object-based: Uses pattern matching against the element name.
- *
  * Only groups that exist in options.groups are considered valid.
  *
  * @example
- *   // Array-based custom groups
  *   const group = computeGroup({
  *     options: {
  *       groups: ['react', 'external', 'internal'],
@@ -84,35 +63,19 @@ interface GetGroupParameters<SingleCustomGroup> {
  *   })
  *   // Returns: 'react'
  *
- * @example
- *   // Object-based custom groups (deprecated style)
- *   const group = computeGroup({
- *   options: {
- *   groups: ['utils', 'components'],
- *   customGroups: {
- *   utils: ['src/utils/*'],
- *   components: ['src/components/*']
- *   },
- *   predefinedGroups: [],
- *   name: 'src/utils/helper'
- *   });
- *   // Returns: 'utils'
- *
  * @template SingleCustomGroup - Type of individual custom group configuration.
  * @param params - Parameters for group computation.
  * @param params.options - Configuration with available groups and custom
  *   groups.
- * @param params.customGroupMatcher - Optional matcher function for array-based
- *   custom groups.
+ * @param params.customGroupMatcher - Optional matcher function for custom
+ *   groups.
  * @param params.predefinedGroups - Fallback predefined groups to check.
- * @param params.name - Optional element name for object-based pattern matching.
  * @returns The matched group name or 'unknown' if no group matches.
  */
 export function computeGroup<SingleCustomGroup>({
   customGroupMatcher,
   predefinedGroups,
   options,
-  name,
 }: GetGroupParameters<SingleCustomGroup>): 'unknown' | string {
   let group: undefined | string
   // For lookup performance.
@@ -136,22 +99,11 @@ export function computeGroup<SingleCustomGroup>({
   }
 
   if (options.customGroups) {
-    if (Array.isArray(options.customGroups)) {
-      for (let customGroup of options.customGroups) {
-        if (customGroupMatcher?.(customGroup)) {
-          let groupDefined = defineGroup(customGroup.groupName)
-          if (groupDefined) {
-            break
-          }
-        }
-      }
-    } else if (name) {
-      for (let [key, pattern] of Object.entries(options.customGroups)) {
-        if (matches(name, pattern)) {
-          let groupDefined = defineGroup(key)
-          if (groupDefined) {
-            break
-          }
+    for (let customGroup of options.customGroups) {
+      if (customGroupMatcher?.(customGroup)) {
+        let groupDefined = defineGroup(customGroup.groupName)
+        if (groupDefined) {
+          break
         }
       }
     }

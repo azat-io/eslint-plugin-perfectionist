@@ -223,7 +223,6 @@ function sortDecorators(
           }),
         predefinedGroups: [],
         options,
-        name,
       })
 
       let sortingNode: Omit<SortDecoratorsSortingNode, 'partitionId'> = {

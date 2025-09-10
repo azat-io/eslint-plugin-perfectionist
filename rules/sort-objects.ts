@@ -77,7 +77,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignorePattern: [],
   ignoreCase: true,
-  customGroups: {},
+  customGroups: [],
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
@@ -327,7 +327,6 @@ export default createEslintRule<Options, MessageId>({
                 }),
               predefinedGroups,
               options,
-              name,
             })
 
             let dependencyName: string = name

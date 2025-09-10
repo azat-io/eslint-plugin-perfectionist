@@ -2,7 +2,6 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
-  DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
@@ -50,15 +49,13 @@ export type Options = Partial<
      * Custom groups for organizing object type members. Can be a structured
      * configuration or the deprecated format.
      */
-    customGroups:
-      | CustomGroupsOption<
-          SingleCustomGroup,
-          {
-            /** Fallback sorting configuration for elements within custom groups. */
-            fallbackSort?: { sortBy?: 'value' | 'name' } & FallbackSortOption
-          }
-        >
-      | DeprecatedCustomGroupsOption
+    customGroups: CustomGroupsOption<
+      SingleCustomGroup,
+      {
+        /** Fallback sorting configuration for elements within custom groups. */
+        fallbackSort?: { sortBy?: 'value' | 'name' } & FallbackSortOption
+      }
+    >
 
     /**
      * Fallback sorting configuration for elements that don't match any group.

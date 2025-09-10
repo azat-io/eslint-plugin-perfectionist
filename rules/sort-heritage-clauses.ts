@@ -149,7 +149,6 @@ function sortHeritageClauses(
         }),
       predefinedGroups: [],
       options,
-      name,
     })
 
     let sortingNode: SortingNode = {

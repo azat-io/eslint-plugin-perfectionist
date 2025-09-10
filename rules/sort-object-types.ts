@@ -74,7 +74,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignorePattern: [],
   ignoreCase: true,
-  customGroups: {},
+  customGroups: [],
   locales: 'en-US',
   sortBy: 'name',
   alphabet: '',
@@ -282,7 +282,6 @@ export function sortObjectTypeElements<MessageIds extends string>({
         }),
       predefinedGroups,
       options,
-      name,
     })
 
     let sortingNode: Omit<SortObjectTypesSortingNode, 'partitionId'> = {

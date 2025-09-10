@@ -1,5 +1,4 @@
 import type {
-  DeprecatedCustomGroupsOption,
   CustomGroupsOption,
   FallbackSortOption,
   GroupsOptions,
@@ -35,11 +34,8 @@ interface OverridableOptions {
  * determine how elements are categorized and sorted.
  */
 interface GroupRelatedOptions {
-  /**
-   * Custom groups configuration. Can be either array-based or object-based
-   * (deprecated) format.
-   */
-  customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption
+  /** Custom groups configuration. */
+  customGroups: CustomGroupsOption
 
   /** Groups configuration defining available groups and their order. */
   groups: GroupsOptions<string>
@@ -96,24 +92,22 @@ export function getCustomGroupsCompareOptions(
 ): OverridableOptions {
   let { customGroups, fallbackSort, groups, order, type } = options
 
-  if (Array.isArray(customGroups)) {
-    let group = groups[groupIndex]
-    let customGroup =
-      typeof group === 'string'
-        ? customGroups.find(currentGroup => group === currentGroup.groupName)
-        : null
+  let group = groups[groupIndex]
+  let customGroup =
+    typeof group === 'string'
+      ? customGroups.find(currentGroup => group === currentGroup.groupName)
+      : null
 
-    if (customGroup) {
-      fallbackSort = {
-        type: customGroup.fallbackSort?.type ?? fallbackSort.type,
-      }
-      let fallbackOrder = customGroup.fallbackSort?.order ?? fallbackSort.order
-      if (fallbackOrder) {
-        fallbackSort.order = fallbackOrder
-      }
-      order = customGroup.order ?? order
-      type = customGroup.type ?? type
+  if (customGroup) {
+    fallbackSort = {
+      type: customGroup.fallbackSort?.type ?? fallbackSort.type,
     }
+    let fallbackOrder = customGroup.fallbackSort?.order ?? fallbackSort.order
+    if (fallbackOrder) {
+      fallbackSort.order = fallbackOrder
+    }
+    order = customGroup.order ?? order
+    type = customGroup.type ?? type
   }
 
   return {

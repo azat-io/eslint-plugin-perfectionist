@@ -8,10 +8,6 @@ import type {
   Options,
   Group,
 } from './sort-imports/types'
-import type {
-  DeprecatedCustomGroupsOption,
-  CustomGroupsOption,
-} from '../types/common-options'
 
 import {
   buildCustomGroupsArrayJsonSchema,
@@ -109,17 +105,9 @@ export default createEslintRule<Options, MessageId>({
     )
 
     validateGeneratedGroupsConfiguration({
-      options: {
-        ...options,
-        customGroups: Array.isArray(options.customGroups)
-          ? options.customGroups
-          : {
-              ...options.customGroups.type,
-              ...options.customGroups.value,
-            },
-      },
       selectors: [...allSelectors, ...allDeprecatedSelectors],
       modifiers: allModifiers,
+      options,
     })
     validateCustomSortConfiguration(options)
     validateNewlinesAndPartitionConfiguration(options)
@@ -174,15 +162,6 @@ export default createEslintRule<Options, MessageId>({
 
       if (node.type !== 'VariableDeclaration' && node.importKind === 'type') {
         if (node.type === 'ImportDeclaration') {
-          if (!Array.isArray(options.customGroups)) {
-            // For deprecated `customGroups.type`
-            group = computeGroupExceptUnknown({
-              customGroups: options.customGroups.type,
-              options,
-              name,
-            })
-          }
-
           for (let selector of commonSelectors) {
             if (selector !== 'subpath' && selector !== 'tsconfig-path') {
               selectors.push(`${selector}-type`)
@@ -192,30 +171,11 @@ export default createEslintRule<Options, MessageId>({
 
         selectors.push('type')
         modifiers.push('type')
-
-        if (!group && !Array.isArray(options.customGroups)) {
-          group = computeGroupExceptUnknown({
-            customGroups: [],
-            selectors,
-            modifiers,
-            options,
-            name,
-          })
-        }
       }
 
       let isSideEffect = isSideEffectImport({ sourceCode, node })
       let isStyleValue = isStyle(name)
       let isStyleSideEffect = isSideEffect && isStyleValue
-
-      if (!group && !Array.isArray(options.customGroups)) {
-        // For deprecated `customGroups.value`
-        group = computeGroupExceptUnknown({
-          customGroups: options.customGroups.value,
-          options,
-          name,
-        })
-      }
 
       if (!isNonExternalReferenceTsImportEquals(node)) {
         if (isStyleSideEffect) {
@@ -263,9 +223,6 @@ export default createEslintRule<Options, MessageId>({
 
       group ??=
         computeGroupExceptUnknown({
-          customGroups: Array.isArray(options.customGroups)
-            ? options.customGroups
-            : [],
           selectors,
           modifiers,
           options,
@@ -354,13 +311,8 @@ export default createEslintRule<Options, MessageId>({
                   getOptionsByGroupIndex: groupIndex => {
                     let customGroupOverriddenOptions =
                       getCustomGroupOverriddenOptions({
-                        options: {
-                          ...options,
-                          customGroups: Array.isArray(options.customGroups)
-                            ? options.customGroups
-                            : [],
-                        },
                         groupIndex,
+                        options,
                       })
 
                     if (options.sortSideEffects) {
@@ -412,15 +364,10 @@ export default createEslintRule<Options, MessageId>({
               missedCommentAbove: 'missedCommentAboveImport',
               unexpectedOrder: 'unexpectedImportsOrder',
             },
-            options: {
-              ...options,
-              customGroups: Array.isArray(options.customGroups)
-                ? options.customGroups
-                : [],
-            },
             sortNodesExcludingEslintDisabled:
               createSortNodesExcludingEslintDisabled(sortingNodeGroups),
             sourceCode,
+            options,
             context,
             nodes,
           })
@@ -570,51 +517,6 @@ let styleExtensions = [
   '.css',
   '.sss',
 ]
-function computeGroupExceptUnknown({
-  customGroups,
-  selectors,
-  modifiers,
-  options,
-  name,
-}: {
-  options: Omit<
-    Required<Options[0]>,
-    'tsconfigRootDir' | 'maxLineLength' | 'customGroups' | 'tsconfig'
-  >
-  customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption | undefined
-  selectors?: Selector[]
-  modifiers?: Modifier[]
-  name: string
-}): string | null {
-  let predefinedGroups =
-    modifiers && selectors
-      ? generatePredefinedGroups({
-          cache: cachedGroupsByModifiersAndSelectors,
-          selectors,
-          modifiers,
-        })
-      : []
-  let computedCustomGroup = computeGroup({
-    customGroupMatcher: customGroup =>
-      doesCustomGroupMatch({
-        modifiers: modifiers!,
-        selectors: selectors!,
-        elementName: name,
-        customGroup,
-      }),
-    options: {
-      ...options,
-      customGroups,
-    },
-    predefinedGroups,
-    name,
-  })
-  if (computedCustomGroup === 'unknown') {
-    return null
-  }
-  return computedCustomGroup
-}
-
 function computeDependencyNames({
   sourceCode,
   node,
@@ -648,6 +550,42 @@ function computeDependencyNames({
     }
   }
   return returnValue
+}
+
+function computeGroupExceptUnknown({
+  selectors,
+  modifiers,
+  options,
+  name,
+}: {
+  options: Omit<
+    Required<Options[0]>,
+    'tsconfigRootDir' | 'maxLineLength' | 'tsconfig'
+  >
+  selectors: Selector[]
+  modifiers: Modifier[]
+  name: string
+}): string | null {
+  let predefinedGroups = generatePredefinedGroups({
+    cache: cachedGroupsByModifiersAndSelectors,
+    selectors,
+    modifiers,
+  })
+  let computedCustomGroup = computeGroup({
+    customGroupMatcher: customGroup =>
+      doesCustomGroupMatch({
+        elementName: name,
+        customGroup,
+        modifiers,
+        selectors,
+      }),
+    predefinedGroups,
+    options,
+  })
+  if (computedCustomGroup === 'unknown') {
+    return null
+  }
+  return computedCustomGroup
 }
 
 function getNodeName({

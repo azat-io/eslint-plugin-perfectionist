@@ -1,7 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
-  DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
@@ -48,9 +47,7 @@ export type Options = Partial<
      * Custom groups for organizing object members. Allows defining groups based
      * on property names, values, and characteristics.
      */
-    customGroups:
-      | CustomGroupsOption<SingleCustomGroup>
-      | DeprecatedCustomGroupsOption
+    customGroups: CustomGroupsOption<SingleCustomGroup>
 
     /**
      * Controls sorting of destructured objects in destructuring assignments.

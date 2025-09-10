@@ -1,7 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type {
-  DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
@@ -23,14 +22,14 @@ import { makeOrderFixes } from './make-order-fixes'
 export interface MakeFixesParameters<T extends SortingNode> {
   /** Optional configuration for various sorting behaviors. */
   options?: {
-    /** Custom groups configuration for advanced grouping. */
-    customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
-
     /** Configuration for partition comments that separate code sections. */
     partitionByComment?: PartitionByCommentOption
 
     /** Configuration for newlines between groups. */
     newlinesBetween?: NewlinesBetweenOption
+
+    /** Custom groups configuration for advanced grouping. */
+    customGroups?: CustomGroupsOption
 
     /** Groups configuration defining available groups and their order. */
     groups?: GroupsOptions<string>
