@@ -130,6 +130,24 @@ export default createEslintRule<Options, MessageId>({
           )
         }
 
+        let { declarationCommentMatchesPattern } = options.useConfigurationIf
+        if (declarationCommentMatchesPattern) {
+          if (!objectParent) {
+            return false
+          }
+          let parentToCheck =
+            objectParent.node.type === 'VariableDeclarator'
+              ? objectParent.node.parent
+              : objectParent.node
+          let parentComment = sourceCode.getCommentsBefore(parentToCheck)
+          let hasMatchingComment = parentComment.some(comment =>
+            matches(comment.value, declarationCommentMatchesPattern),
+          )
+          if (!hasMatchingComment) {
+            return false
+          }
+        }
+
         return true
       })
 
@@ -457,6 +475,7 @@ export default createEslintRule<Options, MessageId>({
           },
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {
+              declarationCommentMatchesPattern: regexJsonSchema,
               callingFunctionNamePattern: regexJsonSchema,
             },
           }),

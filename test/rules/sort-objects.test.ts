@@ -2318,6 +2318,83 @@ describe('sort-objects', () => {
       })
     })
 
+    it('applies configuration when declaration comment matches', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          // Ignore me
+          const obj = {
+            b,
+            c,
+            a,
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          // Ignore me
+          func({
+            b,
+            c,
+            a,
+          })
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          // Do NOT ignore me
+          const obj = {
+            a,
+            b,
+          }
+        `,
+        code: dedent`
+          // Do NOT ignore me
+          const obj = {
+            b,
+            a,
+          }
+        `,
+      })
+    })
+
     it('filters custom groups by selector and modifiers', async () => {
       await invalid({
         options: [
