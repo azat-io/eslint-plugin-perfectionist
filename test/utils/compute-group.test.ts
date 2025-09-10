@@ -74,37 +74,4 @@ describe('computeGroup', () => {
       ).toBe('group2')
     })
   })
-
-  describe('deprecated custom groups', () => {
-    it('should take priority over predefined groups', () => {
-      expect(
-        computeGroup({
-          options: {
-            customGroups: {
-              group2: 'name',
-            },
-            groups: ['group1', 'group2'],
-          },
-          predefinedGroups: ['group1'],
-          name: 'name',
-        }),
-      ).toBe('group2')
-    })
-
-    it('should return the first matching custom group encountered that exists in `options.groups`', () => {
-      expect(
-        computeGroup({
-          options: {
-            customGroups: {
-              group1: 'name',
-              group2: 'name',
-            },
-            groups: ['group2', 'group1'],
-          },
-          predefinedGroups: [],
-          name: 'name',
-        }),
-      ).toBe('group1')
-    })
-  })
 })

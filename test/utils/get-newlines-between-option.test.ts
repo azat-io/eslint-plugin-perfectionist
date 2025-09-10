@@ -24,20 +24,6 @@ describe('get-newlines-between-option', () => {
       },
     )
 
-    it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
-      'should return the global option (`%s`) if "customGroups" is not an array',
-      newlinesBetween => {
-        expect(
-          getNewlinesBetweenOption(
-            buildParameters({
-              customGroups: {},
-              newlinesBetween,
-            }),
-          ),
-        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
-      },
-    )
-
     it.each(['ignore', ...NEVER_OPTIONS] as const)(
       'should return "%s" if "newlinesBetween" is "%s"',
       newlinesBetween => {
