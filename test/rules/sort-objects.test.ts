@@ -2168,6 +2168,33 @@ describe('sort-objects', () => {
 
     it('applies configuration when callingFunctionNamePattern matches', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              callingFunctionNamePattern: '^.*$',
+            },
+            type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          ({ a: 1, b: 1 })
+        `,
+        code: dedent`
+          ({ b: 1, a: 1 })
+        `,
+      })
+
+      await invalid({
         errors: [
           {
             data: {
