@@ -662,6 +662,1068 @@ describe('sort-decorators', () => {
       })
     })
 
+    it.each([
+      ['string pattern', 'Hello'],
+      ['array of patterns', ['noMatch', 'Hello']],
+      ['case-insensitive regex', { pattern: 'HELLO', flags: 'i' }],
+      ['regex in array', ['noMatch', { pattern: 'HELLO', flags: 'i' }]],
+    ])(
+      'groups elements by name pattern - %s',
+      async (_, elementNamePattern) => {
+        await invalid({
+          output: dedent`
+            @HelloDecorator
+            @A
+            @B
+            class Class {
+
+              @HelloDecorator
+              @A
+              @B
+              property
+
+              @HelloDecorator
+              @A
+              @B
+              accessor field
+
+              @HelloDecorator
+              @A
+              @B
+              method(
+                @HelloDecorator
+                @A
+                @B
+                parameter) {}
+
+            }
+          `,
+          code: dedent`
+            @A
+            @B
+            @HelloDecorator
+            class Class {
+
+              @A
+              @B
+              @HelloDecorator
+              property
+
+              @A
+              @B
+              @HelloDecorator
+              accessor field
+
+              @A
+              @B
+              @HelloDecorator
+              method(
+                @A
+                @B
+                @HelloDecorator
+                parameter) {}
+
+            }
+          `,
+          errors: duplicate5Times([
+            {
+              data: {
+                rightGroup: 'decoratorsContainingHello',
+                right: 'HelloDecorator',
+                leftGroup: 'unknown',
+                left: 'B',
+              },
+              messageId: 'unexpectedDecoratorsGroupOrder',
+            },
+          ]),
+          options: [
+            {
+              customGroups: [
+                {
+                  groupName: 'decoratorsContainingHello',
+                  elementNamePattern,
+                },
+              ],
+              groups: ['decoratorsContainingHello', 'unknown'],
+            },
+          ],
+        })
+      },
+    )
+
+    it('overrides sort type and order for specific groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'reversedContainingFooByLineLength',
+              leftGroup: 'unknown',
+              right: 'aFoo',
+              left: 'p',
+            },
+            messageId: 'unexpectedDecoratorsGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'reversedContainingFooByLineLength',
+              leftGroup: 'unknown',
+              right: 'bbFoo',
+              left: 'oo',
+            },
+            messageId: 'unexpectedDecoratorsGroupOrder',
+          },
+        ],
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'reversedContainingFooByLineLength',
+                elementNamePattern: 'Foo',
+                type: 'line-length',
+                order: 'desc',
+              },
+            ],
+            groups: ['reversedContainingFooByLineLength', 'unknown'],
+            type: 'alphabetical',
+            order: 'asc',
+          },
+        ],
+        output: dedent`
+          @bbFoo
+          @aFoo
+          @oo
+          @p
+          class Class {}
+        `,
+        code: dedent`
+          @p
+          @aFoo
+          @oo
+          @bbFoo
+          class Class {}
+        `,
+      })
+    })
+
+    it('applies fallback sort when primary sort results in tie', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                fallbackSort: {
+                  type: 'alphabetical',
+                  order: 'asc',
+                },
+                elementNamePattern: '^foo',
+                type: 'line-length',
+                groupName: 'foo',
+                order: 'desc',
+              },
+            ],
+            type: 'alphabetical',
+            groups: ['foo'],
+            order: 'asc',
+          },
+        ],
+        output: dedent`
+          @fooBar
+          @fooZar
+          class Class {
+
+            @fooBar
+            @fooZar
+            property
+
+            @fooBar
+            @fooZar
+            accessor field
+
+            @fooBar
+            @fooZar
+            method(
+              @fooBar
+              @fooZar
+              parameter) {}
+
+          }
+        `,
+        code: dedent`
+          @fooZar
+          @fooBar
+          class Class {
+
+            @fooZar
+            @fooBar
+            property
+
+            @fooZar
+            @fooBar
+            accessor field
+
+            @fooZar
+            @fooBar
+            method(
+              @fooZar
+              @fooBar
+              parameter) {}
+
+          }
+        `,
+        errors: duplicate5Times([
+          {
+            data: {
+              right: 'fooBar',
+              left: 'fooZar',
+            },
+            messageId: 'unexpectedDecoratorsOrder',
+          },
+        ]),
+      })
+    })
+
+    it('preserves original order for unsorted groups', async () => {
+      await invalid({
+        output: dedent`
+          @bFoo
+          @aFoo
+          @dFoo
+          @eFoo
+          @cFoo
+          @m
+          class Class {
+
+            @bFoo
+            @aFoo
+            @dFoo
+            @eFoo
+            @cFoo
+            @m
+            property
+
+            @bFoo
+            @aFoo
+            @dFoo
+            @eFoo
+            @cFoo
+            @m
+            accessor field
+
+            @bFoo
+            @aFoo
+            @dFoo
+            @eFoo
+            @cFoo
+            @m
+            method(
+              @bFoo
+              @aFoo
+              @dFoo
+              @eFoo
+              @cFoo
+              @m
+              parameter) {}
+
+          }
+        `,
+        code: dedent`
+          @bFoo
+          @aFoo
+          @dFoo
+          @eFoo
+          @m
+          @cFoo
+          class Class {
+
+            @bFoo
+            @aFoo
+            @dFoo
+            @eFoo
+            @m
+            @cFoo
+            property
+
+            @bFoo
+            @aFoo
+            @dFoo
+            @eFoo
+            @m
+            @cFoo
+            accessor field
+
+            @bFoo
+            @aFoo
+            @dFoo
+            @eFoo
+            @m
+            @cFoo
+            method(
+              @bFoo
+              @aFoo
+              @dFoo
+              @eFoo
+              @m
+              @cFoo
+              parameter) {}
+
+          }
+        `,
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'unsortedContainingFoo',
+                elementNamePattern: 'Foo',
+                type: 'unsorted',
+              },
+            ],
+            groups: ['unsortedContainingFoo', 'unknown'],
+          },
+        ],
+        errors: duplicate5Times([
+          {
+            data: {
+              rightGroup: 'unsortedContainingFoo',
+              leftGroup: 'unknown',
+              right: 'cFoo',
+              left: 'm',
+            },
+            messageId: 'unexpectedDecoratorsGroupOrder',
+          },
+        ]),
+      })
+    })
+
+    it('supports negative regex patterns in custom groups', async () => {
+      await valid({
+        code: dedent`
+          @iHaveFooInMyName
+          @meTooIHaveFoo
+          @a
+          @b
+          class Class {
+
+            @iHaveFooInMyName
+            @meTooIHaveFoo
+            @a
+            @b
+            property
+
+            @iHaveFooInMyName
+            @meTooIHaveFoo
+            @a
+            @b
+            accessor field
+
+            @iHaveFooInMyName
+            @meTooIHaveFoo
+            @a
+            @b
+            method(
+              @iHaveFooInMyName
+              @meTooIHaveFoo
+              @a
+              @b
+              parameter) {}
+
+          }
+        `,
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
+            groups: ['unknown', 'elementsWithoutFoo'],
+            type: 'alphabetical',
+          },
+        ],
+      })
+    })
+
+    it.each([
+      ['never', 'never' as const],
+      ['0', 0 as const],
+    ])(
+      'removes newlines between groups when newlinesBetween is %s',
+      async (_description, newlinesBetween) => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: 'y',
+                left: 'a',
+              },
+              messageId: 'extraSpacingBetweenDecorators',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'z',
+              },
+              messageId: 'unexpectedDecoratorsOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'z',
+              },
+              messageId: 'extraSpacingBetweenDecorators',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+              ],
+              groups: ['a', 'unknown'],
+              newlinesBetween,
+            },
+          ],
+          code: dedent`
+              @a
+
+
+             @y
+            @z
+
+                @b
+            class Class {}
+          `,
+          output: dedent`
+              @a
+             @b
+            @y
+                @z
+            class Class {}
+          `,
+        })
+      },
+    )
+
+    it.each([
+      ['always', 'always' as const],
+      ['1', 1 as const],
+    ])(
+      'adds newlines between groups when newlinesBetween is %s',
+      async (_description, newlinesBetween) => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: 'z',
+                left: 'a',
+              },
+              messageId: 'extraSpacingBetweenDecorators',
+            },
+            {
+              data: {
+                right: 'y',
+                left: 'z',
+              },
+              messageId: 'unexpectedDecoratorsOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'y',
+              },
+              messageId: 'missedSpacingBetweenDecorators',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              groups: ['a', 'unknown', 'b'],
+              newlinesBetween,
+            },
+          ],
+          output: dedent`
+              @a
+
+             @y
+            @z
+
+                @b
+            class Class {}
+          `,
+          code: dedent`
+              @a
+
+
+             @z
+            @y
+                @b
+            class Class {}
+          `,
+        })
+      },
+    )
+
+    it('applies inline newline settings between specific groups', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              { elementNamePattern: 'a', groupName: 'a' },
+              { elementNamePattern: 'b', groupName: 'b' },
+              { elementNamePattern: 'c', groupName: 'c' },
+              { elementNamePattern: 'd', groupName: 'd' },
+              { elementNamePattern: 'e', groupName: 'e' },
+            ],
+            groups: [
+              'a',
+              { newlinesBetween: 'always' },
+              'b',
+              { newlinesBetween: 'always' },
+              'c',
+              { newlinesBetween: 'never' },
+              'd',
+              { newlinesBetween: 'ignore' },
+              'e',
+            ],
+            newlinesBetween: 'always',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'missedSpacingBetweenDecorators',
+          },
+          {
+            data: {
+              right: 'c',
+              left: 'b',
+            },
+            messageId: 'extraSpacingBetweenDecorators',
+          },
+          {
+            data: {
+              right: 'd',
+              left: 'c',
+            },
+            messageId: 'extraSpacingBetweenDecorators',
+          },
+        ],
+        output: dedent`
+          @a
+
+          @b
+
+          @c
+          @d
+
+
+          @e
+          class Class {}
+        `,
+        code: dedent`
+          @a
+          @b
+
+
+          @c
+
+          @d
+
+
+          @e
+          class Class {}
+        `,
+      })
+    })
+
+    it.each([
+      [2, 'never' as const],
+      [2, 0 as const],
+      [2, 'ignore' as const],
+      ['never' as const, 2],
+      [0 as const, 2],
+      ['ignore' as const, 2],
+    ])(
+      'enforces 2 newlines when global is %s and group is %s',
+      async (globalNewlinesBetween, groupNewlinesBetween) => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                { elementNamePattern: 'a', groupName: 'a' },
+                { elementNamePattern: 'b', groupName: 'b' },
+                { groupName: 'unusedGroup', elementNamePattern: 'X' },
+              ],
+              groups: [
+                'a',
+                'unusedGroup',
+                { newlinesBetween: groupNewlinesBetween },
+                'b',
+              ],
+              newlinesBetween: globalNewlinesBetween,
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'missedSpacingBetweenDecorators',
+            },
+          ],
+          output: dedent`
+            @a
+
+
+            @b
+            class Class {}
+          `,
+          code: dedent`
+            @a
+            @b
+            class Class {}
+          `,
+        })
+      },
+    )
+
+    it.each([
+      'always' as const,
+      2 as const,
+      'ignore' as const,
+      'never' as const,
+      0 as const,
+    ])(
+      'removes newlines when "never" overrides global %s between specific groups',
+      async globalNewlinesBetween => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                { elementNamePattern: 'a', groupName: 'a' },
+                { elementNamePattern: 'b', groupName: 'b' },
+                { elementNamePattern: 'c', groupName: 'c' },
+                { groupName: 'unusedGroup', elementNamePattern: 'X' },
+              ],
+              groups: [
+                'a',
+                { newlinesBetween: 'never' },
+                'unusedGroup',
+                { newlinesBetween: 'never' },
+                'b',
+                { newlinesBetween: 'always' },
+                'c',
+              ],
+              newlinesBetween: globalNewlinesBetween,
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'extraSpacingBetweenDecorators',
+            },
+          ],
+          output: dedent`
+            @a
+            @b
+            class Class {}
+          `,
+          code: dedent`
+            @a
+
+            @b
+            class Class {}
+          `,
+        })
+      },
+    )
+
+    it.each([
+      ['ignore' as const, 'never' as const],
+      ['ignore' as const, 0 as const],
+      ['never' as const, 'ignore' as const],
+      [0 as const, 'ignore' as const],
+    ])(
+      'accepts any spacing when global is %s and group is %s',
+      async (globalNewlinesBetween, groupNewlinesBetween) => {
+        await valid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                { elementNamePattern: 'a', groupName: 'a' },
+                { elementNamePattern: 'b', groupName: 'b' },
+                { groupName: 'unusedGroup', elementNamePattern: 'X' },
+              ],
+              groups: [
+                'a',
+                'unusedGroup',
+                { newlinesBetween: groupNewlinesBetween },
+                'b',
+              ],
+              newlinesBetween: globalNewlinesBetween,
+            },
+          ],
+          code: dedent`
+            @a
+
+            @b
+            class Class {}
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                { elementNamePattern: 'a', groupName: 'a' },
+                { elementNamePattern: 'b', groupName: 'b' },
+                { groupName: 'unusedGroup', elementNamePattern: 'X' },
+              ],
+              groups: [
+                'a',
+                'unusedGroup',
+                { newlinesBetween: groupNewlinesBetween },
+                'b',
+              ],
+              newlinesBetween: globalNewlinesBetween,
+            },
+          ],
+          code: dedent`
+            @a
+            @b
+            class Class {}
+          `,
+        })
+      },
+    )
+
+    it('preserves inline comments when reordering elements', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: 'b|c',
+                groupName: 'b|c',
+              },
+            ],
+            groups: ['unknown', 'b|c'],
+            newlinesBetween: 'always',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              rightGroup: 'unknown',
+              leftGroup: 'b|c',
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedDecoratorsGroupOrder',
+          },
+        ],
+        output: dedent`
+          @a // Comment after
+
+          @b
+          @c
+          class Class {}
+        `,
+        code: dedent`
+          @b
+          @a // Comment after
+
+          @c
+          class Class {}
+        `,
+      })
+    })
+
+    it.each([
+      ['never', 'never' as const],
+      ['0', 0 as const],
+    ])(
+      'preserves partition boundaries regardless of newlinesBetween %s',
+      async (_description, newlinesBetween) => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+              ],
+              groups: ['a', 'unknown'],
+              partitionByComment: true,
+              newlinesBetween,
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedDecoratorsOrder',
+            },
+          ],
+          output: dedent`
+            @a
+
+            // Partition comment
+
+            @b
+            @c
+            class Class {}
+          `,
+          code: dedent`
+            @a
+
+            // Partition comment
+
+            @c
+            @b
+            class Class {}
+          `,
+        })
+      },
+    )
+
+    it.each([
+      ['always', 'always'],
+      ['1', 1],
+    ] as const)(
+      'allows to use newlinesInside: %s',
+      async (_description, newlinesInside) => {
+        await invalid({
+          options: [
+            {
+              customGroups: [
+                {
+                  elementNamePattern: '.*',
+                  groupName: 'group1',
+                  newlinesInside,
+                },
+              ],
+              groups: ['group1'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'missedSpacingBetweenDecorators',
+            },
+          ],
+          output: dedent`
+            @a
+
+            @b
+            class Class {}
+          `,
+          code: dedent`
+            @a
+            @b
+            class Class {}
+          `,
+        })
+      },
+    )
+
+    it.each([
+      ['never', 'never'],
+      ['0', 0],
+    ] as const)(
+      'allows to use newlinesInside: %s',
+      async (_description, newlinesInside) => {
+        await invalid({
+          options: [
+            {
+              customGroups: [
+                {
+                  elementNamePattern: '.*',
+                  groupName: 'group1',
+                  newlinesInside,
+                },
+              ],
+              type: 'alphabetical',
+              groups: ['group1'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'extraSpacingBetweenDecorators',
+            },
+          ],
+          output: dedent`
+            @a
+            @b
+            class Class {}
+          `,
+          code: dedent`
+            @a
+
+            @b
+            class Class {}
+          `,
+        })
+      },
+    )
+
+    it('sorts within newline-separated partitions', async () => {
+      await invalid({
+        output: dedent`
+          @a
+          @d
+
+          @c
+
+          @b
+          @e
+          class Class {
+
+            @a
+            @d
+
+            @c
+
+            @b
+            @e
+            property
+
+            @a
+            @d
+
+            @c
+
+            @b
+            @e
+            accessor field
+
+            @a
+            @d
+
+            @c
+
+            @b
+            @e
+            method(
+              @a
+              @d
+
+              @c
+
+              @b
+              @e
+              parameter) {}
+
+          }
+        `,
+        code: dedent`
+          @d
+          @a
+
+          @c
+
+          @e
+          @b
+          class Class {
+
+            @d
+            @a
+
+            @c
+
+            @e
+            @b
+            property
+
+            @d
+            @a
+
+            @c
+
+            @e
+            @b
+            accessor field
+
+            @d
+            @a
+
+            @c
+
+            @e
+            @b
+            method(
+              @d
+              @a
+
+              @c
+
+              @e
+              @b
+              parameter) {}
+
+          }
+        `,
+        errors: duplicate5Times([
+          {
+            data: {
+              right: 'a',
+              left: 'd',
+            },
+            messageId: 'unexpectedDecoratorsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'e',
+            },
+            messageId: 'unexpectedDecoratorsOrder',
+          },
+        ]),
+        options: [
+          {
+            partitionByNewLine: true,
+            type: 'alphabetical',
+          },
+        ],
+      })
+    })
+
     it('sorts decorators within partition comment boundaries', async () => {
       await invalid({
         output: dedent`
