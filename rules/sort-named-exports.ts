@@ -218,11 +218,6 @@ export default createEslintRule<Options, MessageId>({
       items: {
         properties: {
           ...commonJsonSchemas,
-          groupKind: {
-            description: '[DEPRECATED] Specifies top-level groups.',
-            enum: ['mixed', 'values-first', 'types-first'],
-            type: 'string',
-          },
           ignoreAlias: {
             description: 'Controls whether to ignore alias names.',
             type: 'boolean',

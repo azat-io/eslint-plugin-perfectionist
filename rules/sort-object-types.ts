@@ -72,7 +72,6 @@ let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   useConfigurationIf: {},
   type: 'alphabetical',
-  groupKind: 'mixed',
   ignorePattern: [],
   ignoreCase: true,
   customGroups: {},
@@ -99,11 +98,6 @@ export let jsonSchema: JSONSchema4 = {
             singleCustomGroupJsonSchema,
           }),
         ],
-      },
-      groupKind: {
-        description: '[DEPRECATED] Specifies top-level groups.',
-        enum: ['mixed', 'required-first', 'optional-first'],
-        type: 'string',
       },
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {
