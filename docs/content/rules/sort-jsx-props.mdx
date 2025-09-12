@@ -285,11 +285,20 @@ Example configuration:
     'error',
     {
       groups: ['r', 'g', 'b'], // Sort tag with colors keys by RGB
-      customGroups: {
-        r: '^r$',
-        g: '^g$',
-        b: '^b$',
-      },
+      customGroups: [
+        {
+          groupName: 'r',
+          elementNamePattern: '^r$',
+        },
+        {
+          groupName: 'g',
+          elementNamePattern: '^g$',
+        },
+        {
+          groupName: 'b',
+          elementNamePattern: '^b$',
+        },
+      ],
       useConfigurationIf: {
         allNamesMatchPattern: '^r|g|b$',
       },
@@ -511,7 +520,7 @@ Custom groups have a higher priority than any predefined group.
                   newlinesBetween: 'ignore',
                   useConfigurationIf: {},
                   groups: [],
-                  customGroups: {},
+                  customGroups: [],
                 },
               ],
             },
@@ -542,7 +551,7 @@ Custom groups have a higher priority than any predefined group.
                 newlinesBetween: 'ignore',
                 useConfigurationIf: {},
                 groups: [],
-                customGroups: {},
+                customGroups: [],
               },
             ],
           },
