@@ -11,7 +11,6 @@ import type {
 
 import {
   buildCustomGroupsArrayJsonSchema,
-  deprecatedCustomGroupsJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
@@ -393,26 +392,6 @@ export default createEslintRule<Options, MessageId>({
       items: {
         properties: {
           ...commonJsonSchemas,
-          customGroups: {
-            oneOf: [
-              {
-                properties: {
-                  value: {
-                    ...deprecatedCustomGroupsJsonSchema,
-                    description: 'Specifies custom groups for value imports.',
-                  },
-                  type: {
-                    ...deprecatedCustomGroupsJsonSchema,
-                    description: 'Specifies custom groups for type imports.',
-                  },
-                },
-                description: 'Specifies custom groups.',
-                additionalProperties: false,
-                type: 'object',
-              },
-              buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
-            ],
-          },
           tsconfig: {
             properties: {
               rootDir: {
@@ -448,6 +427,9 @@ export default createEslintRule<Options, MessageId>({
             description: 'Specifies the tsConfig root directory.',
             type: 'string',
           },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,

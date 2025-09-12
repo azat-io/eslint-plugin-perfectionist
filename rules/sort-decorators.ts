@@ -8,7 +8,6 @@ import type {
 
 import {
   buildCustomGroupsArrayJsonSchema,
-  deprecatedCustomGroupsJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
@@ -73,12 +72,6 @@ export default createEslintRule<Options, MessageId>({
       items: {
         properties: {
           ...commonJsonSchemas,
-          customGroups: {
-            oneOf: [
-              deprecatedCustomGroupsJsonSchema,
-              buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
-            ],
-          },
           sortOnParameters: {
             description:
               'Controls whether sorting should be enabled for method parameter decorators.',
@@ -104,6 +97,9 @@ export default createEslintRule<Options, MessageId>({
               'Controls whether sorting should be enabled for class decorators.',
             type: 'boolean',
           },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,

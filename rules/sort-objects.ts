@@ -9,7 +9,6 @@ import type { Modifier, Selector, Options } from './sort-objects/types'
 import {
   buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
-  deprecatedCustomGroupsJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
@@ -448,12 +447,6 @@ export default createEslintRule<Options, MessageId>({
             ],
             description: 'Controls whether to sort destructured objects.',
           },
-          customGroups: {
-            oneOf: [
-              deprecatedCustomGroupsJsonSchema,
-              buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
-            ],
-          },
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {
               callingFunctionNamePattern: regexJsonSchema,
@@ -472,6 +465,9 @@ export default createEslintRule<Options, MessageId>({
             description: 'Controls whether to sort styled components.',
             type: 'boolean',
           },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
