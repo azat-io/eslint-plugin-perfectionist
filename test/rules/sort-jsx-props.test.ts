@@ -200,7 +200,7 @@ describe('sort-jsx-props', () => {
     it('positions shorthand props according to group configuration', async () => {
       let shorthandOptions = {
         ...options,
-        groups: ['unknown', 'shorthand'],
+        groups: ['unknown', 'shorthand-prop'],
       }
 
       await valid({
@@ -221,7 +221,7 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              leftGroup: 'shorthand',
+              leftGroup: 'shorthand-prop',
               rightGroup: 'unknown',
               left: 'aaaaaa',
               right: 'b',
@@ -256,7 +256,7 @@ describe('sort-jsx-props', () => {
     it('positions multiline props according to group configuration', async () => {
       let multilineOptions = {
         ...options,
-        groups: ['multiline', 'unknown'],
+        groups: ['multiline-prop', 'unknown'],
       }
 
       await valid({
@@ -281,7 +281,7 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              rightGroup: 'multiline',
+              rightGroup: 'multiline-prop',
               leftGroup: 'unknown',
               right: 'd',
               left: 'c',
@@ -359,45 +359,6 @@ describe('sort-jsx-props', () => {
             $a
             b="b"
             $c
-          />
-        `,
-      })
-    })
-
-    it('groups props by shorthand selector', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'shorthandElements',
-              leftGroup: 'unknown',
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: [
-              {
-                groupName: 'shorthandElements',
-                selector: 'shorthand',
-              },
-            ],
-            groups: ['shorthandElements', 'unknown'],
-          },
-        ],
-        output: dedent`
-          <Element
-            a
-            b="b"
-          />
-        `,
-        code: dedent`
-          <Element
-            b="b"
-            a
           />
         `,
       })
@@ -1574,7 +1535,7 @@ describe('sort-jsx-props', () => {
     it('positions shorthand props according to group configuration', async () => {
       let shorthandOptions = {
         ...options,
-        groups: ['unknown', 'shorthand'],
+        groups: ['unknown', 'shorthand-prop'],
       }
 
       await valid({
@@ -1595,7 +1556,7 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              leftGroup: 'shorthand',
+              leftGroup: 'shorthand-prop',
               rightGroup: 'unknown',
               left: 'aaaaaa',
               right: 'b',
@@ -1630,7 +1591,7 @@ describe('sort-jsx-props', () => {
     it('positions multiline props according to group configuration', async () => {
       let multilineOptions = {
         ...options,
-        groups: ['multiline', 'unknown'],
+        groups: ['multiline-prop', 'unknown'],
       }
 
       await valid({
@@ -1655,7 +1616,7 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              rightGroup: 'multiline',
+              rightGroup: 'multiline-prop',
               leftGroup: 'unknown',
               right: 'd',
               left: 'c',
@@ -1733,45 +1694,6 @@ describe('sort-jsx-props', () => {
             $a
             b="b"
             $c
-          />
-        `,
-      })
-    })
-
-    it('groups props by shorthand selector', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'shorthandElements',
-              leftGroup: 'unknown',
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: [
-              {
-                groupName: 'shorthandElements',
-                selector: 'shorthand',
-              },
-            ],
-            groups: ['shorthandElements', 'unknown'],
-          },
-        ],
-        output: dedent`
-          <Element
-            a
-            b="b"
-          />
-        `,
-        code: dedent`
-          <Element
-            b="b"
-            a
           />
         `,
       })
@@ -2941,7 +2863,7 @@ describe('sort-jsx-props', () => {
     it('positions shorthand props according to group configuration', async () => {
       let shorthandOptions = {
         ...options,
-        groups: ['unknown', 'shorthand'],
+        groups: ['unknown', 'shorthand-prop'],
       }
 
       await valid({
@@ -2962,7 +2884,7 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              leftGroup: 'shorthand',
+              leftGroup: 'shorthand-prop',
               rightGroup: 'unknown',
               left: 'aaaaaa',
               right: 'b',
@@ -2997,7 +2919,7 @@ describe('sort-jsx-props', () => {
     it('positions multiline props according to group configuration', async () => {
       let multilineOptions = {
         ...options,
-        groups: ['multiline', 'unknown'],
+        groups: ['multiline-prop', 'unknown'],
       }
 
       await valid({
@@ -3022,7 +2944,7 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              rightGroup: 'multiline',
+              rightGroup: 'multiline-prop',
               leftGroup: 'unknown',
               right: 'd',
               left: 'c',
@@ -3107,45 +3029,6 @@ describe('sort-jsx-props', () => {
             b="b"
             $a
             $c
-          />
-        `,
-      })
-    })
-
-    it('groups props by shorthand selector', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'shorthandElements',
-              leftGroup: 'unknown',
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: [
-              {
-                groupName: 'shorthandElements',
-                selector: 'shorthand',
-              },
-            ],
-            groups: ['shorthandElements', 'unknown'],
-          },
-        ],
-        output: dedent`
-          <Element
-            a
-            b="b"
-          />
-        `,
-        code: dedent`
-          <Element
-            b="b"
-            a
           />
         `,
       })

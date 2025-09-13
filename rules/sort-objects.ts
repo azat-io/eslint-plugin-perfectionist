@@ -303,7 +303,6 @@ export default createEslintRule<Options, MessageId>({
 
             if (property.loc.start.line !== property.loc.end.line) {
               modifiers.push('multiline')
-              selectors.push('multiline')
             }
 
             let name = getNodeName({ sourceCode, property })

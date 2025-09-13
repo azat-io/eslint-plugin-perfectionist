@@ -1553,14 +1553,14 @@ describe('sort-objects', () => {
       })
     })
 
-    it('prioritizes methods over multiline properties', async () => {
+    it('prioritizes methods over member selector', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
+              left: 'memberProperty',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
             },
             messageId: 'unexpectedObjectsGroupOrder',
@@ -1569,61 +1569,19 @@ describe('sort-objects', () => {
         output: dedent`
           let obj = {
             method() {},
-            multilineProperty: {
-              // Some multiline stuff
-            },
+            memberProperty: something,
           }
         `,
         code: dedent`
           let obj = {
-            multilineProperty: {
-              // Some multiline stuff
-            },
+            memberProperty: something,
             method() {},
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes properties over multiline methods', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'multilineFunction',
-              leftGroup: 'multiline',
-              rightGroup: 'property',
-              right: 'property',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        output: dedent`
-          let obj = {
-            property,
-            multilineFunction() {
-              // Some multiline stuff
-            },
-          }
-        `,
-        code: dedent`
-          let obj = {
-            multilineFunction() {
-              // Some multiline stuff
-            },
-            property,
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property', 'multiline'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -1679,7 +1637,7 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            groups: ['multiline', 'unknown', 'method'],
+            groups: ['multiline-member', 'unknown', 'method'],
           },
         ],
       })
@@ -4417,14 +4375,14 @@ describe('sort-objects', () => {
       })
     })
 
-    it('prioritizes methods over multiline properties', async () => {
+    it('prioritizes methods over member selector', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
+              left: 'memberProperty',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
             },
             messageId: 'unexpectedObjectsGroupOrder',
@@ -4433,61 +4391,19 @@ describe('sort-objects', () => {
         output: dedent`
           let obj = {
             method() {},
-            multilineProperty: {
-              // Some multiline stuff
-            },
+            memberProperty: something,
           }
         `,
         code: dedent`
           let obj = {
-            multilineProperty: {
-              // Some multiline stuff
-            },
+            memberProperty: something,
             method() {},
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes properties over multiline methods', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'multilineFunction',
-              leftGroup: 'multiline',
-              rightGroup: 'property',
-              right: 'property',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        output: dedent`
-          let obj = {
-            property,
-            multilineFunction() {
-              // Some multiline stuff
-            },
-          }
-        `,
-        code: dedent`
-          let obj = {
-            multilineFunction() {
-              // Some multiline stuff
-            },
-            property,
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property', 'multiline'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -4543,7 +4459,7 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            groups: ['multiline', 'unknown', 'method'],
+            groups: ['multiline-member', 'unknown', 'method'],
           },
         ],
       })
@@ -7273,14 +7189,14 @@ describe('sort-objects', () => {
       })
     })
 
-    it('prioritizes methods over multiline properties', async () => {
+    it('prioritizes methods over member selector', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
+              left: 'memberProperty',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
             },
             messageId: 'unexpectedObjectsGroupOrder',
@@ -7289,61 +7205,19 @@ describe('sort-objects', () => {
         output: dedent`
           let obj = {
             method() {},
-            multilineProperty: {
-              // Some multiline stuff
-            },
+            memberProperty: something,
           }
         `,
         code: dedent`
           let obj = {
-            multilineProperty: {
-              // Some multiline stuff
-            },
+            memberProperty: something,
             method() {},
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes properties over multiline methods', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'multilineFunction',
-              leftGroup: 'multiline',
-              rightGroup: 'property',
-              right: 'property',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        output: dedent`
-          let obj = {
-            property,
-            multilineFunction() {
-              // Some multiline stuff
-            },
-          }
-        `,
-        code: dedent`
-          let obj = {
-            multilineFunction() {
-              // Some multiline stuff
-            },
-            property,
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property', 'multiline'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -7399,7 +7273,7 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            groups: ['multiline', 'unknown', 'method'],
+            groups: ['multiline-member', 'unknown', 'method'],
           },
         ],
       })
