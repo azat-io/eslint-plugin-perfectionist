@@ -135,23 +135,10 @@ export type SingleCustomGroup = {
    */
   elementNamePattern?: RegexOption
 } & (
-  | BaseSingleCustomGroup<MultilineSelector>
   | BaseSingleCustomGroup<PropertySelector>
   | BaseSingleCustomGroup<MethodSelector>
   | BaseSingleCustomGroup<MemberSelector>
 )
-
-/**
- * Union type of all available selectors for object members.
- *
- * Selectors identify the type of object member for grouping and sorting
- * purposes.
- */
-export type Selector =
-  | MultilineSelector
-  | PropertySelector
-  | MemberSelector
-  | MethodSelector
 
 /**
  * Union type of all available modifiers for object members.
@@ -160,6 +147,14 @@ export type Selector =
  * whether they are optional, required, or span multiple lines.
  */
 export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
+
+/**
+ * Union type of all available selectors for object members.
+ *
+ * Selectors identify the type of object member for grouping and sorting
+ * purposes.
+ */
+export type Selector = PropertySelector | MemberSelector | MethodSelector
 
 /**
  * Maps each selector type to its allowed modifiers.
@@ -243,21 +238,7 @@ type MethodGroup = JoinWithDash<
  * predefined group types, 'unknown' for unmatched members, or custom string
  * identifiers.
  */
-type Group =
-  | MultilineGroup
-  | PropertyGroup
-  | MethodGroup
-  | MemberGroup
-  | 'unknown'
-  | string
-
-/** @deprecated For {@link `MultilineModifier`}. Will be removed in v5.0.0. */
-type MultilineGroup = JoinWithDash<
-  [OptionalModifier, RequiredModifier, MultilineSelector]
->
-
-/** @deprecated For {@link `MultilineModifier`}. Will be removed in v5.0.0. */
-type MultilineSelector = 'multiline'
+type Group = PropertyGroup | MethodGroup | MemberGroup | 'unknown' | string
 
 /**
  * Modifier indicating a member spans multiple lines.
@@ -309,12 +290,7 @@ type MethodSelector = 'method'
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allSelectors: Selector[] = [
-  'member',
-  'method',
-  'multiline',
-  'property',
-]
+export let allSelectors: Selector[] = ['member', 'method', 'property']
 
 /**
  * Array of all available modifiers for object members.

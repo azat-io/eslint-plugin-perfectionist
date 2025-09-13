@@ -249,7 +249,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              rightGroup: 'optional-multiline',
+              rightGroup: 'optional-multiline-member',
               leftGroup: 'index-signature',
               left: '[key: string]',
               right: 'b',
@@ -258,7 +258,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              leftGroup: 'optional-multiline',
+              leftGroup: 'optional-multiline-member',
               rightGroup: 'required-method',
               right: 'c',
               left: 'b',
@@ -272,7 +272,7 @@ describe('sort-object-types', () => {
             groups: [
               'unknown',
               'required-method',
-              'optional-multiline',
+              'optional-multiline-member',
               'index-signature',
               'required-property',
             ],
@@ -335,15 +335,15 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('prioritizes index-signature over multiline', async () => {
+    it('prioritizes index-signature over member', async () => {
       await invalid({
         errors: [
           {
             data: {
               rightGroup: 'index-signature',
-              left: 'multilineProperty',
               right: '[key: string]',
-              leftGroup: 'multiline',
+              leftGroup: 'member',
+              left: 'member',
             },
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
@@ -351,37 +351,33 @@ describe('sort-object-types', () => {
         output: dedent`
           type Type = {
             [key: string]: string;
-            multilineProperty: {
-              a: string
-            }
+            member: "something";
           }
         `,
         code: dedent`
           type Type = {
-            multilineProperty: {
-              a: string
-            }
+            member: "something";
             [key: string]: string;
           }
         `,
         options: [
           {
             ...options,
-            groups: ['index-signature', 'multiline'],
+            groups: ['index-signature', 'member'],
           },
         ],
       })
     })
 
-    it('prioritizes method over multiline', async () => {
+    it('prioritizes method over member', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
+              left: 'member',
             },
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
@@ -389,61 +385,19 @@ describe('sort-object-types', () => {
         output: dedent`
           type Type = {
             method(): string
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
           }
         `,
         code: dedent`
           type Type = {
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
             method(): string
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes multiline over property', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'multilineProperty',
-              rightGroup: 'multiline',
-              leftGroup: 'property',
-              left: 'property',
-            },
-            messageId: 'unexpectedObjectTypesGroupOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            multilineProperty: {
-              a: string
-            }
-            property: string
-          }
-        `,
-        code: dedent`
-          type Type = {
-            property: string
-            multilineProperty: {
-              a: string
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['multiline', 'property'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -579,7 +533,7 @@ describe('sort-object-types', () => {
             customGroups: {
               g: 'g',
             },
-            groups: ['g', 'multiline', 'unknown'],
+            groups: ['g', 'multiline-member', 'unknown'],
           },
         ],
       })
@@ -588,7 +542,7 @@ describe('sort-object-types', () => {
         errors: [
           {
             data: {
-              rightGroup: 'multiline',
+              rightGroup: 'multiline-member',
               leftGroup: 'unknown',
               right: 'd',
               left: 'c',
@@ -597,7 +551,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              leftGroup: 'multiline',
+              leftGroup: 'multiline-member',
               rightGroup: 'g',
               right: 'g',
               left: 'd',
@@ -635,7 +589,7 @@ describe('sort-object-types', () => {
             customGroups: {
               g: 'g',
             },
-            groups: ['g', 'multiline', 'unknown'],
+            groups: ['g', 'multiline-member', 'unknown'],
           },
         ],
       })
@@ -2876,7 +2830,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              rightGroup: 'optional-multiline',
+              rightGroup: 'optional-multiline-member',
               leftGroup: 'index-signature',
               left: '[key: string]',
               right: 'b',
@@ -2885,7 +2839,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              leftGroup: 'optional-multiline',
+              leftGroup: 'optional-multiline-member',
               rightGroup: 'required-method',
               right: 'c',
               left: 'b',
@@ -2899,7 +2853,7 @@ describe('sort-object-types', () => {
             groups: [
               'unknown',
               'required-method',
-              'optional-multiline',
+              'optional-multiline-member',
               'index-signature',
               'required-property',
             ],
@@ -2962,15 +2916,15 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('prioritizes index-signature over multiline', async () => {
+    it('prioritizes index-signature over member', async () => {
       await invalid({
         errors: [
           {
             data: {
               rightGroup: 'index-signature',
-              left: 'multilineProperty',
               right: '[key: string]',
-              leftGroup: 'multiline',
+              leftGroup: 'member',
+              left: 'member',
             },
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
@@ -2978,37 +2932,33 @@ describe('sort-object-types', () => {
         output: dedent`
           type Type = {
             [key: string]: string;
-            multilineProperty: {
-              a: string
-            }
+            member: "something";
           }
         `,
         code: dedent`
           type Type = {
-            multilineProperty: {
-              a: string
-            }
+            member: "something";
             [key: string]: string;
           }
         `,
         options: [
           {
             ...options,
-            groups: ['index-signature', 'multiline'],
+            groups: ['index-signature', 'member'],
           },
         ],
       })
     })
 
-    it('prioritizes method over multiline', async () => {
+    it('prioritizes method over member', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
+              left: 'member',
             },
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
@@ -3016,61 +2966,19 @@ describe('sort-object-types', () => {
         output: dedent`
           type Type = {
             method(): string
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
           }
         `,
         code: dedent`
           type Type = {
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
             method(): string
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes multiline over property', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'multilineProperty',
-              rightGroup: 'multiline',
-              leftGroup: 'property',
-              left: 'property',
-            },
-            messageId: 'unexpectedObjectTypesGroupOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            multilineProperty: {
-              a: string
-            }
-            property: string
-          }
-        `,
-        code: dedent`
-          type Type = {
-            property: string
-            multilineProperty: {
-              a: string
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['multiline', 'property'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -3206,7 +3114,7 @@ describe('sort-object-types', () => {
             customGroups: {
               g: 'g',
             },
-            groups: ['g', 'multiline', 'unknown'],
+            groups: ['g', 'multiline-member', 'unknown'],
           },
         ],
       })
@@ -3215,7 +3123,7 @@ describe('sort-object-types', () => {
         errors: [
           {
             data: {
-              rightGroup: 'multiline',
+              rightGroup: 'multiline-member',
               leftGroup: 'unknown',
               right: 'd',
               left: 'c',
@@ -3224,7 +3132,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              leftGroup: 'multiline',
+              leftGroup: 'multiline-member',
               rightGroup: 'g',
               right: 'g',
               left: 'd',
@@ -3262,7 +3170,7 @@ describe('sort-object-types', () => {
             customGroups: {
               g: 'g',
             },
-            groups: ['g', 'multiline', 'unknown'],
+            groups: ['g', 'multiline-member', 'unknown'],
           },
         ],
       })
@@ -5510,7 +5418,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              rightGroup: 'optional-multiline',
+              rightGroup: 'optional-multiline-member',
               leftGroup: 'index-signature',
               left: '[key: string]',
               right: 'b',
@@ -5519,7 +5427,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              leftGroup: 'optional-multiline',
+              leftGroup: 'optional-multiline-member',
               rightGroup: 'required-method',
               right: 'c',
               left: 'b',
@@ -5533,7 +5441,7 @@ describe('sort-object-types', () => {
             groups: [
               'unknown',
               'required-method',
-              'optional-multiline',
+              'optional-multiline-member',
               'index-signature',
               'required-property',
             ],
@@ -5596,15 +5504,15 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('prioritizes index-signature over multiline', async () => {
+    it('prioritizes index-signature over member', async () => {
       await invalid({
         errors: [
           {
             data: {
               rightGroup: 'index-signature',
-              left: 'multilineProperty',
               right: '[key: string]',
-              leftGroup: 'multiline',
+              leftGroup: 'member',
+              left: 'member',
             },
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
@@ -5612,37 +5520,33 @@ describe('sort-object-types', () => {
         output: dedent`
           type Type = {
             [key: string]: string;
-            multilineProperty: {
-              a: string
-            }
+            member: "something";
           }
         `,
         code: dedent`
           type Type = {
-            multilineProperty: {
-              a: string
-            }
+            member: "something";
             [key: string]: string;
           }
         `,
         options: [
           {
             ...options,
-            groups: ['index-signature', 'multiline'],
+            groups: ['index-signature', 'member'],
           },
         ],
       })
     })
 
-    it('prioritizes method over multiline', async () => {
+    it('prioritizes method over member', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
+              left: 'member',
             },
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
@@ -5650,61 +5554,19 @@ describe('sort-object-types', () => {
         output: dedent`
           type Type = {
             method(): string
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
           }
         `,
         code: dedent`
           type Type = {
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
             method(): string
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes multiline over property', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'multilineProperty',
-              rightGroup: 'multiline',
-              leftGroup: 'property',
-              left: 'property',
-            },
-            messageId: 'unexpectedObjectTypesGroupOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            multilineProperty: {
-              a: string
-            }
-            property: string
-          }
-        `,
-        code: dedent`
-          type Type = {
-            property: string
-            multilineProperty: {
-              a: string
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['multiline', 'property'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -5840,7 +5702,7 @@ describe('sort-object-types', () => {
             customGroups: {
               g: 'g',
             },
-            groups: ['g', 'multiline', 'unknown'],
+            groups: ['g', 'multiline-member', 'unknown'],
           },
         ],
       })
@@ -5849,7 +5711,7 @@ describe('sort-object-types', () => {
         errors: [
           {
             data: {
-              rightGroup: 'multiline',
+              rightGroup: 'multiline-member',
               leftGroup: 'unknown',
               right: 'd',
               left: 'c',
@@ -5858,7 +5720,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              leftGroup: 'multiline',
+              leftGroup: 'multiline-member',
               rightGroup: 'g',
               right: 'g',
               left: 'd',
@@ -5896,7 +5758,7 @@ describe('sort-object-types', () => {
             customGroups: {
               g: 'g',
             },
-            groups: ['g', 'multiline', 'unknown'],
+            groups: ['g', 'multiline-member', 'unknown'],
           },
         ],
       })
@@ -8123,10 +7985,10 @@ describe('sort-object-types', () => {
       await valid({
         options: [
           {
+            groups: ['multiline-member', 'method', 'unknown', 'myCustomGroup'],
             customGroups: {
               myCustomGroup: 'x',
             },
-            groups: ['multiline', 'method', 'unknown', 'myCustomGroup'],
           },
         ],
         code: dedent`
