@@ -463,7 +463,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              rightGroup: 'optional-multiline',
+              rightGroup: 'optional-multiline-member',
               leftGroup: 'index-signature',
               left: '[key: string]',
               right: 'b',
@@ -472,7 +472,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              leftGroup: 'optional-multiline',
+              leftGroup: 'optional-multiline-member',
               rightGroup: 'required-method',
               right: 'c',
               left: 'b',
@@ -486,7 +486,7 @@ describe('sort-interfaces', () => {
             groups: [
               'unknown',
               'required-method',
-              'optional-multiline',
+              'optional-multiline-member',
               'index-signature',
               'required-property',
             ],
@@ -549,15 +549,15 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('prioritizes index-signature over multiline', async () => {
+    it('prioritizes index-signature over member', async () => {
       await invalid({
         errors: [
           {
             data: {
               rightGroup: 'index-signature',
-              left: 'multilineProperty',
               right: '[key: string]',
-              leftGroup: 'multiline',
+              leftGroup: 'member',
+              left: 'member',
             },
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
@@ -565,37 +565,33 @@ describe('sort-interfaces', () => {
         output: dedent`
           interface Interface {
             [key: string]: string;
-            multilineProperty: {
-              a: string
-            }
+            member: 'something';
           }
         `,
         code: dedent`
           interface Interface {
-            multilineProperty: {
-              a: string
-            }
+            member: 'something';
             [key: string]: string;
           }
         `,
         options: [
           {
             ...options,
-            groups: ['index-signature', 'multiline'],
+            groups: ['index-signature', 'member'],
           },
         ],
       })
     })
 
-    it('prioritizes method over multiline', async () => {
+    it('prioritizes method over member', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
+              left: 'member',
             },
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
@@ -603,61 +599,19 @@ describe('sort-interfaces', () => {
         output: dedent`
           interface Interface {
             method(): string
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
           }
         `,
         code: dedent`
           interface Interface {
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
             method(): string
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes multiline over property', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'multilineProperty',
-              rightGroup: 'multiline',
-              leftGroup: 'property',
-              left: 'property',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            multilineProperty: {
-              a: string
-            }
-            property: string
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            property: string
-            multilineProperty: {
-              a: string
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['multiline', 'property'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -793,7 +747,7 @@ describe('sort-interfaces', () => {
             customGroups: {
               g: 'g',
             },
-            groups: ['g', 'multiline', 'unknown'],
+            groups: ['g', 'multiline-member', 'unknown'],
           },
         ],
       })
@@ -802,7 +756,7 @@ describe('sort-interfaces', () => {
         errors: [
           {
             data: {
-              rightGroup: 'multiline',
+              rightGroup: 'multiline-member',
               leftGroup: 'unknown',
               right: 'd',
               left: 'c',
@@ -811,7 +765,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              leftGroup: 'multiline',
+              leftGroup: 'multiline-member',
               rightGroup: 'g',
               right: 'g',
               left: 'd',
@@ -849,7 +803,7 @@ describe('sort-interfaces', () => {
             customGroups: {
               g: 'g',
             },
-            groups: ['g', 'multiline', 'unknown'],
+            groups: ['g', 'multiline-member', 'unknown'],
           },
         ],
       })
@@ -3179,7 +3133,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              rightGroup: 'optional-multiline',
+              rightGroup: 'optional-multiline-member',
               leftGroup: 'index-signature',
               left: '[key: string]',
               right: 'b',
@@ -3188,7 +3142,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              leftGroup: 'optional-multiline',
+              leftGroup: 'optional-multiline-member',
               rightGroup: 'required-method',
               right: 'c',
               left: 'b',
@@ -3202,7 +3156,7 @@ describe('sort-interfaces', () => {
             groups: [
               'unknown',
               'required-method',
-              'optional-multiline',
+              'optional-multiline-member',
               'index-signature',
               'required-property',
             ],
@@ -3265,15 +3219,15 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('prioritizes index-signature over multiline', async () => {
+    it('prioritizes index-signature over member', async () => {
       await invalid({
         errors: [
           {
             data: {
               rightGroup: 'index-signature',
-              left: 'multilineProperty',
               right: '[key: string]',
-              leftGroup: 'multiline',
+              leftGroup: 'member',
+              left: 'member',
             },
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
@@ -3281,37 +3235,33 @@ describe('sort-interfaces', () => {
         output: dedent`
           interface Interface {
             [key: string]: string;
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
           }
         `,
         code: dedent`
           interface Interface {
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
             [key: string]: string;
           }
         `,
         options: [
           {
             ...options,
-            groups: ['index-signature', 'multiline'],
+            groups: ['index-signature', 'member'],
           },
         ],
       })
     })
 
-    it('prioritizes method over multiline', async () => {
+    it('prioritizes method over member', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
+              left: 'member',
             },
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
@@ -3319,61 +3269,19 @@ describe('sort-interfaces', () => {
         output: dedent`
           interface Interface {
             method(): string
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
           }
         `,
         code: dedent`
           interface Interface {
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
             method(): string
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes multiline over property', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'multilineProperty',
-              rightGroup: 'multiline',
-              leftGroup: 'property',
-              left: 'property',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            multilineProperty: {
-              a: string
-            }
-            property: string
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            property: string
-            multilineProperty: {
-              a: string
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['multiline', 'property'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -3509,7 +3417,7 @@ describe('sort-interfaces', () => {
             customGroups: {
               g: 'g',
             },
-            groups: ['g', 'multiline', 'unknown'],
+            groups: ['g', 'multiline-member', 'unknown'],
           },
         ],
       })
@@ -3518,7 +3426,7 @@ describe('sort-interfaces', () => {
         errors: [
           {
             data: {
-              rightGroup: 'multiline',
+              rightGroup: 'multiline-member',
               leftGroup: 'unknown',
               right: 'd',
               left: 'c',
@@ -3527,7 +3435,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              leftGroup: 'multiline',
+              leftGroup: 'multiline-member',
               rightGroup: 'g',
               right: 'g',
               left: 'd',
@@ -3565,7 +3473,7 @@ describe('sort-interfaces', () => {
             customGroups: {
               g: 'g',
             },
-            groups: ['g', 'multiline', 'unknown'],
+            groups: ['g', 'multiline-member', 'unknown'],
           },
         ],
       })
@@ -5881,7 +5789,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              rightGroup: 'optional-multiline',
+              rightGroup: 'optional-multiline-member',
               leftGroup: 'index-signature',
               left: '[key: string]',
               right: 'b',
@@ -5890,7 +5798,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              leftGroup: 'optional-multiline',
+              leftGroup: 'optional-multiline-member',
               rightGroup: 'required-method',
               right: 'c',
               left: 'b',
@@ -5904,7 +5812,7 @@ describe('sort-interfaces', () => {
             groups: [
               'unknown',
               'required-method',
-              'optional-multiline',
+              'optional-multiline-member',
               'index-signature',
               'required-property',
             ],
@@ -5967,15 +5875,15 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('prioritizes index-signature over multiline', async () => {
+    it('prioritizes index-signature over member', async () => {
       await invalid({
         errors: [
           {
             data: {
               rightGroup: 'index-signature',
-              left: 'multilineProperty',
               right: '[key: string]',
-              leftGroup: 'multiline',
+              leftGroup: 'member',
+              left: 'member',
             },
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
@@ -5983,37 +5891,33 @@ describe('sort-interfaces', () => {
         output: dedent`
           interface Interface {
             [key: string]: string;
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
           }
         `,
         code: dedent`
           interface Interface {
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
             [key: string]: string;
           }
         `,
         options: [
           {
             ...options,
-            groups: ['index-signature', 'multiline'],
+            groups: ['index-signature', 'member'],
           },
         ],
       })
     })
 
-    it('prioritizes method over multiline', async () => {
+    it('prioritizes method over member', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
+              left: 'member',
             },
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
@@ -6021,61 +5925,19 @@ describe('sort-interfaces', () => {
         output: dedent`
           interface Interface {
             method(): string
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
           }
         `,
         code: dedent`
           interface Interface {
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
             method(): string
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes multiline over property', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'multilineProperty',
-              rightGroup: 'multiline',
-              leftGroup: 'property',
-              left: 'property',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            multilineProperty: {
-              a: string
-            }
-            property: string
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            property: string
-            multilineProperty: {
-              a: string
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['multiline', 'property'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -6211,7 +6073,7 @@ describe('sort-interfaces', () => {
             customGroups: {
               g: 'g',
             },
-            groups: ['g', 'multiline', 'unknown'],
+            groups: ['g', 'multiline-member', 'unknown'],
           },
         ],
       })
@@ -6220,7 +6082,7 @@ describe('sort-interfaces', () => {
         errors: [
           {
             data: {
-              rightGroup: 'multiline',
+              rightGroup: 'multiline-member',
               leftGroup: 'unknown',
               right: 'd',
               left: 'c',
@@ -6229,7 +6091,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              leftGroup: 'multiline',
+              leftGroup: 'multiline-member',
               rightGroup: 'g',
               right: 'g',
               left: 'd',
@@ -6267,7 +6129,7 @@ describe('sort-interfaces', () => {
             customGroups: {
               g: 'g',
             },
-            groups: ['g', 'multiline', 'unknown'],
+            groups: ['g', 'multiline-member', 'unknown'],
           },
         ],
       })

@@ -130,7 +130,6 @@ export type SingleCustomGroup = (
       sortBy?: 'value' | 'name'
     } & BaseSingleCustomGroup<PropertySelector>)
   | BaseSingleCustomGroup<IndexSignatureSelector>
-  | BaseSingleCustomGroup<MultilineSelector>
   | BaseSingleCustomGroup<MethodSelector>
   | BaseSingleCustomGroup<MemberSelector>
 ) &
@@ -144,7 +143,6 @@ export type SingleCustomGroup = (
  */
 export type Selector =
   | IndexSignatureSelector
-  | MultilineSelector
   | PropertySelector
   | MemberSelector
   | MethodSelector
@@ -231,22 +229,6 @@ type IndexSignatureGroup = JoinWithDash<
 >
 
 /**
- * Union type of all possible group identifiers for object type members.
- *
- * Groups are used to organize and sort related members together. Can be
- * predefined group types, 'unknown' for unmatched members, or custom string
- * identifiers.
- */
-type Group =
-  | IndexSignatureGroup
-  | MultilineGroup
-  | PropertyGroup
-  | MethodGroup
-  | MemberGroup
-  | 'unknown'
-  | string
-
-/**
  * Group type for property members.
  *
  * Represents all possible combinations of modifiers with the property selector,
@@ -256,6 +238,21 @@ type Group =
 type PropertyGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineModifier, PropertySelector]
 >
+
+/**
+ * Union type of all possible group identifiers for object type members.
+ *
+ * Groups are used to organize and sort related members together. Can be
+ * predefined group types, 'unknown' for unmatched members, or custom string
+ * identifiers.
+ */
+type Group =
+  | IndexSignatureGroup
+  | PropertyGroup
+  | MethodGroup
+  | MemberGroup
+  | 'unknown'
+  | string
 
 /**
  * Group type for generic member elements.
@@ -279,20 +276,12 @@ type MethodGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineModifier, MethodSelector]
 >
 
-/** @deprecated For {@link `MultilineModifier`}. Will be removed in v5.0.0. */
-type MultilineGroup = JoinWithDash<
-  [OptionalModifier, RequiredModifier, MultilineSelector]
->
-
 /**
  * Selector for index signature members.
  *
  * Matches TypeScript index signatures like `[key: string]: any`.
  */
 type IndexSignatureSelector = 'index-signature'
-
-/** @deprecated For {@link `MultilineModifier`}. Will be removed in v5.0.0. */
-type MultilineSelector = 'multiline'
 
 /**
  * Modifier indicating a member spans multiple lines.
@@ -346,7 +335,6 @@ export let allSelectors: Selector[] = [
   'index-signature',
   'member',
   'method',
-  'multiline',
   'property',
 ]
 
