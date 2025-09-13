@@ -2392,7 +2392,7 @@ describe('sort-imports', () => {
                 'tsconfig-path',
               ],
             ],
-            tsconfigRootDir: '.',
+            tsconfig: { rootDir: '.' },
           },
         ],
         output: dedent`
@@ -6053,7 +6053,7 @@ describe('sort-imports', () => {
                 'tsconfig-path',
               ],
             ],
-            tsconfigRootDir: '.',
+            tsconfig: { rootDir: '.' },
           },
         ],
         output: dedent`
@@ -9738,7 +9738,7 @@ describe('sort-imports', () => {
                 'tsconfig-path',
               ],
             ],
-            tsconfigRootDir: '.',
+            tsconfig: { rootDir: '.' },
           },
         ],
         output: dedent`
@@ -11614,7 +11614,7 @@ describe('sort-imports', () => {
         options: [
           {
             groups: ['internal', 'unknown'],
-            tsconfigRootDir: '.',
+            tsconfig: { rootDir: '.' },
           },
         ],
         before: () => {
@@ -11638,7 +11638,7 @@ describe('sort-imports', () => {
         options: [
           {
             groups: ['external', 'unknown'],
-            tsconfigRootDir: '.',
+            tsconfig: { rootDir: '.' },
           },
         ],
         code: dedent`
@@ -11662,7 +11662,7 @@ describe('sort-imports', () => {
         options: [
           {
             groups: ['external', 'unknown'],
-            tsconfigRootDir: '.',
+            tsconfig: { rootDir: '.' },
           },
         ],
         before: () => {
@@ -11692,7 +11692,7 @@ describe('sort-imports', () => {
         options: [
           {
             groups: ['external', 'unknown'],
-            tsconfigRootDir: '.',
+            tsconfig: { rootDir: '.' },
           },
         ],
         code: dedent`

@@ -68,12 +68,6 @@ export type Options = Partial<{
   newlinesBetween: NewlinesBetweenOption
 
   /**
-   * @deprecated Since v4.14.0. Will be removed in v5.0.0. Use
-   *   {@link tsconfig.rootDir} instead.
-   */
-  tsconfigRootDir: undefined | string
-
-  /**
    * Maximum line length for imports. When exceeded, import names are used for
    * sorting instead of the entire line.
    */
