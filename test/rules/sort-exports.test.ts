@@ -675,7 +675,6 @@ describe('sort-exports', () => {
             ],
             groups: ['reversedValuesByLineLength', 'unknown'],
             type: 'alphabetical',
-            groupKind: 'mixed',
             order: 'asc',
           },
         ],
@@ -759,7 +758,6 @@ describe('sort-exports', () => {
               },
             ],
             groups: ['unsortedValues', 'unknown'],
-            groupKind: 'mixed',
           },
         ],
         errors: [
@@ -2142,7 +2140,6 @@ describe('sort-exports', () => {
             ],
             groups: ['reversedValuesByLineLength', 'unknown'],
             type: 'alphabetical',
-            groupKind: 'mixed',
             order: 'asc',
           },
         ],
@@ -2226,7 +2223,6 @@ describe('sort-exports', () => {
               },
             ],
             groups: ['unsortedValues', 'unknown'],
-            groupKind: 'mixed',
           },
         ],
         errors: [
@@ -3765,7 +3761,6 @@ describe('sort-exports', () => {
             ],
             groups: ['reversedValuesByLineLength', 'unknown'],
             type: 'alphabetical',
-            groupKind: 'mixed',
             order: 'asc',
           },
         ],
@@ -3849,7 +3844,6 @@ describe('sort-exports', () => {
               },
             ],
             groups: ['unsortedValues', 'unknown'],
-            groupKind: 'mixed',
           },
         ],
         errors: [

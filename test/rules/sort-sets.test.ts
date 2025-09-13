@@ -235,8 +235,8 @@ describe('sort-sets', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -244,17 +244,21 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedSetsOrder',
+            messageId: 'unexpectedSetsGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedSetsOrder',
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -645,7 +649,6 @@ describe('sort-sets', () => {
           {
             ...options,
             groups: ['spread', 'literal'],
-            groupKind: 'mixed',
           },
         ],
         output: dedent`
@@ -675,7 +678,6 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -725,7 +727,6 @@ describe('sort-sets', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -773,7 +774,6 @@ describe('sort-sets', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -901,7 +901,6 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -1758,8 +1757,8 @@ describe('sort-sets', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -1767,17 +1766,21 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedSetsOrder',
+            messageId: 'unexpectedSetsGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedSetsOrder',
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -2168,7 +2171,6 @@ describe('sort-sets', () => {
           {
             ...options,
             groups: ['spread', 'literal'],
-            groupKind: 'mixed',
           },
         ],
         output: dedent`
@@ -2198,7 +2200,6 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -2248,7 +2249,6 @@ describe('sort-sets', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -2296,7 +2296,6 @@ describe('sort-sets', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -2424,7 +2423,6 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -3281,8 +3279,8 @@ describe('sort-sets', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -3290,17 +3288,21 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedSetsOrder',
+            messageId: 'unexpectedSetsGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedSetsOrder',
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -3691,7 +3693,6 @@ describe('sort-sets', () => {
           {
             ...options,
             groups: ['spread', 'literal'],
-            groupKind: 'mixed',
           },
         ],
         output: dedent`
@@ -3721,7 +3722,6 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -3771,7 +3771,6 @@ describe('sort-sets', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -3819,7 +3818,6 @@ describe('sort-sets', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -3947,7 +3945,6 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 

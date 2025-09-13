@@ -339,10 +339,12 @@ describe('sort-named-imports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-import',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedImportsOrder',
+            messageId: 'unexpectedNamedImportsGroupOrder',
           },
           {
             data: {
@@ -388,7 +390,7 @@ describe('sort-named-imports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-import'],
           },
         ],
       })
@@ -1855,10 +1857,12 @@ describe('sort-named-imports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-import',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedImportsOrder',
+            messageId: 'unexpectedNamedImportsGroupOrder',
           },
           {
             data: {
@@ -1904,7 +1908,7 @@ describe('sort-named-imports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-import'],
           },
         ],
       })
@@ -3364,10 +3368,12 @@ describe('sort-named-imports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-import',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedImportsOrder',
+            messageId: 'unexpectedNamedImportsGroupOrder',
           },
           {
             data: {
@@ -3413,7 +3419,7 @@ describe('sort-named-imports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-import'],
           },
         ],
       })

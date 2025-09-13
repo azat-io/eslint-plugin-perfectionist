@@ -263,8 +263,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -272,17 +272,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -311,8 +315,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -465,7 +469,7 @@ describe('sort-array-includes', () => {
         {
           ...options,
           partitionByComment: '^Part:',
-          groupKind: 'spreads-first',
+          groups: ['spread'],
         },
       ]
 
@@ -473,17 +477,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -842,13 +850,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: ['spread', 'literal'],
-            groupKind: 'mixed',
-          },
-        ],
         output: dedent`
           [
             ...b,
@@ -863,6 +864,12 @@ describe('sort-array-includes', () => {
             'a'
           ].includes(value)
         `,
+        options: [
+          {
+            ...options,
+            groups: ['spread', 'literal'],
+          },
+        ],
       })
     })
 
@@ -876,7 +883,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -926,7 +932,6 @@ describe('sort-array-includes', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -974,7 +979,6 @@ describe('sort-array-includes', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -1102,7 +1106,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -2056,8 +2059,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -2065,17 +2068,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -2104,8 +2111,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -2258,7 +2265,7 @@ describe('sort-array-includes', () => {
         {
           ...options,
           partitionByComment: '^Part:',
-          groupKind: 'spreads-first',
+          groups: ['spread'],
         },
       ]
 
@@ -2266,17 +2273,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -2635,13 +2646,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: ['spread', 'literal'],
-            groupKind: 'mixed',
-          },
-        ],
         output: dedent`
           [
             ...b,
@@ -2656,6 +2660,12 @@ describe('sort-array-includes', () => {
             'a'
           ].includes(value)
         `,
+        options: [
+          {
+            ...options,
+            groups: ['spread', 'literal'],
+          },
+        ],
       })
     })
 
@@ -2669,7 +2679,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -2719,7 +2728,6 @@ describe('sort-array-includes', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -2767,7 +2775,6 @@ describe('sort-array-includes', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -2895,7 +2902,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -3830,8 +3836,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -3839,17 +3845,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -3878,8 +3888,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -4032,7 +4042,7 @@ describe('sort-array-includes', () => {
         {
           ...options,
           partitionByComment: '^Part:',
-          groupKind: 'spreads-first',
+          groups: ['spread'],
         },
       ]
 
@@ -4040,17 +4050,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -4409,13 +4423,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: ['spread', 'literal'],
-            groupKind: 'mixed',
-          },
-        ],
         output: dedent`
           [
             ...b,
@@ -4430,6 +4437,12 @@ describe('sort-array-includes', () => {
             'aa'
           ].includes(value)
         `,
+        options: [
+          {
+            ...options,
+            groups: ['spread', 'literal'],
+          },
+        ],
       })
     })
 
@@ -4443,7 +4456,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -4493,7 +4505,6 @@ describe('sort-array-includes', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -4541,7 +4552,6 @@ describe('sort-array-includes', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -4669,7 +4679,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 

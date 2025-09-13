@@ -113,10 +113,12 @@ describe('sort-named-exports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-export',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedExportsOrder',
+            messageId: 'unexpectedNamedExportsGroupOrder',
           },
           {
             data: {
@@ -162,7 +164,7 @@ describe('sort-named-exports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-export'],
           },
         ],
       })
@@ -1481,10 +1483,12 @@ describe('sort-named-exports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-export',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedExportsOrder',
+            messageId: 'unexpectedNamedExportsGroupOrder',
           },
           {
             data: {
@@ -1530,7 +1534,7 @@ describe('sort-named-exports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-export'],
           },
         ],
       })
@@ -2849,10 +2853,12 @@ describe('sort-named-exports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-export',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedExportsOrder',
+            messageId: 'unexpectedNamedExportsGroupOrder',
           },
           {
             data: {
@@ -2898,7 +2904,7 @@ describe('sort-named-exports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-export'],
           },
         ],
       })
