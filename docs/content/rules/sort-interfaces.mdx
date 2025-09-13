@@ -311,18 +311,6 @@ See the [`groups`](#newlines-between-groups) option.
 
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
-### [DEPRECATED] groupKind
-
-<sub>default: `'mixed'`</sub>
-
-Use the [groups](#groups) option with the `optional` and `required` modifiers instead.
-
-Specifies how optional and required members should be ordered in TypeScript interfaces.
-
-- `'optional-first'` — Put all optional members before required members.
-- `'required-first'` — Put all required members before optional members.
-- `'mixed'` — Do not enforce any specific order based on optionality.
-
 ### useConfigurationIf
 
 <sub>
@@ -689,7 +677,6 @@ interface User {
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   useConfigurationIf: {},
-                  groupKind: 'mixed',
                   groups: [],
                   customGroups: [],
                 },
@@ -723,7 +710,6 @@ interface User {
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 useConfigurationIf: {},
-                groupKind: 'mixed',
                 groups: [],
                 customGroups: [],
               },

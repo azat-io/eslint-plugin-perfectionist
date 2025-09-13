@@ -72,7 +72,6 @@ let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   useConfigurationIf: {},
   type: 'alphabetical',
-  groupKind: 'mixed',
   ignorePattern: [],
   ignoreCase: true,
   customGroups: {},
@@ -99,11 +98,6 @@ export let jsonSchema: JSONSchema4 = {
             singleCustomGroupJsonSchema,
           }),
         ],
-      },
-      groupKind: {
-        description: '[DEPRECATED] Specifies top-level groups.',
-        enum: ['mixed', 'required-first', 'optional-first'],
-        type: 'string',
       },
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {
@@ -219,171 +213,148 @@ export function sortObjectTypeElements<MessageIds extends string>({
     sourceCode,
   })
 
-  let formattedMembers: SortObjectTypesSortingNode[][] = elements.reduce(
-    (accumulator: SortObjectTypesSortingNode[][], typeElement) => {
-      if (
-        typeElement.type === 'TSCallSignatureDeclaration' ||
-        typeElement.type === 'TSConstructSignatureDeclaration'
-      ) {
-        accumulator.push([])
-        return accumulator
-      }
-
-      let lastGroup = accumulator.at(-1)
-      let lastSortingNode = lastGroup?.at(-1)
-
-      let selectors: Selector[] = []
-      let modifiers: Modifier[] = []
-
-      if (typeElement.type === 'TSIndexSignature') {
-        selectors.push('index-signature')
-      }
-
-      if (isNodeFunctionType(typeElement)) {
-        selectors.push('method')
-      }
-
-      if (typeElement.loc.start.line !== typeElement.loc.end.line) {
-        modifiers.push('multiline')
-        selectors.push('multiline')
-      }
-
-      if (
-        !(['index-signature', 'method'] as Selector[]).some(selector =>
-          selectors.includes(selector),
-        )
-      ) {
-        selectors.push('property')
-      }
-
-      selectors.push('member')
-
-      if (isMemberOptional(typeElement)) {
-        modifiers.push('optional')
-      } else {
-        modifiers.push('required')
-      }
-
-      let name = getNodeName({ typeElement, sourceCode })
-      let value: string | null = null
-      if (
-        typeElement.type === 'TSPropertySignature' &&
-        typeElement.typeAnnotation
-      ) {
-        value = sourceCode.getText(typeElement.typeAnnotation.typeAnnotation)
-      }
-
-      let predefinedGroups = generatePredefinedGroups({
-        cache: cachedGroupsByModifiersAndSelectors,
-        selectors,
-        modifiers,
-      })
-      let group = computeGroup({
-        customGroupMatcher: customGroup =>
-          doesCustomGroupMatch({
-            elementValue: value,
-            elementName: name,
-            customGroup,
-            selectors,
-            modifiers,
-          }),
-        predefinedGroups,
-        options,
-        name,
-      })
-
-      let sortingNode: SortObjectTypesSortingNode = {
-        isEslintDisabled: isNodeEslintDisabled(
-          typeElement,
-          eslintDisabledLines,
-        ),
-        groupKind: isMemberOptional(typeElement) ? 'optional' : 'required',
-        size: rangeToDiff(typeElement, sourceCode),
-        addSafetySemicolonWhenInline: true,
-        partitionId: accumulator.length,
-        node: typeElement,
-        group,
-        value,
-        name,
-      }
-
-      if (
-        shouldPartition({
-          lastSortingNode,
-          sortingNode,
-          sourceCode,
-          options,
-        })
-      ) {
-        lastGroup = []
-        accumulator.push(lastGroup)
-      }
-
-      lastGroup?.push(sortingNode)
-
-      return accumulator
-    },
-    [[]],
-  )
-
-  let groupKindOrder
-  if (options.groupKind === 'required-first') {
-    groupKindOrder = ['required', 'optional'] as const
-  } else if (options.groupKind === 'optional-first') {
-    groupKindOrder = ['optional', 'required'] as const
-  } else {
-    groupKindOrder = ['any'] as const
-  }
-  for (let nodes of formattedMembers) {
-    let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-      nodes.filter(
-        currentNode =>
-          groupKind === 'any' || currentNode.groupKind === groupKind,
-      ),
-    )
-
-    function sortNodesExcludingEslintDisabled(
-      ignoreEslintDisabledNodes: boolean,
-    ): SortObjectTypesSortingNode[] {
-      return filteredGroupKindNodes.flatMap(groupedNodes =>
-        sortNodesByGroups({
-          getOptionsByGroupIndex: groupIndex => {
-            let {
-              fallbackSortNodeValueGetter,
-              options: overriddenOptions,
-              nodeValueGetter,
-            } = getCustomGroupsCompareOptions(options, groupIndex)
-            return {
-              options: {
-                ...options,
-                ...overriddenOptions,
-              },
-              fallbackSortNodeValueGetter,
-              nodeValueGetter,
-            }
-          },
-          isNodeIgnoredForGroup: (node, groupOptions) => {
-            if (groupOptions.sortBy === 'value') {
-              return !node.value
-            }
-            return false
-          },
-          ignoreEslintDisabledNodes,
-          groups: options.groups,
-          nodes: groupedNodes,
-        }),
-      )
+  let formattedMembers: SortObjectTypesSortingNode[][] = [[]]
+  for (let typeElement of elements) {
+    if (
+      typeElement.type === 'TSCallSignatureDeclaration' ||
+      typeElement.type === 'TSConstructSignatureDeclaration'
+    ) {
+      continue
     }
 
-    reportAllErrors<MessageIds>({
-      sortNodesExcludingEslintDisabled,
-      availableMessageIds,
-      sourceCode,
+    let lastGroup = formattedMembers.at(-1)
+    let lastSortingNode = lastGroup?.at(-1)
+
+    let selectors: Selector[] = []
+    let modifiers: Modifier[] = []
+
+    if (typeElement.type === 'TSIndexSignature') {
+      selectors.push('index-signature')
+    }
+
+    if (isNodeFunctionType(typeElement)) {
+      selectors.push('method')
+    }
+
+    if (typeElement.loc.start.line !== typeElement.loc.end.line) {
+      modifiers.push('multiline')
+      selectors.push('multiline')
+    }
+
+    if (
+      !(['index-signature', 'method'] as Selector[]).some(selector =>
+        selectors.includes(selector),
+      )
+    ) {
+      selectors.push('property')
+    }
+
+    selectors.push('member')
+
+    if (isMemberOptional(typeElement)) {
+      modifiers.push('optional')
+    } else {
+      modifiers.push('required')
+    }
+
+    let name = getNodeName({ typeElement, sourceCode })
+    let value: string | null = null
+    if (
+      typeElement.type === 'TSPropertySignature' &&
+      typeElement.typeAnnotation
+    ) {
+      value = sourceCode.getText(typeElement.typeAnnotation.typeAnnotation)
+    }
+
+    let predefinedGroups = generatePredefinedGroups({
+      cache: cachedGroupsByModifiersAndSelectors,
+      selectors,
+      modifiers,
+    })
+    let group = computeGroup({
+      customGroupMatcher: customGroup =>
+        doesCustomGroupMatch({
+          elementValue: value,
+          elementName: name,
+          customGroup,
+          selectors,
+          modifiers,
+        }),
+      predefinedGroups,
       options,
-      context,
-      nodes,
+      name,
+    })
+
+    let sortingNode: Omit<SortObjectTypesSortingNode, 'partitionId'> = {
+      isEslintDisabled: isNodeEslintDisabled(typeElement, eslintDisabledLines),
+      size: rangeToDiff(typeElement, sourceCode),
+      addSafetySemicolonWhenInline: true,
+      node: typeElement,
+      group,
+      value,
+      name,
+    }
+
+    if (
+      shouldPartition({
+        lastSortingNode,
+        sortingNode,
+        sourceCode,
+        options,
+      })
+    ) {
+      lastGroup = []
+      formattedMembers.push(lastGroup)
+    }
+
+    lastGroup?.push({
+      ...sortingNode,
+      partitionId: formattedMembers.length,
     })
   }
+
+  function sortNodesExcludingEslintDisabled(
+    ignoreEslintDisabledNodes: boolean,
+  ): SortObjectTypesSortingNode[] {
+    return formattedMembers.flatMap(groupedNodes =>
+      sortNodesByGroups({
+        getOptionsByGroupIndex: groupIndex => {
+          let {
+            fallbackSortNodeValueGetter,
+            options: overriddenOptions,
+            nodeValueGetter,
+          } = getCustomGroupsCompareOptions(options, groupIndex)
+          return {
+            options: {
+              ...options,
+              ...overriddenOptions,
+            },
+            fallbackSortNodeValueGetter,
+            nodeValueGetter,
+          }
+        },
+        isNodeIgnoredForGroup: (node, groupOptions) => {
+          if (groupOptions.sortBy === 'value') {
+            return !node.value
+          }
+          return false
+        },
+        ignoreEslintDisabledNodes,
+        groups: options.groups,
+        nodes: groupedNodes,
+      }),
+    )
+  }
+
+  let nodes = formattedMembers.flat()
+  reportAllErrors<MessageIds>({
+    sortNodesExcludingEslintDisabled,
+    availableMessageIds,
+    sourceCode,
+    options,
+    context,
+    nodes,
+  })
 }
 
 function getNodeName({

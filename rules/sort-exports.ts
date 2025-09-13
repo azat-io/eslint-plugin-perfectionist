@@ -47,12 +47,9 @@ type MessageId =
   | 'missedCommentAboveExport'
   | 'unexpectedExportsOrder'
 
-interface SortExportsSortingNode
-  extends SortingNode<
-    TSESTree.ExportNamedDeclarationWithSource | TSESTree.ExportAllDeclaration
-  > {
-  groupKind: 'value' | 'type'
-}
+type SortExportsSortingNode = SortingNode<
+  TSESTree.ExportNamedDeclarationWithSource | TSESTree.ExportAllDeclaration
+>
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
@@ -61,7 +58,6 @@ let defaultOptions: Required<Options[0]> = {
   newlinesBetween: 'ignore',
   partitionByNewLine: false,
   type: 'alphabetical',
-  groupKind: 'mixed',
   customGroups: [],
   ignoreCase: true,
   locales: 'en-US',
@@ -125,7 +121,6 @@ export default createEslintRule<Options, MessageId>({
 
       let sortingNode: Omit<SortExportsSortingNode, 'partitionId'> = {
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
-        groupKind: node.exportKind === 'value' ? 'value' : 'type',
         size: rangeToDiff(node, sourceCode),
         addSafetySemicolonWhenInline: true,
         group,
@@ -153,51 +148,35 @@ export default createEslintRule<Options, MessageId>({
 
     return {
       'Program:exit': () => {
-        let groupKindOrder
-        if (options.groupKind === 'values-first') {
-          groupKindOrder = ['value', 'type'] as const
-        } else if (options.groupKind === 'types-first') {
-          groupKindOrder = ['type', 'value'] as const
-        } else {
-          groupKindOrder = ['any'] as const
-        }
-
-        for (let nodes of formattedMembers) {
-          let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-            nodes.filter(
-              currentNode =>
-                groupKind === 'any' || currentNode.groupKind === groupKind,
-            ),
+        function sortNodesExcludingEslintDisabled(
+          ignoreEslintDisabledNodes: boolean,
+        ): SortExportsSortingNode[] {
+          return formattedMembers.flatMap(groupedNodes =>
+            sortNodesByGroups({
+              getOptionsByGroupIndex:
+                buildGetCustomGroupOverriddenOptionsFunction(options),
+              ignoreEslintDisabledNodes,
+              groups: options.groups,
+              nodes: groupedNodes,
+            }),
           )
-          function sortNodesExcludingEslintDisabled(
-            ignoreEslintDisabledNodes: boolean,
-          ): SortExportsSortingNode[] {
-            return filteredGroupKindNodes.flatMap(groupedNodes =>
-              sortNodesByGroups({
-                getOptionsByGroupIndex:
-                  buildGetCustomGroupOverriddenOptionsFunction(options),
-                ignoreEslintDisabledNodes,
-                groups: options.groups,
-                nodes: groupedNodes,
-              }),
-            )
-          }
-
-          reportAllErrors<MessageId>({
-            availableMessageIds: {
-              missedSpacingBetweenMembers: 'missedSpacingBetweenExports',
-              extraSpacingBetweenMembers: 'extraSpacingBetweenExports',
-              unexpectedGroupOrder: 'unexpectedExportsGroupOrder',
-              missedCommentAbove: 'missedCommentAboveExport',
-              unexpectedOrder: 'unexpectedExportsOrder',
-            },
-            sortNodesExcludingEslintDisabled,
-            sourceCode,
-            options,
-            context,
-            nodes,
-          })
         }
+
+        let nodes = formattedMembers.flat()
+        reportAllErrors<MessageId>({
+          availableMessageIds: {
+            missedSpacingBetweenMembers: 'missedSpacingBetweenExports',
+            extraSpacingBetweenMembers: 'extraSpacingBetweenExports',
+            unexpectedGroupOrder: 'unexpectedExportsGroupOrder',
+            missedCommentAbove: 'missedCommentAboveExport',
+            unexpectedOrder: 'unexpectedExportsOrder',
+          },
+          sortNodesExcludingEslintDisabled,
+          sourceCode,
+          options,
+          context,
+          nodes,
+        })
       },
       ExportNamedDeclaration: node => {
         if (node.source !== null) {
@@ -212,11 +191,6 @@ export default createEslintRule<Options, MessageId>({
       items: {
         properties: {
           ...commonJsonSchemas,
-          groupKind: {
-            description: '[DEPRECATED] Specifies top-level groups.',
-            enum: ['mixed', 'values-first', 'types-first'],
-            type: 'string',
-          },
           customGroups: buildCustomGroupsArrayJsonSchema({
             singleCustomGroupJsonSchema,
           }),

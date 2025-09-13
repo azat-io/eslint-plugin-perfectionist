@@ -210,18 +210,6 @@ See the [`groups`](#newlines-between-groups) option.
 
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
-### [DEPRECATED] groupKind
-
-<sub>default: `'mixed'`</sub>
-
-Use the [groups](#groups) option with the `value` and `type` modifiers instead.
-
-Groups exports by their kind, determining whether value exports should come before or after type exports.
-
-- `mixed` — Do not group named exports by their kind; export statements are sorted together regardless of their type.
-- `values-first` — Group all value exports before type exports.
-- `types-first` — Group all type exports before value exports.
-
 ### groups
 
 <sub>
@@ -388,7 +376,6 @@ Custom groups have a higher priority than any predefined group.
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
-                  groupKind: 'mixed',
                   groups: [],
                   customGroups: [],
                 },
@@ -419,7 +406,6 @@ Custom groups have a higher priority than any predefined group.
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
-                groupKind: 'mixed',
                 groups: [],
                 customGroups: [],
               },

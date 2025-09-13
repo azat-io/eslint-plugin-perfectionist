@@ -25,7 +25,6 @@ let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   useConfigurationIf: {},
   type: 'alphabetical',
-  groupKind: 'mixed',
   ignorePattern: [],
   ignoreCase: true,
   customGroups: {},
