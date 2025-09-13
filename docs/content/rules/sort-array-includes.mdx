@@ -203,18 +203,6 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
-### [DEPRECATED] groupKind
-
-<sub>default: `'literals-first'`</sub>
-
-Use the [groups](#groups) option with the `literal` and `spread` selectors instead. Make sure to set this option to `mixed`.
-
-Groups array elements by their kind, determining whether spread values should come before or after literal values.
-
-- `mixed` — Do not group array elements by their kind; spread values are sorted together with literal values.
-- `literals-first` — Group all literal values before spread values.
-- `spreads-first` — Group all spread values before literal values.
-
 ### partitionByComment
 
 <sub>default: `false`</sub>
@@ -445,7 +433,6 @@ Custom groups have a higher priority than any predefined group.
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
-                  groupKind: 'literals-first',
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   useConfigurationIf: {},
@@ -476,7 +463,6 @@ Custom groups have a higher priority than any predefined group.
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
-                groupKind: 'literals-first',
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 useConfigurationIf: {},
