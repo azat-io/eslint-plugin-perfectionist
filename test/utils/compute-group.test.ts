@@ -8,6 +8,7 @@ describe('computeGroup', () => {
       computeGroup({
         options: {
           groups: ['group2'],
+          customGroups: [],
         },
         predefinedGroups: ['group1'],
       }),
@@ -19,6 +20,7 @@ describe('computeGroup', () => {
       computeGroup({
         options: {
           groups: ['group1', 'group2'],
+          customGroups: [],
         },
         predefinedGroups: ['group2', 'group1'],
       }),
@@ -30,6 +32,7 @@ describe('computeGroup', () => {
       computeGroup({
         options: {
           groups: ['group1', ['group2', 'group3'], 'group4'],
+          customGroups: [],
         },
         predefinedGroups: ['group3', 'group4'],
       }),

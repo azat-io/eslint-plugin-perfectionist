@@ -222,57 +222,6 @@ describe('sort-objects', () => {
       })
     })
 
-    it('allows setting priority keys in custom groups', async () => {
-      let customOptions = {
-        ...options,
-        customGroups: { top: ['c', 'b'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          let Obj = {
-            b: 'bb',
-            c: 'ccc',
-            a: 'aaaa',
-            d: 'd',
-          }
-        `,
-        options: [customOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        output: dedent`
-          let Obj = {
-            b: 'bb',
-            c: 'ccc',
-            a: 'aaaa',
-            d: 'd',
-          }
-        `,
-        code: dedent`
-          let Obj = {
-            a: 'aaaa',
-            b: 'bb',
-            c: 'ccc',
-            d: 'd',
-          }
-        `,
-        options: [customOptions],
-      })
-    })
-
     it('allows using regex patterns for custom groups', async () => {
       await valid({
         options: [
@@ -3092,57 +3041,6 @@ describe('sort-objects', () => {
       })
     })
 
-    it('allows setting priority keys in custom groups', async () => {
-      let customOptions = {
-        ...options,
-        customGroups: { top: ['c', 'b'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          let Obj = {
-            b: 'bb',
-            c: 'ccc',
-            a: 'aaaa',
-            d: 'd',
-          }
-        `,
-        options: [customOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        output: dedent`
-          let Obj = {
-            b: 'bb',
-            c: 'ccc',
-            a: 'aaaa',
-            d: 'd',
-          }
-        `,
-        code: dedent`
-          let Obj = {
-            a: 'aaaa',
-            b: 'bb',
-            c: 'ccc',
-            d: 'd',
-          }
-        `,
-        options: [customOptions],
-      })
-    })
-
     it('allows using regex patterns for custom groups', async () => {
       await valid({
         options: [
@@ -5930,64 +5828,6 @@ describe('sort-objects', () => {
           }
         `,
         options: [options],
-      })
-    })
-
-    it('allows setting priority keys in custom groups', async () => {
-      let customOptions = {
-        ...options,
-        customGroups: { top: ['c', 'b'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          let Obj = {
-            c: 'ccc',
-            b: 'bb',
-            a: 'aaaa',
-            d: 'd',
-          }
-        `,
-        options: [customOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-          {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-        ],
-        output: dedent`
-          let Obj = {
-            c: 'ccc',
-            b: 'bb',
-            a: 'aaaa',
-            d: 'd',
-          }
-        `,
-        code: dedent`
-          let Obj = {
-            a: 'aaaa',
-            b: 'bb',
-            c: 'ccc',
-            d: 'd',
-          }
-        `,
-        options: [customOptions],
       })
     })
 

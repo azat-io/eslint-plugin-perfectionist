@@ -253,54 +253,6 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('positions callback props according to custom group pattern', async () => {
-      let callbackOptions = {
-        ...options,
-        customGroups: { callback: 'on' },
-        groups: ['unknown', 'callback'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        options: [callbackOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'callback',
-              rightGroup: 'unknown',
-              left: 'onChange',
-              right: 'a',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        code: dedent`
-          <Element
-            onChange={handleChange}
-            a="a"
-            b="b"
-          />
-        `,
-        options: [callbackOptions],
-      })
-    })
-
     it('positions multiline props according to group configuration', async () => {
       let multilineOptions = {
         ...options,
@@ -366,60 +318,6 @@ describe('sort-jsx-props', () => {
           />
         `,
         options: [multilineOptions],
-      })
-    })
-
-    it('prioritizes props in custom top group', async () => {
-      let topGroupOptions = {
-        ...options,
-        customGroups: { top: ['d', 'e'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        code: dedent`
-          <Element
-            a="aaaa"
-            b="bbb"
-            c="cc"
-            d="ddd"
-            e="ee"
-          />
-        `,
-        options: [topGroupOptions],
       })
     })
 
@@ -1679,54 +1577,6 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('positions callback props according to custom group pattern', async () => {
-      let callbackOptions = {
-        ...options,
-        customGroups: { callback: 'on' },
-        groups: ['unknown', 'callback'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        options: [callbackOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'callback',
-              rightGroup: 'unknown',
-              left: 'onChange',
-              right: 'a',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        code: dedent`
-          <Element
-            onChange={handleChange}
-            a="a"
-            b="b"
-          />
-        `,
-        options: [callbackOptions],
-      })
-    })
-
     it('positions multiline props according to group configuration', async () => {
       let multilineOptions = {
         ...options,
@@ -1792,60 +1642,6 @@ describe('sort-jsx-props', () => {
           />
         `,
         options: [multilineOptions],
-      })
-    })
-
-    it('prioritizes props in custom top group', async () => {
-      let topGroupOptions = {
-        ...options,
-        customGroups: { top: ['d', 'e'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        code: dedent`
-          <Element
-            a="aaaa"
-            b="bbb"
-            c="cc"
-            d="ddd"
-            e="ee"
-          />
-        `,
-        options: [topGroupOptions],
       })
     })
 
@@ -3098,54 +2894,6 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('positions callback props according to custom group pattern', async () => {
-      let callbackOptions = {
-        ...options,
-        customGroups: { callback: 'on' },
-        groups: ['unknown', 'callback'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        options: [callbackOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'callback',
-              rightGroup: 'unknown',
-              left: 'onChange',
-              right: 'a',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        code: dedent`
-          <Element
-            onChange={handleChange}
-            a="a"
-            b="b"
-          />
-        `,
-        options: [callbackOptions],
-      })
-    })
-
     it('positions multiline props according to group configuration', async () => {
       let multilineOptions = {
         ...options,
@@ -3218,60 +2966,6 @@ describe('sort-jsx-props', () => {
           />
         `,
         options: [multilineOptions],
-      })
-    })
-
-    it('prioritizes props in custom top group', async () => {
-      let topGroupOptions = {
-        ...options,
-        customGroups: { top: ['d', 'e'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        code: dedent`
-          <Element
-            a="aaaa"
-            b="bbb"
-            c="cc"
-            d="ddd"
-            e="ee"
-          />
-        `,
-        options: [topGroupOptions],
       })
     })
 
@@ -4472,30 +4166,6 @@ describe('sort-jsx-props', () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
       ).resolves.not.toThrow()
-    })
-
-    it('supports mixing predefined and custom groups', async () => {
-      await valid({
-        code: dedent`
-          let Component = () => (
-            <Element
-              a="aaa"
-              b="bb"
-              c="c"
-            >
-              Value
-            </Element>
-          )
-        `,
-        options: [
-          {
-            customGroups: {
-              myCustomGroup: 'x',
-            },
-            groups: ['multiline', 'shorthand', 'unknown', 'myCustomGroup'],
-          },
-        ],
-      })
     })
 
     it('uses alphabetical ascending order by default', async () => {
