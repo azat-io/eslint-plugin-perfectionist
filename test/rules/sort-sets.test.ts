@@ -137,41 +137,6 @@ describe('sort-sets', () => {
       })
     })
 
-    it('places spread elements after literals with literals-first option', async () => {
-      let literalsFirstOptions = [
-        {
-          ...options,
-          groupKind: 'literals-first',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Set(['a', 'b', 'c', ...other])
-        `,
-        options: literalsFirstOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...other',
-              right: 'c',
-            },
-            messageId: 'unexpectedSetsOrder',
-          },
-        ],
-        output: dedent`
-          new Set(['a', 'b', 'c', ...other])
-        `,
-        code: dedent`
-          new Set(['a', 'b', ...other, 'c'])
-        `,
-        options: literalsFirstOptions,
-      })
-    })
-
     it('sorts elements in Set with Array constructor', async () => {
       await valid({
         code: dedent`
@@ -212,56 +177,6 @@ describe('sort-sets', () => {
           ))
         `,
         options: [options],
-      })
-    })
-
-    it('sorts mixed literals and spread elements together with mixed grouping', async () => {
-      let mixedOptions = [
-        {
-          ...options,
-          groupKind: 'mixed',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Set(new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ))
-        `,
-        options: mixedOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '...d',
-              left: 'bbb',
-            },
-            messageId: 'unexpectedSetsOrder',
-          },
-        ],
-        output: dedent`
-          new Set(new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ))
-        `,
-        code: dedent`
-          new Set(new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ))
-        `,
-        options: mixedOptions,
       })
     })
 
@@ -320,8 +235,8 @@ describe('sort-sets', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -329,17 +244,21 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedSetsOrder',
+            messageId: 'unexpectedSetsGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedSetsOrder',
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -730,7 +649,6 @@ describe('sort-sets', () => {
           {
             ...options,
             groups: ['spread', 'literal'],
-            groupKind: 'mixed',
           },
         ],
         output: dedent`
@@ -760,7 +678,6 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -810,7 +727,6 @@ describe('sort-sets', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -858,7 +774,6 @@ describe('sort-sets', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -986,7 +901,6 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -1745,41 +1659,6 @@ describe('sort-sets', () => {
       })
     })
 
-    it('places spread elements after literals with literals-first option', async () => {
-      let literalsFirstOptions = [
-        {
-          ...options,
-          groupKind: 'literals-first',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Set(['a', 'b', 'c', ...other])
-        `,
-        options: literalsFirstOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...other',
-              right: 'c',
-            },
-            messageId: 'unexpectedSetsOrder',
-          },
-        ],
-        output: dedent`
-          new Set(['a', 'b', 'c', ...other])
-        `,
-        code: dedent`
-          new Set(['a', 'b', ...other, 'c'])
-        `,
-        options: literalsFirstOptions,
-      })
-    })
-
     it('sorts elements in Set with Array constructor', async () => {
       await valid({
         code: dedent`
@@ -1820,56 +1699,6 @@ describe('sort-sets', () => {
           ))
         `,
         options: [options],
-      })
-    })
-
-    it('sorts mixed literals and spread elements together with mixed grouping', async () => {
-      let mixedOptions = [
-        {
-          ...options,
-          groupKind: 'mixed',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Set(new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ))
-        `,
-        options: mixedOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '...d',
-              left: 'bbb',
-            },
-            messageId: 'unexpectedSetsOrder',
-          },
-        ],
-        output: dedent`
-          new Set(new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ))
-        `,
-        code: dedent`
-          new Set(new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ))
-        `,
-        options: mixedOptions,
       })
     })
 
@@ -1928,8 +1757,8 @@ describe('sort-sets', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -1937,17 +1766,21 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedSetsOrder',
+            messageId: 'unexpectedSetsGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedSetsOrder',
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -2338,7 +2171,6 @@ describe('sort-sets', () => {
           {
             ...options,
             groups: ['spread', 'literal'],
-            groupKind: 'mixed',
           },
         ],
         output: dedent`
@@ -2368,7 +2200,6 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -2418,7 +2249,6 @@ describe('sort-sets', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -2466,7 +2296,6 @@ describe('sort-sets', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -2594,7 +2423,6 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -3353,41 +3181,6 @@ describe('sort-sets', () => {
       })
     })
 
-    it('places spread elements after literals with literals-first option', async () => {
-      let literalsFirstOptions = [
-        {
-          ...options,
-          groupKind: 'literals-first',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Set(['a', 'b', 'c', ...other])
-        `,
-        options: literalsFirstOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...other',
-              right: 'c',
-            },
-            messageId: 'unexpectedSetsOrder',
-          },
-        ],
-        output: dedent`
-          new Set(['a', 'b', 'c', ...other])
-        `,
-        code: dedent`
-          new Set(['a', 'b', ...other, 'c'])
-        `,
-        options: literalsFirstOptions,
-      })
-    })
-
     it('sorts elements in Set with Array constructor', async () => {
       await valid({
         code: dedent`
@@ -3428,56 +3221,6 @@ describe('sort-sets', () => {
           ))
         `,
         options: [options],
-      })
-    })
-
-    it('sorts mixed literals and spread elements together with mixed grouping', async () => {
-      let mixedOptions = [
-        {
-          ...options,
-          groupKind: 'mixed',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Set(new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ))
-        `,
-        options: mixedOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'bbb',
-              left: '...d',
-            },
-            messageId: 'unexpectedSetsOrder',
-          },
-        ],
-        output: dedent`
-          new Set(new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ))
-        `,
-        code: dedent`
-          new Set(new Array(
-            'aaaa',
-            ...d,
-            'bbb',
-            'cc',
-          ))
-        `,
-        options: mixedOptions,
       })
     })
 
@@ -3536,8 +3279,8 @@ describe('sort-sets', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -3545,17 +3288,21 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedSetsOrder',
+            messageId: 'unexpectedSetsGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedSetsOrder',
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -3946,7 +3693,6 @@ describe('sort-sets', () => {
           {
             ...options,
             groups: ['spread', 'literal'],
-            groupKind: 'mixed',
           },
         ],
         output: dedent`
@@ -3976,7 +3722,6 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -4026,7 +3771,6 @@ describe('sort-sets', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -4074,7 +3818,6 @@ describe('sort-sets', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -4202,7 +3945,6 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -5174,50 +4916,6 @@ describe('sort-sets', () => {
         options: [
           {
             partitionByComment: true,
-          },
-        ],
-      })
-    })
-
-    it('works with eslint-disable and mixed grouping', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedSetsOrder',
-          },
-          {
-            data: {
-              right: '...anotherArray',
-              left: 'a',
-            },
-            messageId: 'unexpectedSetsOrder',
-          },
-        ],
-        output: dedent`
-          new Set([
-            ...anotherArray,
-            'b',
-            // eslint-disable-next-line
-            'a',
-            'c'
-          ])
-        `,
-        code: dedent`
-          new Set([
-            'c',
-            'b',
-            // eslint-disable-next-line
-            'a',
-            ...anotherArray
-          ])
-        `,
-        options: [
-          {
-            groupKind: 'mixed',
           },
         ],
       })

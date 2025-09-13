@@ -247,93 +247,6 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it('sorts named imports grouping by their kind', async () => {
-      await valid({
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await valid({
-        code: dedent`
-          import { AAA, BB, type BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await valid({
-        code: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, type C, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'BB',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { AAA, BB, type BB, type C } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'AAA',
-              right: 'BB',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-          {
-            data: {
-              left: 'BB',
-              right: 'C',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-    })
-
     it('allows to use original import names', async () => {
       await valid({
         options: [
@@ -426,10 +339,12 @@ describe('sort-named-imports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-import',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedImportsOrder',
+            messageId: 'unexpectedNamedImportsGroupOrder',
           },
           {
             data: {
@@ -475,7 +390,7 @@ describe('sort-named-imports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-import'],
           },
         ],
       })
@@ -1850,93 +1765,6 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it('sorts named imports grouping by their kind', async () => {
-      await valid({
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await valid({
-        code: dedent`
-          import { AAA, BB, type BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await valid({
-        code: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, type C, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'BB',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { AAA, BB, type BB, type C } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'AAA',
-              right: 'BB',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-          {
-            data: {
-              left: 'BB',
-              right: 'C',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-    })
-
     it('allows to use original import names', async () => {
       await valid({
         options: [
@@ -2029,10 +1857,12 @@ describe('sort-named-imports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-import',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedImportsOrder',
+            messageId: 'unexpectedNamedImportsGroupOrder',
           },
           {
             data: {
@@ -2078,7 +1908,7 @@ describe('sort-named-imports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-import'],
           },
         ],
       })
@@ -3446,93 +3276,6 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it('sorts named imports grouping by their kind', async () => {
-      await valid({
-        code: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await valid({
-        code: dedent`
-          import { AAA, BB, type BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await valid({
-        code: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'AAA',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, type C, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'BB',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { AAA, BB, type BB, type C } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'AAA',
-              right: 'BB',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-          {
-            data: {
-              left: 'BB',
-              right: 'C',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-    })
-
     it('allows to use original import names', async () => {
       await valid({
         options: [
@@ -3625,10 +3368,12 @@ describe('sort-named-imports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-import',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedImportsOrder',
+            messageId: 'unexpectedNamedImportsGroupOrder',
           },
           {
             data: {
@@ -3674,7 +3419,7 @@ describe('sort-named-imports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-import'],
           },
         ],
       })

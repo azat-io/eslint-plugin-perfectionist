@@ -407,106 +407,6 @@ describe('sort-exports', () => {
       })
     })
 
-    it('sorts exports with values-first group kind', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: './d',
-              left: './f',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './c',
-              left: './e',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './a',
-              left: './c',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { A } from "./a";
-          export { B } from "./b";
-          export { C } from "./c";
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export type { F } from "./f";
-        `,
-        code: dedent`
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'values-first',
-          },
-        ],
-      })
-    })
-
-    it('sorts exports with types-first group kind', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: './a',
-              left: './c',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './f',
-              left: './b',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './d',
-              left: './f',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export type { F } from "./f";
-          export { A } from "./a";
-          export { B } from "./b";
-          export { C } from "./c";
-        `,
-        code: dedent`
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'types-first',
-          },
-        ],
-      })
-    })
-
     it('allows to trim special characters', async () => {
       await valid({
         code: dedent`
@@ -775,7 +675,6 @@ describe('sort-exports', () => {
             ],
             groups: ['reversedValuesByLineLength', 'unknown'],
             type: 'alphabetical',
-            groupKind: 'mixed',
             order: 'asc',
           },
         ],
@@ -859,7 +758,6 @@ describe('sort-exports', () => {
               },
             ],
             groups: ['unsortedValues', 'unknown'],
-            groupKind: 'mixed',
           },
         ],
         errors: [
@@ -1974,106 +1872,6 @@ describe('sort-exports', () => {
       })
     })
 
-    it('sorts exports with values-first group kind', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: './d',
-              left: './f',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './c',
-              left: './e',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './a',
-              left: './c',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { A } from "./a";
-          export { B } from "./b";
-          export { C } from "./c";
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export type { F } from "./f";
-        `,
-        code: dedent`
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'values-first',
-          },
-        ],
-      })
-    })
-
-    it('sorts exports with types-first group kind', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: './a',
-              left: './c',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './f',
-              left: './b',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './d',
-              left: './f',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export type { F } from "./f";
-          export { A } from "./a";
-          export { B } from "./b";
-          export { C } from "./c";
-        `,
-        code: dedent`
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'types-first',
-          },
-        ],
-      })
-    })
-
     it('allows to trim special characters', async () => {
       await valid({
         code: dedent`
@@ -2342,7 +2140,6 @@ describe('sort-exports', () => {
             ],
             groups: ['reversedValuesByLineLength', 'unknown'],
             type: 'alphabetical',
-            groupKind: 'mixed',
             order: 'asc',
           },
         ],
@@ -2426,7 +2223,6 @@ describe('sort-exports', () => {
               },
             ],
             groups: ['unsortedValues', 'unknown'],
-            groupKind: 'mixed',
           },
         ],
         errors: [
@@ -3697,78 +3493,6 @@ describe('sort-exports', () => {
       })
     })
 
-    it('sorts exports with values-first group kind', async () => {
-      await invalid({
-        output: dedent`
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-        `,
-        code: dedent`
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-        `,
-        errors: [
-          {
-            data: {
-              right: './c',
-              left: './e',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groupKind: 'values-first',
-          },
-        ],
-      })
-    })
-
-    it('sorts exports with types-first group kind', async () => {
-      await invalid({
-        output: dedent`
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-        `,
-        code: dedent`
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-        `,
-        errors: [
-          {
-            data: {
-              right: './f',
-              left: './b',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groupKind: 'types-first',
-          },
-        ],
-      })
-    })
-
     it('allows to trim special characters', async () => {
       await valid({
         code: dedent`
@@ -4037,7 +3761,6 @@ describe('sort-exports', () => {
             ],
             groups: ['reversedValuesByLineLength', 'unknown'],
             type: 'alphabetical',
-            groupKind: 'mixed',
             order: 'asc',
           },
         ],
@@ -4121,7 +3844,6 @@ describe('sort-exports', () => {
               },
             ],
             groups: ['unsortedValues', 'unknown'],
-            groupKind: 'mixed',
           },
         ],
         errors: [

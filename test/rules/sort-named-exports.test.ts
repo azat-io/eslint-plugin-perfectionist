@@ -59,93 +59,6 @@ describe('sort-named-exports', () => {
       })
     })
 
-    it('sorts named exports grouping by their kind', async () => {
-      await valid({
-        code: dedent`
-          export { AAA, type BB, BB, type C }
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await valid({
-        code: dedent`
-          export { AAA, BB, type BB, type C }
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await valid({
-        code: dedent`
-          export { type BB, type C, AAA, BB }
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { AAA, type BB, BB, type C }
-        `,
-        code: dedent`
-          export { AAA, type C, type BB, BB }
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'AAA',
-              left: 'BB',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-          {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { AAA, BB, type BB, type C }
-        `,
-        code: dedent`
-          export { type BB, AAA, type C, BB }
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'AAA',
-              right: 'C',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { type BB, type C, AAA, BB }
-        `,
-        code: dedent`
-          export { type BB, AAA, type C, BB }
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-    })
-
     it('allows to use new line as partition', async () => {
       await invalid({
         errors: [
@@ -200,10 +113,12 @@ describe('sort-named-exports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-export',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedExportsOrder',
+            messageId: 'unexpectedNamedExportsGroupOrder',
           },
           {
             data: {
@@ -249,7 +164,7 @@ describe('sort-named-exports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-export'],
           },
         ],
       })
@@ -1514,93 +1429,6 @@ describe('sort-named-exports', () => {
       })
     })
 
-    it('sorts named exports grouping by their kind', async () => {
-      await valid({
-        code: dedent`
-          export { AAA, type BB, BB, type C }
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await valid({
-        code: dedent`
-          export { AAA, BB, type BB, type C }
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await valid({
-        code: dedent`
-          export { type BB, type C, AAA, BB }
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { AAA, type BB, BB, type C }
-        `,
-        code: dedent`
-          export { AAA, type C, type BB, BB }
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'AAA',
-              left: 'BB',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-          {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { AAA, BB, type BB, type C }
-        `,
-        code: dedent`
-          export { type BB, AAA, type C, BB }
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'AAA',
-              right: 'C',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { type BB, type C, AAA, BB }
-        `,
-        code: dedent`
-          export { type BB, AAA, type C, BB }
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-    })
-
     it('allows to use new line as partition', async () => {
       await invalid({
         errors: [
@@ -1655,10 +1483,12 @@ describe('sort-named-exports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-export',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedExportsOrder',
+            messageId: 'unexpectedNamedExportsGroupOrder',
           },
           {
             data: {
@@ -1704,7 +1534,7 @@ describe('sort-named-exports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-export'],
           },
         ],
       })
@@ -2969,100 +2799,6 @@ describe('sort-named-exports', () => {
       })
     })
 
-    it('sorts named exports grouping by their kind', async () => {
-      await valid({
-        code: dedent`
-          export { type BB, type C, AAA, BB }
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await valid({
-        code: dedent`
-          export { AAA, BB, type BB, type C }
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await valid({
-        code: dedent`
-          export { type BB, type C, AAA, BB }
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'AAA',
-              right: 'C',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-          {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { type BB, type C, AAA, BB }
-        `,
-        code: dedent`
-          export { AAA, type C, type BB, BB }
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'AAA',
-              left: 'BB',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-          {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { AAA, BB, type BB, type C }
-        `,
-        code: dedent`
-          export { type BB, AAA, type C, BB }
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'AAA',
-              right: 'C',
-            },
-            messageId: 'unexpectedNamedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { type BB, type C, AAA, BB }
-        `,
-        code: dedent`
-          export { type BB, AAA, type C, BB }
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-    })
-
     it('allows to use new line as partition', async () => {
       await invalid({
         errors: [
@@ -3117,10 +2853,12 @@ describe('sort-named-exports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-export',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedExportsOrder',
+            messageId: 'unexpectedNamedExportsGroupOrder',
           },
           {
             data: {
@@ -3166,7 +2904,7 @@ describe('sort-named-exports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-export'],
           },
         ],
       })
