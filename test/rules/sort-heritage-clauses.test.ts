@@ -188,9 +188,12 @@ describe('sort-heritage-clauses', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -1649,9 +1652,12 @@ describe('sort-heritage-clauses', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -1942,9 +1948,12 @@ describe('sort-heritage-clauses', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -2174,6 +2183,22 @@ describe('sort-heritage-clauses', () => {
 
     it('enforces custom group ordering in heritage clauses', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: '^a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: '^b',
+                groupName: 'b',
+              },
+            ],
+            groups: ['b', 'a'],
+          },
+        ],
         errors: [
           {
             data: {
@@ -2183,16 +2208,6 @@ describe('sort-heritage-clauses', () => {
               left: 'aa',
             },
             messageId: 'unexpectedHeritageClausesGroupOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: {
-              a: '^a',
-              b: '^b',
-            },
-            groups: ['b', 'a'],
           },
         ],
         output: dedent`

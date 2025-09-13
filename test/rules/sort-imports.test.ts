@@ -1459,13 +1459,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -1524,6 +1531,24 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                groupName: 'unusedGroup',
+                elementNamePattern: 'X',
+              },
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'never' },
@@ -1533,14 +1558,6 @@ describe('sort-imports', () => {
               { newlinesBetween: 'always' },
               'c',
             ],
-            customGroups: {
-              value: {
-                unusedGroup: 'X',
-                a: 'a',
-                b: 'b',
-                c: 'c',
-              },
-            },
             newlinesBetween: globalNewlinesBetween,
           },
         ],
@@ -1593,13 +1610,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -1620,13 +1644,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -5071,13 +5102,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -5136,6 +5174,24 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                groupName: 'unusedGroup',
+                elementNamePattern: 'X',
+              },
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'never' },
@@ -5145,14 +5201,6 @@ describe('sort-imports', () => {
               { newlinesBetween: 'always' },
               'c',
             ],
-            customGroups: {
-              value: {
-                unusedGroup: 'X',
-                a: 'a',
-                b: 'b',
-                c: 'c',
-              },
-            },
             newlinesBetween: globalNewlinesBetween,
           },
         ],
@@ -5205,13 +5253,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -5232,13 +5287,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -7842,15 +7904,17 @@ describe('sort-imports', () => {
               ['parent', 'sibling', 'index'],
               'unknown',
             ],
-            customGroups: {
-              value: {
-                primary: ['t', '@a/.+'],
-                secondary: '@b/.+',
+            customGroups: [
+              {
+                elementNamePattern: ['^t$', '^@a/.+'],
+                groupName: 'primary',
               },
-              type: {
-                primary: ['t', '@a/.+'],
+              {
+                elementNamePattern: '^@b/.+',
+                groupName: 'secondary',
+                modifiers: ['value'],
               },
-            },
+            ],
           },
         ],
         errors: [
@@ -8695,13 +8759,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -8760,6 +8831,24 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                groupName: 'unusedGroup',
+                elementNamePattern: 'X',
+              },
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'never' },
@@ -8769,14 +8858,6 @@ describe('sort-imports', () => {
               { newlinesBetween: 'always' },
               'c',
             ],
-            customGroups: {
-              value: {
-                unusedGroup: 'X',
-                a: 'a',
-                b: 'b',
-                c: 'c',
-              },
-            },
             newlinesBetween: globalNewlinesBetween,
           },
         ],
@@ -8829,13 +8910,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -8856,13 +8944,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -10996,11 +11091,13 @@ describe('sort-imports', () => {
               'type',
               'myCustomGroup1',
             ],
-            customGroups: {
-              type: {
-                myCustomGroup1: 'x',
+            customGroups: [
+              {
+                groupName: 'myCustomGroup1',
+                elementNamePattern: 'x',
+                modifiers: ['type'],
               },
-            },
+            ],
           },
         ],
         code: dedent`
@@ -11163,21 +11260,52 @@ describe('sort-imports', () => {
       await valid({
         options: [
           {
-            customGroups: {
-              value: {
-                validators: ['^~/validators/.+'],
-                composable: ['^~/composable/.+'],
-                components: ['^~/components/.+'],
-                services: ['^~/services/.+'],
-                widgets: ['^~/widgets/.+'],
-                stores: ['^~/stores/.+'],
-                logics: ['^~/logics/.+'],
-                assets: ['^~/assets/.+'],
-                utils: ['^~/utils/.+'],
-                pages: ['^~/pages/.+'],
-                ui: ['^~/ui/.+'],
+            customGroups: [
+              {
+                elementNamePattern: '^~/validators/.+',
+                groupName: 'validators',
               },
-            },
+              {
+                elementNamePattern: '^~/composable/.+',
+                groupName: 'composable',
+              },
+              {
+                elementNamePattern: '^~/components/.+',
+                groupName: 'components',
+              },
+              {
+                elementNamePattern: '^~/services/.+',
+                groupName: 'services',
+              },
+              {
+                elementNamePattern: '^~/widgets/.+',
+                groupName: 'widgets',
+              },
+              {
+                elementNamePattern: '^~/stores/.+',
+                groupName: 'stores',
+              },
+              {
+                elementNamePattern: '^~/logics/.+',
+                groupName: 'logics',
+              },
+              {
+                elementNamePattern: '^~/assets/.+',
+                groupName: 'assets',
+              },
+              {
+                elementNamePattern: '^~/utils/.+',
+                groupName: 'utils',
+              },
+              {
+                elementNamePattern: '^~/pages/.+',
+                groupName: 'pages',
+              },
+              {
+                elementNamePattern: '^~/ui/.+',
+                groupName: 'ui',
+              },
+            ],
             groups: [
               ['builtin', 'external'],
               'internal',
@@ -11225,6 +11353,78 @@ describe('sort-imports', () => {
       })
 
       await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: '^~/validators/.+',
+                groupName: 'validators',
+              },
+              {
+                elementNamePattern: '^~/composable/.+',
+                groupName: 'composable',
+              },
+              {
+                elementNamePattern: '^~/components/.+',
+                groupName: 'components',
+              },
+              {
+                elementNamePattern: '^~/services/.+',
+                groupName: 'services',
+              },
+              {
+                elementNamePattern: '^~/widgets/.+',
+                groupName: 'widgets',
+              },
+              {
+                elementNamePattern: '^~/stores/.+',
+                groupName: 'stores',
+              },
+              {
+                elementNamePattern: '^~/logics/.+',
+                groupName: 'logics',
+              },
+              {
+                elementNamePattern: '^~/assets/.+',
+                groupName: 'assets',
+              },
+              {
+                elementNamePattern: '^~/utils/.+',
+                groupName: 'utils',
+              },
+              {
+                elementNamePattern: '^~/pages/.+',
+                groupName: 'pages',
+              },
+              {
+                elementNamePattern: '^~/ui/.+',
+                groupName: 'ui',
+              },
+            ],
+            groups: [
+              ['builtin', 'external'],
+              'internal',
+              'stores',
+              'services',
+              'validators',
+              'utils',
+              'logics',
+              'composable',
+              'ui',
+              'components',
+              'pages',
+              'widgets',
+              'assets',
+              'parent',
+              'sibling',
+              'side-effect',
+              'index',
+              'style',
+              'unknown',
+            ],
+            type: 'line-length',
+          },
+        ],
         errors: [
           {
             data: {
@@ -11275,47 +11475,6 @@ describe('sort-imports', () => {
               left: '~/stores/cartStore.ts',
             },
             messageId: 'missedSpacingBetweenImports',
-          },
-        ],
-        options: [
-          {
-            customGroups: {
-              value: {
-                validators: ['~/validators/.+'],
-                composable: ['~/composable/.+'],
-                components: ['~/components/.+'],
-                services: ['~/services/.+'],
-                widgets: ['~/widgets/.+'],
-                stores: ['~/stores/.+'],
-                logics: ['~/logics/.+'],
-                assets: ['~/assets/.+'],
-                utils: ['~/utils/.+'],
-                pages: ['~/pages/.+'],
-                ui: ['~/ui/.+'],
-              },
-            },
-            groups: [
-              ['builtin', 'external'],
-              'internal',
-              'stores',
-              'services',
-              'validators',
-              'utils',
-              'logics',
-              'composable',
-              'ui',
-              'components',
-              'pages',
-              'widgets',
-              'assets',
-              'parent',
-              'sibling',
-              'side-effect',
-              'index',
-              'style',
-              'unknown',
-            ],
-            type: 'line-length',
           },
         ],
         output: dedent`

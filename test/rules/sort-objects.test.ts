@@ -227,9 +227,12 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -994,10 +997,16 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              attributesStartingWithA: 'a',
-              attributesStartingWithB: 'b',
-            },
+            customGroups: [
+              {
+                groupName: 'attributesStartingWithA',
+                elementNamePattern: '^a',
+              },
+              {
+                groupName: 'attributesStartingWithB',
+                elementNamePattern: '^b',
+              },
+            ],
             groups: ['attributesStartingWithA', 'attributesStartingWithB'],
           },
         ],
@@ -1741,6 +1750,28 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+              {
+                elementNamePattern: 'd',
+                groupName: 'd',
+              },
+              {
+                elementNamePattern: 'e',
+                groupName: 'e',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'always' },
@@ -1752,13 +1783,6 @@ describe('sort-objects', () => {
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            customGroups: {
-              a: 'a',
-              b: 'b',
-              c: 'c',
-              d: 'd',
-              e: 'e',
-            },
             newlinesBetween: 'always',
           },
         ],
@@ -2117,6 +2141,35 @@ describe('sort-objects', () => {
       'applies configuration when allNamesMatchPattern matches (pattern: %s)',
       async rgbAllNamesMatchPattern => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -2135,26 +2188,6 @@ describe('sort-objects', () => {
                 left: 'g',
               },
               messageId: 'unexpectedObjectsGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -2224,13 +2257,22 @@ describe('sort-objects', () => {
           },
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'r',
+                groupName: 'r',
+              },
+              {
+                elementNamePattern: 'g',
+                groupName: 'g',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
             useConfigurationIf: {
               callingFunctionNamePattern: '^someFunction$',
-            },
-            customGroups: {
-              r: 'r',
-              g: 'g',
-              b: 'b',
             },
             groups: ['r', 'g', 'b'],
           },
@@ -2815,9 +2857,12 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -3046,9 +3091,12 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -3813,10 +3861,16 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              attributesStartingWithA: 'a',
-              attributesStartingWithB: 'b',
-            },
+            customGroups: [
+              {
+                groupName: 'attributesStartingWithA',
+                elementNamePattern: '^a',
+              },
+              {
+                groupName: 'attributesStartingWithB',
+                elementNamePattern: '^b',
+              },
+            ],
             groups: ['attributesStartingWithA', 'attributesStartingWithB'],
           },
         ],
@@ -4560,6 +4614,28 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+              {
+                elementNamePattern: 'd',
+                groupName: 'd',
+              },
+              {
+                elementNamePattern: 'e',
+                groupName: 'e',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'always' },
@@ -4571,13 +4647,6 @@ describe('sort-objects', () => {
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            customGroups: {
-              a: 'a',
-              b: 'b',
-              c: 'c',
-              d: 'd',
-              e: 'e',
-            },
             newlinesBetween: 'always',
           },
         ],
@@ -4936,6 +5005,35 @@ describe('sort-objects', () => {
       'applies configuration when allNamesMatchPattern matches (pattern: %s)',
       async rgbAllNamesMatchPattern => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -4954,26 +5052,6 @@ describe('sort-objects', () => {
                 left: 'g',
               },
               messageId: 'unexpectedObjectsGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -5043,13 +5121,22 @@ describe('sort-objects', () => {
           },
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'r',
+                groupName: 'r',
+              },
+              {
+                elementNamePattern: 'g',
+                groupName: 'g',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
             useConfigurationIf: {
               callingFunctionNamePattern: '^someFunction$',
-            },
-            customGroups: {
-              r: 'r',
-              g: 'g',
-              b: 'b',
             },
             groups: ['r', 'g', 'b'],
           },
@@ -5619,9 +5706,12 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -5836,9 +5926,12 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -6624,10 +6717,16 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              attributesStartingWithA: 'a',
-              attributesStartingWithB: 'b',
-            },
+            customGroups: [
+              {
+                groupName: 'attributesStartingWithA',
+                elementNamePattern: '^a',
+              },
+              {
+                groupName: 'attributesStartingWithB',
+                elementNamePattern: '^b',
+              },
+            ],
             groups: ['attributesStartingWithA', 'attributesStartingWithB'],
           },
         ],
@@ -7371,6 +7470,28 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+              {
+                elementNamePattern: 'd',
+                groupName: 'd',
+              },
+              {
+                elementNamePattern: 'e',
+                groupName: 'e',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'always' },
@@ -7382,13 +7503,6 @@ describe('sort-objects', () => {
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            customGroups: {
-              a: 'a',
-              b: 'b',
-              c: 'c',
-              d: 'd',
-              e: 'e',
-            },
             newlinesBetween: 'always',
           },
         ],
@@ -7747,6 +7861,35 @@ describe('sort-objects', () => {
       'applies configuration when allNamesMatchPattern matches (pattern: %s)',
       async rgbAllNamesMatchPattern => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -7765,26 +7908,6 @@ describe('sort-objects', () => {
                 left: 'g',
               },
               messageId: 'unexpectedObjectsGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -7854,13 +7977,22 @@ describe('sort-objects', () => {
           },
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'r',
+                groupName: 'r',
+              },
+              {
+                elementNamePattern: 'g',
+                groupName: 'g',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
             useConfigurationIf: {
               callingFunctionNamePattern: '^someFunction$',
-            },
-            customGroups: {
-              r: 'r',
-              g: 'g',
-              b: 'b',
             },
             groups: ['r', 'g', 'b'],
           },
@@ -8430,9 +8562,12 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -9051,6 +9186,18 @@ describe('sort-objects', () => {
 
     it('applies groups configuration to destructured objects based on groups attribute', async () => {
       await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: 'c',
+                groupName: 'top',
+              },
+            ],
+            destructuredObjects: { groups: true },
+            groups: ['top', 'unknown'],
+          },
+        ],
         errors: [
           {
             data: {
@@ -9062,15 +9209,6 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsGroupOrder',
           },
         ],
-        options: [
-          {
-            customGroups: {
-              top: 'c',
-            },
-            destructuredObjects: { groups: true },
-            groups: ['top', 'unknown'],
-          },
-        ],
         output: dedent`
           let { c, a, b } = obj
         `,
@@ -9080,6 +9218,19 @@ describe('sort-objects', () => {
       })
 
       await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: 'c',
+                groupName: 'top',
+              },
+            ],
+
+            destructuredObjects: { groups: false },
+            groups: ['top', 'unknown'],
+          },
+        ],
         errors: [
           {
             data: {
@@ -9089,15 +9240,6 @@ describe('sort-objects', () => {
               left: 'c',
             },
             messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: {
-              top: 'c',
-            },
-            destructuredObjects: { groups: false },
-            groups: ['top', 'unknown'],
           },
         ],
         output: dedent`
