@@ -1,53 +1,57 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  DeprecatedCustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-} from '../types/common-options'
+import type { Options } from './sort-heritage-clauses/types'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
+  buildCustomGroupsArrayJsonSchema,
   deprecatedCustomGroupsJsonSchema,
+  partitionByNewLineJsonSchema,
+  partitionByCommentJsonSchema,
+  newlinesBetweenJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import {
+  MISSED_SPACING_ERROR,
+  EXTRA_SPACING_ERROR,
+  GROUP_ORDER_ERROR,
+  ORDER_ERROR,
+} from '../utils/report-errors'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { singleCustomGroupJsonSchema } from './sort-heritage-clauses/types'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { GROUP_ORDER_ERROR, ORDER_ERROR } from '../utils/report-errors'
+import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
+import { shouldPartition } from '../utils/should-partition'
 import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-export type Options = [
-  Partial<
-    {
-      customGroups: DeprecatedCustomGroupsOption
-      groups: GroupsOptions<Group>
-    } & CommonOptions
-  >,
-]
-
 type MessageId =
   | 'unexpectedHeritageClausesGroupOrder'
+  | 'missedSpacingBetweenHeritageClauses'
+  | 'extraSpacingBetweenHeritageClauses'
   | 'unexpectedHeritageClausesOrder'
-
-type Group = 'unknown' | string
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
+  newlinesBetween: 'ignore',
+  partitionByNewLine: false,
+  partitionByComment: false,
   type: 'alphabetical',
   ignoreCase: true,
-  customGroups: {},
+  customGroups: [],
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
@@ -56,25 +60,37 @@ let defaultOptions: Required<Options[0]> = {
 
 export default createEslintRule<Options, MessageId>({
   meta: {
-    schema: [
-      {
+    schema: {
+      items: {
         properties: {
           ...commonJsonSchemas,
-          customGroups: deprecatedCustomGroupsJsonSchema,
+          customGroups: {
+            oneOf: [
+              deprecatedCustomGroupsJsonSchema,
+              buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
+            ],
+          },
+          partitionByNewLine: partitionByNewLineJsonSchema,
+          partitionByComment: partitionByCommentJsonSchema,
+          newlinesBetween: newlinesBetweenJsonSchema,
           groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
       },
-    ],
+      uniqueItems: true,
+      type: 'array',
+    },
+    messages: {
+      missedSpacingBetweenHeritageClauses: MISSED_SPACING_ERROR,
+      extraSpacingBetweenHeritageClauses: EXTRA_SPACING_ERROR,
+      unexpectedHeritageClausesGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedHeritageClausesOrder: ORDER_ERROR,
+    },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-heritage-clauses',
       description: 'Enforce sorted heritage clauses.',
       recommended: true,
-    },
-    messages: {
-      unexpectedHeritageClausesGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedHeritageClausesOrder: ORDER_ERROR,
     },
     type: 'suggestion',
     fixable: 'code',
@@ -85,10 +101,11 @@ export default createEslintRule<Options, MessageId>({
     let options = complete(context.options.at(0), settings, defaultOptions)
     validateCustomSortConfiguration(options)
     validateGeneratedGroupsConfiguration({
-      selectors: [],
       modifiers: [],
+      selectors: [],
       options,
     })
+    validateNewlinesAndPartitionConfiguration(options)
 
     return {
       TSInterfaceDeclaration: declaration =>
@@ -118,15 +135,24 @@ function sortHeritageClauses(
     sourceCode,
   })
 
-  let nodes: SortingNode[] = heritageClauses.map(heritageClause => {
+  let formattedMembers: SortingNode[][] = [[]]
+  for (let heritageClause of heritageClauses) {
     let name = getHeritageClauseExpressionName(heritageClause.expression)
 
     let group = computeGroup({
+      customGroupMatcher: customGroup =>
+        doesCustomGroupMatch({
+          elementName: name,
+          selectors: [],
+          modifiers: [],
+          customGroup,
+        }),
       predefinedGroups: [],
       options,
       name,
     })
-    return {
+
+    let sortingNode: SortingNode = {
       isEslintDisabled: isNodeEslintDisabled(
         heritageClause,
         eslintDisabledLines,
@@ -137,30 +163,52 @@ function sortHeritageClauses(
       group,
       name,
     }
-  })
 
-  function sortNodesExcludingEslintDisabled(
-    ignoreEslintDisabledNodes: boolean,
-  ): SortingNode[] {
-    return sortNodesByGroups({
-      getOptionsByGroupIndex: () => ({ options }),
-      ignoreEslintDisabledNodes,
-      groups: options.groups,
+    let lastSortingNode = formattedMembers.at(-1)?.at(-1)
+    if (
+      shouldPartition({
+        lastSortingNode,
+        sortingNode,
+        sourceCode,
+        options,
+      })
+    ) {
+      formattedMembers.push([])
+    }
+
+    formattedMembers.at(-1)!.push(sortingNode)
+  }
+
+  for (let nodes of formattedMembers) {
+    function createSortNodesExcludingEslintDisabled(
+      sortingNodes: SortingNode[],
+    ) {
+      return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
+        return sortNodesByGroups({
+          getOptionsByGroupIndex:
+            buildGetCustomGroupOverriddenOptionsFunction(options),
+          ignoreEslintDisabledNodes,
+          groups: options.groups,
+          nodes: sortingNodes,
+        })
+      }
+    }
+
+    reportAllErrors<MessageId>({
+      availableMessageIds: {
+        missedSpacingBetweenMembers: 'missedSpacingBetweenHeritageClauses',
+        extraSpacingBetweenMembers: 'extraSpacingBetweenHeritageClauses',
+        unexpectedGroupOrder: 'unexpectedHeritageClausesGroupOrder',
+        unexpectedOrder: 'unexpectedHeritageClausesOrder',
+      },
+      sortNodesExcludingEslintDisabled:
+        createSortNodesExcludingEslintDisabled(nodes),
+      sourceCode,
+      options,
+      context,
       nodes,
     })
   }
-
-  reportAllErrors<MessageId>({
-    availableMessageIds: {
-      unexpectedGroupOrder: 'unexpectedHeritageClausesGroupOrder',
-      unexpectedOrder: 'unexpectedHeritageClausesOrder',
-    },
-    sortNodesExcludingEslintDisabled,
-    sourceCode,
-    options,
-    context,
-    nodes,
-  })
 }
 
 function getHeritageClauseExpressionName(
