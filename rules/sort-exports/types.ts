@@ -31,12 +31,6 @@ export type Options = Partial<
     customGroups: CustomGroupsOption<SingleCustomGroup>
 
     /**
-     * @deprecated Since v4.12.0. Will be removed in v5.0.0. Use {@link groups}
-     *   instead.
-     */
-    groupKind: 'values-first' | 'types-first' | 'mixed'
-
-    /**
      * Partition export statements by comment delimiters. Exports separated by
      * specific comments are sorted independently.
      */
