@@ -98,13 +98,11 @@ export function computeGroup<SingleCustomGroup>({
     return true
   }
 
-  if (options.customGroups) {
-    for (let customGroup of options.customGroups) {
-      if (customGroupMatcher?.(customGroup)) {
-        let groupDefined = defineGroup(customGroup.groupName)
-        if (groupDefined) {
-          break
-        }
+  for (let customGroup of options.customGroups) {
+    if (customGroupMatcher?.(customGroup)) {
+      let groupDefined = defineGroup(customGroup.groupName)
+      if (groupDefined) {
+        break
       }
     }
   }

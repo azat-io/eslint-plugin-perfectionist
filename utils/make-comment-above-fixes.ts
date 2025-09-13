@@ -14,7 +14,7 @@ interface MakeCommentAboveFixesParameters {
   /** Configuration options containing groups and custom groups. */
   options: {
     /** Optional custom groups configuration. */
-    customGroups?: CustomGroupsOption
+    customGroups: CustomGroupsOption
 
     /** Groups configuration that may include commentAbove settings. */
     groups: GroupsOptions<string>

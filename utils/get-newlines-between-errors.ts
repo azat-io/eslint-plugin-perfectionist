@@ -46,7 +46,7 @@ interface GetNewlinesBetweenErrorsParameters<
     newlinesBetween: NewlinesBetweenOption
 
     /** Optional custom groups configuration. */
-    customGroups?: CustomGroupsOption
+    customGroups: CustomGroupsOption
 
     /** Groups configuration for determining newline requirements. */
     groups: GroupsOptions<string>

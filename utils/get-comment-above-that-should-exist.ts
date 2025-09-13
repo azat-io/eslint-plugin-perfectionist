@@ -15,7 +15,7 @@ interface GetCommentAboveMissingParameters<T extends SortingNode> {
   /** Configuration options for grouping. */
   options: {
     /** Optional custom groups configuration. */
-    customGroups?: CustomGroupsOption
+    customGroups: CustomGroupsOption
 
     /** Groups configuration that may include comment requirements. */
     groups: GroupsOptions<string>

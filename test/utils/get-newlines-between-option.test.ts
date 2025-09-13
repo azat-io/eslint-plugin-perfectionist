@@ -44,6 +44,7 @@ describe('get-newlines-between-option', () => {
         expect(
           getNewlinesBetweenOption({
             options: {
+              customGroups: [],
               newlinesBetween,
               groups,
             },
@@ -60,6 +61,7 @@ describe('get-newlines-between-option', () => {
         getNewlinesBetweenOption({
           options: {
             newlinesBetween: 'always',
+            customGroups: [],
             groups,
           },
           nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group2'),
@@ -76,6 +78,7 @@ describe('get-newlines-between-option', () => {
           getNewlinesBetweenOption({
             options: {
               newlinesBetween: 'always',
+              customGroups: [],
               groups,
             },
             nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
@@ -373,15 +376,15 @@ describe('get-newlines-between-option', () => {
         finalGroups,
         nextNodeGroupIndexGroup ?? 'group2',
       ),
+      options: {
+        customGroups: customGroups ?? [],
+        groups: finalGroups,
+        newlinesBetween,
+      },
       nodeGroupIndex: generateNodeGroupIndex(
         finalGroups,
         sortingNodeGroup ?? 'group1',
       ),
-      options: {
-        groups: finalGroups,
-        newlinesBetween,
-        customGroups,
-      },
     }
   }
 

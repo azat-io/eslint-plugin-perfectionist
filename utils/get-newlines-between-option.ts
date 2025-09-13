@@ -26,7 +26,7 @@ export interface GetNewlinesBetweenOptionParameters {
      * Optional custom groups configuration with possible newlinesInside
      * settings.
      */
-    customGroups?: CustomGroupsOption
+    customGroups: CustomGroupsOption
 
     /** Groups configuration that may include inline newlines settings. */
     groups: GroupsOptions<string>
@@ -69,7 +69,6 @@ export function getNewlinesBetweenOption({
 
   /* NewlinesInside check. */
   if (
-    options.customGroups &&
     typeof nodeGroup === 'string' &&
     typeof nextNodeGroup === 'string' &&
     nodeGroup === nextNodeGroup

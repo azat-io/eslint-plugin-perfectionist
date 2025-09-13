@@ -26,7 +26,8 @@ interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
     /** Required newlines configuration between groups. */
 
     /** Optional custom groups configuration. */
-    customGroups?: CustomGroupsOption
+    customGroups: CustomGroupsOption
+
     /** Groups configuration defining available groups and their order. */
     groups: GroupsOptions<string>
   }

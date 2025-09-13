@@ -26,13 +26,13 @@ export interface MakeFixesParameters<T extends SortingNode> {
     partitionByComment?: PartitionByCommentOption
 
     /** Configuration for newlines between groups. */
-    newlinesBetween?: NewlinesBetweenOption
+    newlinesBetween: NewlinesBetweenOption
 
     /** Custom groups configuration for advanced grouping. */
-    customGroups?: CustomGroupsOption
+    customGroups: CustomGroupsOption
 
     /** Groups configuration defining available groups and their order. */
-    groups?: GroupsOptions<string>
+    groups: GroupsOptions<string>
   }
 
   /** Optional function to customize newlines between specific nodes. */
@@ -135,7 +135,7 @@ export function makeFixes<T extends SortingNode>({
     return [...orderFixes, ...commentAfterFixes]
   }
 
-  if (options?.groups && options.newlinesBetween !== undefined) {
+  if (options?.groups) {
     let newlinesFixes = makeNewlinesBetweenFixes({
       options: {
         ...options,
