@@ -132,11 +132,9 @@ export default createEslintRule<Options, MessageId>({
             let modifiers: Modifier[] = []
 
             if (attribute.value === null) {
-              selectors.push('shorthand')
               modifiers.push('shorthand')
             }
             if (attribute.loc.start.line !== attribute.loc.end.line) {
-              selectors.push('multiline')
               modifiers.push('multiline')
             }
             selectors.push('prop')
