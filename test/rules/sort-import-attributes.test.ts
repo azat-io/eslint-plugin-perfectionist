@@ -1,0 +1,1179 @@
+import { createRuleTester } from 'eslint-vitest-rule-tester'
+import typescriptParser from '@typescript-eslint/parser'
+import { describe, expect, it } from 'vitest'
+import dedent from 'dedent'
+
+import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import rule from '../../rules/sort-import-attributes'
+import { Alphabet } from '../../utils/alphabet'
+
+describe('sort-import-attributes', () => {
+  let { invalid, valid } = createRuleTester({
+    name: 'sort-import-attributes',
+    parser: typescriptParser,
+    rule,
+  })
+
+  describe('alphabetical', () => {
+    let options = {
+      type: 'alphabetical',
+      order: 'asc',
+    } as const
+
+    it('sorts import attributes', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with { a: 'a', b: 'b', c: 'c' }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with { a: 'a', b: 'b', c: 'c' }
+        `,
+        code: dedent`
+          import data from 'module' with { a: 'a', c: 'c', b: 'b' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts multiline import attributes', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with {
+            a: 'a',
+            b: 'b',
+            c: 'c',
+          }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            a: 'a',
+            b: 'b',
+            c: 'c',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            a: 'a',
+            c: 'c',
+            b: 'b',
+          }
+        `,
+        options: [options],
+      })
+    })
+
+    it('handles string-literal attribute keys', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with { 'a': '1', 'b': '2' }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with { 'a': '1', 'b': '2' }
+        `,
+        code: dedent`
+          import data from 'module' with { 'b': '2', 'a': '1' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('positions attributes according to group configuration', async () => {
+      let grouped = {
+        ...options,
+        customGroups: [{ elementNamePattern: '^t', groupName: 't' }],
+        groups: ['t', 'unknown'],
+      } as const
+
+      await valid({
+        code: dedent`
+          import data from 'module' with {
+            type: 'json',
+            mode: 'no-cors',
+          }
+        `,
+        options: [grouped],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'unknown',
+              rightGroup: 't',
+              right: 'type',
+              left: 'mode',
+            },
+            messageId: 'unexpectedImportAttributesGroupOrder',
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            type: 'json',
+            mode: 'no-cors',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            mode: 'no-cors',
+            type: 'json',
+          }
+        `,
+        options: [grouped],
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is always', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [{ elementNamePattern: '^t', groupName: 't' }],
+            newlinesBetween: 'always',
+            groups: ['t', 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'missedSpacingBetweenImportAttributes',
+            data: { right: 'mode', left: 'type' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            type: 'json',
+
+            mode: 'no-cors',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            type: 'json',
+            mode: 'no-cors',
+          }
+        `,
+      })
+    })
+
+    it('allows partitioning by new lines', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'c', left: 'd' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            a: 'a',
+            b: 'b',
+
+            c: 'c',
+            d: 'd',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            b: 'b',
+            a: 'a',
+
+            d: 'd',
+            c: 'c',
+          }
+        `,
+        options: [
+          {
+            ...options,
+            newlinesBetween: 'ignore',
+            partitionByNewLine: true,
+          },
+        ],
+      })
+    })
+
+    it('allows partitioning by comment patterns', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'c', left: 'd' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            a: 'a',
+            b: 'b',
+            // Part: Section
+            c: 'c',
+            d: 'd',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            b: 'b',
+            a: 'a',
+            // Part: Section
+            d: 'd',
+            c: 'c',
+          }
+        `,
+        options: [
+          {
+            ...options,
+            partitionByComment: '^Part',
+            newlinesBetween: 'ignore',
+          },
+        ],
+      })
+    })
+  })
+
+  describe('natural', () => {
+    let options = {
+      type: 'natural',
+      order: 'asc',
+    } as const
+
+    it('sorts import attributes', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with { a: 'a', b: 'b', c: 'c' }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with { a: 'a', b: 'b', c: 'c' }
+        `,
+        code: dedent`
+          import data from 'module' with { a: 'a', c: 'c', b: 'b' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts multiline import attributes', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with {
+            a: 'a',
+            b: 'b',
+            c: 'c',
+          }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            a: 'a',
+            b: 'b',
+            c: 'c',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            a: 'a',
+            c: 'c',
+            b: 'b',
+          }
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts attributes in natural order', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with { link1: 'v', link2: 'v', link10: 'v' }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'link2', left: 'link10' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with { link1: 'v', link2: 'v', link10: 'v' }
+        `,
+        code: dedent`
+          import data from 'module' with { link1: 'v', link10: 'v', link2: 'v' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('handles string-literal attribute keys', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with { 'a': '1', 'b': '2' }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with { 'a': '1', 'b': '2' }
+        `,
+        code: dedent`
+          import data from 'module' with { 'b': '2', 'a': '1' }
+        `,
+        options: [options],
+      })
+    })
+    it('positions attributes according to group configuration', async () => {
+      let grouped = {
+        ...options,
+        customGroups: [{ elementNamePattern: '^t', groupName: 't' }],
+        groups: ['t', 'unknown'],
+      } as const
+
+      await valid({
+        code: dedent`
+          import data from 'module' with {
+            type: 'json',
+            mode: 'no-cors',
+          }
+        `,
+        options: [grouped],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'unknown',
+              rightGroup: 't',
+              right: 'type',
+              left: 'mode',
+            },
+            messageId: 'unexpectedImportAttributesGroupOrder',
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            type: 'json',
+            mode: 'no-cors',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            mode: 'no-cors',
+            type: 'json',
+          }
+        `,
+        options: [grouped],
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is always', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [{ elementNamePattern: '^t', groupName: 't' }],
+            newlinesBetween: 'always',
+            groups: ['t', 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'missedSpacingBetweenImportAttributes',
+            data: { right: 'mode', left: 'type' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            type: 'json',
+
+            mode: 'no-cors',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            type: 'json',
+            mode: 'no-cors',
+          }
+        `,
+      })
+    })
+
+    it('allows partitioning by new lines', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'c', left: 'd' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            a: 'a',
+            b: 'b',
+
+            c: 'c',
+            d: 'd',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            b: 'b',
+            a: 'a',
+
+            d: 'd',
+            c: 'c',
+          }
+        `,
+        options: [
+          {
+            ...options,
+            newlinesBetween: 'ignore',
+            partitionByNewLine: true,
+          },
+        ],
+      })
+    })
+
+    it('allows partitioning by comment patterns', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'c', left: 'd' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            a: 'a',
+            b: 'b',
+            // Part: Section
+            c: 'c',
+            d: 'd',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            b: 'b',
+            a: 'a',
+            // Part: Section
+            d: 'd',
+            c: 'c',
+          }
+        `,
+        options: [
+          {
+            ...options,
+            partitionByComment: '^Part',
+            newlinesBetween: 'ignore',
+          },
+        ],
+      })
+    })
+  })
+
+  describe('line-length', () => {
+    let options = {
+      type: 'line-length',
+      order: 'desc',
+    } as const
+
+    it('sorts import attributes', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with { ccc: 'v', bb: 'v', a: 'v' }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'ccc', left: 'a' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with { ccc: 'v', bb: 'v', a: 'v' }
+        `,
+        code: dedent`
+          import data from 'module' with { a: 'v', ccc: 'v', bb: 'v' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts multiline import attributes', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with {
+            ccc: 'v',
+            bb: 'v',
+            a: 'v',
+          }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'ccc', left: 'a' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            ccc: 'v',
+            bb: 'v',
+            a: 'v',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            a: 'v',
+            ccc: 'v',
+            bb: 'v',
+          }
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts attributes by name length', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with { ccc: 'v', bb: 'v', a: 'v' }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'ccc', left: 'a' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with { ccc: 'v', bb: 'v', a: 'v' }
+        `,
+        code: dedent`
+          import data from 'module' with { a: 'v', ccc: 'v', bb: 'v' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('handles string-literal attribute keys', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with { 'bb': 'v', 'a': 'v' }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'bb', left: 'a' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with { 'bb': 'v', 'a': 'v' }
+        `,
+        code: dedent`
+          import data from 'module' with { 'a': 'v', 'bb': 'v' }
+        `,
+        options: [options],
+      })
+    })
+    it('positions attributes according to group configuration', async () => {
+      let grouped = {
+        ...options,
+        customGroups: [{ elementNamePattern: '^t', groupName: 't' }],
+        groups: ['t', 'unknown'],
+      } as const
+
+      await valid({
+        code: dedent`
+          import data from 'module' with {
+            type: 'json',
+            mode: 'no-cors',
+          }
+        `,
+        options: [grouped],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'unknown',
+              rightGroup: 't',
+              right: 'type',
+              left: 'mode',
+            },
+            messageId: 'unexpectedImportAttributesGroupOrder',
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            type: 'json',
+            mode: 'no-cors',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            mode: 'no-cors',
+            type: 'json',
+          }
+        `,
+        options: [grouped],
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is always', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [{ elementNamePattern: '^t', groupName: 't' }],
+            newlinesBetween: 'always',
+            groups: ['t', 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'missedSpacingBetweenImportAttributes',
+            data: { right: 'mode', left: 'type' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            type: 'json',
+
+            mode: 'no-cors',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            type: 'json',
+            mode: 'no-cors',
+          }
+        `,
+      })
+    })
+
+    it('allows partitioning by new lines', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'bb', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'ddd', left: 'c' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            bb: 'b',
+            a: 'a',
+
+            ddd: 'd',
+            c: 'c',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            a: 'a',
+            bb: 'b',
+
+            c: 'c',
+            ddd: 'd',
+          }
+        `,
+        options: [
+          {
+            ...options,
+            newlinesBetween: 'ignore',
+            partitionByNewLine: true,
+          },
+        ],
+      })
+    })
+
+    it('allows partitioning by comment patterns', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'bb', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'ddd', left: 'c' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            bb: 'b',
+            a: 'a',
+            // Part: Section
+            ddd: 'd',
+            c: 'c',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            a: 'a',
+            bb: 'b',
+            // Part: Section
+            c: 'c',
+            ddd: 'd',
+          }
+        `,
+        options: [
+          {
+            ...options,
+            partitionByComment: '^Part',
+            newlinesBetween: 'ignore',
+          },
+        ],
+      })
+    })
+  })
+
+  describe('custom', () => {
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    it('sorts import attributes using custom alphabet', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with { a: 'a', b: 'b', c: 'c' }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with { a: 'a', b: 'b', c: 'c' }
+        `,
+        code: dedent`
+          import data from 'module' with { a: 'a', c: 'c', b: 'b' }
+        `,
+        options: [options],
+      })
+    })
+  })
+
+  describe('unsorted', () => {
+    let options = {
+      type: 'unsorted',
+      order: 'asc',
+    } as const
+
+    it('allows any order when type is unsorted', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with { b: 'b', c: 'c', a: 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('enforces group order while preserving order within groups', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              { elementNamePattern: '^a', groupName: 'a' },
+              { elementNamePattern: '^b', groupName: 'b' },
+            ],
+            groups: ['b', 'a'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              rightGroup: 'b',
+              leftGroup: 'a',
+              right: 'ba',
+              left: 'aa',
+            },
+            messageId: 'unexpectedImportAttributesGroupOrder',
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            ba: '1',
+            bb: '1',
+            ab: '1',
+            aa: '1',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            ab: '1',
+            aa: '1',
+            ba: '1',
+            bb: '1',
+          }
+        `,
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is always', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              { elementNamePattern: '^b', groupName: 'b' },
+              { elementNamePattern: '^a', groupName: 'a' },
+            ],
+            newlinesBetween: 'always',
+            groups: ['b', 'a'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'missedSpacingBetweenImportAttributes',
+            data: { right: 'ab', left: 'ba' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with {
+            ba: '1',
+
+            ab: '1',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            ba: '1',
+            ab: '1',
+          }
+        `,
+      })
+    })
+  })
+
+  describe('misc', () => {
+    it('validates the JSON schema', async () => {
+      await expect(
+        validateRuleJsonSchema(rule.meta.schema),
+      ).resolves.not.toThrow()
+    })
+
+    it('uses alphabetical ascending order by default', async () => {
+      await valid(
+        dedent`
+          import data from 'module' with { a: 'a', b: 'b', c: 'c' }
+        `,
+      )
+
+      await valid({
+        code: dedent`
+          import data from 'module' with { link1: 'v', link10: 'v', link2: 'v' }
+        `,
+        options: [{}],
+      })
+    })
+
+    it('ignores imports without attributes', async () => {
+      await valid(
+        dedent`
+          import data from 'module'
+        `,
+      )
+    })
+
+    it('ignores imports with a single attribute', async () => {
+      await valid(
+        dedent`
+          import data from 'module' with { a: 'a' }
+        `,
+      )
+    })
+
+    it('ignores attributes disabled with eslint-disable-next-line', async () => {
+      await valid({
+        code: dedent`
+          import data from 'module' with {
+            b: 'b',
+            // eslint-disable-next-line
+            a: 'a',
+            c: 'c',
+          }
+        `,
+      })
+    })
+
+    it('sorts attributes with eslint-disable-line comments', async () => {
+      await invalid({
+        output: dedent`
+          import data from 'module' with {
+            b: 'b',
+            c: 'c',
+            a: 'a', // eslint-disable-line
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            c: 'c',
+            b: 'b',
+            a: 'a', // eslint-disable-line
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
+    it('handles block eslint-disable-next-line comments', async () => {
+      await invalid({
+        output: dedent`
+          import data from 'module' with {
+            b: 'b',
+            c: 'c',
+            /* eslint-disable-next-line */
+            a: 'a',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            c: 'c',
+            b: 'b',
+            /* eslint-disable-next-line */
+            a: 'a',
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
+    it('sorts attributes around eslint-disable/enable block', async () => {
+      await invalid({
+        output: dedent`
+          import data from 'module' with {
+            a: 'a',
+            d: 'd',
+            /* eslint-disable */
+            c: 'c',
+            b: 'b',
+            // Shouldn't move
+            /* eslint-enable */
+            e: 'e',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            d: 'd',
+            e: 'e',
+            /* eslint-disable */
+            c: 'c',
+            b: 'b',
+            // Shouldn't move
+            /* eslint-enable */
+            a: 'a',
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
+    it('handles rule-specific eslint-disable-next-line comments', async () => {
+      await invalid({
+        output: dedent`
+          import data from 'module' with {
+            b: 'b',
+            c: 'c',
+            // eslint-disable-next-line rule-to-test/sort-import-attributes
+            a: 'a',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            c: 'c',
+            b: 'b',
+            // eslint-disable-next-line rule-to-test/sort-import-attributes
+            a: 'a',
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
+    it('handles rule-specific eslint-disable-line comments', async () => {
+      await invalid({
+        output: dedent`
+          import data from 'module' with {
+            b: 'b',
+            c: 'c',
+            a: 'a', // eslint-disable-line rule-to-test/sort-import-attributes
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            c: 'c',
+            b: 'b',
+            a: 'a', // eslint-disable-line rule-to-test/sort-import-attributes
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
+    it('sorts attributes around rule-specific eslint-disable/enable block', async () => {
+      await invalid({
+        output: dedent`
+          import data from 'module' with {
+            a: 'a',
+            d: 'd',
+            /* eslint-disable rule-to-test/sort-import-attributes */
+            c: 'c',
+            b: 'b',
+            // Shouldn't move
+            /* eslint-enable */
+            e: 'e',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            d: 'd',
+            e: 'e',
+            /* eslint-disable rule-to-test/sort-import-attributes */
+            c: 'c',
+            b: 'b',
+            // Shouldn't move
+            /* eslint-enable */
+            a: 'a',
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+  })
+})

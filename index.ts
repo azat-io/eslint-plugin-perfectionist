@@ -3,6 +3,7 @@ import type { ESLint, Linter, Rule } from 'eslint'
 import { version as packageVersion, name as packageName } from './package.json'
 import sortVariableDeclarations from './rules/sort-variable-declarations'
 import sortIntersectionTypes from './rules/sort-intersection-types'
+import sortImportAttributes from './rules/sort-import-attributes'
 import sortHeritageClauses from './rules/sort-heritage-clauses'
 import sortArrayIncludes from './rules/sort-array-includes'
 import sortNamedImports from './rules/sort-named-imports'
@@ -26,6 +27,7 @@ interface PluginConfig {
   rules: {
     'sort-variable-declarations': Rule.RuleModule
     'sort-intersection-types': Rule.RuleModule
+    'sort-import-attributes': Rule.RuleModule
     'sort-heritage-clauses': Rule.RuleModule
     'sort-array-includes': Rule.RuleModule
     'sort-named-imports': Rule.RuleModule
@@ -72,6 +74,7 @@ let plugin = {
   rules: {
     'sort-variable-declarations': sortVariableDeclarations,
     'sort-intersection-types': sortIntersectionTypes,
+    'sort-import-attributes': sortImportAttributes,
     'sort-heritage-clauses': sortHeritageClauses,
     'sort-array-includes': sortArrayIncludes,
     'sort-named-imports': sortNamedImports,
