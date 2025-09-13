@@ -283,7 +283,7 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
 <sub>
   type: `Array<string | string[]>`
 </sub>
-<sub>default: `[]`</sub>
+<sub>default: `['literal']`</sub>
 
 Specifies a list of groups for sorting. Groups help organize elements into categories.
 
@@ -408,7 +408,7 @@ Custom groups have a higher priority than any predefined group.
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   useConfigurationIf: {},
-                  groups: [],
+                  groups: ['literal'],
                   customGroups: [],
                 },
               ],
@@ -439,7 +439,7 @@ Custom groups have a higher priority than any predefined group.
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 useConfigurationIf: {},
-                groups: [],
+                groups: ['literal'],
                 customGroups: [],
               },
             ],

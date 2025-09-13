@@ -65,12 +65,12 @@ export let defaultOptions: Required<Options[0]> = {
   newlinesBetween: 'ignore',
   useConfigurationIf: {},
   type: 'alphabetical',
+  groups: ['literal'],
   ignoreCase: true,
   locales: 'en-US',
   customGroups: [],
   alphabet: '',
   order: 'asc',
-  groups: [],
 }
 
 export let jsonSchema: JSONSchema4 = {
