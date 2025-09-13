@@ -190,18 +190,6 @@ Specifies whether to use the export alias as the name for sorting instead of the
 - `true` — Use the export alias for sorting.
 - `false` — Use the local name for sorting.
 
-### [DEPRECATED] groupKind
-
-<sub>default: `'mixed'`</sub>
-
-Use the [groups](#groups) option with the `value` and `type` modifiers instead.
-
-Groups named exports by their kind, determining whether value exports should come before or after type exports.
-
-- `mixed` — Do not group named exports by their kind; export statements are sorted together regardless of their type.
-- `values-first` — Group all value exports before type exports.
-- `types-first` — Group all type exports before value exports.
-
 ### partitionByComment
 
 <sub>default: `false`</sub>
@@ -399,7 +387,6 @@ Custom groups have a higher priority than any predefined group.
                   ignoreAlias: false,
                   ignoreCase: true,
                   specialCharacters: 'keep',
-                  groupKind: 'mixed',
                   partitionByNewLine: false,
                   partitionByComment: false,
                   newlinesBetween: 'ignore',
@@ -431,7 +418,6 @@ Custom groups have a higher priority than any predefined group.
                 ignoreAlias: false,
                 ignoreCase: true,
                 specialCharacters: 'keep',
-                groupKind: 'mixed',
                 partitionByNewLine: false,
                 partitionByComment: false,
                 newlinesBetween: 'ignore',

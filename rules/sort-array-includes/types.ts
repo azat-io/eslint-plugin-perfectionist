@@ -36,12 +36,6 @@ export type Options = Partial<
     }
 
     /**
-     * @deprecated Since v4.4.0. Will be removed in v5.0.0. Use {@link groups}
-     *   instead.
-     */
-    groupKind: 'literals-first' | 'spreads-first' | 'mixed'
-
-    /**
      * Custom groups for organizing array elements. Allows defining groups based
      * on element name patterns and selectors.
      */
