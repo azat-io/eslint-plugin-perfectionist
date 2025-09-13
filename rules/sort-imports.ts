@@ -69,10 +69,8 @@ export type MessageId =
   | 'missedCommentAboveImport'
   | 'unexpectedImportsOrder'
 
-let defaultOptions: Required<
-  Omit<Options[0], 'tsconfigRootDir' | 'maxLineLength' | 'tsconfig'>
-> &
-  Pick<Options[0], 'tsconfigRootDir' | 'maxLineLength' | 'tsconfig'> = {
+let defaultOptions: Required<Omit<Options[0], 'maxLineLength' | 'tsconfig'>> &
+  Pick<Options[0], 'maxLineLength' | 'tsconfig'> = {
   groups: [
     'type-import',
     ['value-builtin', 'value-external'],
@@ -125,8 +123,7 @@ export default createEslintRule<Options, MessageId>({
     validateNewlinesAndPartitionConfiguration(options)
     validateSideEffectsConfiguration(options)
 
-    let tsconfigRootDirectory =
-      options.tsconfig?.rootDir ?? options.tsconfigRootDir
+    let tsconfigRootDirectory = options.tsconfig?.rootDir
     let tsConfigOutput = tsconfigRootDirectory
       ? readClosestTsConfigByPath({
           tsconfigFilename: options.tsconfig?.filename ?? 'tsconfig.json',
@@ -497,10 +494,6 @@ export default createEslintRule<Options, MessageId>({
             enum: ['node', 'bun'],
             type: 'string',
           },
-          tsconfigRootDir: {
-            description: 'Specifies the tsConfig root directory.',
-            type: 'string',
-          },
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
@@ -579,7 +572,7 @@ function computeGroupExceptUnknown({
 }: {
   options: Omit<
     Required<Options[0]>,
-    'tsconfigRootDir' | 'maxLineLength' | 'customGroups' | 'tsconfig'
+    'maxLineLength' | 'customGroups' | 'tsconfig'
   >
   customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption | undefined
   selectors?: Selector[]
