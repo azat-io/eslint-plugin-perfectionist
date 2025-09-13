@@ -53,14 +53,12 @@ type MessageId =
   | 'unexpectedArrayIncludesGroupOrder'
   | 'unexpectedArrayIncludesOrder'
 
-interface SortArrayIncludesSortingNode
-  extends SortingNode<TSESTree.SpreadElement | TSESTree.Expression> {
-  groupKind: 'literal' | 'spread'
-}
+type SortArrayIncludesSortingNode = SortingNode<
+  TSESTree.SpreadElement | TSESTree.Expression
+>
 
 export let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
-  groupKind: 'literals-first',
   specialCharacters: 'keep',
   partitionByComment: false,
   partitionByNewLine: false,
@@ -194,17 +192,9 @@ export function sortArray<MessageIds extends string>({
         return accumulator
       }
 
-      let groupKind: 'literal' | 'spread'
-      let selector: Selector
-      if (element.type === 'SpreadElement') {
-        groupKind = 'spread'
-        selector = 'spread'
-      } else {
-        groupKind = 'literal'
-        selector = 'literal'
-      }
-
       let name = getNodeName({ sourceCode, element })
+      let selector: Selector =
+        element.type === 'SpreadElement' ? 'spread' : 'literal'
       let predefinedGroups = generatePredefinedGroups({
         cache: cachedGroupsByModifiersAndSelectors,
         selectors: [selector],
@@ -226,7 +216,6 @@ export function sortArray<MessageIds extends string>({
         isEslintDisabled: isNodeEslintDisabled(element, eslintDisabledLines),
         size: rangeToDiff(element, sourceCode),
         node: element,
-        groupKind,
         group,
         name,
       }
@@ -253,46 +242,29 @@ export function sortArray<MessageIds extends string>({
     [[]],
   )
 
-  let groupKindOrder
-  if (options.groupKind === 'literals-first') {
-    groupKindOrder = ['literal', 'spread'] as const
-  } else if (options.groupKind === 'spreads-first') {
-    groupKindOrder = ['spread', 'literal'] as const
-  } else {
-    groupKindOrder = ['any'] as const
-  }
-
-  for (let nodes of formattedMembers) {
-    let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-      nodes.filter(
-        currentNode =>
-          groupKind === 'any' || currentNode.groupKind === groupKind,
-      ),
+  function sortNodesExcludingEslintDisabled(
+    ignoreEslintDisabledNodes: boolean,
+  ): SortArrayIncludesSortingNode[] {
+    return formattedMembers.flatMap(nodes =>
+      sortNodesByGroups({
+        getOptionsByGroupIndex:
+          buildGetCustomGroupOverriddenOptionsFunction(options),
+        ignoreEslintDisabledNodes,
+        groups: options.groups,
+        nodes,
+      }),
     )
-
-    function sortNodesExcludingEslintDisabled(
-      ignoreEslintDisabledNodes: boolean,
-    ): SortArrayIncludesSortingNode[] {
-      return filteredGroupKindNodes.flatMap(groupedNodes =>
-        sortNodesByGroups({
-          getOptionsByGroupIndex:
-            buildGetCustomGroupOverriddenOptionsFunction(options),
-          ignoreEslintDisabledNodes,
-          groups: options.groups,
-          nodes: groupedNodes,
-        }),
-      )
-    }
-
-    reportAllErrors<MessageIds>({
-      sortNodesExcludingEslintDisabled,
-      availableMessageIds,
-      sourceCode,
-      options,
-      context,
-      nodes,
-    })
   }
+
+  let nodes = formattedMembers.flat()
+  reportAllErrors<MessageIds>({
+    sortNodesExcludingEslintDisabled,
+    availableMessageIds,
+    sourceCode,
+    options,
+    context,
+    nodes,
+  })
 }
 
 function getNodeName({

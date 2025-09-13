@@ -59,7 +59,6 @@ let defaultOptions: Required<Options[0]> = {
   newlinesBetween: 'ignore',
   type: 'alphabetical',
   ignoreAlias: false,
-  groupKind: 'mixed',
   customGroups: [],
   ignoreCase: true,
   locales: 'en-US',
@@ -135,11 +134,6 @@ export default createEslintRule<Options, MessageId>({
         })
 
         let sortingNode: Omit<SortNamedImportsSortingNode, 'partitionId'> = {
-          groupKind:
-            specifier.type === 'ImportSpecifier' &&
-            specifier.importKind === 'type'
-              ? 'type'
-              : 'value',
           isEslintDisabled: isNodeEslintDisabled(
             specifier,
             eslintDisabledLines,
@@ -168,50 +162,34 @@ export default createEslintRule<Options, MessageId>({
         })
       }
 
-      let groupKindOrder
-      if (options.groupKind === 'values-first') {
-        groupKindOrder = ['value', 'type'] as const
-      } else if (options.groupKind === 'types-first') {
-        groupKindOrder = ['type', 'value'] as const
-      } else {
-        groupKindOrder = ['any'] as const
-      }
-
-      for (let nodes of formattedMembers) {
-        let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-          nodes.filter(
-            currentNode =>
-              groupKind === 'any' || currentNode.groupKind === groupKind,
-          ),
+      function sortNodesExcludingEslintDisabled(
+        ignoreEslintDisabledNodes: boolean,
+      ): SortNamedImportsSortingNode[] {
+        return formattedMembers.flatMap(groupedNodes =>
+          sortNodesByGroups({
+            getOptionsByGroupIndex:
+              buildGetCustomGroupOverriddenOptionsFunction(options),
+            ignoreEslintDisabledNodes,
+            groups: options.groups,
+            nodes: groupedNodes,
+          }),
         )
-        function sortNodesExcludingEslintDisabled(
-          ignoreEslintDisabledNodes: boolean,
-        ): SortNamedImportsSortingNode[] {
-          return filteredGroupKindNodes.flatMap(groupedNodes =>
-            sortNodesByGroups({
-              getOptionsByGroupIndex:
-                buildGetCustomGroupOverriddenOptionsFunction(options),
-              ignoreEslintDisabledNodes,
-              groups: options.groups,
-              nodes: groupedNodes,
-            }),
-          )
-        }
-
-        reportAllErrors<MessageId>({
-          availableMessageIds: {
-            missedSpacingBetweenMembers: 'missedSpacingBetweenNamedImports',
-            extraSpacingBetweenMembers: 'extraSpacingBetweenNamedImports',
-            unexpectedGroupOrder: 'unexpectedNamedImportsGroupOrder',
-            unexpectedOrder: 'unexpectedNamedImportsOrder',
-          },
-          sortNodesExcludingEslintDisabled,
-          sourceCode,
-          options,
-          context,
-          nodes,
-        })
       }
+
+      let nodes = formattedMembers.flat()
+      reportAllErrors<MessageId>({
+        availableMessageIds: {
+          missedSpacingBetweenMembers: 'missedSpacingBetweenNamedImports',
+          extraSpacingBetweenMembers: 'extraSpacingBetweenNamedImports',
+          unexpectedGroupOrder: 'unexpectedNamedImportsGroupOrder',
+          unexpectedOrder: 'unexpectedNamedImportsOrder',
+        },
+        sortNodesExcludingEslintDisabled,
+        sourceCode,
+        options,
+        context,
+        nodes,
+      })
     },
   }),
   meta: {

@@ -287,7 +287,6 @@ export function sortObjectTypeElements<MessageIds extends string>({
 
     let sortingNode: Omit<SortObjectTypesSortingNode, 'partitionId'> = {
       isEslintDisabled: isNodeEslintDisabled(typeElement, eslintDisabledLines),
-      groupKind: isMemberOptional(typeElement) ? 'optional' : 'required',
       size: rangeToDiff(typeElement, sourceCode),
       addSafetySemicolonWhenInline: true,
       node: typeElement,
@@ -314,64 +313,48 @@ export function sortObjectTypeElements<MessageIds extends string>({
     })
   }
 
-  let groupKindOrder
-  if (options.groupKind === 'required-first') {
-    groupKindOrder = ['required', 'optional'] as const
-  } else if (options.groupKind === 'optional-first') {
-    groupKindOrder = ['optional', 'required'] as const
-  } else {
-    groupKindOrder = ['any'] as const
-  }
-  for (let nodes of formattedMembers) {
-    let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-      nodes.filter(
-        currentNode =>
-          groupKind === 'any' || currentNode.groupKind === groupKind,
-      ),
+  function sortNodesExcludingEslintDisabled(
+    ignoreEslintDisabledNodes: boolean,
+  ): SortObjectTypesSortingNode[] {
+    return formattedMembers.flatMap(groupedNodes =>
+      sortNodesByGroups({
+        getOptionsByGroupIndex: groupIndex => {
+          let {
+            fallbackSortNodeValueGetter,
+            options: overriddenOptions,
+            nodeValueGetter,
+          } = getCustomGroupsCompareOptions(options, groupIndex)
+          return {
+            options: {
+              ...options,
+              ...overriddenOptions,
+            },
+            fallbackSortNodeValueGetter,
+            nodeValueGetter,
+          }
+        },
+        isNodeIgnoredForGroup: (node, groupOptions) => {
+          if (groupOptions.sortBy === 'value') {
+            return !node.value
+          }
+          return false
+        },
+        ignoreEslintDisabledNodes,
+        groups: options.groups,
+        nodes: groupedNodes,
+      }),
     )
-
-    function sortNodesExcludingEslintDisabled(
-      ignoreEslintDisabledNodes: boolean,
-    ): SortObjectTypesSortingNode[] {
-      return filteredGroupKindNodes.flatMap(groupedNodes =>
-        sortNodesByGroups({
-          getOptionsByGroupIndex: groupIndex => {
-            let {
-              fallbackSortNodeValueGetter,
-              options: overriddenOptions,
-              nodeValueGetter,
-            } = getCustomGroupsCompareOptions(options, groupIndex)
-            return {
-              options: {
-                ...options,
-                ...overriddenOptions,
-              },
-              fallbackSortNodeValueGetter,
-              nodeValueGetter,
-            }
-          },
-          isNodeIgnoredForGroup: (node, groupOptions) => {
-            if (groupOptions.sortBy === 'value') {
-              return !node.value
-            }
-            return false
-          },
-          ignoreEslintDisabledNodes,
-          groups: options.groups,
-          nodes: groupedNodes,
-        }),
-      )
-    }
-
-    reportAllErrors<MessageIds>({
-      sortNodesExcludingEslintDisabled,
-      availableMessageIds,
-      sourceCode,
-      options,
-      context,
-      nodes,
-    })
   }
+
+  let nodes = formattedMembers.flat()
+  reportAllErrors<MessageIds>({
+    sortNodesExcludingEslintDisabled,
+    availableMessageIds,
+    sourceCode,
+    options,
+    context,
+    nodes,
+  })
 }
 
 function getNodeName({

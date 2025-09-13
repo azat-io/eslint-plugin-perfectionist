@@ -67,12 +67,6 @@ export type Options = Partial<
     fallbackSort: { sortBy?: 'value' | 'name' } & FallbackSortOption
 
     /**
-     * @deprecated Will be removed in v5.0.0. Use {@link groups} instead.
-     *   Controls whether required or optional members should be grouped first.
-     */
-    groupKind: 'required-first' | 'optional-first' | 'mixed'
-
-    /**
      * Partition object type members by comment delimiters. Members separated by
      * specific comments are sorted independently.
      */
@@ -400,12 +394,6 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
  */
 export interface SortObjectTypesSortingNode
   extends SortingNode<TSESTree.TypeElement> {
-  /**
-   * Indicates whether the member is required or optional. Used for grouping
-   * members by their optionality.
-   */
-  groupKind: 'required' | 'optional'
-
   /**
    * The string representation of the member's type annotation. Used when
    * sorting by value instead of name. Can be null for members without explicit
