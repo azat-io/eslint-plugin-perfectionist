@@ -67,10 +67,10 @@ describe('sort-enums', () => {
       await valid({
         code: dedent`
           enum Enum {
-            1 = 'a',
-            12 = 'b',
-            2 = 'c',
-            8 = 'c',
+            '1' = 'a',
+            '12' = 'b',
+            '2' = 'c',
+            '8' = 'c',
           }
         `,
         options: [options],
@@ -88,18 +88,18 @@ describe('sort-enums', () => {
         ],
         output: dedent`
           enum Enum {
-            1 = 'a',
-            12 = 'b',
-            2 = 'c',
-            8 = 'c',
+            '1' = 'a',
+            '12' = 'b',
+            '2' = 'c',
+            '8' = 'c',
           }
         `,
         code: dedent`
           enum Enum {
-            1 = 'a',
-            2 = 'c',
-            8 = 'c',
-            12 = 'b',
+            '1' = 'a',
+            '2' = 'c',
+            '8' = 'c',
+            '12' = 'b',
           }
         `,
         options: [options],
@@ -1626,10 +1626,10 @@ describe('sort-enums', () => {
       await valid({
         code: dedent`
           enum Enum {
-            1 = 'a',
-            2 = 'c',
-            8 = 'c',
-            12 = 'b',
+            '1' = 'a',
+            '2' = 'c',
+            '8' = 'c',
+            '12' = 'b',
           }
         `,
         options: [options],
@@ -1647,18 +1647,18 @@ describe('sort-enums', () => {
         ],
         output: dedent`
           enum Enum {
-            1 = 'a',
-            2 = 'c',
-            8 = 'c',
-            12 = 'b',
+            '1' = 'a',
+            '2' = 'c',
+            '8' = 'c',
+            '12' = 'b',
           }
         `,
         code: dedent`
           enum Enum {
-            1 = 'a',
-            2 = 'c',
-            12 = 'b',
-            8 = 'c',
+            '1' = 'a',
+            '2' = 'c',
+            '12' = 'b',
+            '8' = 'c',
           }
         `,
         options: [options],
@@ -3185,10 +3185,10 @@ describe('sort-enums', () => {
       await valid({
         code: dedent`
           enum Enum {
-            12 = 'b',
-            1 = 'a',
-            2 = 'c',
-            8 = 'c',
+            '12' = 'b',
+            '1' = 'a',
+            '2' = 'c',
+            '8' = 'c',
           }
         `,
         options: [options],
@@ -3206,18 +3206,18 @@ describe('sort-enums', () => {
         ],
         output: dedent`
           enum Enum {
-            12 = 'b',
-            1 = 'a',
-            2 = 'c',
-            8 = 'c',
+            '12' = 'b',
+            '1' = 'a',
+            '2' = 'c',
+            '8' = 'c',
           }
         `,
         code: dedent`
           enum Enum {
-            1 = 'a',
-            2 = 'c',
-            8 = 'c',
-            12 = 'b',
+            '1' = 'a',
+            '2' = 'c',
+            '8' = 'c',
+            '12' = 'b',
           }
         `,
         options: [options],

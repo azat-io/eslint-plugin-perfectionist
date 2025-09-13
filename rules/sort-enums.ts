@@ -144,7 +144,7 @@ export default createEslintRule<Options, MessageId>({
 
           let name =
             member.id.type === 'Literal'
-              ? `${member.id.value}`
+              ? member.id.value
               : sourceCode.getText(member.id)
 
           let group = computeGroup({
