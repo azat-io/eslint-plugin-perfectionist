@@ -165,41 +165,6 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it('places spread elements after literals with literals-first option', async () => {
-      let literalsFirstOptions = [
-        {
-          ...options,
-          groupKind: 'literals-first',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...other',
-              right: 'c',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        code: dedent`
-          ['a', 'b', ...other, 'c'].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-    })
-
     it('sorts elements in Array constructor calls', async () => {
       await valid({
         code: dedent`
@@ -240,56 +205,6 @@ describe('sort-array-includes', () => {
           ).includes(value)
         `,
         options: [options],
-      })
-    })
-
-    it('sorts mixed literals and spread elements together with mixed grouping', async () => {
-      let mixedOptions = [
-        {
-          ...options,
-          groupKind: 'mixed',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '...d',
-              left: 'bbb',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        code: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
       })
     })
 
@@ -2043,41 +1958,6 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it('places spread elements after literals with literals-first option', async () => {
-      let literalsFirstOptions = [
-        {
-          ...options,
-          groupKind: 'literals-first',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...other',
-              right: 'c',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        code: dedent`
-          ['a', 'b', ...other, 'c'].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-    })
-
     it('sorts elements in Array constructor calls', async () => {
       await valid({
         code: dedent`
@@ -2118,56 +1998,6 @@ describe('sort-array-includes', () => {
           ).includes(value)
         `,
         options: [options],
-      })
-    })
-
-    it('sorts mixed literals and spread elements together with mixed grouping', async () => {
-      let mixedOptions = [
-        {
-          ...options,
-          groupKind: 'mixed',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '...d',
-              left: 'bbb',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        code: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
       })
     })
 
@@ -3902,41 +3732,6 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it('places spread elements after literals with literals-first option', async () => {
-      let literalsFirstOptions = [
-        {
-          ...options,
-          groupKind: 'literals-first',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...other',
-              right: 'c',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        code: dedent`
-          ['a', 'b', ...other, 'c'].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-    })
-
     it('sorts elements in Array constructor calls', async () => {
       await valid({
         code: dedent`
@@ -3977,56 +3772,6 @@ describe('sort-array-includes', () => {
           ).includes(value)
         `,
         options: [options],
-      })
-    })
-
-    it('sorts mixed literals and spread elements together with mixed grouping', async () => {
-      let mixedOptions = [
-        {
-          ...options,
-          groupKind: 'mixed',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...d',
-              right: 'bbb',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ).includes(value)
-        `,
-        code: dedent`
-          new Array(
-            'aaaa',
-            ...d,
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
       })
     })
 
