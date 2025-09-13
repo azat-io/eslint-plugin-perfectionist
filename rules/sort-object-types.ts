@@ -238,7 +238,6 @@ export function sortObjectTypeElements<MessageIds extends string>({
 
     if (typeElement.loc.start.line !== typeElement.loc.end.line) {
       modifiers.push('multiline')
-      selectors.push('multiline')
     }
 
     if (
