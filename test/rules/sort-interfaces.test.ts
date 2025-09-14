@@ -727,88 +727,6 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('allows to set groups for sorting', async () => {
-      await valid({
-        code: dedent`
-          interface Interface {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline-member', 'unknown'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'multiline-member',
-              leftGroup: 'unknown',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-          {
-            data: {
-              leftGroup: 'multiline-member',
-              rightGroup: 'g',
-              right: 'g',
-              left: 'd',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            g: 'g'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline-member', 'unknown'],
-          },
-        ],
-      })
-    })
-
     it('filters on selector and modifiers', async () => {
       await invalid({
         options: [
@@ -1431,28 +1349,6 @@ describe('sort-interfaces', () => {
         })
       },
     )
-
-    it('allows to use regex for custom groups', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
-            groups: ['unknown', 'elementsWithoutFoo'],
-          },
-        ],
-        code: dedent`
-          interface Interface {
-              iHaveFooInMyName: string
-              meTooIHaveFoo: string
-              a: string
-              b: string
-          }
-        `,
-      })
-    })
 
     it('allows to use new line as partition', async () => {
       await valid({
@@ -2422,6 +2318,35 @@ describe('sort-interfaces', () => {
       'allows to use allNamesMatchPattern with %s',
       async (_description, rgbAllNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^r$',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: '^g$',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: '^b$',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -2440,26 +2365,6 @@ describe('sort-interfaces', () => {
                 left: 'g',
               },
               messageId: 'unexpectedInterfacePropertiesGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -3397,88 +3302,6 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('allows to set groups for sorting', async () => {
-      await valid({
-        code: dedent`
-          interface Interface {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline-member', 'unknown'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'multiline-member',
-              leftGroup: 'unknown',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-          {
-            data: {
-              leftGroup: 'multiline-member',
-              rightGroup: 'g',
-              right: 'g',
-              left: 'd',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            g: 'g'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline-member', 'unknown'],
-          },
-        ],
-      })
-    })
-
     it('filters on selector and modifiers', async () => {
       await invalid({
         options: [
@@ -4101,28 +3924,6 @@ describe('sort-interfaces', () => {
         })
       },
     )
-
-    it('allows to use regex for custom groups', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
-            groups: ['unknown', 'elementsWithoutFoo'],
-          },
-        ],
-        code: dedent`
-          interface Interface {
-              iHaveFooInMyName: string
-              meTooIHaveFoo: string
-              a: string
-              b: string
-          }
-        `,
-      })
-    })
 
     it('allows to use new line as partition', async () => {
       await valid({
@@ -5092,6 +4893,35 @@ describe('sort-interfaces', () => {
       'allows to use allNamesMatchPattern with %s',
       async (_description, rgbAllNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^r$',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: '^g$',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: '^b$',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -5110,26 +4940,6 @@ describe('sort-interfaces', () => {
                 left: 'g',
               },
               messageId: 'unexpectedInterfacePropertiesGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -6053,88 +5863,6 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('allows to set groups for sorting', async () => {
-      await valid({
-        code: dedent`
-          interface Interface {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline-member', 'unknown'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'multiline-member',
-              leftGroup: 'unknown',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-          {
-            data: {
-              leftGroup: 'multiline-member',
-              rightGroup: 'g',
-              right: 'g',
-              left: 'd',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            g: 'g'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline-member', 'unknown'],
-          },
-        ],
-      })
-    })
-
     it('filters on selector and modifiers', async () => {
       await invalid({
         options: [
@@ -6757,28 +6485,6 @@ describe('sort-interfaces', () => {
         })
       },
     )
-
-    it('allows to use regex for custom groups', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
-            groups: ['unknown', 'elementsWithoutFoo'],
-          },
-        ],
-        code: dedent`
-          interface Interface {
-              iHaveFooInMyName: string
-              meTooIHaveFoo: string
-              a: string
-              b: string
-          }
-        `,
-      })
-    })
 
     it('allows to use new line as partition', async () => {
       await valid({
@@ -7741,6 +7447,35 @@ describe('sort-interfaces', () => {
       'allows to use allNamesMatchPattern with %s',
       async (_description, rgbAllNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^r$',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: '^g$',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: '^b$',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -7759,26 +7494,6 @@ describe('sort-interfaces', () => {
                 left: 'g',
               },
               messageId: 'unexpectedInterfacePropertiesGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`

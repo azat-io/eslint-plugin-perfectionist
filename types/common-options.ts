@@ -451,28 +451,6 @@ export type GroupsOptions<T> = (
 )[]
 
 /**
- * Legacy format for defining custom groups using object notation.
- *
- * @deprecated Use array-based CustomGroupsOption with 'anyOf' instead. This
- *   format is maintained for backward compatibility but will be removed in
- *   future versions. Will be removed in v5.0.0.
- * @example
- *   // Deprecated format
- *   const customGroups: DeprecatedCustomGroupsOption = {
- *     react: ['react', 'react-*'],
- *     lodash: 'lodash',
- *   }
- *
- * @example
- *   // Preferred format
- *   const customGroups: CustomGroupsOption = [
- *     { groupName: 'react', anyOf: ['react', 'react-*'] },
- *     { groupName: 'lodash', anyOf: ['lodash'] },
- *   ]
- */
-export type DeprecatedCustomGroupsOption = Record<string, string[] | string>
-
-/**
  * Regular expression pattern configuration for matching strings.
  *
  * Supports multiple formats for flexibility in pattern definition, from simple

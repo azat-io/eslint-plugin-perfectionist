@@ -253,54 +253,6 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('positions callback props according to custom group pattern', async () => {
-      let callbackOptions = {
-        ...options,
-        customGroups: { callback: 'on' },
-        groups: ['unknown', 'callback'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        options: [callbackOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'callback',
-              rightGroup: 'unknown',
-              left: 'onChange',
-              right: 'a',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        code: dedent`
-          <Element
-            onChange={handleChange}
-            a="a"
-            b="b"
-          />
-        `,
-        options: [callbackOptions],
-      })
-    })
-
     it('positions multiline props according to group configuration', async () => {
       let multilineOptions = {
         ...options,
@@ -369,68 +321,17 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('prioritizes props in custom top group', async () => {
-      let topGroupOptions = {
-        ...options,
-        customGroups: { top: ['d', 'e'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        code: dedent`
-          <Element
-            a="aaaa"
-            b="bbb"
-            c="cc"
-            d="ddd"
-            e="ee"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-    })
-
     it('matches props using regex patterns in custom groups', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -963,7 +864,12 @@ describe('sort-jsx-props', () => {
           options: [
             {
               ...options,
-              customGroups: { a: 'a' },
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+              ],
               groups: ['a', 'unknown'],
               newlinesBetween,
             },
@@ -1024,10 +930,16 @@ describe('sort-jsx-props', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                a: 'a',
-                b: 'b',
-              },
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: ['a', 'unknown', 'b'],
               newlinesBetween,
             },
@@ -1061,6 +973,28 @@ describe('sort-jsx-props', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+              {
+                elementNamePattern: 'd',
+                groupName: 'd',
+              },
+              {
+                elementNamePattern: 'e',
+                groupName: 'e',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'always' },
@@ -1072,13 +1006,6 @@ describe('sort-jsx-props', () => {
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            customGroups: {
-              a: 'a',
-              b: 'b',
-              c: 'c',
-              d: 'd',
-              e: 'e',
-            },
             newlinesBetween: 'always',
           },
         ],
@@ -1149,17 +1076,26 @@ describe('sort-jsx-props', () => {
           options: [
             {
               ...options,
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
+                },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
                 { newlinesBetween: groupNewlinesBetween },
                 'b',
               ],
-              customGroups: {
-                unusedGroup: 'X',
-                a: 'a',
-                b: 'b',
-              },
               newlinesBetween: globalNewlinesBetween,
             },
           ],
@@ -1249,6 +1185,18 @@ describe('sort-jsx-props', () => {
 
     it('preserves inline comments when reordering props', async () => {
       await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: 'b|c',
+                groupName: 'b|c',
+              },
+            ],
+            groups: ['unknown', 'b|c'],
+            newlinesBetween: 'always',
+          },
+        ],
         errors: [
           {
             data: {
@@ -1258,15 +1206,6 @@ describe('sort-jsx-props', () => {
               left: 'b',
             },
             messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: {
-              'b|c': 'b|c',
-            },
-            groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
           },
         ],
         output: dedent`
@@ -1297,6 +1236,35 @@ describe('sort-jsx-props', () => {
       'applies configuration when all names match pattern - %s',
       async (_description, allNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -1315,26 +1283,6 @@ describe('sort-jsx-props', () => {
                 left: 'g',
               },
               messageId: 'unexpectedJSXPropsGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -1640,54 +1588,6 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('positions callback props according to custom group pattern', async () => {
-      let callbackOptions = {
-        ...options,
-        customGroups: { callback: 'on' },
-        groups: ['unknown', 'callback'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        options: [callbackOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'callback',
-              rightGroup: 'unknown',
-              left: 'onChange',
-              right: 'a',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        code: dedent`
-          <Element
-            onChange={handleChange}
-            a="a"
-            b="b"
-          />
-        `,
-        options: [callbackOptions],
-      })
-    })
-
     it('positions multiline props according to group configuration', async () => {
       let multilineOptions = {
         ...options,
@@ -1756,68 +1656,17 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('prioritizes props in custom top group', async () => {
-      let topGroupOptions = {
-        ...options,
-        customGroups: { top: ['d', 'e'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        code: dedent`
-          <Element
-            a="aaaa"
-            b="bbb"
-            c="cc"
-            d="ddd"
-            e="ee"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-    })
-
     it('matches props using regex patterns in custom groups', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -2350,7 +2199,12 @@ describe('sort-jsx-props', () => {
           options: [
             {
               ...options,
-              customGroups: { a: 'a' },
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+              ],
               groups: ['a', 'unknown'],
               newlinesBetween,
             },
@@ -2411,10 +2265,16 @@ describe('sort-jsx-props', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                a: 'a',
-                b: 'b',
-              },
+              customGroups: [
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: ['a', 'unknown', 'b'],
               newlinesBetween,
             },
@@ -2448,6 +2308,28 @@ describe('sort-jsx-props', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+              {
+                elementNamePattern: 'd',
+                groupName: 'd',
+              },
+              {
+                elementNamePattern: 'e',
+                groupName: 'e',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'always' },
@@ -2459,13 +2341,6 @@ describe('sort-jsx-props', () => {
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            customGroups: {
-              a: 'a',
-              b: 'b',
-              c: 'c',
-              d: 'd',
-              e: 'e',
-            },
             newlinesBetween: 'always',
           },
         ],
@@ -2536,17 +2411,26 @@ describe('sort-jsx-props', () => {
           options: [
             {
               ...options,
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
+                },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
                 { newlinesBetween: groupNewlinesBetween },
                 'b',
               ],
-              customGroups: {
-                unusedGroup: 'X',
-                a: 'a',
-                b: 'b',
-              },
               newlinesBetween: globalNewlinesBetween,
             },
           ],
@@ -2636,6 +2520,18 @@ describe('sort-jsx-props', () => {
 
     it('preserves inline comments when reordering props', async () => {
       await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: 'b|c',
+                groupName: 'b|c',
+              },
+            ],
+            groups: ['unknown', 'b|c'],
+            newlinesBetween: 'always',
+          },
+        ],
         errors: [
           {
             data: {
@@ -2645,15 +2541,6 @@ describe('sort-jsx-props', () => {
               left: 'b',
             },
             messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: {
-              'b|c': 'b|c',
-            },
-            groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
           },
         ],
         output: dedent`
@@ -2684,6 +2571,35 @@ describe('sort-jsx-props', () => {
       'applies configuration when all names match pattern - %s',
       async (_description, allNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -2702,26 +2618,6 @@ describe('sort-jsx-props', () => {
                 left: 'g',
               },
               messageId: 'unexpectedJSXPropsGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -3020,54 +2916,6 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('positions callback props according to custom group pattern', async () => {
-      let callbackOptions = {
-        ...options,
-        customGroups: { callback: 'on' },
-        groups: ['unknown', 'callback'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        options: [callbackOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'callback',
-              rightGroup: 'unknown',
-              left: 'onChange',
-              right: 'a',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        code: dedent`
-          <Element
-            onChange={handleChange}
-            a="a"
-            b="b"
-          />
-        `,
-        options: [callbackOptions],
-      })
-    })
-
     it('positions multiline props according to group configuration', async () => {
       let multilineOptions = {
         ...options,
@@ -3143,68 +2991,17 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('prioritizes props in custom top group', async () => {
-      let topGroupOptions = {
-        ...options,
-        customGroups: { top: ['d', 'e'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        code: dedent`
-          <Element
-            a="aaaa"
-            b="bbb"
-            c="cc"
-            d="ddd"
-            e="ee"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-    })
-
     it('matches props using regex patterns in custom groups', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -3737,7 +3534,12 @@ describe('sort-jsx-props', () => {
           options: [
             {
               ...options,
-              customGroups: { a: 'aaaa' },
+              customGroups: [
+                {
+                  elementNamePattern: 'aaaa',
+                  groupName: 'a',
+                },
+              ],
               groups: ['a', 'unknown'],
               newlinesBetween,
             },
@@ -3798,10 +3600,16 @@ describe('sort-jsx-props', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                a: 'aaaa',
-                b: 'bbb',
-              },
+              customGroups: [
+                {
+                  elementNamePattern: 'aaaa',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'bbb',
+                  groupName: 'b',
+                },
+              ],
               groups: ['a', 'unknown', 'b'],
               newlinesBetween,
             },
@@ -3835,6 +3643,28 @@ describe('sort-jsx-props', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+              {
+                elementNamePattern: 'd',
+                groupName: 'd',
+              },
+              {
+                elementNamePattern: 'e',
+                groupName: 'e',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'always' },
@@ -3846,13 +3676,6 @@ describe('sort-jsx-props', () => {
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            customGroups: {
-              a: 'a',
-              b: 'b',
-              c: 'c',
-              d: 'd',
-              e: 'e',
-            },
             newlinesBetween: 'always',
           },
         ],
@@ -3923,17 +3746,26 @@ describe('sort-jsx-props', () => {
           options: [
             {
               ...options,
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
+                },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
                 { newlinesBetween: groupNewlinesBetween },
                 'b',
               ],
-              customGroups: {
-                unusedGroup: 'X',
-                a: 'a',
-                b: 'b',
-              },
               newlinesBetween: globalNewlinesBetween,
             },
           ],
@@ -4023,6 +3855,18 @@ describe('sort-jsx-props', () => {
 
     it('preserves inline comments when reordering props', async () => {
       await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: 'b|c',
+                groupName: 'b|c',
+              },
+            ],
+            groups: ['unknown', 'b|c'],
+            newlinesBetween: 'always',
+          },
+        ],
         errors: [
           {
             data: {
@@ -4032,15 +3876,6 @@ describe('sort-jsx-props', () => {
               left: 'b',
             },
             messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: {
-              'b|c': 'b|c',
-            },
-            groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
           },
         ],
         output: dedent`
@@ -4071,6 +3906,35 @@ describe('sort-jsx-props', () => {
       'applies configuration when all names match pattern - %s',
       async (_description, allNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -4089,26 +3953,6 @@ describe('sort-jsx-props', () => {
                 left: 'g',
               },
               messageId: 'unexpectedJSXPropsGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -4271,6 +4115,22 @@ describe('sort-jsx-props', () => {
 
     it('groups props by pattern while preserving order within groups', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: '^a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: '^b',
+                groupName: 'b',
+              },
+            ],
+            groups: ['b', 'a'],
+          },
+        ],
         errors: [
           {
             data: {
@@ -4280,16 +4140,6 @@ describe('sort-jsx-props', () => {
               left: 'aa',
             },
             messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: {
-              a: '^a',
-              b: '^b',
-            },
-            groups: ['b', 'a'],
           },
         ],
         output: dedent`
@@ -4316,10 +4166,16 @@ describe('sort-jsx-props', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              a: '^a',
-              b: '^b',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: '^b',
+                groupName: 'b',
+              },
+            ],
             newlinesBetween: 'always',
             groups: ['b', 'a'],
           },
@@ -4351,35 +4207,6 @@ describe('sort-jsx-props', () => {
   })
 
   describe('misc', () => {
-    it('supports mixing predefined and custom groups', async () => {
-      await valid({
-        options: [
-          {
-            groups: [
-              'multiline-prop',
-              'shorthand-prop',
-              'unknown',
-              'myCustomGroup',
-            ],
-            customGroups: {
-              myCustomGroup: 'x',
-            },
-          },
-        ],
-        code: dedent`
-          let Component = () => (
-            <Element
-              a="aaa"
-              b="bb"
-              c="c"
-            >
-              Value
-            </Element>
-          )
-        `,
-      })
-    })
-
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
