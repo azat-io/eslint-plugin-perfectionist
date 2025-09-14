@@ -1,3 +1,5 @@
+import type { TSESLint } from '@typescript-eslint/utils'
+
 import { TSESTree } from '@typescript-eslint/types'
 
 import type { Modifier, Selector } from './sort-jsx-props/types'
@@ -23,7 +25,7 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getMatchingContextOptions } from '../utils/get-matching-context-options'
+import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -50,7 +52,7 @@ type MessageId =
   | 'unexpectedJSXPropsGroupOrder'
   | 'unexpectedJSXPropsOrder'
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
@@ -75,22 +77,11 @@ export default createEslintRule<Options, MessageId>({
 
       let settings = getSettings(context.settings)
       let { sourceCode, id } = context
-      let matchedContextOptions = getMatchingContextOptions({
-        nodeNames: node.openingElement.attributes
-          .filter(
-            attribute =>
-              attribute.type !== TSESTree.AST_NODE_TYPES.JSXSpreadAttribute,
-          )
-          .map(attribute => getNodeName({ attribute })),
-        contextOptions: context.options,
-      }).find(options => {
-        if (!options.useConfigurationIf?.tagMatchesPattern) {
-          return true
-        }
-        return matches(
-          sourceCode.getText(node.openingElement.name),
-          options.useConfigurationIf.tagMatchesPattern,
-        )
+
+      let matchedContextOptions = computeMatchedContextOptions({
+        sourceCode,
+        context,
+        node,
       })
       let options = complete(matchedContextOptions, settings, defaultOptions)
       validateCustomSortConfiguration(options)
@@ -262,6 +253,34 @@ export default createEslintRule<Options, MessageId>({
   defaultOptions: [defaultOptions],
   name: 'sort-jsx-props',
 })
+
+function computeMatchedContextOptions({
+  sourceCode,
+  context,
+  node,
+}: {
+  context: TSESLint.RuleContext<string, Options>
+  sourceCode: TSESLint.SourceCode
+  node: TSESTree.JSXElement
+}): Options[number] | undefined {
+  return filterOptionsByAllNamesMatch({
+    nodeNames: node.openingElement.attributes
+      .filter(
+        attribute =>
+          attribute.type !== TSESTree.AST_NODE_TYPES.JSXSpreadAttribute,
+      )
+      .map(attribute => getNodeName({ attribute })),
+    contextOptions: context.options,
+  }).find(options => {
+    if (!options.useConfigurationIf?.tagMatchesPattern) {
+      return true
+    }
+    return matches(
+      sourceCode.getText(node.openingElement.name),
+      options.useConfigurationIf.tagMatchesPattern,
+    )
+  })
+}
 
 function getNodeName({
   attribute,

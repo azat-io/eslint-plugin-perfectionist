@@ -30,6 +30,12 @@ export type Options = Partial<
      */
     useConfigurationIf: {
       /**
+       * Regular expression pattern to match against the comment associated to
+       * the name of the object.
+       */
+      declarationCommentMatchesPattern?: RegexOption
+
+      /**
        * Regular expression pattern to match against the name of the function
        * that contains this object. Useful for applying different sorting rules
        * to objects passed to specific functions.

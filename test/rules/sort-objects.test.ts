@@ -2168,6 +2168,33 @@ describe('sort-objects', () => {
 
     it('applies configuration when callingFunctionNamePattern matches', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              callingFunctionNamePattern: '^.*$',
+            },
+            type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          ({ a: 1, b: 1 })
+        `,
+        code: dedent`
+          ({ b: 1, a: 1 })
+        `,
+      })
+
+      await invalid({
         errors: [
           {
             data: {
@@ -2287,6 +2314,83 @@ describe('sort-objects', () => {
         ],
         code: dedent`
           Schema.index({ b: 1, a: 1 });
+        `,
+      })
+    })
+
+    it('applies configuration when declaration comment matches', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          // Ignore me
+          const obj = {
+            b,
+            c,
+            a,
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          // Ignore me
+          func({
+            b,
+            c,
+            a,
+          })
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          // Do NOT ignore me
+          const obj = {
+            a,
+            b,
+          }
+        `,
+        code: dedent`
+          // Do NOT ignore me
+          const obj = {
+            b,
+            a,
+          }
         `,
       })
     })

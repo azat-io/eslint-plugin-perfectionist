@@ -51,7 +51,7 @@ type SortExportsSortingNode = SortingNode<
   TSESTree.ExportNamedDeclarationWithSource | TSESTree.ExportAllDeclaration
 >
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByComment: false,
