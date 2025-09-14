@@ -64,8 +64,10 @@ export type MessageId =
   | 'missedCommentAboveImport'
   | 'unexpectedImportsOrder'
 
-let defaultOptions: Required<Omit<Options[0], 'maxLineLength' | 'tsconfig'>> &
-  Pick<Options[0], 'maxLineLength' | 'tsconfig'> = {
+let defaultOptions: Required<
+  Omit<Options[number], 'maxLineLength' | 'tsconfig'>
+> &
+  Pick<Options[number], 'maxLineLength' | 'tsconfig'> = {
   groups: [
     'type-import',
     ['value-builtin', 'value-external'],
@@ -533,7 +535,7 @@ function computeGroupExceptUnknown({
   options,
   name,
 }: {
-  options: Omit<Required<Options[0]>, 'maxLineLength' | 'tsconfig'>
+  options: Omit<Required<Options[number]>, 'maxLineLength' | 'tsconfig'>
   selectors: Selector[]
   modifiers: Modifier[]
   name: string
