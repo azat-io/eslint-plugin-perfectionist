@@ -302,11 +302,20 @@ Example configuration:
     'error',
     {
       groups: ['r', 'g', 'b'], // Sort colors types by RGB
-      customGroups: {
-        r: '^r$',
-        g: '^g$',
-        b: '^b$',
-      },
+      customGroups: [
+        {
+          groupName: 'r',
+          elementNamePattern: '^r$',
+        },
+        {
+          groupName: 'g',
+          elementNamePattern: '^g$',
+        },
+        {
+          groupName: 'b',
+          elementNamePattern: '^b$',
+        },
+      ],
       useConfigurationIf: {
         allNamesMatchPattern: '^r|g|b$',
       },

@@ -6,7 +6,6 @@ import type { SortingNode } from '../types/sorting-node'
 
 import {
   buildCustomGroupsArrayJsonSchema,
-  deprecatedCustomGroupsJsonSchema,
   partitionByNewLineJsonSchema,
   partitionByCommentJsonSchema,
   newlinesBetweenJsonSchema,
@@ -64,12 +63,9 @@ export default createEslintRule<Options, MessageId>({
       items: {
         properties: {
           ...commonJsonSchemas,
-          customGroups: {
-            oneOf: [
-              deprecatedCustomGroupsJsonSchema,
-              buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
-            ],
-          },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByNewLine: partitionByNewLineJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
@@ -149,7 +145,6 @@ function sortHeritageClauses(
         }),
       predefinedGroups: [],
       options,
-      name,
     })
 
     let sortingNode: SortingNode = {

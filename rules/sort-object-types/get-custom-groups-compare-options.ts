@@ -42,18 +42,16 @@ export function getCustomGroupsCompareOptions(
 
   let { fallbackSort, customGroups, sortBy, groups } = options
   let fallbackSortBy = fallbackSort.sortBy
-  if (Array.isArray(customGroups)) {
-    let group = groups[groupIndex]
-    let customGroup =
-      typeof group === 'string'
-        ? customGroups.find(currentGroup => group === currentGroup.groupName)
-        : null
+  let group = groups[groupIndex]
+  let customGroup =
+    typeof group === 'string'
+      ? customGroups.find(currentGroup => group === currentGroup.groupName)
+      : null
 
-    if (customGroup) {
-      fallbackSortBy = customGroup.fallbackSort?.sortBy ?? fallbackSortBy
-      if ('sortBy' in customGroup && customGroup.sortBy) {
-        ;({ sortBy } = customGroup)
-      }
+  if (customGroup) {
+    fallbackSortBy = customGroup.fallbackSort?.sortBy ?? fallbackSortBy
+    if ('sortBy' in customGroup && customGroup.sortBy) {
+      ;({ sortBy } = customGroup)
     }
   }
 
