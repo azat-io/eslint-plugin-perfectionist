@@ -6,7 +6,7 @@ import { getCustomGroupsCompareOptions } from '../../../rules/sort-object-types/
 
 describe('get-custom-groups-compare-options', () => {
   let commonOptions: Pick<
-    Required<Options[0]>,
+    Required<Options[number]>,
     'fallbackSort' | 'sortBy' | 'order' | 'type'
   > = {
     fallbackSort: {

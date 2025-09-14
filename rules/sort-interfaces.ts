@@ -17,7 +17,7 @@ type MessageId =
   | 'extraSpacingBetweenInterfaceMembers'
   | 'unexpectedInterfacePropertiesOrder'
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   partitionByComment: false,
   partitionByNewLine: false,

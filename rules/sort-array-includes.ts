@@ -57,7 +57,7 @@ type SortArrayIncludesSortingNode = SortingNode<
   TSESTree.SpreadElement | TSESTree.Expression
 >
 
-export let defaultOptions: Required<Options[0]> = {
+export let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByComment: false,
