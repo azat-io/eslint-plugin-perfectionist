@@ -326,9 +326,12 @@ interface Interface extends WithId, Logged, StartupService {
      'withIdInterface',         // [!code ++]
      'unknown'
    ],
-+  customGroups: {              // [!code ++]
-+    withIdInterface: '^WithId' // [!code ++]
-+  }                            // [!code ++]
++  customGroups: [                    // [!code ++]
++    {                                // [!code ++]
++       groupName: 'withIdInterface'  // [!code ++]
++       elementNamePattern: '^WithId' // [!code ++]
++    }                                // [!code ++]
++  ]                                  // [!code ++]
  }
 ```
 
