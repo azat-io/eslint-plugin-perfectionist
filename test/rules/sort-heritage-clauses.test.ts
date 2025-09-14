@@ -183,69 +183,17 @@ describe('sort-heritage-clauses', () => {
       })
     })
 
-    it('applies custom grouping to heritage clauses', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g'],
-          },
-        ],
-        code: dedent`
-          interface Interface extends
-            g,
-            a {
-          }
-        `,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'g',
-              right: 'g',
-              left: 'a',
-            },
-            messageId: 'unexpectedHeritageClausesGroupOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g'],
-          },
-        ],
-        output: dedent`
-          interface Interface extends
-            g,
-            a {
-          }
-        `,
-        code: dedent`
-          interface Interface extends
-            a,
-            g {
-          }
-        `,
-      })
-    })
-
     it('supports regex patterns in custom groups for heritage clauses', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -1699,69 +1647,17 @@ describe('sort-heritage-clauses', () => {
       })
     })
 
-    it('applies custom grouping to heritage clauses', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g'],
-          },
-        ],
-        code: dedent`
-          interface Interface extends
-            g,
-            a {
-          }
-        `,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'g',
-              right: 'g',
-              left: 'a',
-            },
-            messageId: 'unexpectedHeritageClausesGroupOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g'],
-          },
-        ],
-        output: dedent`
-          interface Interface extends
-            g,
-            a {
-          }
-        `,
-        code: dedent`
-          interface Interface extends
-            a,
-            g {
-          }
-        `,
-      })
-    })
-
     it('supports regex patterns in custom groups for heritage clauses', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -2047,69 +1943,17 @@ describe('sort-heritage-clauses', () => {
       })
     })
 
-    it('applies custom grouping to heritage clauses', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g'],
-          },
-        ],
-        code: dedent`
-          interface Interface extends
-            g,
-            a {
-          }
-        `,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'g',
-              right: 'g',
-              left: 'a',
-            },
-            messageId: 'unexpectedHeritageClausesGroupOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g'],
-          },
-        ],
-        output: dedent`
-          interface Interface extends
-            g,
-            a {
-          }
-        `,
-        code: dedent`
-          interface Interface extends
-            a,
-            g {
-          }
-        `,
-      })
-    })
-
     it('supports regex patterns in custom groups for heritage clauses', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -2339,6 +2183,22 @@ describe('sort-heritage-clauses', () => {
 
     it('enforces custom group ordering in heritage clauses', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: '^a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: '^b',
+                groupName: 'b',
+              },
+            ],
+            groups: ['b', 'a'],
+          },
+        ],
         errors: [
           {
             data: {
@@ -2348,16 +2208,6 @@ describe('sort-heritage-clauses', () => {
               left: 'aa',
             },
             messageId: 'unexpectedHeritageClausesGroupOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: {
-              a: '^a',
-              b: '^b',
-            },
-            groups: ['b', 'a'],
           },
         ],
         output: dedent`

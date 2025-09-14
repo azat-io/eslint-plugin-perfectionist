@@ -1,7 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
-  DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
@@ -14,9 +13,7 @@ import { regexJsonSchema } from '../../utils/common-json-schemas'
 
 export type Options = Partial<
   {
-    customGroups:
-      | CustomGroupsOption<SingleCustomGroup>
-      | DeprecatedCustomGroupsOption
+    customGroups: CustomGroupsOption<SingleCustomGroup>
     partitionByComment: PartitionByCommentOption
     newlinesBetween: NewlinesBetweenOption
     groups: GroupsOptions<Group>

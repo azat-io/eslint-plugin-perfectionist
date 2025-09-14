@@ -24,20 +24,6 @@ describe('get-newlines-between-option', () => {
       },
     )
 
-    it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
-      'should return the global option (`%s`) if "customGroups" is not an array',
-      newlinesBetween => {
-        expect(
-          getNewlinesBetweenOption(
-            buildParameters({
-              customGroups: {},
-              newlinesBetween,
-            }),
-          ),
-        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
-      },
-    )
-
     it.each(['ignore', ...NEVER_OPTIONS] as const)(
       'should return "%s" if "newlinesBetween" is "%s"',
       newlinesBetween => {
@@ -58,6 +44,7 @@ describe('get-newlines-between-option', () => {
         expect(
           getNewlinesBetweenOption({
             options: {
+              customGroups: [],
               newlinesBetween,
               groups,
             },
@@ -74,6 +61,7 @@ describe('get-newlines-between-option', () => {
         getNewlinesBetweenOption({
           options: {
             newlinesBetween: 'always',
+            customGroups: [],
             groups,
           },
           nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group2'),
@@ -90,6 +78,7 @@ describe('get-newlines-between-option', () => {
           getNewlinesBetweenOption({
             options: {
               newlinesBetween: 'always',
+              customGroups: [],
               groups,
             },
             nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
@@ -387,15 +376,15 @@ describe('get-newlines-between-option', () => {
         finalGroups,
         nextNodeGroupIndexGroup ?? 'group2',
       ),
+      options: {
+        customGroups: customGroups ?? [],
+        groups: finalGroups,
+        newlinesBetween,
+      },
       nodeGroupIndex: generateNodeGroupIndex(
         finalGroups,
         sortingNodeGroup ?? 'group1',
       ),
-      options: {
-        groups: finalGroups,
-        newlinesBetween,
-        customGroups,
-      },
     }
   }
 

@@ -18,23 +18,6 @@ describe('get-custom-groups-compare-options', () => {
     order: 'asc',
   }
 
-  it('return the entered options if "customGroups" is not an array', () => {
-    expect(
-      getCustomGroupsCompareOptions(
-        {
-          ...commonOptions,
-          groups: ['group'],
-          customGroups: {},
-        },
-        0,
-      ),
-    ).toStrictEqual({
-      fallbackSortNodeValueGetter: null,
-      options: commonOptions,
-      nodeValueGetter: null,
-    })
-  })
-
   it('return the entered options if the group is not linked to a custom group', () => {
     expect(
       getCustomGroupsCompareOptions(

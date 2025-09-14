@@ -9,7 +9,6 @@ import type { Modifier, Selector, Options } from './sort-objects/types'
 import {
   buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
-  deprecatedCustomGroupsJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
@@ -77,7 +76,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignorePattern: [],
   ignoreCase: true,
-  customGroups: {},
+  customGroups: [],
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
@@ -326,7 +325,6 @@ export default createEslintRule<Options, MessageId>({
                 }),
               predefinedGroups,
               options,
-              name,
             })
 
             let dependencyName: string = name
@@ -448,12 +446,6 @@ export default createEslintRule<Options, MessageId>({
             ],
             description: 'Controls whether to sort destructured objects.',
           },
-          customGroups: {
-            oneOf: [
-              deprecatedCustomGroupsJsonSchema,
-              buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
-            ],
-          },
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {
               callingFunctionNamePattern: regexJsonSchema,
@@ -472,6 +464,9 @@ export default createEslintRule<Options, MessageId>({
             description: 'Controls whether to sort styled components.',
             type: 'boolean',
           },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
