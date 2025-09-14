@@ -304,9 +304,7 @@ Specifies whether this rule should be applied to styled-components like librarie
 <sub>
   type:
   ```
-  {
-    allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
-  }
+    string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
   ```
 </sub>
 <sub>default: `[]`</sub>
@@ -349,6 +347,7 @@ The `groups` attribute specifies whether to use groups to sort destructured obje
   {
     allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
     callingFunctionNamePattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+    declarationCommentMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
   }
   ```
 </sub>
@@ -394,6 +393,7 @@ Example configuration:
 
 - `callingFunctionNamePattern` — A regexp pattern for matching objects that are passed as arguments to a function with a specific name.
 
+Example configuration:
 ```ts
 {
   'perfectionist/sort-objects': [
@@ -402,6 +402,26 @@ Example configuration:
       type: 'unsorted', // Don't sort objects passed to createSlice
       useConfigurationIf: {
         callingFunctionNamePattern: '^createSlice$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `declarationCommentMatchesPattern` — A regexp pattern to specify which comments above the object declaration should match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-objects': [
+    'error',
+    {
+      type: 'unsorted', // Don't sort objects with a "do not sort" comment
+      useConfigurationIf: {
+        declarationCommentMatchesPattern: '^do not sort$',
       },
     },
     {

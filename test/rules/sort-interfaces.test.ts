@@ -2439,6 +2439,63 @@ describe('sort-interfaces', () => {
       })
     })
 
+    it('detects declaration comment by pattern', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          // Ignore me
+          interface Interface {
+            b: string
+            c: string
+            a: string
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedInterfacePropertiesOrder',
+          },
+        ],
+        output: dedent`
+          // Do NOT ignore me
+          interface Interface {
+            a: string
+            b: string
+          }
+        `,
+        code: dedent`
+          // Do NOT ignore me
+          interface Interface {
+            b: string
+            a: string
+          }
+        `,
+      })
+    })
+
     it('allows sorting by value', async () => {
       await invalid({
         errors: [

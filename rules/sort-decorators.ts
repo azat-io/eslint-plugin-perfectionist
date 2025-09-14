@@ -46,7 +46,7 @@ type MessageId =
   | 'extraSpacingBetweenDecorators'
   | 'unexpectedDecoratorsOrder'
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByComment: false,
@@ -190,7 +190,7 @@ export default createEslintRule<Options, MessageId>({
 
 function sortDecorators(
   context: Readonly<RuleContext<MessageId, Options>>,
-  options: Required<Options[0]>,
+  options: Required<Options[number]>,
   decorators: TSESTree.Decorator[],
 ): void {
   if (!isSortable(decorators)) {
