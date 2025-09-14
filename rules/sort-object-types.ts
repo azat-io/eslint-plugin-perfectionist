@@ -235,7 +235,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
     }
 
     if (
-      !(['index-signature', 'method'] as Selector[]).some(selector =>
+      !(['index-signature', 'method'] as const).some(selector =>
         selectors.includes(selector),
       )
     ) {
