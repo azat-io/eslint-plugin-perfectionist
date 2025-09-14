@@ -189,24 +189,6 @@ export let groupsJsonSchema: JSONSchema4 = {
   type: 'array',
 }
 
-export let deprecatedCustomGroupsJsonSchema: JSONSchema4 = {
-  additionalProperties: {
-    oneOf: [
-      {
-        type: 'string',
-      },
-      {
-        items: {
-          type: 'string',
-        },
-        type: 'array',
-      },
-    ],
-  },
-  description: 'Specifies custom groups.',
-  type: 'object',
-}
-
 let singleRegexJsonSchema: JSONSchema4 = {
   oneOf: [
     {

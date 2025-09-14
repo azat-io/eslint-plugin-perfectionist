@@ -13,7 +13,6 @@ import type {
 import {
   buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
-  deprecatedCustomGroupsJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
@@ -74,7 +73,7 @@ let defaultOptions: Required<Options[0]> = {
   type: 'alphabetical',
   ignorePattern: [],
   ignoreCase: true,
-  customGroups: {},
+  customGroups: [],
   locales: 'en-US',
   sortBy: 'name',
   alphabet: '',
@@ -90,15 +89,10 @@ export let jsonSchema: JSONSchema4 = {
           sortBy: sortByJsonSchema,
         },
       }),
-      customGroups: {
-        oneOf: [
-          deprecatedCustomGroupsJsonSchema,
-          buildCustomGroupsArrayJsonSchema({
-            additionalFallbackSortProperties: { sortBy: sortByJsonSchema },
-            singleCustomGroupJsonSchema,
-          }),
-        ],
-      },
+      customGroups: buildCustomGroupsArrayJsonSchema({
+        additionalFallbackSortProperties: { sortBy: sortByJsonSchema },
+        singleCustomGroupJsonSchema,
+      }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {
           declarationMatchesPattern: regexJsonSchema,
@@ -281,7 +275,6 @@ export function sortObjectTypeElements<MessageIds extends string>({
         }),
       predefinedGroups,
       options,
-      name,
     })
 
     let sortingNode: Omit<SortObjectTypesSortingNode, 'partitionId'> = {

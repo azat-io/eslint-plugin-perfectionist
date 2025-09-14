@@ -664,121 +664,6 @@ describe('sort-imports', () => {
       })
     })
 
-    it('supports custom import groups with primary and secondary categories', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '@a/a1',
-              left: 't',
-            },
-            messageId: 'unexpectedImportsOrder',
-          },
-          {
-            data: {
-              right: '@a/a1',
-              left: 't',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-          {
-            data: {
-              right: '@b/b1',
-              left: '@a/a2',
-            },
-            messageId: 'missedSpacingBetweenImports',
-          },
-          {
-            data: {
-              left: '@b/b3',
-              right: 'c',
-            },
-            messageId: 'missedSpacingBetweenImports',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: [
-              'type',
-              'primary',
-              'secondary',
-              ['builtin', 'external'],
-              'internal-type',
-              'internal',
-              ['parent-type', 'sibling-type', 'index-type'],
-              ['parent', 'sibling', 'index'],
-              'unknown',
-            ],
-            customGroups: {
-              value: {
-                primary: ['t', '@a/.+'],
-                secondary: '@b/.+',
-              },
-              type: {
-                primary: ['t', '@a/.+'],
-              },
-            },
-          },
-        ],
-        output: dedent`
-          import a1 from '@a/a1'
-          import a2 from '@a/a2'
-          import type { T } from 't'
-
-          import b1 from '@b/b1'
-          import b2 from '@b/b2'
-          import b3 from '@b/b3'
-
-          import { c } from 'c'
-        `,
-        code: dedent`
-          import type { T } from 't'
-
-          import a1 from '@a/a1'
-          import a2 from '@a/a2'
-          import b1 from '@b/b1'
-          import b2 from '@b/b2'
-          import b3 from '@b/b3'
-          import { c } from 'c'
-        `,
-      })
-    })
-
-    it('supports custom groups for value imports only', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              value: {
-                primary: ['a'],
-              },
-            },
-            groups: ['type', 'primary'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              right: 'a',
-              left: 'a',
-            },
-            messageId: 'missedSpacingBetweenImports',
-          },
-        ],
-        output: dedent`
-          import type { A } from 'a'
-
-          import { a } from 'a'
-        `,
-        code: dedent`
-          import type { A } from 'a'
-          import { a } from 'a'
-        `,
-      })
-    })
-
     it('handles hash symbol in internal patterns correctly', async () => {
       await valid({
         code: dedent`
@@ -1544,83 +1429,6 @@ describe('sort-imports', () => {
       })
     })
 
-    it('handles custom spacing rules between consecutive groups', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'a',
-              { newlinesBetween: 'always' },
-              'b',
-              { newlinesBetween: 'always' },
-              'c',
-              { newlinesBetween: 'never' },
-              'd',
-              { newlinesBetween: 'ignore' },
-              'e',
-            ],
-            customGroups: {
-              value: {
-                a: 'a',
-                b: 'b',
-                c: 'c',
-                d: 'd',
-                e: 'e',
-              },
-            },
-            newlinesBetween: 'always',
-          },
-        ],
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'missedSpacingBetweenImports',
-          },
-          {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-          {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-        ],
-        output: dedent`
-          import { A } from 'a'
-
-          import { B } from 'b'
-
-          import { C } from 'c'
-          import { D } from 'd'
-
-
-          import { E } from 'e'
-        `,
-        code: dedent`
-          import { A } from 'a'
-          import { B } from 'b'
-
-
-          import { C } from 'c'
-
-          import { D } from 'd'
-
-
-          import { E } from 'e'
-        `,
-      })
-    })
-
     it.each([
       [
         'enforces spacing when global option is 2 and group option is never',
@@ -1651,13 +1459,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -1716,6 +1531,24 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                groupName: 'unusedGroup',
+                elementNamePattern: 'X',
+              },
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'never' },
@@ -1725,14 +1558,6 @@ describe('sort-imports', () => {
               { newlinesBetween: 'always' },
               'c',
             ],
-            customGroups: {
-              value: {
-                unusedGroup: 'X',
-                a: 'a',
-                b: 'b',
-                c: 'c',
-              },
-            },
             newlinesBetween: globalNewlinesBetween,
           },
         ],
@@ -1785,13 +1610,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -1812,13 +1644,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -4468,121 +4307,6 @@ describe('sort-imports', () => {
       })
     })
 
-    it('supports custom import groups with primary and secondary categories', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '@a/a1',
-              left: 't',
-            },
-            messageId: 'unexpectedImportsOrder',
-          },
-          {
-            data: {
-              right: '@a/a1',
-              left: 't',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-          {
-            data: {
-              right: '@b/b1',
-              left: '@a/a2',
-            },
-            messageId: 'missedSpacingBetweenImports',
-          },
-          {
-            data: {
-              left: '@b/b3',
-              right: 'c',
-            },
-            messageId: 'missedSpacingBetweenImports',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: [
-              'type',
-              'primary',
-              'secondary',
-              ['builtin', 'external'],
-              'internal-type',
-              'internal',
-              ['parent-type', 'sibling-type', 'index-type'],
-              ['parent', 'sibling', 'index'],
-              'unknown',
-            ],
-            customGroups: {
-              value: {
-                primary: ['t', '@a/.+'],
-                secondary: '@b/.+',
-              },
-              type: {
-                primary: ['t', '@a/.+'],
-              },
-            },
-          },
-        ],
-        output: dedent`
-          import a1 from '@a/a1'
-          import a2 from '@a/a2'
-          import type { T } from 't'
-
-          import b1 from '@b/b1'
-          import b2 from '@b/b2'
-          import b3 from '@b/b3'
-
-          import { c } from 'c'
-        `,
-        code: dedent`
-          import type { T } from 't'
-
-          import a1 from '@a/a1'
-          import a2 from '@a/a2'
-          import b1 from '@b/b1'
-          import b2 from '@b/b2'
-          import b3 from '@b/b3'
-          import { c } from 'c'
-        `,
-      })
-    })
-
-    it('supports custom groups for value imports only', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              value: {
-                primary: ['a'],
-              },
-            },
-            groups: ['type', 'primary'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              right: 'a',
-              left: 'a',
-            },
-            messageId: 'missedSpacingBetweenImports',
-          },
-        ],
-        output: dedent`
-          import type { A } from 'a'
-
-          import { a } from 'a'
-        `,
-        code: dedent`
-          import type { A } from 'a'
-          import { a } from 'a'
-        `,
-      })
-    })
-
     it('handles hash symbol in internal patterns correctly', async () => {
       await valid({
         code: dedent`
@@ -5348,83 +5072,6 @@ describe('sort-imports', () => {
       })
     })
 
-    it('handles custom spacing rules between consecutive groups', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'a',
-              { newlinesBetween: 'always' },
-              'b',
-              { newlinesBetween: 'always' },
-              'c',
-              { newlinesBetween: 'never' },
-              'd',
-              { newlinesBetween: 'ignore' },
-              'e',
-            ],
-            customGroups: {
-              value: {
-                a: 'a',
-                b: 'b',
-                c: 'c',
-                d: 'd',
-                e: 'e',
-              },
-            },
-            newlinesBetween: 'always',
-          },
-        ],
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'missedSpacingBetweenImports',
-          },
-          {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-          {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-        ],
-        output: dedent`
-          import { A } from 'a'
-
-          import { B } from 'b'
-
-          import { C } from 'c'
-          import { D } from 'd'
-
-
-          import { E } from 'e'
-        `,
-        code: dedent`
-          import { A } from 'a'
-          import { B } from 'b'
-
-
-          import { C } from 'c'
-
-          import { D } from 'd'
-
-
-          import { E } from 'e'
-        `,
-      })
-    })
-
     it.each([
       [
         'enforces spacing when global option is 2 and group option is never',
@@ -5455,13 +5102,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -5520,6 +5174,24 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                groupName: 'unusedGroup',
+                elementNamePattern: 'X',
+              },
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'never' },
@@ -5529,14 +5201,6 @@ describe('sort-imports', () => {
               { newlinesBetween: 'always' },
               'c',
             ],
-            customGroups: {
-              value: {
-                unusedGroup: 'X',
-                a: 'a',
-                b: 'b',
-                c: 'c',
-              },
-            },
             newlinesBetween: globalNewlinesBetween,
           },
         ],
@@ -5589,13 +5253,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -5616,13 +5287,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -8226,15 +7904,17 @@ describe('sort-imports', () => {
               ['parent', 'sibling', 'index'],
               'unknown',
             ],
-            customGroups: {
-              value: {
-                primary: ['t', '@a/.+'],
-                secondary: '@b/.+',
+            customGroups: [
+              {
+                elementNamePattern: ['^t$', '^@a/.+'],
+                groupName: 'primary',
               },
-              type: {
-                primary: ['t', '@a/.+'],
+              {
+                elementNamePattern: '^@b/.+',
+                groupName: 'secondary',
+                modifiers: ['value'],
               },
-            },
+            ],
           },
         ],
         errors: [
@@ -8280,40 +7960,6 @@ describe('sort-imports', () => {
           import b2 from '@b/b2'
           import b3 from '@b/b3'
           import { c } from 'c'
-        `,
-      })
-    })
-
-    it('supports custom groups for value imports only', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              value: {
-                primary: ['a'],
-              },
-            },
-            groups: ['type', 'primary'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              right: 'a',
-              left: 'a',
-            },
-            messageId: 'missedSpacingBetweenImports',
-          },
-        ],
-        output: dedent`
-          import type { A } from 'a'
-
-          import { a } from 'a'
-        `,
-        code: dedent`
-          import type { A } from 'a'
-          import { a } from 'a'
         `,
       })
     })
@@ -9083,83 +8729,6 @@ describe('sort-imports', () => {
       })
     })
 
-    it('handles custom spacing rules between consecutive groups', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'a',
-              { newlinesBetween: 'always' },
-              'b',
-              { newlinesBetween: 'always' },
-              'c',
-              { newlinesBetween: 'never' },
-              'd',
-              { newlinesBetween: 'ignore' },
-              'e',
-            ],
-            customGroups: {
-              value: {
-                a: 'a',
-                b: 'b',
-                c: 'c',
-                d: 'd',
-                e: 'e',
-              },
-            },
-            newlinesBetween: 'always',
-          },
-        ],
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'missedSpacingBetweenImports',
-          },
-          {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-          {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-        ],
-        output: dedent`
-          import { A } from 'a'
-
-          import { B } from 'b'
-
-          import { C } from 'c'
-          import { D } from 'd'
-
-
-          import { E } from 'e'
-        `,
-        code: dedent`
-          import { A } from 'a'
-          import { B } from 'b'
-
-
-          import { C } from 'c'
-
-          import { D } from 'd'
-
-
-          import { E } from 'e'
-        `,
-      })
-    })
-
     it.each([
       [
         'enforces spacing when global option is 2 and group option is never',
@@ -9190,13 +8759,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -9255,6 +8831,24 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                groupName: 'unusedGroup',
+                elementNamePattern: 'X',
+              },
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'never' },
@@ -9264,14 +8858,6 @@ describe('sort-imports', () => {
               { newlinesBetween: 'always' },
               'c',
             ],
-            customGroups: {
-              value: {
-                unusedGroup: 'X',
-                a: 'a',
-                b: 'b',
-                c: 'c',
-              },
-            },
             newlinesBetween: globalNewlinesBetween,
           },
         ],
@@ -9324,13 +8910,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -9351,13 +8944,20 @@ describe('sort-imports', () => {
           options: [
             {
               ...options,
-              customGroups: {
-                value: {
-                  unusedGroup: 'X',
-                  a: 'a',
-                  b: 'b',
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
                 },
-              },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
@@ -11458,83 +11058,6 @@ describe('sort-imports', () => {
         options: [options],
       })
     })
-
-    it('enforces group order regardless of sorting settings', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'b',
-              leftGroup: 'a',
-              right: 'ba',
-              left: 'aa',
-            },
-            messageId: 'unexpectedImportsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: {
-              value: {
-                a: '^a',
-                b: '^b',
-              },
-            },
-            groups: ['b', 'a'],
-          },
-        ],
-        output: dedent`
-          import { ba } from 'ba'
-          import { bb } from 'bb'
-
-          import { ab } from 'ab'
-          import { aa } from 'aa'
-        `,
-        code: dedent`
-          import { ab } from 'ab'
-          import { aa } from 'aa'
-          import { ba } from 'ba'
-          import { bb } from 'bb'
-        `,
-      })
-    })
-
-    it('enforces spacing rules between import groups', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              value: {
-                a: '^a',
-                b: '^b',
-              },
-            },
-            newlinesBetween: 'never',
-            groups: ['b', 'a'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-        ],
-        output: dedent`
-          import { b } from 'b'
-          import { a } from 'a'
-        `,
-        code: dedent`
-          import { b } from 'b'
-
-          import { a } from 'a'
-        `,
-      })
-    })
   })
 
   describe('misc', () => {
@@ -11568,11 +11091,13 @@ describe('sort-imports', () => {
               'type',
               'myCustomGroup1',
             ],
-            customGroups: {
-              type: {
-                myCustomGroup1: 'x',
+            customGroups: [
+              {
+                groupName: 'myCustomGroup1',
+                elementNamePattern: 'x',
+                modifiers: ['type'],
               },
-            },
+            ],
           },
         ],
         code: dedent`
@@ -11735,21 +11260,52 @@ describe('sort-imports', () => {
       await valid({
         options: [
           {
-            customGroups: {
-              value: {
-                validators: ['^~/validators/.+'],
-                composable: ['^~/composable/.+'],
-                components: ['^~/components/.+'],
-                services: ['^~/services/.+'],
-                widgets: ['^~/widgets/.+'],
-                stores: ['^~/stores/.+'],
-                logics: ['^~/logics/.+'],
-                assets: ['^~/assets/.+'],
-                utils: ['^~/utils/.+'],
-                pages: ['^~/pages/.+'],
-                ui: ['^~/ui/.+'],
+            customGroups: [
+              {
+                elementNamePattern: '^~/validators/.+',
+                groupName: 'validators',
               },
-            },
+              {
+                elementNamePattern: '^~/composable/.+',
+                groupName: 'composable',
+              },
+              {
+                elementNamePattern: '^~/components/.+',
+                groupName: 'components',
+              },
+              {
+                elementNamePattern: '^~/services/.+',
+                groupName: 'services',
+              },
+              {
+                elementNamePattern: '^~/widgets/.+',
+                groupName: 'widgets',
+              },
+              {
+                elementNamePattern: '^~/stores/.+',
+                groupName: 'stores',
+              },
+              {
+                elementNamePattern: '^~/logics/.+',
+                groupName: 'logics',
+              },
+              {
+                elementNamePattern: '^~/assets/.+',
+                groupName: 'assets',
+              },
+              {
+                elementNamePattern: '^~/utils/.+',
+                groupName: 'utils',
+              },
+              {
+                elementNamePattern: '^~/pages/.+',
+                groupName: 'pages',
+              },
+              {
+                elementNamePattern: '^~/ui/.+',
+                groupName: 'ui',
+              },
+            ],
             groups: [
               ['builtin', 'external'],
               'internal',
@@ -11797,6 +11353,78 @@ describe('sort-imports', () => {
       })
 
       await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: '^~/validators/.+',
+                groupName: 'validators',
+              },
+              {
+                elementNamePattern: '^~/composable/.+',
+                groupName: 'composable',
+              },
+              {
+                elementNamePattern: '^~/components/.+',
+                groupName: 'components',
+              },
+              {
+                elementNamePattern: '^~/services/.+',
+                groupName: 'services',
+              },
+              {
+                elementNamePattern: '^~/widgets/.+',
+                groupName: 'widgets',
+              },
+              {
+                elementNamePattern: '^~/stores/.+',
+                groupName: 'stores',
+              },
+              {
+                elementNamePattern: '^~/logics/.+',
+                groupName: 'logics',
+              },
+              {
+                elementNamePattern: '^~/assets/.+',
+                groupName: 'assets',
+              },
+              {
+                elementNamePattern: '^~/utils/.+',
+                groupName: 'utils',
+              },
+              {
+                elementNamePattern: '^~/pages/.+',
+                groupName: 'pages',
+              },
+              {
+                elementNamePattern: '^~/ui/.+',
+                groupName: 'ui',
+              },
+            ],
+            groups: [
+              ['builtin', 'external'],
+              'internal',
+              'stores',
+              'services',
+              'validators',
+              'utils',
+              'logics',
+              'composable',
+              'ui',
+              'components',
+              'pages',
+              'widgets',
+              'assets',
+              'parent',
+              'sibling',
+              'side-effect',
+              'index',
+              'style',
+              'unknown',
+            ],
+            type: 'line-length',
+          },
+        ],
         errors: [
           {
             data: {
@@ -11847,47 +11475,6 @@ describe('sort-imports', () => {
               left: '~/stores/cartStore.ts',
             },
             messageId: 'missedSpacingBetweenImports',
-          },
-        ],
-        options: [
-          {
-            customGroups: {
-              value: {
-                validators: ['~/validators/.+'],
-                composable: ['~/composable/.+'],
-                components: ['~/components/.+'],
-                services: ['~/services/.+'],
-                widgets: ['~/widgets/.+'],
-                stores: ['~/stores/.+'],
-                logics: ['~/logics/.+'],
-                assets: ['~/assets/.+'],
-                utils: ['~/utils/.+'],
-                pages: ['~/pages/.+'],
-                ui: ['~/ui/.+'],
-              },
-            },
-            groups: [
-              ['builtin', 'external'],
-              'internal',
-              'stores',
-              'services',
-              'validators',
-              'utils',
-              'logics',
-              'composable',
-              'ui',
-              'components',
-              'pages',
-              'widgets',
-              'assets',
-              'parent',
-              'sibling',
-              'side-effect',
-              'index',
-              'style',
-              'unknown',
-            ],
-            type: 'line-length',
           },
         ],
         output: dedent`
