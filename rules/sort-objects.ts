@@ -24,6 +24,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
@@ -33,7 +34,7 @@ import {
 } from './sort-objects/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getFirstNodeParentWithType } from './sort-objects/get-first-node-parent-with-type'
-import { getMatchingContextOptions } from '../utils/get-matching-context-options'
+import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -62,7 +63,7 @@ type MessageId =
   | 'unexpectedObjectsGroupOrder'
   | 'unexpectedObjectsOrder'
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   partitionByNewLine: false,
   partitionByComment: false,
@@ -95,36 +96,11 @@ export default createEslintRule<Options, MessageId>({
         return
       }
 
-      let objectParent = getObjectParent({
-        onlyFirstParent: true,
-        node: nodeObject,
+      let matchedContextOptions = computeMatchedContextOptions({
+        nodeObject,
         sourceCode,
+        context,
       })
-      let matchedContextOptions = getMatchingContextOptions({
-        nodeNames: nodeObject.properties
-          .filter(
-            property =>
-              property.type !== 'SpreadElement' &&
-              property.type !== 'RestElement',
-          )
-          .map(property => getNodeName({ sourceCode, property })),
-        contextOptions: context.options,
-      }).find(options => {
-        if (!options.useConfigurationIf?.callingFunctionNamePattern) {
-          return true
-        }
-        if (
-          objectParent?.type === 'VariableDeclarator' ||
-          !objectParent?.name
-        ) {
-          return false
-        }
-        return matches(
-          objectParent.name,
-          options.useConfigurationIf.callingFunctionNamePattern,
-        )
-      })
-
       let options = complete(matchedContextOptions, settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGeneratedGroupsConfiguration({
@@ -376,6 +352,7 @@ export default createEslintRule<Options, MessageId>({
         !options.destructuredObjects.groups
           ? ('sortNodes' as const)
           : ('sortNodesByGroups' as const)
+
       function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
       ): SortingNodeWithDependencies[] {
@@ -448,6 +425,7 @@ export default createEslintRule<Options, MessageId>({
           },
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {
+              declarationCommentMatchesPattern: regexJsonSchema,
               callingFunctionNamePattern: regexJsonSchema,
             },
           }),
@@ -498,13 +476,118 @@ export default createEslintRule<Options, MessageId>({
   name: 'sort-objects',
 })
 
-function getVariableParentName({
+function computeMatchedContextOptions({
+  sourceCode,
+  nodeObject,
+  context,
+}: {
+  nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  context: TSESLint.RuleContext<MessageId, Options>
+  sourceCode: TSESLint.SourceCode
+}): Options[number] | undefined {
+  let objectParent = getObjectParent({
+    onlyFirstParent: true,
+    node: nodeObject,
+    sourceCode,
+  })
+  let filteredContextOptions = filterOptionsByAllNamesMatch({
+    nodeNames: nodeObject.properties
+      .filter(
+        property =>
+          property.type !== 'SpreadElement' && property.type !== 'RestElement',
+      )
+      .map(property => getNodeName({ sourceCode, property })),
+    contextOptions: context.options,
+  })
+
+  let parentNodeForDeclarationComment = null
+  if (objectParent) {
+    parentNodeForDeclarationComment =
+      objectParent.type === 'VariableDeclarator'
+        ? objectParent.node.parent
+        : objectParent.node
+  }
+  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
+    parentNode: parentNodeForDeclarationComment,
+    contextOptions: filteredContextOptions,
+    sourceCode,
+  })
+
+  return filteredContextOptions.find(options => {
+    if (!options.useConfigurationIf) {
+      return true
+    }
+
+    if (options.useConfigurationIf.callingFunctionNamePattern) {
+      if (!objectParent) {
+        return false
+      }
+      if (objectParent.type === 'VariableDeclarator' || !objectParent.name) {
+        return false
+      }
+      return matches(
+        objectParent.name,
+        options.useConfigurationIf.callingFunctionNamePattern,
+      )
+    }
+
+    return true
+  })
+}
+
+function getObjectParent({
+  onlyFirstParent,
+  sourceCode,
+  node,
+}: {
+  node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  sourceCode: TSESLint.SourceCode
+  onlyFirstParent: boolean
+}):
+  | {
+      node: TSESTree.VariableDeclarator | TSESTree.Property
+      type: 'VariableDeclarator'
+      name: string | null
+    }
+  | {
+      node: TSESTree.CallExpression
+      type: 'CallExpression'
+      name: string | null
+    }
+  | null {
+  let variableParent = getVariableParent({ onlyFirstParent, node })
+  if (variableParent) {
+    return {
+      type: 'VariableDeclarator',
+      name: variableParent.name,
+      node: variableParent.node,
+    }
+  }
+  let callParent = getFirstNodeParentWithType({
+    allowedTypes: [TSESTree.AST_NODE_TYPES.CallExpression],
+    onlyFirstParent,
+    node,
+  })
+  if (callParent) {
+    return {
+      name: sourceCode.getText(callParent.callee),
+      type: 'CallExpression',
+      node: callParent,
+    }
+  }
+  return null
+}
+
+function getVariableParent({
   onlyFirstParent,
   node,
 }: {
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
   onlyFirstParent: boolean
-}): string | null {
+}): {
+  node: TSESTree.VariableDeclarator | TSESTree.Property
+  name: string | null
+} | null {
   let variableParent = getFirstNodeParentWithType({
     allowedTypes: [
       TSESTree.AST_NODE_TYPES.VariableDeclarator,
@@ -529,43 +612,10 @@ function getVariableParentName({
       throw new UnreachableCaseError(variableParent)
   }
 
-  return parentId.type === 'Identifier' ? parentId.name : null
-}
-
-function getObjectParent({
-  onlyFirstParent,
-  sourceCode,
-  node,
-}: {
-  node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
-  sourceCode: TSESLint.SourceCode
-  onlyFirstParent: boolean
-}): {
-  type: 'VariableDeclarator' | 'CallExpression'
-  name: string
-} | null {
-  let variableParentName = getVariableParentName({
-    onlyFirstParent,
-    node,
-  })
-  if (variableParentName) {
-    return {
-      type: 'VariableDeclarator',
-      name: variableParentName,
-    }
+  return {
+    name: parentId.type === 'Identifier' ? parentId.name : null,
+    node: variableParent,
   }
-  let callParentName = getCallExpressionParentName({
-    onlyFirstParent,
-    sourceCode,
-    node,
-  })
-  if (callParentName) {
-    return {
-      type: 'CallExpression',
-      name: callParentName,
-    }
-  }
-  return null
 }
 
 function isStyledComponents(styledNode: TSESTree.Node): boolean {
@@ -588,27 +638,6 @@ function isStyledComponents(styledNode: TSESTree.Node): boolean {
     (styledNode.callee.type === 'CallExpression' &&
       isStyledCallExpression(styledNode.callee.callee))
   )
-}
-
-function getCallExpressionParentName({
-  onlyFirstParent,
-  sourceCode,
-  node,
-}: {
-  node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
-  sourceCode: TSESLint.SourceCode
-  onlyFirstParent: boolean
-}): string | null {
-  let callParent = getFirstNodeParentWithType({
-    allowedTypes: [TSESTree.AST_NODE_TYPES.CallExpression],
-    onlyFirstParent,
-    node,
-  })
-  if (!callParent) {
-    return null
-  }
-
-  return sourceCode.getText(callParent.callee)
 }
 
 function getNodeName({

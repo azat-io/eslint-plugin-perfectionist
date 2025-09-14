@@ -27,7 +27,7 @@ type MessageId = 'unexpectedSwitchCaseOrder'
 
 type Options = [Partial<CommonOptions>]
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   type: 'alphabetical',
