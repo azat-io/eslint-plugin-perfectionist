@@ -4763,7 +4763,7 @@ describe('sort-enums', () => {
         `,
         options: [
           {
-            forceNumericSort: true,
+            sortByValue: 'ifNumericEnum',
           },
         ],
       })
@@ -4779,7 +4779,7 @@ describe('sort-enums', () => {
         `,
         options: [
           {
-            forceNumericSort: true,
+            sortByValue: 'ifNumericEnum',
           },
         ],
       })
@@ -4795,7 +4795,7 @@ describe('sort-enums', () => {
         `,
         options: [
           {
-            forceNumericSort: true,
+            sortByValue: 'ifNumericEnum',
           },
         ],
       })
@@ -4811,7 +4811,7 @@ describe('sort-enums', () => {
         `,
         options: [
           {
-            forceNumericSort: true,
+            sortByValue: 'ifNumericEnum',
           },
         ],
       })
@@ -4837,7 +4837,7 @@ describe('sort-enums', () => {
         `,
         options: [
           {
-            forceNumericSort: true,
+            sortByValue: 'ifNumericEnum',
           },
         ],
       })
@@ -4853,7 +4853,7 @@ describe('sort-enums', () => {
         `,
         options: [
           {
-            forceNumericSort: true,
+            sortByValue: 'ifNumericEnum',
           },
         ],
       })
@@ -4904,7 +4904,7 @@ describe('sort-enums', () => {
     )
 
     it.each(['alphabetical', 'line-length', 'natural'])(
-      'forces numeric sorting when forceNumericSort is enabled (type: %s)',
+      'forces numeric sorting when sortByValue is ifNumericEnum (type: %s)',
       async type => {
         await invalid({
           errors: [
@@ -4939,7 +4939,7 @@ describe('sort-enums', () => {
           `,
           options: [
             {
-              forceNumericSort: true,
+              sortByValue: 'ifNumericEnum',
               type,
             },
           ],
