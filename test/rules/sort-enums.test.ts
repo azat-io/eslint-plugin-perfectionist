@@ -1571,6 +1571,24 @@ describe('sort-enums', () => {
         })
       },
     )
+
+    it('does not sort by value for a numeric enum if sortByValue is false', async () => {
+      await valid({
+        code: dedent`
+          enum Enum {
+            A = 3,
+            B = 1,
+            C = 2,
+          }
+        `,
+        options: [
+          {
+            ...options,
+            sortByValue: false,
+          },
+        ],
+      })
+    })
   })
 
   describe('natural', () => {
@@ -5045,10 +5063,10 @@ describe('sort-enums', () => {
       await valid({
         code: dedent`
           enum NumberBase {
-            BASE_10 = 10,
-            BASE_16 = 16,
             BASE_2 = 2,
-            BASE_8 = 8
+            BASE_8 = 8,
+            BASE_10 = 10,
+            BASE_16 = 16
           }
         `,
         options: [{}],

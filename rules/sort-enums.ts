@@ -56,12 +56,12 @@ interface SortEnumsSortingNode
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
+  sortByValue: 'ifNumericEnum',
   partitionByComment: false,
   partitionByNewLine: false,
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
   type: 'alphabetical',
-  sortByValue: false,
   ignoreCase: true,
   locales: 'en-US',
   customGroups: [],
