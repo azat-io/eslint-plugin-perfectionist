@@ -28,6 +28,7 @@ import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { singleCustomGroupJsonSchema } from './sort-enums/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -59,7 +60,6 @@ let defaultOptions: Required<Options[number]> = {
   partitionByNewLine: false,
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
-  forceNumericSort: false,
   type: 'alphabetical',
   sortByValue: false,
   ignoreCase: true,
@@ -260,14 +260,17 @@ export default createEslintRule<Options, MessageId>({
       {
         properties: {
           ...commonJsonSchemas,
-          forceNumericSort: {
-            description:
-              'Will always sort numeric enums by their value regardless of the sort type specified.',
-            type: 'boolean',
-          },
           sortByValue: {
-            description: 'Compare enum values instead of names.',
-            type: 'boolean',
+            oneOf: [
+              {
+                type: 'boolean',
+              },
+              {
+                enum: ['ifNumericEnum'],
+                type: 'string',
+              },
+            ],
+            description: 'Specifies whether to sort enums by value.',
           },
           customGroups: buildCustomGroupsArrayJsonSchema({
             singleCustomGroupJsonSchema,
@@ -339,6 +342,35 @@ function getBinaryExpressionNumberValue(
   }
 }
 
+function computeNodeValueGetter({
+  isNumericEnum,
+  options,
+}: {
+  options: Pick<Required<Options[number]>, 'sortByValue'>
+  isNumericEnum: boolean
+}): NodeValueGetterFunction<SortEnumsSortingNode> | null {
+  switch (options.sortByValue) {
+    case 'ifNumericEnum':
+      if (!isNumericEnum) {
+        return null
+      }
+      break
+    case false:
+      return null
+    case true:
+      break
+    /* v8 ignore next 2 */
+    default:
+      throw new UnreachableCaseError(options.sortByValue)
+  }
+  return sortingNode => {
+    if (isNumericEnum) {
+      return sortingNode.numericValue!.toString()
+    }
+    return sortingNode.value ?? ''
+  }
+}
+
 function getExpressionNumberValue(expression: TSESTree.Node): number | null {
   switch (expression.type) {
     case 'BinaryExpression':
@@ -357,23 +389,6 @@ function getExpressionNumberValue(expression: TSESTree.Node): number | null {
     default:
       return null
   }
-}
-
-function computeNodeValueGetter({
-  isNumericEnum,
-  options,
-}: {
-  options: Pick<Required<Options[number]>, 'forceNumericSort' | 'sortByValue'>
-  isNumericEnum: boolean
-}): NodeValueGetterFunction<SortEnumsSortingNode> | null {
-  return options.sortByValue || (isNumericEnum && options.forceNumericSort)
-    ? sortingNode => {
-        if (isNumericEnum) {
-          return sortingNode.numericValue!.toString()
-        }
-        return sortingNode.value ?? ''
-      }
-    : null
 }
 
 function getUnaryExpressionNumberValue(
@@ -401,17 +416,18 @@ function computeOptionType({
   isNumericEnum,
   options,
 }: {
-  options: Pick<
-    Required<Options[number]>,
-    'forceNumericSort' | 'sortByValue' | 'type'
-  >
+  options: Pick<Required<Options[number]>, 'sortByValue' | 'type'>
   isNumericEnum: boolean
 }): TypeOption {
   /**
    * If the enum is numeric, and we sort by value, always use the `natural` sort
    * type, which will correctly sort them.
    */
-  return isNumericEnum && (options.forceNumericSort || options.sortByValue)
-    ? 'natural'
-    : options.type
+  if (!isNumericEnum) {
+    return options.type
+  }
+  if (!options.sortByValue) {
+    return options.type
+  }
+  return 'natural'
 }
