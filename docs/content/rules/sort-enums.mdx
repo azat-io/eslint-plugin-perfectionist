@@ -176,17 +176,9 @@ Controls whether sorting should be done using the enum's values or names.
 
 - `true` — Use enum values.
 - `false` — Use enum names.
+- `ifNumericEnum` — Use enum values only if the enum is numeric.
 
 When this setting is `true`, numeric enums will have their values sorted numerically regardless of the `type` setting.
-
-### forceNumericSort
-
-<sub>default: `false`</sub>
-
-Controls whether numeric enums should always be sorted numerically, regardless of the `type` and `sortByValue` settings.
-
-- `true` — Use enum values.
-- `false` — Use enum names.
 
 ### partitionByComment
 
@@ -361,7 +353,6 @@ Custom groups have a higher priority than any predefined group.
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   sortByValue: false,
-                  forceNumericSort: false,
                   groups: [],
                   customGroups: [],
                 },
@@ -393,7 +384,6 @@ Custom groups have a higher priority than any predefined group.
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 sortByValue: false,
-                forceNumericSort: false,
                 groups: [],
                 customGroups: [],
               },
