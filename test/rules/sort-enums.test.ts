@@ -4841,6 +4841,22 @@ describe('sort-enums', () => {
           },
         ],
       })
+
+      await valid({
+        code: dedent`
+          enum Enum {
+              A = 1,
+              B = A,
+              C = -A,
+              D = 2,
+            }
+        `,
+        options: [
+          {
+            forceNumericSort: true,
+          },
+        ],
+      })
     })
 
     it.each(['alphabetical', 'line-length', 'natural'])(
