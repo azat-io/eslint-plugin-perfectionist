@@ -38,6 +38,14 @@ export type Options = Partial<
     newlinesBetween: NewlinesBetweenOption
 
     /**
+     * Whether to sort enum members by their values instead of names. When true,
+     * compares enum values; when false, compares enum member names.
+     *
+     * @default false
+     */
+    sortByValue: 'ifNumericEnum' | boolean
+
+    /**
      * Defines the order and grouping of enum members. Members are sorted within
      * their groups and groups are ordered as specified.
      */
@@ -48,22 +56,6 @@ export type Options = Partial<
      * separated by empty lines are sorted independently.
      */
     partitionByNewLine: boolean
-
-    /**
-     * Forces numeric enums to be sorted by their value. When true, numeric
-     * enums are always sorted by value regardless of the main sort type.
-     *
-     * @default false
-     */
-    forceNumericSort: boolean
-
-    /**
-     * Whether to sort enum members by their values instead of names. When true,
-     * compares enum values; when false, compares enum member names.
-     *
-     * @default false
-     */
-    sortByValue: boolean
   } & CommonOptions
 >[]
 
