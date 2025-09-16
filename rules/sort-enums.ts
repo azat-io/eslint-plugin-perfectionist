@@ -202,9 +202,7 @@ export default createEslintRule<Options, MessageId>({
       let nodes = formattedMembers.flat()
 
       let isNumericEnum = nodes.every(
-        sortingNode =>
-          sortingNode.numericValue !== null &&
-          !Number.isNaN(sortingNode.numericValue),
+        sortingNode => sortingNode.numericValue !== null,
       )
 
       let nodeValueGetter = computeNodeValueGetter({
@@ -306,9 +304,12 @@ function getBinaryExpressionNumberValue(
   leftExpression: TSESTree.PrivateIdentifier | TSESTree.Expression,
   rightExpression: TSESTree.Expression,
   operator: string,
-): number {
+): number | null {
   let left = getExpressionNumberValue(leftExpression)
   let right = getExpressionNumberValue(rightExpression)
+  if (left === null || right === null) {
+    return null
+  }
   switch (operator) {
     case '**':
       return left ** right
@@ -334,11 +335,11 @@ function getBinaryExpressionNumberValue(
       return left ^ right
     /* v8 ignore next 2 - Unsure if we can reach it */
     default:
-      return Number.NaN
+      return null
   }
 }
 
-function getExpressionNumberValue(expression: TSESTree.Node): number {
+function getExpressionNumberValue(expression: TSESTree.Node): number | null {
   switch (expression.type) {
     case 'BinaryExpression':
       return getBinaryExpressionNumberValue(
@@ -352,11 +353,9 @@ function getExpressionNumberValue(expression: TSESTree.Node): number {
         expression.operator,
       )
     case 'Literal':
-      return typeof expression.value === 'number'
-        ? expression.value
-        : Number.NaN
+      return typeof expression.value === 'number' ? expression.value : null
     default:
-      return Number.NaN
+      return null
   }
 }
 
@@ -377,6 +376,27 @@ function computeNodeValueGetter({
     : null
 }
 
+function getUnaryExpressionNumberValue(
+  argumentExpression: TSESTree.Expression,
+  operator: string,
+): number | null {
+  let argument = getExpressionNumberValue(argumentExpression)
+  if (argument === null) {
+    return null
+  }
+  switch (operator) {
+    case '+':
+      return argument
+    case '-':
+      return -argument
+    case '~':
+      return ~argument
+    /* v8 ignore next 2 - Unsure if we can reach it */
+    default:
+      return null
+  }
+}
+
 function computeOptionType({
   isNumericEnum,
   options,
@@ -394,22 +414,4 @@ function computeOptionType({
   return isNumericEnum && (options.forceNumericSort || options.sortByValue)
     ? 'natural'
     : options.type
-}
-
-function getUnaryExpressionNumberValue(
-  argumentExpression: TSESTree.Expression,
-  operator: string,
-): number {
-  let argument = getExpressionNumberValue(argumentExpression)
-  switch (operator) {
-    case '+':
-      return argument
-    case '-':
-      return -argument
-    case '~':
-      return ~argument
-    /* v8 ignore next 2 - Unsure if we can reach it */
-    default:
-      return Number.NaN
-  }
 }
