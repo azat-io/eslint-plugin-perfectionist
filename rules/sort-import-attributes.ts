@@ -1,4 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { Options } from './sort-import-attributes/types'
 import type { SortingNode } from '../types/sorting-node'
@@ -17,6 +18,7 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -72,6 +74,7 @@ export default createEslintRule<Options, MessageId>({
         modifiers: [],
         options,
       })
+      validateNewlinesAndPartitionConfiguration(options)
 
       let eslintDisabledLines = getEslintDisabledLines({
         ruleName: id,
@@ -80,7 +83,7 @@ export default createEslintRule<Options, MessageId>({
 
       let formattedMembers: SortingNode<TSESTree.ImportAttribute>[][] = [[]]
       for (let attribute of attributes) {
-        let name = getAttributeName(attribute)
+        let name = getAttributeName(attribute, sourceCode)
 
         let group = computeGroup({
           customGroupMatcher: customGroup =>
@@ -197,10 +200,13 @@ export default createEslintRule<Options, MessageId>({
   name: 'sort-import-attributes',
 })
 
-function getAttributeName(attribute: TSESTree.ImportAttribute): string {
+function getAttributeName(
+  attribute: TSESTree.ImportAttribute,
+  sourceCode: TSESLint.SourceCode,
+): string {
   let { key } = attribute
   if (key.type === 'Identifier') {
     return key.name
   }
-  return key.value!.toString()
+  return key.value?.toString() ?? sourceCode.getText(attribute)
 }

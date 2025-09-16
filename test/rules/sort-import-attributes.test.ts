@@ -1,3 +1,5 @@
+import type { TSESTree } from '@typescript-eslint/types'
+
 import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
@@ -950,6 +952,69 @@ describe('sort-import-attributes', () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
       ).resolves.not.toThrow()
+    })
+
+    it('uses the attribute source when a literal key lacks value', async () => {
+      function removeLiteralValue(program: TSESTree.Program): void {
+        for (let statement of program.body) {
+          if (statement.type !== 'ImportDeclaration') {
+            continue
+          }
+
+          for (let attribute of statement.attributes) {
+            if (
+              attribute.key.type === 'Literal' &&
+              attribute.key.value === 'a'
+            ) {
+              ;(attribute.key as { value?: unknown }).value = undefined
+            }
+          }
+        }
+      }
+
+      let parserWithMissingLiteralValue = {
+        ...typescriptParser,
+        parseForESLint(
+          code: string,
+          parserOptions?: Parameters<typeof typescriptParser.parseForESLint>[1],
+        ) {
+          let result = typescriptParser.parseForESLint(code, parserOptions)
+          removeLiteralValue(result.ast)
+          return result
+        },
+        parse(
+          code: string,
+          parserOptions?: Parameters<typeof typescriptParser.parse>[1],
+        ) {
+          let program = typescriptParser.parse(code, parserOptions)
+          removeLiteralValue(program)
+          return program
+        },
+      }
+
+      let { invalid: invalidWithMissingLiteralValue } = createRuleTester({
+        parser: parserWithMissingLiteralValue,
+        name: 'sort-import-attributes',
+        rule,
+      })
+
+      let alphabetical = { type: 'alphabetical', order: 'asc' } as const
+
+      await invalidWithMissingLiteralValue({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: "'a': '1'", left: 'b' },
+          },
+        ],
+        output: dedent`
+          import data from 'module' with { 'a': '1', 'b': '2' }
+        `,
+        code: dedent`
+          import data from 'module' with { 'b': '2', 'a': '1' }
+        `,
+        options: [alphabetical],
+      })
     })
 
     it('uses alphabetical ascending order by default', async () => {
