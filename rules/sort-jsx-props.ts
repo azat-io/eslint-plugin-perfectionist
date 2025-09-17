@@ -91,10 +91,6 @@ export default createEslintRule<Options, MessageId>({
       })
       validateNewlinesAndPartitionConfiguration(options)
 
-      if (!isSortable(node.openingElement.attributes)) {
-        return
-      }
-
       let eslintDisabledLines = getEslintDisabledLines({
         ruleName: id,
         sourceCode,
