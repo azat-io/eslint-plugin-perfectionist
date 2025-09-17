@@ -218,24 +218,6 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
-### [DEPRECATED] ignorePattern
-
-<sub>
-  type:
-  ```
-  {
-    allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
-  }
-  ```
-</sub>
-<sub>default: `[]`</sub>
-
-Use the [useConfigurationIf.tagMatchesPattern](#useconfigurationif) option alongside [type: unsorted](#type) instead.
-
-Specifies names or patterns for JSX elements that should be ignored by this rule. This can be useful if you have specific components that you do not want to sort.
-
-You can specify their names or a regexp pattern to ignore, for example: `'^Table.+'` to ignore all JSX elements whose names begin with the word Table.
-
 ### partitionByNewLine
 
 <sub>default: `false`</sub>
@@ -515,7 +497,6 @@ Custom groups have a higher priority than any predefined group.
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
-                  ignorePattern: [],
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   useConfigurationIf: {},
@@ -546,7 +527,6 @@ Custom groups have a higher priority than any predefined group.
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
-                ignorePattern: [],
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 useConfigurationIf: {},
