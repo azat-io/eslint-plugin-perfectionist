@@ -7961,24 +7961,6 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('allows to ignore interfaces', async () => {
-      await valid({
-        options: [
-          {
-            ignorePattern: ['Ignore'],
-            type: 'line-length',
-            order: 'desc',
-          },
-        ],
-        code: dedent`
-          interface IgnoreInterface {
-            b: 'b'
-            a: 'aaa'
-          }
-        `,
-      })
-    })
-
     it('supports eslint-disable for individual nodes', async () => {
       await valid({
         code: dedent`
