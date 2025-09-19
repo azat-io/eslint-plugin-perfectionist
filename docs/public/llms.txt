@@ -14,39 +14,40 @@ Key features:
 
 ## Getting Started
 
-- [Introduction](https://perfectionist.dev/guide/introduction.html.md): Learn about ESLint Plugin Perfectionist and how it can help maintain a consistent and high-quality codebase
-- [Getting Started](https://perfectionist.dev/guide/getting-started.html.md): Installation and basic configuration guide
-- [Integrations](https://perfectionist.dev/guide/integrations.html.md): Set up automatic formatting on save in popular code editors
+- [Introduction](https://perfectionist.dev/guide/introduction): Learn about ESLint Plugin Perfectionist and how it can help maintain a consistent and high-quality codebase
+- [Getting Started](https://perfectionist.dev/guide/getting-started): Installation and basic configuration guide
+- [Integrations](https://perfectionist.dev/guide/integrations): Set up automatic formatting on save in popular code editors
 
 ## Configurations
 
-- [Recommended Alphabetical](https://perfectionist.dev/configs/recommended-alphabetical.html.md): All plugin rules with alphabetical sorting in ascending order
-- [Recommended Natural](https://perfectionist.dev/configs/recommended-natural.html.md): Natural sorting that handles numbers intuitively (e.g., item-1, item-2, item-10)
-- [Recommended Line Length](https://perfectionist.dev/configs/recommended-line-length.html.md): Sort by code line length (shorter lines first)
-- [Recommended Custom](https://perfectionist.dev/configs/recommended-custom.html.md): Define your own custom alphabet for sorting
+- [Recommended Alphabetical](https://perfectionist.dev/configs/recommended-alphabetical): All plugin rules with alphabetical sorting in ascending order
+- [Recommended Natural](https://perfectionist.dev/configs/recommended-natural): Natural sorting that handles numbers intuitively (e.g., item-1, item-2, item-10)
+- [Recommended Line Length](https://perfectionist.dev/configs/recommended-line-length): Sort by code line length (shorter lines first)
+- [Recommended Custom](https://perfectionist.dev/configs/recommended-custom): Define your own custom alphabet for sorting
 
 ## Rules
 
-- [sort-array-includes](https://perfectionist.dev/rules/sort-array-includes.html.md): Sort array elements in `includes` method
-- [sort-classes](https://perfectionist.dev/rules/sort-classes.html.md): Sort class members and properties
-- [sort-decorators](https://perfectionist.dev/rules/sort-decorators.html.md): Sort decorators on classes, methods, and properties
-- [sort-enums](https://perfectionist.dev/rules/sort-enums.html.md): Sort TypeScript enum members
-- [sort-exports](https://perfectionist.dev/rules/sort-exports.html.md): Sort export statements
-- [sort-heritage-clauses](https://perfectionist.dev/rules/sort-heritage-clauses.html.md): Sort implements/extends clauses
-- [sort-imports](https://perfectionist.dev/rules/sort-imports.html.md): Sort import declarations
-- [sort-interfaces](https://perfectionist.dev/rules/sort-interfaces.html.md): Sort TypeScript interface properties
-- [sort-intersection-types](https://perfectionist.dev/rules/sort-intersection-types.html.md): Sort TypeScript intersection types
-- [sort-jsx-props](https://perfectionist.dev/rules/sort-jsx-props.html.md): Sort JSX/TSX component props
-- [sort-maps](https://perfectionist.dev/rules/sort-maps.html.md): Sort Map elements
-- [sort-modules](https://perfectionist.dev/rules/sort-modules.html.md): Sort module members
-- [sort-named-exports](https://perfectionist.dev/rules/sort-named-exports.html.md): Sort named exports
-- [sort-named-imports](https://perfectionist.dev/rules/sort-named-imports.html.md): Sort named imports
-- [sort-object-types](https://perfectionist.dev/rules/sort-object-types.html.md): Sort TypeScript object type properties
-- [sort-objects](https://perfectionist.dev/rules/sort-objects.html.md): Sort object properties
-- [sort-sets](https://perfectionist.dev/rules/sort-sets.html.md): Sort Set elements
-- [sort-switch-case](https://perfectionist.dev/rules/sort-switch-case.html.md): Sort switch statement cases
-- [sort-union-types](https://perfectionist.dev/rules/sort-union-types.html.md): Sort TypeScript union types
-- [sort-variable-declarations](https://perfectionist.dev/rules/sort-variable-declarations.html.md): Sort variable declarations
+- [sort-array-includes](https://perfectionist.dev/rules/sort-array-includes): Sort array elements in `includes` method
+- [sort-classes](https://perfectionist.dev/rules/sort-classes): Sort class members and properties
+- [sort-decorators](https://perfectionist.dev/rules/sort-decorators): Sort decorators on classes, methods, and properties
+- [sort-enums](https://perfectionist.dev/rules/sort-enums): Sort TypeScript enum members
+- [sort-exports](https://perfectionist.dev/rules/sort-exports): Sort export statements
+- [sort-heritage-clauses](https://perfectionist.dev/rules/sort-heritage-clauses): Sort implements/extends clauses
+- [sort-import-attributes](https://perfectionist.dev/rules/sort-import-attributes): Sort import attributes
+- [sort-imports](https://perfectionist.dev/rules/sort-imports): Sort import declarations
+- [sort-interfaces](https://perfectionist.dev/rules/sort-interfaces): Sort TypeScript interface properties
+- [sort-intersection-types](https://perfectionist.dev/rules/sort-intersection-types): Sort TypeScript intersection types
+- [sort-jsx-props](https://perfectionist.dev/rules/sort-jsx-props): Sort JSX/TSX component props
+- [sort-maps](https://perfectionist.dev/rules/sort-maps): Sort Map elements
+- [sort-modules](https://perfectionist.dev/rules/sort-modules): Sort module members
+- [sort-named-exports](https://perfectionist.dev/rules/sort-named-exports): Sort named exports
+- [sort-named-imports](https://perfectionist.dev/rules/sort-named-imports): Sort named imports
+- [sort-object-types](https://perfectionist.dev/rules/sort-object-types): Sort TypeScript object type properties
+- [sort-objects](https://perfectionist.dev/rules/sort-objects): Sort object properties
+- [sort-sets](https://perfectionist.dev/rules/sort-sets): Sort Set elements
+- [sort-switch-case](https://perfectionist.dev/rules/sort-switch-case): Sort switch statement cases
+- [sort-union-types](https://perfectionist.dev/rules/sort-union-types): Sort TypeScript union types
+- [sort-variable-declarations](https://perfectionist.dev/rules/sort-variable-declarations): Sort variable declarations
 
 ## Optional
 
