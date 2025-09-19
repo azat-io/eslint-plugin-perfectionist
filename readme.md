@@ -179,6 +179,7 @@ module.exports = {
 | [sort-classes](https://perfectionist.dev/rules/sort-classes)                             | Enforce sorted classes                        | 🔧  |
 | [sort-decorators](https://perfectionist.dev/rules/sort-decorators)                       | Enforce sorted decorators                     | 🔧  |
 | [sort-enums](https://perfectionist.dev/rules/sort-enums)                                 | Enforce sorted TypeScript enums               | 🔧  |
+| [sort-export-attributes](https://perfectionist.dev/rules/sort-export-attributes)         | Enforce sorted export attributes              | 🔧  |
 | [sort-exports](https://perfectionist.dev/rules/sort-exports)                             | Enforce sorted exports                        | 🔧  |
 | [sort-heritage-clauses](https://perfectionist.dev/rules/sort-heritage-clauses)           | Enforce sorted `implements`/`extends` clauses | 🔧  |
 | [sort-import-attributes](https://perfectionist.dev/rules/sort-import-attributes)         | Enforce sorted import attributes              | 🔧  |
