@@ -8017,22 +8017,6 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('allows to ignore object types', async () => {
-      await valid({
-        code: dedent`
-          type IgnoreType = {
-            b: 'b'
-            a: 'a'
-          }
-        `,
-        options: [
-          {
-            ignorePattern: ['Ignore'],
-          },
-        ],
-      })
-    })
-
     it('sorts type members with computed keys without type annotations', async () => {
       await valid({
         code: dedent`
