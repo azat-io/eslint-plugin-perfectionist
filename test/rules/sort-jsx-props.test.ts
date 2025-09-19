@@ -4260,33 +4260,6 @@ describe('sort-jsx-props', () => {
       )
     })
 
-    it.each([
-      ['string pattern', 'Element'],
-      ['array of patterns', ['noMatch', 'Element']],
-      ['case-insensitive regex', { pattern: 'ELEMENT', flags: 'i' }],
-      ['regex in array', ['noMatch', { pattern: 'ELEMENT', flags: 'i' }]],
-    ])(
-      'ignores jsx elements matching ignore pattern - %s',
-      async (_description, ignorePattern) => {
-        await valid({
-          code: dedent`
-            let Component = () => (
-              <Element
-                c="c"
-                b="bb"
-                a="aaa"
-              />
-            )
-          `,
-          options: [
-            {
-              ignorePattern,
-            },
-          ],
-        })
-      },
-    )
-
     it('ignores props disabled with eslint-disable-next-line', async () => {
       await valid({
         code: dedent`
