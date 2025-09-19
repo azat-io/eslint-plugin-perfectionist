@@ -57,7 +57,7 @@ export function sortNodes<T extends SortingNode>({
     }
   }
 
-  let sortedNodes = [...nonIgnoredNodes].sort((a, b) =>
+  let sortedNodes = [...nonIgnoredNodes].toSorted((a, b) =>
     compare({
       fallbackSortNodeValueGetter,
       nodeValueGetter,
