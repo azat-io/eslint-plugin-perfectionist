@@ -72,7 +72,6 @@ let defaultOptions: Required<Options[number]> = {
   specialCharacters: 'keep',
   useConfigurationIf: {},
   type: 'alphabetical',
-  ignorePattern: [],
   ignoreCase: true,
   customGroups: [],
   locales: 'en-US',
@@ -103,7 +102,6 @@ export let jsonSchema: JSONSchema4 = {
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,
-      ignorePattern: regexJsonSchema,
       sortBy: sortByJsonSchema,
       groups: groupsJsonSchema,
     },
@@ -190,10 +188,6 @@ export function sortObjectTypeElements<MessageIds extends string>({
     options,
   })
   validateNewlinesAndPartitionConfiguration(options)
-
-  if (parentNode && matches(parentNode.id.name, options.ignorePattern)) {
-    return
-  }
 
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,

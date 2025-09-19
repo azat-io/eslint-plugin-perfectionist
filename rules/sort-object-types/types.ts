@@ -94,12 +94,6 @@ export type Options = Partial<
     partitionByNewLine: boolean
 
     /**
-     * @deprecated Will be removed in v5.0.0. Use
-     *   {@link useConfigurationIf.declarationMatchesPattern} instead.
-     */
-    ignorePattern: RegexOption
-
-    /**
      * Determines what to sort by when comparing object type members.
      *
      * - 'name': Sort by the member's property/method name
