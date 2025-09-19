@@ -1,5 +1,4 @@
 import type {
-  DeprecatedCustomGroupsOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
   GroupsOptions,
@@ -18,16 +17,16 @@ export interface GetNewlinesBetweenOptionParameters {
   /** Configuration options for newlines and groups. */
   options: {
     /**
-     * Optional custom groups configuration with possible newlinesInside
-     * settings.
-     */
-    customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
-
-    /**
      * Global newlines configuration: 'always', 'never', 'ignore', or numeric
      * value.
      */
     newlinesBetween: NewlinesBetweenOption
+
+    /**
+     * Optional custom groups configuration with possible newlinesInside
+     * settings.
+     */
+    customGroups: CustomGroupsOption
 
     /** Groups configuration that may include inline newlines settings. */
     groups: GroupsOptions<string>
@@ -70,7 +69,6 @@ export function getNewlinesBetweenOption({
 
   /* NewlinesInside check. */
   if (
-    Array.isArray(options.customGroups) &&
     typeof nodeGroup === 'string' &&
     typeof nextNodeGroup === 'string' &&
     nodeGroup === nextNodeGroup

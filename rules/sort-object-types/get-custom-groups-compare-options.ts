@@ -6,7 +6,7 @@ import { buildNodeValueGetter } from './build-node-value-getter'
 
 /** Subset of options needed for determining compare behavior for object types. */
 type InputOptions = Pick<
-  Required<Options[0]>,
+  Required<Options[number]>,
   'fallbackSort' | 'customGroups' | 'sortBy' | 'groups' | 'order' | 'type'
 >
 
@@ -29,7 +29,7 @@ export function getCustomGroupsCompareOptions(
   groupIndex: number,
 ): {
   options: Pick<
-    Required<Options[0]>,
+    Required<Options[number]>,
     'fallbackSort' | 'sortBy' | 'order' | 'type'
   >
   fallbackSortNodeValueGetter?: NodeValueGetterFunction<SortObjectTypesSortingNode> | null
@@ -42,18 +42,16 @@ export function getCustomGroupsCompareOptions(
 
   let { fallbackSort, customGroups, sortBy, groups } = options
   let fallbackSortBy = fallbackSort.sortBy
-  if (Array.isArray(customGroups)) {
-    let group = groups[groupIndex]
-    let customGroup =
-      typeof group === 'string'
-        ? customGroups.find(currentGroup => group === currentGroup.groupName)
-        : null
+  let group = groups[groupIndex]
+  let customGroup =
+    typeof group === 'string'
+      ? customGroups.find(currentGroup => group === currentGroup.groupName)
+      : null
 
-    if (customGroup) {
-      fallbackSortBy = customGroup.fallbackSort?.sortBy ?? fallbackSortBy
-      if ('sortBy' in customGroup && customGroup.sortBy) {
-        ;({ sortBy } = customGroup)
-      }
+  if (customGroup) {
+    fallbackSortBy = customGroup.fallbackSort?.sortBy ?? fallbackSortBy
+    if ('sortBy' in customGroup && customGroup.sortBy) {
+      ;({ sortBy } = customGroup)
     }
   }
 

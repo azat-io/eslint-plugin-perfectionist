@@ -165,41 +165,6 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it('places spread elements after literals with literals-first option', async () => {
-      let literalsFirstOptions = [
-        {
-          ...options,
-          groupKind: 'literals-first',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...other',
-              right: 'c',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        code: dedent`
-          ['a', 'b', ...other, 'c'].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-    })
-
     it('sorts elements in Array constructor calls', async () => {
       await valid({
         code: dedent`
@@ -240,56 +205,6 @@ describe('sort-array-includes', () => {
           ).includes(value)
         `,
         options: [options],
-      })
-    })
-
-    it('sorts mixed literals and spread elements together with mixed grouping', async () => {
-      let mixedOptions = [
-        {
-          ...options,
-          groupKind: 'mixed',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '...d',
-              left: 'bbb',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        code: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
       })
     })
 
@@ -348,8 +263,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -357,17 +272,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -396,8 +315,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -550,7 +469,7 @@ describe('sort-array-includes', () => {
         {
           ...options,
           partitionByComment: '^Part:',
-          groupKind: 'spreads-first',
+          groups: ['spread'],
         },
       ]
 
@@ -558,17 +477,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -927,13 +850,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: ['spread', 'literal'],
-            groupKind: 'mixed',
-          },
-        ],
         output: dedent`
           [
             ...b,
@@ -948,6 +864,12 @@ describe('sort-array-includes', () => {
             'a'
           ].includes(value)
         `,
+        options: [
+          {
+            ...options,
+            groups: ['spread', 'literal'],
+          },
+        ],
       })
     })
 
@@ -961,7 +883,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -1011,7 +932,6 @@ describe('sort-array-includes', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -1059,7 +979,6 @@ describe('sort-array-includes', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -1187,7 +1106,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -2043,41 +1961,6 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it('places spread elements after literals with literals-first option', async () => {
-      let literalsFirstOptions = [
-        {
-          ...options,
-          groupKind: 'literals-first',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...other',
-              right: 'c',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        code: dedent`
-          ['a', 'b', ...other, 'c'].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-    })
-
     it('sorts elements in Array constructor calls', async () => {
       await valid({
         code: dedent`
@@ -2118,56 +2001,6 @@ describe('sort-array-includes', () => {
           ).includes(value)
         `,
         options: [options],
-      })
-    })
-
-    it('sorts mixed literals and spread elements together with mixed grouping', async () => {
-      let mixedOptions = [
-        {
-          ...options,
-          groupKind: 'mixed',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '...d',
-              left: 'bbb',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        code: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
       })
     })
 
@@ -2226,8 +2059,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -2235,17 +2068,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -2274,8 +2111,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -2428,7 +2265,7 @@ describe('sort-array-includes', () => {
         {
           ...options,
           partitionByComment: '^Part:',
-          groupKind: 'spreads-first',
+          groups: ['spread'],
         },
       ]
 
@@ -2436,17 +2273,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -2805,13 +2646,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: ['spread', 'literal'],
-            groupKind: 'mixed',
-          },
-        ],
         output: dedent`
           [
             ...b,
@@ -2826,6 +2660,12 @@ describe('sort-array-includes', () => {
             'a'
           ].includes(value)
         `,
+        options: [
+          {
+            ...options,
+            groups: ['spread', 'literal'],
+          },
+        ],
       })
     })
 
@@ -2839,7 +2679,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -2889,7 +2728,6 @@ describe('sort-array-includes', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -2937,7 +2775,6 @@ describe('sort-array-includes', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -3065,7 +2902,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -3902,41 +3738,6 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it('places spread elements after literals with literals-first option', async () => {
-      let literalsFirstOptions = [
-        {
-          ...options,
-          groupKind: 'literals-first',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...other',
-              right: 'c',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        code: dedent`
-          ['a', 'b', ...other, 'c'].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-    })
-
     it('sorts elements in Array constructor calls', async () => {
       await valid({
         code: dedent`
@@ -3977,56 +3778,6 @@ describe('sort-array-includes', () => {
           ).includes(value)
         `,
         options: [options],
-      })
-    })
-
-    it('sorts mixed literals and spread elements together with mixed grouping', async () => {
-      let mixedOptions = [
-        {
-          ...options,
-          groupKind: 'mixed',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...d',
-              right: 'bbb',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ).includes(value)
-        `,
-        code: dedent`
-          new Array(
-            'aaaa',
-            ...d,
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
       })
     })
 
@@ -4085,8 +3836,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -4094,17 +3845,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -4133,8 +3888,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -4287,7 +4042,7 @@ describe('sort-array-includes', () => {
         {
           ...options,
           partitionByComment: '^Part:',
-          groupKind: 'spreads-first',
+          groups: ['spread'],
         },
       ]
 
@@ -4295,17 +4050,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -4664,13 +4423,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: ['spread', 'literal'],
-            groupKind: 'mixed',
-          },
-        ],
         output: dedent`
           [
             ...b,
@@ -4685,6 +4437,12 @@ describe('sort-array-includes', () => {
             'aa'
           ].includes(value)
         `,
+        options: [
+          {
+            ...options,
+            groups: ['spread', 'literal'],
+          },
+        ],
       })
     })
 
@@ -4698,7 +4456,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -4748,7 +4505,6 @@ describe('sort-array-includes', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -4796,7 +4552,6 @@ describe('sort-array-includes', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -4924,7 +4679,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 

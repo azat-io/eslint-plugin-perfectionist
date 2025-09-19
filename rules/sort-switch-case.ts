@@ -27,7 +27,7 @@ type MessageId = 'unexpectedSwitchCaseOrder'
 
 type Options = [Partial<CommonOptions>]
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   type: 'alphabetical',
@@ -210,7 +210,7 @@ export default createEslintRule<Options, MessageId>({
       let sortedSortingNodeGroupsForBlockSort = [
         ...sortingNodeGroupsForBlockSort,
       ]
-        .sort((a, b) => {
+        .toSorted((a, b) => {
           if (lastBlockCaseShouldStayInPlace) {
             if (a === lastNodeGroup) {
               return 1

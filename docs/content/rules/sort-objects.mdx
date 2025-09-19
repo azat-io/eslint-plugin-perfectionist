@@ -299,24 +299,6 @@ Specifies whether this rule should be applied to styled-components like librarie
 - `true` — Apply the rule to styled-components.
 - `false` — Disable the rule for styled-components.
 
-### [DEPRECATED] ignorePattern
-
-<sub>
-  type:
-  ```
-  {
-    allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
-  }
-  ```
-</sub>
-<sub>default: `[]`</sub>
-
-Use the [useConfigurationIf.declarationMatchesPattern](#useconfigurationif) option alongside [type: unsorted](#type) instead.
-
-Specifies names or patterns for objects that should be ignored by this rule. This can be useful if you have specific objects that you do not want to sort.
-
-You can specify their names or a regexp pattern to ignore, for example: `'^User.+'` to ignore all object whose names begin with the word “User”.
-
 ### [DEPRECATED] destructureOnly
 
 <sub>default: `false`</sub>
@@ -349,6 +331,7 @@ The `groups` attribute specifies whether to use groups to sort destructured obje
   {
     allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
     callingFunctionNamePattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+    declarationCommentMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
   }
   ```
 </sub>
@@ -367,11 +350,20 @@ Example configuration:
     'error',
     {
       groups: ['r', 'g', 'b'], // Sort colors by RGB
-      customGroups: {
-        r: '^r$',
-        g: '^g$',
-        b: '^b$',
-      },
+      customGroups: [
+        {
+          groupName: 'r',
+          elementNamePattern: '^r$',
+        },
+        {
+          groupName: 'g',
+          elementNamePattern: '^g$',
+        },
+        {
+          groupName: 'b',
+          elementNamePattern: '^b$',
+        },
+      ],
       useConfigurationIf: {
         allNamesMatchPattern: '^r|g|b$',
       },
@@ -385,6 +377,7 @@ Example configuration:
 
 - `callingFunctionNamePattern` — A regexp pattern for matching objects that are passed as arguments to a function with a specific name.
 
+Example configuration:
 ```ts
 {
   'perfectionist/sort-objects': [
@@ -393,6 +386,26 @@ Example configuration:
       type: 'unsorted', // Don't sort objects passed to createSlice
       useConfigurationIf: {
         callingFunctionNamePattern: '^createSlice$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `declarationCommentMatchesPattern` — A regexp pattern to specify which comments above the object declaration should match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-objects': [
+    'error',
+    {
+      type: 'unsorted', // Don't sort objects with a "do not sort" comment
+      useConfigurationIf: {
+        declarationCommentMatchesPattern: '^do not sort$',
       },
     },
     {
@@ -679,7 +692,6 @@ let user = {
                   objectDeclarations: true,
                   destructuredObjects: true,
                   styledComponents: true,
-                  ignorePattern: [],
                   useConfigurationIf: {},
                   groups: [],
                   customGroups: [],
@@ -714,7 +726,6 @@ let user = {
                 objectDeclarations: true,
                 destructuredObjects: true,
                 styledComponents: true,
-                ignorePattern: [],
                 useConfigurationIf: {},
                 groups: [],
                 customGroups: [],

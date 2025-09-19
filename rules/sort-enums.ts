@@ -7,7 +7,6 @@ import type { Options } from './sort-enums/types'
 
 import {
   buildCustomGroupsArrayJsonSchema,
-  deprecatedCustomGroupsJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
@@ -54,7 +53,7 @@ interface SortEnumsSortingNode
   value: string | null
 }
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   partitionByComment: false,
   partitionByNewLine: false,
@@ -144,7 +143,7 @@ export default createEslintRule<Options, MessageId>({
 
           let name =
             member.id.type === 'Literal'
-              ? `${member.id.value}`
+              ? member.id.value
               : sourceCode.getText(member.id)
 
           let group = computeGroup({
@@ -263,12 +262,6 @@ export default createEslintRule<Options, MessageId>({
       {
         properties: {
           ...commonJsonSchemas,
-          customGroups: {
-            oneOf: [
-              deprecatedCustomGroupsJsonSchema,
-              buildCustomGroupsArrayJsonSchema({ singleCustomGroupJsonSchema }),
-            ],
-          },
           forceNumericSort: {
             description:
               'Will always sort numeric enums by their value regardless of the sort type specified.',
@@ -278,6 +271,9 @@ export default createEslintRule<Options, MessageId>({
             description: 'Compare enum values instead of names.',
             type: 'boolean',
           },
+          customGroups: buildCustomGroupsArrayJsonSchema({
+            singleCustomGroupJsonSchema,
+          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
@@ -368,7 +364,7 @@ function computeNodeValueGetter({
   isNumericEnum,
   options,
 }: {
-  options: Pick<Required<Options[0]>, 'forceNumericSort' | 'sortByValue'>
+  options: Pick<Required<Options[number]>, 'forceNumericSort' | 'sortByValue'>
   isNumericEnum: boolean
 }): NodeValueGetterFunction<SortEnumsSortingNode> | null {
   return options.sortByValue || (isNumericEnum && options.forceNumericSort)
@@ -386,7 +382,7 @@ function computeOptionType({
   options,
 }: {
   options: Pick<
-    Required<Options[0]>,
+    Required<Options[number]>,
     'forceNumericSort' | 'sortByValue' | 'type'
   >
   isNumericEnum: boolean
