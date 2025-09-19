@@ -59,7 +59,6 @@ let defaultOptions: Required<Options[number]> = {
   partitionByNewLine: false,
   useConfigurationIf: {},
   type: 'alphabetical',
-  ignorePattern: [],
   ignoreCase: true,
   customGroups: [],
   locales: 'en-US',
@@ -91,14 +90,6 @@ export default createEslintRule<Options, MessageId>({
         options,
       })
       validateNewlinesAndPartitionConfiguration(options)
-
-      let shouldIgnore = matches(
-        sourceCode.getText(node.openingElement.name),
-        options.ignorePattern,
-      )
-      if (shouldIgnore || !isSortable(node.openingElement.attributes)) {
-        return
-      }
 
       let eslintDisabledLines = getEslintDisabledLines({
         ruleName: id,
@@ -227,7 +218,6 @@ export default createEslintRule<Options, MessageId>({
           }),
           partitionByNewLine: partitionByNewLineJsonSchema,
           newlinesBetween: newlinesBetweenJsonSchema,
-          ignorePattern: regexJsonSchema,
           groups: groupsJsonSchema,
         },
         additionalProperties: false,
