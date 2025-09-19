@@ -210,7 +210,7 @@ export default createEslintRule<Options, MessageId>({
       let sortedSortingNodeGroupsForBlockSort = [
         ...sortingNodeGroupsForBlockSort,
       ]
-        .sort((a, b) => {
+        .toSorted((a, b) => {
           if (lastBlockCaseShouldStayInPlace) {
             if (a === lastNodeGroup) {
               return 1
