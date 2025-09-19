@@ -130,7 +130,7 @@ export function sortNodesByGroups<
   }
 
   let sortedNodes: T[] = []
-  for (let groupIndex of Object.keys(nodesByNonIgnoredGroupIndex).sort(
+  for (let groupIndex of Object.keys(nodesByNonIgnoredGroupIndex).toSorted(
     (a, b) => Number(a) - Number(b),
   )) {
     let { fallbackSortNodeValueGetter, nodeValueGetter, options } =
