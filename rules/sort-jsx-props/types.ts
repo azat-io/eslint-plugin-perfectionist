@@ -61,12 +61,6 @@ export type Options = Partial<
      * empty lines are sorted independently.
      */
     partitionByNewLine: boolean
-
-    /**
-     * @deprecated Since v4.11.0. Will be removed in v5.0.0. Use
-     *   {@link `useConfigurationIf.tagMatchesPattern`} instead.
-     */
-    ignorePattern: RegexOption
   } & CommonOptions
 >[]
 
