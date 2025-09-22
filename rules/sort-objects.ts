@@ -72,7 +72,6 @@ let defaultOptions: Required<Options[number]> = {
   destructuredObjects: true,
   objectDeclarations: true,
   styledComponents: true,
-  destructureOnly: false,
   useConfigurationIf: {},
   type: 'alphabetical',
   ignorePattern: [],
@@ -115,7 +114,7 @@ export default createEslintRule<Options, MessageId>({
         if (!options.destructuredObjects) {
           return
         }
-      } else if (options.destructureOnly || !options.objectDeclarations) {
+      } else if (!options.objectDeclarations) {
         return
       }
 
@@ -429,11 +428,6 @@ export default createEslintRule<Options, MessageId>({
               callingFunctionNamePattern: regexJsonSchema,
             },
           }),
-          destructureOnly: {
-            description:
-              '[DEPRECATED] Controls whether to sort only destructured objects.',
-            type: 'boolean',
-          },
           objectDeclarations: {
             description: 'Controls whether to sort object declarations.',
             type: 'boolean',
