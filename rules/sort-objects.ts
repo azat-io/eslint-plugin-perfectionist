@@ -426,6 +426,7 @@ export default createEslintRule<Options, MessageId>({
             additionalProperties: {
               declarationCommentMatchesPattern: regexJsonSchema,
               callingFunctionNamePattern: regexJsonSchema,
+              declarationMatchesPattern: regexJsonSchema,
             },
           }),
           objectDeclarations: {
@@ -516,13 +517,32 @@ function computeMatchedContextOptions({
       if (!objectParent) {
         return false
       }
-      if (objectParent.type === 'VariableDeclarator' || !objectParent.name) {
+      if (objectParent.type !== 'CallExpression' || !objectParent.name) {
         return false
       }
-      return matches(
+      let patternMatches = matches(
         objectParent.name,
         options.useConfigurationIf.callingFunctionNamePattern,
       )
+      if (!patternMatches) {
+        return false
+      }
+    }
+
+    if (options.useConfigurationIf.declarationMatchesPattern) {
+      if (!objectParent) {
+        return false
+      }
+      if (objectParent.type !== 'VariableDeclarator' || !objectParent.name) {
+        return false
+      }
+      let patternMatches = matches(
+        objectParent.name,
+        options.useConfigurationIf.declarationMatchesPattern,
+      )
+      if (!patternMatches) {
+        return false
+      }
     }
 
     return true
