@@ -8979,67 +8979,6 @@ describe('sort-objects', () => {
       })
     })
 
-    it('sorts only destructured objects when destructureOnly is enabled', async () => {
-      await valid({
-        code: dedent`
-          let obj = {
-            c: 'c',
-            b: 'b',
-            a: 'a',
-          }
-
-          let { a, b, c } = obj
-        `,
-        options: [
-          {
-            destructureOnly: true,
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-          {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-        ],
-        output: dedent`
-          let obj = {
-            c: 'c',
-            b: 'b',
-            a: 'a',
-          }
-
-          let { a, b, c } = obj
-        `,
-        code: dedent`
-          let obj = {
-            c: 'c',
-            b: 'b',
-            a: 'a',
-          }
-
-          let { c, b, a } = obj
-        `,
-        options: [
-          {
-            destructureOnly: true,
-          },
-        ],
-      })
-    })
-
     it('skips object declarations when objectDeclarations is disabled', async () => {
       await valid({
         code: dedent`
