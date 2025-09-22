@@ -110,12 +110,6 @@ export type Options = Partial<
      * @default true
      */
     styledComponents: boolean
-
-    /**
-     * @deprecated For {@link `destructuredObjects`} and
-     *   {@link `objectDeclarations`}. Will be removed in v5.0.0.
-     */
-    destructureOnly: boolean
   } & CommonOptions
 >[]
 
