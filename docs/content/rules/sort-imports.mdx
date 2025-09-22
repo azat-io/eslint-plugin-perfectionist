@@ -15,7 +15,6 @@ keywords:
 
 import CodeExample from '../../components/CodeExample.svelte'
 import Important from '../../components/Important.astro'
-import CodeTabs from '../../components/CodeTabs.svelte'
 import dedent from 'dedent'
 
 Enforce sorted imports.
@@ -621,99 +620,47 @@ Specifies which environment’s built-in modules should be recognized. If you ar
 
 ## Usage
 
-<CodeTabs
-  code={[
-    {
-      source: dedent`
-        // eslint.config.js
-        import perfectionist from 'eslint-plugin-perfectionist'
+```js
+// eslint.config.js
+import perfectionist from 'eslint-plugin-perfectionist'
 
-        export default [
-          {
-            plugins: {
-              perfectionist,
-            },
-            rules: {
-              'perfectionist/sort-imports': [
-                'error',
-                {
-                  type: 'alphabetical',
-                  order: 'asc',
-                  fallbackSort: { type: 'unsorted' },
-                  ignoreCase: true,
-                  specialCharacters: 'keep',
-                  internalPattern: ['^~/.+', '^@/.+'],
-                  partitionByComment: false,
-                  partitionByNewLine: false,
-                  newlinesBetween: 1,
-                  maxLineLength: undefined,
-                  groups: [
-                    'type-import',
-                    ['value-builtin', 'value-external'],
-                    'type-internal',
-                    'value-internal',
-                    ['type-parent', 'type-sibling', 'type-index'],
-                    ['value-parent', 'value-sibling', 'value-index'],
-                    'ts-equals-import',
-                    'unknown',
-                  ],
-                  customGroups: [],
-                  environment: 'node',
-                },
-              ],
-            },
-          },
-        ]
-      `,
-      name: 'Flat Config',
-      value: 'flat',
+export default [
+  {
+    plugins: {
+      perfectionist,
     },
-    {
-      source: dedent`
-        // .eslintrc.js
-        module.exports = {
-          plugins: [
-            'perfectionist',
+    rules: {
+      'perfectionist/sort-imports': [
+        'error',
+        {
+          type: 'alphabetical',
+          order: 'asc',
+          fallbackSort: { type: 'unsorted' },
+          ignoreCase: true,
+          specialCharacters: 'keep',
+          internalPattern: ['^~/.+', '^@/.+'],
+          partitionByComment: false,
+          partitionByNewLine: false,
+          newlinesBetween: 1,
+          maxLineLength: undefined,
+          groups: [
+            'type-import',
+            ['value-builtin', 'value-external'],
+            'type-internal',
+            'value-internal',
+            ['type-parent', 'type-sibling', 'type-index'],
+            ['value-parent', 'value-sibling', 'value-index'],
+            'ts-equals-import',
+            'unknown',
           ],
-          rules: {
-            'perfectionist/sort-imports': [
-              'error',
-              {
-                type: 'alphabetical',
-                order: 'asc',
-                fallbackSort: { type: 'unsorted' },
-                ignoreCase: true,
-                specialCharacters: 'keep',
-                internalPattern: ['^~/.+', '^@/.+'],
-                partitionByComment: false,
-                partitionByNewLine: false,
-                newlinesBetween: 1,
-                maxLineLength: undefined,
-                groups: [
-                  'type-import',
-                  ['value-builtin', 'value-external'],
-                  'type-internal',
-                  'value-internal',
-                  ['type-parent', 'type-sibling', 'type-index'],
-                  ['value-parent', 'value-sibling', 'value-index'],
-                  'ts-equals-import',
-                  'unknown',
-                ],
-                customGroups: [],
-                environment: 'node',
-              },
-            ],
-          },
-        }
-      `,
-      name: 'Legacy Config',
-      value: 'legacy',
+          customGroups: [],
+          environment: 'node',
+        },
+      ],
     },
-  ]}
-  type="config-type"
-  client:load
-  lang="tsx"
-/>
+  },
+]
+```
 
 ## Version
 

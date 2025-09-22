@@ -13,7 +13,6 @@ keywords:
 ---
 
 import CodeExample from '../../components/CodeExample.svelte'
-import CodeTabs from '../../components/CodeTabs.svelte'
 import dedent from 'dedent'
 
 Enforce sorted export attributes.
@@ -195,75 +194,35 @@ An attribute matches a custom group when its name satisfies `elementNamePattern`
 
 ## Usage
 
-<CodeTabs
-  code={[
-    {
-      source: dedent`
-        // eslint.config.js
-        import perfectionist from 'eslint-plugin-perfectionist'
+```js
+// eslint.config.js
+import perfectionist from 'eslint-plugin-perfectionist'
 
-        export default [
-          {
-            plugins: { perfectionist },
-            rules: {
-              'perfectionist/sort-export-attributes': [
-                'error',
-                {
-                  type: 'alphabetical',
-                  order: 'asc',
-                  fallbackSort: { type: 'unsorted' },
-                  ignoreCase: true,
-                  specialCharacters: 'keep',
-                  locales: 'en-US',
-                  alphabet: '',
-                  partitionByComment: false,
-                  partitionByNewLine: false,
-                  newlinesBetween: 'ignore',
-                  groups: [],
-                  customGroups: [],
-                },
-              ],
-            },
-          },
-        ]
-      `,
-      name: 'Flat Config',
-      value: 'flat',
+export default [
+  {
+    plugins: { perfectionist },
+    rules: {
+      'perfectionist/sort-export-attributes': [
+        'error',
+        {
+          type: 'alphabetical',
+          order: 'asc',
+          fallbackSort: { type: 'unsorted' },
+          ignoreCase: true,
+          specialCharacters: 'keep',
+          locales: 'en-US',
+          alphabet: '',
+          partitionByComment: false,
+          partitionByNewLine: false,
+          newlinesBetween: 'ignore',
+          groups: [],
+          customGroups: [],
+        },
+      ],
     },
-    {
-      source: dedent`
-        // .eslintrc.js
-        module.exports = {
-          plugins: ['perfectionist'],
-          rules: {
-            'perfectionist/sort-export-attributes': [
-              'error',
-              {
-                type: 'alphabetical',
-                order: 'asc',
-                fallbackSort: { type: 'unsorted' },
-                ignoreCase: true,
-                specialCharacters: 'keep',
-                locales: 'en-US',
-                alphabet: '',
-                partitionByComment: false,
-                partitionByNewLine: false,
-                newlinesBetween: 'ignore',
-                groups: [],
-                customGroups: [],
-              },
-            ],
-          },
-        }
-      `,
-      name: 'Legacy Config',
-      value: 'legacy',
-    },
-  ]}
-  type="config-type"
-  client:load
-  lang="tsx"
-/>
+  },
+]
+```
 
 ## Version
 

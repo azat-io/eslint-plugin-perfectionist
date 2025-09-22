@@ -50,10 +50,6 @@ interface PluginConfig {
     'sort-maps': Rule.RuleModule
   }
   configs: {
-    'recommended-alphabetical-legacy': Linter.LegacyConfig
-    'recommended-line-length-legacy': Linter.LegacyConfig
-    'recommended-natural-legacy': Linter.LegacyConfig
-    'recommended-custom-legacy': Linter.LegacyConfig
     'recommended-alphabetical': Linter.Config
     'recommended-line-length': Linter.Config
     'recommended-natural': Linter.Config
@@ -121,32 +117,9 @@ function createConfig(options: BaseOptions): Linter.Config {
   }
 }
 
-function createLegacyConfig(options: BaseOptions): Linter.LegacyConfig {
-  return {
-    rules: getRules(options),
-    plugins: [pluginName],
-  }
-}
-
 export default {
   ...plugin,
   configs: {
-    'recommended-alphabetical-legacy': createLegacyConfig({
-      type: 'alphabetical',
-      order: 'asc',
-    }),
-    'recommended-line-length-legacy': createLegacyConfig({
-      type: 'line-length',
-      order: 'desc',
-    }),
-    'recommended-natural-legacy': createLegacyConfig({
-      type: 'natural',
-      order: 'asc',
-    }),
-    'recommended-custom-legacy': createLegacyConfig({
-      type: 'custom',
-      order: 'asc',
-    }),
     'recommended-alphabetical': createConfig({
       type: 'alphabetical',
       order: 'asc',

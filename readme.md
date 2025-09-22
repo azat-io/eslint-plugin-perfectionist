@@ -89,8 +89,6 @@ npm install --save-dev eslint-plugin-perfectionist
 
 Add `eslint-plugin-perfectionist` to the plugins section of the ESLint configuration file and define the list of rules you will use.
 
-### Flat Config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files))
-
 ```js
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -112,31 +110,9 @@ export default [
 ]
 ```
 
-### Legacy Config ([`.eslintrc.js`](https://eslint.org/docs/latest/use/configure/configuration-files-deprecated))
-
-<!-- prettier-ignore -->
-```js
-module.exports = {
-  plugins: [
-    'perfectionist',
-  ],
-  rules: {
-    'perfectionist/sort-imports': [
-      'error',
-      {
-        type: 'natural',
-        order: 'asc',
-      }
-    ]
-  }
-}
-```
-
 ## Configs
 
 The easiest way to use `eslint-plugin-perfectionist` is to use ready-made configs. Config files use all the rules of the current plugin, but you can override them.
-
-### Flat Config ([`eslint.config.js`](https://eslint.org/docs/latest/use/configure/configuration-files))
 
 <!-- prettier-ignore -->
 ```js
@@ -147,16 +123,21 @@ export default [
 ]
 ```
 
-### Legacy Config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files-deprecated))
+<details>
+  <summary>Usage in legacy <code>.eslintrc.js</code> configurations:</summary>
 
-<!-- prettier-ignore -->
 ```js
+const perfectionist = require('eslint-plugin-perfectionist')
+
 module.exports = {
-  extends: [
-    'plugin:perfectionist/recommended-natural-legacy',
-  ],
+  plugins: ['perfectionist'],
+  rules: {
+    ...perfectionist.configs['recommended-natural'].rules,
+  },
 }
 ```
+
+</details>
 
 ### List of Configs
 

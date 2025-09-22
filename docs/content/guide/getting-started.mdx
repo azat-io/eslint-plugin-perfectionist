@@ -89,48 +89,39 @@ Next, install `eslint-plugin-perfectionist`:
 
 Add `perfectionist` to the plugins section of your ESLint configuration. Then configure the rules you want to use under the rules section.
 
-<CodeTabs
-  code={[
-    {
-      source: dedent`
-        // eslint.config.js
-        import perfectionist from 'eslint-plugin-perfectionist'
+```js
+// eslint.config.js
+import perfectionist from 'eslint-plugin-perfectionist'
 
-        export default [
-          {
-            plugins: {
-              perfectionist,
-            },
-            rules: {
-              'perfectionist/sort-imports': 'error',
-            },
-          },
-        ]
-      `,
-      name: 'Flat Config',
-      value: 'flat',
+export default [
+  {
+    plugins: {
+      perfectionist,
     },
-    {
-      source: dedent`
-        // .eslintrc.js
-        module.exports = {
-          plugins: [
-            'perfectionist',
-          ],
-          rules: {
-            'perfectionist/sort-imports': 'error',
-          },
-        }
-      `,
-      name: 'Legacy Config',
-      value: 'legacy',
+    rules: {
+      'perfectionist/sort-imports': 'error',
     },
+  },
+]
+```
 
-]}
-type="config-type"
-client:load
-lang="tsx"
-/>
+<br/>
+
+<details>
+  <summary>Usage in legacy <code>.eslintrc.js</code> configurations:</summary>
+
+```js
+const perfectionist = require('eslint-plugin-perfectionist')
+
+module.exports = {
+  plugins: ['perfectionist'],
+  rules: {
+    ...perfectionist.configs['recommended-natural'].rules,
+  },
+}
+```
+
+</details>
 
 ## Settings
 
@@ -153,63 +144,27 @@ In settings, you can set the following options:
 
 Example:
 
-<CodeTabs
-  code={[
-    {
-      source: dedent`
-        // eslint.config.js
-        import perfectionist from 'eslint-plugin-perfectionist'
+```js
+// eslint.config.js
+import perfectionist from 'eslint-plugin-perfectionist'
 
-        export default [
-          {
-            plugins: {
-              perfectionist,
-            },
-            rules: {
-              'perfectionist/sort-objects': ['error', {
-                type: 'alphabetical',
-              }],
-              'perfectionist/sort-interfaces': ['error'],
-            },
-            settings: {
-              perfectionist: {
-                type: 'line-length',
-                partitionByComment: true,
-              },
-            },
-          },
-        ]
-      `,
-      name: 'Flat Config',
-      value: 'flat',
+export default [
+  {
+    plugins: {
+      perfectionist,
     },
-    {
-      source: dedent`
-        // .eslintrc.js
-        module.exports = {
-          plugins: [
-            'perfectionist',
-          ],
-          rules: {
-            'perfectionist/sort-objects': ['error', {
-              type: 'alphabetical',
-            }],
-            'perfectionist/sort-interfaces': ['error'],
-          },
-          settings: {
-            perfectionist: {
-              type: 'line-length',
-              partitionByComment: true,
-            },
-          },
-        }
-      `,
-      name: 'Legacy Config',
-      value: 'legacy',
+    rules: {
+      'perfectionist/sort-objects': ['error', {
+        type: 'alphabetical',
+      }],
+      'perfectionist/sort-interfaces': ['error'],
     },
-
-]}
-type="config-type"
-client:load
-lang="tsx"
-/>
+    settings: {
+      perfectionist: {
+        type: 'line-length',
+        partitionByComment: true,
+      },
+    },
+  },
+]
+```

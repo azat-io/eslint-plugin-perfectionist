@@ -13,9 +13,6 @@ keywords:
   - eslint-plugin-perfectionist
 ---
 
-import CodeTabs from '../../components/CodeTabs.svelte'
-import dedent from 'dedent'
-
 Configuration for the `eslint-plugin-perfectionist` plugin, which provides all plugin rules with your predefined custom ordered alphabet.
 
 This configuration allows you to define your own custom order for sorting elements in your codebase as you desire.
@@ -37,65 +34,28 @@ Example: `01234564789abcdef...`
 
 Use the `Alphabet` utility class from `eslint-plugin-perfectionist/alphabet` to quickly generate a custom alphabet.
 
-<CodeTabs
-  code={[
-    {
-      source: dedent`
-        // eslint.config.js
-        import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
-        import perfectionist from 'eslint-plugin-perfectionist'
-        import naturalCompare from 'natural-compare-lite';
+```js
+// eslint.config.js
+import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
+import perfectionist from 'eslint-plugin-perfectionist'
+import naturalCompare from 'natural-compare-lite';
 
-        const myCustomAlphabet = Alphabet
-          .generateRecommendedAlphabet()
-          .sortingBy((a, b) => naturalCompare(a, b))
-          .getCharacters();
+const myCustomAlphabet = Alphabet
+  .generateRecommendedAlphabet()
+  .sortingBy((a, b) => naturalCompare(a, b))
+  .getCharacters();
 
-        export default [
-          {
-            ...perfectionist.configs['recommended-custom'],
-            settings: {
-              perfectionist: {
-                  alphabet: myCustomAlphabet
-              }
-            }
-          }
-        ]
-      `,
-      name: 'Flat Config',
-      value: 'flat',
-    },
-    {
-      source: dedent`
-        // .eslintrc.js
-        import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
-        import perfectionist from 'eslint-plugin-perfectionist'
-        import naturalCompare from 'natural-compare-lite';
-
-        const myCustomAlphabet = Alphabet
-          .generateRecommendedAlphabet()
-          .sortingBy((a, b) => naturalCompare(a, b))
-          .getCharacters();
-
-        module.exports = {
-          extends: [
-            'plugin:perfectionist/recommended-custom-legacy',
-          ],
-          settings: {
-            perfectionist: {
-                alphabet: myCustomAlphabet
-            }
-          }
-        }
-      `,
-      name: 'Legacy Config',
-      value: 'legacy',
-    },
-]}
-type="config-type"
-client:load
-lang="tsx"
-/>
+export default [
+  {
+    ...perfectionist.configs['recommended-custom'],
+    settings: {
+      perfectionist: {
+          alphabet: myCustomAlphabet
+      }
+    }
+  }
+]
+```
 
 ## Alphabet class
 

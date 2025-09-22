@@ -13,9 +13,6 @@ keywords:
   - eslint-plugin-perfectionist
 ---
 
-import CodeTabs from '../../components/CodeTabs.svelte'
-import dedent from 'dedent'
-
 Configuration for the `eslint-plugin-perfectionist` plugin, which provides all plugin rules with predefined options: alphabetical sorting in ascending order.
 
 Uses [localeCompare](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare) to sort elements.
@@ -32,36 +29,11 @@ It helps quickly locate declarations and ensures that similar elements are group
 
 ## Usage
 
-<CodeTabs
-  code={[
-    {
-      source: dedent`
-        // eslint.config.js
-        import perfectionist from 'eslint-plugin-perfectionist'
+```js
+// eslint.config.js
+import perfectionist from 'eslint-plugin-perfectionist'
 
-        export default [
-          perfectionist.configs['recommended-alphabetical'],
-        ]
-      `,
-      name: 'Flat Config',
-      value: 'flat',
-    },
-    {
-      source: dedent`
-        // .eslintrc.js
-        module.exports = {
-          extends: [
-            'plugin:perfectionist/recommended-alphabetical-legacy',
-          ],
-        }
-      `,
-      name: 'Legacy Config',
-      value: 'legacy',
-    },
-
-]}
-type="config-type"
-client:load
-lang="tsx"
-/>
-
+export default [
+  perfectionist.configs['recommended-alphabetical'],
+]
+```

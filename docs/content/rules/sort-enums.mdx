@@ -13,7 +13,6 @@ keywords:
 ---
 
 import CodeExample from '../../components/CodeExample.svelte'
-import CodeTabs from '../../components/CodeTabs.svelte'
 import dedent from 'dedent'
 
 Enforce sorted TypeScript enum members.
@@ -336,79 +335,37 @@ Custom groups have a higher priority than any predefined group.
 
 ## Usage
 
-<CodeTabs
-  code={[
-    {
-      source: dedent`
-        // eslint.config.js
-        import perfectionist from 'eslint-plugin-perfectionist'
+```js
+// eslint.config.js
+import perfectionist from 'eslint-plugin-perfectionist'
 
-        export default [
-          {
-            plugins: {
-              perfectionist,
-            },
-            rules: {
-              'perfectionist/sort-enums': [
-                'error',
-                {
-                  type: 'alphabetical',
-                  order: 'asc',
-                  fallbackSort: { type: 'unsorted' },
-                  ignoreCase: true,
-                  specialCharacters: 'keep',
-                  partitionByComment: false,
-                  partitionByNewLine: false,
-                  newlinesBetween: 'ignore',
-                  sortByValue: false,
-                  forceNumericSort: false,
-                  groups: [],
-                  customGroups: [],
-                },
-              ],
-            },
-          },
-        ]
-      `,
-      name: 'Flat Config',
-      value: 'flat',
+export default [
+  {
+    plugins: {
+      perfectionist,
     },
-    {
-      source: dedent`
-        // .eslintrc.js
-        module.exports = {
-          plugins: [
-            'perfectionist',
-          ],
-          rules: {
-            'perfectionist/sort-enums': [
-              'error',
-              {
-                type: 'alphabetical',
-                order: 'asc',
-                fallbackSort: { type: 'unsorted' },
-                ignoreCase: true,
-                specialCharacters: 'keep',
-                partitionByComment: false,
-                partitionByNewLine: false,
-                newlinesBetween: 'ignore',
-                sortByValue: false,
-                forceNumericSort: false,
-                groups: [],
-                customGroups: [],
-              },
-            ],
-          },
-        }
-      `,
-      name: 'Legacy Config',
-      value: 'legacy',
+    rules: {
+      'perfectionist/sort-enums': [
+        'error',
+        {
+          type: 'alphabetical',
+          order: 'asc',
+          fallbackSort: { type: 'unsorted' },
+          ignoreCase: true,
+          specialCharacters: 'keep',
+          partitionByComment: false,
+          partitionByNewLine: false,
+          newlinesBetween: 'ignore',
+          sortByValue: false,
+          forceNumericSort: false,
+          groups: [],
+          customGroups: [],
+        },
+      ],
     },
-  ]}
-  type="config-type"
-  client:load
-  lang="tsx"
-/>
+  },
+]
+```
 
 ## Version
 

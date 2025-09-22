@@ -16,9 +16,6 @@ keywords:
   - natural sorting configuration
 ---
 
-import CodeTabs from '../../components/CodeTabs.svelte'
-import dedent from 'dedent'
-
 Configuration for the `eslint-plugin-perfectionist` plugin, which provides all plugin rules with predefined options: natural sorting in ascending order.
 
 What is the difference between natural sorting and alphabetical sorting? Natural sort compares strings containing a mixture of letters and numbers, just as a human would do when sorting. For example: `item-1`, `item-2`, `item-10`.
@@ -35,36 +32,11 @@ This configuration is particularly useful for projects where an intuitive unders
 
 ## Usage
 
-<CodeTabs
-  code={[
-    {
-      source: dedent`
-        // eslint.config.js
-        import perfectionist from 'eslint-plugin-perfectionist'
+```js
+// eslint.config.js
+import perfectionist from 'eslint-plugin-perfectionist'
 
-        export default [
-          perfectionist.configs['recommended-natural'],
-        ]
-      `,
-      name: 'Flat Config',
-      value: 'flat',
-    },
-    {
-      source: dedent`
-        // .eslintrc.js
-        module.exports = {
-          extends: [
-            'plugin:perfectionist/recommended-natural-legacy',
-          ],
-        }
-      `,
-      name: 'Legacy Config',
-      value: 'legacy',
-    },
-
-]}
-type="config-type"
-client:load
-lang="tsx"
-/>
-
+export default [
+  perfectionist.configs['recommended-natural'],
+]
+```

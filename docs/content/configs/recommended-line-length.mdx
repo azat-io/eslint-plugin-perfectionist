@@ -22,9 +22,6 @@ keywords:
   - line length recommendations
 ---
 
-import CodeTabs from '../../components/CodeTabs.svelte'
-import dedent from 'dedent'
-
 Configuration for the `eslint-plugin-perfectionist` plugin, which provides all plugin rules with preset options: sorting by string length in descending order.
 
 This configuration will make your code prettier and more visually pleasing.
@@ -37,35 +34,11 @@ This configuration is especially useful for projects where the aesthetic appeara
 
 ## Usage
 
-<CodeTabs
-  code={[
-    {
-      source: dedent`
-        // eslint.config.js
-        import perfectionist from 'eslint-plugin-perfectionist'
+```js
+// eslint.config.js
+import perfectionist from 'eslint-plugin-perfectionist'
 
-        export default [
-          perfectionist.configs['recommended-line-length'],
-        ]
-      `,
-      name: 'Flat Config',
-      value: 'flat',
-    },
-    {
-      source: dedent`
-        // .eslintrc.js
-        module.exports = {
-          extends: [
-            'plugin:perfectionist/recommended-line-length-legacy',
-          ],
-        }
-      `,
-      name: 'Legacy Config',
-      value: 'legacy',
-    },
-
-]}
-type="config-type"
-client:load
-lang="tsx"
-/>
+export default [
+  perfectionist.configs['recommended-line-length'],
+]
+```
