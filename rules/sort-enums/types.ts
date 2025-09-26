@@ -41,7 +41,7 @@ export type Options = Partial<
      * Whether to sort enum members by their values instead of names. When true,
      * compares enum values; when false, compares enum member names.
      *
-     * @default false
+     * @default ifNumericEnum
      */
     sortByValue: 'ifNumericEnum' | boolean
 
