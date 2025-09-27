@@ -1,0 +1,272 @@
+---
+title: sort-regexp
+description: Keep regular expressions predictable by sorting flags, character classes, and alternation branches. This ESLint rule helps you avoid subtle regex bugs and improves readability
+shortDescription: Enforce sorted regular expressions
+keywords:
+  - eslint
+  - regex sorting
+  - regular expressions
+  - eslint rule
+  - code quality
+  - javascript linting
+---
+
+import CodeExample from '../../components/CodeExample.svelte'
+import CodeTabs from '../../components/CodeTabs.svelte'
+import dedent from 'dedent'
+
+Enforce consistent ordering in regular expressions: flags, character-class elements, and alternation branches inside capture groups or the top-level pattern.
+
+Large patterns become easier to maintain when related branches are grouped and repeatedly used flags or character classes follow the same order. This rule helps you spot missing alternatives, avoid duplicated work, and keeps refactors safer by applying one sorting strategy across your codebase.
+
+The rule is **safe** – it only reorders elements without changing their meaning.
+
+## Try it out
+
+<CodeExample
+  alphabetical={dedent`
+    const patterns = {
+      alternatives: /(apple|banana|orange|pear)/,
+      alias: /(?<role>administrator|guest|user)/,
+      characterClass: /[0-9A-Za-fz]/,
+      flags: /pattern/gimsuy,
+    }
+  `}
+  lineLength={dedent`
+    const patterns = {
+      alternatives: /(banana|orange|apple|pear)/,
+      alias: /(?<role>administrator|guest|user)/,
+      characterClass: /[0-9A-Za-fz]/,
+      flags: /pattern/yusmig,
+    }
+  `}
+  initial={dedent`
+    const patterns = {
+      alternatives: /(pear|apple|orange|banana)/,
+      alias: /(?<role>user|administrator|guest)/,
+      characterClass: /[z0-9a-fA-Z]/,
+      flags: /pattern/yusmig,
+    }
+  `}
+  client:load
+  lang="tsx"
+/>
+
+## Options
+
+This rule accepts an options object with the following properties:
+
+### type
+
+<sub>default: `'alphabetical'`</sub>
+
+Specifies the sorting strategy applied to matches (flags, character-class elements, and alternation branches).
+
+- `'alphabetical'` — Sort values alphabetically using [`localeCompare`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare).
+- `'natural'` — Sort values in [natural](https://github.com/yobacca/natural-orderby) order (e.g., `(?=2)` comes before `(?=10)`).
+- `'line-length'` — Sort values by their textual length.
+- `'custom'` — Sort values according to a custom alphabet defined in [`alphabet`](#alphabet).
+- `'unsorted'` — Do not reorder values. [`groups`](#groups) and [`customGroups`](#customgroups) are still applied.
+
+### order
+
+<sub>default: `'asc'`</sub>
+
+Specifies the direction of sorting.
+
+- `'asc'` — Ascending order (shorter to longer, A to Z).
+- `'desc'` — Descending order (longer to shorter, Z to A).
+
+### fallbackSort
+
+<sub>
+  type:
+  ```ts
+  {
+    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted'
+    order?: 'asc' | 'desc'
+  }
+  ```
+</sub>
+<sub>default: `{ type: 'unsorted' }`</sub>
+
+Used when the primary [`type`](#type) considers two values equal. For example, rely on alphabetical order when two branches share the same length.
+
+### alphabet
+
+<sub>default: `''`</sub>
+
+Defines the custom alphabet for `'custom'` sorting. Use the [`Alphabet` helper](https://perfectionist.dev/alphabet) to build consistent alphabets quickly.
+
+### locales
+
+<sub>default: `'en-US'`</sub>
+
+Locales passed to `localeCompare` when alphabetical comparisons are required.
+
+### ignoreCase
+
+<sub>default: `true`</sub>
+
+Whether comparisons should be case-insensitive.
+
+- `true` — Treat upper- and lowercase branches as equal (default).
+- `false` — Preserve case sensitivity.
+
+### specialCharacters
+
+<sub>default: `'keep'`</sub>
+
+Controls how special characters are handled before comparison.
+
+- `'keep'` — Keep them (default).
+- `'trim'` — Trim leading special characters.
+- `'remove'` — Remove all special characters.
+
+### ignoreAlias
+
+<sub>default: `false`</sub>
+
+Determines whether named capturing group aliases (e.g., `(?<role>...)`) are considered during comparison.
+
+- `false` — Sort by `alias: pattern` (default).
+- `true` — Ignore the alias and only compare the branch content.
+
+This is useful when you only care about the pattern and not how it is aliased.
+
+### customGroups
+
+<sub>
+  type: `Array<CustomGroupDefinition | CustomGroupAnyOfDefinition>`
+</sub>
+<sub>default: `[]`</sub>
+
+Define custom groups to control how alternatives are organized before sorting.
+
+```ts
+interface CustomGroupDefinition {
+  groupName: string
+  selector?: 'alias' | 'pattern'
+  elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+  elementValuePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+}
+
+interface CustomGroupAnyOfDefinition {
+  groupName: string
+  anyOf: Array<{
+    selector?: 'alias' | 'pattern'
+    elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+    elementValuePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+  }>
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted'
+  order?: 'asc' | 'desc'
+  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+}
+```
+
+Attributes:
+
+- `groupName` — Identifier referenced in [`groups`](#groups).
+- `selector` — Filter by element type:
+  - `'alias'` — Named capturing group alternatives.
+  - `'pattern'` — Plain alternatives without aliases.
+- `elementNamePattern` — Regex applied to the alias (if present).
+- `elementValuePattern` — Regex applied to the branch content.
+- `type`, `order`, `fallbackSort` — Override the respective global options for the group.
+
+Custom groups are evaluated in order; the first match wins and overrides predefined groups.
+
+### groups
+
+<sub>
+  type: `Array<string | string[]>`
+</sub>
+<sub>default: `[]`</sub>
+
+Controls the order in which groups are evaluated. Use the selectors from [`customGroups`](#customgroups) or custom group names. When an element does not match any provided group, it falls back to the implicit `unknown` group at the end of the list.
+
+You can combine multiple groups by wrapping them in an array; all members will be sorted together using the global or overridden options.
+
+## Usage
+
+<CodeTabs
+  code={[
+    {
+      source: dedent`
+        // eslint.config.js
+        import perfectionist from 'eslint-plugin-perfectionist'
+
+        export default [
+          {
+            plugins: {
+              perfectionist,
+            },
+            rules: {
+              'perfectionist/sort-regexp': [
+                'error',
+                {
+                  type: 'alphabetical',
+                  order: 'asc',
+                  fallbackSort: { type: 'unsorted' },
+                  ignoreCase: true,
+                  ignoreAlias: false,
+                  specialCharacters: 'keep',
+                  locales: 'en-US',
+                  alphabet: '',
+                  groups: [],
+                  customGroups: [],
+                },
+              ],
+            },
+          },
+        ]
+      `,
+      name: 'Flat Config',
+      value: 'flat',
+    },
+    {
+      source: dedent`
+        // .eslintrc.js
+        module.exports = {
+          plugins: [
+            'perfectionist',
+          ],
+          rules: {
+            'perfectionist/sort-regexp': [
+              'error',
+              {
+                type: 'alphabetical',
+                order: 'asc',
+                fallbackSort: { type: 'unsorted' },
+                ignoreCase: true,
+                ignoreAlias: false,
+                specialCharacters: 'keep',
+                locales: 'en-US',
+                alphabet: '',
+                groups: [],
+                customGroups: [],
+              },
+            ],
+          },
+        }
+      `,
+      name: 'Legacy Config',
+      value: 'legacy',
+    },
+  ]}
+  type="config-type"
+  client:load
+  lang="tsx"
+/>
+
+## Version
+
+This rule was introduced in [v5.0.0](https://github.com/azat-io/eslint-plugin-perfectionist/releases/tag/v5.0.0).
+
+## Resources
+
+- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-regexp.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/rules/sort-regexp.test.ts)

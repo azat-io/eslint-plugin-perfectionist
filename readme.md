@@ -193,6 +193,7 @@ module.exports = {
 | [sort-named-imports](https://perfectionist.dev/rules/sort-named-imports)                 | Enforce sorted named imports                  | 🔧  |
 | [sort-object-types](https://perfectionist.dev/rules/sort-object-types)                   | Enforce sorted object types                   | 🔧  |
 | [sort-objects](https://perfectionist.dev/rules/sort-objects)                             | Enforce sorted objects                        | 🔧  |
+| [sort-regexp](https://perfectionist.dev/rules/sort-regexp)                               | Enforce sorted regular expressions            | 🔧  |
 | [sort-sets](https://perfectionist.dev/rules/sort-sets)                                   | Enforce sorted Set elements                   | 🔧  |
 | [sort-switch-case](https://perfectionist.dev/rules/sort-switch-case)                     | Enforce sorted switch case statements         | 🔧  |
 | [sort-union-types](https://perfectionist.dev/rules/sort-union-types)                     | Enforce sorted union types                    | 🔧  |

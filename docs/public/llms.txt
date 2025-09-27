@@ -44,6 +44,7 @@ Key features:
 - [sort-named-imports](https://perfectionist.dev/rules/sort-named-imports): Sort named imports
 - [sort-object-types](https://perfectionist.dev/rules/sort-object-types): Sort TypeScript object type properties
 - [sort-objects](https://perfectionist.dev/rules/sort-objects): Sort object properties
+- [sort-regexp](https://perfectionist.dev/rules/sort-regexp): Sort regular expressions
 - [sort-sets](https://perfectionist.dev/rules/sort-sets): Sort Set elements
 - [sort-switch-case](https://perfectionist.dev/rules/sort-switch-case): Sort switch statement cases
 - [sort-union-types](https://perfectionist.dev/rules/sort-union-types): Sort TypeScript union types

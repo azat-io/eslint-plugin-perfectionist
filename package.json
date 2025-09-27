@@ -57,6 +57,7 @@
     "test:unit": "vitest --run --coverage"
   },
   "dependencies": {
+    "@eslint-community/regexpp": "^4.12.1",
     "@typescript-eslint/utils": "^8.46.2",
     "natural-orderby": "^5.0.0"
   },

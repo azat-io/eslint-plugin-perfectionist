@@ -10,6 +10,9 @@ importers:
 
   .:
     dependencies:
+      '@eslint-community/regexpp':
+        specifier: ^4.12.1
+        version: 4.12.1
       '@typescript-eslint/utils':
         specifier: ^8.46.2
         version: 8.46.2(eslint@9.36.0(jiti@2.6.1))(typescript@5.9.3)

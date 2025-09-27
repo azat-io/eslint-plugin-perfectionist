@@ -20,6 +20,7 @@ import sortImports from './rules/sort-imports'
 import sortExports from './rules/sort-exports'
 import sortObjects from './rules/sort-objects'
 import sortModules from './rules/sort-modules'
+import sortRegexp from './rules/sort-regexp'
 import sortEnums from './rules/sort-enums'
 import sortMaps from './rules/sort-maps'
 import sortSets from './rules/sort-sets'
@@ -45,6 +46,7 @@ interface PluginConfig {
     'sort-imports': Rule.RuleModule
     'sort-exports': Rule.RuleModule
     'sort-objects': Rule.RuleModule
+    'sort-regexp': Rule.RuleModule
     'sort-enums': Rule.RuleModule
     'sort-sets': Rule.RuleModule
     'sort-maps': Rule.RuleModule
@@ -92,6 +94,7 @@ export let rules = {
   'sort-imports': sortImports,
   'sort-exports': sortExports,
   'sort-objects': sortObjects,
+  'sort-regexp': sortRegexp,
   'sort-enums': sortEnums,
   'sort-sets': sortSets,
   'sort-maps': sortMaps,
