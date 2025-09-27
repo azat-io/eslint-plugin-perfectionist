@@ -649,7 +649,7 @@ describe('sort-enums', () => {
         options: [
           {
             ...options,
-            sortByValue: true,
+            sortByValue: 'always',
           },
         ],
       })
@@ -1571,6 +1571,24 @@ describe('sort-enums', () => {
         })
       },
     )
+
+    it('does not sort by value for a numeric enum if sortByValue is "never"', async () => {
+      await valid({
+        code: dedent`
+          enum Enum {
+            A = 3,
+            B = 1,
+            C = 2,
+          }
+        `,
+        options: [
+          {
+            ...options,
+            sortByValue: 'never',
+          },
+        ],
+      })
+    })
   })
 
   describe('natural', () => {
@@ -2208,7 +2226,7 @@ describe('sort-enums', () => {
         options: [
           {
             ...options,
-            sortByValue: true,
+            sortByValue: 'always',
           },
         ],
       })
@@ -3711,7 +3729,7 @@ describe('sort-enums', () => {
         options: [
           {
             ...options,
-            sortByValue: true,
+            sortByValue: 'always',
           },
         ],
       })
@@ -4847,7 +4865,7 @@ describe('sort-enums', () => {
         `,
         options: [
           {
-            forceNumericSort: true,
+            sortByValue: 'ifNumericEnum',
           },
         ],
       })
@@ -4863,7 +4881,7 @@ describe('sort-enums', () => {
         `,
         options: [
           {
-            forceNumericSort: true,
+            sortByValue: 'ifNumericEnum',
           },
         ],
       })
@@ -4879,7 +4897,7 @@ describe('sort-enums', () => {
         `,
         options: [
           {
-            forceNumericSort: true,
+            sortByValue: 'ifNumericEnum',
           },
         ],
       })
@@ -4895,7 +4913,7 @@ describe('sort-enums', () => {
         `,
         options: [
           {
-            forceNumericSort: true,
+            sortByValue: 'ifNumericEnum',
           },
         ],
       })
@@ -4921,7 +4939,23 @@ describe('sort-enums', () => {
         `,
         options: [
           {
-            forceNumericSort: true,
+            sortByValue: 'ifNumericEnum',
+          },
+        ],
+      })
+
+      await valid({
+        code: dedent`
+          enum Enum {
+              A = 1,
+              B = A,
+              C = -A,
+              D = 2,
+            }
+        `,
+        options: [
+          {
+            sortByValue: 'ifNumericEnum',
           },
         ],
       })
@@ -4963,7 +4997,7 @@ describe('sort-enums', () => {
           `,
           options: [
             {
-              sortByValue: true,
+              sortByValue: 'always',
               type,
             },
           ],
@@ -4972,7 +5006,7 @@ describe('sort-enums', () => {
     )
 
     it.each(['alphabetical', 'line-length', 'natural'])(
-      'forces numeric sorting when forceNumericSort is enabled (type: %s)',
+      'forces numeric sorting when sortByValue is ifNumericEnum (type: %s)',
       async type => {
         await invalid({
           errors: [
@@ -5007,7 +5041,7 @@ describe('sort-enums', () => {
           `,
           options: [
             {
-              forceNumericSort: true,
+              sortByValue: 'ifNumericEnum',
               type,
             },
           ],
@@ -5029,10 +5063,10 @@ describe('sort-enums', () => {
       await valid({
         code: dedent`
           enum NumberBase {
-            BASE_10 = 10,
-            BASE_16 = 16,
             BASE_2 = 2,
-            BASE_8 = 8
+            BASE_8 = 8,
+            BASE_10 = 10,
+            BASE_16 = 16
           }
         `,
         options: [{}],
