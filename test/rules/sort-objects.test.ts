@@ -2318,6 +2318,135 @@ describe('sort-objects', () => {
       })
     })
 
+    it('applies configuration when declarationMatchesPattern matches', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^constant$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const constant = {
+            b,
+            a,
+            c,
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^constant$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const notAConstant = {
+            constant: {
+              b,
+              a,
+              c,
+            }
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              declarationMatchesPattern: '^.*$',
+            },
+            type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          func({ a: 1, b: 1 })
+        `,
+        code: dedent`
+          func({ b: 1, a: 1 })
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^constant$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          let notAConstant = {
+            a,
+            b,
+          }
+        `,
+        code: dedent`
+          let notAConstant = {
+            b,
+            a,
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              declarationMatchesPattern: '^.*$',
+            },
+            type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          ({ a: 1, b: 1 })
+        `,
+        code: dedent`
+          ({ b: 1, a: 1 })
+        `,
+      })
+    })
+
     it('applies configuration when declaration comment matches', async () => {
       await valid({
         options: [

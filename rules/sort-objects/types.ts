@@ -43,6 +43,12 @@ export type Options = Partial<
       callingFunctionNamePattern?: RegexOption
 
       /**
+       * Regular expression pattern to match against the object's declaration
+       * name. The rule is only applied to declarations with matching names.
+       */
+      declarationMatchesPattern?: RegexOption
+
+      /**
        * Regular expression pattern to match against all property names. The
        * rule is only applied when all property names match this pattern.
        */
