@@ -323,6 +323,7 @@ The `groups` attribute specifies whether to use groups to sort destructured obje
   {
     allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
     callingFunctionNamePattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+    declarationMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
     declarationCommentMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
   }
   ```
@@ -378,6 +379,26 @@ Example configuration:
       type: 'unsorted', // Don't sort objects passed to createSlice
       useConfigurationIf: {
         callingFunctionNamePattern: '^createSlice$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `declarationMatchesPattern` — A regexp pattern that the object's declaration name must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-objects': [
+    'error',
+    {
+      type: 'unsorted', // Do not sort metadata objects
+      useConfigurationIf: {
+        declarationMatchesPattern: '*metadata$',
       },
     },
     {
