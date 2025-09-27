@@ -649,7 +649,7 @@ describe('sort-enums', () => {
         options: [
           {
             ...options,
-            sortByValue: true,
+            sortByValue: 'always',
           },
         ],
       })
@@ -1572,7 +1572,7 @@ describe('sort-enums', () => {
       },
     )
 
-    it('does not sort by value for a numeric enum if sortByValue is false', async () => {
+    it('does not sort by value for a numeric enum if sortByValue is "never"', async () => {
       await valid({
         code: dedent`
           enum Enum {
@@ -1584,7 +1584,7 @@ describe('sort-enums', () => {
         options: [
           {
             ...options,
-            sortByValue: false,
+            sortByValue: 'never',
           },
         ],
       })
@@ -2226,7 +2226,7 @@ describe('sort-enums', () => {
         options: [
           {
             ...options,
-            sortByValue: true,
+            sortByValue: 'always',
           },
         ],
       })
@@ -3729,7 +3729,7 @@ describe('sort-enums', () => {
         options: [
           {
             ...options,
-            sortByValue: true,
+            sortByValue: 'always',
           },
         ],
       })
@@ -4997,7 +4997,7 @@ describe('sort-enums', () => {
           `,
           options: [
             {
-              sortByValue: true,
+              sortByValue: 'always',
               type,
             },
           ],

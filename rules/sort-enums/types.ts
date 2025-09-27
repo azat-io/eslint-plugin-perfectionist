@@ -26,6 +26,14 @@ export type Options = Partial<
     customGroups: CustomGroupsOption<SingleCustomGroup>
 
     /**
+     * Whether to sort enum members by their values instead of names. When true,
+     * compares enum values; when false, compares enum member names.
+     *
+     * @default ifNumericEnum
+     */
+    sortByValue: 'ifNumericEnum' | 'always' | 'never'
+
+    /**
      * Partition enum members by comment delimiters. Members separated by
      * specific comments are sorted independently.
      */
@@ -36,14 +44,6 @@ export type Options = Partial<
      * members.
      */
     newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Whether to sort enum members by their values instead of names. When true,
-     * compares enum values; when false, compares enum member names.
-     *
-     * @default ifNumericEnum
-     */
-    sortByValue: 'ifNumericEnum' | boolean
 
     /**
      * Defines the order and grouping of enum members. Members are sorted within
