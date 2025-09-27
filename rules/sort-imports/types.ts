@@ -1,7 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
-  DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
   SpecialCharactersOption,
   NewlinesBetweenOption,
@@ -44,17 +43,8 @@ export type Options = Partial<{
       }
     | undefined
 
-  /**
-   * Custom groups for organizing imports. Can be an array of group
-   * configurations or separate configurations for value and type imports
-   * (deprecated).
-   */
-  customGroups:
-    | {
-        value?: DeprecatedCustomGroupsOption
-        type?: DeprecatedCustomGroupsOption
-      }
-    | CustomGroupsOption<SingleCustomGroup>
+  /** Custom groups for organizing imports. */
+  customGroups: CustomGroupsOption<SingleCustomGroup>
 
   /**
    * Partition imports by comment delimiters. Imports separated by specific
@@ -76,12 +66,6 @@ export type Options = Partial<{
 
   /** Controls the placement of newlines between different groups of imports. */
   newlinesBetween: NewlinesBetweenOption
-
-  /**
-   * @deprecated Since v4.14.0. Will be removed in v5.0.0. Use
-   *   {@link tsconfig.rootDir} instead.
-   */
-  tsconfigRootDir: undefined | string
 
   /**
    * Maximum line length for imports. When exceeded, import names are used for

@@ -463,7 +463,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              rightGroup: 'optional-multiline',
+              rightGroup: 'optional-multiline-member',
               leftGroup: 'index-signature',
               left: '[key: string]',
               right: 'b',
@@ -472,7 +472,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              leftGroup: 'optional-multiline',
+              leftGroup: 'optional-multiline-member',
               rightGroup: 'required-method',
               right: 'c',
               left: 'b',
@@ -486,7 +486,7 @@ describe('sort-interfaces', () => {
             groups: [
               'unknown',
               'required-method',
-              'optional-multiline',
+              'optional-multiline-member',
               'index-signature',
               'required-property',
             ],
@@ -549,15 +549,15 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('prioritizes index-signature over multiline', async () => {
+    it('prioritizes index-signature over member', async () => {
       await invalid({
         errors: [
           {
             data: {
               rightGroup: 'index-signature',
-              left: 'multilineProperty',
               right: '[key: string]',
-              leftGroup: 'multiline',
+              leftGroup: 'member',
+              left: 'member',
             },
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
@@ -565,37 +565,33 @@ describe('sort-interfaces', () => {
         output: dedent`
           interface Interface {
             [key: string]: string;
-            multilineProperty: {
-              a: string
-            }
+            member: 'something';
           }
         `,
         code: dedent`
           interface Interface {
-            multilineProperty: {
-              a: string
-            }
+            member: 'something';
             [key: string]: string;
           }
         `,
         options: [
           {
             ...options,
-            groups: ['index-signature', 'multiline'],
+            groups: ['index-signature', 'member'],
           },
         ],
       })
     })
 
-    it('prioritizes method over multiline', async () => {
+    it('prioritizes method over member', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
+              left: 'member',
             },
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
@@ -603,61 +599,19 @@ describe('sort-interfaces', () => {
         output: dedent`
           interface Interface {
             method(): string
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
           }
         `,
         code: dedent`
           interface Interface {
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
             method(): string
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes multiline over property', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'multilineProperty',
-              rightGroup: 'multiline',
-              leftGroup: 'property',
-              left: 'property',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            multilineProperty: {
-              a: string
-            }
-            property: string
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            property: string
-            multilineProperty: {
-              a: string
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['multiline', 'property'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -768,88 +722,6 @@ describe('sort-interfaces', () => {
           {
             ...options,
             groups: ['multiline-property', 'required-property'],
-          },
-        ],
-      })
-    })
-
-    it('allows to set groups for sorting', async () => {
-      await valid({
-        code: dedent`
-          interface Interface {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline', 'unknown'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'multiline',
-              leftGroup: 'unknown',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-          {
-            data: {
-              leftGroup: 'multiline',
-              rightGroup: 'g',
-              right: 'g',
-              left: 'd',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            g: 'g'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline', 'unknown'],
           },
         ],
       })
@@ -1478,28 +1350,6 @@ describe('sort-interfaces', () => {
       },
     )
 
-    it('allows to use regex for custom groups', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
-            groups: ['unknown', 'elementsWithoutFoo'],
-          },
-        ],
-        code: dedent`
-          interface Interface {
-              iHaveFooInMyName: string
-              meTooIHaveFoo: string
-              a: string
-              b: string
-          }
-        `,
-      })
-    })
-
     it('allows to use new line as partition', async () => {
       await valid({
         code: dedent`
@@ -1572,110 +1422,6 @@ describe('sort-interfaces', () => {
             partitionByNewLine: true,
           },
         ],
-      })
-    })
-
-    it('sorts interface properties with group kind', async () => {
-      await valid({
-        code: dedent`
-          interface Interface {
-            a?: string
-            [index: number]: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'optional-first',
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            a?: string
-            c?: string
-            d?: string
-            e?(): void
-            b: string
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            a?: string
-            b: string
-            c?: string
-            d?: string
-            e?(): void
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'optional-first',
-          },
-        ],
-      })
-    })
-
-    it('allows to set groups for sorting with group kind', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'unknown',
-              leftGroup: 'last',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-          {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: {
-              last: 'a',
-            },
-            groups: ['unknown', 'last'],
-            groupKind: 'optional-first',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            c?: string
-            d?: string
-            b: string
-            e: string
-            a: string
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            a: string
-            b: string
-            c?: string
-            d?: string
-            e: string
-          }
-        `,
       })
     })
 
@@ -2572,6 +2318,35 @@ describe('sort-interfaces', () => {
       'allows to use allNamesMatchPattern with %s',
       async (_description, rgbAllNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^r$',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: '^g$',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: '^b$',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -2590,26 +2365,6 @@ describe('sort-interfaces', () => {
                 left: 'g',
               },
               messageId: 'unexpectedInterfacePropertiesGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -2677,6 +2432,63 @@ describe('sort-interfaces', () => {
         `,
         code: dedent`
           interface OtherInterface {
+            b: string
+            a: string
+          }
+        `,
+      })
+    })
+
+    it('detects declaration comment by pattern', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          // Ignore me
+          interface Interface {
+            b: string
+            c: string
+            a: string
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedInterfacePropertiesOrder',
+          },
+        ],
+        output: dedent`
+          // Do NOT ignore me
+          interface Interface {
+            a: string
+            b: string
+          }
+        `,
+        code: dedent`
+          // Do NOT ignore me
+          interface Interface {
             b: string
             a: string
           }
@@ -3283,7 +3095,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              rightGroup: 'optional-multiline',
+              rightGroup: 'optional-multiline-member',
               leftGroup: 'index-signature',
               left: '[key: string]',
               right: 'b',
@@ -3292,7 +3104,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              leftGroup: 'optional-multiline',
+              leftGroup: 'optional-multiline-member',
               rightGroup: 'required-method',
               right: 'c',
               left: 'b',
@@ -3306,7 +3118,7 @@ describe('sort-interfaces', () => {
             groups: [
               'unknown',
               'required-method',
-              'optional-multiline',
+              'optional-multiline-member',
               'index-signature',
               'required-property',
             ],
@@ -3369,15 +3181,15 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('prioritizes index-signature over multiline', async () => {
+    it('prioritizes index-signature over member', async () => {
       await invalid({
         errors: [
           {
             data: {
               rightGroup: 'index-signature',
-              left: 'multilineProperty',
               right: '[key: string]',
-              leftGroup: 'multiline',
+              leftGroup: 'member',
+              left: 'member',
             },
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
@@ -3385,37 +3197,33 @@ describe('sort-interfaces', () => {
         output: dedent`
           interface Interface {
             [key: string]: string;
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
           }
         `,
         code: dedent`
           interface Interface {
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
             [key: string]: string;
           }
         `,
         options: [
           {
             ...options,
-            groups: ['index-signature', 'multiline'],
+            groups: ['index-signature', 'member'],
           },
         ],
       })
     })
 
-    it('prioritizes method over multiline', async () => {
+    it('prioritizes method over member', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
+              left: 'member',
             },
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
@@ -3423,61 +3231,19 @@ describe('sort-interfaces', () => {
         output: dedent`
           interface Interface {
             method(): string
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
           }
         `,
         code: dedent`
           interface Interface {
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
             method(): string
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes multiline over property', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'multilineProperty',
-              rightGroup: 'multiline',
-              leftGroup: 'property',
-              left: 'property',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            multilineProperty: {
-              a: string
-            }
-            property: string
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            property: string
-            multilineProperty: {
-              a: string
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['multiline', 'property'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -3588,88 +3354,6 @@ describe('sort-interfaces', () => {
           {
             ...options,
             groups: ['multiline-property', 'required-property'],
-          },
-        ],
-      })
-    })
-
-    it('allows to set groups for sorting', async () => {
-      await valid({
-        code: dedent`
-          interface Interface {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline', 'unknown'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'multiline',
-              leftGroup: 'unknown',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-          {
-            data: {
-              leftGroup: 'multiline',
-              rightGroup: 'g',
-              right: 'g',
-              left: 'd',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            g: 'g'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline', 'unknown'],
           },
         ],
       })
@@ -4298,28 +3982,6 @@ describe('sort-interfaces', () => {
       },
     )
 
-    it('allows to use regex for custom groups', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
-            groups: ['unknown', 'elementsWithoutFoo'],
-          },
-        ],
-        code: dedent`
-          interface Interface {
-              iHaveFooInMyName: string
-              meTooIHaveFoo: string
-              a: string
-              b: string
-          }
-        `,
-      })
-    })
-
     it('allows to use new line as partition', async () => {
       await valid({
         code: dedent`
@@ -4392,110 +4054,6 @@ describe('sort-interfaces', () => {
             partitionByNewLine: true,
           },
         ],
-      })
-    })
-
-    it('sorts interface properties with group kind', async () => {
-      await valid({
-        code: dedent`
-          interface Interface {
-            a?: string
-            [index: number]: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'optional-first',
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            a?: string
-            c?: string
-            d?: string
-            e?(): void
-            b: string
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            a?: string
-            b: string
-            c?: string
-            d?: string
-            e?(): void
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'optional-first',
-          },
-        ],
-      })
-    })
-
-    it('allows to set groups for sorting with group kind', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'unknown',
-              leftGroup: 'last',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-          {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: {
-              last: 'a',
-            },
-            groups: ['unknown', 'last'],
-            groupKind: 'optional-first',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            c?: string
-            d?: string
-            b: string
-            e: string
-            a: string
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            a: string
-            b: string
-            c?: string
-            d?: string
-            e: string
-          }
-        `,
       })
     })
 
@@ -5392,6 +4950,35 @@ describe('sort-interfaces', () => {
       'allows to use allNamesMatchPattern with %s',
       async (_description, rgbAllNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^r$',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: '^g$',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: '^b$',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -5410,26 +4997,6 @@ describe('sort-interfaces', () => {
                 left: 'g',
               },
               messageId: 'unexpectedInterfacePropertiesGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -6089,7 +5656,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              rightGroup: 'optional-multiline',
+              rightGroup: 'optional-multiline-member',
               leftGroup: 'index-signature',
               left: '[key: string]',
               right: 'b',
@@ -6098,7 +5665,7 @@ describe('sort-interfaces', () => {
           },
           {
             data: {
-              leftGroup: 'optional-multiline',
+              leftGroup: 'optional-multiline-member',
               rightGroup: 'required-method',
               right: 'c',
               left: 'b',
@@ -6112,7 +5679,7 @@ describe('sort-interfaces', () => {
             groups: [
               'unknown',
               'required-method',
-              'optional-multiline',
+              'optional-multiline-member',
               'index-signature',
               'required-property',
             ],
@@ -6175,15 +5742,15 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('prioritizes index-signature over multiline', async () => {
+    it('prioritizes index-signature over member', async () => {
       await invalid({
         errors: [
           {
             data: {
               rightGroup: 'index-signature',
-              left: 'multilineProperty',
               right: '[key: string]',
-              leftGroup: 'multiline',
+              leftGroup: 'member',
+              left: 'member',
             },
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
@@ -6191,37 +5758,33 @@ describe('sort-interfaces', () => {
         output: dedent`
           interface Interface {
             [key: string]: string;
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
           }
         `,
         code: dedent`
           interface Interface {
-            multilineProperty: {
-              a: string
-            }
+            member: 'something'
             [key: string]: string;
           }
         `,
         options: [
           {
             ...options,
-            groups: ['index-signature', 'multiline'],
+            groups: ['index-signature', 'member'],
           },
         ],
       })
     })
 
-    it('prioritizes method over multiline', async () => {
+    it('prioritizes method over member', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
+              left: 'member',
             },
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
@@ -6229,61 +5792,19 @@ describe('sort-interfaces', () => {
         output: dedent`
           interface Interface {
             method(): string
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
           }
         `,
         code: dedent`
           interface Interface {
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
             method(): string
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes multiline over property', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'multilineProperty',
-              rightGroup: 'multiline',
-              leftGroup: 'property',
-              left: 'property',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            multilineProperty: {
-              a: string
-            }
-            property: string
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            property: string
-            multilineProperty: {
-              a: string
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['multiline', 'property'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -6394,88 +5915,6 @@ describe('sort-interfaces', () => {
           {
             ...options,
             groups: ['multiline-property', 'required-property'],
-          },
-        ],
-      })
-    })
-
-    it('allows to set groups for sorting', async () => {
-      await valid({
-        code: dedent`
-          interface Interface {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline', 'unknown'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'multiline',
-              leftGroup: 'unknown',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-          {
-            data: {
-              leftGroup: 'multiline',
-              rightGroup: 'g',
-              right: 'g',
-              left: 'd',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            g: 'g'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline', 'unknown'],
           },
         ],
       })
@@ -7104,28 +6543,6 @@ describe('sort-interfaces', () => {
       },
     )
 
-    it('allows to use regex for custom groups', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
-            groups: ['unknown', 'elementsWithoutFoo'],
-          },
-        ],
-        code: dedent`
-          interface Interface {
-              iHaveFooInMyName: string
-              meTooIHaveFoo: string
-              a: string
-              b: string
-          }
-        `,
-      })
-    })
-
     it('allows to use new line as partition', async () => {
       await valid({
         code: dedent`
@@ -7198,110 +6615,6 @@ describe('sort-interfaces', () => {
             partitionByNewLine: true,
           },
         ],
-      })
-    })
-
-    it('sorts interface properties with group kind', async () => {
-      await valid({
-        code: dedent`
-          interface Interface {
-            a?: string
-            [index: number]: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'optional-first',
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            a?: string
-            c?: string
-            d?: string
-            e?(): void
-            b: string
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            a?: string
-            b: string
-            c?: string
-            d?: string
-            e?(): void
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'optional-first',
-          },
-        ],
-      })
-    })
-
-    it('allows to set groups for sorting with group kind', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'unknown',
-              leftGroup: 'last',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedInterfacePropertiesGroupOrder',
-          },
-          {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: {
-              last: 'a',
-            },
-            groups: ['unknown', 'last'],
-            groupKind: 'optional-first',
-          },
-        ],
-        output: dedent`
-          interface Interface {
-            c?: string
-            d?: string
-            b: string
-            e: string
-            a: string
-          }
-        `,
-        code: dedent`
-          interface Interface {
-            a: string
-            b: string
-            c?: string
-            d?: string
-            e: string
-          }
-        `,
       })
     })
 
@@ -8191,6 +7504,35 @@ describe('sort-interfaces', () => {
       'allows to use allNamesMatchPattern with %s',
       async (_description, rgbAllNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^r$',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: '^g$',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: '^b$',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -8209,26 +7551,6 @@ describe('sort-interfaces', () => {
                 left: 'g',
               },
               messageId: 'unexpectedInterfacePropertiesGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -8634,24 +7956,6 @@ describe('sort-interfaces', () => {
           interface Interface {
             b: string
             a: string
-          }
-        `,
-      })
-    })
-
-    it('allows to ignore interfaces', async () => {
-      await valid({
-        options: [
-          {
-            ignorePattern: ['Ignore'],
-            type: 'line-length',
-            order: 'desc',
-          },
-        ],
-        code: dedent`
-          interface IgnoreInterface {
-            b: 'b'
-            a: 'aaa'
           }
         `,
       })

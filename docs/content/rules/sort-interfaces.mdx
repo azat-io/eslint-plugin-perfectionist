@@ -248,16 +248,6 @@ interface User {
 
 ```
 
-### [DEPRECATED] ignorePattern
-
-<sub>default: `[]`</sub>
-
-Use the [useConfigurationIf.declarationMatchesPattern](#useconfigurationif) option alongside [type: unsorted](#type) instead.
-
-Specifies names or patterns for interfaces that should be ignored by this rule. This can be useful if you have specific interfaces that you do not want to sort.
-
-You can specify their names or a regexp pattern to ignore, for example: `'^Component.+'` to ignore all interfaces whose names begin with the word “Component”.
-
 ### partitionByComment
 
 <sub>default: `false`</sub>
@@ -311,18 +301,6 @@ See the [`groups`](#newlines-between-groups) option.
 
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
-### [DEPRECATED] groupKind
-
-<sub>default: `'mixed'`</sub>
-
-Use the [groups](#groups) option with the `optional` and `required` modifiers instead.
-
-Specifies how optional and required members should be ordered in TypeScript interfaces.
-
-- `'optional-first'` — Put all optional members before required members.
-- `'required-first'` — Put all required members before optional members.
-- `'mixed'` — Do not enforce any specific order based on optionality.
-
 ### useConfigurationIf
 
 <sub>
@@ -331,6 +309,7 @@ Specifies how optional and required members should be ordered in TypeScript inte
   {
     allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
     declarationMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+    declarationCommentMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
   }
   ```
 </sub>
@@ -348,11 +327,20 @@ Example configuration:
     'error',
     {
       groups: ['r', 'g', 'b'], // Sort colors types by RGB
-      customGroups: {
-        r: '^r$',
-        g: '^g$',
-        b: '^b$',
-      },
+      customGroups: [
+        {
+          groupName: 'r',
+          elementNamePattern: '^r$',
+        },
+        {
+          groupName: 'g',
+          elementNamePattern: '^g$',
+        },
+        {
+          groupName: 'b',
+          elementNamePattern: '^b$',
+        },
+      ],
       useConfigurationIf: {
         allNamesMatchPattern: '^r|g|b$',
       },
@@ -375,6 +363,26 @@ Example configuration:
       type: 'unsorted', // Do not sort Metadata interfaces
       useConfigurationIf: {
         declarationMatchesPattern: '*Metadata$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `declarationCommentMatchesPattern` — A regexp pattern to specify which comments above the interface declaration should match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-interfaces': [
+    'error',
+    {
+      type: 'unsorted', // Don't sort interfaces with a "do not sort" comment
+      useConfigurationIf: {
+        declarationCommentMatchesPattern: '^do not sort$',
       },
     },
     {
@@ -684,12 +692,10 @@ interface User {
                   ignoreCase: true,
                   specialCharacters: 'keep',
                   sortBy: 'name',
-                  ignorePattern: [],
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   useConfigurationIf: {},
-                  groupKind: 'mixed',
                   groups: [],
                   customGroups: [],
                 },
@@ -718,12 +724,10 @@ interface User {
                 ignoreCase: true,
                 specialCharacters: 'keep',
                 sortBy: 'name',
-                ignorePattern: [],
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 useConfigurationIf: {},
-                groupKind: 'mixed',
                 groups: [],
                 customGroups: [],
               },
