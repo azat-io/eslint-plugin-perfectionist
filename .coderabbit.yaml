@@ -1,0 +1,118 @@
+# Set the language for reviews by using the corresponding ISO language code.
+language: 'en-US'
+
+# Enable early-access features.
+early_access: true
+
+# Enable free tier features for users not on a paid plan.
+enable_free_tier: true
+
+# Settings related to reviews.
+reviews:
+  # Set the profile for reviews.
+  profile: 'chill'
+
+  # Approve the review once CodeRabbit’s comments are resolved and no pre-merge
+  # checks are in an error state.
+  request_changes_workflow: false
+
+  # Generate a high level summary of the changes in the PR/MR description.
+  high_level_summary: true
+
+  # Include the high level summary in the walkthrough comment.
+  high_level_summary_in_walkthrough: true
+
+  # Post review details on each review. Additionally, post a review status when
+  # a review is skipped in certain cases.
+  review_status: true
+
+  # Set the commit status to ‘pending’ when the review is in progress and
+  # ‘success’ when it is complete.
+  commit_status: true
+
+  # Set the commit status to ‘failure’ when the PR cannot be reviewed by
+  # CodeRabbit for any reason.
+  fail_commit_status: false
+
+  # Generate walkthrough in a markdown collapsible section.
+  collapse_walkthrough: true
+
+  # Generate a summary of the changed files in the walkthrough.
+  changed_files_summary: true
+
+  # Generate sequence diagrams in the walkthrough.
+  sequence_diagrams: true
+
+  # Estimate the code review effort in the walkthrough.
+  estimate_code_review_effort: true
+
+  # Generate an assessment of how well the changes address the linked issues in
+  # the walkthrough.
+  assess_linked_issues: true
+
+  # Include possibly related issues in the walkthrough.
+  related_issues: true
+
+  # Include possibly related pull requests in the walkthrough.
+  related_prs: true
+
+  # Suggest labels based on the changes in the pull request in the walkthrough.
+  suggested_labels: false
+
+  # Automatically apply suggested labels to the pull request.
+  auto_apply_labels: false
+
+  # Suggest reviewers based on the changes in the pull request in the
+  # walkthrough.
+  suggested_reviewers: true
+
+  # Automatically assign suggested reviewers to the pull request.
+  auto_assign_reviewers: false
+
+  # Post an in-progress fortune message while the review is in progress.
+  in_progress_fortune: true
+
+  # Generate a poem in the walkthrough comment.
+  poem: false
+
+  # Specify file patterns to include or exclude in a review using glob patterns.
+  path_filters:
+    - '!pnpm-lock.yaml'
+
+  # Abort the in-progress review if the pull request is closed or merged.
+  abort_on_close: true
+
+  # Disable caching of code and dependencies.
+  disable_cache: false
+
+  # Configuration for auto review.
+  auto_review:
+    # Automatic code review.
+    enabled: true
+
+    # Automatic incremental code review on each push.
+    auto_incremental_review: true
+
+    # Review draft PRs.
+    drafts: false
+
+    # Base branches.
+    base_branches:
+      - '.*'
+
+    # Ignore reviewing pull requests by these usernames.
+    ignore_usernames:
+      - 'codecov[bot]'
+      - 'github-actions[bot]'
+
+  # Configuration for finishing touches.
+  finishing_touches:
+    # Options for generating Docstrings for your PRs.
+    docstrings:
+      # Allow CodeRabbit to generate docstrings for PRs.
+      enabled: false
+
+    # Options for generating unit tests for your PRs.
+    unit_tests:
+      # Allow CodeRabbit to generate unit tests for PRs.
+      enabled: false
