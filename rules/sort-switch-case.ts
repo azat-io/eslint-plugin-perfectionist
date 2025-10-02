@@ -286,6 +286,7 @@ export default createEslintRule<Options, MessageId>({
     messages: {
       unexpectedSwitchCaseOrder: ORDER_ERROR,
     },
+    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },
