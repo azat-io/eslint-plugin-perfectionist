@@ -237,6 +237,7 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted JSX props.',
       recommended: true,
     },
+    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },

@@ -193,6 +193,7 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted export attributes.',
       recommended: true,
     },
+    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },

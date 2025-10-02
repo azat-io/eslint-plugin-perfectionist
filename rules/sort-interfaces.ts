@@ -35,6 +35,23 @@ let defaultOptions: Required<Options[number]> = {
 }
 
 export default createEslintRule<Options, MessageId>({
+  meta: {
+    messages: {
+      unexpectedInterfacePropertiesGroupOrder: GROUP_ORDER_ERROR,
+      missedSpacingBetweenInterfaceMembers: MISSED_SPACING_ERROR,
+      extraSpacingBetweenInterfaceMembers: EXTRA_SPACING_ERROR,
+      unexpectedInterfacePropertiesOrder: ORDER_ERROR,
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-interfaces',
+      description: 'Enforce sorted interface properties.',
+      recommended: true,
+    },
+    defaultOptions: [defaultOptions],
+    schema: jsonSchema,
+    type: 'suggestion',
+    fixable: 'code',
+  },
   create: context => ({
     TSInterfaceDeclaration: node =>
       sortObjectTypeElements<MessageId>({
@@ -49,22 +66,6 @@ export default createEslintRule<Options, MessageId>({
         context,
       }),
   }),
-  meta: {
-    messages: {
-      unexpectedInterfacePropertiesGroupOrder: GROUP_ORDER_ERROR,
-      missedSpacingBetweenInterfaceMembers: MISSED_SPACING_ERROR,
-      extraSpacingBetweenInterfaceMembers: EXTRA_SPACING_ERROR,
-      unexpectedInterfacePropertiesOrder: ORDER_ERROR,
-    },
-    docs: {
-      url: 'https://perfectionist.dev/rules/sort-interfaces',
-      description: 'Enforce sorted interface properties.',
-      recommended: true,
-    },
-    schema: jsonSchema,
-    type: 'suggestion',
-    fixable: 'code',
-  },
   defaultOptions: [defaultOptions],
   name: 'sort-interfaces',
 })

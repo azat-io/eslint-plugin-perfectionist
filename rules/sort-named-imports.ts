@@ -226,6 +226,7 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted named imports.',
       recommended: true,
     },
+    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },

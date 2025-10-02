@@ -670,6 +670,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
       description: 'Enforce sorted classes.',
       recommended: true,
     },
+    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },

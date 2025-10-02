@@ -232,6 +232,7 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted Map elements.',
       recommended: true,
     },
+    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },

@@ -140,6 +140,7 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted object types.',
       recommended: true,
     },
+    defaultOptions: [defaultOptions],
     schema: jsonSchema,
     type: 'suggestion',
     fixable: 'code',

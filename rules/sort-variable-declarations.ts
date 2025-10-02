@@ -222,6 +222,7 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted variable declarations.',
       recommended: true,
     },
+    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },
