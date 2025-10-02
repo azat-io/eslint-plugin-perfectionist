@@ -93,7 +93,7 @@
     "cspell": "^9.2.1",
     "dedent": "^1.7.0",
     "eslint": "^9.36.0",
-    "eslint-plugin-eslint-plugin": "^6.5.0",
+    "eslint-plugin-eslint-plugin": "^7.0.0",
     "eslint-vitest-rule-tester": "^2.2.2",
     "json-schema-to-typescript-lite": "^15.0.0",
     "keyux": "^0.11.3",
