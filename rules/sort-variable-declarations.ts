@@ -246,37 +246,37 @@ function extractDependencies(init: TSESTree.Expression): string[] {
     }
 
     if (nodeValue.type === 'Property') {
-      traverseNode(nodeValue.key)
-      traverseNode(nodeValue.value)
+      checkNode(nodeValue.key)
+      checkNode(nodeValue.value)
     }
 
     if (nodeValue.type === 'ConditionalExpression') {
-      traverseNode(nodeValue.test)
-      traverseNode(nodeValue.consequent)
-      traverseNode(nodeValue.alternate)
+      checkNode(nodeValue.test)
+      checkNode(nodeValue.consequent)
+      checkNode(nodeValue.alternate)
     }
 
     if (
       'expression' in nodeValue &&
       typeof nodeValue.expression !== 'boolean'
     ) {
-      traverseNode(nodeValue.expression)
+      checkNode(nodeValue.expression)
     }
 
     if ('object' in nodeValue) {
-      traverseNode(nodeValue.object)
+      checkNode(nodeValue.object)
     }
 
     if ('callee' in nodeValue) {
-      traverseNode(nodeValue.callee)
+      checkNode(nodeValue.callee)
     }
 
     if ('left' in nodeValue) {
-      traverseNode(nodeValue.left)
+      checkNode(nodeValue.left)
     }
 
     if ('right' in nodeValue) {
-      traverseNode(nodeValue.right as TSESTree.Node)
+      checkNode(nodeValue.right as TSESTree.Node)
     }
 
     if ('elements' in nodeValue) {
@@ -285,37 +285,33 @@ function extractDependencies(init: TSESTree.Expression): string[] {
       )
 
       for (let element of elements) {
-        traverseNode(element)
+        checkNode(element)
       }
     }
 
     if ('argument' in nodeValue && nodeValue.argument) {
-      traverseNode(nodeValue.argument)
+      checkNode(nodeValue.argument)
     }
 
     if ('arguments' in nodeValue) {
       for (let argument of nodeValue.arguments) {
-        traverseNode(argument)
+        checkNode(argument)
       }
     }
 
     if ('properties' in nodeValue) {
       for (let property of nodeValue.properties) {
-        traverseNode(property)
+        checkNode(property)
       }
     }
 
     if ('expressions' in nodeValue) {
       for (let nodeExpression of nodeValue.expressions) {
-        traverseNode(nodeExpression)
+        checkNode(nodeExpression)
       }
     }
   }
 
-  function traverseNode(nodeValue: TSESTree.Node): void {
-    checkNode(nodeValue)
-  }
-
-  traverseNode(init)
+  checkNode(init)
   return dependencies
 }
