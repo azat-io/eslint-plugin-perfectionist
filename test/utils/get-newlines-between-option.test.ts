@@ -312,7 +312,7 @@ describe('get-newlines-between-option', () => {
         )
 
         it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
-          'should return 0 if there are only `never` between all groups and global option is `%s`',
+          'should return 0 if there are only 0 between all groups and global option is `%s`',
           newlinesBetween => {
             expect(
               getNewlinesBetweenOption(

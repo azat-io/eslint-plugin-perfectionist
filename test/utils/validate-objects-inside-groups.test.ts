@@ -22,9 +22,9 @@ function buildAllPossibleCases(): {
   first: (typeof cases)[number]
 }[] {
   let cases = [
-    { newlinesBetween: 'always' },
+    { newlinesBetween: 1 },
     { commentAbove: 'comment' },
-    { newlinesBetween: 'always', commentAbove: 'comment' },
+    { commentAbove: 'comment', newlinesBetween: 1 },
   ] as const
 
   let returnValue: {
