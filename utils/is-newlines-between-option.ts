@@ -17,7 +17,7 @@ import type {
  * @example
  *   const groups = [
  *     'imports',
- *     { newlinesBetween: 'always' }, // Add 1 newline between imports and types
+ *     { newlinesBetween: 1 }, // Add 1 newline between imports and types
  *     'types',
  *     { newlinesBetween: 2 }, // Add 2 newlines between types and components
  *     'components',

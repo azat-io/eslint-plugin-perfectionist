@@ -15,10 +15,7 @@ import { isNewlinesBetweenOption } from './is-newlines-between-option'
 export interface GetNewlinesBetweenOptionParameters {
   /** Configuration options for newlines and groups. */
   options: {
-    /**
-     * Global newlines configuration: 'always', 'never', 'ignore', or numeric
-     * value.
-     */
+    /** Global newlines configuration: 'ignore', or numeric value. */
     newlinesBetween: NewlinesBetweenOption
 
     /**
