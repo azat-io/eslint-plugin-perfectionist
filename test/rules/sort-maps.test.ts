@@ -951,10 +951,7 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ])(
+    it.each([['0', 0]])(
       'removes extra newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -1031,16 +1028,16 @@ describe('sort-maps', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1097,10 +1094,8 @@ describe('sort-maps', () => {
     })
 
     it.each([
-      ['2 spaces globally with never in group', 2, 'never'],
       ['2 spaces globally with 0 in group', 2, 0],
       ['2 spaces globally with ignore in group', 2, 'ignore'],
-      ['never globally with 2 spaces in group', 'never', 2],
       ['0 globally with 2 spaces in group', 0, 2],
       ['ignore globally with 2 spaces in group', 'ignore', 2],
     ])(
@@ -1152,13 +1147,12 @@ describe('sort-maps', () => {
     )
 
     it.each([
-      ['always', 'always'],
+      ['1 space', 1],
       ['2 spaces', 2],
       ['ignore', 'ignore'],
-      ['never', 'never'],
       ['0', 0],
     ])(
-      'removes newlines when never is between groups despite %s global setting',
+      'removes newlines when 0 is between groups despite %s global setting',
       async (_description, globalNewlinesBetween) => {
         await invalid({
           options: [
@@ -1172,11 +1166,11 @@ describe('sort-maps', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -1209,9 +1203,7 @@ describe('sort-maps', () => {
     )
 
     it.each([
-      ['ignore globally with never in group', 'ignore', 'never'],
       ['ignore globally with 0 in group', 'ignore', 0],
-      ['never globally with ignore in group', 'never', 'ignore'],
       ['0 globally with ignore in group', 0, 'ignore'],
     ])(
       'allows any spacing when %s',
@@ -1282,7 +1274,7 @@ describe('sort-maps', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1315,10 +1307,7 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -2386,10 +2375,7 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ])(
+    it.each([['0', 0]])(
       'removes extra newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -2466,16 +2452,16 @@ describe('sort-maps', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -2532,10 +2518,8 @@ describe('sort-maps', () => {
     })
 
     it.each([
-      ['2 spaces globally with never in group', 2, 'never'],
       ['2 spaces globally with 0 in group', 2, 0],
       ['2 spaces globally with ignore in group', 2, 'ignore'],
-      ['never globally with 2 spaces in group', 'never', 2],
       ['0 globally with 2 spaces in group', 0, 2],
       ['ignore globally with 2 spaces in group', 'ignore', 2],
     ])(
@@ -2587,13 +2571,12 @@ describe('sort-maps', () => {
     )
 
     it.each([
-      ['always', 'always'],
+      ['1 space', 1],
       ['2 spaces', 2],
       ['ignore', 'ignore'],
-      ['never', 'never'],
       ['0', 0],
     ])(
-      'removes newlines when never is between groups despite %s global setting',
+      'removes newlines when 0 is between groups despite %s global setting',
       async (_description, globalNewlinesBetween) => {
         await invalid({
           options: [
@@ -2607,11 +2590,11 @@ describe('sort-maps', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -2644,9 +2627,7 @@ describe('sort-maps', () => {
     )
 
     it.each([
-      ['ignore globally with never in group', 'ignore', 'never'],
       ['ignore globally with 0 in group', 'ignore', 0],
-      ['never globally with ignore in group', 'never', 'ignore'],
       ['0 globally with ignore in group', 0, 'ignore'],
     ])(
       'allows any spacing when %s',
@@ -2717,7 +2698,7 @@ describe('sort-maps', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -2750,10 +2731,7 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -3821,10 +3799,7 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ])(
+    it.each([['0', 0]])(
       'removes extra newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -3901,16 +3876,16 @@ describe('sort-maps', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -3967,10 +3942,8 @@ describe('sort-maps', () => {
     })
 
     it.each([
-      ['2 spaces globally with never in group', 2, 'never'],
       ['2 spaces globally with 0 in group', 2, 0],
       ['2 spaces globally with ignore in group', 2, 'ignore'],
-      ['never globally with 2 spaces in group', 'never', 2],
       ['0 globally with 2 spaces in group', 0, 2],
       ['ignore globally with 2 spaces in group', 'ignore', 2],
     ])(
@@ -4022,13 +3995,12 @@ describe('sort-maps', () => {
     )
 
     it.each([
-      ['always', 'always'],
+      ['1 space', 1],
       ['2 spaces', 2],
       ['ignore', 'ignore'],
-      ['never', 'never'],
       ['0', 0],
     ])(
-      'removes newlines when never is between groups despite %s global setting',
+      'removes newlines when 0 is between groups despite %s global setting',
       async (_description, globalNewlinesBetween) => {
         await invalid({
           options: [
@@ -4042,11 +4014,11 @@ describe('sort-maps', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4079,9 +4051,7 @@ describe('sort-maps', () => {
     )
 
     it.each([
-      ['ignore globally with never in group', 'ignore', 'never'],
       ['ignore globally with 0 in group', 'ignore', 0],
-      ['never globally with ignore in group', 'never', 'ignore'],
       ['0 globally with ignore in group', 0, 'ignore'],
     ])(
       'allows any spacing when %s',
@@ -4152,7 +4122,7 @@ describe('sort-maps', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4185,10 +4155,7 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -4450,7 +4417,7 @@ describe('sort-maps', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],

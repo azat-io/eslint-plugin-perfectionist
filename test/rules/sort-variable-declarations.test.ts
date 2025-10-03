@@ -1405,10 +1405,7 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -1469,10 +1466,7 @@ describe('sort-variable-declarations', () => {
       },
     )
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
+    it.each([['1', 1]])(
       'adds newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -1552,16 +1546,16 @@ describe('sort-variable-declarations', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1616,12 +1610,10 @@ describe('sort-variable-declarations', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1668,14 +1660,8 @@ describe('sort-variable-declarations', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -1689,11 +1675,11 @@ describe('sort-variable-declarations', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -1724,10 +1710,8 @@ describe('sort-variable-declarations', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1795,7 +1779,7 @@ describe('sort-variable-declarations', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1826,10 +1810,7 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries regardless of newlinesBetween %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -3263,10 +3244,7 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -3327,10 +3305,7 @@ describe('sort-variable-declarations', () => {
       },
     )
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
+    it.each([['1', 1]])(
       'adds newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -3410,16 +3385,16 @@ describe('sort-variable-declarations', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -3474,12 +3449,10 @@ describe('sort-variable-declarations', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -3526,14 +3499,8 @@ describe('sort-variable-declarations', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -3547,11 +3514,11 @@ describe('sort-variable-declarations', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -3582,10 +3549,8 @@ describe('sort-variable-declarations', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -3653,7 +3618,7 @@ describe('sort-variable-declarations', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -3684,10 +3649,7 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries regardless of newlinesBetween %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -5121,10 +5083,7 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -5185,10 +5144,7 @@ describe('sort-variable-declarations', () => {
       },
     )
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
+    it.each([['1', 1]])(
       'adds newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -5268,16 +5224,16 @@ describe('sort-variable-declarations', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -5332,12 +5288,10 @@ describe('sort-variable-declarations', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -5384,14 +5338,8 @@ describe('sort-variable-declarations', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -5405,11 +5353,11 @@ describe('sort-variable-declarations', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -5440,10 +5388,8 @@ describe('sort-variable-declarations', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -5511,7 +5457,7 @@ describe('sort-variable-declarations', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -5542,10 +5488,7 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries regardless of newlinesBetween %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -5665,7 +5608,7 @@ describe('sort-variable-declarations', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],

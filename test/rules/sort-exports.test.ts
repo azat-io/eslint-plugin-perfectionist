@@ -836,10 +836,7 @@ describe('sort-exports', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -928,15 +925,15 @@ describe('sort-exports', () => {
             groups: [
               'a',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'b',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'c',
               {
-                newlinesBetween: 'never',
+                newlinesBetween: 0,
               },
               'd',
               {
@@ -944,7 +941,7 @@ describe('sort-exports', () => {
               },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -997,12 +994,10 @@ describe('sort-exports', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1047,14 +1042,8 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'enforces no newline if the global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -1068,11 +1057,11 @@ describe('sort-exports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -1101,10 +1090,8 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1159,10 +1146,7 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'ignores newline fixes between different partitions when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -1444,11 +1428,11 @@ describe('sort-exports', () => {
               'value-export',
               {
                 commentAbove: 'Type exports',
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               ['type-export'],
             ],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
         output: dedent`
@@ -2301,10 +2285,7 @@ describe('sort-exports', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -2393,15 +2374,15 @@ describe('sort-exports', () => {
             groups: [
               'a',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'b',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'c',
               {
-                newlinesBetween: 'never',
+                newlinesBetween: 0,
               },
               'd',
               {
@@ -2409,7 +2390,7 @@ describe('sort-exports', () => {
               },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -2462,12 +2443,10 @@ describe('sort-exports', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2512,14 +2491,8 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'enforces no newline if the global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -2533,11 +2506,11 @@ describe('sort-exports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -2566,10 +2539,8 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2625,12 +2596,10 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2675,14 +2644,8 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'enforces no newline if the global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -2696,11 +2659,11 @@ describe('sort-exports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -2729,10 +2692,8 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2787,10 +2748,7 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'ignores newline fixes between different partitions when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -3072,11 +3030,11 @@ describe('sort-exports', () => {
               'value-export',
               {
                 commentAbove: 'Type exports',
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               ['type-export'],
             ],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
         output: dedent`
@@ -3922,10 +3880,7 @@ describe('sort-exports', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -4007,15 +3962,15 @@ describe('sort-exports', () => {
             groups: [
               'a',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'b',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'c',
               {
-                newlinesBetween: 'never',
+                newlinesBetween: 0,
               },
               'd',
               {
@@ -4023,7 +3978,7 @@ describe('sort-exports', () => {
               },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4076,12 +4031,10 @@ describe('sort-exports', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4126,14 +4079,8 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'enforces no newline if the global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -4147,11 +4094,11 @@ describe('sort-exports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4180,10 +4127,8 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4239,12 +4184,10 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4289,14 +4232,8 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'enforces no newline if the global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -4310,11 +4247,11 @@ describe('sort-exports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4343,10 +4280,8 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4401,10 +4336,7 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'ignores newline fixes between different partitions when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -4686,11 +4618,11 @@ describe('sort-exports', () => {
               'value-export',
               {
                 commentAbove: 'Type exports',
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               ['type-export'],
             ],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
         output: dedent`
@@ -4808,7 +4740,7 @@ describe('sort-exports', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],

@@ -1259,10 +1259,7 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it.each([
-      ['always', 'always'],
-      ['1', 1],
-    ] as const)(
+    it.each([['1', 1]])(
       'allows to use newlinesInside: %s',
       async (_description, newlinesInside) => {
         await invalid({
@@ -1304,10 +1301,7 @@ describe('sort-interfaces', () => {
       },
     )
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
+    it.each([['0', 0]])(
       'allows to use newlinesInside: %s',
       async (_description, newlinesInside) => {
         await invalid({
@@ -1835,10 +1829,7 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
+    it.each([['0', 0]])(
       'removes newlines when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -1909,16 +1900,16 @@ describe('sort-interfaces', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1975,13 +1966,11 @@ describe('sort-interfaces', () => {
     })
 
     it.each([
-      [2, 'never'],
       [2, 0],
       [2, 'ignore'],
-      ['never', 2],
       [0, 2],
       ['ignore', 2],
-    ] as const)(
+    ])(
       'enforces newlines when global option is %s and group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -2029,8 +2018,8 @@ describe('sort-interfaces', () => {
       },
     )
 
-    it.each(['always', 2, 'ignore', 'never', 0] as const)(
-      'enforces no newline when global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline when global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -2044,11 +2033,11 @@ describe('sort-interfaces', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -2081,11 +2070,9 @@ describe('sort-interfaces', () => {
     )
 
     it.each([
-      ['ignore', 'never'],
       ['ignore', 0],
-      ['never', 'ignore'],
       [0, 'ignore'],
-    ] as const)(
+    ])(
       'does not enforce newline when global option is %s and group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await valid({
@@ -2175,16 +2162,13 @@ describe('sort-interfaces', () => {
         options: [
           {
             groups: ['property', 'method'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
+    it.each([['0', 0]])(
       'ignores newline fixes between different partitions when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -3891,10 +3875,7 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it.each([
-      ['always', 'always'],
-      ['1', 1],
-    ] as const)(
+    it.each([['1', 1]])(
       'allows to use newlinesInside: %s',
       async (_description, newlinesInside) => {
         await invalid({
@@ -3936,10 +3917,7 @@ describe('sort-interfaces', () => {
       },
     )
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
+    it.each([['0', 0]])(
       'allows to use newlinesInside: %s',
       async (_description, newlinesInside) => {
         await invalid({
@@ -4467,10 +4445,7 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
+    it.each([['0', 0]])(
       'removes newlines when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -4541,16 +4516,16 @@ describe('sort-interfaces', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4607,13 +4582,11 @@ describe('sort-interfaces', () => {
     })
 
     it.each([
-      [2, 'never'],
       [2, 0],
       [2, 'ignore'],
-      ['never', 2],
       [0, 2],
       ['ignore', 2],
-    ] as const)(
+    ])(
       'enforces newlines when global option is %s and group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -4661,8 +4634,8 @@ describe('sort-interfaces', () => {
       },
     )
 
-    it.each(['always', 2, 'ignore', 'never', 0] as const)(
-      'enforces no newline when global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline when global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -4676,11 +4649,11 @@ describe('sort-interfaces', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4713,11 +4686,9 @@ describe('sort-interfaces', () => {
     )
 
     it.each([
-      ['ignore', 'never'],
       ['ignore', 0],
-      ['never', 'ignore'],
       [0, 'ignore'],
-    ] as const)(
+    ])(
       'does not enforce newline when global option is %s and group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await valid({
@@ -4807,16 +4778,13 @@ describe('sort-interfaces', () => {
         options: [
           {
             groups: ['property', 'method'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
+    it.each([['0', 0]])(
       'ignores newline fixes between different partitions when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -6452,10 +6420,7 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it.each([
-      ['always', 'always'],
-      ['1', 1],
-    ] as const)(
+    it.each([['1', 1]])(
       'allows to use newlinesInside: %s',
       async (_description, newlinesInside) => {
         await invalid({
@@ -6497,10 +6462,7 @@ describe('sort-interfaces', () => {
       },
     )
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
+    it.each([['0', 0]])(
       'allows to use newlinesInside: %s',
       async (_description, newlinesInside) => {
         await invalid({
@@ -7021,10 +6983,7 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
+    it.each([['0', 0]])(
       'removes newlines when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -7095,16 +7054,16 @@ describe('sort-interfaces', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -7161,13 +7120,11 @@ describe('sort-interfaces', () => {
     })
 
     it.each([
-      [2, 'never'],
       [2, 0],
       [2, 'ignore'],
-      ['never', 2],
       [0, 2],
       ['ignore', 2],
-    ] as const)(
+    ])(
       'enforces newlines when global option is %s and group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -7215,8 +7172,8 @@ describe('sort-interfaces', () => {
       },
     )
 
-    it.each(['always', 2, 'ignore', 'never', 0] as const)(
-      'enforces no newline when global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline when global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -7230,11 +7187,11 @@ describe('sort-interfaces', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -7267,11 +7224,9 @@ describe('sort-interfaces', () => {
     )
 
     it.each([
-      ['ignore', 'never'],
       ['ignore', 0],
-      ['never', 'ignore'],
       [0, 'ignore'],
-    ] as const)(
+    ])(
       'does not enforce newline when global option is %s and group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await valid({
@@ -7361,16 +7316,13 @@ describe('sort-interfaces', () => {
         options: [
           {
             groups: ['property', 'method'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
+    it.each([['0', 0]])(
       'ignores newline fixes between different partitions when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -7879,7 +7831,7 @@ describe('sort-interfaces', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],

@@ -1095,10 +1095,7 @@ describe('sort-sets', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         let newlinesOptions = [
@@ -1192,15 +1189,15 @@ describe('sort-sets', () => {
           groups: [
             'a',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'b',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'c',
             {
-              newlinesBetween: 'never',
+              newlinesBetween: 0,
             },
             'd',
             {
@@ -1208,7 +1205,7 @@ describe('sort-sets', () => {
             },
             'e',
           ],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -1268,12 +1265,10 @@ describe('sort-sets', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1324,16 +1319,10 @@ describe('sort-sets', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
-        let neverBetweenGroupsOptions = [
+        let noNewlineBetweenGroupsOptions = [
           {
             ...options,
             customGroups: [
@@ -1344,11 +1333,11 @@ describe('sort-sets', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'unusedGroup',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
             ],
             newlinesBetween: globalNewlinesBetween,
@@ -1378,16 +1367,14 @@ describe('sort-sets', () => {
               b,
             ])
           `,
-          options: neverBetweenGroupsOptions,
+          options: noNewlineBetweenGroupsOptions,
         })
       },
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1442,7 +1429,7 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['unknown', 'b|c'],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -1479,10 +1466,7 @@ describe('sort-sets', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries regardless of newlinesBetween %s',
       async (_description, newlinesBetween) => {
         let partitionOptions = [
@@ -2617,10 +2601,7 @@ describe('sort-sets', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         let newlinesOptions = [
@@ -2714,15 +2695,15 @@ describe('sort-sets', () => {
           groups: [
             'a',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'b',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'c',
             {
-              newlinesBetween: 'never',
+              newlinesBetween: 0,
             },
             'd',
             {
@@ -2730,7 +2711,7 @@ describe('sort-sets', () => {
             },
             'e',
           ],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -2790,12 +2771,10 @@ describe('sort-sets', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2846,16 +2825,10 @@ describe('sort-sets', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
-        let neverBetweenGroupsOptions = [
+        let noNewlineBetweenGroupsOptions = [
           {
             ...options,
             customGroups: [
@@ -2866,11 +2839,11 @@ describe('sort-sets', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'unusedGroup',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
             ],
             newlinesBetween: globalNewlinesBetween,
@@ -2900,16 +2873,14 @@ describe('sort-sets', () => {
               b,
             ])
           `,
-          options: neverBetweenGroupsOptions,
+          options: noNewlineBetweenGroupsOptions,
         })
       },
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2964,7 +2935,7 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['unknown', 'b|c'],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -3001,10 +2972,7 @@ describe('sort-sets', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries regardless of newlinesBetween %s',
       async (_description, newlinesBetween) => {
         let partitionOptions = [
@@ -4139,10 +4107,7 @@ describe('sort-sets', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         let newlinesOptions = [
@@ -4236,15 +4201,15 @@ describe('sort-sets', () => {
           groups: [
             'a',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'b',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'c',
             {
-              newlinesBetween: 'never',
+              newlinesBetween: 0,
             },
             'd',
             {
@@ -4252,7 +4217,7 @@ describe('sort-sets', () => {
             },
             'e',
           ],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -4312,12 +4277,10 @@ describe('sort-sets', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4368,16 +4331,10 @@ describe('sort-sets', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
-        let neverBetweenGroupsOptions = [
+        let noNewlineBetweenGroupsOptions = [
           {
             ...options,
             customGroups: [
@@ -4388,11 +4345,11 @@ describe('sort-sets', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'unusedGroup',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
             ],
             newlinesBetween: globalNewlinesBetween,
@@ -4422,16 +4379,14 @@ describe('sort-sets', () => {
               b,
             ])
           `,
-          options: neverBetweenGroupsOptions,
+          options: noNewlineBetweenGroupsOptions,
         })
       },
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4486,7 +4441,7 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['unknown', 'b|c'],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -4523,10 +4478,7 @@ describe('sort-sets', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries regardless of newlinesBetween %s',
       async (_description, newlinesBetween) => {
         let partitionOptions = [
@@ -4718,7 +4670,7 @@ describe('sort-sets', () => {
               groupName: 'b',
             },
           ],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
           groups: ['b', 'a'],
         },
       ]

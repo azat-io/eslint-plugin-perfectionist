@@ -863,10 +863,7 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines when newlinesBetween is %s',
       async (_, newlinesBetween) => {
         await invalid({
@@ -951,16 +948,16 @@ describe('sort-intersection-types', () => {
             ...options,
             groups: [
               'function',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'object',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'named',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'tuple',
               { newlinesBetween: 'ignore' },
               'nullish',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         output: dedent`
@@ -992,12 +989,10 @@ describe('sort-intersection-types', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1039,14 +1034,8 @@ describe('sort-intersection-types', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -1054,9 +1043,9 @@ describe('sort-intersection-types', () => {
               ...options,
               groups: [
                 'named',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'tuple',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'nullish',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -1087,10 +1076,8 @@ describe('sort-intersection-types', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1153,7 +1140,7 @@ describe('sort-intersection-types', () => {
         options: [
           {
             groups: ['literal', 'named'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         output: dedent`
@@ -1173,10 +1160,7 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries regardless of newlinesBetween %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -1541,7 +1525,7 @@ describe('sort-intersection-types', () => {
               },
             ],
             groups: ['elementsIncludingFoo', 'unknown'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1595,10 +1579,7 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
+    it.each([['1', 1]])(
       'enforces newlines within groups when newlinesInside is %s',
       async (_, newlinesInside) => {
         await invalid({
@@ -1638,10 +1619,7 @@ describe('sort-intersection-types', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines within groups when newlinesInside is %s',
       async (_, newlinesInside) => {
         await invalid({
@@ -2525,10 +2503,7 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines when newlinesBetween is %s',
       async (_, newlinesBetween) => {
         await invalid({
@@ -2613,16 +2588,16 @@ describe('sort-intersection-types', () => {
             ...options,
             groups: [
               'function',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'object',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'named',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'tuple',
               { newlinesBetween: 'ignore' },
               'nullish',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         output: dedent`
@@ -2654,12 +2629,10 @@ describe('sort-intersection-types', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2701,14 +2674,8 @@ describe('sort-intersection-types', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -2716,9 +2683,9 @@ describe('sort-intersection-types', () => {
               ...options,
               groups: [
                 'named',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'tuple',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'nullish',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -2749,10 +2716,8 @@ describe('sort-intersection-types', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2815,7 +2780,7 @@ describe('sort-intersection-types', () => {
         options: [
           {
             groups: ['literal', 'named'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         output: dedent`
@@ -2835,10 +2800,7 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries regardless of newlinesBetween %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -3203,7 +3165,7 @@ describe('sort-intersection-types', () => {
               },
             ],
             groups: ['elementsIncludingFoo', 'unknown'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -3257,10 +3219,7 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
+    it.each([['1', 1]])(
       'enforces newlines within groups when newlinesInside is %s',
       async (_, newlinesInside) => {
         await invalid({
@@ -3300,10 +3259,7 @@ describe('sort-intersection-types', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines within groups when newlinesInside is %s',
       async (_, newlinesInside) => {
         await invalid({
@@ -4180,10 +4136,7 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines when newlinesBetween is %s',
       async (_, newlinesBetween) => {
         await invalid({
@@ -4268,16 +4221,16 @@ describe('sort-intersection-types', () => {
             ...options,
             groups: [
               'function',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'object',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'named',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'tuple',
               { newlinesBetween: 'ignore' },
               'nullish',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         output: dedent`
@@ -4309,12 +4262,10 @@ describe('sort-intersection-types', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4356,14 +4307,8 @@ describe('sort-intersection-types', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -4371,9 +4316,9 @@ describe('sort-intersection-types', () => {
               ...options,
               groups: [
                 'named',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'tuple',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'nullish',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4404,10 +4349,8 @@ describe('sort-intersection-types', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4470,7 +4413,7 @@ describe('sort-intersection-types', () => {
         options: [
           {
             groups: ['literal', 'named'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         output: dedent`
@@ -4490,10 +4433,7 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries regardless of newlinesBetween %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -4858,7 +4798,7 @@ describe('sort-intersection-types', () => {
               },
             ],
             groups: ['elementsIncludingFoo', 'unknown'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4912,10 +4852,7 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
+    it.each([['1', 1]])(
       'enforces newlines within groups when newlinesInside is %s',
       async (_, newlinesInside) => {
         await invalid({
@@ -4955,10 +4892,7 @@ describe('sort-intersection-types', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines within groups when newlinesInside is %s',
       async (_, newlinesInside) => {
         await invalid({
@@ -5109,7 +5043,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['named', 'literal'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         output: dedent`

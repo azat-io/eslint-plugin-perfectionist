@@ -1104,10 +1104,7 @@ describe('sort-enums', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -1170,10 +1167,7 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
+    it.each([['1', 1]])(
       'enforces single newline between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -1271,15 +1265,15 @@ describe('sort-enums', () => {
             groups: [
               'a',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'b',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'c',
               {
-                newlinesBetween: 'never',
+                newlinesBetween: 0,
               },
               'd',
               {
@@ -1287,7 +1281,7 @@ describe('sort-enums', () => {
               },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1344,12 +1338,10 @@ describe('sort-enums', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines between non-consecutive groups when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1398,14 +1390,8 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when never is set between all groups (global: %s)',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 is set between all groups (global: %s)',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -1419,11 +1405,11 @@ describe('sort-enums', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -1456,10 +1442,8 @@ describe('sort-enums', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'allows any spacing when both options allow flexibility (global: %s, group: %s)',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1518,10 +1502,7 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries regardless of newlinesBetween setting (%s)',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -2663,10 +2644,7 @@ describe('sort-enums', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -2729,10 +2707,7 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
+    it.each([['1', 1]])(
       'enforces single newline between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -2830,15 +2805,15 @@ describe('sort-enums', () => {
             groups: [
               'a',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'b',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'c',
               {
-                newlinesBetween: 'never',
+                newlinesBetween: 0,
               },
               'd',
               {
@@ -2846,7 +2821,7 @@ describe('sort-enums', () => {
               },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -2903,12 +2878,10 @@ describe('sort-enums', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines between non-consecutive groups when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2957,14 +2930,8 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when never is set between all groups (global: %s)',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 is set between all groups (global: %s)',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -2978,11 +2945,11 @@ describe('sort-enums', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -3015,10 +2982,8 @@ describe('sort-enums', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'allows any spacing when both options allow flexibility (global: %s, group: %s)',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -3077,10 +3042,7 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries regardless of newlinesBetween setting (%s)',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -4166,10 +4128,7 @@ describe('sort-enums', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'removes newlines between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -4232,10 +4191,7 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
+    it.each([['1', 1]])(
       'enforces single newline between groups when newlinesBetween is %s',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -4333,15 +4289,15 @@ describe('sort-enums', () => {
             groups: [
               'a',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'b',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'c',
               {
-                newlinesBetween: 'never',
+                newlinesBetween: 0,
               },
               'd',
               {
@@ -4349,7 +4305,7 @@ describe('sort-enums', () => {
               },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4406,12 +4362,10 @@ describe('sort-enums', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines between non-consecutive groups when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4460,14 +4414,8 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when never is set between all groups (global: %s)',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 is set between all groups (global: %s)',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -4481,11 +4429,11 @@ describe('sort-enums', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4518,10 +4466,8 @@ describe('sort-enums', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'allows any spacing when both options allow flexibility (global: %s, group: %s)',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4580,10 +4526,7 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
+    it.each([['0', 0]])(
       'preserves partition boundaries regardless of newlinesBetween setting (%s)',
       async (_description, newlinesBetween) => {
         await invalid({
@@ -4772,7 +4715,7 @@ describe('sort-enums', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],
