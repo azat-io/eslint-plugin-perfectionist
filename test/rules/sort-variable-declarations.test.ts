@@ -458,6 +458,18 @@ describe('sort-variable-declarations', () => {
       })
     })
 
+    it('detects dependencies in destructured assignments', async () => {
+      await valid({
+        code: dedent`
+          let a = "a",
+            [{
+              b = a,
+            }] = {}
+        `,
+        options: [options],
+      })
+    })
+
     it('ignores dependencies inside function bodies', async () => {
       await valid({
         code: dedent`
@@ -2304,6 +2316,18 @@ describe('sort-variable-declarations', () => {
       })
     })
 
+    it('detects dependencies in destructured assignments', async () => {
+      await valid({
+        code: dedent`
+          let a = "a",
+            [{
+              b = a,
+            }] = {}
+        `,
+        options: [options],
+      })
+    })
+
     it('ignores dependencies inside function bodies', async () => {
       await valid({
         code: dedent`
@@ -4145,6 +4169,18 @@ describe('sort-variable-declarations', () => {
         code: dedent`
           let b = 'b',
           a = \`\${b}\`
+        `,
+        options: [options],
+      })
+    })
+
+    it('detects dependencies in destructured assignments', async () => {
+      await valid({
+        code: dedent`
+          let a = "a",
+            [{
+              b = a,
+            }] = {}
         `,
         options: [options],
       })

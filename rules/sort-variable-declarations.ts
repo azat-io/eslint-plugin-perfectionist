@@ -96,9 +96,9 @@ export default createEslintRule<Options, MessageId>({
 
           let selector: Selector
 
-          let dependencies: string[] = []
+          let dependencies: string[] = extractDependencies(declaration.id)
           if (declaration.init) {
-            dependencies = extractDependencies(declaration.init)
+            dependencies.push(...extractDependencies(declaration.init))
             selector = 'initialized'
           } else {
             selector = 'uninitialized'
