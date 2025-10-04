@@ -1,7 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import { AST_TOKEN_TYPES } from '@typescript-eslint/types'
-
 import type {
   PartitionByCommentOption,
   RegexOption,
@@ -91,10 +89,10 @@ export function isPartitionComment({
   }
 
   let relevantPartitionByComment
-  if (comment.type === AST_TOKEN_TYPES.Block && 'block' in partitionByComment) {
+  if (comment.type === 'Block' && 'block' in partitionByComment) {
     relevantPartitionByComment = partitionByComment.block
   }
-  if (comment.type === AST_TOKEN_TYPES.Line && 'line' in partitionByComment) {
+  if (comment.type === 'Line' && 'line' in partitionByComment) {
     relevantPartitionByComment = partitionByComment.line
   }
 

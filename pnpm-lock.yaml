@@ -10,9 +10,6 @@ importers:
 
   .:
     dependencies:
-      '@typescript-eslint/types':
-        specifier: ^8.45.0
-        version: 8.45.0
       '@typescript-eslint/utils':
         specifier: ^8.45.0
         version: 8.45.0(eslint@9.36.0(jiti@2.6.1))(typescript@5.9.3)
@@ -77,6 +74,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^8.45.0
         version: 8.45.0(eslint@9.36.0(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/types':
+        specifier: ^8.45.0
+        version: 8.45.0
       '@vercel/og':
         specifier: ^0.8.5
         version: 0.8.5
