@@ -1,5 +1,19 @@
 # Changelog
 
+## v4.15.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.15.0...v4.15.1)
+
+### 🐞 Bug Fixes
+
+- **sort-modules:** Fix decorator dependencies not detected ([86f1626](https://github.com/azat-io/eslint-plugin-perfectionist/commit/86f1626))
+- **sort-objects:** Fix complex call expressions being ignored in calling function name pattern ([20da679](https://github.com/azat-io/eslint-plugin-perfectionist/commit/20da679))
+- **sort-variable-declarations:** Fix destructured assignments dependencies not detected ([1def9db](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1def9db))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v4.15.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.14.0...v4.15.0)
