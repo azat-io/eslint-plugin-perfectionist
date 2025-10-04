@@ -4179,8 +4179,6 @@ describe('sort-classes', () => {
 
     it.each([
       ['ignore', 0],
-      ['ignore', 0],
-      [0, 'ignore'],
       [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
@@ -8831,8 +8829,6 @@ describe('sort-classes', () => {
 
     it.each([
       ['ignore', 0],
-      ['ignore', 0],
-      [0, 'ignore'],
       [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
@@ -13417,8 +13413,6 @@ describe('sort-classes', () => {
 
     it.each([
       ['ignore', 0],
-      ['ignore', 0],
-      [0, 'ignore'],
       [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',

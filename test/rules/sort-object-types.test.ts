@@ -2008,7 +2008,7 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('ignores newline fixes between different partitions with newlinesBetween: %s', async () => {
+    it('ignores newline fixes between different partitions with newlinesBetween: 0', async () => {
       await invalid({
         options: [
           {
@@ -4547,7 +4547,7 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('ignores newline fixes between different partitions with newlinesBetween: %s', async () => {
+    it('ignores newline fixes between different partitions with newlinesBetween: 0', async () => {
       await invalid({
         options: [
           {
@@ -7029,7 +7029,7 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('ignores newline fixes between different partitions with newlinesBetween: %s', async () => {
+    it('ignores newline fixes between different partitions with newlinesBetween: 0', async () => {
       await invalid({
         options: [
           {
