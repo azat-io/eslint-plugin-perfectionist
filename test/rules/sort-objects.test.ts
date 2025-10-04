@@ -222,65 +222,17 @@ describe('sort-objects', () => {
       })
     })
 
-    it('allows setting priority keys in custom groups', async () => {
-      let customOptions = {
-        ...options,
-        customGroups: { top: ['c', 'b'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          let Obj = {
-            b: 'bb',
-            c: 'ccc',
-            a: 'aaaa',
-            d: 'd',
-          }
-        `,
-        options: [customOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        output: dedent`
-          let Obj = {
-            b: 'bb',
-            c: 'ccc',
-            a: 'aaaa',
-            d: 'd',
-          }
-        `,
-        code: dedent`
-          let Obj = {
-            a: 'aaaa',
-            b: 'bb',
-            c: 'ccc',
-            d: 'd',
-          }
-        `,
-        options: [customOptions],
-      })
-    })
-
     it('allows using regex patterns for custom groups', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -1045,10 +997,16 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              attributesStartingWithA: 'a',
-              attributesStartingWithB: 'b',
-            },
+            customGroups: [
+              {
+                groupName: 'attributesStartingWithA',
+                elementNamePattern: '^a',
+              },
+              {
+                groupName: 'attributesStartingWithB',
+                elementNamePattern: '^b',
+              },
+            ],
             groups: ['attributesStartingWithA', 'attributesStartingWithB'],
           },
         ],
@@ -1595,14 +1553,14 @@ describe('sort-objects', () => {
       })
     })
 
-    it('prioritizes methods over multiline properties', async () => {
+    it('prioritizes methods over member selector', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
+              left: 'memberProperty',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
             },
             messageId: 'unexpectedObjectsGroupOrder',
@@ -1611,61 +1569,19 @@ describe('sort-objects', () => {
         output: dedent`
           let obj = {
             method() {},
-            multilineProperty: {
-              // Some multiline stuff
-            },
+            memberProperty: something,
           }
         `,
         code: dedent`
           let obj = {
-            multilineProperty: {
-              // Some multiline stuff
-            },
+            memberProperty: something,
             method() {},
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes properties over multiline methods', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'multilineFunction',
-              leftGroup: 'multiline',
-              rightGroup: 'property',
-              right: 'property',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        output: dedent`
-          let obj = {
-            property,
-            multilineFunction() {
-              // Some multiline stuff
-            },
-          }
-        `,
-        code: dedent`
-          let obj = {
-            multilineFunction() {
-              // Some multiline stuff
-            },
-            property,
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property', 'multiline'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -1721,7 +1637,7 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            groups: ['multiline', 'unknown', 'method'],
+            groups: ['multiline-member', 'unknown', 'method'],
           },
         ],
       })
@@ -1792,6 +1708,28 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+              {
+                elementNamePattern: 'd',
+                groupName: 'd',
+              },
+              {
+                elementNamePattern: 'e',
+                groupName: 'e',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'always' },
@@ -1803,13 +1741,6 @@ describe('sort-objects', () => {
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            customGroups: {
-              a: 'a',
-              b: 'b',
-              c: 'c',
-              d: 'd',
-              e: 'e',
-            },
             newlinesBetween: 'always',
           },
         ],
@@ -2168,6 +2099,35 @@ describe('sort-objects', () => {
       'applies configuration when allNamesMatchPattern matches (pattern: %s)',
       async rgbAllNamesMatchPattern => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -2186,26 +2146,6 @@ describe('sort-objects', () => {
                 left: 'g',
               },
               messageId: 'unexpectedObjectsGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -2227,6 +2167,33 @@ describe('sort-objects', () => {
     )
 
     it('applies configuration when callingFunctionNamePattern matches', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              callingFunctionNamePattern: '^.*$',
+            },
+            type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          ({ a: 1, b: 1 })
+        `,
+        code: dedent`
+          ({ b: 1, a: 1 })
+        `,
+      })
+
       await invalid({
         errors: [
           {
@@ -2275,13 +2242,22 @@ describe('sort-objects', () => {
           },
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'r',
+                groupName: 'r',
+              },
+              {
+                elementNamePattern: 'g',
+                groupName: 'g',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
             useConfigurationIf: {
               callingFunctionNamePattern: '^someFunction$',
-            },
-            customGroups: {
-              r: 'r',
-              g: 'g',
-              b: 'b',
             },
             groups: ['r', 'g', 'b'],
           },
@@ -2338,6 +2314,212 @@ describe('sort-objects', () => {
         ],
         code: dedent`
           Schema.index({ b: 1, a: 1 });
+        `,
+      })
+    })
+
+    it('applies configuration when declarationMatchesPattern matches', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^constant$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const constant = {
+            b,
+            a,
+            c,
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^constant$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const notAConstant = {
+            constant: {
+              b,
+              a,
+              c,
+            }
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              declarationMatchesPattern: '^.*$',
+            },
+            type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          func({ a: 1, b: 1 })
+        `,
+        code: dedent`
+          func({ b: 1, a: 1 })
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^constant$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          let notAConstant = {
+            a,
+            b,
+          }
+        `,
+        code: dedent`
+          let notAConstant = {
+            b,
+            a,
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              declarationMatchesPattern: '^.*$',
+            },
+            type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          ({ a: 1, b: 1 })
+        `,
+        code: dedent`
+          ({ b: 1, a: 1 })
+        `,
+      })
+    })
+
+    it('applies configuration when declaration comment matches', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          // Ignore me
+          const obj = {
+            b,
+            c,
+            a,
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          // Ignore me
+          func({
+            b,
+            c,
+            a,
+          })
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          // Do NOT ignore me
+          const obj = {
+            a,
+            b,
+          }
+        `,
+        code: dedent`
+          // Do NOT ignore me
+          const obj = {
+            b,
+            a,
+          }
         `,
       })
     })
@@ -2866,9 +3048,12 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -3092,65 +3277,17 @@ describe('sort-objects', () => {
       })
     })
 
-    it('allows setting priority keys in custom groups', async () => {
-      let customOptions = {
-        ...options,
-        customGroups: { top: ['c', 'b'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          let Obj = {
-            b: 'bb',
-            c: 'ccc',
-            a: 'aaaa',
-            d: 'd',
-          }
-        `,
-        options: [customOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        output: dedent`
-          let Obj = {
-            b: 'bb',
-            c: 'ccc',
-            a: 'aaaa',
-            d: 'd',
-          }
-        `,
-        code: dedent`
-          let Obj = {
-            a: 'aaaa',
-            b: 'bb',
-            c: 'ccc',
-            d: 'd',
-          }
-        `,
-        options: [customOptions],
-      })
-    })
-
     it('allows using regex patterns for custom groups', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -3915,10 +4052,16 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              attributesStartingWithA: 'a',
-              attributesStartingWithB: 'b',
-            },
+            customGroups: [
+              {
+                groupName: 'attributesStartingWithA',
+                elementNamePattern: '^a',
+              },
+              {
+                groupName: 'attributesStartingWithB',
+                elementNamePattern: '^b',
+              },
+            ],
             groups: ['attributesStartingWithA', 'attributesStartingWithB'],
           },
         ],
@@ -4465,14 +4608,14 @@ describe('sort-objects', () => {
       })
     })
 
-    it('prioritizes methods over multiline properties', async () => {
+    it('prioritizes methods over member selector', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
+              left: 'memberProperty',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
             },
             messageId: 'unexpectedObjectsGroupOrder',
@@ -4481,61 +4624,19 @@ describe('sort-objects', () => {
         output: dedent`
           let obj = {
             method() {},
-            multilineProperty: {
-              // Some multiline stuff
-            },
+            memberProperty: something,
           }
         `,
         code: dedent`
           let obj = {
-            multilineProperty: {
-              // Some multiline stuff
-            },
+            memberProperty: something,
             method() {},
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes properties over multiline methods', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'multilineFunction',
-              leftGroup: 'multiline',
-              rightGroup: 'property',
-              right: 'property',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        output: dedent`
-          let obj = {
-            property,
-            multilineFunction() {
-              // Some multiline stuff
-            },
-          }
-        `,
-        code: dedent`
-          let obj = {
-            multilineFunction() {
-              // Some multiline stuff
-            },
-            property,
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property', 'multiline'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -4591,7 +4692,7 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            groups: ['multiline', 'unknown', 'method'],
+            groups: ['multiline-member', 'unknown', 'method'],
           },
         ],
       })
@@ -4662,6 +4763,28 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+              {
+                elementNamePattern: 'd',
+                groupName: 'd',
+              },
+              {
+                elementNamePattern: 'e',
+                groupName: 'e',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'always' },
@@ -4673,13 +4796,6 @@ describe('sort-objects', () => {
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            customGroups: {
-              a: 'a',
-              b: 'b',
-              c: 'c',
-              d: 'd',
-              e: 'e',
-            },
             newlinesBetween: 'always',
           },
         ],
@@ -5038,6 +5154,35 @@ describe('sort-objects', () => {
       'applies configuration when allNamesMatchPattern matches (pattern: %s)',
       async rgbAllNamesMatchPattern => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -5056,26 +5201,6 @@ describe('sort-objects', () => {
                 left: 'g',
               },
               messageId: 'unexpectedObjectsGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -5145,13 +5270,22 @@ describe('sort-objects', () => {
           },
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'r',
+                groupName: 'r',
+              },
+              {
+                elementNamePattern: 'g',
+                groupName: 'g',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
             useConfigurationIf: {
               callingFunctionNamePattern: '^someFunction$',
-            },
-            customGroups: {
-              r: 'r',
-              g: 'g',
-              b: 'b',
             },
             groups: ['r', 'g', 'b'],
           },
@@ -5721,9 +5855,12 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -5933,72 +6070,17 @@ describe('sort-objects', () => {
       })
     })
 
-    it('allows setting priority keys in custom groups', async () => {
-      let customOptions = {
-        ...options,
-        customGroups: { top: ['c', 'b'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          let Obj = {
-            c: 'ccc',
-            b: 'bb',
-            a: 'aaaa',
-            d: 'd',
-          }
-        `,
-        options: [customOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-          {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-        ],
-        output: dedent`
-          let Obj = {
-            c: 'ccc',
-            b: 'bb',
-            a: 'aaaa',
-            d: 'd',
-          }
-        `,
-        code: dedent`
-          let Obj = {
-            a: 'aaaa',
-            b: 'bb',
-            c: 'ccc',
-            d: 'd',
-          }
-        `,
-        options: [customOptions],
-      })
-    })
-
     it('allows using regex patterns for custom groups', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -6784,10 +6866,16 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              attributesStartingWithA: 'a',
-              attributesStartingWithB: 'b',
-            },
+            customGroups: [
+              {
+                groupName: 'attributesStartingWithA',
+                elementNamePattern: '^a',
+              },
+              {
+                groupName: 'attributesStartingWithB',
+                elementNamePattern: '^b',
+              },
+            ],
             groups: ['attributesStartingWithA', 'attributesStartingWithB'],
           },
         ],
@@ -7334,14 +7422,14 @@ describe('sort-objects', () => {
       })
     })
 
-    it('prioritizes methods over multiline properties', async () => {
+    it('prioritizes methods over member selector', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
+              left: 'memberProperty',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
             },
             messageId: 'unexpectedObjectsGroupOrder',
@@ -7350,61 +7438,19 @@ describe('sort-objects', () => {
         output: dedent`
           let obj = {
             method() {},
-            multilineProperty: {
-              // Some multiline stuff
-            },
+            memberProperty: something,
           }
         `,
         code: dedent`
           let obj = {
-            multilineProperty: {
-              // Some multiline stuff
-            },
+            memberProperty: something,
             method() {},
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes properties over multiline methods', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'multilineFunction',
-              leftGroup: 'multiline',
-              rightGroup: 'property',
-              right: 'property',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        output: dedent`
-          let obj = {
-            property,
-            multilineFunction() {
-              // Some multiline stuff
-            },
-          }
-        `,
-        code: dedent`
-          let obj = {
-            multilineFunction() {
-              // Some multiline stuff
-            },
-            property,
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property', 'multiline'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -7460,7 +7506,7 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            groups: ['multiline', 'unknown', 'method'],
+            groups: ['multiline-member', 'unknown', 'method'],
           },
         ],
       })
@@ -7531,6 +7577,28 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+              {
+                elementNamePattern: 'd',
+                groupName: 'd',
+              },
+              {
+                elementNamePattern: 'e',
+                groupName: 'e',
+              },
+            ],
             groups: [
               'a',
               { newlinesBetween: 'always' },
@@ -7542,13 +7610,6 @@ describe('sort-objects', () => {
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            customGroups: {
-              a: 'a',
-              b: 'b',
-              c: 'c',
-              d: 'd',
-              e: 'e',
-            },
             newlinesBetween: 'always',
           },
         ],
@@ -7907,6 +7968,35 @@ describe('sort-objects', () => {
       'applies configuration when allNamesMatchPattern matches (pattern: %s)',
       async rgbAllNamesMatchPattern => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -7925,26 +8015,6 @@ describe('sort-objects', () => {
                 left: 'g',
               },
               messageId: 'unexpectedObjectsGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -8014,13 +8084,22 @@ describe('sort-objects', () => {
           },
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'r',
+                groupName: 'r',
+              },
+              {
+                elementNamePattern: 'g',
+                groupName: 'g',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
             useConfigurationIf: {
               callingFunctionNamePattern: '^someFunction$',
-            },
-            customGroups: {
-              r: 'r',
-              g: 'g',
-              b: 'b',
             },
             groups: ['r', 'g', 'b'],
           },
@@ -8590,9 +8669,12 @@ describe('sort-objects', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -9026,67 +9108,6 @@ describe('sort-objects', () => {
       })
     })
 
-    it('sorts only destructured objects when destructureOnly is enabled', async () => {
-      await valid({
-        code: dedent`
-          let obj = {
-            c: 'c',
-            b: 'b',
-            a: 'a',
-          }
-
-          let { a, b, c } = obj
-        `,
-        options: [
-          {
-            destructureOnly: true,
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-          {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-        ],
-        output: dedent`
-          let obj = {
-            c: 'c',
-            b: 'b',
-            a: 'a',
-          }
-
-          let { a, b, c } = obj
-        `,
-        code: dedent`
-          let obj = {
-            c: 'c',
-            b: 'b',
-            a: 'a',
-          }
-
-          let { c, b, a } = obj
-        `,
-        options: [
-          {
-            destructureOnly: true,
-          },
-        ],
-      })
-    })
-
     it('skips object declarations when objectDeclarations is disabled', async () => {
       await valid({
         code: dedent`
@@ -9211,6 +9232,18 @@ describe('sort-objects', () => {
 
     it('applies groups configuration to destructured objects based on groups attribute', async () => {
       await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: 'c',
+                groupName: 'top',
+              },
+            ],
+            destructuredObjects: { groups: true },
+            groups: ['top', 'unknown'],
+          },
+        ],
         errors: [
           {
             data: {
@@ -9222,15 +9255,6 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsGroupOrder',
           },
         ],
-        options: [
-          {
-            customGroups: {
-              top: 'c',
-            },
-            destructuredObjects: { groups: true },
-            groups: ['top', 'unknown'],
-          },
-        ],
         output: dedent`
           let { c, a, b } = obj
         `,
@@ -9240,6 +9264,19 @@ describe('sort-objects', () => {
       })
 
       await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: 'c',
+                groupName: 'top',
+              },
+            ],
+
+            destructuredObjects: { groups: false },
+            groups: ['top', 'unknown'],
+          },
+        ],
         errors: [
           {
             data: {
@@ -9249,15 +9286,6 @@ describe('sort-objects', () => {
               left: 'c',
             },
             messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: {
-              top: 'c',
-            },
-            destructuredObjects: { groups: false },
-            groups: ['top', 'unknown'],
           },
         ],
         output: dedent`

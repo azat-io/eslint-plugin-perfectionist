@@ -1,10 +1,10 @@
 import type { Linter } from 'eslint'
 
-import eslintPlugin from 'eslint-plugin-eslint-plugin/configs/recommended'
+import eslintPlugin from 'eslint-plugin-eslint-plugin'
 import eslintConfig from '@azat-io/eslint-config'
 
 export default eslintConfig({
-  extends: eslintPlugin,
+  extends: eslintPlugin.configs.recommended,
   perfectionist: true,
   typescript: true,
   svelte: true,

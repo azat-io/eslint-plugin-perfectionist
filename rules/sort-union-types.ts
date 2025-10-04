@@ -47,7 +47,7 @@ type MessageId =
   | 'extraSpacingBetweenUnionTypes'
   | 'unexpectedUnionTypesOrder'
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
@@ -82,6 +82,23 @@ export let jsonSchema: JSONSchema4 = {
 }
 
 export default createEslintRule<Options, MessageId>({
+  meta: {
+    messages: {
+      missedSpacingBetweenUnionTypes: MISSED_SPACING_ERROR,
+      extraSpacingBetweenUnionTypes: EXTRA_SPACING_ERROR,
+      unexpectedUnionTypesGroupOrder: GROUP_ORDER_ERROR,
+      unexpectedUnionTypesOrder: ORDER_ERROR,
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-union-types',
+      description: 'Enforce sorted union types.',
+      recommended: true,
+    },
+    defaultOptions: [defaultOptions],
+    schema: jsonSchema,
+    type: 'suggestion',
+    fixable: 'code',
+  },
   create: context => ({
     TSUnionType: node => {
       sortUnionOrIntersectionTypes({
@@ -97,22 +114,6 @@ export default createEslintRule<Options, MessageId>({
       })
     },
   }),
-  meta: {
-    messages: {
-      missedSpacingBetweenUnionTypes: MISSED_SPACING_ERROR,
-      extraSpacingBetweenUnionTypes: EXTRA_SPACING_ERROR,
-      unexpectedUnionTypesGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedUnionTypesOrder: ORDER_ERROR,
-    },
-    docs: {
-      url: 'https://perfectionist.dev/rules/sort-union-types',
-      description: 'Enforce sorted union types.',
-      recommended: true,
-    },
-    schema: jsonSchema,
-    type: 'suggestion',
-    fixable: 'code',
-  },
   defaultOptions: [defaultOptions],
   name: 'sort-union-types',
 })

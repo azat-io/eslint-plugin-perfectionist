@@ -1,7 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
-  DeprecatedCustomGroupsOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
   CommonOptions,
@@ -46,9 +45,7 @@ export type Options = Partial<
      * Custom groups for organizing JSX props. Allows defining groups based on
      * prop names, values, and characteristics.
      */
-    customGroups:
-      | CustomGroupsOption<SingleCustomGroup>
-      | DeprecatedCustomGroupsOption
+    customGroups: CustomGroupsOption<SingleCustomGroup>
 
     /** Controls the placement of newlines between different groups of JSX props. */
     newlinesBetween: NewlinesBetweenOption
@@ -64,12 +61,6 @@ export type Options = Partial<
      * empty lines are sorted independently.
      */
     partitionByNewLine: boolean
-
-    /**
-     * @deprecated Since v4.11.0. Will be removed in v5.0.0. Use
-     *   {@link `useConfigurationIf.tagMatchesPattern`} instead.
-     */
-    ignorePattern: RegexOption
   } & CommonOptions
 >[]
 
@@ -114,16 +105,16 @@ export interface SingleCustomGroup {
 }
 
 /**
- * Union type of all available JSX prop selectors. Used to categorize different
- * types of JSX props.
- */
-export type Selector = MultilineSelector | ShorthandSelector | PropertySelector
-
-/**
  * Union type of all available JSX prop modifiers. Used to identify specific
  * characteristics of JSX props.
  */
 export type Modifier = MultilineModifier | ShorthandModifier
+
+/**
+ * Union type of all available JSX prop selectors. Used to categorize different
+ * types of JSX props.
+ */
+export type Selector = PropertySelector
 
 /**
  * Represents all possible group combinations for regular JSX props. Combines
@@ -137,36 +128,7 @@ type PropertyGroup = JoinWithDash<
  * Represents a group identifier for JSX prop categorization. Can be a
  * predefined group, 'unknown' for uncategorized props, or a custom group name.
  */
-type Group =
-  | ShorthandGroup
-  | MultilineGroup
-  | PropertyGroup
-  | 'unknown'
-  | string
-
-/**
- * @deprecated Since v4.11.0. Will be removed in v5.0.0. Use
- *   {@link `MultilineModifier`} instead.
- */
-type MultilineGroup = JoinWithDash<[MultilineSelector]>
-
-/**
- * @deprecated Since v4.11.0. Will be removed in v5.0.0. Use
- *   {@link `ShorthandModifier`} instead.
- */
-type ShorthandGroup = JoinWithDash<[ShorthandSelector]>
-
-/**
- * @deprecated Since v4.11.0. Will be removed in v5.0.0. Use
- *   {@link `ShorthandModifier`} instead.
- */
-type ShorthandSelector = 'shorthand'
-
-/**
- * @deprecated Since v4.11.0. Will be removed in v5.0.0. Use
- *   {@link `MultilineModifier`} instead.
- */
-type MultilineSelector = 'multiline'
+type Group = PropertyGroup | 'unknown' | string
 
 /** Modifier for JSX props that span multiple lines. */
 type MultilineModifier = 'multiline'
@@ -181,7 +143,7 @@ type PropertySelector = 'prop'
  * Complete list of available JSX prop selectors. Used for validation and JSON
  * schema generation.
  */
-export let allSelectors: Selector[] = ['multiline', 'prop', 'shorthand']
+export let allSelectors: Selector[] = ['prop']
 
 /**
  * Complete list of available JSX prop modifiers. Used for validation and JSON

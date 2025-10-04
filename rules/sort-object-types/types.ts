@@ -2,7 +2,6 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
-  DeprecatedCustomGroupsOption,
   PartitionByCommentOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
@@ -34,6 +33,12 @@ export type Options = Partial<
      */
     useConfigurationIf: {
       /**
+       * Regular expression pattern to match against the comment declaration.
+       * The rule is only applied to declaration comments with matching names.
+       */
+      declarationCommentMatchesPattern?: RegexOption
+
+      /**
        * Regular expression pattern to match against the type declaration name.
        * The rule is only applied to declarations with matching names.
        */
@@ -50,27 +55,19 @@ export type Options = Partial<
      * Custom groups for organizing object type members. Can be a structured
      * configuration or the deprecated format.
      */
-    customGroups:
-      | CustomGroupsOption<
-          SingleCustomGroup,
-          {
-            /** Fallback sorting configuration for elements within custom groups. */
-            fallbackSort?: { sortBy?: 'value' | 'name' } & FallbackSortOption
-          }
-        >
-      | DeprecatedCustomGroupsOption
+    customGroups: CustomGroupsOption<
+      SingleCustomGroup,
+      {
+        /** Fallback sorting configuration for elements within custom groups. */
+        fallbackSort?: { sortBy?: 'value' | 'name' } & FallbackSortOption
+      }
+    >
 
     /**
      * Fallback sorting configuration for elements that don't match any group.
      * Includes an additional option to sort by member value or name.
      */
     fallbackSort: { sortBy?: 'value' | 'name' } & FallbackSortOption
-
-    /**
-     * @deprecated Will be removed in v5.0.0. Use {@link groups} instead.
-     *   Controls whether required or optional members should be grouped first.
-     */
-    groupKind: 'required-first' | 'optional-first' | 'mixed'
 
     /**
      * Partition object type members by comment delimiters. Members separated by
@@ -95,12 +92,6 @@ export type Options = Partial<
      * separated by empty lines are sorted independently.
      */
     partitionByNewLine: boolean
-
-    /**
-     * @deprecated Will be removed in v5.0.0. Use
-     *   {@link useConfigurationIf.declarationMatchesPattern} instead.
-     */
-    ignorePattern: RegexOption
 
     /**
      * Determines what to sort by when comparing object type members.
@@ -136,7 +127,6 @@ export type SingleCustomGroup = (
       sortBy?: 'value' | 'name'
     } & BaseSingleCustomGroup<PropertySelector>)
   | BaseSingleCustomGroup<IndexSignatureSelector>
-  | BaseSingleCustomGroup<MultilineSelector>
   | BaseSingleCustomGroup<MethodSelector>
   | BaseSingleCustomGroup<MemberSelector>
 ) &
@@ -150,7 +140,6 @@ export type SingleCustomGroup = (
  */
 export type Selector =
   | IndexSignatureSelector
-  | MultilineSelector
   | PropertySelector
   | MemberSelector
   | MethodSelector
@@ -237,22 +226,6 @@ type IndexSignatureGroup = JoinWithDash<
 >
 
 /**
- * Union type of all possible group identifiers for object type members.
- *
- * Groups are used to organize and sort related members together. Can be
- * predefined group types, 'unknown' for unmatched members, or custom string
- * identifiers.
- */
-type Group =
-  | IndexSignatureGroup
-  | MultilineGroup
-  | PropertyGroup
-  | MethodGroup
-  | MemberGroup
-  | 'unknown'
-  | string
-
-/**
  * Group type for property members.
  *
  * Represents all possible combinations of modifiers with the property selector,
@@ -262,6 +235,21 @@ type Group =
 type PropertyGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineModifier, PropertySelector]
 >
+
+/**
+ * Union type of all possible group identifiers for object type members.
+ *
+ * Groups are used to organize and sort related members together. Can be
+ * predefined group types, 'unknown' for unmatched members, or custom string
+ * identifiers.
+ */
+type Group =
+  | IndexSignatureGroup
+  | PropertyGroup
+  | MethodGroup
+  | MemberGroup
+  | 'unknown'
+  | string
 
 /**
  * Group type for generic member elements.
@@ -285,20 +273,12 @@ type MethodGroup = JoinWithDash<
   [OptionalModifier, RequiredModifier, MultilineModifier, MethodSelector]
 >
 
-/** @deprecated For {@link `MultilineModifier`}. Will be removed in v5.0.0. */
-type MultilineGroup = JoinWithDash<
-  [OptionalModifier, RequiredModifier, MultilineSelector]
->
-
 /**
  * Selector for index signature members.
  *
  * Matches TypeScript index signatures like `[key: string]: any`.
  */
 type IndexSignatureSelector = 'index-signature'
-
-/** @deprecated For {@link `MultilineModifier`}. Will be removed in v5.0.0. */
-type MultilineSelector = 'multiline'
 
 /**
  * Modifier indicating a member spans multiple lines.
@@ -352,7 +332,6 @@ export let allSelectors: Selector[] = [
   'index-signature',
   'member',
   'method',
-  'multiline',
   'property',
 ]
 
@@ -400,12 +379,6 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
  */
 export interface SortObjectTypesSortingNode
   extends SortingNode<TSESTree.TypeElement> {
-  /**
-   * Indicates whether the member is required or optional. Used for grouping
-   * members by their optionality.
-   */
-  groupKind: 'required' | 'optional'
-
   /**
    * The string representation of the member's type annotation. Used when
    * sorting by value instead of name. Can be null for members without explicit

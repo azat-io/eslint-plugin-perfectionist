@@ -270,7 +270,6 @@ export function reportAllErrors<
 
     if (
       left &&
-      options.newlinesBetween !== undefined &&
       availableMessageIds.missedSpacingBetweenMembers &&
       availableMessageIds.extraSpacingBetweenMembers
     ) {

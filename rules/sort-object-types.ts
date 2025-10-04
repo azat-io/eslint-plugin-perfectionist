@@ -13,7 +13,6 @@ import type {
 import {
   buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
-  deprecatedCustomGroupsJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
@@ -28,6 +27,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
@@ -36,7 +36,7 @@ import {
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { getCustomGroupsCompareOptions } from './sort-object-types/get-custom-groups-compare-options'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getMatchingContextOptions } from '../utils/get-matching-context-options'
+import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isMemberOptional } from './sort-object-types/is-member-optional'
@@ -64,7 +64,7 @@ type MessageId =
   | 'unexpectedObjectTypesGroupOrder'
   | 'unexpectedObjectTypesOrder'
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted', sortBy: 'name' },
   partitionByComment: false,
   partitionByNewLine: false,
@@ -72,10 +72,8 @@ let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   useConfigurationIf: {},
   type: 'alphabetical',
-  groupKind: 'mixed',
-  ignorePattern: [],
   ignoreCase: true,
-  customGroups: {},
+  customGroups: [],
   locales: 'en-US',
   sortBy: 'name',
   alphabet: '',
@@ -91,29 +89,19 @@ export let jsonSchema: JSONSchema4 = {
           sortBy: sortByJsonSchema,
         },
       }),
-      customGroups: {
-        oneOf: [
-          deprecatedCustomGroupsJsonSchema,
-          buildCustomGroupsArrayJsonSchema({
-            additionalFallbackSortProperties: { sortBy: sortByJsonSchema },
-            singleCustomGroupJsonSchema,
-          }),
-        ],
-      },
-      groupKind: {
-        description: '[DEPRECATED] Specifies top-level groups.',
-        enum: ['mixed', 'required-first', 'optional-first'],
-        type: 'string',
-      },
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {
+          declarationCommentMatchesPattern: regexJsonSchema,
           declarationMatchesPattern: regexJsonSchema,
         },
+      }),
+      customGroups: buildCustomGroupsArrayJsonSchema({
+        additionalFallbackSortProperties: { sortBy: sortByJsonSchema },
+        singleCustomGroupJsonSchema,
       }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
       newlinesBetween: newlinesBetweenJsonSchema,
-      ignorePattern: regexJsonSchema,
       sortBy: sortByJsonSchema,
       groups: groupsJsonSchema,
     },
@@ -134,10 +122,8 @@ export default createEslintRule<Options, MessageId>({
           unexpectedGroupOrder: 'unexpectedObjectTypesGroupOrder',
           unexpectedOrder: 'unexpectedObjectTypesOrder',
         },
-        parentNodeName:
-          node.parent.type === 'TSTypeAliasDeclaration'
-            ? node.parent.id.name
-            : null,
+        parentNode:
+          node.parent.type === 'TSTypeAliasDeclaration' ? node.parent : null,
         elements: node.members,
         context,
       }),
@@ -154,6 +140,7 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted object types.',
       recommended: true,
     },
+    defaultOptions: [defaultOptions],
     schema: jsonSchema,
     type: 'suggestion',
     fixable: 'code',
@@ -164,7 +151,7 @@ export default createEslintRule<Options, MessageId>({
 
 export function sortObjectTypeElements<MessageIds extends string>({
   availableMessageIds,
-  parentNodeName,
+  parentNode,
   elements,
   context,
 }: {
@@ -174,9 +161,12 @@ export function sortObjectTypeElements<MessageIds extends string>({
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
+  parentNode:
+    | TSESTree.TSTypeAliasDeclaration
+    | TSESTree.TSInterfaceDeclaration
+    | null
   context: RuleContext<MessageIds, Options>
   elements: TSESTree.TypeElement[]
-  parentNodeName: string | null
 }): void {
   if (!isSortable(elements)) {
     return
@@ -184,22 +174,12 @@ export function sortObjectTypeElements<MessageIds extends string>({
 
   let settings = getSettings(context.settings)
   let { sourceCode, id } = context
-  let matchedContextOptions = getMatchingContextOptions({
-    nodeNames: elements.map(node =>
-      getNodeName({ typeElement: node, sourceCode }),
-    ),
-    contextOptions: context.options,
-  }).find(options => {
-    if (!options.useConfigurationIf?.declarationMatchesPattern) {
-      return true
-    }
-    if (!parentNodeName) {
-      return false
-    }
-    return matches(
-      parentNodeName,
-      options.useConfigurationIf.declarationMatchesPattern,
-    )
+
+  let matchedContextOptions = computeMatchedContextOptions({
+    parentNode,
+    sourceCode,
+    elements,
+    context,
   })
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
@@ -210,180 +190,151 @@ export function sortObjectTypeElements<MessageIds extends string>({
   })
   validateNewlinesAndPartitionConfiguration(options)
 
-  if (parentNodeName && matches(parentNodeName, options.ignorePattern)) {
-    return
-  }
-
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,
   })
 
-  let formattedMembers: SortObjectTypesSortingNode[][] = elements.reduce(
-    (accumulator: SortObjectTypesSortingNode[][], typeElement) => {
-      if (
-        typeElement.type === 'TSCallSignatureDeclaration' ||
-        typeElement.type === 'TSConstructSignatureDeclaration'
-      ) {
-        accumulator.push([])
-        return accumulator
-      }
-
-      let lastGroup = accumulator.at(-1)
-      let lastSortingNode = lastGroup?.at(-1)
-
-      let selectors: Selector[] = []
-      let modifiers: Modifier[] = []
-
-      if (typeElement.type === 'TSIndexSignature') {
-        selectors.push('index-signature')
-      }
-
-      if (isNodeFunctionType(typeElement)) {
-        selectors.push('method')
-      }
-
-      if (typeElement.loc.start.line !== typeElement.loc.end.line) {
-        modifiers.push('multiline')
-        selectors.push('multiline')
-      }
-
-      if (
-        !(['index-signature', 'method'] as Selector[]).some(selector =>
-          selectors.includes(selector),
-        )
-      ) {
-        selectors.push('property')
-      }
-
-      selectors.push('member')
-
-      if (isMemberOptional(typeElement)) {
-        modifiers.push('optional')
-      } else {
-        modifiers.push('required')
-      }
-
-      let name = getNodeName({ typeElement, sourceCode })
-      let value: string | null = null
-      if (
-        typeElement.type === 'TSPropertySignature' &&
-        typeElement.typeAnnotation
-      ) {
-        value = sourceCode.getText(typeElement.typeAnnotation.typeAnnotation)
-      }
-
-      let predefinedGroups = generatePredefinedGroups({
-        cache: cachedGroupsByModifiersAndSelectors,
-        selectors,
-        modifiers,
-      })
-      let group = computeGroup({
-        customGroupMatcher: customGroup =>
-          doesCustomGroupMatch({
-            elementValue: value,
-            elementName: name,
-            customGroup,
-            selectors,
-            modifiers,
-          }),
-        predefinedGroups,
-        options,
-        name,
-      })
-
-      let sortingNode: SortObjectTypesSortingNode = {
-        isEslintDisabled: isNodeEslintDisabled(
-          typeElement,
-          eslintDisabledLines,
-        ),
-        groupKind: isMemberOptional(typeElement) ? 'optional' : 'required',
-        size: rangeToDiff(typeElement, sourceCode),
-        addSafetySemicolonWhenInline: true,
-        partitionId: accumulator.length,
-        node: typeElement,
-        group,
-        value,
-        name,
-      }
-
-      if (
-        shouldPartition({
-          lastSortingNode,
-          sortingNode,
-          sourceCode,
-          options,
-        })
-      ) {
-        lastGroup = []
-        accumulator.push(lastGroup)
-      }
-
-      lastGroup?.push(sortingNode)
-
-      return accumulator
-    },
-    [[]],
-  )
-
-  let groupKindOrder
-  if (options.groupKind === 'required-first') {
-    groupKindOrder = ['required', 'optional'] as const
-  } else if (options.groupKind === 'optional-first') {
-    groupKindOrder = ['optional', 'required'] as const
-  } else {
-    groupKindOrder = ['any'] as const
-  }
-  for (let nodes of formattedMembers) {
-    let filteredGroupKindNodes = groupKindOrder.map(groupKind =>
-      nodes.filter(
-        currentNode =>
-          groupKind === 'any' || currentNode.groupKind === groupKind,
-      ),
-    )
-
-    function sortNodesExcludingEslintDisabled(
-      ignoreEslintDisabledNodes: boolean,
-    ): SortObjectTypesSortingNode[] {
-      return filteredGroupKindNodes.flatMap(groupedNodes =>
-        sortNodesByGroups({
-          getOptionsByGroupIndex: groupIndex => {
-            let {
-              fallbackSortNodeValueGetter,
-              options: overriddenOptions,
-              nodeValueGetter,
-            } = getCustomGroupsCompareOptions(options, groupIndex)
-            return {
-              options: {
-                ...options,
-                ...overriddenOptions,
-              },
-              fallbackSortNodeValueGetter,
-              nodeValueGetter,
-            }
-          },
-          isNodeIgnoredForGroup: (node, groupOptions) => {
-            if (groupOptions.sortBy === 'value') {
-              return !node.value
-            }
-            return false
-          },
-          ignoreEslintDisabledNodes,
-          groups: options.groups,
-          nodes: groupedNodes,
-        }),
-      )
+  let formattedMembers: SortObjectTypesSortingNode[][] = [[]]
+  for (let typeElement of elements) {
+    if (
+      typeElement.type === 'TSCallSignatureDeclaration' ||
+      typeElement.type === 'TSConstructSignatureDeclaration'
+    ) {
+      continue
     }
 
-    reportAllErrors<MessageIds>({
-      sortNodesExcludingEslintDisabled,
-      availableMessageIds,
-      sourceCode,
+    let lastGroup = formattedMembers.at(-1)
+    let lastSortingNode = lastGroup?.at(-1)
+
+    let selectors: Selector[] = []
+    let modifiers: Modifier[] = []
+
+    if (typeElement.type === 'TSIndexSignature') {
+      selectors.push('index-signature')
+    }
+
+    if (isNodeFunctionType(typeElement)) {
+      selectors.push('method')
+    }
+
+    if (typeElement.loc.start.line !== typeElement.loc.end.line) {
+      modifiers.push('multiline')
+    }
+
+    if (
+      !(['index-signature', 'method'] as const).some(selector =>
+        selectors.includes(selector),
+      )
+    ) {
+      selectors.push('property')
+    }
+
+    selectors.push('member')
+
+    if (isMemberOptional(typeElement)) {
+      modifiers.push('optional')
+    } else {
+      modifiers.push('required')
+    }
+
+    let name = getNodeName({ typeElement, sourceCode })
+    let value: string | null = null
+    if (
+      typeElement.type === 'TSPropertySignature' &&
+      typeElement.typeAnnotation
+    ) {
+      value = sourceCode.getText(typeElement.typeAnnotation.typeAnnotation)
+    }
+
+    let predefinedGroups = generatePredefinedGroups({
+      cache: cachedGroupsByModifiersAndSelectors,
+      selectors,
+      modifiers,
+    })
+    let group = computeGroup({
+      customGroupMatcher: customGroup =>
+        doesCustomGroupMatch({
+          elementValue: value,
+          elementName: name,
+          customGroup,
+          selectors,
+          modifiers,
+        }),
+      predefinedGroups,
       options,
-      context,
-      nodes,
+    })
+
+    let sortingNode: Omit<SortObjectTypesSortingNode, 'partitionId'> = {
+      isEslintDisabled: isNodeEslintDisabled(typeElement, eslintDisabledLines),
+      size: rangeToDiff(typeElement, sourceCode),
+      addSafetySemicolonWhenInline: true,
+      node: typeElement,
+      group,
+      value,
+      name,
+    }
+
+    if (
+      shouldPartition({
+        lastSortingNode,
+        sortingNode,
+        sourceCode,
+        options,
+      })
+    ) {
+      lastGroup = []
+      formattedMembers.push(lastGroup)
+    }
+
+    lastGroup?.push({
+      ...sortingNode,
+      partitionId: formattedMembers.length,
     })
   }
+
+  function sortNodesExcludingEslintDisabled(
+    ignoreEslintDisabledNodes: boolean,
+  ): SortObjectTypesSortingNode[] {
+    return formattedMembers.flatMap(groupedNodes =>
+      sortNodesByGroups({
+        getOptionsByGroupIndex: groupIndex => {
+          let {
+            fallbackSortNodeValueGetter,
+            options: overriddenOptions,
+            nodeValueGetter,
+          } = getCustomGroupsCompareOptions(options, groupIndex)
+          return {
+            options: {
+              ...options,
+              ...overriddenOptions,
+            },
+            fallbackSortNodeValueGetter,
+            nodeValueGetter,
+          }
+        },
+        isNodeIgnoredForGroup: (node, groupOptions) => {
+          if (groupOptions.sortBy === 'value') {
+            return !node.value
+          }
+          return false
+        },
+        ignoreEslintDisabledNodes,
+        groups: options.groups,
+        nodes: groupedNodes,
+      }),
+    )
+  }
+
+  let nodes = formattedMembers.flat()
+  reportAllErrors<MessageIds>({
+    sortNodesExcludingEslintDisabled,
+    availableMessageIds,
+    sourceCode,
+    options,
+    context,
+    nodes,
+  })
 }
 
 function getNodeName({
@@ -427,4 +378,50 @@ function getNodeName({
     )
   }
   return name
+}
+
+function computeMatchedContextOptions({
+  sourceCode,
+  parentNode,
+  elements,
+  context,
+}: {
+  parentNode:
+    | TSESTree.TSTypeAliasDeclaration
+    | TSESTree.TSInterfaceDeclaration
+    | null
+  context: TSESLint.RuleContext<string, Options>
+  elements: TSESTree.TypeElement[]
+  sourceCode: TSESLint.SourceCode
+}): Options[number] | undefined {
+  let filteredContextOptions = filterOptionsByAllNamesMatch({
+    nodeNames: elements.map(node =>
+      getNodeName({ typeElement: node, sourceCode }),
+    ),
+    contextOptions: context.options,
+  })
+  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
+    contextOptions: filteredContextOptions,
+    parentNode,
+    sourceCode,
+  })
+
+  return filteredContextOptions.find(options => {
+    if (!options.useConfigurationIf) {
+      return true
+    }
+
+    if (options.useConfigurationIf.declarationMatchesPattern) {
+      if (!parentNode) {
+        return false
+      }
+
+      return matches(
+        parentNode.id.name,
+        options.useConfigurationIf.declarationMatchesPattern,
+      )
+    }
+
+    return true
+  })
 }

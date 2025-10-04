@@ -6,7 +6,7 @@ import { getCustomGroupsCompareOptions } from '../../../rules/sort-object-types/
 
 describe('get-custom-groups-compare-options', () => {
   let commonOptions: Pick<
-    Required<Options[0]>,
+    Required<Options[number]>,
     'fallbackSort' | 'sortBy' | 'order' | 'type'
   > = {
     fallbackSort: {
@@ -17,23 +17,6 @@ describe('get-custom-groups-compare-options', () => {
     sortBy: 'name',
     order: 'asc',
   }
-
-  it('return the entered options if "customGroups" is not an array', () => {
-    expect(
-      getCustomGroupsCompareOptions(
-        {
-          ...commonOptions,
-          groups: ['group'],
-          customGroups: {},
-        },
-        0,
-      ),
-    ).toStrictEqual({
-      fallbackSortNodeValueGetter: null,
-      options: commonOptions,
-      nodeValueGetter: null,
-    })
-  })
 
   it('return the entered options if the group is not linked to a custom group', () => {
     expect(

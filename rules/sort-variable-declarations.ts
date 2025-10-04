@@ -47,7 +47,7 @@ type MessageId =
   | 'unexpectedVariableDeclarationsGroupOrder'
   | 'unexpectedVariableDeclarationsOrder'
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
   partitionByNewLine: false,
@@ -222,6 +222,7 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted variable declarations.',
       recommended: true,
     },
+    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },
