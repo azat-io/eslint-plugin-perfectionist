@@ -831,136 +831,130 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          <Component
+            a
+
+
+           y
+          z
+
+              b
+          />
+        `,
+        output: dedent`
+          <Component
+            a
+           b
+          y
+              z
+          />
+        `,
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'z',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+          {
+            data: {
+              right: 'y',
+              left: 'z',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'y',
+            },
+            messageId: 'missedSpacingBetweenJSXPropsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            <Component
-              a
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          <Component
+            a
+
+           y
+          z
+
+              b
+          />
+        `,
+        code: dedent`
+          <Component
+            a
 
 
-             y
-            z
-
-                b
-            />
-          `,
-          output: dedent`
-            <Component
-              a
-             b
-            y
-                z
-            />
-          `,
-        })
-      },
-    )
-
-    it.each([['1', 1]])(
-      'adds newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'z',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
-            },
-            {
-              data: {
-                right: 'y',
-                left: 'z',
-              },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'y',
-              },
-              messageId: 'missedSpacingBetweenJSXPropsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'b',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            <Component
-              a
-
-             y
-            z
-
-                b
-            />
-          `,
-          code: dedent`
-            <Component
-              a
-
-
-             z
-            y
-                b
-            />
-          `,
-        })
-      },
-    )
+           z
+          y
+              b
+          />
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -2152,136 +2146,130 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          <Component
+            a
+
+
+           y
+          z
+
+              b
+          />
+        `,
+        output: dedent`
+          <Component
+            a
+           b
+          y
+              z
+          />
+        `,
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'z',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+          {
+            data: {
+              right: 'y',
+              left: 'z',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'y',
+            },
+            messageId: 'missedSpacingBetweenJSXPropsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            <Component
-              a
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          <Component
+            a
+
+           y
+          z
+
+              b
+          />
+        `,
+        code: dedent`
+          <Component
+            a
 
 
-             y
-            z
-
-                b
-            />
-          `,
-          output: dedent`
-            <Component
-              a
-             b
-            y
-                z
-            />
-          `,
-        })
-      },
-    )
-
-    it.each([['1', 1]])(
-      'adds newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'z',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
-            },
-            {
-              data: {
-                right: 'y',
-                left: 'z',
-              },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'y',
-              },
-              messageId: 'missedSpacingBetweenJSXPropsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'b',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            <Component
-              a
-
-             y
-            z
-
-                b
-            />
-          `,
-          code: dedent`
-            <Component
-              a
-
-
-             z
-            y
-                b
-            />
-          `,
-        })
-      },
-    )
+           z
+          y
+              b
+          />
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -3473,136 +3461,130 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
+            },
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          <Component
+            aaaa
+
+
+           yy
+          z
+
+              bbb
+          />
+        `,
+        output: dedent`
+          <Component
+            aaaa
+           bbb
+          yy
+              z
+          />
+        `,
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'z',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+          {
+            data: {
+              right: 'yy',
+              left: 'z',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'yy',
+            },
+            messageId: 'missedSpacingBetweenJSXPropsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
               },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
+              {
+                elementNamePattern: 'bbb',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaaa',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            <Component
-              aaaa
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          <Component
+            aaaa
+
+           yy
+          z
+
+              bbb
+          />
+        `,
+        code: dedent`
+          <Component
+            aaaa
 
 
-             yy
-            z
-
-                bbb
-            />
-          `,
-          output: dedent`
-            <Component
-              aaaa
-             bbb
-            yy
-                z
-            />
-          `,
-        })
-      },
-    )
-
-    it.each([['1', 1]])(
-      'adds newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'z',
-              },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
-            },
-            {
-              data: {
-                right: 'yy',
-                left: 'z',
-              },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'yy',
-              },
-              messageId: 'missedSpacingBetweenJSXPropsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaaa',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'bbb',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            <Component
-              aaaa
-
-             yy
-            z
-
-                bbb
-            />
-          `,
-          code: dedent`
-            <Component
-              aaaa
-
-
-             z
-            yy
-                bbb
-            />
-          `,
-        })
-      },
-    )
+           z
+          yy
+              bbb
+          />
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({

@@ -870,60 +870,57 @@ describe('sort-union-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: '() => null',
-                right: 'Y',
-              },
-              messageId: 'extraSpacingBetweenUnionTypes',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: '() => null',
+              right: 'Y',
             },
-            {
-              data: {
-                right: 'B',
-                left: 'Z',
-              },
-              messageId: 'unexpectedUnionTypesOrder',
+            messageId: 'extraSpacingBetweenUnionTypes',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Z',
             },
-            {
-              data: {
-                right: 'B',
-                left: 'Z',
-              },
-              messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: 'unexpectedUnionTypesOrder',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Z',
             },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['function', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            type T =
-              (() => null)
+            messageId: 'extraSpacingBetweenUnionTypes',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['function', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          type T =
+            (() => null)
 
 
-             | Y
-            | Z
+           | Y
+          | Z
 
-                | B
-          `,
-          output: dedent`
-            type T =
-              (() => null)
-             | B
-            | Y
-                | Z
-          `,
-        })
-      },
-    )
+              | B
+        `,
+        output: dedent`
+          type T =
+            (() => null)
+           | B
+          | Y
+              | Z
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -1167,54 +1164,51 @@ describe('sort-union-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedUnionTypesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            type Type =
-              | a
+            messageId: 'unexpectedUnionTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type =
+            | a
 
-              // Partition comment
+            // Partition comment
 
-              | b
-              | c
-          `,
-          code: dedent`
-            type Type =
-              | a
+            | b
+            | c
+        `,
+        code: dedent`
+          type Type =
+            | a
 
-              // Partition comment
+            // Partition comment
 
-              | c
-              | b
-          `,
-        })
-      },
-    )
+            | c
+            | b
+        `,
+      })
+    })
 
     it('sorts single-line union types correctly', async () => {
       await invalid({
@@ -1586,86 +1580,80 @@ describe('sort-union-types', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'adds newlines within groups when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'named',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('adds newlines within groups when newlinesInside is 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                selector: 'named',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenUnionTypes',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type T =
-              | a
+            messageId: 'missedSpacingBetweenUnionTypes',
+          },
+        ],
+        output: dedent`
+          type T =
+            | a
 
-              | b
-          `,
-          code: dedent`
-            type T =
-              | a
-              | b
-          `,
-        })
-      },
-    )
+            | b
+        `,
+        code: dedent`
+          type T =
+            | a
+            | b
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'removes newlines within groups when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'named',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('removes newlines within groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                selector: 'named',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenUnionTypes',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type T =
-              | a
-              | b
-          `,
-          code: dedent`
-            type T =
-              | a
+            messageId: 'extraSpacingBetweenUnionTypes',
+          },
+        ],
+        output: dedent`
+          type T =
+            | a
+            | b
+        `,
+        code: dedent`
+          type T =
+            | a
 
-              | b
-          `,
-        })
-      },
-    )
+            | b
+        `,
+      })
+    })
   })
 
   describe('natural', () => {
@@ -2524,60 +2512,57 @@ describe('sort-union-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: '() => null',
-                right: 'Y',
-              },
-              messageId: 'extraSpacingBetweenUnionTypes',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: '() => null',
+              right: 'Y',
             },
-            {
-              data: {
-                right: 'B',
-                left: 'Z',
-              },
-              messageId: 'unexpectedUnionTypesOrder',
+            messageId: 'extraSpacingBetweenUnionTypes',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Z',
             },
-            {
-              data: {
-                right: 'B',
-                left: 'Z',
-              },
-              messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: 'unexpectedUnionTypesOrder',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Z',
             },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['function', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            type T =
-              (() => null)
+            messageId: 'extraSpacingBetweenUnionTypes',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['function', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          type T =
+            (() => null)
 
 
-             | Y
-            | Z
+           | Y
+          | Z
 
-                | B
-          `,
-          output: dedent`
-            type T =
-              (() => null)
-             | B
-            | Y
-                | Z
-          `,
-        })
-      },
-    )
+              | B
+        `,
+        output: dedent`
+          type T =
+            (() => null)
+           | B
+          | Y
+              | Z
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -2821,54 +2806,51 @@ describe('sort-union-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedUnionTypesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            type Type =
-              | a
+            messageId: 'unexpectedUnionTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type =
+            | a
 
-              // Partition comment
+            // Partition comment
 
-              | b
-              | c
-          `,
-          code: dedent`
-            type Type =
-              | a
+            | b
+            | c
+        `,
+        code: dedent`
+          type Type =
+            | a
 
-              // Partition comment
+            // Partition comment
 
-              | c
-              | b
-          `,
-        })
-      },
-    )
+            | c
+            | b
+        `,
+      })
+    })
 
     it('sorts single-line union types correctly', async () => {
       await invalid({
@@ -3240,86 +3222,80 @@ describe('sort-union-types', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'adds newlines within groups when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'named',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('adds newlines within groups when newlinesInside is 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                selector: 'named',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenUnionTypes',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type T =
-              | a
+            messageId: 'missedSpacingBetweenUnionTypes',
+          },
+        ],
+        output: dedent`
+          type T =
+            | a
 
-              | b
-          `,
-          code: dedent`
-            type T =
-              | a
-              | b
-          `,
-        })
-      },
-    )
+            | b
+        `,
+        code: dedent`
+          type T =
+            | a
+            | b
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'removes newlines within groups when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'named',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('removes newlines within groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                selector: 'named',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenUnionTypes',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type T =
-              | a
-              | b
-          `,
-          code: dedent`
-            type T =
-              | a
+            messageId: 'extraSpacingBetweenUnionTypes',
+          },
+        ],
+        output: dedent`
+          type T =
+            | a
+            | b
+        `,
+        code: dedent`
+          type T =
+            | a
 
-              | b
-          `,
-        })
-      },
-    )
+            | b
+        `,
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -4164,60 +4140,57 @@ describe('sort-union-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: '() => null',
-                right: 'YY',
-              },
-              messageId: 'extraSpacingBetweenUnionTypes',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: '() => null',
+              right: 'YY',
             },
-            {
-              data: {
-                right: 'BBB',
-                left: 'Z',
-              },
-              messageId: 'unexpectedUnionTypesOrder',
+            messageId: 'extraSpacingBetweenUnionTypes',
+          },
+          {
+            data: {
+              right: 'BBB',
+              left: 'Z',
             },
-            {
-              data: {
-                right: 'BBB',
-                left: 'Z',
-              },
-              messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: 'unexpectedUnionTypesOrder',
+          },
+          {
+            data: {
+              right: 'BBB',
+              left: 'Z',
             },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['function', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            type T =
-              (() => null)
+            messageId: 'extraSpacingBetweenUnionTypes',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['function', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          type T =
+            (() => null)
 
 
-             | YY
-            | Z
+           | YY
+          | Z
 
-                | BBB
-          `,
-          output: dedent`
-            type T =
-              (() => null)
-             | BBB
-            | YY
-                | Z
-          `,
-        })
-      },
-    )
+              | BBB
+        `,
+        output: dedent`
+          type T =
+            (() => null)
+           | BBB
+          | YY
+              | Z
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -4461,54 +4434,51 @@ describe('sort-union-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedUnionTypesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            type Type =
-              | a
+            messageId: 'unexpectedUnionTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type =
+            | a
 
-              // Partition comment
+            // Partition comment
 
-              | bb
-              | c
-          `,
-          code: dedent`
-            type Type =
-              | a
+            | bb
+            | c
+        `,
+        code: dedent`
+          type Type =
+            | a
 
-              // Partition comment
+            // Partition comment
 
-              | c
-              | bb
-          `,
-        })
-      },
-    )
+            | c
+            | bb
+        `,
+      })
+    })
 
     it('sorts single-line union types correctly', async () => {
       await invalid({
@@ -4880,86 +4850,80 @@ describe('sort-union-types', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'adds newlines within groups when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'named',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('adds newlines within groups when newlinesInside is 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                selector: 'named',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenUnionTypes',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type T =
-              | a
+            messageId: 'missedSpacingBetweenUnionTypes',
+          },
+        ],
+        output: dedent`
+          type T =
+            | a
 
-              | b
-          `,
-          code: dedent`
-            type T =
-              | a
-              | b
-          `,
-        })
-      },
-    )
+            | b
+        `,
+        code: dedent`
+          type T =
+            | a
+            | b
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'removes newlines within groups when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'named',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('removes newlines within groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                selector: 'named',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenUnionTypes',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type T =
-              | a
-              | b
-          `,
-          code: dedent`
-            type T =
-              | a
+            messageId: 'extraSpacingBetweenUnionTypes',
+          },
+        ],
+        output: dedent`
+          type T =
+            | a
+            | b
+        `,
+        code: dedent`
+          type T =
+            | a
 
-              | b
-          `,
-        })
-      },
-    )
+            | b
+        `,
+      })
+    })
   })
 
   describe('custom', () => {

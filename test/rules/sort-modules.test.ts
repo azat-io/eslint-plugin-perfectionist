@@ -828,82 +828,76 @@ describe('sort-modules', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'enforces newlines between group members when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'type',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'B',
-                left: 'A',
+    it('enforces newlines between group members when newlinesInside is 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                newlinesInside: 1,
+                selector: 'type',
               },
-              messageId: 'missedSpacingBetweenModulesMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'B',
+              left: 'A',
             },
-          ],
-          output: dedent`
-            type A = {}
+            messageId: 'missedSpacingBetweenModulesMembers',
+          },
+        ],
+        output: dedent`
+          type A = {}
 
-            type B = {}
-          `,
-          code: dedent`
-            type A = {}
-            type B = {}
-          `,
-        })
-      },
-    )
+          type B = {}
+        `,
+        code: dedent`
+          type A = {}
+          type B = {}
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'removes newlines between group members when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'type',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'B',
-                left: 'A',
+    it('removes newlines between group members when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                newlinesInside: 0,
+                selector: 'type',
               },
-              messageId: 'extraSpacingBetweenModulesMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'B',
+              left: 'A',
             },
-          ],
-          output: dedent`
-            type A = {}
-            type B = {}
-          `,
-          code: dedent`
-            type A = {}
+            messageId: 'extraSpacingBetweenModulesMembers',
+          },
+        ],
+        output: dedent`
+          type A = {}
+          type B = {}
+        `,
+        code: dedent`
+          type A = {}
 
-            type B = {}
-          `,
-        })
-      },
-    )
+          type B = {}
+        `,
+      })
+    })
 
     it('prioritizes declare modifier over export modifier', async () => {
       await invalid({
@@ -1769,151 +1763,145 @@ describe('sort-modules', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                leftGroup: 'interface',
-                rightGroup: 'unknown',
-                right: 'y',
-                left: 'A',
-              },
-              messageId: 'unexpectedModulesGroupOrder',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'interface',
+              rightGroup: 'unknown',
+              right: 'y',
+              left: 'A',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedModulesOrder',
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenModulesMembers',
+            messageId: 'unexpectedModulesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['unknown', 'interface'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-              interface A {}
+            messageId: 'extraSpacingBetweenModulesMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['unknown', 'interface'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+            interface A {}
 
 
-             function y() {}
-            function z() {}
+           function y() {}
+          function z() {}
 
-                function b() {}
-          `,
-          output: dedent`
               function b() {}
-             function y() {}
-            function z() {}
-                interface A {}
-          `,
-        })
-      },
-    )
-
-    it.each([['1', 1]])(
-      'maintains single newline between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'b',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'b'],
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
-              messageId: 'missedSpacingBetweenModulesMembers',
-            },
-          ],
-          output: dedent`
-            function a() {};
-
+        `,
+        output: dedent`
             function b() {}
-          `,
-          code: dedent`
-            function a() {};function b() {}
-          `,
-        })
-
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'z',
-                left: 'A',
-              },
-              messageId: 'extraSpacingBetweenModulesMembers',
-            },
-            {
-              data: {
-                right: 'y',
-                left: 'z',
-              },
-              messageId: 'unexpectedModulesOrder',
-            },
-            {
-              data: {
-                right: 'B',
-                left: 'y',
-              },
-              messageId: 'missedSpacingBetweenModulesMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['interface', 'unknown', 'class'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
+           function y() {}
+          function z() {}
               interface A {}
+        `,
+      })
+    })
 
-             function y() {}
-            function z() {}
+    it('maintains single newline between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: ['a', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'missedSpacingBetweenModulesMembers',
+          },
+        ],
+        output: dedent`
+          function a() {};
 
-                class B {}
-          `,
-          code: dedent`
-              interface A {}
+          function b() {}
+        `,
+        code: dedent`
+          function a() {};function b() {}
+        `,
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'z',
+              left: 'A',
+            },
+            messageId: 'extraSpacingBetweenModulesMembers',
+          },
+          {
+            data: {
+              right: 'y',
+              left: 'z',
+            },
+            messageId: 'unexpectedModulesOrder',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'y',
+            },
+            messageId: 'missedSpacingBetweenModulesMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['interface', 'unknown', 'class'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+            interface A {}
+
+           function y() {}
+          function z() {}
+
+              class B {}
+        `,
+        code: dedent`
+            interface A {}
 
 
-             function z() {}
-            function y() {}
-                class B {}
-          `,
-        })
-      },
-    )
+           function z() {}
+          function y() {}
+              class B {}
+        `,
+      })
+    })
 
     it('handles newlinesBetween settings between consecutive groups', async () => {
       await invalid({
@@ -2177,52 +2165,49 @@ describe('sort-modules', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedModulesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            function a() {}
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        output: dedent`
+          function a() {}
 
-            // Partition comment
+          // Partition comment
 
-            function b() {}
-            function c() {}
-          `,
-          code: dedent`
-            function a() {}
+          function b() {}
+          function c() {}
+        `,
+        code: dedent`
+          function a() {}
 
-            // Partition comment
+          // Partition comment
 
-            function c() {}
-            function b() {}
-          `,
-        })
-      },
-    )
+          function c() {}
+          function b() {}
+        `,
+      })
+    })
 
     it('sorts inline non-declare functions correctly', async () => {
       await invalid({
@@ -3395,82 +3380,76 @@ describe('sort-modules', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'enforces newlines between group members when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'type',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'B',
-                left: 'A',
+    it('enforces newlines between group members when newlinesInside is 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                newlinesInside: 1,
+                selector: 'type',
               },
-              messageId: 'missedSpacingBetweenModulesMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'B',
+              left: 'A',
             },
-          ],
-          output: dedent`
-            type A = {}
+            messageId: 'missedSpacingBetweenModulesMembers',
+          },
+        ],
+        output: dedent`
+          type A = {}
 
-            type B = {}
-          `,
-          code: dedent`
-            type A = {}
-            type B = {}
-          `,
-        })
-      },
-    )
+          type B = {}
+        `,
+        code: dedent`
+          type A = {}
+          type B = {}
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'removes newlines between group members when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'type',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'B',
-                left: 'A',
+    it('removes newlines between group members when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                newlinesInside: 0,
+                selector: 'type',
               },
-              messageId: 'extraSpacingBetweenModulesMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'B',
+              left: 'A',
             },
-          ],
-          output: dedent`
-            type A = {}
-            type B = {}
-          `,
-          code: dedent`
-            type A = {}
+            messageId: 'extraSpacingBetweenModulesMembers',
+          },
+        ],
+        output: dedent`
+          type A = {}
+          type B = {}
+        `,
+        code: dedent`
+          type A = {}
 
-            type B = {}
-          `,
-        })
-      },
-    )
+          type B = {}
+        `,
+      })
+    })
 
     it('prioritizes declare modifier over export modifier', async () => {
       await invalid({
@@ -4336,151 +4315,145 @@ describe('sort-modules', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                leftGroup: 'interface',
-                rightGroup: 'unknown',
-                right: 'y',
-                left: 'A',
-              },
-              messageId: 'unexpectedModulesGroupOrder',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'interface',
+              rightGroup: 'unknown',
+              right: 'y',
+              left: 'A',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedModulesOrder',
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenModulesMembers',
+            messageId: 'unexpectedModulesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['unknown', 'interface'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-              interface A {}
+            messageId: 'extraSpacingBetweenModulesMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['unknown', 'interface'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+            interface A {}
 
 
-             function y() {}
-            function z() {}
+           function y() {}
+          function z() {}
 
-                function b() {}
-          `,
-          output: dedent`
               function b() {}
-             function y() {}
-            function z() {}
-                interface A {}
-          `,
-        })
-      },
-    )
-
-    it.each([['1', 1]])(
-      'maintains single newline between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'b',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'b'],
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
-              messageId: 'missedSpacingBetweenModulesMembers',
-            },
-          ],
-          output: dedent`
-            function a() {};
-
+        `,
+        output: dedent`
             function b() {}
-          `,
-          code: dedent`
-            function a() {};function b() {}
-          `,
-        })
-
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'z',
-                left: 'A',
-              },
-              messageId: 'extraSpacingBetweenModulesMembers',
-            },
-            {
-              data: {
-                right: 'y',
-                left: 'z',
-              },
-              messageId: 'unexpectedModulesOrder',
-            },
-            {
-              data: {
-                right: 'B',
-                left: 'y',
-              },
-              messageId: 'missedSpacingBetweenModulesMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['interface', 'unknown', 'class'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
+           function y() {}
+          function z() {}
               interface A {}
+        `,
+      })
+    })
 
-             function y() {}
-            function z() {}
+    it('maintains single newline between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: ['a', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'missedSpacingBetweenModulesMembers',
+          },
+        ],
+        output: dedent`
+          function a() {};
 
-                class B {}
-          `,
-          code: dedent`
-              interface A {}
+          function b() {}
+        `,
+        code: dedent`
+          function a() {};function b() {}
+        `,
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'z',
+              left: 'A',
+            },
+            messageId: 'extraSpacingBetweenModulesMembers',
+          },
+          {
+            data: {
+              right: 'y',
+              left: 'z',
+            },
+            messageId: 'unexpectedModulesOrder',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'y',
+            },
+            messageId: 'missedSpacingBetweenModulesMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['interface', 'unknown', 'class'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+            interface A {}
+
+           function y() {}
+          function z() {}
+
+              class B {}
+        `,
+        code: dedent`
+            interface A {}
 
 
-             function z() {}
-            function y() {}
-                class B {}
-          `,
-        })
-      },
-    )
+           function z() {}
+          function y() {}
+              class B {}
+        `,
+      })
+    })
 
     it('handles newlinesBetween settings between consecutive groups', async () => {
       await invalid({
@@ -4744,52 +4717,49 @@ describe('sort-modules', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedModulesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            function a() {}
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        output: dedent`
+          function a() {}
 
-            // Partition comment
+          // Partition comment
 
-            function b() {}
-            function c() {}
-          `,
-          code: dedent`
-            function a() {}
+          function b() {}
+          function c() {}
+        `,
+        code: dedent`
+          function a() {}
 
-            // Partition comment
+          // Partition comment
 
-            function c() {}
-            function b() {}
-          `,
-        })
-      },
-    )
+          function c() {}
+          function b() {}
+        `,
+      })
+    })
 
     it('sorts inline non-declare functions correctly', async () => {
       await invalid({
@@ -5963,82 +5933,76 @@ describe('sort-modules', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'enforces newlines between group members when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'type',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'B',
-                left: 'A',
+    it('enforces newlines between group members when newlinesInside is 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                newlinesInside: 1,
+                selector: 'type',
               },
-              messageId: 'missedSpacingBetweenModulesMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'B',
+              left: 'A',
             },
-          ],
-          output: dedent`
-            type A = {}
+            messageId: 'missedSpacingBetweenModulesMembers',
+          },
+        ],
+        output: dedent`
+          type A = {}
 
-            type B = {}
-          `,
-          code: dedent`
-            type A = {}
-            type B = {}
-          `,
-        })
-      },
-    )
+          type B = {}
+        `,
+        code: dedent`
+          type A = {}
+          type B = {}
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'removes newlines between group members when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'type',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'B',
-                left: 'A',
+    it('removes newlines between group members when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                newlinesInside: 0,
+                selector: 'type',
               },
-              messageId: 'extraSpacingBetweenModulesMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'B',
+              left: 'A',
             },
-          ],
-          output: dedent`
-            type A = {}
-            type B = {}
-          `,
-          code: dedent`
-            type A = {}
+            messageId: 'extraSpacingBetweenModulesMembers',
+          },
+        ],
+        output: dedent`
+          type A = {}
+          type B = {}
+        `,
+        code: dedent`
+          type A = {}
 
-            type B = {}
-          `,
-        })
-      },
-    )
+          type B = {}
+        `,
+      })
+    })
 
     it('prioritizes declare modifier over export modifier', async () => {
       await invalid({
@@ -6863,151 +6827,145 @@ describe('sort-modules', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                leftGroup: 'interface',
-                rightGroup: 'unknown',
-                left: 'AAAA',
-                right: 'yy',
-              },
-              messageId: 'unexpectedModulesGroupOrder',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'interface',
+              rightGroup: 'unknown',
+              left: 'AAAA',
+              right: 'yy',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'unexpectedModulesOrder',
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenModulesMembers',
+            messageId: 'unexpectedModulesOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
             },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['unknown', 'interface'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-              interface AAAA {}
+            messageId: 'extraSpacingBetweenModulesMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['unknown', 'interface'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+            interface AAAA {}
 
 
-             function yy() {}
-            function z() {}
+           function yy() {}
+          function z() {}
 
-                function bbb() {}
-          `,
-          output: dedent`
               function bbb() {}
-             function yy() {}
-            function z() {}
-                interface AAAA {}
-          `,
-        })
-      },
-    )
-
-    it.each([['1', 1]])(
-      'maintains single newline between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'b',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'b'],
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
-              messageId: 'missedSpacingBetweenModulesMembers',
-            },
-          ],
-          output: dedent`
-            function a() {};
-
-            function b() {}
-          `,
-          code: dedent`
-            function a() {};function b() {}
-          `,
-        })
-
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'AAAA',
-                right: 'z',
-              },
-              messageId: 'extraSpacingBetweenModulesMembers',
-            },
-            {
-              data: {
-                right: 'yy',
-                left: 'z',
-              },
-              messageId: 'unexpectedModulesOrder',
-            },
-            {
-              data: {
-                right: 'BBB',
-                left: 'yy',
-              },
-              messageId: 'missedSpacingBetweenModulesMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['interface', 'unknown', 'class'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
+        `,
+        output: dedent`
+            function bbb() {}
+           function yy() {}
+          function z() {}
               interface AAAA {}
+        `,
+      })
+    })
 
-             function yy() {}
-            function z() {}
+    it('maintains single newline between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: ['a', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'missedSpacingBetweenModulesMembers',
+          },
+        ],
+        output: dedent`
+          function a() {};
 
-                class BBB {}
-          `,
-          code: dedent`
-              interface AAAA {}
+          function b() {}
+        `,
+        code: dedent`
+          function a() {};function b() {}
+        `,
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'AAAA',
+              right: 'z',
+            },
+            messageId: 'extraSpacingBetweenModulesMembers',
+          },
+          {
+            data: {
+              right: 'yy',
+              left: 'z',
+            },
+            messageId: 'unexpectedModulesOrder',
+          },
+          {
+            data: {
+              right: 'BBB',
+              left: 'yy',
+            },
+            messageId: 'missedSpacingBetweenModulesMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['interface', 'unknown', 'class'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+            interface AAAA {}
+
+           function yy() {}
+          function z() {}
+
+              class BBB {}
+        `,
+        code: dedent`
+            interface AAAA {}
 
 
-             function z() {}
-            function yy() {}
-                class BBB {}
-          `,
-        })
-      },
-    )
+           function z() {}
+          function yy() {}
+              class BBB {}
+        `,
+      })
+    })
 
     it('handles newlinesBetween settings between consecutive groups', async () => {
       await invalid({
@@ -7271,52 +7229,49 @@ describe('sort-modules', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedModulesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            function a() {}
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        output: dedent`
+          function a() {}
 
-            // Partition comment
+          // Partition comment
 
-            function bb() {}
-            function c() {}
-          `,
-          code: dedent`
-            function a() {}
+          function bb() {}
+          function c() {}
+        `,
+        code: dedent`
+          function a() {}
 
-            // Partition comment
+          // Partition comment
 
-            function c() {}
-            function bb() {}
-          `,
-        })
-      },
-    )
+          function c() {}
+          function bb() {}
+        `,
+      })
+    })
 
     it('sorts inline non-declare functions correctly', async () => {
       await invalid({

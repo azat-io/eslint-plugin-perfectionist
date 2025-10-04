@@ -1300,70 +1300,67 @@ describe('sort-array-includes', () => {
       },
     )
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        let newlinesOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedArrayIncludesOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          code: dedent`
-            [
-              'a',
+          groups: ['a', 'unknown'],
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+          },
+        ],
+        code: dedent`
+          [
+            'a',
 
 
-             'y',
-            'z',
+           'y',
+          'z',
 
-                'b'
-            ].includes(value)
-          `,
-          output: dedent`
-            [
-              'a',
-             'b',
-            'y',
-                'z'
-            ].includes(value)
-          `,
-          options: newlinesOptions,
-        })
-      },
-    )
+              'b'
+          ].includes(value)
+        `,
+        output: dedent`
+          [
+            'a',
+           'b',
+          'y',
+              'z'
+          ].includes(value)
+        `,
+        options: newlinesOptions,
+      })
+    })
 
     it('adds newlines between multiple groups', async () => {
       let multiGroupOptions = [
@@ -1738,58 +1735,55 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        let partitionOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            partitionByComment: true,
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      let partitionOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'b',
-                left: 'c',
-              },
-              messageId: 'unexpectedArrayIncludesOrder',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          output: dedent`
-            [
-              'a',
+          groups: ['a', 'unknown'],
+          partitionByComment: true,
+          newlinesBetween: 0,
+        },
+      ]
 
-              // Partition comment
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+        ],
+        output: dedent`
+          [
+            'a',
 
-              'b',
-              'c',
-            ].includes(value)
-          `,
-          code: dedent`
-            [
-              'a',
+            // Partition comment
 
-              // Partition comment
+            'b',
+            'c',
+          ].includes(value)
+        `,
+        code: dedent`
+          [
+            'a',
 
-              'c',
-              'b',
-            ].includes(value)
-          `,
-          options: partitionOptions,
-        })
-      },
-    )
+            // Partition comment
+
+            'c',
+            'b',
+          ].includes(value)
+        `,
+        options: partitionOptions,
+      })
+    })
   })
 
   describe('natural', () => {
@@ -3080,70 +3074,67 @@ describe('sort-array-includes', () => {
       },
     )
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        let newlinesOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedArrayIncludesOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          code: dedent`
-            [
-              'a',
+          groups: ['a', 'unknown'],
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+          },
+        ],
+        code: dedent`
+          [
+            'a',
 
 
-             'y',
-            'z',
+           'y',
+          'z',
 
-                'b'
-            ].includes(value)
-          `,
-          output: dedent`
-            [
-              'a',
-             'b',
-            'y',
-                'z'
-            ].includes(value)
-          `,
-          options: newlinesOptions,
-        })
-      },
-    )
+              'b'
+          ].includes(value)
+        `,
+        output: dedent`
+          [
+            'a',
+           'b',
+          'y',
+              'z'
+          ].includes(value)
+        `,
+        options: newlinesOptions,
+      })
+    })
 
     it('adds newlines between multiple groups', async () => {
       let multiGroupOptions = [
@@ -3518,58 +3509,55 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        let partitionOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            partitionByComment: true,
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      let partitionOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'b',
-                left: 'c',
-              },
-              messageId: 'unexpectedArrayIncludesOrder',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          output: dedent`
-            [
-              'a',
+          groups: ['a', 'unknown'],
+          partitionByComment: true,
+          newlinesBetween: 0,
+        },
+      ]
 
-              // Partition comment
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+        ],
+        output: dedent`
+          [
+            'a',
 
-              'b',
-              'c',
-            ].includes(value)
-          `,
-          code: dedent`
-            [
-              'a',
+            // Partition comment
 
-              // Partition comment
+            'b',
+            'c',
+          ].includes(value)
+        `,
+        code: dedent`
+          [
+            'a',
 
-              'c',
-              'b',
-            ].includes(value)
-          `,
-          options: partitionOptions,
-        })
-      },
-    )
+            // Partition comment
+
+            'c',
+            'b',
+          ].includes(value)
+        `,
+        options: partitionOptions,
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -4841,70 +4829,67 @@ describe('sort-array-includes', () => {
       },
     )
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        let newlinesOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'aa',
-                groupName: 'aa',
-              },
-            ],
-            groups: ['aa', 'unknown'],
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
-              },
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'unexpectedArrayIncludesOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
+              elementNamePattern: 'aa',
+              groupName: 'aa',
             },
           ],
-          code: dedent`
-            [
-              'aaaa',
+          groups: ['aa', 'unknown'],
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
+            },
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+          },
+        ],
+        code: dedent`
+          [
+            'aaaa',
 
 
-             'yy',
-            'z',
+           'yy',
+          'z',
 
-                'bbb'
-            ].includes(value)
-          `,
-          output: dedent`
-            [
-              'aaaa',
-             'bbb',
-            'yy',
-                'z'
-            ].includes(value)
-          `,
-          options: newlinesOptions,
-        })
-      },
-    )
+              'bbb'
+          ].includes(value)
+        `,
+        output: dedent`
+          [
+            'aaaa',
+           'bbb',
+          'yy',
+              'z'
+          ].includes(value)
+        `,
+        options: newlinesOptions,
+      })
+    })
 
     it('adds newlines between multiple groups', async () => {
       let multiGroupOptions = [
@@ -5279,58 +5264,55 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        let partitionOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            partitionByComment: true,
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      let partitionOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'bb',
-                left: 'c',
-              },
-              messageId: 'unexpectedArrayIncludesOrder',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          output: dedent`
-            [
-              'aaa',
+          groups: ['a', 'unknown'],
+          partitionByComment: true,
+          newlinesBetween: 0,
+        },
+      ]
 
-              // Partition comment
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+        ],
+        output: dedent`
+          [
+            'aaa',
 
-              'bb',
-              'c',
-            ].includes(value)
-          `,
-          code: dedent`
-            [
-              'aaa',
+            // Partition comment
 
-              // Partition comment
+            'bb',
+            'c',
+          ].includes(value)
+        `,
+        code: dedent`
+          [
+            'aaa',
 
-              'c',
-              'bb',
-            ].includes(value)
-          `,
-          options: partitionOptions,
-        })
-      },
-    )
+            // Partition comment
+
+            'c',
+            'bb',
+          ].includes(value)
+        `,
+        options: partitionOptions,
+      })
+    })
   })
 
   describe('custom', () => {

@@ -1113,68 +1113,65 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenNamedImports',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenNamedImports',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenNamedImports',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedNamedImportsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenNamedImports',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            import {
-                a,
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          import {
+              a,
 
 
-               y,
-              z,
+             y,
+            z,
 
-                  b,
-            } from 'module'
-          `,
-          output: dedent`
-            import {
-                a,
-               b,
-              y,
-                  z,
-            } from 'module'
-          `,
-        })
-      },
-    )
+                b,
+          } from 'module'
+        `,
+        output: dedent`
+          import {
+              a,
+             b,
+            y,
+                z,
+          } from 'module'
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -1464,56 +1461,53 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedNamedImportsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            import {
-              a,
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+        ],
+        output: dedent`
+          import {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              b,
-              c,
-            } from 'module'
-          `,
-          code: dedent`
-            import {
-              a,
+            b,
+            c,
+          } from 'module'
+        `,
+        code: dedent`
+          import {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              b,
-            } from 'module'
-          `,
-        })
-      },
-    )
+            c,
+            b,
+          } from 'module'
+        `,
+      })
+    })
   })
 
   describe('natural', () => {
@@ -2615,68 +2609,65 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenNamedImports',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenNamedImports',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenNamedImports',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedNamedImportsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenNamedImports',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            import {
-                a,
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          import {
+              a,
 
 
-               y,
-              z,
+             y,
+            z,
 
-                  b,
-            } from 'module'
-          `,
-          output: dedent`
-            import {
-                a,
-               b,
-              y,
-                  z,
-            } from 'module'
-          `,
-        })
-      },
-    )
+                b,
+          } from 'module'
+        `,
+        output: dedent`
+          import {
+              a,
+             b,
+            y,
+                z,
+          } from 'module'
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -2966,56 +2957,53 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedNamedImportsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            import {
-              a,
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+        ],
+        output: dedent`
+          import {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              b,
-              c,
-            } from 'module'
-          `,
-          code: dedent`
-            import {
-              a,
+            b,
+            c,
+          } from 'module'
+        `,
+        code: dedent`
+          import {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              b,
-            } from 'module'
-          `,
-        })
-      },
-    )
+            c,
+            b,
+          } from 'module'
+        `,
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -4110,68 +4098,65 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
+            },
+            messageId: 'extraSpacingBetweenNamedImports',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenNamedImports',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenNamedImports',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'unexpectedNamedImportsOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenNamedImports',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaaa',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            import {
-                aaaa,
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          import {
+              aaaa,
 
 
-               yy,
-              z,
+             yy,
+            z,
 
-                  bbb,
-            } from 'module'
-          `,
-          output: dedent`
-            import {
-                aaaa,
-               bbb,
-              yy,
-                  z,
-            } from 'module'
-          `,
-        })
-      },
-    )
+                bbb,
+          } from 'module'
+        `,
+        output: dedent`
+          import {
+              aaaa,
+             bbb,
+            yy,
+                z,
+          } from 'module'
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -4461,56 +4446,53 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaa',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaa',
+                groupName: 'a',
               },
-              messageId: 'unexpectedNamedImportsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            import {
-              aaa,
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+        ],
+        output: dedent`
+          import {
+            aaa,
 
-              // Partition comment
+            // Partition comment
 
-              bb,
-              c,
-            } from 'module'
-          `,
-          code: dedent`
-            import {
-              aaa,
+            bb,
+            c,
+          } from 'module'
+        `,
+        code: dedent`
+          import {
+            aaa,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              bb,
-            } from 'module'
-          `,
-        })
-      },
-    )
+            c,
+            bb,
+          } from 'module'
+        `,
+      })
+    })
   })
 
   describe('custom', () => {

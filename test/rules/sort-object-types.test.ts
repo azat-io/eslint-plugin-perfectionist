@@ -1051,90 +1051,84 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenObjectTypeMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type type = {
-              a
+            messageId: 'missedSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        output: dedent`
+          type type = {
+            a
 
-              b
-            }
-          `,
-          code: dedent`
-            type type = {
-              a
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+        code: dedent`
+          type type = {
+            a
+            b
+          }
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type type = {
-              a
-              b
-            }
-          `,
-          code: dedent`
-            type type = {
-              a
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        output: dedent`
+          type type = {
+            a
+            b
+          }
+        `,
+        code: dedent`
+          type type = {
+            a
 
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+      })
+    })
 
     it('allows to use regex for custom groups', async () => {
       await valid({
@@ -1673,62 +1667,59 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedObjectTypesOrder',
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            type Type = {
-              a: () => null,
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        code: dedent`
+          type Type = {
+            a: () => null,
 
 
-             y: "y",
-            z: "z",
+           y: "y",
+          z: "z",
 
-                b: "b",
-            }
-          `,
-          output: dedent`
-            type Type = {
-              a: () => null,
-             b: "b",
-            y: "y",
-                z: "z",
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              b: "b",
+          }
+        `,
+        output: dedent`
+          type Type = {
+            a: () => null,
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -2017,56 +2008,53 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'ignores newline fixes between different partitions with newlinesBetween: %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('ignores newline fixes between different partitions with newlinesBetween: %s', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedObjectTypesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            type Type = {
-              a: string
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type = {
+            a: string
 
-              // Partition comment
+            // Partition comment
 
-              b: string
-              c: string
-            }
-          `,
-          code: dedent`
-            type Type = {
-              a: string
+            b: string
+            c: string
+          }
+        `,
+        code: dedent`
+          type Type = {
+            a: string
 
-              // Partition comment
+            // Partition comment
 
-              c: string
-              b: string
-            }
-          `,
-        })
-      },
-    )
+            c: string
+            b: string
+          }
+        `,
+      })
+    })
 
     it('sorts inline elements correctly', async () => {
       await invalid({
@@ -3602,90 +3590,84 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenObjectTypeMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type type = {
-              a
+            messageId: 'missedSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        output: dedent`
+          type type = {
+            a
 
-              b
-            }
-          `,
-          code: dedent`
-            type type = {
-              a
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+        code: dedent`
+          type type = {
+            a
+            b
+          }
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type type = {
-              a
-              b
-            }
-          `,
-          code: dedent`
-            type type = {
-              a
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        output: dedent`
+          type type = {
+            a
+            b
+          }
+        `,
+        code: dedent`
+          type type = {
+            a
 
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+      })
+    })
 
     it('allows to use regex for custom groups', async () => {
       await valid({
@@ -4224,62 +4206,59 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedObjectTypesOrder',
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            type Type = {
-              a: () => null,
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        code: dedent`
+          type Type = {
+            a: () => null,
 
 
-             y: "y",
-            z: "z",
+           y: "y",
+          z: "z",
 
-                b: "b",
-            }
-          `,
-          output: dedent`
-            type Type = {
-              a: () => null,
-             b: "b",
-            y: "y",
-                z: "z",
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              b: "b",
+          }
+        `,
+        output: dedent`
+          type Type = {
+            a: () => null,
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -4568,56 +4547,53 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'ignores newline fixes between different partitions with newlinesBetween: %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('ignores newline fixes between different partitions with newlinesBetween: %s', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedObjectTypesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            type Type = {
-              a: string
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type = {
+            a: string
 
-              // Partition comment
+            // Partition comment
 
-              b: string
-              c: string
-            }
-          `,
-          code: dedent`
-            type Type = {
-              a: string
+            b: string
+            c: string
+          }
+        `,
+        code: dedent`
+          type Type = {
+            a: string
 
-              // Partition comment
+            // Partition comment
 
-              c: string
-              b: string
-            }
-          `,
-        })
-      },
-    )
+            c: string
+            b: string
+          }
+        `,
+      })
+    })
 
     it('sorts inline elements correctly', async () => {
       await invalid({
@@ -6103,90 +6079,84 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenObjectTypeMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type type = {
-              a
+            messageId: 'missedSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        output: dedent`
+          type type = {
+            a
 
-              b
-            }
-          `,
-          code: dedent`
-            type type = {
-              a
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+        code: dedent`
+          type type = {
+            a
+            b
+          }
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type type = {
-              a
-              b
-            }
-          `,
-          code: dedent`
-            type type = {
-              a
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        output: dedent`
+          type type = {
+            a
+            b
+          }
+        `,
+        code: dedent`
+          type type = {
+            a
 
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+      })
+    })
 
     it('allows to use regex for custom groups', async () => {
       await valid({
@@ -6718,62 +6688,59 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
-              },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'unexpectedObjectTypesOrder',
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            type Type = {
-              aaaa: () => null,
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        code: dedent`
+          type Type = {
+            aaaa: () => null,
 
 
-             yy: "y",
-            z: "z",
+           yy: "y",
+          z: "z",
 
-                bbb: "b",
-            }
-          `,
-          output: dedent`
-            type Type = {
-              aaaa: () => null,
-             bbb: "b",
-            yy: "y",
-                z: "z",
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              bbb: "b",
+          }
+        `,
+        output: dedent`
+          type Type = {
+            aaaa: () => null,
+           bbb: "b",
+          yy: "y",
+              z: "z",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -7062,56 +7029,53 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'ignores newline fixes between different partitions with newlinesBetween: %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('ignores newline fixes between different partitions with newlinesBetween: %s', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedObjectTypesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            type Type = {
-              a: string
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type = {
+            a: string
 
-              // Partition comment
+            // Partition comment
 
-              bb: string
-              c: string
-            }
-          `,
-          code: dedent`
-            type Type = {
-              a: string
+            bb: string
+            c: string
+          }
+        `,
+        code: dedent`
+          type Type = {
+            a: string
 
-              // Partition comment
+            // Partition comment
 
-              c: string
-              bb: string
-            }
-          `,
-        })
-      },
-    )
+            c: string
+            bb: string
+          }
+        `,
+      })
+    })
 
     it('sorts inline elements correctly', async () => {
       await invalid({

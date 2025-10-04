@@ -951,68 +951,65 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes extra newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes extra newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedMapElementsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenMapElementsMembers',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedMapElementsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenMapElementsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            new Map([
-              [a, null],
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          new Map([
+            [a, null],
 
 
-             [y, null],
-            [z, null],
+           [y, null],
+          [z, null],
 
-                [b, null]
-            ])
-          `,
-          output: dedent`
-            new Map([
-              [a, null],
-             [b, null],
-            [y, null],
-                [z, null]
-            ])
-          `,
-        })
-      },
-    )
+              [b, null]
+          ])
+        `,
+        output: dedent`
+          new Map([
+            [a, null],
+           [b, null],
+          [y, null],
+              [z, null]
+          ])
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -1307,56 +1304,53 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedMapElementsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            new Map([
-              [a, 'a'],
+            messageId: 'unexpectedMapElementsOrder',
+          },
+        ],
+        output: dedent`
+          new Map([
+            [a, 'a'],
 
-              // Partition comment
+            // Partition comment
 
-              [b, 'b'],
-              [c, 'c'],
-            ])
-          `,
-          code: dedent`
-            new Map([
-              [a, 'a'],
+            [b, 'b'],
+            [c, 'c'],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [a, 'a'],
 
-              // Partition comment
+            // Partition comment
 
-              [c, 'c'],
-              [b, 'b'],
-            ])
-          `,
-        })
-      },
-    )
+            [c, 'c'],
+            [b, 'b'],
+          ])
+        `,
+      })
+    })
 
     it.each([
       ['string pattern', 'foo'],
@@ -2375,68 +2369,65 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes extra newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes extra newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedMapElementsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenMapElementsMembers',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedMapElementsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenMapElementsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            new Map([
-              [a, null],
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          new Map([
+            [a, null],
 
 
-             [y, null],
-            [z, null],
+           [y, null],
+          [z, null],
 
-                [b, null]
-            ])
-          `,
-          output: dedent`
-            new Map([
-              [a, null],
-             [b, null],
-            [y, null],
-                [z, null]
-            ])
-          `,
-        })
-      },
-    )
+              [b, null]
+          ])
+        `,
+        output: dedent`
+          new Map([
+            [a, null],
+           [b, null],
+          [y, null],
+              [z, null]
+          ])
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -2731,56 +2722,53 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedMapElementsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            new Map([
-              [a, 'a'],
+            messageId: 'unexpectedMapElementsOrder',
+          },
+        ],
+        output: dedent`
+          new Map([
+            [a, 'a'],
 
-              // Partition comment
+            // Partition comment
 
-              [b, 'b'],
-              [c, 'c'],
-            ])
-          `,
-          code: dedent`
-            new Map([
-              [a, 'a'],
+            [b, 'b'],
+            [c, 'c'],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [a, 'a'],
 
-              // Partition comment
+            // Partition comment
 
-              [c, 'c'],
-              [b, 'b'],
-            ])
-          `,
-        })
-      },
-    )
+            [c, 'c'],
+            [b, 'b'],
+          ])
+        `,
+      })
+    })
 
     it.each([
       ['string pattern', 'foo'],
@@ -3799,68 +3787,65 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes extra newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
+    it('removes extra newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
+            },
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'unexpectedMapElementsOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenMapElementsMembers',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'unexpectedMapElementsOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenMapElementsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaaa',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            new Map([
-              [aaaa, null],
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          new Map([
+            [aaaa, null],
 
 
-             [yy, null],
-            [z, null],
+           [yy, null],
+          [z, null],
 
-                [bbb, null]
-            ])
-          `,
-          output: dedent`
-            new Map([
-              [aaaa, null],
-             [bbb, null],
-            [yy, null],
-                [z, null]
-            ])
-          `,
-        })
-      },
-    )
+              [bbb, null]
+          ])
+        `,
+        output: dedent`
+          new Map([
+            [aaaa, null],
+           [bbb, null],
+          [yy, null],
+              [z, null]
+          ])
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -4155,56 +4140,53 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaa',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('preserves partition boundaries when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaa',
+                groupName: 'a',
               },
-              messageId: 'unexpectedMapElementsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            new Map([
-              [aaa, 'a'],
+            messageId: 'unexpectedMapElementsOrder',
+          },
+        ],
+        output: dedent`
+          new Map([
+            [aaa, 'a'],
 
-              // Partition comment
+            // Partition comment
 
-              [bb, 'b'],
-              [c, 'c'],
-            ])
-          `,
-          code: dedent`
-            new Map([
-              [aaa, 'a'],
+            [bb, 'b'],
+            [c, 'c'],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [aaa, 'a'],
 
-              // Partition comment
+            // Partition comment
 
-              [c, 'c'],
-              [bb, 'b'],
-            ])
-          `,
-        })
-      },
-    )
+            [c, 'c'],
+            [bb, 'b'],
+          ])
+        `,
+      })
+    })
 
     it.each([
       ['string pattern', 'foo'],

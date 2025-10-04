@@ -1104,136 +1104,130 @@ describe('sort-enums', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'Y',
-                left: 'A',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'Y',
+              left: 'A',
+            },
+            messageId: 'extraSpacingBetweenEnumsMembers',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Z',
+            },
+            messageId: 'unexpectedEnumsOrder',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Z',
+            },
+            messageId: 'extraSpacingBetweenEnumsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenEnumsMembers',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          enum Enum {
+            A = null,
+
+
+           Y = null,
+          Z = null,
+
+              B = null,
+          }
+        `,
+        output: dedent`
+          enum Enum {
+            A = null,
+           B = null,
+          Y = null,
+              Z = null,
+          }
+        `,
+      })
+    })
+
+    it('enforces single newline between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'Z',
+              left: 'A',
             },
-            {
-              data: {
-                right: 'B',
-                left: 'Z',
+            messageId: 'extraSpacingBetweenEnumsMembers',
+          },
+          {
+            data: {
+              right: 'Y',
+              left: 'Z',
+            },
+            messageId: 'unexpectedEnumsOrder',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Y',
+            },
+            messageId: 'missedSpacingBetweenEnumsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'a',
               },
-              messageId: 'unexpectedEnumsOrder',
-            },
-            {
-              data: {
-                right: 'B',
-                left: 'Z',
+              {
+                elementNamePattern: 'B',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenEnumsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'A',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            enum Enum {
-              A = null,
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            A = null,
+
+           Y = null,
+          Z = null,
+
+              B = null,
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            A = null,
 
 
-             Y = null,
-            Z = null,
-
-                B = null,
-            }
-          `,
-          output: dedent`
-            enum Enum {
-              A = null,
-             B = null,
-            Y = null,
-                Z = null,
-            }
-          `,
-        })
-      },
-    )
-
-    it.each([['1', 1]])(
-      'enforces single newline between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'Z',
-                left: 'A',
-              },
-              messageId: 'extraSpacingBetweenEnumsMembers',
-            },
-            {
-              data: {
-                right: 'Y',
-                left: 'Z',
-              },
-              messageId: 'unexpectedEnumsOrder',
-            },
-            {
-              data: {
-                right: 'B',
-                left: 'Y',
-              },
-              messageId: 'missedSpacingBetweenEnumsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'A',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'B',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            enum Enum {
-              A = null,
-
-             Y = null,
-            Z = null,
-
-                B = null,
-            }
-          `,
-          code: dedent`
-            enum Enum {
-              A = null,
-
-
-             Z = null,
-            Y = null,
-                B = null,
-            }
-          `,
-        })
-      },
-    )
+           Z = null,
+          Y = null,
+              B = null,
+          }
+        `,
+      })
+    })
 
     it('applies newlinesBetween rules between consecutive groups', async () => {
       await invalid({
@@ -1502,56 +1496,53 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween setting (%s)',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'A',
-                  groupName: 'A',
-                },
-              ],
-              groups: ['A', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'B',
-                left: 'C',
+    it('preserves partition boundaries regardless of newlinesBetween setting (0)', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'A',
               },
-              messageId: 'unexpectedEnumsOrder',
+            ],
+            groups: ['A', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'B',
+              left: 'C',
             },
-          ],
-          output: dedent`
-            enum Enum {
-              A = 'A',
+            messageId: 'unexpectedEnumsOrder',
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            A = 'A',
 
-              // Partition comment
+            // Partition comment
 
-              B = 'B',
-              C = 'C',
-            }
-          `,
-          code: dedent`
-            enum Enum {
-              A = 'A',
+            B = 'B',
+            C = 'C',
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            A = 'A',
 
-              // Partition comment
+            // Partition comment
 
-              C = 'C',
-              B = 'B',
-            }
-          `,
-        })
-      },
-    )
+            C = 'C',
+            B = 'B',
+          }
+        `,
+      })
+    })
   })
 
   describe('natural', () => {
@@ -2644,136 +2635,130 @@ describe('sort-enums', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'Y',
-                left: 'A',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'Y',
+              left: 'A',
+            },
+            messageId: 'extraSpacingBetweenEnumsMembers',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Z',
+            },
+            messageId: 'unexpectedEnumsOrder',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Z',
+            },
+            messageId: 'extraSpacingBetweenEnumsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenEnumsMembers',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          enum Enum {
+            A = null,
+
+
+           Y = null,
+          Z = null,
+
+              B = null,
+          }
+        `,
+        output: dedent`
+          enum Enum {
+            A = null,
+           B = null,
+          Y = null,
+              Z = null,
+          }
+        `,
+      })
+    })
+
+    it('enforces single newline between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'Z',
+              left: 'A',
             },
-            {
-              data: {
-                right: 'B',
-                left: 'Z',
+            messageId: 'extraSpacingBetweenEnumsMembers',
+          },
+          {
+            data: {
+              right: 'Y',
+              left: 'Z',
+            },
+            messageId: 'unexpectedEnumsOrder',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Y',
+            },
+            messageId: 'missedSpacingBetweenEnumsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'a',
               },
-              messageId: 'unexpectedEnumsOrder',
-            },
-            {
-              data: {
-                right: 'B',
-                left: 'Z',
+              {
+                elementNamePattern: 'B',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenEnumsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'A',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            enum Enum {
-              A = null,
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            A = null,
+
+           Y = null,
+          Z = null,
+
+              B = null,
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            A = null,
 
 
-             Y = null,
-            Z = null,
-
-                B = null,
-            }
-          `,
-          output: dedent`
-            enum Enum {
-              A = null,
-             B = null,
-            Y = null,
-                Z = null,
-            }
-          `,
-        })
-      },
-    )
-
-    it.each([['1', 1]])(
-      'enforces single newline between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'Z',
-                left: 'A',
-              },
-              messageId: 'extraSpacingBetweenEnumsMembers',
-            },
-            {
-              data: {
-                right: 'Y',
-                left: 'Z',
-              },
-              messageId: 'unexpectedEnumsOrder',
-            },
-            {
-              data: {
-                right: 'B',
-                left: 'Y',
-              },
-              messageId: 'missedSpacingBetweenEnumsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'A',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'B',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            enum Enum {
-              A = null,
-
-             Y = null,
-            Z = null,
-
-                B = null,
-            }
-          `,
-          code: dedent`
-            enum Enum {
-              A = null,
-
-
-             Z = null,
-            Y = null,
-                B = null,
-            }
-          `,
-        })
-      },
-    )
+           Z = null,
+          Y = null,
+              B = null,
+          }
+        `,
+      })
+    })
 
     it('applies newlinesBetween rules between consecutive groups', async () => {
       await invalid({
@@ -3042,56 +3027,53 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween setting (%s)',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'A',
-                  groupName: 'A',
-                },
-              ],
-              groups: ['A', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'B',
-                left: 'C',
+    it('preserves partition boundaries regardless of newlinesBetween setting (0)', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'A',
               },
-              messageId: 'unexpectedEnumsOrder',
+            ],
+            groups: ['A', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'B',
+              left: 'C',
             },
-          ],
-          output: dedent`
-            enum Enum {
-              A = 'A',
+            messageId: 'unexpectedEnumsOrder',
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            A = 'A',
 
-              // Partition comment
+            // Partition comment
 
-              B = 'B',
-              C = 'C',
-            }
-          `,
-          code: dedent`
-            enum Enum {
-              A = 'A',
+            B = 'B',
+            C = 'C',
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            A = 'A',
 
-              // Partition comment
+            // Partition comment
 
-              C = 'C',
-              B = 'B',
-            }
-          `,
-        })
-      },
-    )
+            C = 'C',
+            B = 'B',
+          }
+        `,
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -4128,136 +4110,130 @@ describe('sort-enums', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'AAAA',
-                right: 'YY',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'AAAA',
+              right: 'YY',
+            },
+            messageId: 'extraSpacingBetweenEnumsMembers',
+          },
+          {
+            data: {
+              right: 'BBB',
+              left: 'Z',
+            },
+            messageId: 'unexpectedEnumsOrder',
+          },
+          {
+            data: {
+              right: 'BBB',
+              left: 'Z',
+            },
+            messageId: 'extraSpacingBetweenEnumsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'AAAA',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenEnumsMembers',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          enum Enum {
+            AAAA = null,
+
+
+           YY = null,
+          Z = null,
+
+              BBB = null,
+          }
+        `,
+        output: dedent`
+          enum Enum {
+            AAAA = null,
+           BBB = null,
+          YY = null,
+              Z = null,
+          }
+        `,
+      })
+    })
+
+    it('enforces single newline between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'AAAA',
+              right: 'Z',
             },
-            {
-              data: {
-                right: 'BBB',
-                left: 'Z',
+            messageId: 'extraSpacingBetweenEnumsMembers',
+          },
+          {
+            data: {
+              right: 'YY',
+              left: 'Z',
+            },
+            messageId: 'unexpectedEnumsOrder',
+          },
+          {
+            data: {
+              right: 'BBB',
+              left: 'YY',
+            },
+            messageId: 'missedSpacingBetweenEnumsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'AAAA',
+                groupName: 'a',
               },
-              messageId: 'unexpectedEnumsOrder',
-            },
-            {
-              data: {
-                right: 'BBB',
-                left: 'Z',
+              {
+                elementNamePattern: 'BBB',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenEnumsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'AAAA',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            enum Enum {
-              AAAA = null,
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            AAAA = null,
+
+           YY = null,
+          Z = null,
+
+              BBB = null,
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            AAAA = null,
 
 
-             YY = null,
-            Z = null,
-
-                BBB = null,
-            }
-          `,
-          output: dedent`
-            enum Enum {
-              AAAA = null,
-             BBB = null,
-            YY = null,
-                Z = null,
-            }
-          `,
-        })
-      },
-    )
-
-    it.each([['1', 1]])(
-      'enforces single newline between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'AAAA',
-                right: 'Z',
-              },
-              messageId: 'extraSpacingBetweenEnumsMembers',
-            },
-            {
-              data: {
-                right: 'YY',
-                left: 'Z',
-              },
-              messageId: 'unexpectedEnumsOrder',
-            },
-            {
-              data: {
-                right: 'BBB',
-                left: 'YY',
-              },
-              messageId: 'missedSpacingBetweenEnumsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'AAAA',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'BBB',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            enum Enum {
-              AAAA = null,
-
-             YY = null,
-            Z = null,
-
-                BBB = null,
-            }
-          `,
-          code: dedent`
-            enum Enum {
-              AAAA = null,
-
-
-             Z = null,
-            YY = null,
-                BBB = null,
-            }
-          `,
-        })
-      },
-    )
+           Z = null,
+          YY = null,
+              BBB = null,
+          }
+        `,
+      })
+    })
 
     it('applies newlinesBetween rules between consecutive groups', async () => {
       await invalid({
@@ -4526,56 +4502,53 @@ describe('sort-enums', () => {
       },
     )
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween setting (%s)',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'AAA',
-                  groupName: 'AAA',
-                },
-              ],
-              groups: ['AAA', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'BB',
-                left: 'C',
+    it('preserves partition boundaries regardless of newlinesBetween setting (0)', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'AAA',
+                groupName: 'AAA',
               },
-              messageId: 'unexpectedEnumsOrder',
+            ],
+            groups: ['AAA', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'BB',
+              left: 'C',
             },
-          ],
-          output: dedent`
-            enum Enum {
-              AAA = 'AAA',
+            messageId: 'unexpectedEnumsOrder',
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            AAA = 'AAA',
 
-              // Partition comment
+            // Partition comment
 
-              BB = 'BB',
-              C = 'C',
-            }
-          `,
-          code: dedent`
-            enum Enum {
-              AAA = 'AAA',
+            BB = 'BB',
+            C = 'C',
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            AAA = 'AAA',
 
-              // Partition comment
+            // Partition comment
 
-              C = 'C',
-              BB = 'BB',
-            }
-          `,
-        })
-      },
-    )
+            C = 'C',
+            BB = 'BB',
+          }
+        `,
+      })
+    })
   })
 
   describe('custom', () => {

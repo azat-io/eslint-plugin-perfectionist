@@ -3891,62 +3891,59 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedClassesOrder',
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
+            messageId: 'unexpectedClassesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            class Class {
-              a = () => null
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+        ],
+        code: dedent`
+          class Class {
+            a = () => null
 
 
-             y = "y"
-            z = "z"
+           y = "y"
+          z = "z"
 
-                b = "b"
-            }
-          `,
-          output: dedent`
-            class Class {
-              a = () => null
-             b = "b"
-            y = "y"
-                z = "z"
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              b = "b"
+          }
+        `,
+        output: dedent`
+          class Class {
+            a = () => null
+           b = "b"
+          y = "y"
+              z = "z"
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it.each([
       ['1', 1],
@@ -4281,56 +4278,53 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'ignores newline fixes between different partitions when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedClassesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            class Class {
-              a
+            messageId: 'unexpectedClassesOrder',
+          },
+        ],
+        output: dedent`
+          class Class {
+            a
 
-              // Partition comment
+            // Partition comment
 
-              b
-              c
-            }
-          `,
-          code: dedent`
-            class Class {
-              a
+            b
+            c
+          }
+        `,
+        code: dedent`
+          class Class {
+            a
 
-              // Partition comment
+            // Partition comment
 
-              c
-              b
-            }
-          `,
-        })
-      },
-    )
+            c
+            b
+          }
+        `,
+      })
+    })
 
     it('sorts inline non-abstract methods correctly', async () => {
       await invalid({
@@ -8549,62 +8543,59 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedClassesOrder',
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
+            messageId: 'unexpectedClassesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            class Class {
-              a = () => null
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+        ],
+        code: dedent`
+          class Class {
+            a = () => null
 
 
-             y = "y"
-            z = "z"
+           y = "y"
+          z = "z"
 
-                b = "b"
-            }
-          `,
-          output: dedent`
-            class Class {
-              a = () => null
-             b = "b"
-            y = "y"
-                z = "z"
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              b = "b"
+          }
+        `,
+        output: dedent`
+          class Class {
+            a = () => null
+           b = "b"
+          y = "y"
+              z = "z"
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it.each([
       ['1', 1],
@@ -8939,56 +8930,53 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'ignores newline fixes between different partitions when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedClassesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            class Class {
-              a
+            messageId: 'unexpectedClassesOrder',
+          },
+        ],
+        output: dedent`
+          class Class {
+            a
 
-              // Partition comment
+            // Partition comment
 
-              b
-              c
-            }
-          `,
-          code: dedent`
-            class Class {
-              a
+            b
+            c
+          }
+        `,
+        code: dedent`
+          class Class {
+            a
 
-              // Partition comment
+            // Partition comment
 
-              c
-              b
-            }
-          `,
-        })
-      },
-    )
+            c
+            b
+          }
+        `,
+      })
+    })
 
     it('sorts inline non-abstract methods correctly', async () => {
       await invalid({
@@ -13148,55 +13136,52 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'z',
-                left: 'y',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+          {
+            data: {
+              right: 'z',
+              left: 'y',
             },
-          ],
-          code: dedent`
-            class Class {
-              a = () => null
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+        ],
+        code: dedent`
+          class Class {
+            a = () => null
 
 
-             b = "b"
-            y = "y"
+           b = "b"
+          y = "y"
 
-                z = "z"
-            }
-          `,
-          output: dedent`
-            class Class {
-              a = () => null
-             b = "b"
-            y = "y"
-                z = "z"
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              z = "z"
+          }
+        `,
+        output: dedent`
+          class Class {
+            a = () => null
+           b = "b"
+          y = "y"
+              z = "z"
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it.each([
       ['1', 1],
@@ -13531,56 +13516,53 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'ignores newline fixes between different partitions when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaa',
-                  groupName: 'aaa',
-                },
-              ],
-              groups: ['aaa', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaa',
+                groupName: 'aaa',
               },
-              messageId: 'unexpectedClassesOrder',
+            ],
+            groups: ['aaa', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            class Class {
-              aaa
+            messageId: 'unexpectedClassesOrder',
+          },
+        ],
+        output: dedent`
+          class Class {
+            aaa
 
-              // Partition comment
+            // Partition comment
 
-              bb
-              c
-            }
-          `,
-          code: dedent`
-            class Class {
-              aaa
+            bb
+            c
+          }
+        `,
+        code: dedent`
+          class Class {
+            aaa
 
-              // Partition comment
+            // Partition comment
 
-              c
-              bb
-            }
-          `,
-        })
-      },
-    )
+            c
+            bb
+          }
+        `,
+      })
+    })
 
     it('sorts inline non-abstract methods correctly', async () => {
       await invalid({
@@ -14758,107 +14740,101 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'allows to use newlinesInside: %s',
-      async (_name, newlinesInside) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'c',
-                left: 'b',
+    it('allows to use newlinesInside: 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'c',
+              left: 'b',
+            },
+            messageId: 'missedSpacingBetweenClassMembers',
+          },
+          {
+            data: {
+              right: 'd',
+              left: 'c',
+            },
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+        ],
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'methodsWithNewlinesInside',
+                selector: 'method',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenClassMembers',
-            },
-            {
-              data: {
-                right: 'd',
-                left: 'c',
+            ],
+            groups: ['unknown', 'methodsWithNewlinesInside'],
+          },
+        ],
+        output: dedent`
+          class Class {
+            a
+            b() {}
+
+            c() {}
+
+            d() {}
+          }
+        `,
+        code: dedent`
+          class Class {
+            a
+            b() {}
+            c() {}
+
+
+            d() {}
+          }
+        `,
+      })
+    })
+
+    it('allows to use newlinesInside: 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'methodsWithoutNewlinesInside',
+                selector: 'method',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenClassMembers',
+            ],
+            groups: ['unknown', 'methodsWithoutNewlinesInside'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'd',
+              left: 'c',
             },
-          ],
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'methodsWithNewlinesInside',
-                  selector: 'method',
-                  newlinesInside,
-                },
-              ],
-              groups: ['unknown', 'methodsWithNewlinesInside'],
-            },
-          ],
-          output: dedent`
-            class Class {
-              a
-              b() {}
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+        ],
+        output: dedent`
+          class Class {
+            a
 
-              c() {}
+            c() {}
+            d() {}
+          }
+        `,
+        code: dedent`
+          class Class {
+            a
 
-              d() {}
-            }
-          `,
-          code: dedent`
-            class Class {
-              a
-              b() {}
-              c() {}
+            c() {}
 
-
-              d() {}
-            }
-          `,
-        })
-      },
-    )
-
-    it.each([['0', 0]])(
-      'allows to use newlinesInside: %s',
-      async (_name, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'methodsWithoutNewlinesInside',
-                  selector: 'method',
-                  newlinesInside,
-                },
-              ],
-              groups: ['unknown', 'methodsWithoutNewlinesInside'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'd',
-                left: 'c',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
-            },
-          ],
-          output: dedent`
-            class Class {
-              a
-
-              c() {}
-              d() {}
-            }
-          `,
-          code: dedent`
-            class Class {
-              a
-
-              c() {}
-
-              d() {}
-            }
-          `,
-        })
-      },
-    )
+            d() {}
+          }
+        `,
+      })
+    })
 
     it.each([
       ['1', 1],

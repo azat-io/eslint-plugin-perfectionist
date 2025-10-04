@@ -1405,132 +1405,126 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedVariableDeclarationsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          let
+            a,
+
+
+           y,
+          z,
+
+              b,
+        `,
+        output: dedent`
+          let
+            a,
+           b,
+          y,
+              z,
+        `,
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'z',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+          },
+          {
+            data: {
+              right: 'y',
+              left: 'z',
+            },
+            messageId: 'unexpectedVariableDeclarationsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'y',
+            },
+            messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedVariableDeclarationsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            let
-              a,
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          let
+            a,
+
+           y,
+          z,
+
+              b,
+        `,
+        code: dedent`
+          let
+            a,
 
 
-             y,
-            z,
-
-                b,
-          `,
-          output: dedent`
-            let
-              a,
-             b,
-            y,
-                z,
-          `,
-        })
-      },
-    )
-
-    it.each([['1', 1]])(
-      'adds newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'z',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            },
-            {
-              data: {
-                right: 'y',
-                left: 'z',
-              },
-              messageId: 'unexpectedVariableDeclarationsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'y',
-              },
-              messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'b',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            let
-              a,
-
-             y,
-            z,
-
-                b,
-          `,
-          code: dedent`
-            let
-              a,
-
-
-             z,
-            y,
-                b,
-          `,
-        })
-      },
-    )
+           z,
+          y,
+              b,
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -1810,54 +1804,51 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedVariableDeclarationsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            let
-              a,
+            messageId: 'unexpectedVariableDeclarationsOrder',
+          },
+        ],
+        output: dedent`
+          let
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              b,
-              c
-          `,
-          code: dedent`
-            let
-              a,
+            b,
+            c
+        `,
+        code: dedent`
+          let
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              b
-          `,
-        })
-      },
-    )
+            c,
+            b
+        `,
+      })
+    })
   })
 
   describe('natural', () => {
@@ -3244,132 +3235,126 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedVariableDeclarationsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          let
+            a,
+
+
+           y,
+          z,
+
+              b,
+        `,
+        output: dedent`
+          let
+            a,
+           b,
+          y,
+              z,
+        `,
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'z',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+          },
+          {
+            data: {
+              right: 'y',
+              left: 'z',
+            },
+            messageId: 'unexpectedVariableDeclarationsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'y',
+            },
+            messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedVariableDeclarationsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            let
-              a,
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          let
+            a,
+
+           y,
+          z,
+
+              b,
+        `,
+        code: dedent`
+          let
+            a,
 
 
-             y,
-            z,
-
-                b,
-          `,
-          output: dedent`
-            let
-              a,
-             b,
-            y,
-                z,
-          `,
-        })
-      },
-    )
-
-    it.each([['1', 1]])(
-      'adds newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'z',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            },
-            {
-              data: {
-                right: 'y',
-                left: 'z',
-              },
-              messageId: 'unexpectedVariableDeclarationsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'y',
-              },
-              messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'b',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            let
-              a,
-
-             y,
-            z,
-
-                b,
-          `,
-          code: dedent`
-            let
-              a,
-
-
-             z,
-            y,
-                b,
-          `,
-        })
-      },
-    )
+           z,
+          y,
+              b,
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -3649,54 +3634,51 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedVariableDeclarationsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            let
-              a,
+            messageId: 'unexpectedVariableDeclarationsOrder',
+          },
+        ],
+        output: dedent`
+          let
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              b,
-              c
-          `,
-          code: dedent`
-            let
-              a,
+            b,
+            c
+        `,
+        code: dedent`
+          let
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              b
-          `,
-        })
-      },
-    )
+            c,
+            b
+        `,
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -5083,132 +5065,126 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
+            },
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'unexpectedVariableDeclarationsOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          let
+            aaaa,
+
+
+           yy,
+          z,
+
+              bbb,
+        `,
+        output: dedent`
+          let
+            aaaa,
+           bbb,
+          yy,
+              z,
+        `,
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'z',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+          },
+          {
+            data: {
+              right: 'yy',
+              left: 'z',
+            },
+            messageId: 'unexpectedVariableDeclarationsOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'yy',
+            },
+            messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
               },
-              messageId: 'unexpectedVariableDeclarationsOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
+              {
+                elementNamePattern: 'bbb',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaaa',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            let
-              aaaa,
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          let
+            aaaa,
+
+           yy,
+          z,
+
+              bbb,
+        `,
+        code: dedent`
+          let
+            aaaa,
 
 
-             yy,
-            z,
-
-                bbb,
-          `,
-          output: dedent`
-            let
-              aaaa,
-             bbb,
-            yy,
-                z,
-          `,
-        })
-      },
-    )
-
-    it.each([['1', 1]])(
-      'adds newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'z',
-              },
-              messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            },
-            {
-              data: {
-                right: 'yy',
-                left: 'z',
-              },
-              messageId: 'unexpectedVariableDeclarationsOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'yy',
-              },
-              messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaaa',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'bbb',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            let
-              aaaa,
-
-             yy,
-            z,
-
-                bbb,
-          `,
-          code: dedent`
-            let
-              aaaa,
-
-
-             z,
-            yy,
-                bbb,
-          `,
-        })
-      },
-    )
+           z,
+          yy,
+              bbb,
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -5488,54 +5464,51 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaa',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaa',
+                groupName: 'a',
               },
-              messageId: 'unexpectedVariableDeclarationsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            let
-              aaa,
+            messageId: 'unexpectedVariableDeclarationsOrder',
+          },
+        ],
+        output: dedent`
+          let
+            aaa,
 
-              // Partition comment
+            // Partition comment
 
-              bb,
-              c
-          `,
-          code: dedent`
-            let
-              aaa,
+            bb,
+            c
+        `,
+        code: dedent`
+          let
+            aaa,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              bb
-          `,
-        })
-      },
-    )
+            c,
+            bb
+        `,
+      })
+    })
   })
 
   describe('custom', () => {

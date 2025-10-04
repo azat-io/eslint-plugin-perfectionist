@@ -1643,62 +1643,59 @@ describe('sort-objects', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenObjectMembers',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedObjectsOrder',
+            messageId: 'extraSpacingBetweenObjectMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: 'unexpectedObjectsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            let Obj = {
-              a: () => null,
+            messageId: 'extraSpacingBetweenObjectMembers',
+          },
+        ],
+        code: dedent`
+          let Obj = {
+            a: () => null,
 
 
-             y: "y",
-            z: "z",
+           y: "y",
+          z: "z",
 
-                b: "b",
-            }
-          `,
-          output: dedent`
-            let Obj = {
-              a: () => null,
-             b: "b",
-            y: "y",
-                z: "z",
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              b: "b",
+          }
+        `,
+        output: dedent`
+          let Obj = {
+            a: () => null,
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it('handles newlinesBetween configuration between consecutive groups', async () => {
       await invalid({
@@ -1981,56 +1978,53 @@ describe('sort-objects', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves newlines between different partitions when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves newlines between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedObjectsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            let obj = {
-              a,
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              b,
-              c,
-            }
-          `,
-          code: dedent`
-            let obj = {
-              a,
+            b,
+            c,
+          }
+        `,
+        code: dedent`
+          let obj = {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              b,
-            }
-          `,
-        })
-      },
-    )
+            c,
+            b,
+          }
+        `,
+      })
+    })
 
     it('sorts inline object properties correctly', async () => {
       await invalid({
@@ -2942,90 +2936,84 @@ describe('sort-objects', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'enforces newlines within custom groups when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('enforces newlines within custom groups when newlinesInside is 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenObjectMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            let obj = {
-              a,
+            messageId: 'missedSpacingBetweenObjectMembers',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a,
 
-              b,
-            }
-          `,
-          code: dedent`
-            let obj = {
-              a,
-              b,
-            }
-          `,
-        })
-      },
-    )
+            b,
+          }
+        `,
+        code: dedent`
+          let obj = {
+            a,
+            b,
+          }
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'removes newlines within custom groups when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('removes newlines within custom groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenObjectMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            let obj = {
-              a,
-              b,
-            }
-          `,
-          code: dedent`
-            let obj = {
-              a,
+            messageId: 'extraSpacingBetweenObjectMembers',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a,
+            b,
+          }
+        `,
+        code: dedent`
+          let obj = {
+            a,
 
-              b,
-            }
-          `,
-        })
-      },
-    )
+            b,
+          }
+        `,
+      })
+    })
 
     it('allows regex patterns in custom groups', async () => {
       await valid({
@@ -4682,62 +4670,59 @@ describe('sort-objects', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenObjectMembers',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedObjectsOrder',
+            messageId: 'extraSpacingBetweenObjectMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: 'unexpectedObjectsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            let Obj = {
-              a: () => null,
+            messageId: 'extraSpacingBetweenObjectMembers',
+          },
+        ],
+        code: dedent`
+          let Obj = {
+            a: () => null,
 
 
-             y: "y",
-            z: "z",
+           y: "y",
+          z: "z",
 
-                b: "b",
-            }
-          `,
-          output: dedent`
-            let Obj = {
-              a: () => null,
-             b: "b",
-            y: "y",
-                z: "z",
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              b: "b",
+          }
+        `,
+        output: dedent`
+          let Obj = {
+            a: () => null,
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it('handles newlinesBetween configuration between consecutive groups', async () => {
       await invalid({
@@ -5020,56 +5005,53 @@ describe('sort-objects', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves newlines between different partitions when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves newlines between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedObjectsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            let obj = {
-              a,
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              b,
-              c,
-            }
-          `,
-          code: dedent`
-            let obj = {
-              a,
+            b,
+            c,
+          }
+        `,
+        code: dedent`
+          let obj = {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              b,
-            }
-          `,
-        })
-      },
-    )
+            c,
+            b,
+          }
+        `,
+      })
+    })
 
     it('sorts inline object properties correctly', async () => {
       await invalid({
@@ -5733,90 +5715,84 @@ describe('sort-objects', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'enforces newlines within custom groups when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('enforces newlines within custom groups when newlinesInside is 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenObjectMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            let obj = {
-              a,
+            messageId: 'missedSpacingBetweenObjectMembers',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a,
 
-              b,
-            }
-          `,
-          code: dedent`
-            let obj = {
-              a,
-              b,
-            }
-          `,
-        })
-      },
-    )
+            b,
+          }
+        `,
+        code: dedent`
+          let obj = {
+            a,
+            b,
+          }
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'removes newlines within custom groups when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('removes newlines within custom groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenObjectMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            let obj = {
-              a,
-              b,
-            }
-          `,
-          code: dedent`
-            let obj = {
-              a,
+            messageId: 'extraSpacingBetweenObjectMembers',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a,
+            b,
+          }
+        `,
+        code: dedent`
+          let obj = {
+            a,
 
-              b,
-            }
-          `,
-        })
-      },
-    )
+            b,
+          }
+        `,
+      })
+    })
 
     it('allows regex patterns in custom groups', async () => {
       await valid({
@@ -7480,62 +7456,59 @@ describe('sort-objects', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
-              },
-              messageId: 'extraSpacingBetweenObjectMembers',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'unexpectedObjectsOrder',
+            messageId: 'extraSpacingBetweenObjectMembers',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: 'unexpectedObjectsOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            let Obj = {
-              aaaa: () => null,
+            messageId: 'extraSpacingBetweenObjectMembers',
+          },
+        ],
+        code: dedent`
+          let Obj = {
+            aaaa: () => null,
 
 
-             yy: "y",
-            z: "z",
+           yy: "y",
+          z: "z",
 
-                bbb: "b",
-            }
-          `,
-          output: dedent`
-            let Obj = {
-              aaaa: () => null,
-             bbb: "b",
-            yy: "y",
-                z: "z",
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              bbb: "b",
+          }
+        `,
+        output: dedent`
+          let Obj = {
+            aaaa: () => null,
+           bbb: "b",
+          yy: "y",
+              z: "z",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it('handles newlinesBetween configuration between consecutive groups', async () => {
       await invalid({
@@ -7818,56 +7791,53 @@ describe('sort-objects', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves newlines between different partitions when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('preserves newlines between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedObjectsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            let obj = {
-              a,
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              bb,
-              c,
-            }
-          `,
-          code: dedent`
-            let obj = {
-              a,
+            bb,
+            c,
+          }
+        `,
+        code: dedent`
+          let obj = {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              bb,
-            }
-          `,
-        })
-      },
-    )
+            c,
+            bb,
+          }
+        `,
+      })
+    })
 
     it('sorts inline object properties correctly', async () => {
       await invalid({
@@ -8531,90 +8501,84 @@ describe('sort-objects', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'enforces newlines within custom groups when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('enforces newlines within custom groups when newlinesInside is 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenObjectMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            let obj = {
-              a,
+            messageId: 'missedSpacingBetweenObjectMembers',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a,
 
-              b,
-            }
-          `,
-          code: dedent`
-            let obj = {
-              a,
-              b,
-            }
-          `,
-        })
-      },
-    )
+            b,
+          }
+        `,
+        code: dedent`
+          let obj = {
+            a,
+            b,
+          }
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'removes newlines within custom groups when newlinesInside is %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('removes newlines within custom groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenObjectMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            let obj = {
-              a,
-              b,
-            }
-          `,
-          code: dedent`
-            let obj = {
-              a,
+            messageId: 'extraSpacingBetweenObjectMembers',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a,
+            b,
+          }
+        `,
+        code: dedent`
+          let obj = {
+            a,
 
-              b,
-            }
-          `,
-        })
-      },
-    )
+            b,
+          }
+        `,
+      })
+    })
 
     it('allows regex patterns in custom groups', async () => {
       await valid({

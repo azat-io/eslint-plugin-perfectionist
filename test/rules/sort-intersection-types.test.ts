@@ -863,60 +863,57 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines when newlinesBetween is %s',
-      async (_, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: '() => null',
-                right: 'Y',
-              },
-              messageId: 'extraSpacingBetweenIntersectionTypes',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: '() => null',
+              right: 'Y',
             },
-            {
-              data: {
-                right: 'B',
-                left: 'Z',
-              },
-              messageId: 'unexpectedIntersectionTypesOrder',
+            messageId: 'extraSpacingBetweenIntersectionTypes',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Z',
             },
-            {
-              data: {
-                right: 'B',
-                left: 'Z',
-              },
-              messageId: 'extraSpacingBetweenIntersectionTypes',
+            messageId: 'unexpectedIntersectionTypesOrder',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Z',
             },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['function', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            type T =
-              (() => null)
+            messageId: 'extraSpacingBetweenIntersectionTypes',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['function', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          type T =
+            (() => null)
 
 
-             & Y
-            & Z
+           & Y
+          & Z
 
-                & B
-          `,
-          output: dedent`
-            type T =
-              (() => null)
-             & B
-            & Y
-                & Z
-          `,
-        })
-      },
-    )
+              & B
+        `,
+        output: dedent`
+          type T =
+            (() => null)
+           & B
+          & Y
+              & Z
+        `,
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -1160,54 +1157,51 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedIntersectionTypesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            type Type =
-              & a
+            messageId: 'unexpectedIntersectionTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type =
+            & a
 
-              // Partition comment
+            // Partition comment
 
-              & b
-              & c
-          `,
-          code: dedent`
-            type Type =
-              & a
+            & b
+            & c
+        `,
+        code: dedent`
+          type Type =
+            & a
 
-              // Partition comment
+            // Partition comment
 
-              & c
-              & b
-          `,
-        })
-      },
-    )
+            & c
+            & b
+        `,
+      })
+    })
 
     it('sorts inline elements correctly', async () => {
       await invalid({
@@ -1579,86 +1573,80 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'enforces newlines within groups when newlinesInside is %s',
-      async (_, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'named',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('enforces newlines within groups when newlinesInside is 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                selector: 'named',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenIntersectionTypes',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type T =
-              & a
+            messageId: 'missedSpacingBetweenIntersectionTypes',
+          },
+        ],
+        output: dedent`
+          type T =
+            & a
 
-              & b
-          `,
-          code: dedent`
-            type T =
-              & a
-              & b
-          `,
-        })
-      },
-    )
+            & b
+        `,
+        code: dedent`
+          type T =
+            & a
+            & b
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'removes newlines within groups when newlinesInside is %s',
-      async (_, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'named',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('removes newlines within groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                selector: 'named',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenIntersectionTypes',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type T =
-              & a
-              & b
-          `,
-          code: dedent`
-            type T =
-              & a
+            messageId: 'extraSpacingBetweenIntersectionTypes',
+          },
+        ],
+        output: dedent`
+          type T =
+            & a
+            & b
+        `,
+        code: dedent`
+          type T =
+            & a
 
-              & b
-          `,
-        })
-      },
-    )
+            & b
+        `,
+      })
+    })
   })
 
   describe('natural', () => {
@@ -2503,60 +2491,57 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines when newlinesBetween is %s',
-      async (_, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: '() => null',
-                right: 'Y',
-              },
-              messageId: 'extraSpacingBetweenIntersectionTypes',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: '() => null',
+              right: 'Y',
             },
-            {
-              data: {
-                right: 'B',
-                left: 'Z',
-              },
-              messageId: 'unexpectedIntersectionTypesOrder',
+            messageId: 'extraSpacingBetweenIntersectionTypes',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Z',
             },
-            {
-              data: {
-                right: 'B',
-                left: 'Z',
-              },
-              messageId: 'extraSpacingBetweenIntersectionTypes',
+            messageId: 'unexpectedIntersectionTypesOrder',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'Z',
             },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['function', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            type T =
-              (() => null)
+            messageId: 'extraSpacingBetweenIntersectionTypes',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['function', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          type T =
+            (() => null)
 
 
-             & Y
-            & Z
+           & Y
+          & Z
 
-                & B
-          `,
-          output: dedent`
-            type T =
-              (() => null)
-             & B
-            & Y
-                & Z
-          `,
-        })
-      },
-    )
+              & B
+        `,
+        output: dedent`
+          type T =
+            (() => null)
+           & B
+          & Y
+              & Z
+        `,
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -2800,54 +2785,51 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedIntersectionTypesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            type Type =
-              & a
+            messageId: 'unexpectedIntersectionTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type =
+            & a
 
-              // Partition comment
+            // Partition comment
 
-              & b
-              & c
-          `,
-          code: dedent`
-            type Type =
-              & a
+            & b
+            & c
+        `,
+        code: dedent`
+          type Type =
+            & a
 
-              // Partition comment
+            // Partition comment
 
-              & c
-              & b
-          `,
-        })
-      },
-    )
+            & c
+            & b
+        `,
+      })
+    })
 
     it('sorts inline elements correctly', async () => {
       await invalid({
@@ -3219,86 +3201,80 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'enforces newlines within groups when newlinesInside is %s',
-      async (_, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'named',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('enforces newlines within groups when newlinesInside is 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                selector: 'named',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenIntersectionTypes',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type T =
-              & a
+            messageId: 'missedSpacingBetweenIntersectionTypes',
+          },
+        ],
+        output: dedent`
+          type T =
+            & a
 
-              & b
-          `,
-          code: dedent`
-            type T =
-              & a
-              & b
-          `,
-        })
-      },
-    )
+            & b
+        `,
+        code: dedent`
+          type T =
+            & a
+            & b
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'removes newlines within groups when newlinesInside is %s',
-      async (_, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'named',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('removes newlines within groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                selector: 'named',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenIntersectionTypes',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type T =
-              & a
-              & b
-          `,
-          code: dedent`
-            type T =
-              & a
+            messageId: 'extraSpacingBetweenIntersectionTypes',
+          },
+        ],
+        output: dedent`
+          type T =
+            & a
+            & b
+        `,
+        code: dedent`
+          type T =
+            & a
 
-              & b
-          `,
-        })
-      },
-    )
+            & b
+        `,
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -4136,60 +4112,57 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'removes newlines when newlinesBetween is %s',
-      async (_, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: '() => null',
-                right: 'YY',
-              },
-              messageId: 'extraSpacingBetweenIntersectionTypes',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: '() => null',
+              right: 'YY',
             },
-            {
-              data: {
-                right: 'BBB',
-                left: 'Z',
-              },
-              messageId: 'unexpectedIntersectionTypesOrder',
+            messageId: 'extraSpacingBetweenIntersectionTypes',
+          },
+          {
+            data: {
+              right: 'BBB',
+              left: 'Z',
             },
-            {
-              data: {
-                right: 'BBB',
-                left: 'Z',
-              },
-              messageId: 'extraSpacingBetweenIntersectionTypes',
+            messageId: 'unexpectedIntersectionTypesOrder',
+          },
+          {
+            data: {
+              right: 'BBB',
+              left: 'Z',
             },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['function', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            type T =
-              (() => null)
+            messageId: 'extraSpacingBetweenIntersectionTypes',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['function', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          type T =
+            (() => null)
 
 
-             & YY
-            & Z
+           & YY
+          & Z
 
-                & BBB
-          `,
-          output: dedent`
-            type T =
-              (() => null)
-             & BBB
-            & YY
-                & Z
-          `,
-        })
-      },
-    )
+              & BBB
+        `,
+        output: dedent`
+          type T =
+            (() => null)
+           & BBB
+          & YY
+              & Z
+        `,
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -4433,54 +4406,51 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([['0', 0]])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedIntersectionTypesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            type Type =
-              & aaa
+            messageId: 'unexpectedIntersectionTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type =
+            & aaa
 
-              // Partition comment
+            // Partition comment
 
-              & bb
-              & c
-          `,
-          code: dedent`
-            type Type =
-              & aaa
+            & bb
+            & c
+        `,
+        code: dedent`
+          type Type =
+            & aaa
 
-              // Partition comment
+            // Partition comment
 
-              & c
-              & bb
-          `,
-        })
-      },
-    )
+            & c
+            & bb
+        `,
+      })
+    })
 
     it('sorts inline elements correctly', async () => {
       await invalid({
@@ -4852,86 +4822,80 @@ describe('sort-intersection-types', () => {
       })
     })
 
-    it.each([['1', 1]])(
-      'enforces newlines within groups when newlinesInside is %s',
-      async (_, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'named',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('enforces newlines within groups when newlinesInside is 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                selector: 'named',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenIntersectionTypes',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type T =
-              & a
+            messageId: 'missedSpacingBetweenIntersectionTypes',
+          },
+        ],
+        output: dedent`
+          type T =
+            & a
 
-              & b
-          `,
-          code: dedent`
-            type T =
-              & a
-              & b
-          `,
-        })
-      },
-    )
+            & b
+        `,
+        code: dedent`
+          type T =
+            & a
+            & b
+        `,
+      })
+    })
 
-    it.each([['0', 0]])(
-      'removes newlines within groups when newlinesInside is %s',
-      async (_, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'group1',
-                  selector: 'named',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('removes newlines within groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'group1',
+                selector: 'named',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenIntersectionTypes',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type T =
-              & a
-              & b
-          `,
-          code: dedent`
-            type T =
-              & a
+            messageId: 'extraSpacingBetweenIntersectionTypes',
+          },
+        ],
+        output: dedent`
+          type T =
+            & a
+            & b
+        `,
+        code: dedent`
+          type T =
+            & a
 
-              & b
-          `,
-        })
-      },
-    )
+            & b
+        `,
+      })
+    })
   })
 
   describe('custom', () => {
