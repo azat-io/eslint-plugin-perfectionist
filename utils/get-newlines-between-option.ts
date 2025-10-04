@@ -5,7 +5,6 @@ import type {
 } from '../types/common-options'
 
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
-import { UnreachableCaseError } from './unreachable-case-error'
 
 /**
  * Parameters for determining newlines requirement between nodes.
@@ -16,10 +15,7 @@ import { UnreachableCaseError } from './unreachable-case-error'
 export interface GetNewlinesBetweenOptionParameters {
   /** Configuration options for newlines and groups. */
   options: {
-    /**
-     * Global newlines configuration: 'always', 'never', 'ignore', or numeric
-     * value.
-     */
+    /** Global newlines configuration: 'ignore', or numeric value. */
     newlinesBetween: NewlinesBetweenOption
 
     /**
@@ -86,9 +82,7 @@ export function getNewlinesBetweenOption({
       nodeCustomGroup.groupName === nextNodeCustomGroup.groupName
     ) {
       if (nodeCustomGroup.newlinesInside !== undefined) {
-        return convertNewlinesBetweenOptionToNumber(
-          nodeCustomGroup.newlinesInside,
-        )
+        return nodeCustomGroup.newlinesInside
       }
       return globalNewlinesBetweenOption
     }
@@ -99,9 +93,7 @@ export function getNewlinesBetweenOption({
     if (nextNodeGroupIndex === nodeGroupIndex + 2) {
       let groupBetween = options.groups[nodeGroupIndex + 1]!
       if (isNewlinesBetweenOption(groupBetween)) {
-        return convertNewlinesBetweenOptionToNumber(
-          groupBetween.newlinesBetween,
-        )
+        return groupBetween.newlinesBetween
       }
     } else {
       let relevantGroups = options.groups.slice(
@@ -115,8 +107,7 @@ export function getNewlinesBetweenOption({
       let newlinesBetweenOptions = new Set(
         groupsWithAllNewlinesBetween
           .filter(isNewlinesBetweenOption)
-          .map(group => group.newlinesBetween)
-          .map(convertNewlinesBetweenOptionToNumber),
+          .map(group => group.newlinesBetween),
       )
 
       let numberNewlinesBetween = [...newlinesBetweenOptions].filter(
@@ -211,47 +202,11 @@ function getGlobalNewlinesBetweenOption({
   nextNodeGroupIndex: number
   nodeGroupIndex: number
 }): 'ignore' | number {
-  let numberNewlinesBetween =
-    convertNewlinesBetweenOptionToNumber(newlinesBetween)
-
-  if (numberNewlinesBetween === 'ignore') {
+  if (newlinesBetween === 'ignore') {
     return 'ignore'
   }
   if (nodeGroupIndex === nextNodeGroupIndex) {
     return 0
   }
-  return numberNewlinesBetween
-}
-
-/**
- * Converts newlines configuration value to a numeric value or 'ignore'.
- *
- * Transforms string configuration values to their numeric equivalents:
- *
- * - 'always' → 1 (one newline required)
- * - 'never' → 0 (no newlines allowed)
- * - 'ignore' → 'ignore' (skip checking)
- * - Number → number (exact count required).
- *
- * @param newlinesBetween - Configuration value to convert.
- * @returns Numeric newlines requirement or 'ignore'.
- * @throws {UnreachableCaseError} If an unknown configuration value is provided.
- */
-function convertNewlinesBetweenOptionToNumber(
-  newlinesBetween: NewlinesBetweenOption,
-): 'ignore' | number {
-  if (typeof newlinesBetween === 'number') {
-    return newlinesBetween
-  }
-  switch (newlinesBetween) {
-    case 'ignore':
-      return 'ignore'
-    case 'always':
-      return 1
-    case 'never':
-      return 0
-    /* v8 ignore next 2 */
-    default:
-      throw new UnreachableCaseError(newlinesBetween)
-  }
+  return newlinesBetween
 }

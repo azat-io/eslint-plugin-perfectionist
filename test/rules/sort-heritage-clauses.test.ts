@@ -507,142 +507,130 @@ describe('sort-heritage-clauses', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenHeritageClauses',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenHeritageClauses',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenHeritageClauses',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          class Class implements
+              a,
+
+
+             y,
+            z,
+
+                b
+          {}
+        `,
+        output: dedent`
+          class Class implements
+              a,
+             b,
+            y,
+                z
+          {}
+        `,
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'z',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+            messageId: 'extraSpacingBetweenHeritageClauses',
+          },
+          {
+            data: {
+              right: 'y',
+              left: 'z',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'y',
+            },
+            messageId: 'missedSpacingBetweenHeritageClauses',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedHeritageClausesOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenHeritageClauses',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            class Class implements
-                a,
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          class Class implements
+              a,
+
+             y,
+            z,
+
+                b
+          {}
+        `,
+        code: dedent`
+          class Class implements
+              a,
 
 
-               y,
-              z,
-
-                  b
-            {}
-          `,
-          output: dedent`
-            class Class implements
-                a,
-               b,
-              y,
-                  z
-            {}
-          `,
-        })
-      },
-    )
-
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
-      'adds newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'z',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenHeritageClauses',
-            },
-            {
-              data: {
-                right: 'y',
-                left: 'z',
-              },
-              messageId: 'unexpectedHeritageClausesOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'y',
-              },
-              messageId: 'missedSpacingBetweenHeritageClauses',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-                {
-                  elementNamePattern: 'b',
-                  groupName: 'b',
-                },
-              ],
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            class Class implements
-                a,
-
-               y,
-              z,
-
-                  b
-            {}
-          `,
-          code: dedent`
-            class Class implements
-                a,
-
-
-               z,
-              y,
-                  b
-            {}
-          `,
-        })
-      },
-    )
+             z,
+            y,
+                b
+          {}
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -658,16 +646,16 @@ describe('sort-heritage-clauses', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -724,12 +712,10 @@ describe('sort-heritage-clauses', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -778,14 +764,8 @@ describe('sort-heritage-clauses', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -799,11 +779,11 @@ describe('sort-heritage-clauses', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -836,10 +816,8 @@ describe('sort-heritage-clauses', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -910,7 +888,7 @@ describe('sort-heritage-clauses', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -943,150 +921,132 @@ describe('sort-heritage-clauses', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedHeritageClausesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            class Class implements
-              a,
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+        ],
+        output: dedent`
+          class Class implements
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              b,
-              c
-            {}
-          `,
-          code: dedent`
-            class Class implements
-              a,
+            b,
+            c
+          {}
+        `,
+        code: dedent`
+          class Class implements
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              b
-            {}
-          `,
-        })
-      },
-    )
+            c,
+            b
+          {}
+        `,
+      })
+    })
 
-    it.each([
-      ['always', 'always'],
-      ['1', 1],
-    ] as const)(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  elementNamePattern: '.*',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: '.*',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenHeritageClauses',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            class Class implements
-              a,
+            messageId: 'missedSpacingBetweenHeritageClauses',
+          },
+        ],
+        output: dedent`
+          class Class implements
+            a,
 
-              b
-            {}
-          `,
-          code: dedent`
-            class Class implements
-              a,
-              b
-            {}
-          `,
-        })
-      },
-    )
+            b
+          {}
+        `,
+        code: dedent`
+          class Class implements
+            a,
+            b
+          {}
+        `,
+      })
+    })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  elementNamePattern: '.*',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: '.*',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenHeritageClauses',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            class Class implements
-              a,
-              b
-            {}
-          `,
-          code: dedent`
-            class Class implements
-              a,
+            messageId: 'extraSpacingBetweenHeritageClauses',
+          },
+        ],
+        output: dedent`
+          class Class implements
+            a,
+            b
+          {}
+        `,
+        code: dedent`
+          class Class implements
+            a,
 
-              b
-            {}
-          `,
-        })
-      },
-    )
+            b
+          {}
+        `,
+      })
+    })
 
     it('sorts within newline-separated partitions', async () => {
       await invalid({

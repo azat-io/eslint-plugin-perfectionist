@@ -1095,73 +1095,67 @@ describe('sort-sets', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        let newlinesOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenSetsMembers',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedSetsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenSetsMembers',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          code: dedent`
-            new Set([
-              'a',
+          groups: ['a', 'unknown'],
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenSetsMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenSetsMembers',
+          },
+        ],
+        code: dedent`
+          new Set([
+            'a',
 
 
-             'y',
-            'z',
+           'y',
+          'z',
 
-                'b'
-            ])
-          `,
-          output: dedent`
-            new Set([
-              'a',
-             'b',
-            'y',
-                'z'
-            ])
-          `,
-          options: newlinesOptions,
-        })
-      },
-    )
+              'b'
+          ])
+        `,
+        output: dedent`
+          new Set([
+            'a',
+           'b',
+          'y',
+              'z'
+          ])
+        `,
+        options: newlinesOptions,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       let inlineNewlineOptions = [
@@ -1192,15 +1186,15 @@ describe('sort-sets', () => {
           groups: [
             'a',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'b',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'c',
             {
-              newlinesBetween: 'never',
+              newlinesBetween: 0,
             },
             'd',
             {
@@ -1208,7 +1202,7 @@ describe('sort-sets', () => {
             },
             'e',
           ],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -1268,12 +1262,10 @@ describe('sort-sets', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1324,16 +1316,10 @@ describe('sort-sets', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
-        let neverBetweenGroupsOptions = [
+        let noNewlineBetweenGroupsOptions = [
           {
             ...options,
             customGroups: [
@@ -1344,11 +1330,11 @@ describe('sort-sets', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'unusedGroup',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
             ],
             newlinesBetween: globalNewlinesBetween,
@@ -1378,16 +1364,14 @@ describe('sort-sets', () => {
               b,
             ])
           `,
-          options: neverBetweenGroupsOptions,
+          options: noNewlineBetweenGroupsOptions,
         })
       },
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1442,7 +1426,7 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['unknown', 'b|c'],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -1479,61 +1463,55 @@ describe('sort-sets', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        let partitionOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            partitionByComment: true,
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      let partitionOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'b',
-                left: 'c',
-              },
-              messageId: 'unexpectedSetsOrder',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          output: dedent`
-            new Set([
-              'a',
+          groups: ['a', 'unknown'],
+          partitionByComment: true,
+          newlinesBetween: 0,
+        },
+      ]
 
-              // Partition comment
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+        ],
+        output: dedent`
+          new Set([
+            'a',
 
-              'b',
-              'c',
-            ])
-          `,
-          code: dedent`
-            new Set([
-              'a',
+            // Partition comment
 
-              // Partition comment
+            'b',
+            'c',
+          ])
+        `,
+        code: dedent`
+          new Set([
+            'a',
 
-              'c',
-              'b',
-            ])
-          `,
-          options: partitionOptions,
-        })
-      },
-    )
+            // Partition comment
+
+            'c',
+            'b',
+          ])
+        `,
+        options: partitionOptions,
+      })
+    })
   })
 
   describe('natural', () => {
@@ -2617,73 +2595,67 @@ describe('sort-sets', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        let newlinesOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenSetsMembers',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedSetsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenSetsMembers',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          code: dedent`
-            new Set([
-              'a',
+          groups: ['a', 'unknown'],
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenSetsMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenSetsMembers',
+          },
+        ],
+        code: dedent`
+          new Set([
+            'a',
 
 
-             'y',
-            'z',
+           'y',
+          'z',
 
-                'b'
-            ])
-          `,
-          output: dedent`
-            new Set([
-              'a',
-             'b',
-            'y',
-                'z'
-            ])
-          `,
-          options: newlinesOptions,
-        })
-      },
-    )
+              'b'
+          ])
+        `,
+        output: dedent`
+          new Set([
+            'a',
+           'b',
+          'y',
+              'z'
+          ])
+        `,
+        options: newlinesOptions,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       let inlineNewlineOptions = [
@@ -2714,15 +2686,15 @@ describe('sort-sets', () => {
           groups: [
             'a',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'b',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'c',
             {
-              newlinesBetween: 'never',
+              newlinesBetween: 0,
             },
             'd',
             {
@@ -2730,7 +2702,7 @@ describe('sort-sets', () => {
             },
             'e',
           ],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -2790,12 +2762,10 @@ describe('sort-sets', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2846,16 +2816,10 @@ describe('sort-sets', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
-        let neverBetweenGroupsOptions = [
+        let noNewlineBetweenGroupsOptions = [
           {
             ...options,
             customGroups: [
@@ -2866,11 +2830,11 @@ describe('sort-sets', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'unusedGroup',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
             ],
             newlinesBetween: globalNewlinesBetween,
@@ -2900,16 +2864,14 @@ describe('sort-sets', () => {
               b,
             ])
           `,
-          options: neverBetweenGroupsOptions,
+          options: noNewlineBetweenGroupsOptions,
         })
       },
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2964,7 +2926,7 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['unknown', 'b|c'],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -3001,61 +2963,55 @@ describe('sort-sets', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        let partitionOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            partitionByComment: true,
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      let partitionOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'b',
-                left: 'c',
-              },
-              messageId: 'unexpectedSetsOrder',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          output: dedent`
-            new Set([
-              'a',
+          groups: ['a', 'unknown'],
+          partitionByComment: true,
+          newlinesBetween: 0,
+        },
+      ]
 
-              // Partition comment
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+        ],
+        output: dedent`
+          new Set([
+            'a',
 
-              'b',
-              'c',
-            ])
-          `,
-          code: dedent`
-            new Set([
-              'a',
+            // Partition comment
 
-              // Partition comment
+            'b',
+            'c',
+          ])
+        `,
+        code: dedent`
+          new Set([
+            'a',
 
-              'c',
-              'b',
-            ])
-          `,
-          options: partitionOptions,
-        })
-      },
-    )
+            // Partition comment
+
+            'c',
+            'b',
+          ])
+        `,
+        options: partitionOptions,
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -4139,73 +4095,67 @@ describe('sort-sets', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        let newlinesOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'aaaa',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
-              },
-              messageId: 'extraSpacingBetweenSetsMembers',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'unexpectedSetsOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenSetsMembers',
+              elementNamePattern: 'aaaa',
+              groupName: 'a',
             },
           ],
-          code: dedent`
-            new Set([
-              'aaaa',
+          groups: ['a', 'unknown'],
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
+            },
+            messageId: 'extraSpacingBetweenSetsMembers',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenSetsMembers',
+          },
+        ],
+        code: dedent`
+          new Set([
+            'aaaa',
 
 
-             'yy',
-            'z',
+           'yy',
+          'z',
 
-                'bbb'
-            ])
-          `,
-          output: dedent`
-            new Set([
-              'aaaa',
-             'bbb',
-            'yy',
-                'z'
-            ])
-          `,
-          options: newlinesOptions,
-        })
-      },
-    )
+              'bbb'
+          ])
+        `,
+        output: dedent`
+          new Set([
+            'aaaa',
+           'bbb',
+          'yy',
+              'z'
+          ])
+        `,
+        options: newlinesOptions,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       let inlineNewlineOptions = [
@@ -4236,15 +4186,15 @@ describe('sort-sets', () => {
           groups: [
             'a',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'b',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'c',
             {
-              newlinesBetween: 'never',
+              newlinesBetween: 0,
             },
             'd',
             {
@@ -4252,7 +4202,7 @@ describe('sort-sets', () => {
             },
             'e',
           ],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -4312,12 +4262,10 @@ describe('sort-sets', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4368,16 +4316,10 @@ describe('sort-sets', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
-        let neverBetweenGroupsOptions = [
+        let noNewlineBetweenGroupsOptions = [
           {
             ...options,
             customGroups: [
@@ -4388,11 +4330,11 @@ describe('sort-sets', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'unusedGroup',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
             ],
             newlinesBetween: globalNewlinesBetween,
@@ -4422,16 +4364,14 @@ describe('sort-sets', () => {
               b,
             ])
           `,
-          options: neverBetweenGroupsOptions,
+          options: noNewlineBetweenGroupsOptions,
         })
       },
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4486,7 +4426,7 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['unknown', 'b|c'],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -4523,61 +4463,55 @@ describe('sort-sets', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        let partitionOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'aaa',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            partitionByComment: true,
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      let partitionOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'bb',
-                left: 'c',
-              },
-              messageId: 'unexpectedSetsOrder',
+              elementNamePattern: 'aaa',
+              groupName: 'a',
             },
           ],
-          output: dedent`
-            new Set([
-              'aaa',
+          groups: ['a', 'unknown'],
+          partitionByComment: true,
+          newlinesBetween: 0,
+        },
+      ]
 
-              // Partition comment
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+        ],
+        output: dedent`
+          new Set([
+            'aaa',
 
-              'bb',
-              'c',
-            ])
-          `,
-          code: dedent`
-            new Set([
-              'aaa',
+            // Partition comment
 
-              // Partition comment
+            'bb',
+            'c',
+          ])
+        `,
+        code: dedent`
+          new Set([
+            'aaa',
 
-              'c',
-              'bb',
-            ])
-          `,
-          options: partitionOptions,
-        })
-      },
-    )
+            // Partition comment
+
+            'c',
+            'bb',
+          ])
+        `,
+        options: partitionOptions,
+      })
+    })
   })
 
   describe('custom', () => {
@@ -4718,7 +4652,7 @@ describe('sort-sets', () => {
               groupName: 'b',
             },
           ],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
           groups: ['b', 'a'],
         },
       ]

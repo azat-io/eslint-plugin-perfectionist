@@ -251,7 +251,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
       })
@@ -307,7 +307,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
       })
@@ -741,7 +741,7 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['builtin', 'external', 'unknown'],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
             environment: 'bun',
           },
         ],
@@ -767,7 +767,7 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['builtin', 'external', 'unknown'],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
             environment: 'bun',
           },
         ],
@@ -1377,74 +1377,64 @@ describe('sort-imports', () => {
       })
     })
 
+    it.each([['removes newlines with 0 option', 0]])(
+      '%s',
+      async (_description, newlinesBetween) => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: '~/y',
+                left: 'a',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+            {
+              data: {
+                right: '~/b',
+                left: '~/z',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+            {
+              data: {
+                right: '~/b',
+                left: '~/z',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
+          code: dedent`
+              import { A } from 'a'
+
+
+             import y from '~/y'
+            import z from '~/z'
+
+                import b from '~/b'
+          `,
+          output: dedent`
+              import { A } from 'a'
+             import b from '~/b'
+            import y from '~/y'
+                import z from '~/z'
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetween,
+            },
+          ],
+        })
+      },
+    )
+
     it.each([
-      ['removes newlines with never option', 'never'],
-      ['removes newlines with 0 option', 0],
-    ])('%s', async (_description, newlinesBetween) => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '~/y',
-              left: 'a',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-          {
-            data: {
-              right: '~/b',
-              left: '~/z',
-            },
-            messageId: 'unexpectedImportsOrder',
-          },
-          {
-            data: {
-              right: '~/b',
-              left: '~/z',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-        ],
-        code: dedent`
-            import { A } from 'a'
-
-
-           import y from '~/y'
-          import z from '~/z'
-
-              import b from '~/b'
-        `,
-        output: dedent`
-            import { A } from 'a'
-           import b from '~/b'
-          import y from '~/y'
-              import z from '~/z'
-        `,
-        options: [
-          {
-            ...options,
-            newlinesBetween,
-          },
-        ],
-      })
-    })
-
-    it.each([
-      [
-        'enforces spacing when global option is 2 and group option is never',
-        2,
-        'never',
-      ],
       ['enforces spacing when global option is 2 and group option is 0', 2, 0],
       [
         'enforces spacing when global option is 2 and group option is ignore',
         2,
         'ignore',
-      ],
-      [
-        'enforces spacing when global option is never and group option is 2',
-        'never',
-        2,
       ],
       ['enforces spacing when global option is 0 and group option is 2', 0, 2],
       [
@@ -1507,23 +1497,19 @@ describe('sort-imports', () => {
 
     it.each([
       [
-        'removes spacing when never option exists between groups regardless of global setting always',
-        'always',
+        'removes spacing when 0 option exists between groups regardless of global setting 1',
+        1,
       ],
       [
-        'removes spacing when never option exists between groups regardless of global setting 2',
+        'removes spacing when 0 option exists between groups regardless of global setting 2',
         2,
       ],
       [
-        'removes spacing when never option exists between groups regardless of global setting ignore',
+        'removes spacing when 0 option exists between groups regardless of global setting ignore',
         'ignore',
       ],
       [
-        'removes spacing when never option exists between groups regardless of global setting never',
-        'never',
-      ],
-      [
-        'removes spacing when never option exists between groups regardless of global setting 0',
+        'removes spacing when 0 option exists between groups regardless of global setting 0',
         0,
       ],
     ])('%s', async (_description, globalNewlinesBetween) => {
@@ -1551,11 +1537,11 @@ describe('sort-imports', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'unusedGroup',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
             ],
             newlinesBetween: globalNewlinesBetween,
@@ -1584,19 +1570,9 @@ describe('sort-imports', () => {
 
     it.each([
       [
-        'preserves existing spacing when ignore and never options are combined',
-        'ignore',
-        'never',
-      ],
-      [
         'preserves existing spacing when ignore and 0 options are combined',
         'ignore',
         0,
-      ],
-      [
-        'preserves existing spacing when never and ignore options are combined',
-        'never',
-        'ignore',
       ],
       [
         'preserves existing spacing when 0 and ignore options are combined',
@@ -1703,17 +1679,13 @@ describe('sort-imports', () => {
         options: [
           {
             groups: ['unknown', 'external'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
     it.each([
-      [
-        'ignores newline fixes between different partitions with never option',
-        'never',
-      ],
       ['ignores newline fixes between different partitions with 0 option', 0],
     ])('%s', async (_description, newlinesBetween) => {
       await invalid({
@@ -2933,52 +2905,45 @@ describe('sort-imports', () => {
       })
     })
 
-    it.each([
-      [
-        'adds spacing inside custom groups when always option is used',
-        'always',
-      ],
-      ['adds spacing inside custom groups when 1 option is used', 1],
-    ])('%s', async (_description, newlinesInside) => {
-      await invalid({
-        options: [
-          {
-            customGroups: [
-              {
-                selector: 'external',
-                groupName: 'group1',
-                newlinesInside,
-              },
-            ],
-            groups: ['group1'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'a',
+    it.each([['adds spacing inside custom groups when 1 option is used', 1]])(
+      '%s',
+      async (_description, newlinesInside) => {
+        await invalid({
+          options: [
+            {
+              customGroups: [
+                {
+                  selector: 'external',
+                  groupName: 'group1',
+                  newlinesInside,
+                },
+              ],
+              groups: ['group1'],
             },
-            messageId: 'missedSpacingBetweenImports',
-          },
-        ],
-        output: dedent`
-          import a from 'a'
+          ],
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'missedSpacingBetweenImports',
+            },
+          ],
+          output: dedent`
+            import a from 'a'
 
-          import b from 'b'
-        `,
-        code: dedent`
-          import a from 'a'
-          import b from 'b'
-        `,
-      })
-    })
+            import b from 'b'
+          `,
+          code: dedent`
+            import a from 'a'
+            import b from 'b'
+          `,
+        })
+      },
+    )
 
     it.each([
-      [
-        'removes spacing inside custom groups when never option is used',
-        'never',
-      ],
       ['removes spacing inside custom groups when 0 option is used', 0],
     ])('%s', async (_description, newlinesInside) => {
       await invalid({
@@ -3351,7 +3316,7 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['external', 'internal'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         output: dedent`
@@ -3645,21 +3610,6 @@ describe('sort-imports', () => {
           // external
           import b from '~/b'; // Comment after b
         `,
-        options: [
-          {
-            ...options,
-            groups: [
-              { commentAbove: 'external' },
-              'external',
-              {
-                commentAbove: 'internal or sibling',
-                newlinesBetween: 'always',
-              },
-              ['internal', 'sibling'],
-            ],
-            newlinesBetween: 'never',
-          },
-        ],
         output: dedent`
           #!/usr/bin/node
           // Some disclaimer
@@ -3674,6 +3624,21 @@ describe('sort-imports', () => {
           // Comment above b
           import b from '~/b'; // Comment after b
         `,
+        options: [
+          {
+            ...options,
+            groups: [
+              { commentAbove: 'external' },
+              'external',
+              {
+                commentAbove: 'internal or sibling',
+                newlinesBetween: 1,
+              },
+              ['internal', 'sibling'],
+            ],
+            newlinesBetween: 0,
+          },
+        ],
       })
     })
   })
@@ -3887,7 +3852,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
       })
@@ -3943,7 +3908,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
       })
@@ -4384,7 +4349,7 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['builtin', 'external', 'unknown'],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
             environment: 'bun',
           },
         ],
@@ -4410,7 +4375,7 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['builtin', 'external', 'unknown'],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
             environment: 'bun',
           },
         ],
@@ -5020,74 +4985,64 @@ describe('sort-imports', () => {
       })
     })
 
+    it.each([['removes newlines with 0 option', 0]])(
+      '%s',
+      async (_description, newlinesBetween) => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: '~/y',
+                left: 'a',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+            {
+              data: {
+                right: '~/b',
+                left: '~/z',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+            {
+              data: {
+                right: '~/b',
+                left: '~/z',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
+          code: dedent`
+              import { A } from 'a'
+
+
+             import y from '~/y'
+            import z from '~/z'
+
+                import b from '~/b'
+          `,
+          output: dedent`
+              import { A } from 'a'
+             import b from '~/b'
+            import y from '~/y'
+                import z from '~/z'
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetween,
+            },
+          ],
+        })
+      },
+    )
+
     it.each([
-      ['removes newlines with never option', 'never'],
-      ['removes newlines with 0 option', 0],
-    ])('%s', async (_description, newlinesBetween) => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '~/y',
-              left: 'a',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-          {
-            data: {
-              right: '~/b',
-              left: '~/z',
-            },
-            messageId: 'unexpectedImportsOrder',
-          },
-          {
-            data: {
-              right: '~/b',
-              left: '~/z',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-        ],
-        code: dedent`
-            import { A } from 'a'
-
-
-           import y from '~/y'
-          import z from '~/z'
-
-              import b from '~/b'
-        `,
-        output: dedent`
-            import { A } from 'a'
-           import b from '~/b'
-          import y from '~/y'
-              import z from '~/z'
-        `,
-        options: [
-          {
-            ...options,
-            newlinesBetween,
-          },
-        ],
-      })
-    })
-
-    it.each([
-      [
-        'enforces spacing when global option is 2 and group option is never',
-        2,
-        'never',
-      ],
       ['enforces spacing when global option is 2 and group option is 0', 2, 0],
       [
         'enforces spacing when global option is 2 and group option is ignore',
         2,
         'ignore',
-      ],
-      [
-        'enforces spacing when global option is never and group option is 2',
-        'never',
-        2,
       ],
       ['enforces spacing when global option is 0 and group option is 2', 0, 2],
       [
@@ -5150,23 +5105,19 @@ describe('sort-imports', () => {
 
     it.each([
       [
-        'removes spacing when never option exists between groups regardless of global setting always',
-        'always',
+        'removes spacing when 0 option exists between groups regardless of global setting 1',
+        1,
       ],
       [
-        'removes spacing when never option exists between groups regardless of global setting 2',
+        'removes spacing when 0 option exists between groups regardless of global setting 2',
         2,
       ],
       [
-        'removes spacing when never option exists between groups regardless of global setting ignore',
+        'removes spacing when 0 option exists between groups regardless of global setting ignore',
         'ignore',
       ],
       [
-        'removes spacing when never option exists between groups regardless of global setting never',
-        'never',
-      ],
-      [
-        'removes spacing when never option exists between groups regardless of global setting 0',
+        'removes spacing when 0 option exists between groups regardless of global setting 0',
         0,
       ],
     ])('%s', async (_description, globalNewlinesBetween) => {
@@ -5194,11 +5145,11 @@ describe('sort-imports', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'unusedGroup',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
             ],
             newlinesBetween: globalNewlinesBetween,
@@ -5227,19 +5178,9 @@ describe('sort-imports', () => {
 
     it.each([
       [
-        'preserves existing spacing when ignore and never options are combined',
-        'ignore',
-        'never',
-      ],
-      [
         'preserves existing spacing when ignore and 0 options are combined',
         'ignore',
         0,
-      ],
-      [
-        'preserves existing spacing when never and ignore options are combined',
-        'never',
-        'ignore',
       ],
       [
         'preserves existing spacing when 0 and ignore options are combined',
@@ -5346,17 +5287,13 @@ describe('sort-imports', () => {
         options: [
           {
             groups: ['unknown', 'external'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
     it.each([
-      [
-        'ignores newline fixes between different partitions with never option',
-        'never',
-      ],
       ['ignores newline fixes between different partitions with 0 option', 0],
     ])('%s', async (_description, newlinesBetween) => {
       await invalid({
@@ -6918,7 +6855,7 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['external', 'internal'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         output: dedent`
@@ -7212,21 +7149,6 @@ describe('sort-imports', () => {
           // external
           import b from '~/b'; // Comment after b
         `,
-        options: [
-          {
-            ...options,
-            groups: [
-              { commentAbove: 'external' },
-              'external',
-              {
-                commentAbove: 'internal or sibling',
-                newlinesBetween: 'always',
-              },
-              ['internal', 'sibling'],
-            ],
-            newlinesBetween: 'never',
-          },
-        ],
         output: dedent`
           #!/usr/bin/node
           // Some disclaimer
@@ -7241,6 +7163,21 @@ describe('sort-imports', () => {
           // Comment above b
           import b from '~/b'; // Comment after b
         `,
+        options: [
+          {
+            ...options,
+            groups: [
+              { commentAbove: 'external' },
+              'external',
+              {
+                commentAbove: 'internal or sibling',
+                newlinesBetween: 1,
+              },
+              ['internal', 'sibling'],
+            ],
+            newlinesBetween: 0,
+          },
+        ],
       })
     })
   })
@@ -7475,7 +7412,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
       })
@@ -7531,7 +7468,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
       })
@@ -8041,7 +7978,7 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['builtin', 'external', 'unknown'],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
             environment: 'bun',
           },
         ],
@@ -8067,7 +8004,7 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['builtin', 'external', 'unknown'],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
             environment: 'bun',
           },
         ],
@@ -8677,74 +8614,64 @@ describe('sort-imports', () => {
       })
     })
 
+    it.each([['removes newlines with 0 option', 0]])(
+      '%s',
+      async (_description, newlinesBetween) => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: '~/y',
+                left: 'aaaa',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+            {
+              data: {
+                right: '~/bb',
+                left: '~/z',
+              },
+              messageId: 'unexpectedImportsOrder',
+            },
+            {
+              data: {
+                right: '~/bb',
+                left: '~/z',
+              },
+              messageId: 'extraSpacingBetweenImports',
+            },
+          ],
+          code: dedent`
+              import { A } from 'aaaa'
+
+
+             import y from '~/y'
+            import z from '~/z'
+
+                import b from '~/bb'
+          `,
+          output: dedent`
+              import { A } from 'aaaa'
+             import b from '~/bb'
+            import y from '~/y'
+                import z from '~/z'
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetween,
+            },
+          ],
+        })
+      },
+    )
+
     it.each([
-      ['removes newlines with never option', 'never'],
-      ['removes newlines with 0 option', 0],
-    ])('%s', async (_description, newlinesBetween) => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '~/y',
-              left: 'aaaa',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-          {
-            data: {
-              right: '~/bb',
-              left: '~/z',
-            },
-            messageId: 'unexpectedImportsOrder',
-          },
-          {
-            data: {
-              right: '~/bb',
-              left: '~/z',
-            },
-            messageId: 'extraSpacingBetweenImports',
-          },
-        ],
-        code: dedent`
-            import { A } from 'aaaa'
-
-
-           import y from '~/y'
-          import z from '~/z'
-
-              import b from '~/bb'
-        `,
-        output: dedent`
-            import { A } from 'aaaa'
-           import b from '~/bb'
-          import y from '~/y'
-              import z from '~/z'
-        `,
-        options: [
-          {
-            ...options,
-            newlinesBetween,
-          },
-        ],
-      })
-    })
-
-    it.each([
-      [
-        'enforces spacing when global option is 2 and group option is never',
-        2,
-        'never',
-      ],
       ['enforces spacing when global option is 2 and group option is 0', 2, 0],
       [
         'enforces spacing when global option is 2 and group option is ignore',
         2,
         'ignore',
-      ],
-      [
-        'enforces spacing when global option is never and group option is 2',
-        'never',
-        2,
       ],
       ['enforces spacing when global option is 0 and group option is 2', 0, 2],
       [
@@ -8807,23 +8734,19 @@ describe('sort-imports', () => {
 
     it.each([
       [
-        'removes spacing when never option exists between groups regardless of global setting always',
-        'always',
+        'removes spacing when 0 option exists between groups regardless of global setting 1',
+        1,
       ],
       [
-        'removes spacing when never option exists between groups regardless of global setting 2',
+        'removes spacing when 0 option exists between groups regardless of global setting 2',
         2,
       ],
       [
-        'removes spacing when never option exists between groups regardless of global setting ignore',
+        'removes spacing when 0 option exists between groups regardless of global setting ignore',
         'ignore',
       ],
       [
-        'removes spacing when never option exists between groups regardless of global setting never',
-        'never',
-      ],
-      [
-        'removes spacing when never option exists between groups regardless of global setting 0',
+        'removes spacing when 0 option exists between groups regardless of global setting 0',
         0,
       ],
     ])('%s', async (_description, globalNewlinesBetween) => {
@@ -8851,11 +8774,11 @@ describe('sort-imports', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'unusedGroup',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
             ],
             newlinesBetween: globalNewlinesBetween,
@@ -8884,19 +8807,9 @@ describe('sort-imports', () => {
 
     it.each([
       [
-        'preserves existing spacing when ignore and never options are combined',
-        'ignore',
-        'never',
-      ],
-      [
         'preserves existing spacing when ignore and 0 options are combined',
         'ignore',
         0,
-      ],
-      [
-        'preserves existing spacing when never and ignore options are combined',
-        'never',
-        'ignore',
       ],
       [
         'preserves existing spacing when 0 and ignore options are combined',
@@ -9003,17 +8916,13 @@ describe('sort-imports', () => {
         options: [
           {
             groups: ['unknown', 'external'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
     it.each([
-      [
-        'ignores newline fixes between different partitions with never option',
-        'never',
-      ],
       ['ignores newline fixes between different partitions with 0 option', 0],
     ])('%s', async (_description, newlinesBetween) => {
       await invalid({
@@ -10603,7 +10512,7 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['external', 'internal'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         output: dedent`
@@ -10897,21 +10806,6 @@ describe('sort-imports', () => {
           // external
           import b from '~/b'; // Comment after b
         `,
-        options: [
-          {
-            ...options,
-            groups: [
-              { commentAbove: 'external' },
-              'external',
-              {
-                commentAbove: 'internal or sibling',
-                newlinesBetween: 'always',
-              },
-              ['internal', 'sibling'],
-            ],
-            newlinesBetween: 'never',
-          },
-        ],
         output: dedent`
           #!/usr/bin/node
           // Some disclaimer
@@ -10926,6 +10820,21 @@ describe('sort-imports', () => {
           // Comment above b
           import b from '~/b'; // Comment after b
         `,
+        options: [
+          {
+            ...options,
+            groups: [
+              { commentAbove: 'external' },
+              'external',
+              {
+                commentAbove: 'internal or sibling',
+                newlinesBetween: 1,
+              },
+              ['internal', 'sibling'],
+            ],
+            newlinesBetween: 0,
+          },
+        ],
       })
     })
 
@@ -11531,7 +11440,7 @@ describe('sort-imports', () => {
         options: [
           {
             groups: ['builtin', 'external', 'side-effect'],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
       })
@@ -11548,7 +11457,7 @@ describe('sort-imports', () => {
         options: [
           {
             groups: ['builtin', 'external', 'side-effect'],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
       })

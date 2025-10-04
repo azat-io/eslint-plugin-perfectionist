@@ -106,8 +106,8 @@ describe('validate-generated-groups-configuration', () => {
   })
 
   it.each([
-    { groups: [{ newlinesBetween: 'always' }, { newlinesBetween: 'always' }] },
-    { groups: [{ newlinesBetween: 'always' }, { commentAbove: 'foo' }] },
+    { groups: [{ newlinesBetween: 1 }, { newlinesBetween: 1 }] },
+    { groups: [{ newlinesBetween: 1 }, { commentAbove: 'foo' }] },
     { groups: [{ commentAbove: 'foo' }, { commentAbove: 'bar' }] },
   ] as const)(
     'throws an error with consecutive newlines/commentAbove objects (%s)',

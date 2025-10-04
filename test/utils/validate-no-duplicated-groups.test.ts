@@ -9,7 +9,7 @@ describe('validate-no-duplicated-groups', () => {
         groups: [
           ['group1'],
           'group2',
-          { newlinesBetween: 'always' },
+          { newlinesBetween: 1 },
           'group1',
           'group2',
         ],

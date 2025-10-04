@@ -42,7 +42,7 @@ interface GetNewlinesBetweenErrorsParameters<
 > {
   /** Configuration options for newlines and groups. */
   options: {
-    /** Newlines configuration: 'always', 'never', 'ignore', or numeric value. */
+    /** Newlines configuration: 'ignore', or numeric value. */
     newlinesBetween: NewlinesBetweenOption
 
     /** Optional custom groups configuration. */
@@ -95,7 +95,7 @@ interface GetNewlinesBetweenErrorsParameters<
  * @example
  *   // Configuration requires 1 newline between different groups
  *   const errors = getNewlinesBetweenErrors({
- *     options: { newlinesBetween: 'always', groups: ['imports', 'types'] },
+ *     options: { newlinesBetween: 1, groups: ['imports', 'types'] },
  *     leftGroupIndex: 0, // imports group
  *     rightGroupIndex: 1, // types group
  *     left: importNode,

@@ -68,7 +68,7 @@ interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
  *   // Configuration with newlines between groups
  *   const options = {
  *     groups: ['imports', 'types', 'functions'],
- *     newlinesBetween: 'always', // 1 newline between groups
+ *     newlinesBetween: 1, // 1 newline between groups
  *   }
  *
  *   // Original: imports and types with no separation

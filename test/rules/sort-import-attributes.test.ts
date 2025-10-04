@@ -154,14 +154,14 @@ describe('sort-import-attributes', () => {
       })
     })
 
-    it('adds newlines between groups when newlinesBetween is always', async () => {
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
       await invalid({
         options: [
           {
             ...options,
             customGroups: [{ elementNamePattern: '^t', groupName: 't' }],
-            newlinesBetween: 'always',
             groups: ['t', 'unknown'],
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -429,14 +429,14 @@ describe('sort-import-attributes', () => {
       })
     })
 
-    it('adds newlines between groups when newlinesBetween is always', async () => {
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
       await invalid({
         options: [
           {
             ...options,
             customGroups: [{ elementNamePattern: '^t', groupName: 't' }],
-            newlinesBetween: 'always',
             groups: ['t', 'unknown'],
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -704,14 +704,14 @@ describe('sort-import-attributes', () => {
       })
     })
 
-    it('adds newlines between groups when newlinesBetween is always', async () => {
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
       await invalid({
         options: [
           {
             ...options,
             customGroups: [{ elementNamePattern: '^t', groupName: 't' }],
-            newlinesBetween: 'always',
             groups: ['t', 'unknown'],
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -911,7 +911,7 @@ describe('sort-import-attributes', () => {
       })
     })
 
-    it('adds newlines between groups when newlinesBetween is always', async () => {
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
       await invalid({
         options: [
           {
@@ -920,7 +920,7 @@ describe('sort-import-attributes', () => {
               { elementNamePattern: '^b', groupName: 'b' },
               { elementNamePattern: '^a', groupName: 'a' },
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],
