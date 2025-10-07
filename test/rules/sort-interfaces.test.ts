@@ -1259,96 +1259,84 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it.each([
-      ['always', 'always'],
-      ['1', 1],
-    ] as const)(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenInterfaceMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            interface Interface {
-              a
+            messageId: 'missedSpacingBetweenInterfaceMembers',
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a
 
-              b
-            }
-          `,
-          code: dedent`
-            interface Interface {
-              a
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            a
+            b
+          }
+        `,
+      })
+    })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenInterfaceMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            interface Interface {
-              a
-              b
-            }
-          `,
-          code: dedent`
-            interface Interface {
-              a
+            messageId: 'extraSpacingBetweenInterfaceMembers',
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a
+            b
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            a
 
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+      })
+    })
 
     it('allows to use new line as partition', async () => {
       await valid({
@@ -1835,65 +1823,59 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
-      'removes newlines when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenInterfaceMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedInterfacePropertiesOrder',
+            messageId: 'extraSpacingBetweenInterfaceMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenInterfaceMembers',
+            messageId: 'unexpectedInterfacePropertiesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            interface Interface {
-              a: () => null,
+            messageId: 'extraSpacingBetweenInterfaceMembers',
+          },
+        ],
+        code: dedent`
+          interface Interface {
+            a: () => null,
 
 
-             y: "y",
-            z: "z",
+           y: "y",
+          z: "z",
 
-                b: "b",
-            }
-          `,
-          output: dedent`
-            interface Interface {
-              a: () => null,
-             b: "b",
-            y: "y",
-                z: "z",
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              b: "b",
+          }
+        `,
+        output: dedent`
+          interface Interface {
+            a: () => null,
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -1909,16 +1891,16 @@ describe('sort-interfaces', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1975,13 +1957,11 @@ describe('sort-interfaces', () => {
     })
 
     it.each([
-      [2, 'never'],
       [2, 0],
       [2, 'ignore'],
-      ['never', 2],
       [0, 2],
       ['ignore', 2],
-    ] as const)(
+    ])(
       'enforces newlines when global option is %s and group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -2029,8 +2009,8 @@ describe('sort-interfaces', () => {
       },
     )
 
-    it.each(['always', 2, 'ignore', 'never', 0] as const)(
-      'enforces no newline when global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline when global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -2044,11 +2024,11 @@ describe('sort-interfaces', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -2081,11 +2061,9 @@ describe('sort-interfaces', () => {
     )
 
     it.each([
-      ['ignore', 'never'],
       ['ignore', 0],
-      ['never', 'ignore'],
       [0, 'ignore'],
-    ] as const)(
+    ])(
       'does not enforce newline when global option is %s and group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await valid({
@@ -2175,65 +2153,59 @@ describe('sort-interfaces', () => {
         options: [
           {
             groups: ['property', 'method'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
-      'ignores newline fixes between different partitions when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedInterfacePropertiesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            interface Interface {
-              a
+            messageId: 'unexpectedInterfacePropertiesOrder',
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a
 
-              // Partition comment
+            // Partition comment
 
-              b
-              c
-            }
-          `,
-          code: dedent`
-            interface Interface {
-              a
+            b
+            c
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            a
 
-              // Partition comment
+            // Partition comment
 
-              c
-              b
-            }
-          `,
-        })
-      },
-    )
+            c
+            b
+          }
+        `,
+      })
+    })
 
     it('sorts inline elements correctly', async () => {
       await invalid({
@@ -3891,96 +3863,84 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it.each([
-      ['always', 'always'],
-      ['1', 1],
-    ] as const)(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenInterfaceMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            interface Interface {
-              a
+            messageId: 'missedSpacingBetweenInterfaceMembers',
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a
 
-              b
-            }
-          `,
-          code: dedent`
-            interface Interface {
-              a
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            a
+            b
+          }
+        `,
+      })
+    })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenInterfaceMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            interface Interface {
-              a
-              b
-            }
-          `,
-          code: dedent`
-            interface Interface {
-              a
+            messageId: 'extraSpacingBetweenInterfaceMembers',
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a
+            b
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            a
 
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+      })
+    })
 
     it('allows to use new line as partition', async () => {
       await valid({
@@ -4467,65 +4427,59 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
-      'removes newlines when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenInterfaceMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedInterfacePropertiesOrder',
+            messageId: 'extraSpacingBetweenInterfaceMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenInterfaceMembers',
+            messageId: 'unexpectedInterfacePropertiesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            interface Interface {
-              a: () => null,
+            messageId: 'extraSpacingBetweenInterfaceMembers',
+          },
+        ],
+        code: dedent`
+          interface Interface {
+            a: () => null,
 
 
-             y: "y",
-            z: "z",
+           y: "y",
+          z: "z",
 
-                b: "b",
-            }
-          `,
-          output: dedent`
-            interface Interface {
-              a: () => null,
-             b: "b",
-            y: "y",
-                z: "z",
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              b: "b",
+          }
+        `,
+        output: dedent`
+          interface Interface {
+            a: () => null,
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -4541,16 +4495,16 @@ describe('sort-interfaces', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4607,13 +4561,11 @@ describe('sort-interfaces', () => {
     })
 
     it.each([
-      [2, 'never'],
       [2, 0],
       [2, 'ignore'],
-      ['never', 2],
       [0, 2],
       ['ignore', 2],
-    ] as const)(
+    ])(
       'enforces newlines when global option is %s and group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -4661,8 +4613,8 @@ describe('sort-interfaces', () => {
       },
     )
 
-    it.each(['always', 2, 'ignore', 'never', 0] as const)(
-      'enforces no newline when global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline when global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -4676,11 +4628,11 @@ describe('sort-interfaces', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4713,11 +4665,9 @@ describe('sort-interfaces', () => {
     )
 
     it.each([
-      ['ignore', 'never'],
       ['ignore', 0],
-      ['never', 'ignore'],
       [0, 'ignore'],
-    ] as const)(
+    ])(
       'does not enforce newline when global option is %s and group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await valid({
@@ -4807,65 +4757,59 @@ describe('sort-interfaces', () => {
         options: [
           {
             groups: ['property', 'method'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
-      'ignores newline fixes between different partitions when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedInterfacePropertiesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            interface Interface {
-              a
+            messageId: 'unexpectedInterfacePropertiesOrder',
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a
 
-              // Partition comment
+            // Partition comment
 
-              b
-              c
-            }
-          `,
-          code: dedent`
-            interface Interface {
-              a
+            b
+            c
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            a
 
-              // Partition comment
+            // Partition comment
 
-              c
-              b
-            }
-          `,
-        })
-      },
-    )
+            c
+            b
+          }
+        `,
+      })
+    })
 
     it('sorts inline elements correctly', async () => {
       await invalid({
@@ -6452,96 +6396,84 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it.each([
-      ['always', 'always'],
-      ['1', 1],
-    ] as const)(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenInterfaceMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            interface Interface {
-              a
+            messageId: 'missedSpacingBetweenInterfaceMembers',
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a
 
-              b
-            }
-          `,
-          code: dedent`
-            interface Interface {
-              a
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            a
+            b
+          }
+        `,
+      })
+    })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenInterfaceMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            interface Interface {
-              a
-              b
-            }
-          `,
-          code: dedent`
-            interface Interface {
-              a
+            messageId: 'extraSpacingBetweenInterfaceMembers',
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a
+            b
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            a
 
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+      })
+    })
 
     it('allows to use new line as partition', async () => {
       await valid({
@@ -7021,65 +6953,59 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
-      'removes newlines when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
-              },
-              messageId: 'extraSpacingBetweenInterfaceMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'unexpectedInterfacePropertiesOrder',
+            messageId: 'extraSpacingBetweenInterfaceMembers',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenInterfaceMembers',
+            messageId: 'unexpectedInterfacePropertiesOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            interface Interface {
-              aaaa: () => null,
+            messageId: 'extraSpacingBetweenInterfaceMembers',
+          },
+        ],
+        code: dedent`
+          interface Interface {
+            aaaa: () => null,
 
 
-             yy: "y",
-            z: "z",
+           yy: "y",
+          z: "z",
 
-                bbb: "b",
-            }
-          `,
-          output: dedent`
-            interface Interface {
-              aaaa: () => null,
-             bbb: "b",
-            yy: "y",
-                z: "z",
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              bbb: "b",
+          }
+        `,
+        output: dedent`
+          interface Interface {
+            aaaa: () => null,
+           bbb: "b",
+          yy: "y",
+              z: "z",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -7095,16 +7021,16 @@ describe('sort-interfaces', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -7161,13 +7087,11 @@ describe('sort-interfaces', () => {
     })
 
     it.each([
-      [2, 'never'],
       [2, 0],
       [2, 'ignore'],
-      ['never', 2],
       [0, 2],
       ['ignore', 2],
-    ] as const)(
+    ])(
       'enforces newlines when global option is %s and group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -7215,8 +7139,8 @@ describe('sort-interfaces', () => {
       },
     )
 
-    it.each(['always', 2, 'ignore', 'never', 0] as const)(
-      'enforces no newline when global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline when global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -7230,11 +7154,11 @@ describe('sort-interfaces', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -7267,11 +7191,9 @@ describe('sort-interfaces', () => {
     )
 
     it.each([
-      ['ignore', 'never'],
       ['ignore', 0],
-      ['never', 'ignore'],
       [0, 'ignore'],
-    ] as const)(
+    ])(
       'does not enforce newline when global option is %s and group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await valid({
@@ -7361,65 +7283,59 @@ describe('sort-interfaces', () => {
         options: [
           {
             groups: ['property', 'method'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ] as const)(
-      'ignores newline fixes between different partitions when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaa',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaa',
+                groupName: 'a',
               },
-              messageId: 'unexpectedInterfacePropertiesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            interface Interface {
-              aaa
+            messageId: 'unexpectedInterfacePropertiesOrder',
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            aaa
 
-              // Partition comment
+            // Partition comment
 
-              bb
-              c
-            }
-          `,
-          code: dedent`
-            interface Interface {
-              aaa
+            bb
+            c
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            aaa
 
-              // Partition comment
+            // Partition comment
 
-              c
-              bb
-            }
-          `,
-        })
-      },
-    )
+            c
+            bb
+          }
+        `,
+      })
+    })
 
     it('sorts inline elements correctly', async () => {
       await invalid({
@@ -7879,7 +7795,7 @@ describe('sort-interfaces', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],

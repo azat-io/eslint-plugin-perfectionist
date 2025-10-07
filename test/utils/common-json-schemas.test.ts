@@ -154,12 +154,9 @@ describe('common-json-schemas', () => {
       newlinesBetweenJsonSchema,
     )
 
-    it.each(['ignore', 'always', 'never'])(
-      "should allow' %s'",
-      newlinesBetween => {
-        expect(newlinesBetweenJsonSchemaValidator(newlinesBetween)).toBeTruthy()
-      },
-    )
+    it.each(['ignore', 1, 0])("should allow '%s'", newlinesBetween => {
+      expect(newlinesBetweenJsonSchemaValidator(newlinesBetween)).toBeTruthy()
+    })
 
     it('should not allow invalid values', () => {
       expect(newlinesBetweenJsonSchemaValidator('invalid')).toBeFalsy()
@@ -180,18 +177,11 @@ describe('common-json-schemas', () => {
     })
 
     describe('newlinesBetween', () => {
-      it.each(['ignore', 'always', 'never'])(
-        "should allow' %s'",
-        newlinesBetween => {
-          expect(
-            groupsJsonSchemaValidator([
-              'group1',
-              { newlinesBetween },
-              'group2',
-            ]),
-          ).toBeTruthy()
-        },
-      )
+      it.each(['ignore', 1, 0])("should allow' %s'", newlinesBetween => {
+        expect(
+          groupsJsonSchemaValidator(['group1', { newlinesBetween }, 'group2']),
+        ).toBeTruthy()
+      })
 
       it('should not allow invalid values', () => {
         expect(
@@ -207,7 +197,7 @@ describe('common-json-schemas', () => {
         expect(
           groupsJsonSchemaValidator([
             'group1',
-            { newlinesBetween: 'always', something: 'something' },
+            { something: 'something', newlinesBetween: 1 },
             'group2',
           ]),
         ).toBeFalsy()
@@ -240,7 +230,7 @@ describe('common-json-schemas', () => {
       expect(
         groupsJsonSchemaValidator([
           'group1',
-          { newlinesBetween: 'always', commentAbove: 'foo' },
+          { commentAbove: 'foo', newlinesBetween: 1 },
           'group2',
         ]),
       ).toBeTruthy()

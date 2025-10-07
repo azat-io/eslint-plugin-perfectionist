@@ -18,7 +18,7 @@ import type {
  *     'imports',
  *     { commentAbove: '// Components' },
  *     'components',
- *     { newlinesBetween: 'always' },
+ *     { newlinesBetween: 1 },
  *     'utils',
  *   ]
  *

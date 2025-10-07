@@ -75,7 +75,7 @@ interface ReportAllErrorsParameters<
    *   type: 'alphabetical',
    *   order: 'asc',
    *   groups: ['static-property', 'property', 'constructor', 'method'],
-   *   newlinesBetween: 'always',
+   *   newlinesBetween: 1,
    *   partitionByComment: true
    *   }
    */

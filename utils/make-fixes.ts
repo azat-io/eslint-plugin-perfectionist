@@ -92,7 +92,7 @@ export interface MakeFixesParameters<T extends SortingNode> {
  *     sortedNodes: sortedNodes,
  *     options: {
  *       groups: ['imports', 'types', 'functions'],
- *       newlinesBetween: 'always',
+ *       newlinesBetween: 1,
  *     },
  *     sourceCode,
  *     fixer,

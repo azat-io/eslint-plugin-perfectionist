@@ -4,14 +4,12 @@ import type { GetNewlinesBetweenOptionParameters } from '../../utils/get-newline
 import type { NewlinesBetweenOption } from '../../types/common-options'
 
 import { getNewlinesBetweenOption } from '../../utils/get-newlines-between-option'
-import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 
-const NEVER_OPTIONS = [0, 'never'] as const
-const ALWAYS_OPTIONS = [1, 2, 'always'] as const
+const MULTIPLE_LINES_OPTIONS = [1, 2] as const
 
 describe('get-newlines-between-option', () => {
   describe('global "newlinesBetween" option', () => {
-    it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
+    it.each([...MULTIPLE_LINES_OPTIONS, 'ignore', 0] as const)(
       'should return the global option (`%s`) if "customGroups" is not defined',
       newlinesBetween => {
         expect(
@@ -20,11 +18,11 @@ describe('get-newlines-between-option', () => {
               newlinesBetween,
             }),
           ),
-        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
+        ).toBe(newlinesBetween)
       },
     )
 
-    it.each(['ignore', ...NEVER_OPTIONS] as const)(
+    it.each(['ignore', 0] as const)(
       'should return "%s" if "newlinesBetween" is "%s"',
       newlinesBetween => {
         expect(
@@ -33,11 +31,11 @@ describe('get-newlines-between-option', () => {
               newlinesBetween,
             }),
           ),
-        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
+        ).toBe(newlinesBetween)
       },
     )
 
-    it.each(ALWAYS_OPTIONS)(
+    it.each(MULTIPLE_LINES_OPTIONS)(
       'should return the entered newlinesBetween ("%s") if nodeGroupNumber !== nextNodeGroupNumber',
       newlinesBetween => {
         let groups = ['group1', 'group2']
@@ -51,16 +49,16 @@ describe('get-newlines-between-option', () => {
             nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group2'),
             nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
           }),
-        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
+        ).toBe(newlinesBetween)
       },
     )
 
-    it('should return 1 if "newlinesBetween" is "always" and nodeGroupIndex !== nextNodeGroupIndex', () => {
+    it('should return 1 if "newlinesBetween" is 1 and nodeGroupIndex !== nextNodeGroupIndex', () => {
       let groups = ['group1', 'group2']
       expect(
         getNewlinesBetweenOption({
           options: {
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             customGroups: [],
             groups,
           },
@@ -70,25 +68,22 @@ describe('get-newlines-between-option', () => {
       ).toBe(1)
     })
 
-    it.each(NEVER_OPTIONS)(
-      'should return 0 if "newlinesBetween" is "always" and nodeGroupNumber === nextNodeGroupNumber',
-      () => {
-        let groups = ['group1']
-        expect(
-          getNewlinesBetweenOption({
-            options: {
-              newlinesBetween: 'always',
-              customGroups: [],
-              groups,
-            },
-            nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
-            nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
-          }),
-        ).toBe(0)
-      },
-    )
+    it('should return 0 if "newlinesBetween" is 1 and nodeGroupNumber === nextNodeGroupNumber', () => {
+      let groups = ['group1']
+      expect(
+        getNewlinesBetweenOption({
+          options: {
+            newlinesBetween: 1,
+            customGroups: [],
+            groups,
+          },
+          nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+          nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+        }),
+      ).toBe(0)
+    })
 
-    it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
+    it.each([...MULTIPLE_LINES_OPTIONS, 'ignore', 0] as const)(
       "should return the global option (`%s`) if the node's group is within an array",
       newlinesBetween => {
         expect(
@@ -103,11 +98,11 @@ describe('get-newlines-between-option', () => {
               newlinesBetween,
             }),
           ),
-        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
+        ).toBe(newlinesBetween)
       },
     )
 
-    it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
+    it.each([...MULTIPLE_LINES_OPTIONS, 'ignore', 0] as const)(
       "should return the global option (`%s`) if the next node's group is within an array",
       newlinesBetween => {
         expect(
@@ -122,7 +117,7 @@ describe('get-newlines-between-option', () => {
               newlinesBetween,
             }),
           ),
-        ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
+        ).toBe(newlinesBetween)
       },
     )
   })
@@ -132,15 +127,15 @@ describe('get-newlines-between-option', () => {
       let parameters = {
         customGroups: [
           {
-            newlinesInside: 'always',
             groupName: 'group1',
+            newlinesInside: 1,
           },
         ],
         nextNodeGroupIndexGroup: 'group1',
         sortingNodeGroup: 'group1',
       } as const
 
-      it.each([...ALWAYS_OPTIONS, ...NEVER_OPTIONS] as const)(
+      it.each([...MULTIPLE_LINES_OPTIONS, 0] as const)(
         'should return the "newlinesInside" option (`%s`) if defined',
         newlinesInside => {
           expect(
@@ -153,14 +148,14 @@ describe('get-newlines-between-option', () => {
                     newlinesInside,
                   },
                 ],
-                newlinesBetween: 'never',
+                newlinesBetween: 0,
               }),
             ),
-          ).toBe(convertNewlinesBetweenOptionToNumber(newlinesInside))
+          ).toBe(newlinesInside)
         },
       )
 
-      it.each(['ignore', ...NEVER_OPTIONS] as const)(
+      it.each(['ignore', 0] as const)(
         'should return the global option (`%s`) if the "newlinesInside" option is not defined',
         newlinesBetween => {
           expect(
@@ -175,13 +170,13 @@ describe('get-newlines-between-option', () => {
                 newlinesBetween,
               }),
             ),
-          ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
+          ).toBe(newlinesBetween)
         },
       )
     })
 
     describe('when the node and next node do not belong to the same custom group', () => {
-      it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
+      it.each([...MULTIPLE_LINES_OPTIONS, 'ignore', 0] as const)(
         'should return the global option (`%s`)',
         newlinesBetween => {
           expect(
@@ -198,17 +193,13 @@ describe('get-newlines-between-option', () => {
                 newlinesBetween,
               }),
             ),
-          ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
+          ).toBe(newlinesBetween)
         },
       )
     })
 
     describe('newlinesBetween option between two groups', () => {
-      let availableOptions = [
-        ...ALWAYS_OPTIONS,
-        ...NEVER_OPTIONS,
-        'ignore',
-      ] as const
+      let availableOptions = [...MULTIPLE_LINES_OPTIONS, 0, 'ignore'] as const
       let availableCombinations: {
         globalNewlinesBetween: NewlinesBetweenOption
         newlinesBetween: NewlinesBetweenOption
@@ -228,13 +219,13 @@ describe('get-newlines-between-option', () => {
                 newlinesBetween: globalNewlinesBetween,
               }),
             ),
-          ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
+          ).toBe(newlinesBetween)
         },
       )
 
       describe('non-adjacent groups', () => {
-        it.each(['always', 1, 'ignore', ...NEVER_OPTIONS] as const)(
-          'should return 1 if the global option is `always` and `%s` exists between the groups',
+        it.each([1, 'ignore', 0] as const)(
+          'should return 1 if the global option is 1 and `%s` exists between the groups',
           newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
@@ -245,15 +236,15 @@ describe('get-newlines-between-option', () => {
                     { newlinesBetween },
                     'group2',
                   ],
-                  newlinesBetween: 'always',
+                  newlinesBetween: 1,
                 }),
               ),
             ).toBe(1)
           },
         )
 
-        it.each([1, 'always', 'ignore', ...NEVER_OPTIONS] as const)(
-          'should return 1 if `always` exists between the groups and global option is `%s`',
+        it.each([1, 'ignore', 0] as const)(
+          'should return 1 if 1 exists between the groups and global option is `%s`',
           newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
@@ -261,7 +252,7 @@ describe('get-newlines-between-option', () => {
                   groups: [
                     'group1',
                     'someOtherGroup',
-                    { newlinesBetween: 'always' },
+                    { newlinesBetween: 1 },
                     'group2',
                   ],
                   newlinesBetween,
@@ -271,7 +262,7 @@ describe('get-newlines-between-option', () => {
           },
         )
 
-        it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
+        it.each([...MULTIPLE_LINES_OPTIONS, 'ignore', 0] as const)(
           'should return the maximum of the newlinesBetween options if the global option is `%s`',
           newlinesBetween => {
             expect(
@@ -291,8 +282,8 @@ describe('get-newlines-between-option', () => {
           },
         )
 
-        it.each(['ignore', ...NEVER_OPTIONS] as const)(
-          'should return `ignore` if `ignore` exists between the groups and not `always` with global option `%s`',
+        it.each(['ignore', 0] as const)(
+          'should return `ignore` if `ignore` exists between the groups and not 1 with global option `%s`',
           newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
@@ -302,7 +293,7 @@ describe('get-newlines-between-option', () => {
                     'someOtherGroup',
                     { newlinesBetween: 'ignore' },
                     'group2',
-                    { newlinesBetween: 'always' },
+                    { newlinesBetween: 1 },
                     'someOtherGroup2',
                   ],
                   newlinesBetween,
@@ -312,17 +303,17 @@ describe('get-newlines-between-option', () => {
           },
         )
 
-        it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
-          'should return 0 if there are only `never` between all groups and global option is `%s`',
+        it.each([...MULTIPLE_LINES_OPTIONS, 'ignore', 0] as const)(
+          'should return 0 if there are only 0 between all groups and global option is `%s`',
           newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
                 buildParameters({
                   groups: [
                     'group1',
-                    { newlinesBetween: 'never' },
+                    { newlinesBetween: 0 },
                     'someOtherGroup',
-                    { newlinesBetween: 'never' },
+                    { newlinesBetween: 0 },
                     'group2',
                     'someOtherGroup2',
                   ],
@@ -333,8 +324,8 @@ describe('get-newlines-between-option', () => {
           },
         )
 
-        it.each([...ALWAYS_OPTIONS, 'ignore', ...NEVER_OPTIONS] as const)(
-          'should return the global option (`%s`) if no `ignore` or `always` exist',
+        it.each([...MULTIPLE_LINES_OPTIONS, 'ignore', 0] as const)(
+          'should return the global option (`%s`) if no `ignore` or 1 exist',
           newlinesBetween => {
             expect(
               getNewlinesBetweenOption(
@@ -342,15 +333,15 @@ describe('get-newlines-between-option', () => {
                   groups: [
                     'group1',
                     'someOtherGroup',
-                    { newlinesBetween: 'never' },
+                    { newlinesBetween: 0 },
                     'group2',
-                    { newlinesBetween: 'always' },
+                    { newlinesBetween: 1 },
                     'someOtherGroup2',
                   ],
                   newlinesBetween,
                 }),
               ),
-            ).toBe(convertNewlinesBetweenOptionToNumber(newlinesBetween))
+            ).toBe(newlinesBetween)
           },
         )
       })
@@ -395,21 +386,3 @@ describe('get-newlines-between-option', () => {
     return groups.indexOf(group)
   }
 })
-
-function convertNewlinesBetweenOptionToNumber(
-  newlinesBetween: NewlinesBetweenOption,
-): 'ignore' | number {
-  if (typeof newlinesBetween === 'number') {
-    return newlinesBetween
-  }
-  switch (newlinesBetween) {
-    case 'ignore':
-      return 'ignore'
-    case 'always':
-      return 1
-    case 'never':
-      return 0
-    default:
-      throw new UnreachableCaseError(newlinesBetween)
-  }
-}
