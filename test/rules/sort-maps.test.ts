@@ -951,71 +951,65 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ])(
-      'removes extra newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes extra newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedMapElementsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenMapElementsMembers',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedMapElementsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenMapElementsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            new Map([
-              [a, null],
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          new Map([
+            [a, null],
 
 
-             [y, null],
-            [z, null],
+           [y, null],
+          [z, null],
 
-                [b, null]
-            ])
-          `,
-          output: dedent`
-            new Map([
-              [a, null],
-             [b, null],
-            [y, null],
-                [z, null]
-            ])
-          `,
-        })
-      },
-    )
+              [b, null]
+          ])
+        `,
+        output: dedent`
+          new Map([
+            [a, null],
+           [b, null],
+          [y, null],
+              [z, null]
+          ])
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -1031,16 +1025,16 @@ describe('sort-maps', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1097,10 +1091,8 @@ describe('sort-maps', () => {
     })
 
     it.each([
-      ['2 spaces globally with never in group', 2, 'never'],
       ['2 spaces globally with 0 in group', 2, 0],
       ['2 spaces globally with ignore in group', 2, 'ignore'],
-      ['never globally with 2 spaces in group', 'never', 2],
       ['0 globally with 2 spaces in group', 0, 2],
       ['ignore globally with 2 spaces in group', 'ignore', 2],
     ])(
@@ -1152,13 +1144,12 @@ describe('sort-maps', () => {
     )
 
     it.each([
-      ['always', 'always'],
+      ['1 space', 1],
       ['2 spaces', 2],
       ['ignore', 'ignore'],
-      ['never', 'never'],
       ['0', 0],
     ])(
-      'removes newlines when never is between groups despite %s global setting',
+      'removes newlines when 0 is between groups despite %s global setting',
       async (_description, globalNewlinesBetween) => {
         await invalid({
           options: [
@@ -1172,11 +1163,11 @@ describe('sort-maps', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -1209,9 +1200,7 @@ describe('sort-maps', () => {
     )
 
     it.each([
-      ['ignore globally with never in group', 'ignore', 'never'],
       ['ignore globally with 0 in group', 'ignore', 0],
-      ['never globally with ignore in group', 'never', 'ignore'],
       ['0 globally with ignore in group', 0, 'ignore'],
     ])(
       'allows any spacing when %s',
@@ -1282,7 +1271,7 @@ describe('sort-maps', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1315,59 +1304,53 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ])(
-      'preserves partition boundaries when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedMapElementsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            new Map([
-              [a, 'a'],
+            messageId: 'unexpectedMapElementsOrder',
+          },
+        ],
+        output: dedent`
+          new Map([
+            [a, 'a'],
 
-              // Partition comment
+            // Partition comment
 
-              [b, 'b'],
-              [c, 'c'],
-            ])
-          `,
-          code: dedent`
-            new Map([
-              [a, 'a'],
+            [b, 'b'],
+            [c, 'c'],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [a, 'a'],
 
-              // Partition comment
+            // Partition comment
 
-              [c, 'c'],
-              [b, 'b'],
-            ])
-          `,
-        })
-      },
-    )
+            [c, 'c'],
+            [b, 'b'],
+          ])
+        `,
+      })
+    })
 
     it.each([
       ['string pattern', 'foo'],
@@ -2386,71 +2369,65 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ])(
-      'removes extra newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes extra newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedMapElementsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenMapElementsMembers',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedMapElementsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenMapElementsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            new Map([
-              [a, null],
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          new Map([
+            [a, null],
 
 
-             [y, null],
-            [z, null],
+           [y, null],
+          [z, null],
 
-                [b, null]
-            ])
-          `,
-          output: dedent`
-            new Map([
-              [a, null],
-             [b, null],
-            [y, null],
-                [z, null]
-            ])
-          `,
-        })
-      },
-    )
+              [b, null]
+          ])
+        `,
+        output: dedent`
+          new Map([
+            [a, null],
+           [b, null],
+          [y, null],
+              [z, null]
+          ])
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -2466,16 +2443,16 @@ describe('sort-maps', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -2532,10 +2509,8 @@ describe('sort-maps', () => {
     })
 
     it.each([
-      ['2 spaces globally with never in group', 2, 'never'],
       ['2 spaces globally with 0 in group', 2, 0],
       ['2 spaces globally with ignore in group', 2, 'ignore'],
-      ['never globally with 2 spaces in group', 'never', 2],
       ['0 globally with 2 spaces in group', 0, 2],
       ['ignore globally with 2 spaces in group', 'ignore', 2],
     ])(
@@ -2587,13 +2562,12 @@ describe('sort-maps', () => {
     )
 
     it.each([
-      ['always', 'always'],
+      ['1 space', 1],
       ['2 spaces', 2],
       ['ignore', 'ignore'],
-      ['never', 'never'],
       ['0', 0],
     ])(
-      'removes newlines when never is between groups despite %s global setting',
+      'removes newlines when 0 is between groups despite %s global setting',
       async (_description, globalNewlinesBetween) => {
         await invalid({
           options: [
@@ -2607,11 +2581,11 @@ describe('sort-maps', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -2644,9 +2618,7 @@ describe('sort-maps', () => {
     )
 
     it.each([
-      ['ignore globally with never in group', 'ignore', 'never'],
       ['ignore globally with 0 in group', 'ignore', 0],
-      ['never globally with ignore in group', 'never', 'ignore'],
       ['0 globally with ignore in group', 0, 'ignore'],
     ])(
       'allows any spacing when %s',
@@ -2717,7 +2689,7 @@ describe('sort-maps', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -2750,59 +2722,53 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ])(
-      'preserves partition boundaries when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedMapElementsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            new Map([
-              [a, 'a'],
+            messageId: 'unexpectedMapElementsOrder',
+          },
+        ],
+        output: dedent`
+          new Map([
+            [a, 'a'],
 
-              // Partition comment
+            // Partition comment
 
-              [b, 'b'],
-              [c, 'c'],
-            ])
-          `,
-          code: dedent`
-            new Map([
-              [a, 'a'],
+            [b, 'b'],
+            [c, 'c'],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [a, 'a'],
 
-              // Partition comment
+            // Partition comment
 
-              [c, 'c'],
-              [b, 'b'],
-            ])
-          `,
-        })
-      },
-    )
+            [c, 'c'],
+            [b, 'b'],
+          ])
+        `,
+      })
+    })
 
     it.each([
       ['string pattern', 'foo'],
@@ -3821,71 +3787,65 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ])(
-      'removes extra newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
+    it('removes extra newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
+            },
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'unexpectedMapElementsOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenMapElementsMembers',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'unexpectedMapElementsOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenMapElementsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaaa',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            new Map([
-              [aaaa, null],
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          new Map([
+            [aaaa, null],
 
 
-             [yy, null],
-            [z, null],
+           [yy, null],
+          [z, null],
 
-                [bbb, null]
-            ])
-          `,
-          output: dedent`
-            new Map([
-              [aaaa, null],
-             [bbb, null],
-            [yy, null],
-                [z, null]
-            ])
-          `,
-        })
-      },
-    )
+              [bbb, null]
+          ])
+        `,
+        output: dedent`
+          new Map([
+            [aaaa, null],
+           [bbb, null],
+          [yy, null],
+              [z, null]
+          ])
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -3901,16 +3861,16 @@ describe('sort-maps', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -3967,10 +3927,8 @@ describe('sort-maps', () => {
     })
 
     it.each([
-      ['2 spaces globally with never in group', 2, 'never'],
       ['2 spaces globally with 0 in group', 2, 0],
       ['2 spaces globally with ignore in group', 2, 'ignore'],
-      ['never globally with 2 spaces in group', 'never', 2],
       ['0 globally with 2 spaces in group', 0, 2],
       ['ignore globally with 2 spaces in group', 'ignore', 2],
     ])(
@@ -4022,13 +3980,12 @@ describe('sort-maps', () => {
     )
 
     it.each([
-      ['always', 'always'],
+      ['1 space', 1],
       ['2 spaces', 2],
       ['ignore', 'ignore'],
-      ['never', 'never'],
       ['0', 0],
     ])(
-      'removes newlines when never is between groups despite %s global setting',
+      'removes newlines when 0 is between groups despite %s global setting',
       async (_description, globalNewlinesBetween) => {
         await invalid({
           options: [
@@ -4042,11 +3999,11 @@ describe('sort-maps', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4079,9 +4036,7 @@ describe('sort-maps', () => {
     )
 
     it.each([
-      ['ignore globally with never in group', 'ignore', 'never'],
       ['ignore globally with 0 in group', 'ignore', 0],
-      ['never globally with ignore in group', 'never', 'ignore'],
       ['0 globally with ignore in group', 0, 'ignore'],
     ])(
       'allows any spacing when %s',
@@ -4152,7 +4107,7 @@ describe('sort-maps', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4185,59 +4140,53 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['never', 'never'],
-      ['0', 0],
-    ])(
-      'preserves partition boundaries when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaa',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('preserves partition boundaries when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaa',
+                groupName: 'a',
               },
-              messageId: 'unexpectedMapElementsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            new Map([
-              [aaa, 'a'],
+            messageId: 'unexpectedMapElementsOrder',
+          },
+        ],
+        output: dedent`
+          new Map([
+            [aaa, 'a'],
 
-              // Partition comment
+            // Partition comment
 
-              [bb, 'b'],
-              [c, 'c'],
-            ])
-          `,
-          code: dedent`
-            new Map([
-              [aaa, 'a'],
+            [bb, 'b'],
+            [c, 'c'],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [aaa, 'a'],
 
-              // Partition comment
+            // Partition comment
 
-              [c, 'c'],
-              [bb, 'b'],
-            ])
-          `,
-        })
-      },
-    )
+            [c, 'c'],
+            [bb, 'b'],
+          ])
+        `,
+      })
+    })
 
     it.each([
       ['string pattern', 'foo'],
@@ -4450,7 +4399,7 @@ describe('sort-maps', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],

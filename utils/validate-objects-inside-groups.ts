@@ -13,7 +13,7 @@ import type { GroupsOptions } from '../types/common-options'
  *   validateObjectsInsideGroups({
  *     groups: [
  *       'react',
- *       { newlinesBetween: 'always' },
+ *       { newlinesBetween: 1 },
  *       { commentAbove: '// External libraries' }, // Error: consecutive objects
  *       'external',
  *     ],
@@ -26,7 +26,7 @@ import type { GroupsOptions } from '../types/common-options'
  *     groups: [
  *       'react',
  *       {
- *         newlinesBetween: 'always',
+ *         newlinesBetween: 1,
  *         commentAbove: '// External libraries',
  *       },
  *       'external',
@@ -39,9 +39,9 @@ import type { GroupsOptions } from '../types/common-options'
  *   validateObjectsInsideGroups({
  *     groups: [
  *       'react',
- *       { newlinesBetween: 'always' },
+ *       { newlinesBetween: 1 },
  *       'external',
- *       { newlinesBetween: 'always' },
+ *       { newlinesBetween: 1 },
  *       'internal',
  *     ],
  *   })

@@ -86,7 +86,7 @@ export interface CommonOptions {
  *       anyOf: ['react', 'react-*'],
  *       type: 'alphabetical',
  *       order: 'asc',
- *       newlinesInside: 'always',
+ *       newlinesInside: 1,
  *     },
  *     {
  *       groupName: 'lodash',
@@ -105,19 +105,13 @@ export type CustomGroupsOption<
   AdditionalOptions = Record<never, never>,
 > = ({
   /**
-   * Controls newline behavior within the custom group.
-   *
-   * - 'always': Enforce newlines between elements in this group
-   * - 'never': Disallow newlines between elements in this group
-   * - Number: Specify exact number of newlines required.
-   */
-  newlinesInside?: 'always' | 'never' | number
-
-  /**
    * Fallback sorting configuration used when primary sort returns equal. Useful
    * for stable sorting when elements have identical primary sort values.
    */
   fallbackSort?: FallbackSortOption
+
+  /** Specify the exact number of newlines required. */
+  newlinesInside?: number
 
   /**
    * Sort direction for this custom group. Overrides the global order setting
@@ -185,45 +179,6 @@ export type TypeOption =
    * 'alphabet' option to specify character precedence.
    */
   | 'custom'
-
-/**
- * Configuration for managing newlines between sorted elements.
- *
- * Controls how blank lines are handled between elements, either preserving,
- * enforcing, or removing them based on the configuration.
- *
- * @example
- *   // Always require one blank line between elements
- *   const newlines: NewlinesBetweenOption = 'always'
- *
- * @example
- *   // Require exactly 2 blank lines
- *   const newlines: NewlinesBetweenOption = 2
- */
-export type NewlinesBetweenOption =
-  /**
-   * Preserve existing newlines without modification. The plugin will not add or
-   * remove blank lines.
-   */
-  | 'ignore'
-
-  /**
-   * Always require exactly one blank line between elements. Adds missing
-   * newlines and removes extra ones.
-   */
-  | 'always'
-
-  /**
-   * Never allow blank lines between elements. Removes all blank lines to keep
-   * elements together.
-   */
-  | 'never'
-
-  /**
-   * Require exactly this number of blank lines between elements. Enforces
-   * consistent spacing with the specified line count.
-   */
-  | number
 
 /**
  * Configuration for handling special characters during string comparison.
@@ -331,6 +286,33 @@ export interface FallbackSortOption {
 }
 
 /**
+ * Configuration for managing newlines between sorted elements.
+ *
+ * Controls how blank lines are handled between elements, either preserving,
+ * enforcing, or removing them based on the configuration.
+ *
+ * @example
+ *   // Always require one blank line between elements
+ *   const newlines: NewlinesBetweenOption = 'always'
+ *
+ * @example
+ *   // Require exactly 2 blank lines
+ *   const newlines: NewlinesBetweenOption = 2
+ */
+export type NewlinesBetweenOption =
+  /**
+   * Preserve existing newlines without modification. The plugin will not add or
+   * remove blank lines.
+   */
+  | 'ignore'
+
+  /**
+   * Require exactly this number of blank lines between elements. Enforces
+   * consistent spacing with the specified line count.
+   */
+  | number
+
+/**
  * Sort direction that determines the ordering of elements.
  *
  * Controls whether elements are arranged from smallest to largest (ascending)
@@ -367,7 +349,7 @@ export type OrderOption =
  * @example
  *   const groups = [
  *     'imports',
- *     { newlinesBetween: 'always' }, // One newline after imports
+ *     { newlinesBetween: 1 }, // One newline after imports
  *     'types',
  *   ]
  */
@@ -432,7 +414,7 @@ export interface GroupCommentAboveOption {
  * @example
  *   const groups: GroupsOptions<'imports' | 'types' | 'components'> = [
  *     'imports',
- *     { newlinesBetween: 'always' },
+ *     { newlinesBetween: 1 },
  *     'types',
  *     { commentAbove: '// Components' },
  *     ['components', 'hooks'], // Composite group
