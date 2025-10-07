@@ -3891,72 +3891,64 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedClassesOrder',
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
+            messageId: 'unexpectedClassesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            class Class {
-              a = () => null
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+        ],
+        code: dedent`
+          class Class {
+            a = () => null
 
 
-             y = "y"
-            z = "z"
+           y = "y"
+          z = "z"
 
-                b = "b"
-            }
-          `,
-          output: dedent`
-            class Class {
-              a = () => null
-             b = "b"
-            y = "y"
-                z = "z"
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              b = "b"
+          }
+        `,
+        output: dedent`
+          class Class {
+            a = () => null
+           b = "b"
+          y = "y"
+              z = "z"
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-      ['ignore', 'ignore' as const],
-      ['never', 'never' as const],
-      ['0', 0 as const],
+      ['1', 1],
+      ['ignore', 'ignore'],
+      ['0', 0],
     ])(
       'enforces no newline between overload signatures when newlinesBetween is %s',
       async (_name, newlinesBetween) => {
@@ -4016,16 +4008,16 @@ describe('sort-classes', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4082,13 +4074,11 @@ describe('sort-classes', () => {
     })
 
     it.each([
-      [2, 'never'],
       [2, 0],
       [2, 'ignore'],
-      ['never', 2],
       [0, 2],
       ['ignore', 2],
-    ] as const)(
+    ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -4136,8 +4126,8 @@ describe('sort-classes', () => {
       },
     )
 
-    it.each(['always', 2, 'ignore', 'never', 0] as const)(
-      'enforces no newline if the global option is %s and "newlinesBetween: never" exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and "newlinesBetween: 0" exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -4151,11 +4141,11 @@ describe('sort-classes', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4188,10 +4178,8 @@ describe('sort-classes', () => {
     )
 
     it.each([
-      ['ignore', 'never'] as const,
-      ['ignore', 0] as const,
-      ['never', 'ignore'] as const,
-      [0, 'ignore'] as const,
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4282,65 +4270,59 @@ describe('sort-classes', () => {
         options: [
           {
             groups: ['property', 'method'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'ignores newline fixes between different partitions when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedClassesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            class Class {
-              a
+            messageId: 'unexpectedClassesOrder',
+          },
+        ],
+        output: dedent`
+          class Class {
+            a
 
-              // Partition comment
+            // Partition comment
 
-              b
-              c
-            }
-          `,
-          code: dedent`
-            class Class {
-              a
+            b
+            c
+          }
+        `,
+        code: dedent`
+          class Class {
+            a
 
-              // Partition comment
+            // Partition comment
 
-              c
-              b
-            }
-          `,
-        })
-      },
-    )
+            c
+            b
+          }
+        `,
+      })
+    })
 
     it('sorts inline non-abstract methods correctly', async () => {
       await invalid({
@@ -8559,72 +8541,64 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedClassesOrder',
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
+            messageId: 'unexpectedClassesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            class Class {
-              a = () => null
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+        ],
+        code: dedent`
+          class Class {
+            a = () => null
 
 
-             y = "y"
-            z = "z"
+           y = "y"
+          z = "z"
 
-                b = "b"
-            }
-          `,
-          output: dedent`
-            class Class {
-              a = () => null
-             b = "b"
-            y = "y"
-                z = "z"
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              b = "b"
+          }
+        `,
+        output: dedent`
+          class Class {
+            a = () => null
+           b = "b"
+          y = "y"
+              z = "z"
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-      ['ignore', 'ignore' as const],
-      ['never', 'never' as const],
-      ['0', 0 as const],
+      ['1', 1],
+      ['ignore', 'ignore'],
+      ['0', 0],
     ])(
       'enforces no newline between overload signatures when newlinesBetween is %s',
       async (_name, newlinesBetween) => {
@@ -8684,16 +8658,16 @@ describe('sort-classes', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -8750,13 +8724,11 @@ describe('sort-classes', () => {
     })
 
     it.each([
-      [2, 'never'],
       [2, 0],
       [2, 'ignore'],
-      ['never', 2],
       [0, 2],
       ['ignore', 2],
-    ] as const)(
+    ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -8804,8 +8776,8 @@ describe('sort-classes', () => {
       },
     )
 
-    it.each(['always', 2, 'ignore', 'never', 0] as const)(
-      'enforces no newline if the global option is %s and "newlinesBetween: never" exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and "newlinesBetween: 0" exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -8819,11 +8791,11 @@ describe('sort-classes', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -8856,10 +8828,8 @@ describe('sort-classes', () => {
     )
 
     it.each([
-      ['ignore', 'never'] as const,
-      ['ignore', 0] as const,
-      ['never', 'ignore'] as const,
-      [0, 'ignore'] as const,
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -8950,65 +8920,59 @@ describe('sort-classes', () => {
         options: [
           {
             groups: ['property', 'method'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'ignores newline fixes between different partitions when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedClassesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            class Class {
-              a
+            messageId: 'unexpectedClassesOrder',
+          },
+        ],
+        output: dedent`
+          class Class {
+            a
 
-              // Partition comment
+            // Partition comment
 
-              b
-              c
-            }
-          `,
-          code: dedent`
-            class Class {
-              a
+            b
+            c
+          }
+        `,
+        code: dedent`
+          class Class {
+            a
 
-              // Partition comment
+            // Partition comment
 
-              c
-              b
-            }
-          `,
-        })
-      },
-    )
+            c
+            b
+          }
+        `,
+      })
+    })
 
     it('sorts inline non-abstract methods correctly', async () => {
       await invalid({
@@ -13168,65 +13132,57 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'z',
-                left: 'y',
-              },
-              messageId: 'extraSpacingBetweenClassMembers',
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+          {
+            data: {
+              right: 'z',
+              left: 'y',
             },
-          ],
-          code: dedent`
-            class Class {
-              a = () => null
+            messageId: 'extraSpacingBetweenClassMembers',
+          },
+        ],
+        code: dedent`
+          class Class {
+            a = () => null
 
 
-             b = "b"
-            y = "y"
+           b = "b"
+          y = "y"
 
-                z = "z"
-            }
-          `,
-          output: dedent`
-            class Class {
-              a = () => null
-             b = "b"
-            y = "y"
-                z = "z"
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              z = "z"
+          }
+        `,
+        output: dedent`
+          class Class {
+            a = () => null
+           b = "b"
+          y = "y"
+              z = "z"
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-      ['ignore', 'ignore' as const],
-      ['never', 'never' as const],
-      ['0', 0 as const],
+      ['1', 1],
+      ['ignore', 'ignore'],
+      ['0', 0],
     ])(
       'enforces no newline between overload signatures when newlinesBetween is %s',
       async (_name, newlinesBetween) => {
@@ -13286,16 +13242,16 @@ describe('sort-classes', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -13352,13 +13308,11 @@ describe('sort-classes', () => {
     })
 
     it.each([
-      [2, 'never'],
       [2, 0],
       [2, 'ignore'],
-      ['never', 2],
       [0, 2],
       ['ignore', 2],
-    ] as const)(
+    ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
         await invalid({
@@ -13406,8 +13360,8 @@ describe('sort-classes', () => {
       },
     )
 
-    it.each(['always', 2, 'ignore', 'never', 0] as const)(
-      'enforces no newline if the global option is %s and "newlinesBetween: never" exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and "newlinesBetween: 0" exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -13421,11 +13375,11 @@ describe('sort-classes', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -13458,10 +13412,8 @@ describe('sort-classes', () => {
     )
 
     it.each([
-      ['ignore', 'never'] as const,
-      ['ignore', 0] as const,
-      ['never', 'ignore'] as const,
-      [0, 'ignore'] as const,
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -13552,65 +13504,59 @@ describe('sort-classes', () => {
         options: [
           {
             groups: ['property', 'method'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'ignores newline fixes between different partitions when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaa',
-                  groupName: 'aaa',
-                },
-              ],
-              groups: ['aaa', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaa',
+                groupName: 'aaa',
               },
-              messageId: 'unexpectedClassesOrder',
+            ],
+            groups: ['aaa', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            class Class {
-              aaa
+            messageId: 'unexpectedClassesOrder',
+          },
+        ],
+        output: dedent`
+          class Class {
+            aaa
 
-              // Partition comment
+            // Partition comment
 
-              bb
-              c
-            }
-          `,
-          code: dedent`
-            class Class {
-              aaa
+            bb
+            c
+          }
+        `,
+        code: dedent`
+          class Class {
+            aaa
 
-              // Partition comment
+            // Partition comment
 
-              c
-              bb
-            }
-          `,
-        })
-      },
-    )
+            c
+            bb
+          }
+        `,
+      })
+    })
 
     it('sorts inline non-abstract methods correctly', async () => {
       await invalid({
@@ -13985,7 +13931,7 @@ describe('sort-classes', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],
@@ -14788,10 +14734,7 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])('allows to use newlinesInside: %s', async (_name, newlinesInside) => {
+    it('allows to use newlinesInside: 1', async () => {
       await invalid({
         errors: [
           {
@@ -14815,7 +14758,7 @@ describe('sort-classes', () => {
               {
                 groupName: 'methodsWithNewlinesInside',
                 selector: 'method',
-                newlinesInside,
+                newlinesInside: 1,
               },
             ],
             groups: ['unknown', 'methodsWithNewlinesInside'],
@@ -14844,10 +14787,7 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])('allows to use newlinesInside: %s', async (_name, newlinesInside) => {
+    it('allows to use newlinesInside: 0', async () => {
       await invalid({
         options: [
           {
@@ -14855,7 +14795,7 @@ describe('sort-classes', () => {
               {
                 groupName: 'methodsWithoutNewlinesInside',
                 selector: 'method',
-                newlinesInside,
+                newlinesInside: 0,
               },
             ],
             groups: ['unknown', 'methodsWithoutNewlinesInside'],
@@ -14891,10 +14831,8 @@ describe('sort-classes', () => {
     })
 
     it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-      ['never', 'never' as const],
-      ['0', 0 as const],
+      ['1', 1],
+      ['0', 0],
     ])(
       'enforces no newline between overload signatures when newlinesInside is %s',
       async (_name, newlinesInside) => {

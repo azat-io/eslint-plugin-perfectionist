@@ -62,7 +62,7 @@ type MessageId =
   | 'unexpectedClassesGroupOrder'
   | 'unexpectedClassesOrder'
 
-let defaultOptions: Required<SortClassesOptions[0]> = {
+let defaultOptions: Required<SortClassesOptions[number]> = {
   groups: [
     'index-signature',
     ['static-property', 'static-accessor-property'],
@@ -670,6 +670,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
       description: 'Enforce sorted classes.',
       recommended: true,
     },
+    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },

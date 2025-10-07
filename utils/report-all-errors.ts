@@ -75,7 +75,7 @@ interface ReportAllErrorsParameters<
    *   type: 'alphabetical',
    *   order: 'asc',
    *   groups: ['static-property', 'property', 'constructor', 'method'],
-   *   newlinesBetween: 'always',
+   *   newlinesBetween: 1,
    *   partitionByComment: true
    *   }
    */
@@ -270,7 +270,6 @@ export function reportAllErrors<
 
     if (
       left &&
-      options.newlinesBetween !== undefined &&
       availableMessageIds.missedSpacingBetweenMembers &&
       availableMessageIds.extraSpacingBetweenMembers
     ) {

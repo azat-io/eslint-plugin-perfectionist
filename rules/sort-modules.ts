@@ -63,7 +63,7 @@ type MessageId =
   | 'unexpectedModulesGroupOrder'
   | 'unexpectedModulesOrder'
 
-let defaultOptions: Required<SortModulesOptions[0]> = {
+let defaultOptions: Required<SortModulesOptions[number]> = {
   groups: [
     'declare-enum',
     'export-enum',
@@ -121,6 +121,7 @@ export default createEslintRule<SortModulesOptions, MessageId>({
       description: 'Enforce sorted modules.',
       recommended: true,
     },
+    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },
@@ -168,7 +169,7 @@ function analyzeModule({
 }: {
   context: TSESLint.RuleContext<MessageId, SortModulesOptions>
   program: TSESTree.TSModuleBlock | TSESTree.Program
-  options: Required<SortModulesOptions[0]>
+  options: Required<SortModulesOptions[number]>
   sourceCode: TSESLint.SourceCode
   eslintDisabledLines: number[]
 }): void {

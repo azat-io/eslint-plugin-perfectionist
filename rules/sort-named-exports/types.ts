@@ -26,13 +26,6 @@ import {
 export type Options = Partial<
   {
     /**
-     * @deprecated Since v4.12.0. Will be removed in v5.0.0. Use {@link groups}
-     *   instead. Controls whether type exports or value exports should be
-     *   grouped first.
-     */
-    groupKind: 'values-first' | 'types-first' | 'mixed'
-
-    /**
      * Custom groups for organizing named exports. Allows defining groups based
      * on export names and types.
      */
@@ -98,20 +91,8 @@ export type SingleCustomGroup = {
   elementNamePattern?: RegexOption
 }
 
-/**
- * Extended sorting node for named export specifiers.
- *
- * Represents a named export with additional metadata needed for sorting,
- * including whether it's a type or value export.
- */
-export interface SortNamedExportsSortingNode
-  extends SortingNode<TSESTree.ExportSpecifier> {
-  /**
-   * Indicates whether the export is a type or value export. Used for grouping
-   * exports by their kind.
-   */
-  groupKind: 'value' | 'type'
-}
+/** Extended sorting node for named export specifiers. */
+export type SortNamedExportsSortingNode = SortingNode<TSESTree.ExportSpecifier>
 
 /**
  * Union type of all available modifiers for named exports.

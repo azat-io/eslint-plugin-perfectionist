@@ -147,7 +147,7 @@ export let newlinesBetweenJsonSchema: JSONSchema4 = {
   oneOf: [
     {
       description: 'Specifies how to handle newlines between groups.',
-      enum: ['ignore', 'always', 'never'],
+      enum: ['ignore'],
       type: 'string',
     },
     {
@@ -187,24 +187,6 @@ export let groupsJsonSchema: JSONSchema4 = {
   },
   description: 'Specifies a list of groups for sorting.',
   type: 'array',
-}
-
-export let deprecatedCustomGroupsJsonSchema: JSONSchema4 = {
-  additionalProperties: {
-    oneOf: [
-      {
-        type: 'string',
-      },
-      {
-        items: {
-          type: 'string',
-        },
-        type: 'array',
-      },
-    ],
-  },
-  description: 'Specifies custom groups.',
-  type: 'object',
 }
 
 let singleRegexJsonSchema: JSONSchema4 = {
@@ -462,26 +444,16 @@ function buildCommonCustomGroupJsonSchemas({
   additionalFallbackSortProperties?: Record<string, JSONSchema4>
 } = {}): Record<string, JSONSchema4> {
   return {
-    newlinesInside: {
-      oneOf: [
-        {
-          description:
-            'Specifies how to handle newlines between members of the custom group.',
-          enum: ['always', 'never'],
-          type: 'string',
-        },
-        {
-          type: 'number',
-          minimum: 0,
-        },
-      ],
-    },
     fallbackSort: buildFallbackSortJsonSchema({
       additionalProperties: additionalFallbackSortProperties,
     }),
     groupName: {
       description: 'Custom group name.',
       type: 'string',
+    },
+    newlinesInside: {
+      type: 'number',
+      minimum: 0,
     },
     order: orderJsonSchema,
     type: typeJsonSchema,

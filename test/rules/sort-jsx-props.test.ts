@@ -200,7 +200,7 @@ describe('sort-jsx-props', () => {
     it('positions shorthand props according to group configuration', async () => {
       let shorthandOptions = {
         ...options,
-        groups: ['unknown', 'shorthand'],
+        groups: ['unknown', 'shorthand-prop'],
       }
 
       await valid({
@@ -221,7 +221,7 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              leftGroup: 'shorthand',
+              leftGroup: 'shorthand-prop',
               rightGroup: 'unknown',
               left: 'aaaaaa',
               right: 'b',
@@ -253,58 +253,10 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('positions callback props according to custom group pattern', async () => {
-      let callbackOptions = {
-        ...options,
-        customGroups: { callback: 'on' },
-        groups: ['unknown', 'callback'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        options: [callbackOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'callback',
-              rightGroup: 'unknown',
-              left: 'onChange',
-              right: 'a',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        code: dedent`
-          <Element
-            onChange={handleChange}
-            a="a"
-            b="b"
-          />
-        `,
-        options: [callbackOptions],
-      })
-    })
-
     it('positions multiline props according to group configuration', async () => {
       let multilineOptions = {
         ...options,
-        groups: ['multiline', 'unknown'],
+        groups: ['multiline-prop', 'unknown'],
       }
 
       await valid({
@@ -329,7 +281,7 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              rightGroup: 'multiline',
+              rightGroup: 'multiline-prop',
               leftGroup: 'unknown',
               right: 'd',
               left: 'c',
@@ -366,60 +318,6 @@ describe('sort-jsx-props', () => {
           />
         `,
         options: [multilineOptions],
-      })
-    })
-
-    it('prioritizes props in custom top group', async () => {
-      let topGroupOptions = {
-        ...options,
-        customGroups: { top: ['d', 'e'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        code: dedent`
-          <Element
-            a="aaaa"
-            b="bbb"
-            c="cc"
-            d="ddd"
-            e="ee"
-          />
-        `,
-        options: [topGroupOptions],
       })
     })
 
@@ -428,9 +326,12 @@ describe('sort-jsx-props', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -458,45 +359,6 @@ describe('sort-jsx-props', () => {
             $a
             b="b"
             $c
-          />
-        `,
-      })
-    })
-
-    it('groups props by shorthand selector', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'shorthandElements',
-              leftGroup: 'unknown',
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: [
-              {
-                groupName: 'shorthandElements',
-                selector: 'shorthand',
-              },
-            ],
-            groups: ['shorthandElements', 'unknown'],
-          },
-        ],
-        output: dedent`
-          <Element
-            a
-            b="b"
-          />
-        `,
-        code: dedent`
-          <Element
-            b="b"
-            a
           />
         `,
       })
@@ -969,156 +831,170 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          <Component
+            a
+
+
+           y
+          z
+
+              b
+          />
+        `,
+        output: dedent`
+          <Component
+            a
+           b
+          y
+              z
+          />
+        `,
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'z',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+          {
+            data: {
+              right: 'y',
+              left: 'z',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'y',
+            },
+            messageId: 'missedSpacingBetweenJSXPropsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: { a: 'a' },
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            <Component
-              a
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          <Component
+            a
+
+           y
+          z
+
+              b
+          />
+        `,
+        code: dedent`
+          <Component
+            a
 
 
-             y
-            z
-
-                b
-            />
-          `,
-          output: dedent`
-            <Component
-              a
-             b
-            y
-                z
-            />
-          `,
-        })
-      },
-    )
-
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
-      'adds newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'z',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
-            },
-            {
-              data: {
-                right: 'y',
-                left: 'z',
-              },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'y',
-              },
-              messageId: 'missedSpacingBetweenJSXPropsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: {
-                a: 'a',
-                b: 'b',
-              },
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            <Component
-              a
-
-             y
-            z
-
-                b
-            />
-          `,
-          code: dedent`
-            <Component
-              a
-
-
-             z
-            y
-                b
-            />
-          `,
-        })
-      },
-    )
+           z
+          y
+              b
+          />
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+              {
+                elementNamePattern: 'd',
+                groupName: 'd',
+              },
+              {
+                elementNamePattern: 'e',
+                groupName: 'e',
+              },
+            ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            customGroups: {
-              a: 'a',
-              b: 'b',
-              c: 'c',
-              d: 'd',
-              e: 'e',
-            },
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1175,12 +1051,10 @@ describe('sort-jsx-props', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1188,17 +1062,26 @@ describe('sort-jsx-props', () => {
           options: [
             {
               ...options,
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
+                },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
                 { newlinesBetween: groupNewlinesBetween },
                 'b',
               ],
-              customGroups: {
-                unusedGroup: 'X',
-                a: 'a',
-                b: 'b',
-              },
               newlinesBetween: globalNewlinesBetween,
             },
           ],
@@ -1229,14 +1112,8 @@ describe('sort-jsx-props', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -1250,11 +1127,11 @@ describe('sort-jsx-props', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -1288,6 +1165,18 @@ describe('sort-jsx-props', () => {
 
     it('preserves inline comments when reordering props', async () => {
       await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: 'b|c',
+                groupName: 'b|c',
+              },
+            ],
+            groups: ['unknown', 'b|c'],
+            newlinesBetween: 1,
+          },
+        ],
         errors: [
           {
             data: {
@@ -1297,15 +1186,6 @@ describe('sort-jsx-props', () => {
               left: 'b',
             },
             messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: {
-              'b|c': 'b|c',
-            },
-            groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
           },
         ],
         output: dedent`
@@ -1336,6 +1216,35 @@ describe('sort-jsx-props', () => {
       'applies configuration when all names match pattern - %s',
       async (_description, allNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -1354,26 +1263,6 @@ describe('sort-jsx-props', () => {
                 left: 'g',
               },
               messageId: 'unexpectedJSXPropsGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -1626,7 +1515,7 @@ describe('sort-jsx-props', () => {
     it('positions shorthand props according to group configuration', async () => {
       let shorthandOptions = {
         ...options,
-        groups: ['unknown', 'shorthand'],
+        groups: ['unknown', 'shorthand-prop'],
       }
 
       await valid({
@@ -1647,7 +1536,7 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              leftGroup: 'shorthand',
+              leftGroup: 'shorthand-prop',
               rightGroup: 'unknown',
               left: 'aaaaaa',
               right: 'b',
@@ -1679,58 +1568,10 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('positions callback props according to custom group pattern', async () => {
-      let callbackOptions = {
-        ...options,
-        customGroups: { callback: 'on' },
-        groups: ['unknown', 'callback'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        options: [callbackOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'callback',
-              rightGroup: 'unknown',
-              left: 'onChange',
-              right: 'a',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        code: dedent`
-          <Element
-            onChange={handleChange}
-            a="a"
-            b="b"
-          />
-        `,
-        options: [callbackOptions],
-      })
-    })
-
     it('positions multiline props according to group configuration', async () => {
       let multilineOptions = {
         ...options,
-        groups: ['multiline', 'unknown'],
+        groups: ['multiline-prop', 'unknown'],
       }
 
       await valid({
@@ -1755,7 +1596,7 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              rightGroup: 'multiline',
+              rightGroup: 'multiline-prop',
               leftGroup: 'unknown',
               right: 'd',
               left: 'c',
@@ -1792,60 +1633,6 @@ describe('sort-jsx-props', () => {
           />
         `,
         options: [multilineOptions],
-      })
-    })
-
-    it('prioritizes props in custom top group', async () => {
-      let topGroupOptions = {
-        ...options,
-        customGroups: { top: ['d', 'e'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        code: dedent`
-          <Element
-            a="aaaa"
-            b="bbb"
-            c="cc"
-            d="ddd"
-            e="ee"
-          />
-        `,
-        options: [topGroupOptions],
       })
     })
 
@@ -1854,9 +1641,12 @@ describe('sort-jsx-props', () => {
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -1884,45 +1674,6 @@ describe('sort-jsx-props', () => {
             $a
             b="b"
             $c
-          />
-        `,
-      })
-    })
-
-    it('groups props by shorthand selector', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'shorthandElements',
-              leftGroup: 'unknown',
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: [
-              {
-                groupName: 'shorthandElements',
-                selector: 'shorthand',
-              },
-            ],
-            groups: ['shorthandElements', 'unknown'],
-          },
-        ],
-        output: dedent`
-          <Element
-            a
-            b="b"
-          />
-        `,
-        code: dedent`
-          <Element
-            b="b"
-            a
           />
         `,
       })
@@ -2395,156 +2146,170 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          <Component
+            a
+
+
+           y
+          z
+
+              b
+          />
+        `,
+        output: dedent`
+          <Component
+            a
+           b
+          y
+              z
+          />
+        `,
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'z',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+          {
+            data: {
+              right: 'y',
+              left: 'z',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'y',
+            },
+            messageId: 'missedSpacingBetweenJSXPropsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: { a: 'a' },
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            <Component
-              a
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          <Component
+            a
+
+           y
+          z
+
+              b
+          />
+        `,
+        code: dedent`
+          <Component
+            a
 
 
-             y
-            z
-
-                b
-            />
-          `,
-          output: dedent`
-            <Component
-              a
-             b
-            y
-                z
-            />
-          `,
-        })
-      },
-    )
-
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
-      'adds newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'z',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
-            },
-            {
-              data: {
-                right: 'y',
-                left: 'z',
-              },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'y',
-              },
-              messageId: 'missedSpacingBetweenJSXPropsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: {
-                a: 'a',
-                b: 'b',
-              },
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            <Component
-              a
-
-             y
-            z
-
-                b
-            />
-          `,
-          code: dedent`
-            <Component
-              a
-
-
-             z
-            y
-                b
-            />
-          `,
-        })
-      },
-    )
+           z
+          y
+              b
+          />
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+              {
+                elementNamePattern: 'd',
+                groupName: 'd',
+              },
+              {
+                elementNamePattern: 'e',
+                groupName: 'e',
+              },
+            ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            customGroups: {
-              a: 'a',
-              b: 'b',
-              c: 'c',
-              d: 'd',
-              e: 'e',
-            },
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -2601,12 +2366,10 @@ describe('sort-jsx-props', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2614,17 +2377,26 @@ describe('sort-jsx-props', () => {
           options: [
             {
               ...options,
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
+                },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
                 { newlinesBetween: groupNewlinesBetween },
                 'b',
               ],
-              customGroups: {
-                unusedGroup: 'X',
-                a: 'a',
-                b: 'b',
-              },
               newlinesBetween: globalNewlinesBetween,
             },
           ],
@@ -2655,14 +2427,8 @@ describe('sort-jsx-props', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -2676,11 +2442,11 @@ describe('sort-jsx-props', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -2714,6 +2480,18 @@ describe('sort-jsx-props', () => {
 
     it('preserves inline comments when reordering props', async () => {
       await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: 'b|c',
+                groupName: 'b|c',
+              },
+            ],
+            groups: ['unknown', 'b|c'],
+            newlinesBetween: 1,
+          },
+        ],
         errors: [
           {
             data: {
@@ -2723,15 +2501,6 @@ describe('sort-jsx-props', () => {
               left: 'b',
             },
             messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: {
-              'b|c': 'b|c',
-            },
-            groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
           },
         ],
         output: dedent`
@@ -2762,6 +2531,35 @@ describe('sort-jsx-props', () => {
       'applies configuration when all names match pattern - %s',
       async (_description, allNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -2780,26 +2578,6 @@ describe('sort-jsx-props', () => {
                 left: 'g',
               },
               messageId: 'unexpectedJSXPropsGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -3045,7 +2823,7 @@ describe('sort-jsx-props', () => {
     it('positions shorthand props according to group configuration', async () => {
       let shorthandOptions = {
         ...options,
-        groups: ['unknown', 'shorthand'],
+        groups: ['unknown', 'shorthand-prop'],
       }
 
       await valid({
@@ -3066,7 +2844,7 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              leftGroup: 'shorthand',
+              leftGroup: 'shorthand-prop',
               rightGroup: 'unknown',
               left: 'aaaaaa',
               right: 'b',
@@ -3098,58 +2876,10 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('positions callback props according to custom group pattern', async () => {
-      let callbackOptions = {
-        ...options,
-        customGroups: { callback: 'on' },
-        groups: ['unknown', 'callback'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        options: [callbackOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'callback',
-              rightGroup: 'unknown',
-              left: 'onChange',
-              right: 'a',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            a="a"
-            b="b"
-            onChange={handleChange}
-          />
-        `,
-        code: dedent`
-          <Element
-            onChange={handleChange}
-            a="a"
-            b="b"
-          />
-        `,
-        options: [callbackOptions],
-      })
-    })
-
     it('positions multiline props according to group configuration', async () => {
       let multilineOptions = {
         ...options,
-        groups: ['multiline', 'unknown'],
+        groups: ['multiline-prop', 'unknown'],
       }
 
       await valid({
@@ -3174,7 +2904,7 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              rightGroup: 'multiline',
+              rightGroup: 'multiline-prop',
               leftGroup: 'unknown',
               right: 'd',
               left: 'c',
@@ -3221,68 +2951,17 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('prioritizes props in custom top group', async () => {
-      let topGroupOptions = {
-        ...options,
-        customGroups: { top: ['d', 'e'] },
-        groups: ['top', 'unknown'],
-      }
-
-      await valid({
-        code: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        output: dedent`
-          <Element
-            d="ddd"
-            e="ee"
-            a="aaaa"
-            b="bbb"
-            c="cc"
-          />
-        `,
-        code: dedent`
-          <Element
-            a="aaaa"
-            b="bbb"
-            c="cc"
-            d="ddd"
-            e="ee"
-          />
-        `,
-        options: [topGroupOptions],
-      })
-    })
-
     it('matches props using regex patterns in custom groups', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -3310,45 +2989,6 @@ describe('sort-jsx-props', () => {
             b="b"
             $a
             $c
-          />
-        `,
-      })
-    })
-
-    it('groups props by shorthand selector', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'shorthandElements',
-              leftGroup: 'unknown',
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: [
-              {
-                groupName: 'shorthandElements',
-                selector: 'shorthand',
-              },
-            ],
-            groups: ['shorthandElements', 'unknown'],
-          },
-        ],
-        output: dedent`
-          <Element
-            a
-            b="b"
-          />
-        `,
-        code: dedent`
-          <Element
-            b="b"
-            a
           />
         `,
       })
@@ -3821,156 +3461,170 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
+            },
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          <Component
+            aaaa
+
+
+           yy
+          z
+
+              bbb
+          />
+        `,
+        output: dedent`
+          <Component
+            aaaa
+           bbb
+          yy
+              z
+          />
+        `,
+      })
+    })
+
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'z',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
+          },
+          {
+            data: {
+              right: 'yy',
+              left: 'z',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'yy',
+            },
+            messageId: 'missedSpacingBetweenJSXPropsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
               },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
+              {
+                elementNamePattern: 'bbb',
+                groupName: 'b',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: { a: 'aaaa' },
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            <Component
-              aaaa
+            ],
+            groups: ['a', 'unknown', 'b'],
+            newlinesBetween: 1,
+          },
+        ],
+        output: dedent`
+          <Component
+            aaaa
+
+           yy
+          z
+
+              bbb
+          />
+        `,
+        code: dedent`
+          <Component
+            aaaa
 
 
-             yy
-            z
-
-                bbb
-            />
-          `,
-          output: dedent`
-            <Component
-              aaaa
-             bbb
-            yy
-                z
-            />
-          `,
-        })
-      },
-    )
-
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
-      'adds newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'z',
-              },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
-            },
-            {
-              data: {
-                right: 'yy',
-                left: 'z',
-              },
-              messageId: 'unexpectedJSXPropsOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'yy',
-              },
-              messageId: 'missedSpacingBetweenJSXPropsMembers',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: {
-                a: 'aaaa',
-                b: 'bbb',
-              },
-              groups: ['a', 'unknown', 'b'],
-              newlinesBetween,
-            },
-          ],
-          output: dedent`
-            <Component
-              aaaa
-
-             yy
-            z
-
-                bbb
-            />
-          `,
-          code: dedent`
-            <Component
-              aaaa
-
-
-             z
-            yy
-                bbb
-            />
-          `,
-        })
-      },
-    )
+           z
+          yy
+              bbb
+          />
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
         options: [
           {
             ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+              {
+                elementNamePattern: 'c',
+                groupName: 'c',
+              },
+              {
+                elementNamePattern: 'd',
+                groupName: 'd',
+              },
+              {
+                elementNamePattern: 'e',
+                groupName: 'e',
+              },
+            ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            customGroups: {
-              a: 'a',
-              b: 'b',
-              c: 'c',
-              d: 'd',
-              e: 'e',
-            },
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4027,12 +3681,10 @@ describe('sort-jsx-props', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4040,17 +3692,26 @@ describe('sort-jsx-props', () => {
           options: [
             {
               ...options,
+              customGroups: [
+                {
+                  groupName: 'unusedGroup',
+                  elementNamePattern: 'X',
+                },
+                {
+                  elementNamePattern: 'a',
+                  groupName: 'a',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
               groups: [
                 'a',
                 'unusedGroup',
                 { newlinesBetween: groupNewlinesBetween },
                 'b',
               ],
-              customGroups: {
-                unusedGroup: 'X',
-                a: 'a',
-                b: 'b',
-              },
               newlinesBetween: globalNewlinesBetween,
             },
           ],
@@ -4081,14 +3742,8 @@ describe('sort-jsx-props', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -4102,11 +3757,11 @@ describe('sort-jsx-props', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4140,6 +3795,18 @@ describe('sort-jsx-props', () => {
 
     it('preserves inline comments when reordering props', async () => {
       await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                elementNamePattern: 'b|c',
+                groupName: 'b|c',
+              },
+            ],
+            groups: ['unknown', 'b|c'],
+            newlinesBetween: 1,
+          },
+        ],
         errors: [
           {
             data: {
@@ -4149,15 +3816,6 @@ describe('sort-jsx-props', () => {
               left: 'b',
             },
             messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            customGroups: {
-              'b|c': 'b|c',
-            },
-            groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
           },
         ],
         output: dedent`
@@ -4188,6 +3846,35 @@ describe('sort-jsx-props', () => {
       'applies configuration when all names match pattern - %s',
       async (_description, allNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -4206,26 +3893,6 @@ describe('sort-jsx-props', () => {
                 left: 'g',
               },
               messageId: 'unexpectedJSXPropsGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -4388,6 +4055,22 @@ describe('sort-jsx-props', () => {
 
     it('groups props by pattern while preserving order within groups', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: '^a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: '^b',
+                groupName: 'b',
+              },
+            ],
+            groups: ['b', 'a'],
+          },
+        ],
         errors: [
           {
             data: {
@@ -4397,16 +4080,6 @@ describe('sort-jsx-props', () => {
               left: 'aa',
             },
             messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: {
-              a: '^a',
-              b: '^b',
-            },
-            groups: ['b', 'a'],
           },
         ],
         output: dedent`
@@ -4428,16 +4101,22 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it('adds newlines between groups when newlinesBetween is always', async () => {
+    it('adds newlines between groups when newlinesBetween is 1', async () => {
       await invalid({
         options: [
           {
             ...options,
-            customGroups: {
-              a: '^a',
-              b: '^b',
-            },
-            newlinesBetween: 'always',
+            customGroups: [
+              {
+                elementNamePattern: '^a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: '^b',
+                groupName: 'b',
+              },
+            ],
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],
@@ -4472,30 +4151,6 @@ describe('sort-jsx-props', () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
       ).resolves.not.toThrow()
-    })
-
-    it('supports mixing predefined and custom groups', async () => {
-      await valid({
-        code: dedent`
-          let Component = () => (
-            <Element
-              a="aaa"
-              b="bb"
-              c="c"
-            >
-              Value
-            </Element>
-          )
-        `,
-        options: [
-          {
-            customGroups: {
-              myCustomGroup: 'x',
-            },
-            groups: ['multiline', 'shorthand', 'unknown', 'myCustomGroup'],
-          },
-        ],
-      })
     })
 
     it('uses alphabetical ascending order by default', async () => {
@@ -4544,33 +4199,6 @@ describe('sort-jsx-props', () => {
         `,
       )
     })
-
-    it.each([
-      ['string pattern', 'Element'],
-      ['array of patterns', ['noMatch', 'Element']],
-      ['case-insensitive regex', { pattern: 'ELEMENT', flags: 'i' }],
-      ['regex in array', ['noMatch', { pattern: 'ELEMENT', flags: 'i' }]],
-    ])(
-      'ignores jsx elements matching ignore pattern - %s',
-      async (_description, ignorePattern) => {
-        await valid({
-          code: dedent`
-            let Component = () => (
-              <Element
-                c="c"
-                b="bb"
-                a="aaa"
-              />
-            )
-          `,
-          options: [
-            {
-              ignorePattern,
-            },
-          ],
-        })
-      },
-    )
 
     it('ignores props disabled with eslint-disable-next-line', async () => {
       await valid({

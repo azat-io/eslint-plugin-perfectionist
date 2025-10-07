@@ -249,7 +249,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              rightGroup: 'optional-multiline',
+              rightGroup: 'optional-multiline-member',
               leftGroup: 'index-signature',
               left: '[key: string]',
               right: 'b',
@@ -258,7 +258,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              leftGroup: 'optional-multiline',
+              leftGroup: 'optional-multiline-member',
               rightGroup: 'required-method',
               right: 'c',
               left: 'b',
@@ -272,7 +272,7 @@ describe('sort-object-types', () => {
             groups: [
               'unknown',
               'required-method',
-              'optional-multiline',
+              'optional-multiline-member',
               'index-signature',
               'required-property',
             ],
@@ -335,15 +335,15 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('prioritizes index-signature over multiline', async () => {
+    it('prioritizes index-signature over member', async () => {
       await invalid({
         errors: [
           {
             data: {
               rightGroup: 'index-signature',
-              left: 'multilineProperty',
               right: '[key: string]',
-              leftGroup: 'multiline',
+              leftGroup: 'member',
+              left: 'member',
             },
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
@@ -351,37 +351,33 @@ describe('sort-object-types', () => {
         output: dedent`
           type Type = {
             [key: string]: string;
-            multilineProperty: {
-              a: string
-            }
+            member: "something";
           }
         `,
         code: dedent`
           type Type = {
-            multilineProperty: {
-              a: string
-            }
+            member: "something";
             [key: string]: string;
           }
         `,
         options: [
           {
             ...options,
-            groups: ['index-signature', 'multiline'],
+            groups: ['index-signature', 'member'],
           },
         ],
       })
     })
 
-    it('prioritizes method over multiline', async () => {
+    it('prioritizes method over member', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
+              left: 'member',
             },
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
@@ -389,61 +385,19 @@ describe('sort-object-types', () => {
         output: dedent`
           type Type = {
             method(): string
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
           }
         `,
         code: dedent`
           type Type = {
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
             method(): string
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes multiline over property', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'multilineProperty',
-              rightGroup: 'multiline',
-              leftGroup: 'property',
-              left: 'property',
-            },
-            messageId: 'unexpectedObjectTypesGroupOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            multilineProperty: {
-              a: string
-            }
-            property: string
-          }
-        `,
-        code: dedent`
-          type Type = {
-            property: string
-            multilineProperty: {
-              a: string
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['multiline', 'property'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -554,88 +508,6 @@ describe('sort-object-types', () => {
           {
             ...options,
             groups: ['multiline-property', 'required-property'],
-          },
-        ],
-      })
-    })
-
-    it('allows to set groups for sorting', async () => {
-      await valid({
-        code: dedent`
-          type Type = {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline', 'unknown'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'multiline',
-              leftGroup: 'unknown',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedObjectTypesGroupOrder',
-          },
-          {
-            data: {
-              leftGroup: 'multiline',
-              rightGroup: 'g',
-              right: 'g',
-              left: 'd',
-            },
-            messageId: 'unexpectedObjectTypesGroupOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        code: dedent`
-          type Type = {
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            g: 'g'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline', 'unknown'],
           },
         ],
       })
@@ -1179,105 +1051,96 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenObjectTypeMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type type = {
-              a
+            messageId: 'missedSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        output: dedent`
+          type type = {
+            a
 
-              b
-            }
-          `,
-          code: dedent`
-            type type = {
-              a
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+        code: dedent`
+          type type = {
+            a
+            b
+          }
+        `,
+      })
+    })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type type = {
-              a
-              b
-            }
-          `,
-          code: dedent`
-            type type = {
-              a
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        output: dedent`
+          type type = {
+            a
+            b
+          }
+        `,
+        code: dedent`
+          type type = {
+            a
 
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+      })
+    })
 
     it('allows to use regex for custom groups', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -1734,125 +1597,6 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('allows to sort required values first', async () => {
-      await valid({
-        code: dedent`
-          type Type = {
-            ccc: string
-            e: string
-            aaaaa?: string
-            bbbb?: string
-            dd?: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'required-first',
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'bbbb',
-              right: 'ccc',
-            },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-          {
-            data: {
-              left: 'dd',
-              right: 'e',
-            },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            ccc: string
-            e: string
-            aaaaa?: string
-            bbbb?: string
-            dd?: string
-          }
-        `,
-        code: dedent`
-          type Type = {
-            aaaaa?: string
-            bbbb?: string
-            ccc: string
-            dd?: string
-            e: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'required-first',
-          },
-        ],
-      })
-    })
-
-    it('allows to sort optional values first', async () => {
-      await valid({
-        code: dedent`
-          type Type = {
-            aaaaa?: string
-            bbbb?: string
-            dd?: string
-            ccc: string
-            e: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'optional-first',
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'ccc',
-              right: 'dd',
-            },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            aaaaa?: string
-            bbbb?: string
-            dd?: string
-            ccc: string
-            e: string
-          }
-        `,
-        code: dedent`
-          type Type = {
-            aaaaa?: string
-            bbbb?: string
-            ccc: string
-            dd?: string
-            e: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'optional-first',
-          },
-        ],
-      })
-    })
-
     it('allows to trim special characters', async () => {
       await valid({
         code: dedent`
@@ -1923,65 +1667,59 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedObjectTypesOrder',
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            type Type = {
-              a: () => null,
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        code: dedent`
+          type Type = {
+            a: () => null,
 
 
-             y: "y",
-            z: "z",
+           y: "y",
+          z: "z",
 
-                b: "b",
-            }
-          `,
-          output: dedent`
-            type Type = {
-              a: () => null,
-             b: "b",
-            y: "y",
-                z: "z",
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              b: "b",
+          }
+        `,
+        output: dedent`
+          type Type = {
+            a: () => null,
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -1997,16 +1735,16 @@ describe('sort-object-types', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -2063,12 +1801,10 @@ describe('sort-object-types', () => {
     })
 
     it.each([
-      ['2 and never', 2 as const, 'never' as const],
-      ['2 and 0', 2 as const, 0 as const],
-      ['2 and ignore', 2 as const, 'ignore' as const],
-      ['never and 2', 'never' as const, 2 as const],
-      ['0 and 2', 0 as const, 2 as const],
-      ['ignore and 2', 'ignore' as const, 2 as const],
+      ['2 and 0', 2, 0],
+      ['2 and ignore', 2, 'ignore'],
+      ['0 and 2', 0, 2],
+      ['ignore and 2', 'ignore', 2],
     ])(
       'enforces newlines when global option is %s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2118,13 +1854,12 @@ describe('sort-object-types', () => {
     )
 
     it.each([
-      ['always', 'always' as const],
-      ['2', 2 as const],
-      ['ignore', 'ignore' as const],
-      ['never', 'never' as const],
-      ['0', 0 as const],
+      ['1', 1],
+      ['2', 2],
+      ['ignore', 'ignore'],
+      ['0', 0],
     ])(
-      'enforces no newline when global option is %s and newlinesBetween: never exists between all groups',
+      'enforces no newline when global option is %s and newlinesBetween: 0 exists between all groups',
       async (_description, globalNewlinesBetween) => {
         await invalid({
           options: [
@@ -2138,11 +1873,11 @@ describe('sort-object-types', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -2175,10 +1910,8 @@ describe('sort-object-types', () => {
     )
 
     it.each([
-      ['ignore and never', 'ignore' as const, 'never' as const],
-      ['ignore and 0', 'ignore' as const, 0 as const],
-      ['never and ignore', 'never' as const, 'ignore' as const],
-      ['0 and ignore', 0 as const, 'ignore' as const],
+      ['ignore and 0', 'ignore', 0],
+      ['0 and ignore', 0, 'ignore'],
     ])(
       'does not enforce a newline when global option is %s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2269,65 +2002,59 @@ describe('sort-object-types', () => {
         options: [
           {
             groups: ['property', 'method'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'ignores newline fixes between different partitions with newlinesBetween: %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('ignores newline fixes between different partitions with newlinesBetween: 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedObjectTypesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            type Type = {
-              a: string
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type = {
+            a: string
 
-              // Partition comment
+            // Partition comment
 
-              b: string
-              c: string
-            }
-          `,
-          code: dedent`
-            type Type = {
-              a: string
+            b: string
+            c: string
+          }
+        `,
+        code: dedent`
+          type Type = {
+            a: string
 
-              // Partition comment
+            // Partition comment
 
-              c: string
-              b: string
-            }
-          `,
-        })
-      },
-    )
+            c: string
+            b: string
+          }
+        `,
+      })
+    })
 
     it('sorts inline elements correctly', async () => {
       await invalid({
@@ -2451,6 +2178,35 @@ describe('sort-object-types', () => {
       'allows to use allNamesMatchPattern with %s',
       async (_description, rgbAllNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -2469,26 +2225,6 @@ describe('sort-object-types', () => {
                 left: 'g',
               },
               messageId: 'unexpectedObjectTypesGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -2597,6 +2333,63 @@ describe('sort-object-types', () => {
               c: string
               b: string
             }
+          }
+        `,
+      })
+    })
+
+    it('detects declaration comment by pattern', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          // Ignore me
+          type Type = {
+            b: string
+            c: string
+            a: string
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+        ],
+        output: dedent`
+          // Do NOT ignore me
+          type Type = {
+            a: string
+            b: string
+          }
+        `,
+        code: dedent`
+          // Do NOT ignore me
+          type Type = {
+            b: string
+            a: string
           }
         `,
       })
@@ -2995,7 +2788,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              rightGroup: 'optional-multiline',
+              rightGroup: 'optional-multiline-member',
               leftGroup: 'index-signature',
               left: '[key: string]',
               right: 'b',
@@ -3004,7 +2797,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              leftGroup: 'optional-multiline',
+              leftGroup: 'optional-multiline-member',
               rightGroup: 'required-method',
               right: 'c',
               left: 'b',
@@ -3018,7 +2811,7 @@ describe('sort-object-types', () => {
             groups: [
               'unknown',
               'required-method',
-              'optional-multiline',
+              'optional-multiline-member',
               'index-signature',
               'required-property',
             ],
@@ -3081,15 +2874,15 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('prioritizes index-signature over multiline', async () => {
+    it('prioritizes index-signature over member', async () => {
       await invalid({
         errors: [
           {
             data: {
               rightGroup: 'index-signature',
-              left: 'multilineProperty',
               right: '[key: string]',
-              leftGroup: 'multiline',
+              leftGroup: 'member',
+              left: 'member',
             },
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
@@ -3097,37 +2890,33 @@ describe('sort-object-types', () => {
         output: dedent`
           type Type = {
             [key: string]: string;
-            multilineProperty: {
-              a: string
-            }
+            member: "something";
           }
         `,
         code: dedent`
           type Type = {
-            multilineProperty: {
-              a: string
-            }
+            member: "something";
             [key: string]: string;
           }
         `,
         options: [
           {
             ...options,
-            groups: ['index-signature', 'multiline'],
+            groups: ['index-signature', 'member'],
           },
         ],
       })
     })
 
-    it('prioritizes method over multiline', async () => {
+    it('prioritizes method over member', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
+              left: 'member',
             },
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
@@ -3135,61 +2924,19 @@ describe('sort-object-types', () => {
         output: dedent`
           type Type = {
             method(): string
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
           }
         `,
         code: dedent`
           type Type = {
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
             method(): string
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes multiline over property', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'multilineProperty',
-              rightGroup: 'multiline',
-              leftGroup: 'property',
-              left: 'property',
-            },
-            messageId: 'unexpectedObjectTypesGroupOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            multilineProperty: {
-              a: string
-            }
-            property: string
-          }
-        `,
-        code: dedent`
-          type Type = {
-            property: string
-            multilineProperty: {
-              a: string
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['multiline', 'property'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -3300,88 +3047,6 @@ describe('sort-object-types', () => {
           {
             ...options,
             groups: ['multiline-property', 'required-property'],
-          },
-        ],
-      })
-    })
-
-    it('allows to set groups for sorting', async () => {
-      await valid({
-        code: dedent`
-          type Type = {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline', 'unknown'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'multiline',
-              leftGroup: 'unknown',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedObjectTypesGroupOrder',
-          },
-          {
-            data: {
-              leftGroup: 'multiline',
-              rightGroup: 'g',
-              right: 'g',
-              left: 'd',
-            },
-            messageId: 'unexpectedObjectTypesGroupOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        code: dedent`
-          type Type = {
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            g: 'g'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline', 'unknown'],
           },
         ],
       })
@@ -3925,105 +3590,96 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenObjectTypeMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type type = {
-              a
+            messageId: 'missedSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        output: dedent`
+          type type = {
+            a
 
-              b
-            }
-          `,
-          code: dedent`
-            type type = {
-              a
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+        code: dedent`
+          type type = {
+            a
+            b
+          }
+        `,
+      })
+    })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type type = {
-              a
-              b
-            }
-          `,
-          code: dedent`
-            type type = {
-              a
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        output: dedent`
+          type type = {
+            a
+            b
+          }
+        `,
+        code: dedent`
+          type type = {
+            a
 
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+      })
+    })
 
     it('allows to use regex for custom groups', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -4480,125 +4136,6 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('allows to sort required values first', async () => {
-      await valid({
-        code: dedent`
-          type Type = {
-            ccc: string
-            e: string
-            aaaaa?: string
-            bbbb?: string
-            dd?: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'required-first',
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'bbbb',
-              right: 'ccc',
-            },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-          {
-            data: {
-              left: 'dd',
-              right: 'e',
-            },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            ccc: string
-            e: string
-            aaaaa?: string
-            bbbb?: string
-            dd?: string
-          }
-        `,
-        code: dedent`
-          type Type = {
-            aaaaa?: string
-            bbbb?: string
-            ccc: string
-            dd?: string
-            e: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'required-first',
-          },
-        ],
-      })
-    })
-
-    it('allows to sort optional values first', async () => {
-      await valid({
-        code: dedent`
-          type Type = {
-            aaaaa?: string
-            bbbb?: string
-            dd?: string
-            ccc: string
-            e: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'optional-first',
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'ccc',
-              right: 'dd',
-            },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            aaaaa?: string
-            bbbb?: string
-            dd?: string
-            ccc: string
-            e: string
-          }
-        `,
-        code: dedent`
-          type Type = {
-            aaaaa?: string
-            bbbb?: string
-            ccc: string
-            dd?: string
-            e: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'optional-first',
-          },
-        ],
-      })
-    })
-
     it('allows to trim special characters', async () => {
       await valid({
         code: dedent`
@@ -4669,65 +4206,59 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedObjectTypesOrder',
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            type Type = {
-              a: () => null,
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        code: dedent`
+          type Type = {
+            a: () => null,
 
 
-             y: "y",
-            z: "z",
+           y: "y",
+          z: "z",
 
-                b: "b",
-            }
-          `,
-          output: dedent`
-            type Type = {
-              a: () => null,
-             b: "b",
-            y: "y",
-                z: "z",
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              b: "b",
+          }
+        `,
+        output: dedent`
+          type Type = {
+            a: () => null,
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -4743,16 +4274,16 @@ describe('sort-object-types', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4809,12 +4340,10 @@ describe('sort-object-types', () => {
     })
 
     it.each([
-      ['2 and never', 2 as const, 'never' as const],
-      ['2 and 0', 2 as const, 0 as const],
-      ['2 and ignore', 2 as const, 'ignore' as const],
-      ['never and 2', 'never' as const, 2 as const],
-      ['0 and 2', 0 as const, 2 as const],
-      ['ignore and 2', 'ignore' as const, 2 as const],
+      ['2 and 0', 2, 0],
+      ['2 and ignore', 2, 'ignore'],
+      ['0 and 2', 0, 2],
+      ['ignore and 2', 'ignore', 2],
     ])(
       'enforces newlines when global option is %s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4864,13 +4393,12 @@ describe('sort-object-types', () => {
     )
 
     it.each([
-      ['always', 'always' as const],
-      ['2', 2 as const],
-      ['ignore', 'ignore' as const],
-      ['never', 'never' as const],
-      ['0', 0 as const],
+      ['1', 1],
+      ['2', 2],
+      ['ignore', 'ignore'],
+      ['0', 0],
     ])(
-      'enforces no newline when global option is %s and newlinesBetween: never exists between all groups',
+      'enforces no newline when global option is %s and newlinesBetween: 0 exists between all groups',
       async (_description, globalNewlinesBetween) => {
         await invalid({
           options: [
@@ -4884,11 +4412,11 @@ describe('sort-object-types', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4921,10 +4449,8 @@ describe('sort-object-types', () => {
     )
 
     it.each([
-      ['ignore and never', 'ignore' as const, 'never' as const],
-      ['ignore and 0', 'ignore' as const, 0 as const],
-      ['never and ignore', 'never' as const, 'ignore' as const],
-      ['0 and ignore', 0 as const, 'ignore' as const],
+      ['ignore and 0', 'ignore', 0],
+      ['0 and ignore', 0, 'ignore'],
     ])(
       'does not enforce a newline when global option is %s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
@@ -5015,65 +4541,59 @@ describe('sort-object-types', () => {
         options: [
           {
             groups: ['property', 'method'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'ignores newline fixes between different partitions with newlinesBetween: %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('ignores newline fixes between different partitions with newlinesBetween: 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedObjectTypesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            type Type = {
-              a: string
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type = {
+            a: string
 
-              // Partition comment
+            // Partition comment
 
-              b: string
-              c: string
-            }
-          `,
-          code: dedent`
-            type Type = {
-              a: string
+            b: string
+            c: string
+          }
+        `,
+        code: dedent`
+          type Type = {
+            a: string
 
-              // Partition comment
+            // Partition comment
 
-              c: string
-              b: string
-            }
-          `,
-        })
-      },
-    )
+            c: string
+            b: string
+          }
+        `,
+      })
+    })
 
     it('sorts inline elements correctly', async () => {
       await invalid({
@@ -5197,6 +4717,35 @@ describe('sort-object-types', () => {
       'allows to use allNamesMatchPattern with %s',
       async (_description, rgbAllNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -5215,26 +4764,6 @@ describe('sort-object-types', () => {
                 left: 'g',
               },
               messageId: 'unexpectedObjectTypesGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -5748,7 +5277,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              rightGroup: 'optional-multiline',
+              rightGroup: 'optional-multiline-member',
               leftGroup: 'index-signature',
               left: '[key: string]',
               right: 'b',
@@ -5757,7 +5286,7 @@ describe('sort-object-types', () => {
           },
           {
             data: {
-              leftGroup: 'optional-multiline',
+              leftGroup: 'optional-multiline-member',
               rightGroup: 'required-method',
               right: 'c',
               left: 'b',
@@ -5771,7 +5300,7 @@ describe('sort-object-types', () => {
             groups: [
               'unknown',
               'required-method',
-              'optional-multiline',
+              'optional-multiline-member',
               'index-signature',
               'required-property',
             ],
@@ -5834,15 +5363,15 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('prioritizes index-signature over multiline', async () => {
+    it('prioritizes index-signature over member', async () => {
       await invalid({
         errors: [
           {
             data: {
               rightGroup: 'index-signature',
-              left: 'multilineProperty',
               right: '[key: string]',
-              leftGroup: 'multiline',
+              leftGroup: 'member',
+              left: 'member',
             },
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
@@ -5850,37 +5379,33 @@ describe('sort-object-types', () => {
         output: dedent`
           type Type = {
             [key: string]: string;
-            multilineProperty: {
-              a: string
-            }
+            member: "something";
           }
         `,
         code: dedent`
           type Type = {
-            multilineProperty: {
-              a: string
-            }
+            member: "something";
             [key: string]: string;
           }
         `,
         options: [
           {
             ...options,
-            groups: ['index-signature', 'multiline'],
+            groups: ['index-signature', 'member'],
           },
         ],
       })
     })
 
-    it('prioritizes method over multiline', async () => {
+    it('prioritizes method over member', async () => {
       await invalid({
         errors: [
           {
             data: {
-              left: 'multilineProperty',
-              leftGroup: 'multiline',
               rightGroup: 'method',
+              leftGroup: 'member',
               right: 'method',
+              left: 'member',
             },
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
@@ -5888,61 +5413,19 @@ describe('sort-object-types', () => {
         output: dedent`
           type Type = {
             method(): string
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
           }
         `,
         code: dedent`
           type Type = {
-            multilineProperty: {
-              a: string
-            }
+            member: "something"
             method(): string
           }
         `,
         options: [
           {
             ...options,
-            groups: ['method', 'multiline'],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes multiline over property', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'multilineProperty',
-              rightGroup: 'multiline',
-              leftGroup: 'property',
-              left: 'property',
-            },
-            messageId: 'unexpectedObjectTypesGroupOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            multilineProperty: {
-              a: string
-            }
-            property: string
-          }
-        `,
-        code: dedent`
-          type Type = {
-            property: string
-            multilineProperty: {
-              a: string
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['multiline', 'property'],
+            groups: ['method', 'member'],
           },
         ],
       })
@@ -6053,88 +5536,6 @@ describe('sort-object-types', () => {
           {
             ...options,
             groups: ['multiline-property', 'required-property'],
-          },
-        ],
-      })
-    })
-
-    it('allows to set groups for sorting', async () => {
-      await valid({
-        code: dedent`
-          type Type = {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline', 'unknown'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'multiline',
-              leftGroup: 'unknown',
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'unexpectedObjectTypesGroupOrder',
-          },
-          {
-            data: {
-              leftGroup: 'multiline',
-              rightGroup: 'g',
-              right: 'g',
-              left: 'd',
-            },
-            messageId: 'unexpectedObjectTypesGroupOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            g: 'g'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-        code: dedent`
-          type Type = {
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-            d: {
-              e: 'e'
-              f: 'f'
-            }
-            g: 'g'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            customGroups: {
-              g: 'g',
-            },
-            groups: ['g', 'multiline', 'unknown'],
           },
         ],
       })
@@ -6678,105 +6079,96 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([
-      ['always', 'always' as const],
-      ['1', 1 as const],
-    ])(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 1', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 1,
               },
-              messageId: 'missedSpacingBetweenObjectTypeMembers',
+            ],
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type type = {
-              a
+            messageId: 'missedSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        output: dedent`
+          type type = {
+            a
 
-              b
-            }
-          `,
-          code: dedent`
-            type type = {
-              a
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+        code: dedent`
+          type type = {
+            a
+            b
+          }
+        `,
+      })
+    })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'allows to use newlinesInside: %s',
-      async (_description, newlinesInside) => {
-        await invalid({
-          options: [
-            {
-              customGroups: [
-                {
-                  selector: 'property',
-                  groupName: 'group1',
-                  newlinesInside,
-                },
-              ],
-              type: 'alphabetical',
-              groups: ['group1'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'a',
+    it('allows to use newlinesInside: 0', async () => {
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                selector: 'property',
+                groupName: 'group1',
+                newlinesInside: 0,
               },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+            ],
+            type: 'alphabetical',
+            groups: ['group1'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
             },
-          ],
-          output: dedent`
-            type type = {
-              a
-              b
-            }
-          `,
-          code: dedent`
-            type type = {
-              a
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        output: dedent`
+          type type = {
+            a
+            b
+          }
+        `,
+        code: dedent`
+          type type = {
+            a
 
-              b
-            }
-          `,
-        })
-      },
-    )
+            b
+          }
+        `,
+      })
+    })
 
     it('allows to use regex for custom groups', async () => {
       await valid({
         options: [
           {
             ...options,
-            customGroups: {
-              elementsWithoutFoo: '^(?!.*Foo).*$',
-            },
+            customGroups: [
+              {
+                elementNamePattern: '^(?!.*Foo).*$',
+                groupName: 'elementsWithoutFoo',
+              },
+            ],
             groups: ['unknown', 'elementsWithoutFoo'],
           },
         ],
@@ -7226,125 +6618,6 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('allows to sort required values first', async () => {
-      await valid({
-        code: dedent`
-          type Type = {
-            ccc: string
-            e: string
-            aaaaa?: string
-            bbbb?: string
-            dd?: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'required-first',
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'bbbb',
-              right: 'ccc',
-            },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-          {
-            data: {
-              left: 'dd',
-              right: 'e',
-            },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            ccc: string
-            e: string
-            aaaaa?: string
-            bbbb?: string
-            dd?: string
-          }
-        `,
-        code: dedent`
-          type Type = {
-            aaaaa?: string
-            bbbb?: string
-            ccc: string
-            dd?: string
-            e: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'required-first',
-          },
-        ],
-      })
-    })
-
-    it('allows to sort optional values first', async () => {
-      await valid({
-        code: dedent`
-          type Type = {
-            aaaaa?: string
-            bbbb?: string
-            dd?: string
-            ccc: string
-            e: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'optional-first',
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'ccc',
-              right: 'dd',
-            },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
-        output: dedent`
-          type Type = {
-            aaaaa?: string
-            bbbb?: string
-            dd?: string
-            ccc: string
-            e: string
-          }
-        `,
-        code: dedent`
-          type Type = {
-            aaaaa?: string
-            bbbb?: string
-            ccc: string
-            dd?: string
-            e: string
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'optional-first',
-          },
-        ],
-      })
-    })
-
     it('allows to trim special characters', async () => {
       await valid({
         code: dedent`
@@ -7415,65 +6688,59 @@ describe('sort-object-types', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
-              },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'unexpectedObjectTypesOrder',
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
             },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenObjectTypeMembers',
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
             },
-          ],
-          code: dedent`
-            type Type = {
-              aaaa: () => null,
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+          },
+        ],
+        code: dedent`
+          type Type = {
+            aaaa: () => null,
 
 
-             yy: "y",
-            z: "z",
+           yy: "y",
+          z: "z",
 
-                bbb: "b",
-            }
-          `,
-          output: dedent`
-            type Type = {
-              aaaa: () => null,
-             bbb: "b",
-            yy: "y",
-                z: "z",
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['method', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-        })
-      },
-    )
+              bbb: "b",
+          }
+        `,
+        output: dedent`
+          type Type = {
+            aaaa: () => null,
+           bbb: "b",
+          yy: "y",
+              z: "z",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -7489,16 +6756,16 @@ describe('sort-object-types', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -7555,12 +6822,10 @@ describe('sort-object-types', () => {
     })
 
     it.each([
-      ['2 and never', 2 as const, 'never' as const],
-      ['2 and 0', 2 as const, 0 as const],
-      ['2 and ignore', 2 as const, 'ignore' as const],
-      ['never and 2', 'never' as const, 2 as const],
-      ['0 and 2', 0 as const, 2 as const],
-      ['ignore and 2', 'ignore' as const, 2 as const],
+      ['2 and 0', 2, 0],
+      ['2 and ignore', 2, 'ignore'],
+      ['0 and 2', 0, 2],
+      ['ignore and 2', 'ignore', 2],
     ])(
       'enforces newlines when global option is %s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
@@ -7610,13 +6875,12 @@ describe('sort-object-types', () => {
     )
 
     it.each([
-      ['always', 'always' as const],
-      ['2', 2 as const],
-      ['ignore', 'ignore' as const],
-      ['never', 'never' as const],
-      ['0', 0 as const],
+      ['1', 1],
+      ['2', 2],
+      ['ignore', 'ignore'],
+      ['0', 0],
     ])(
-      'enforces no newline when global option is %s and newlinesBetween: never exists between all groups',
+      'enforces no newline when global option is %s and newlinesBetween: 0 exists between all groups',
       async (_description, globalNewlinesBetween) => {
         await invalid({
           options: [
@@ -7630,11 +6894,11 @@ describe('sort-object-types', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -7667,10 +6931,8 @@ describe('sort-object-types', () => {
     )
 
     it.each([
-      ['ignore and never', 'ignore' as const, 'never' as const],
-      ['ignore and 0', 'ignore' as const, 0 as const],
-      ['never and ignore', 'never' as const, 'ignore' as const],
-      ['0 and ignore', 0 as const, 'ignore' as const],
+      ['ignore and 0', 'ignore', 0],
+      ['0 and ignore', 0, 'ignore'],
     ])(
       'does not enforce a newline when global option is %s',
       async (_description, globalNewlinesBetween, groupNewlinesBetween) => {
@@ -7761,65 +7023,59 @@ describe('sort-object-types', () => {
         options: [
           {
             groups: ['property', 'method'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'ignores newline fixes between different partitions with newlinesBetween: %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('ignores newline fixes between different partitions with newlinesBetween: 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedObjectTypesOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            type Type = {
-              a: string
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type = {
+            a: string
 
-              // Partition comment
+            // Partition comment
 
-              bb: string
-              c: string
-            }
-          `,
-          code: dedent`
-            type Type = {
-              a: string
+            bb: string
+            c: string
+          }
+        `,
+        code: dedent`
+          type Type = {
+            a: string
 
-              // Partition comment
+            // Partition comment
 
-              c: string
-              bb: string
-            }
-          `,
-        })
-      },
-    )
+            c: string
+            bb: string
+          }
+        `,
+      })
+    })
 
     it('sorts inline elements correctly', async () => {
       await invalid({
@@ -7943,6 +7199,35 @@ describe('sort-object-types', () => {
       'allows to use allNamesMatchPattern with %s',
       async (_description, rgbAllNamesMatchPattern) => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
           errors: [
             {
               data: {
@@ -7961,26 +7246,6 @@ describe('sort-object-types', () => {
                 left: 'g',
               },
               messageId: 'unexpectedObjectTypesGroupOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
-              },
-            },
-            {
-              ...options,
-              customGroups: {
-                r: 'r',
-                g: 'g',
-                b: 'b',
-              },
-              useConfigurationIf: {
-                allNamesMatchPattern: rgbAllNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
             },
           ],
           output: dedent`
@@ -8445,7 +7710,7 @@ describe('sort-object-types', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],
@@ -8476,26 +7741,6 @@ describe('sort-object-types', () => {
   })
 
   describe('misc', () => {
-    it('allows predefined groups and defined custom groups', async () => {
-      await valid({
-        options: [
-          {
-            customGroups: {
-              myCustomGroup: 'x',
-            },
-            groups: ['multiline', 'method', 'unknown', 'myCustomGroup'],
-          },
-        ],
-        code: dedent`
-          type Type = {
-            a: 'aaa'
-            b: 'bb'
-            c: 'c'
-          }
-        `,
-      })
-    })
-
     it('ignores semi at the end of value', async () => {
       await valid({
         code: dedent`
@@ -8682,22 +7927,6 @@ describe('sort-object-types', () => {
             b: fooBar
           }
         `,
-      })
-    })
-
-    it('allows to ignore object types', async () => {
-      await valid({
-        code: dedent`
-          type IgnoreType = {
-            b: 'b'
-            a: 'a'
-          }
-        `,
-        options: [
-          {
-            ignorePattern: ['Ignore'],
-          },
-        ],
       })
     })
 

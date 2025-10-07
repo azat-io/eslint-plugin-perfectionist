@@ -3,6 +3,8 @@ import type { ESLint, Linter, Rule } from 'eslint'
 import { version as packageVersion, name as packageName } from './package.json'
 import sortVariableDeclarations from './rules/sort-variable-declarations'
 import sortIntersectionTypes from './rules/sort-intersection-types'
+import sortImportAttributes from './rules/sort-import-attributes'
+import sortExportAttributes from './rules/sort-export-attributes'
 import sortHeritageClauses from './rules/sort-heritage-clauses'
 import sortArrayIncludes from './rules/sort-array-includes'
 import sortNamedImports from './rules/sort-named-imports'
@@ -26,6 +28,8 @@ interface PluginConfig {
   rules: {
     'sort-variable-declarations': Rule.RuleModule
     'sort-intersection-types': Rule.RuleModule
+    'sort-import-attributes': Rule.RuleModule
+    'sort-export-attributes': Rule.RuleModule
     'sort-heritage-clauses': Rule.RuleModule
     'sort-array-includes': Rule.RuleModule
     'sort-named-imports': Rule.RuleModule
@@ -68,33 +72,37 @@ interface BaseOptions {
 
 let pluginName = 'perfectionist'
 
+export let rules = {
+  'sort-variable-declarations': sortVariableDeclarations,
+  'sort-intersection-types': sortIntersectionTypes,
+  'sort-import-attributes': sortImportAttributes,
+  'sort-export-attributes': sortExportAttributes,
+  'sort-heritage-clauses': sortHeritageClauses,
+  'sort-array-includes': sortArrayIncludes,
+  'sort-named-imports': sortNamedImports,
+  'sort-named-exports': sortNamedExports,
+  'sort-object-types': sortObjectTypes,
+  'sort-union-types': sortUnionTypes,
+  'sort-switch-case': sortSwitchCase,
+  'sort-decorators': sortDecorators,
+  'sort-interfaces': sortInterfaces,
+  'sort-jsx-props': sortJsxProps,
+  'sort-modules': sortModules,
+  'sort-classes': sortClasses,
+  'sort-imports': sortImports,
+  'sort-exports': sortExports,
+  'sort-objects': sortObjects,
+  'sort-enums': sortEnums,
+  'sort-sets': sortSets,
+  'sort-maps': sortMaps,
+}
+
 let plugin = {
-  rules: {
-    'sort-variable-declarations': sortVariableDeclarations,
-    'sort-intersection-types': sortIntersectionTypes,
-    'sort-heritage-clauses': sortHeritageClauses,
-    'sort-array-includes': sortArrayIncludes,
-    'sort-named-imports': sortNamedImports,
-    'sort-named-exports': sortNamedExports,
-    'sort-object-types': sortObjectTypes,
-    'sort-union-types': sortUnionTypes,
-    'sort-switch-case': sortSwitchCase,
-    'sort-decorators': sortDecorators,
-    'sort-interfaces': sortInterfaces,
-    'sort-jsx-props': sortJsxProps,
-    'sort-modules': sortModules,
-    'sort-classes': sortClasses,
-    'sort-imports': sortImports,
-    'sort-exports': sortExports,
-    'sort-objects': sortObjects,
-    'sort-enums': sortEnums,
-    'sort-sets': sortSets,
-    'sort-maps': sortMaps,
-  },
   meta: {
     version: packageVersion,
     name: packageName,
   },
+  rules,
 } as unknown as ESLint.Plugin
 
 function getRules(options: BaseOptions): Linter.RulesRecord {
@@ -122,40 +130,42 @@ function createLegacyConfig(options: BaseOptions): Linter.LegacyConfig {
   }
 }
 
+export let configs = {
+  'recommended-alphabetical-legacy': createLegacyConfig({
+    type: 'alphabetical',
+    order: 'asc',
+  }),
+  'recommended-line-length-legacy': createLegacyConfig({
+    type: 'line-length',
+    order: 'desc',
+  }),
+  'recommended-natural-legacy': createLegacyConfig({
+    type: 'natural',
+    order: 'asc',
+  }),
+  'recommended-custom-legacy': createLegacyConfig({
+    type: 'custom',
+    order: 'asc',
+  }),
+  'recommended-alphabetical': createConfig({
+    type: 'alphabetical',
+    order: 'asc',
+  }),
+  'recommended-line-length': createConfig({
+    type: 'line-length',
+    order: 'desc',
+  }),
+  'recommended-natural': createConfig({
+    type: 'natural',
+    order: 'asc',
+  }),
+  'recommended-custom': createConfig({
+    type: 'custom',
+    order: 'asc',
+  }),
+}
+
 export default {
   ...plugin,
-  configs: {
-    'recommended-alphabetical-legacy': createLegacyConfig({
-      type: 'alphabetical',
-      order: 'asc',
-    }),
-    'recommended-line-length-legacy': createLegacyConfig({
-      type: 'line-length',
-      order: 'desc',
-    }),
-    'recommended-natural-legacy': createLegacyConfig({
-      type: 'natural',
-      order: 'asc',
-    }),
-    'recommended-custom-legacy': createLegacyConfig({
-      type: 'custom',
-      order: 'asc',
-    }),
-    'recommended-alphabetical': createConfig({
-      type: 'alphabetical',
-      order: 'asc',
-    }),
-    'recommended-line-length': createConfig({
-      type: 'line-length',
-      order: 'desc',
-    }),
-    'recommended-natural': createConfig({
-      type: 'natural',
-      order: 'asc',
-    }),
-    'recommended-custom': createConfig({
-      type: 'custom',
-      order: 'asc',
-    }),
-  },
+  configs,
 } as PluginConfig

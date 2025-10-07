@@ -165,41 +165,6 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it('places spread elements after literals with literals-first option', async () => {
-      let literalsFirstOptions = [
-        {
-          ...options,
-          groupKind: 'literals-first',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...other',
-              right: 'c',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        code: dedent`
-          ['a', 'b', ...other, 'c'].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-    })
-
     it('sorts elements in Array constructor calls', async () => {
       await valid({
         code: dedent`
@@ -240,56 +205,6 @@ describe('sort-array-includes', () => {
           ).includes(value)
         `,
         options: [options],
-      })
-    })
-
-    it('sorts mixed literals and spread elements together with mixed grouping', async () => {
-      let mixedOptions = [
-        {
-          ...options,
-          groupKind: 'mixed',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '...d',
-              left: 'bbb',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        code: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
       })
     })
 
@@ -348,8 +263,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -357,17 +272,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -396,8 +315,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -550,7 +469,7 @@ describe('sort-array-includes', () => {
         {
           ...options,
           partitionByComment: '^Part:',
-          groupKind: 'spreads-first',
+          groups: ['spread'],
         },
       ]
 
@@ -558,17 +477,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -927,13 +850,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: ['spread', 'literal'],
-            groupKind: 'mixed',
-          },
-        ],
         output: dedent`
           [
             ...b,
@@ -948,6 +864,12 @@ describe('sort-array-includes', () => {
             'a'
           ].includes(value)
         `,
+        options: [
+          {
+            ...options,
+            groups: ['spread', 'literal'],
+          },
+        ],
       })
     })
 
@@ -961,7 +883,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -1011,7 +932,6 @@ describe('sort-array-includes', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -1059,7 +979,6 @@ describe('sort-array-includes', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -1187,7 +1106,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -1382,73 +1300,67 @@ describe('sort-array-includes', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        let newlinesOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedArrayIncludesOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          code: dedent`
-            [
-              'a',
+          groups: ['a', 'unknown'],
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+          },
+        ],
+        code: dedent`
+          [
+            'a',
 
 
-             'y',
-            'z',
+           'y',
+          'z',
 
-                'b'
-            ].includes(value)
-          `,
-          output: dedent`
-            [
-              'a',
-             'b',
-            'y',
-                'z'
-            ].includes(value)
-          `,
-          options: newlinesOptions,
-        })
-      },
-    )
+              'b'
+          ].includes(value)
+        `,
+        output: dedent`
+          [
+            'a',
+           'b',
+          'y',
+              'z'
+          ].includes(value)
+        `,
+        options: newlinesOptions,
+      })
+    })
 
     it('adds newlines between multiple groups', async () => {
       let multiGroupOptions = [
@@ -1464,8 +1376,8 @@ describe('sort-array-includes', () => {
               groupName: 'b',
             },
           ],
-          newlinesBetween: 'always' as const,
           groups: ['a', 'unknown', 'b'],
+          newlinesBetween: 1,
         },
       ]
 
@@ -1546,15 +1458,15 @@ describe('sort-array-includes', () => {
           groups: [
             'a',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'b',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'c',
             {
-              newlinesBetween: 'never',
+              newlinesBetween: 0,
             },
             'd',
             {
@@ -1562,7 +1474,7 @@ describe('sort-array-includes', () => {
             },
             'e',
           ],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -1622,12 +1534,10 @@ describe('sort-array-includes', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1678,16 +1588,10 @@ describe('sort-array-includes', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
-        let neverBetweenGroupsOptions = [
+        let noNewlineBetweenGroupsOptions = [
           {
             ...options,
             customGroups: [
@@ -1698,11 +1602,11 @@ describe('sort-array-includes', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'unusedGroup',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
             ],
             newlinesBetween: globalNewlinesBetween,
@@ -1732,16 +1636,14 @@ describe('sort-array-includes', () => {
               b,
             ].includes(value)
           `,
-          options: neverBetweenGroupsOptions,
+          options: noNewlineBetweenGroupsOptions,
         })
       },
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1796,7 +1698,7 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['unknown', 'b|c'],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -1833,61 +1735,55 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        let partitionOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            partitionByComment: true,
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      let partitionOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'b',
-                left: 'c',
-              },
-              messageId: 'unexpectedArrayIncludesOrder',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          output: dedent`
-            [
-              'a',
+          groups: ['a', 'unknown'],
+          partitionByComment: true,
+          newlinesBetween: 0,
+        },
+      ]
 
-              // Partition comment
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+        ],
+        output: dedent`
+          [
+            'a',
 
-              'b',
-              'c',
-            ].includes(value)
-          `,
-          code: dedent`
-            [
-              'a',
+            // Partition comment
 
-              // Partition comment
+            'b',
+            'c',
+          ].includes(value)
+        `,
+        code: dedent`
+          [
+            'a',
 
-              'c',
-              'b',
-            ].includes(value)
-          `,
-          options: partitionOptions,
-        })
-      },
-    )
+            // Partition comment
+
+            'c',
+            'b',
+          ].includes(value)
+        `,
+        options: partitionOptions,
+      })
+    })
   })
 
   describe('natural', () => {
@@ -2043,41 +1939,6 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it('places spread elements after literals with literals-first option', async () => {
-      let literalsFirstOptions = [
-        {
-          ...options,
-          groupKind: 'literals-first',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...other',
-              right: 'c',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        code: dedent`
-          ['a', 'b', ...other, 'c'].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-    })
-
     it('sorts elements in Array constructor calls', async () => {
       await valid({
         code: dedent`
@@ -2118,56 +1979,6 @@ describe('sort-array-includes', () => {
           ).includes(value)
         `,
         options: [options],
-      })
-    })
-
-    it('sorts mixed literals and spread elements together with mixed grouping', async () => {
-      let mixedOptions = [
-        {
-          ...options,
-          groupKind: 'mixed',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: '...d',
-              left: 'bbb',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          new Array(
-            ...d,
-            'aaaa',
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        code: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
       })
     })
 
@@ -2226,8 +2037,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -2235,17 +2046,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -2274,8 +2089,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -2428,7 +2243,7 @@ describe('sort-array-includes', () => {
         {
           ...options,
           partitionByComment: '^Part:',
-          groupKind: 'spreads-first',
+          groups: ['spread'],
         },
       ]
 
@@ -2436,17 +2251,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -2805,13 +2624,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: ['spread', 'literal'],
-            groupKind: 'mixed',
-          },
-        ],
         output: dedent`
           [
             ...b,
@@ -2826,6 +2638,12 @@ describe('sort-array-includes', () => {
             'a'
           ].includes(value)
         `,
+        options: [
+          {
+            ...options,
+            groups: ['spread', 'literal'],
+          },
+        ],
       })
     })
 
@@ -2839,7 +2657,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -2889,7 +2706,6 @@ describe('sort-array-includes', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -2937,7 +2753,6 @@ describe('sort-array-includes', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -3065,7 +2880,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -3260,73 +3074,67 @@ describe('sort-array-includes', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        let newlinesOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'y',
-                left: 'a',
-              },
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedArrayIncludesOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          code: dedent`
-            [
-              'a',
+          groups: ['a', 'unknown'],
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+          },
+        ],
+        code: dedent`
+          [
+            'a',
 
 
-             'y',
-            'z',
+           'y',
+          'z',
 
-                'b'
-            ].includes(value)
-          `,
-          output: dedent`
-            [
-              'a',
-             'b',
-            'y',
-                'z'
-            ].includes(value)
-          `,
-          options: newlinesOptions,
-        })
-      },
-    )
+              'b'
+          ].includes(value)
+        `,
+        output: dedent`
+          [
+            'a',
+           'b',
+          'y',
+              'z'
+          ].includes(value)
+        `,
+        options: newlinesOptions,
+      })
+    })
 
     it('adds newlines between multiple groups', async () => {
       let multiGroupOptions = [
@@ -3342,8 +3150,8 @@ describe('sort-array-includes', () => {
               groupName: 'b',
             },
           ],
-          newlinesBetween: 'always' as const,
           groups: ['a', 'unknown', 'b'],
+          newlinesBetween: 1,
         },
       ]
 
@@ -3424,15 +3232,15 @@ describe('sort-array-includes', () => {
           groups: [
             'a',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'b',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'c',
             {
-              newlinesBetween: 'never',
+              newlinesBetween: 0,
             },
             'd',
             {
@@ -3440,7 +3248,7 @@ describe('sort-array-includes', () => {
             },
             'e',
           ],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -3500,12 +3308,10 @@ describe('sort-array-includes', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -3556,16 +3362,10 @@ describe('sort-array-includes', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
-        let neverBetweenGroupsOptions = [
+        let noNewlineBetweenGroupsOptions = [
           {
             ...options,
             customGroups: [
@@ -3576,11 +3376,11 @@ describe('sort-array-includes', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'unusedGroup',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
             ],
             newlinesBetween: globalNewlinesBetween,
@@ -3610,16 +3410,14 @@ describe('sort-array-includes', () => {
               b,
             ].includes(value)
           `,
-          options: neverBetweenGroupsOptions,
+          options: noNewlineBetweenGroupsOptions,
         })
       },
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -3674,7 +3472,7 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['unknown', 'b|c'],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -3711,61 +3509,55 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        let partitionOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            partitionByComment: true,
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      let partitionOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'b',
-                left: 'c',
-              },
-              messageId: 'unexpectedArrayIncludesOrder',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          output: dedent`
-            [
-              'a',
+          groups: ['a', 'unknown'],
+          partitionByComment: true,
+          newlinesBetween: 0,
+        },
+      ]
 
-              // Partition comment
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+        ],
+        output: dedent`
+          [
+            'a',
 
-              'b',
-              'c',
-            ].includes(value)
-          `,
-          code: dedent`
-            [
-              'a',
+            // Partition comment
 
-              // Partition comment
+            'b',
+            'c',
+          ].includes(value)
+        `,
+        code: dedent`
+          [
+            'a',
 
-              'c',
-              'b',
-            ].includes(value)
-          `,
-          options: partitionOptions,
-        })
-      },
-    )
+            // Partition comment
+
+            'c',
+            'b',
+          ].includes(value)
+        `,
+        options: partitionOptions,
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -3902,41 +3694,6 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it('places spread elements after literals with literals-first option', async () => {
-      let literalsFirstOptions = [
-        {
-          ...options,
-          groupKind: 'literals-first',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...other',
-              right: 'c',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          ['a', 'b', 'c', ...other].includes(value)
-        `,
-        code: dedent`
-          ['a', 'b', ...other, 'c'].includes(value)
-        `,
-        options: literalsFirstOptions,
-      })
-    })
-
     it('sorts elements in Array constructor calls', async () => {
       await valid({
         code: dedent`
@@ -3977,56 +3734,6 @@ describe('sort-array-includes', () => {
           ).includes(value)
         `,
         options: [options],
-      })
-    })
-
-    it('sorts mixed literals and spread elements together with mixed grouping', async () => {
-      let mixedOptions = [
-        {
-          ...options,
-          groupKind: 'mixed',
-        },
-      ]
-
-      await valid({
-        code: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: '...d',
-              right: 'bbb',
-            },
-            messageId: 'unexpectedArrayIncludesOrder',
-          },
-        ],
-        output: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            ...d,
-            'cc',
-          ).includes(value)
-        `,
-        code: dedent`
-          new Array(
-            'aaaa',
-            ...d,
-            'bbb',
-            'cc',
-          ).includes(value)
-        `,
-        options: mixedOptions,
       })
     })
 
@@ -4085,8 +3792,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -4094,17 +3801,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -4133,8 +3844,8 @@ describe('sort-array-includes', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
-          groupKind: 'spreads-first',
           partitionByNewLine: true,
+          groups: ['spread'],
         },
       ]
 
@@ -4287,7 +3998,7 @@ describe('sort-array-includes', () => {
         {
           ...options,
           partitionByComment: '^Part:',
-          groupKind: 'spreads-first',
+          groups: ['spread'],
         },
       ]
 
@@ -4295,17 +4006,21 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...d',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
           {
             data: {
+              rightGroup: 'spread',
+              leftGroup: 'unknown',
               right: '...b',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
         output: dedent`
@@ -4664,13 +4379,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: ['spread', 'literal'],
-            groupKind: 'mixed',
-          },
-        ],
         output: dedent`
           [
             ...b,
@@ -4685,6 +4393,12 @@ describe('sort-array-includes', () => {
             'aa'
           ].includes(value)
         `,
+        options: [
+          {
+            ...options,
+            groups: ['spread', 'literal'],
+          },
+        ],
       })
     })
 
@@ -4698,7 +4412,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['literalElements', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -4748,7 +4461,6 @@ describe('sort-array-includes', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
-            groupKind: 'mixed',
           },
         ]
 
@@ -4796,7 +4508,6 @@ describe('sort-array-includes', () => {
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
           type: 'alphabetical',
-          groupKind: 'mixed',
           order: 'asc',
         },
       ]
@@ -4924,7 +4635,6 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['unsortedLiterals', 'unknown'],
-          groupKind: 'mixed',
         },
       ]
 
@@ -5119,73 +4829,67 @@ describe('sort-array-includes', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        let newlinesOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'aa',
-                groupName: 'aa',
-              },
-            ],
-            groups: ['aa', 'unknown'],
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
-              },
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'unexpectedArrayIncludesOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
+              elementNamePattern: 'aa',
+              groupName: 'aa',
             },
           ],
-          code: dedent`
-            [
-              'aaaa',
+          groups: ['aa', 'unknown'],
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
+            },
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+          },
+        ],
+        code: dedent`
+          [
+            'aaaa',
 
 
-             'yy',
-            'z',
+           'yy',
+          'z',
 
-                'bbb'
-            ].includes(value)
-          `,
-          output: dedent`
-            [
-              'aaaa',
-             'bbb',
-            'yy',
-                'z'
-            ].includes(value)
-          `,
-          options: newlinesOptions,
-        })
-      },
-    )
+              'bbb'
+          ].includes(value)
+        `,
+        output: dedent`
+          [
+            'aaaa',
+           'bbb',
+          'yy',
+              'z'
+          ].includes(value)
+        `,
+        options: newlinesOptions,
+      })
+    })
 
     it('adds newlines between multiple groups', async () => {
       let multiGroupOptions = [
@@ -5201,8 +4905,8 @@ describe('sort-array-includes', () => {
               groupName: 'b',
             },
           ],
-          newlinesBetween: 'always' as const,
           groups: ['aa', 'unknown', 'b'],
+          newlinesBetween: 1,
         },
       ]
 
@@ -5283,15 +4987,15 @@ describe('sort-array-includes', () => {
           groups: [
             'a',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'b',
             {
-              newlinesBetween: 'always',
+              newlinesBetween: 1,
             },
             'c',
             {
-              newlinesBetween: 'never',
+              newlinesBetween: 0,
             },
             'd',
             {
@@ -5299,7 +5003,7 @@ describe('sort-array-includes', () => {
             },
             'e',
           ],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -5359,12 +5063,10 @@ describe('sort-array-includes', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -5415,16 +5117,10 @@ describe('sort-array-includes', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
-        let neverBetweenGroupsOptions = [
+        let noNewlineBetweenGroupsOptions = [
           {
             ...options,
             customGroups: [
@@ -5435,11 +5131,11 @@ describe('sort-array-includes', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'unusedGroup',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
             ],
             newlinesBetween: globalNewlinesBetween,
@@ -5469,16 +5165,14 @@ describe('sort-array-includes', () => {
               b,
             ].includes(value)
           `,
-          options: neverBetweenGroupsOptions,
+          options: noNewlineBetweenGroupsOptions,
         })
       },
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -5533,7 +5227,7 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['unknown', 'b|c'],
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
         },
       ]
 
@@ -5570,61 +5264,55 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        let partitionOptions = [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'a',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            partitionByComment: true,
-            newlinesBetween,
-          },
-        ]
-
-        await invalid({
-          errors: [
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      let partitionOptions = [
+        {
+          ...options,
+          customGroups: [
             {
-              data: {
-                right: 'bb',
-                left: 'c',
-              },
-              messageId: 'unexpectedArrayIncludesOrder',
+              elementNamePattern: 'a',
+              groupName: 'a',
             },
           ],
-          output: dedent`
-            [
-              'aaa',
+          groups: ['a', 'unknown'],
+          partitionByComment: true,
+          newlinesBetween: 0,
+        },
+      ]
 
-              // Partition comment
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+        ],
+        output: dedent`
+          [
+            'aaa',
 
-              'bb',
-              'c',
-            ].includes(value)
-          `,
-          code: dedent`
-            [
-              'aaa',
+            // Partition comment
 
-              // Partition comment
+            'bb',
+            'c',
+          ].includes(value)
+        `,
+        code: dedent`
+          [
+            'aaa',
 
-              'c',
-              'bb',
-            ].includes(value)
-          `,
-          options: partitionOptions,
-        })
-      },
-    )
+            // Partition comment
+
+            'c',
+            'bb',
+          ].includes(value)
+        `,
+        options: partitionOptions,
+      })
+    })
   })
 
   describe('custom', () => {
@@ -5767,7 +5455,7 @@ describe('sort-array-includes', () => {
               groupName: 'b',
             },
           ],
-          newlinesBetween: 'always' as const,
+          newlinesBetween: 1,
           groups: ['b', 'a'],
         },
       ]

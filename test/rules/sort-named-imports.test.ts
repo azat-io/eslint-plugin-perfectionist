@@ -247,93 +247,6 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it('sorts named imports grouping by their kind', async () => {
-      await valid({
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await valid({
-        code: dedent`
-          import { AAA, BB, type BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await valid({
-        code: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, type C, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'BB',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { AAA, BB, type BB, type C } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'AAA',
-              right: 'BB',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-          {
-            data: {
-              left: 'BB',
-              right: 'C',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-    })
-
     it('allows to use original import names', async () => {
       await valid({
         options: [
@@ -426,10 +339,12 @@ describe('sort-named-imports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-import',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedImportsOrder',
+            messageId: 'unexpectedNamedImportsGroupOrder',
           },
           {
             data: {
@@ -475,7 +390,7 @@ describe('sort-named-imports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-import'],
           },
         ],
       })
@@ -1198,71 +1113,65 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenNamedImports',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenNamedImports',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenNamedImports',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedNamedImportsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenNamedImports',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            import {
-                a,
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          import {
+              a,
 
 
-               y,
-              z,
+             y,
+            z,
 
-                  b,
-            } from 'module'
-          `,
-          output: dedent`
-            import {
-                a,
-               b,
-              y,
-                  z,
-            } from 'module'
-          `,
-        })
-      },
-    )
+                b,
+          } from 'module'
+        `,
+        output: dedent`
+          import {
+              a,
+             b,
+            y,
+                z,
+          } from 'module'
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -1278,16 +1187,16 @@ describe('sort-named-imports', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1344,12 +1253,10 @@ describe('sort-named-imports', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1398,14 +1305,8 @@ describe('sort-named-imports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -1419,11 +1320,11 @@ describe('sort-named-imports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -1456,10 +1357,8 @@ describe('sort-named-imports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1529,7 +1428,7 @@ describe('sort-named-imports', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1562,59 +1461,53 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedNamedImportsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            import {
-              a,
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+        ],
+        output: dedent`
+          import {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              b,
-              c,
-            } from 'module'
-          `,
-          code: dedent`
-            import {
-              a,
+            b,
+            c,
+          } from 'module'
+        `,
+        code: dedent`
+          import {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              b,
-            } from 'module'
-          `,
-        })
-      },
-    )
+            c,
+            b,
+          } from 'module'
+        `,
+      })
+    })
   })
 
   describe('natural', () => {
@@ -1850,93 +1743,6 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it('sorts named imports grouping by their kind', async () => {
-      await valid({
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await valid({
-        code: dedent`
-          import { AAA, BB, type BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await valid({
-        code: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, type C, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'BB',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { AAA, BB, type BB, type C } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'AAA',
-              right: 'BB',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-          {
-            data: {
-              left: 'BB',
-              right: 'C',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-    })
-
     it('allows to use original import names', async () => {
       await valid({
         options: [
@@ -2029,10 +1835,12 @@ describe('sort-named-imports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-import',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedImportsOrder',
+            messageId: 'unexpectedNamedImportsGroupOrder',
           },
           {
             data: {
@@ -2078,7 +1886,7 @@ describe('sort-named-imports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-import'],
           },
         ],
       })
@@ -2801,71 +2609,65 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenNamedImports',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenNamedImports',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenNamedImports',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedNamedImportsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenNamedImports',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            import {
-                a,
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          import {
+              a,
 
 
-               y,
-              z,
+             y,
+            z,
 
-                  b,
-            } from 'module'
-          `,
-          output: dedent`
-            import {
-                a,
-               b,
-              y,
-                  z,
-            } from 'module'
-          `,
-        })
-      },
-    )
+                b,
+          } from 'module'
+        `,
+        output: dedent`
+          import {
+              a,
+             b,
+            y,
+                z,
+          } from 'module'
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -2881,16 +2683,16 @@ describe('sort-named-imports', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -2947,12 +2749,10 @@ describe('sort-named-imports', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -3001,14 +2801,8 @@ describe('sort-named-imports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -3022,11 +2816,11 @@ describe('sort-named-imports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -3059,10 +2853,8 @@ describe('sort-named-imports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -3132,7 +2924,7 @@ describe('sort-named-imports', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -3165,59 +2957,53 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedNamedImportsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            import {
-              a,
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+        ],
+        output: dedent`
+          import {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              b,
-              c,
-            } from 'module'
-          `,
-          code: dedent`
-            import {
-              a,
+            b,
+            c,
+          } from 'module'
+        `,
+        code: dedent`
+          import {
+            a,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              b,
-            } from 'module'
-          `,
-        })
-      },
-    )
+            c,
+            b,
+          } from 'module'
+        `,
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -3446,93 +3232,6 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it('sorts named imports grouping by their kind', async () => {
-      await valid({
-        code: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await valid({
-        code: dedent`
-          import { AAA, BB, type BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await valid({
-        code: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'AAA',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, type C, BB } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'mixed' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'BB',
-              left: 'BB',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { AAA, BB, type BB, type C } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'values-first' }],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              left: 'AAA',
-              right: 'BB',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-          {
-            data: {
-              left: 'BB',
-              right: 'C',
-            },
-            messageId: 'unexpectedNamedImportsOrder',
-          },
-        ],
-        output: dedent`
-          import { type BB, type C, AAA, BB } from 'module'
-        `,
-        code: dedent`
-          import { AAA, type BB, BB, type C } from 'module'
-        `,
-        options: [{ ...options, groupKind: 'types-first' }],
-      })
-    })
-
     it('allows to use original import names', async () => {
       await valid({
         options: [
@@ -3625,10 +3324,12 @@ describe('sort-named-imports', () => {
         errors: [
           {
             data: {
+              rightGroup: 'type-import',
+              leftGroup: 'unknown',
               left: 'CC',
               right: 'D',
             },
-            messageId: 'unexpectedNamedImportsOrder',
+            messageId: 'unexpectedNamedImportsGroupOrder',
           },
           {
             data: {
@@ -3674,7 +3375,7 @@ describe('sort-named-imports', () => {
           {
             ...options,
             partitionByComment: '^Part',
-            groupKind: 'types-first',
+            groups: ['type-import'],
           },
         ],
       })
@@ -4397,71 +4098,65 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines between groups when newlinesBetween is %s',
-      async (_, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: 'aaaa',
-                right: 'yy',
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'aaaa',
+              right: 'yy',
+            },
+            messageId: 'extraSpacingBetweenNamedImports',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+          {
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenNamedImports',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenNamedImports',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'unexpectedNamedImportsOrder',
-            },
-            {
-              data: {
-                right: 'bbb',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenNamedImports',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaaa',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-            import {
-                aaaa,
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          import {
+              aaaa,
 
 
-               yy,
-              z,
+             yy,
+            z,
 
-                  bbb,
-            } from 'module'
-          `,
-          output: dedent`
-            import {
-                aaaa,
-               bbb,
-              yy,
-                  z,
-            } from 'module'
-          `,
-        })
-      },
-    )
+                bbb,
+          } from 'module'
+        `,
+        output: dedent`
+          import {
+              aaaa,
+             bbb,
+            yy,
+                z,
+          } from 'module'
+        `,
+      })
+    })
 
     it('applies inline newline settings between specific groups', async () => {
       await invalid({
@@ -4477,16 +4172,16 @@ describe('sort-named-imports', () => {
             ],
             groups: [
               'a',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'b',
-              { newlinesBetween: 'always' },
+              { newlinesBetween: 1 },
               'c',
-              { newlinesBetween: 'never' },
+              { newlinesBetween: 0 },
               'd',
               { newlinesBetween: 'ignore' },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4543,12 +4238,10 @@ describe('sort-named-imports', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces 2 newlines when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4597,14 +4290,8 @@ describe('sort-named-imports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'removes newlines when "never" overrides global %s between specific groups',
+    it.each([1, 2, 'ignore', 0])(
+      'removes newlines when 0 overrides global %s between specific groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -4618,11 +4305,11 @@ describe('sort-named-imports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4655,10 +4342,8 @@ describe('sort-named-imports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'accepts any spacing when global is %s and group is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4728,7 +4413,7 @@ describe('sort-named-imports', () => {
               },
             ],
             groups: ['unknown', 'b|c'],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4761,59 +4446,53 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'preserves partition boundaries regardless of newlinesBetween %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaa',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bb',
-                left: 'c',
+    it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaa',
+                groupName: 'a',
               },
-              messageId: 'unexpectedNamedImportsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bb',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            import {
-              aaa,
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+        ],
+        output: dedent`
+          import {
+            aaa,
 
-              // Partition comment
+            // Partition comment
 
-              bb,
-              c,
-            } from 'module'
-          `,
-          code: dedent`
-            import {
-              aaa,
+            bb,
+            c,
+          } from 'module'
+        `,
+        code: dedent`
+          import {
+            aaa,
 
-              // Partition comment
+            // Partition comment
 
-              c,
-              bb,
-            } from 'module'
-          `,
-        })
-      },
-    )
+            c,
+            bb,
+          } from 'module'
+        `,
+      })
+    })
   })
 
   describe('custom', () => {
@@ -4890,7 +4569,7 @@ describe('sort-named-imports', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],

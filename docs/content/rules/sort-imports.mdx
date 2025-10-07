@@ -282,18 +282,6 @@ This option is only available when the type is set to `'line-length'`.
 
 If this option is not set, the rule will not search for a `tsconfig.json` file.
 
-### [DEPRECATED] tsconfigRootDir
-
-<sub>default: `undefined`</sub>
-
-Use the [tsconfig](#tsconfig) option with the `rootDir` attribute.
-
-Specifies the  directory of the root `tsconfig.json` file (ex: `.`). This is used in [`groups`](#groups) for:
-- Marking aliased imports as `internal`.
-- Marking imports matching [tsconfig paths](https://www.typescriptlang.org/tsconfig/#paths) as `tsconfig-path`.
-
-If this option is not set, the rule will not search for a `tsconfig.json` file.
-
 ### groups
 
 <sub>
@@ -335,7 +323,7 @@ The list of selectors is sorted from most to least important:
 - `'side-effect-style'` — Side effect style imports.
 - `'side-effect'` — Side effect imports.
 - `'style'` — Styles.
-- `'tsconfig-path'` — `tsconfig` [paths](https://www.typescriptlang.org/tsconfig/#paths) alias imports. Requires [`tsconfigRootDir`](#tsconfigrootdir) to be set.
+- `'tsconfig-path'` — `tsconfig` [paths](https://www.typescriptlang.org/tsconfig/#paths) alias imports. Requires [`tsconfig.rootDir`](#tsconfig) to be set.
 - `'index'` — Main file from the current directory.
 - `'sibling'` — Modules from the same directory.
 - `'parent'` — Modules from the parent directory.

@@ -17,7 +17,7 @@ type MessageId =
   | 'extraSpacingBetweenInterfaceMembers'
   | 'unexpectedInterfacePropertiesOrder'
 
-let defaultOptions: Required<Options[0]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   partitionByComment: false,
   partitionByNewLine: false,
@@ -25,10 +25,8 @@ let defaultOptions: Required<Options[0]> = {
   specialCharacters: 'keep',
   useConfigurationIf: {},
   type: 'alphabetical',
-  groupKind: 'mixed',
-  ignorePattern: [],
   ignoreCase: true,
-  customGroups: {},
+  customGroups: [],
   locales: 'en-US',
   sortBy: 'name',
   alphabet: '',
@@ -37,20 +35,6 @@ let defaultOptions: Required<Options[0]> = {
 }
 
 export default createEslintRule<Options, MessageId>({
-  create: context => ({
-    TSInterfaceDeclaration: node =>
-      sortObjectTypeElements<MessageId>({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: 'missedSpacingBetweenInterfaceMembers',
-          extraSpacingBetweenMembers: 'extraSpacingBetweenInterfaceMembers',
-          unexpectedGroupOrder: 'unexpectedInterfacePropertiesGroupOrder',
-          unexpectedOrder: 'unexpectedInterfacePropertiesOrder',
-        },
-        parentNodeName: node.id.name,
-        elements: node.body.body,
-        context,
-      }),
-  }),
   meta: {
     messages: {
       unexpectedInterfacePropertiesGroupOrder: GROUP_ORDER_ERROR,
@@ -63,10 +47,25 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted interface properties.',
       recommended: true,
     },
+    defaultOptions: [defaultOptions],
     schema: jsonSchema,
     type: 'suggestion',
     fixable: 'code',
   },
+  create: context => ({
+    TSInterfaceDeclaration: node =>
+      sortObjectTypeElements<MessageId>({
+        availableMessageIds: {
+          missedSpacingBetweenMembers: 'missedSpacingBetweenInterfaceMembers',
+          extraSpacingBetweenMembers: 'extraSpacingBetweenInterfaceMembers',
+          unexpectedGroupOrder: 'unexpectedInterfacePropertiesGroupOrder',
+          unexpectedOrder: 'unexpectedInterfacePropertiesOrder',
+        },
+        elements: node.body.body,
+        parentNode: node,
+        context,
+      }),
+  }),
   defaultOptions: [defaultOptions],
   name: 'sort-interfaces',
 })

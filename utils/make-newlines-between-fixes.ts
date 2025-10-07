@@ -1,7 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type {
-  DeprecatedCustomGroupsOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
   GroupsOptions,
@@ -22,12 +21,13 @@ import { getNodeRange } from './get-node-range'
 interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
   /** Configuration options for groups and newlines. */
   options: {
-    /** Optional custom groups configuration. */
-    customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
+    newlinesBetween: NewlinesBetweenOption
 
     /** Required newlines configuration between groups. */
 
-    newlinesBetween: NewlinesBetweenOption
+    /** Optional custom groups configuration. */
+    customGroups: CustomGroupsOption
+
     /** Groups configuration defining available groups and their order. */
     groups: GroupsOptions<string>
   }
@@ -68,7 +68,7 @@ interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
  *   // Configuration with newlines between groups
  *   const options = {
  *     groups: ['imports', 'types', 'functions'],
- *     newlinesBetween: 'always', // 1 newline between groups
+ *     newlinesBetween: 1, // 1 newline between groups
  *   }
  *
  *   // Original: imports and types with no separation

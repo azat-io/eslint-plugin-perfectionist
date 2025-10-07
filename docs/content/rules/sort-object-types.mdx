@@ -276,18 +276,6 @@ See the [`groups`](#newlines-between-groups) option.
 
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
-### [DEPRECATED] groupKind
-
-<sub>default: `'mixed'`</sub>
-
-Use the [groups](#groups) option with the `optional` and `required` modifiers instead.
-
-Groups type object keys by their kind, determining whether required values should come before or after optional values.
-
-- `mixed` — Do not group object keys by their kind; required values are sorted together optional values.
-- `required-first` — Group all required values before optional.
-- `optional-first` — Group all optional values before required.
-
 ### useConfigurationIf
 
 <sub>
@@ -296,6 +284,7 @@ Groups type object keys by their kind, determining whether required values shoul
   {
     allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
     declarationMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+    declarationCommentMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
   }
   ```
 </sub>
@@ -314,11 +303,20 @@ Example configuration:
     'error',
     {
       groups: ['r', 'g', 'b'], // Sort colors types by RGB
-      customGroups: {
-        r: '^r$',
-        g: '^g$',
-        b: '^b$',
-      },
+      customGroups: [
+        {
+          groupName: 'r',
+          elementNamePattern: '^r$',
+        },
+        {
+          groupName: 'g',
+          elementNamePattern: '^g$',
+        },
+        {
+          groupName: 'b',
+          elementNamePattern: '^b$',
+        },
+      ],
       useConfigurationIf: {
         allNamesMatchPattern: '^r|g|b$',
       },
@@ -341,6 +339,26 @@ Example configuration:
       type: 'unsorted', // Do not sort Metadata types
       useConfigurationIf: {
         declarationMatchesPattern: '*Metadata$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `declarationCommentMatchesPattern` — A regexp pattern to specify which comments above the type declaration should match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-object-types': [
+    'error',
+    {
+      type: 'unsorted', // Don't sort object types with a "do not sort" comment
+      useConfigurationIf: {
+        declarationCommentMatchesPattern: '^do not sort$',
       },
     },
     {

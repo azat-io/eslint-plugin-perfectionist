@@ -407,106 +407,6 @@ describe('sort-exports', () => {
       })
     })
 
-    it('sorts exports with values-first group kind', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: './d',
-              left: './f',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './c',
-              left: './e',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './a',
-              left: './c',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { A } from "./a";
-          export { B } from "./b";
-          export { C } from "./c";
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export type { F } from "./f";
-        `,
-        code: dedent`
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'values-first',
-          },
-        ],
-      })
-    })
-
-    it('sorts exports with types-first group kind', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: './a',
-              left: './c',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './f',
-              left: './b',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './d',
-              left: './f',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export type { F } from "./f";
-          export { A } from "./a";
-          export { B } from "./b";
-          export { C } from "./c";
-        `,
-        code: dedent`
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'types-first',
-          },
-        ],
-      })
-    })
-
     it('allows to trim special characters', async () => {
       await valid({
         code: dedent`
@@ -775,7 +675,6 @@ describe('sort-exports', () => {
             ],
             groups: ['reversedValuesByLineLength', 'unknown'],
             type: 'alphabetical',
-            groupKind: 'mixed',
             order: 'asc',
           },
         ],
@@ -859,7 +758,6 @@ describe('sort-exports', () => {
               },
             ],
             groups: ['unsortedValues', 'unknown'],
-            groupKind: 'mixed',
           },
         ],
         errors: [
@@ -938,67 +836,61 @@ describe('sort-exports', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenExports',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedExportsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenExports',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenExports',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedExportsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenExports',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-              export { a } from 'a'
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+            export { a } from 'a'
 
 
-             export { y } from 'y'
-            export { z } from 'z'
+           export { y } from 'y'
+          export { z } from 'z'
 
-                export { b } from 'b'
-          `,
-          output: dedent`
-              export { a } from 'a'
-             export { b } from 'b'
-            export { y } from 'y'
-                export { z } from 'z'
-          `,
-        })
-      },
-    )
+              export { b } from 'b'
+        `,
+        output: dedent`
+            export { a } from 'a'
+           export { b } from 'b'
+          export { y } from 'y'
+              export { z } from 'z'
+        `,
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -1030,15 +922,15 @@ describe('sort-exports', () => {
             groups: [
               'a',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'b',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'c',
               {
-                newlinesBetween: 'never',
+                newlinesBetween: 0,
               },
               'd',
               {
@@ -1046,7 +938,7 @@ describe('sort-exports', () => {
               },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -1099,12 +991,10 @@ describe('sort-exports', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1149,14 +1039,8 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'enforces no newline if the global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -1170,11 +1054,11 @@ describe('sort-exports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -1203,10 +1087,8 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -1261,55 +1143,49 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'ignores newline fixes between different partitions when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedExportsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            export { a } from 'a'
+            messageId: 'unexpectedExportsOrder',
+          },
+        ],
+        output: dedent`
+          export { a } from 'a'
 
-            // Partition comment
+          // Partition comment
 
-            export { b } from 'b'
-            export { c } from 'c'
-          `,
-          code: dedent`
-            export { a } from 'a'
+          export { b } from 'b'
+          export { c } from 'c'
+        `,
+        code: dedent`
+          export { a } from 'a'
 
-            // Partition comment
+          // Partition comment
 
-            export { c } from 'c'
-            export { b } from 'b'
-          `,
-        })
-      },
-    )
+          export { c } from 'c'
+          export { b } from 'b'
+        `,
+      })
+    })
 
     it('reports missing comments', async () => {
       await invalid({
@@ -1546,11 +1422,11 @@ describe('sort-exports', () => {
               'value-export',
               {
                 commentAbove: 'Type exports',
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               ['type-export'],
             ],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
         output: dedent`
@@ -1974,106 +1850,6 @@ describe('sort-exports', () => {
       })
     })
 
-    it('sorts exports with values-first group kind', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: './d',
-              left: './f',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './c',
-              left: './e',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './a',
-              left: './c',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export { A } from "./a";
-          export { B } from "./b";
-          export { C } from "./c";
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export type { F } from "./f";
-        `,
-        code: dedent`
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'values-first',
-          },
-        ],
-      })
-    })
-
-    it('sorts exports with types-first group kind', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: './a',
-              left: './c',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './f',
-              left: './b',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-          {
-            data: {
-              right: './d',
-              left: './f',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-        ],
-        output: dedent`
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export type { F } from "./f";
-          export { A } from "./a";
-          export { B } from "./b";
-          export { C } from "./c";
-        `,
-        code: dedent`
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-        `,
-        options: [
-          {
-            ...options,
-            groupKind: 'types-first',
-          },
-        ],
-      })
-    })
-
     it('allows to trim special characters', async () => {
       await valid({
         code: dedent`
@@ -2342,7 +2118,6 @@ describe('sort-exports', () => {
             ],
             groups: ['reversedValuesByLineLength', 'unknown'],
             type: 'alphabetical',
-            groupKind: 'mixed',
             order: 'asc',
           },
         ],
@@ -2426,7 +2201,6 @@ describe('sort-exports', () => {
               },
             ],
             groups: ['unsortedValues', 'unknown'],
-            groupKind: 'mixed',
           },
         ],
         errors: [
@@ -2505,67 +2279,61 @@ describe('sort-exports', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenExports',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'unexpectedExportsOrder',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenExports',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenExports',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'unexpectedExportsOrder',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenExports',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-              export { a } from 'a'
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+            export { a } from 'a'
 
 
-             export { y } from 'y'
-            export { z } from 'z'
+           export { y } from 'y'
+          export { z } from 'z'
 
-                export { b } from 'b'
-          `,
-          output: dedent`
-              export { a } from 'a'
-             export { b } from 'b'
-            export { y } from 'y'
-                export { z } from 'z'
-          `,
-        })
-      },
-    )
+              export { b } from 'b'
+        `,
+        output: dedent`
+            export { a } from 'a'
+           export { b } from 'b'
+          export { y } from 'y'
+              export { z } from 'z'
+        `,
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -2597,15 +2365,15 @@ describe('sort-exports', () => {
             groups: [
               'a',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'b',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'c',
               {
-                newlinesBetween: 'never',
+                newlinesBetween: 0,
               },
               'd',
               {
@@ -2613,7 +2381,7 @@ describe('sort-exports', () => {
               },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -2666,12 +2434,10 @@ describe('sort-exports', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2716,14 +2482,8 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'enforces no newline if the global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -2737,11 +2497,11 @@ describe('sort-exports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -2770,10 +2530,8 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2829,12 +2587,10 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2879,14 +2635,8 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'enforces no newline if the global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -2900,11 +2650,11 @@ describe('sort-exports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -2933,10 +2683,8 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -2991,55 +2739,49 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'ignores newline fixes between different partitions when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'b',
-                left: 'c',
+    it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'unexpectedExportsOrder',
+            ],
+            groups: ['a', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
             },
-          ],
-          output: dedent`
-            export { a } from 'a'
+            messageId: 'unexpectedExportsOrder',
+          },
+        ],
+        output: dedent`
+          export { a } from 'a'
 
-            // Partition comment
+          // Partition comment
 
-            export { b } from 'b'
-            export { c } from 'c'
-          `,
-          code: dedent`
-            export { a } from 'a'
+          export { b } from 'b'
+          export { c } from 'c'
+        `,
+        code: dedent`
+          export { a } from 'a'
 
-            // Partition comment
+          // Partition comment
 
-            export { c } from 'c'
-            export { b } from 'b'
-          `,
-        })
-      },
-    )
+          export { c } from 'c'
+          export { b } from 'b'
+        `,
+      })
+    })
 
     it('reports missing comments', async () => {
       await invalid({
@@ -3276,11 +3018,11 @@ describe('sort-exports', () => {
               'value-export',
               {
                 commentAbove: 'Type exports',
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               ['type-export'],
             ],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
         output: dedent`
@@ -3697,78 +3439,6 @@ describe('sort-exports', () => {
       })
     })
 
-    it('sorts exports with values-first group kind', async () => {
-      await invalid({
-        output: dedent`
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-        `,
-        code: dedent`
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-        `,
-        errors: [
-          {
-            data: {
-              right: './c',
-              left: './e',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groupKind: 'values-first',
-          },
-        ],
-      })
-    })
-
-    it('sorts exports with types-first group kind', async () => {
-      await invalid({
-        output: dedent`
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-        `,
-        code: dedent`
-          export { C } from "./c";
-          export { A } from "./a";
-          export { B } from "./b";
-          export type { F } from "./f";
-          export type { D } from "./d";
-          export type { E } from "./e";
-        `,
-        errors: [
-          {
-            data: {
-              right: './f',
-              left: './b',
-            },
-            messageId: 'unexpectedExportsOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groupKind: 'types-first',
-          },
-        ],
-      })
-    })
-
     it('allows to trim special characters', async () => {
       await valid({
         code: dedent`
@@ -4037,7 +3707,6 @@ describe('sort-exports', () => {
             ],
             groups: ['reversedValuesByLineLength', 'unknown'],
             type: 'alphabetical',
-            groupKind: 'mixed',
             order: 'asc',
           },
         ],
@@ -4121,7 +3790,6 @@ describe('sort-exports', () => {
               },
             ],
             groups: ['unsortedValues', 'unknown'],
-            groupKind: 'mixed',
           },
         ],
         errors: [
@@ -4200,60 +3868,54 @@ describe('sort-exports', () => {
       })
     })
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'removes newlines when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                right: 'y',
-                left: 'a',
+    it('removes newlines when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'y',
+              left: 'a',
+            },
+            messageId: 'extraSpacingBetweenExports',
+          },
+          {
+            data: {
+              right: 'b',
+              left: 'z',
+            },
+            messageId: 'extraSpacingBetweenExports',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
               },
-              messageId: 'extraSpacingBetweenExports',
-            },
-            {
-              data: {
-                right: 'b',
-                left: 'z',
-              },
-              messageId: 'extraSpacingBetweenExports',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'a',
-                  groupName: 'a',
-                },
-              ],
-              groups: ['a', 'unknown'],
-              newlinesBetween,
-            },
-          ],
-          code: dedent`
-              export { a } from 'a'
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+            export { a } from 'a'
 
 
-             export { y } from 'y'
-            export { z } from 'z'
+           export { y } from 'y'
+          export { z } from 'z'
 
-                export { b } from 'b'
-          `,
-          output: dedent`
-              export { a } from 'a'
-             export { y } from 'y'
-            export { z } from 'z'
-                export { b } from 'b'
-          `,
-        })
-      },
-    )
+              export { b } from 'b'
+        `,
+        output: dedent`
+            export { a } from 'a'
+           export { y } from 'y'
+          export { z } from 'z'
+              export { b } from 'b'
+        `,
+      })
+    })
 
     it('handles newlinesBetween between consecutive groups', async () => {
       await invalid({
@@ -4285,15 +3947,15 @@ describe('sort-exports', () => {
             groups: [
               'a',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'b',
               {
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               'c',
               {
-                newlinesBetween: 'never',
+                newlinesBetween: 0,
               },
               'd',
               {
@@ -4301,7 +3963,7 @@ describe('sort-exports', () => {
               },
               'e',
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -4354,12 +4016,10 @@ describe('sort-exports', () => {
     })
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4404,14 +4064,8 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'enforces no newline if the global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -4425,11 +4079,11 @@ describe('sort-exports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4458,10 +4112,8 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4517,12 +4169,10 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      [2, 'never' as const],
-      [2, 0 as const],
-      [2, 'ignore' as const],
-      ['never' as const, 2],
-      [0 as const, 2],
-      ['ignore' as const, 2],
+      [2, 0],
+      [2, 'ignore'],
+      [0, 2],
+      ['ignore', 2],
     ])(
       'enforces newlines if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4567,14 +4217,8 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      'always' as const,
-      2 as const,
-      'ignore' as const,
-      'never' as const,
-      0 as const,
-    ])(
-      'enforces no newline if the global option is %s and newlinesBetween: never exists between all groups',
+    it.each([1, 2, 'ignore', 0])(
+      'enforces no newline if the global option is %s and newlinesBetween: 0 exists between all groups',
       async globalNewlinesBetween => {
         await invalid({
           options: [
@@ -4588,11 +4232,11 @@ describe('sort-exports', () => {
               ],
               groups: [
                 'a',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'unusedGroup',
-                { newlinesBetween: 'never' },
+                { newlinesBetween: 0 },
                 'b',
-                { newlinesBetween: 'always' },
+                { newlinesBetween: 1 },
                 'c',
               ],
               newlinesBetween: globalNewlinesBetween,
@@ -4621,10 +4265,8 @@ describe('sort-exports', () => {
     )
 
     it.each([
-      ['ignore' as const, 'never' as const],
-      ['ignore' as const, 0 as const],
-      ['never' as const, 'ignore' as const],
-      [0 as const, 'ignore' as const],
+      ['ignore', 0],
+      [0, 'ignore'],
     ])(
       'does not enforce a newline if the global option is %s and the group option is %s',
       async (globalNewlinesBetween, groupNewlinesBetween) => {
@@ -4679,55 +4321,49 @@ describe('sort-exports', () => {
       },
     )
 
-    it.each([
-      ['never', 'never' as const],
-      ['0', 0 as const],
-    ])(
-      'ignores newline fixes between different partitions when newlinesBetween is %s',
-      async (_description, newlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'aaaa',
-                  groupName: 'aaaa',
-                },
-              ],
-              groups: ['aaaa', 'unknown'],
-              partitionByComment: true,
-              newlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              data: {
-                right: 'bbb',
-                left: 'cc',
+    it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'aaaa',
               },
-              messageId: 'unexpectedExportsOrder',
+            ],
+            groups: ['aaaa', 'unknown'],
+            partitionByComment: true,
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'bbb',
+              left: 'cc',
             },
-          ],
-          output: dedent`
-            export { a } from 'aaaa'
+            messageId: 'unexpectedExportsOrder',
+          },
+        ],
+        output: dedent`
+          export { a } from 'aaaa'
 
-            // Partition comment
+          // Partition comment
 
-            export { b } from 'bbb'
-            export { c } from 'cc'
-          `,
-          code: dedent`
-            export { a } from 'aaaa'
+          export { b } from 'bbb'
+          export { c } from 'cc'
+        `,
+        code: dedent`
+          export { a } from 'aaaa'
 
-            // Partition comment
+          // Partition comment
 
-            export { c } from 'cc'
-            export { b } from 'bbb'
-          `,
-        })
-      },
-    )
+          export { c } from 'cc'
+          export { b } from 'bbb'
+        `,
+      })
+    })
 
     it('reports missing comments', async () => {
       await invalid({
@@ -4964,11 +4600,11 @@ describe('sort-exports', () => {
               'value-export',
               {
                 commentAbove: 'Type exports',
-                newlinesBetween: 'always',
+                newlinesBetween: 1,
               },
               ['type-export'],
             ],
-            newlinesBetween: 'never',
+            newlinesBetween: 0,
           },
         ],
         output: dedent`
@@ -5086,7 +4722,7 @@ describe('sort-exports', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 'always',
+            newlinesBetween: 1,
             groups: ['b', 'a'],
           },
         ],

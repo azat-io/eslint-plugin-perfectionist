@@ -1,7 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type {
-  DeprecatedCustomGroupsOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
   GroupsOptions,
@@ -43,11 +42,11 @@ interface GetNewlinesBetweenErrorsParameters<
 > {
   /** Configuration options for newlines and groups. */
   options: {
-    /** Optional custom groups configuration. */
-    customGroups?: DeprecatedCustomGroupsOption | CustomGroupsOption
-
-    /** Newlines configuration: 'always', 'never', 'ignore', or numeric value. */
+    /** Newlines configuration: 'ignore', or numeric value. */
     newlinesBetween: NewlinesBetweenOption
+
+    /** Optional custom groups configuration. */
+    customGroups: CustomGroupsOption
 
     /** Groups configuration for determining newline requirements. */
     groups: GroupsOptions<string>
@@ -96,7 +95,7 @@ interface GetNewlinesBetweenErrorsParameters<
  * @example
  *   // Configuration requires 1 newline between different groups
  *   const errors = getNewlinesBetweenErrors({
- *     options: { newlinesBetween: 'always', groups: ['imports', 'types'] },
+ *     options: { newlinesBetween: 1, groups: ['imports', 'types'] },
  *     leftGroupIndex: 0, // imports group
  *     rightGroupIndex: 1, // types group
  *     left: importNode,

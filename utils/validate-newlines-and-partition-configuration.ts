@@ -42,7 +42,7 @@ interface Options {
  *   // Invalid: Conflicting options
  *   validateNewlinesAndPartitionConfiguration({
  *     partitionByNewLine: true,
- *     newlinesBetween: 'always', // Conflicts with partitionByNewLine
+ *     newlinesBetween: 1, // Conflicts with partitionByNewLine
  *     groups: ['react', 'external', 'internal'],
  *   })
  *   // Throws: The 'partitionByNewLine' and 'newlinesBetween' options cannot be used together
@@ -54,7 +54,7 @@ interface Options {
  *     newlinesBetween: 'ignore',
  *     groups: [
  *       'external',
- *       { newlinesBetween: 'always' }, // Can't use with partitions
+ *       { newlinesBetween: 1 }, // Can't use with partitions
  *       'internal',
  *     ],
  *   })
@@ -64,12 +64,12 @@ interface Options {
  *   // Valid: Using newlinesBetween without partitions
  *   validateNewlinesAndPartitionConfiguration({
  *     partitionByNewLine: false,
- *     newlinesBetween: 'always',
+ *     newlinesBetween: 1,
  *     groups: [
  *       'react',
- *       { newlinesBetween: 'always' },
+ *       { newlinesBetween: 1 },
  *       'external',
- *       { newlinesBetween: 'always' },
+ *       { newlinesBetween: 1 },
  *       'internal',
  *     ],
  *   })
@@ -87,7 +87,7 @@ interface Options {
  *   // Option 2: Enforce consistent spacing
  *   validateNewlinesAndPartitionConfiguration({
  *     partitionByNewLine: false,
- *     newlinesBetween: 'always',
+ *     newlinesBetween: 1,
  *     groups: ['react', 'external', '@company', 'internal', 'relative'],
  *   })
  *   // Choose one approach, not both

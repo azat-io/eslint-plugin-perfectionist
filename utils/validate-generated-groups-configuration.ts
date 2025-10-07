@@ -1,8 +1,4 @@
-import type {
-  DeprecatedCustomGroupsOption,
-  CustomGroupsOption,
-  GroupsOptions,
-} from '../types/common-options'
+import type { CustomGroupsOption, GroupsOptions } from '../types/common-options'
 
 import { validateObjectsInsideGroups } from './validate-objects-inside-groups'
 import { validateNoDuplicatedGroups } from './validate-no-duplicated-groups'
@@ -10,7 +6,7 @@ import { validateNoDuplicatedGroups } from './validate-no-duplicated-groups'
 /** Parameters for validating generated groups configuration. */
 interface ValidateGenerateGroupsConfigurationParameters {
   options: {
-    customGroups: DeprecatedCustomGroupsOption | CustomGroupsOption
+    customGroups: CustomGroupsOption
     groups: GroupsOptions<string>
   }
   selectors: string[]
@@ -26,15 +22,14 @@ interface ValidateGenerateGroupsConfigurationParameters {
  * 2. Is defined in customGroups
  * 3. Is the special 'unknown' group.
  *
- * Also validates that there are no duplicate groups and that object-based group
- * configurations are properly structured.
+ * Also validates that there are no duplicate groups.
  *
  * @example
  *   // Valid predefined groups for React imports
  *   validateGeneratedGroupsConfiguration({
  *     options: {
  *       groups: ['react', 'external', 'internal', 'side-effect-import'],
- *       customGroups: {},
+ *       customGroups: [],
  *     },
  *     selectors: ['import', 'export'],
  *     modifiers: ['side-effect', 'type', 'value'],
@@ -46,7 +41,7 @@ interface ValidateGenerateGroupsConfigurationParameters {
  *   validateGeneratedGroupsConfiguration({
  *     options: {
  *       groups: ['my-special-group'], // Not predefined, not in customGroups
- *       customGroups: {},
+ *       customGroups: [],
  *     },
  *     selectors: ['property', 'method'],
  *     modifiers: ['static', 'private'],
@@ -58,9 +53,15 @@ interface ValidateGenerateGroupsConfigurationParameters {
  *   validateGeneratedGroupsConfiguration({
  *     options: {
  *       groups: ['static-property', 'constructor', 'lifecycle-methods'],
- *       customGroups: {
- *         'lifecycle-methods': ['componentDidMount', 'componentWillUnmount'],
- *       },
+ *       customGroups: [
+ *         {
+ *           groupName: 'lifecycle-methods',
+ *           elementNamePattern: [
+ *             /^componentDidMount$/,
+ *             /^componentWillUnmount$/,
+ *           ],
+ *         },
+ *       ],
  *     },
  *     selectors: ['property', 'method', 'constructor'],
  *     modifiers: ['static', 'private', 'public'],
@@ -76,9 +77,7 @@ export function validateGeneratedGroupsConfiguration({
   options,
 }: ValidateGenerateGroupsConfigurationParameters): void {
   let availableCustomGroupNames = new Set(
-    Array.isArray(options.customGroups)
-      ? options.customGroups.map(customGroup => customGroup.groupName)
-      : Object.keys(options.customGroups),
+    options.customGroups.map(customGroup => customGroup.groupName),
   )
   let invalidGroups = options.groups
     .flat()
