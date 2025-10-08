@@ -951,6 +951,32 @@ describe('sort-objects', () => {
         `,
         options: [options],
       })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              nodeDependentOnRight: 'a',
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedObjectsDependencyOrder',
+          },
+        ],
+        output: dedent`
+          let {
+            [b]: bRenamed = something,
+            a = bRenamed,
+          } = obj;
+        `,
+        code: dedent`
+          let {
+            a = bRenamed,
+            [b]: bRenamed = something,
+          } = obj;
+        `,
+        options: [options],
+      })
     })
 
     it('detects and handles circular dependencies', async () => {

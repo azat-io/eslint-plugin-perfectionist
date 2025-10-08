@@ -291,8 +291,15 @@ export default createEslintRule<Options, MessageId>({
 
             let dependencyName: string = name
             let isDestructuredObject = nodeObject.type === 'ObjectPattern'
-            if (isDestructuredObject && property.value.type === 'Identifier') {
-              dependencyName = property.value.name
+            if (isDestructuredObject) {
+              if (property.value.type === 'Identifier') {
+                dependencyName = property.value.name
+              } else if (
+                property.value.type === 'AssignmentPattern' &&
+                property.value.left.type === 'Identifier'
+              ) {
+                dependencyName = property.value.left.name
+              }
             }
 
             let sortingNode: Omit<SortingNodeWithDependencies, 'partitionId'> =
