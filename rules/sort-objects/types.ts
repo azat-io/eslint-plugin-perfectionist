@@ -30,6 +30,12 @@ export type Options = Partial<
      */
     useConfigurationIf: {
       /**
+       * Specifies whether to only match destructured objects or regular
+       * objects.
+       */
+      objectType?: 'non-destructured' | 'destructured'
+
+      /**
        * Regular expression pattern to match against the comment associated to
        * the name of the object.
        */

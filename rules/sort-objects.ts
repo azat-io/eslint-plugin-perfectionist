@@ -424,6 +424,12 @@ export default createEslintRule<Options, MessageId>({
           },
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {
+              objectType: {
+                description:
+                  'Specifies whether to only match destructured objects or regular objects.',
+                enum: ['destructured', 'non-destructured'],
+                type: 'string',
+              },
               declarationCommentMatchesPattern: regexJsonSchema,
               callingFunctionNamePattern: regexJsonSchema,
               declarationMatchesPattern: regexJsonSchema,
