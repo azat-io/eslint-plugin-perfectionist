@@ -299,22 +299,6 @@ Specifies whether this rule should be applied to styled-components like librarie
 - `true` — Apply the rule to styled-components.
 - `false` — Disable the rule for styled-components.
 
-### objectDeclarations
-
-<sub>default: `true`</sub>
-
-Specifies whether to sort standard object declarations.
-
-### destructuredObjects
-
-<sub>
-  type: `boolean | { groups: boolean }`
-</sub>
-<sub>default: `true`</sub>
-
-Specifies whether to sort destructured objects.
-The `groups` attribute specifies whether to use groups to sort destructured objects.
-
 ### useConfigurationIf
 
 <sub>
@@ -723,8 +707,6 @@ let user = {
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
-                  objectDeclarations: true,
-                  destructuredObjects: true,
                   styledComponents: true,
                   useConfigurationIf: {},
                   groups: [],
@@ -757,8 +739,6 @@ let user = {
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
-                objectDeclarations: true,
-                destructuredObjects: true,
                 styledComponents: true,
                 useConfigurationIf: {},
                 groups: [],

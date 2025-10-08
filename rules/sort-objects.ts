@@ -3,7 +3,6 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { BaseSortNodesByGroupsOptions } from '../utils/sort-nodes-by-groups'
 import type { Modifier, Selector, Options } from './sort-objects/types'
 
 import {
@@ -49,7 +48,6 @@ import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { sortNodes } from '../utils/sort-nodes'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
@@ -69,8 +67,6 @@ let defaultOptions: Required<Options[number]> = {
   partitionByComment: false,
   newlinesBetween: 'ignore',
   specialCharacters: 'keep',
-  destructuredObjects: true,
-  objectDeclarations: true,
   styledComponents: true,
   useConfigurationIf: {},
   type: 'alphabetical',
@@ -108,15 +104,6 @@ export default createEslintRule<Options, MessageId>({
         options,
       })
       validateNewlinesAndPartitionConfiguration(options)
-
-      let isDestructuredObject = nodeObject.type === 'ObjectPattern'
-      if (isDestructuredObject) {
-        if (!options.destructuredObjects) {
-          return
-        }
-      } else if (!options.objectDeclarations) {
-        return
-      }
 
       let objectParentForIgnorePattern = getObjectParent({
         onlyFirstParent: false,
@@ -303,6 +290,7 @@ export default createEslintRule<Options, MessageId>({
             })
 
             let dependencyName: string = name
+            let isDestructuredObject = nodeObject.type === 'ObjectPattern'
             if (isDestructuredObject && property.value.type === 'Identifier') {
               dependencyName = property.value.name
             }
@@ -344,31 +332,17 @@ export default createEslintRule<Options, MessageId>({
       }
       let formattedMembers = formatProperties(nodeObject.properties)
 
-      let sortingOptions: BaseSortNodesByGroupsOptions = options
-      let nodesSortingFunction =
-        isDestructuredObject &&
-        typeof options.destructuredObjects === 'object' &&
-        !options.destructuredObjects.groups
-          ? ('sortNodes' as const)
-          : ('sortNodesByGroups' as const)
-
       function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
       ): SortingNodeWithDependencies[] {
         let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
-          nodesSortingFunction === 'sortNodes'
-            ? sortNodes({
-                ignoreEslintDisabledNodes,
-                options: sortingOptions,
-                nodes,
-              })
-            : sortNodesByGroups({
-                getOptionsByGroupIndex:
-                  buildGetCustomGroupOverriddenOptionsFunction(options),
-                ignoreEslintDisabledNodes,
-                groups: options.groups,
-                nodes,
-              }),
+          sortNodesByGroups({
+            getOptionsByGroupIndex:
+              buildGetCustomGroupOverriddenOptionsFunction(options),
+            ignoreEslintDisabledNodes,
+            groups: options.groups,
+            nodes,
+          }),
         )
 
         return sortNodesByDependencies(nodesSortedByGroups, {
@@ -403,25 +377,6 @@ export default createEslintRule<Options, MessageId>({
       items: {
         properties: {
           ...commonJsonSchemas,
-          destructuredObjects: {
-            oneOf: [
-              {
-                type: 'boolean',
-              },
-              {
-                properties: {
-                  groups: {
-                    description:
-                      'Controls whether to use groups to sort destructured objects.',
-                    type: 'boolean',
-                  },
-                },
-                additionalProperties: false,
-                type: 'object',
-              },
-            ],
-            description: 'Controls whether to sort destructured objects.',
-          },
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {
               objectType: {
@@ -435,10 +390,6 @@ export default createEslintRule<Options, MessageId>({
               declarationMatchesPattern: regexJsonSchema,
             },
           }),
-          objectDeclarations: {
-            description: 'Controls whether to sort object declarations.',
-            type: 'boolean',
-          },
           styledComponents: {
             description: 'Controls whether to sort styled components.',
             type: 'boolean',
