@@ -520,6 +520,22 @@ function computeMatchedContextOptions({
       return true
     }
 
+    if (options.useConfigurationIf.objectType) {
+      let isDestructuredObject = nodeObject.type === 'ObjectPattern'
+      if (
+        isDestructuredObject &&
+        options.useConfigurationIf.objectType === 'non-destructured'
+      ) {
+        return false
+      }
+      if (
+        !isDestructuredObject &&
+        options.useConfigurationIf.objectType === 'destructured'
+      ) {
+        return false
+      }
+    }
+
     if (options.useConfigurationIf.callingFunctionNamePattern) {
       if (!objectParent) {
         return false
