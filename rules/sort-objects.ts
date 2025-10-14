@@ -91,7 +91,9 @@ export default createEslintRule<Options, MessageId>({
         return
       }
 
+      let isDestructuredObject = nodeObject.type === 'ObjectPattern'
       let matchedContextOptions = computeMatchedContextOptions({
+        isDestructuredObject,
         nodeObject,
         sourceCode,
         context,
@@ -290,7 +292,6 @@ export default createEslintRule<Options, MessageId>({
             })
 
             let dependencyName: string = name
-            let isDestructuredObject = nodeObject.type === 'ObjectPattern'
             if (isDestructuredObject) {
               if (property.value.type === 'Identifier') {
                 dependencyName = property.value.name
@@ -437,6 +438,7 @@ export default createEslintRule<Options, MessageId>({
 })
 
 function computeMatchedContextOptions({
+  isDestructuredObject,
   sourceCode,
   nodeObject,
   context,
@@ -444,6 +446,7 @@ function computeMatchedContextOptions({
   nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
   context: TSESLint.RuleContext<MessageId, Options>
   sourceCode: TSESLint.SourceCode
+  isDestructuredObject: boolean
 }): Options[number] | undefined {
   let objectParent = getObjectParent({
     onlyFirstParent: true,
@@ -479,7 +482,6 @@ function computeMatchedContextOptions({
     }
 
     if (options.useConfigurationIf.objectType) {
-      let isDestructuredObject = nodeObject.type === 'ObjectPattern'
       if (
         isDestructuredObject &&
         options.useConfigurationIf.objectType === 'non-destructured'
