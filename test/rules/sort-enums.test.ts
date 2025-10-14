@@ -655,6 +655,24 @@ describe('sort-enums', () => {
       })
     })
 
+    it('sorts enum members by their key if "sortByValue" is "never"', async () => {
+      await valid({
+        code: dedent`
+          enum NumberBase {
+            BASE_10 = 10,
+            BASE_16 = 16,
+            BASE_2 = 2,
+            BASE_8 = 8
+          }
+        `,
+        options: [
+          {
+            sortByValue: 'never',
+          },
+        ],
+      })
+    })
+
     it('trims special characters when sorting', async () => {
       await valid({
         code: dedent`
