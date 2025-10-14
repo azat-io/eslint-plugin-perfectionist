@@ -26,8 +26,9 @@ export type Options = Partial<
     customGroups: CustomGroupsOption<SingleCustomGroup>
 
     /**
-     * Whether to sort enum members by their values instead of names. When true,
-     * compares enum values; when false, compares enum member names.
+     * Whether to sort enum members by their values instead of names. When
+     * "always", compares enum values; when "never", compares enum member
+     * names.
      *
      * @default ifNumericEnum
      */
