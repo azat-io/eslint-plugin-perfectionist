@@ -170,23 +170,13 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
 
 ### sortByValue
 
-<sub>default: `false`</sub>
+<sub>default: `'ifNumericEnum'`</sub>
 
 Controls whether sorting should be done using the enum's values or names.
 
-- `true` — Use enum values.
-- `false` — Use enum names.
-
-When this setting is `true`, numeric enums will have their values sorted numerically regardless of the `type` setting.
-
-### forceNumericSort
-
-<sub>default: `false`</sub>
-
-Controls whether numeric enums should always be sorted numerically, regardless of the `type` and `sortByValue` settings.
-
-- `true` — Use enum values.
-- `false` — Use enum names.
+- `'always'` — Use enum values.
+- `'never'` — Use enum names.
+- `'ifNumericEnum'` — Use enum values only if the enum is numeric.
 
 ### partitionByComment
 
@@ -360,8 +350,7 @@ Custom groups have a higher priority than any predefined group.
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
-                  sortByValue: false,
-                  forceNumericSort: false,
+                  sortByValue: "ifNumericEnum",
                   groups: [],
                   customGroups: [],
                 },
@@ -392,8 +381,7 @@ Custom groups have a higher priority than any predefined group.
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
-                sortByValue: false,
-                forceNumericSort: false,
+                sortByValue: "ifNumericEnum",
                 groups: [],
                 customGroups: [],
               },
