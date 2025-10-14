@@ -951,6 +951,32 @@ describe('sort-objects', () => {
         `,
         options: [options],
       })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              nodeDependentOnRight: 'a',
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedObjectsDependencyOrder',
+          },
+        ],
+        output: dedent`
+          let {
+            [b]: bRenamed = something,
+            a = bRenamed,
+          } = obj;
+        `,
+        code: dedent`
+          let {
+            a = bRenamed,
+            [b]: bRenamed = something,
+          } = obj;
+        `,
+        options: [options],
+      })
     })
 
     it('detects and handles circular dependencies', async () => {
@@ -2504,6 +2530,148 @@ describe('sort-objects', () => {
             b,
             a,
           }
+        `,
+      })
+    })
+
+    it('skips object declarations when objectType is "destructured"', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              objectType: 'destructured',
+            },
+          },
+          {
+            type: 'unsorted',
+          },
+        ],
+        code: dedent`
+          let obj = {
+            c: 'c',
+            a: 'a',
+            b: 'b',
+          }
+
+          let { a, b, c } = obj
+        `,
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        options: [
+          {
+            useConfigurationIf: {
+              objectType: 'destructured',
+            },
+          },
+          {
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            c: 'c',
+            a: 'a',
+            b: 'b',
+          }
+
+          let { a, b, c } = obj
+        `,
+        code: dedent`
+          let obj = {
+            c: 'c',
+            a: 'a',
+            b: 'b',
+          }
+
+          let { c, b, a } = obj
+        `,
+      })
+    })
+
+    it('skips destructured objects when objectType is "non-destructured"', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              objectType: 'non-destructured',
+            },
+          },
+          {
+            type: 'unsorted',
+          },
+        ],
+        code: dedent`
+          let obj = {
+            a: 'a',
+            b: 'b',
+            c: 'c',
+          }
+
+          let { b, c, a } = obj
+        `,
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        options: [
+          {
+            useConfigurationIf: {
+              objectType: 'non-destructured',
+            },
+          },
+          {
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a: 'a',
+            b: 'b',
+            c: 'c',
+          }
+
+          let { c, a, b } = obj
+        `,
+        code: dedent`
+          let obj = {
+            c: 'c',
+            b: 'b',
+            a: 'a',
+          }
+
+          let { c, a, b } = obj
         `,
       })
     })
@@ -9021,195 +9189,6 @@ describe('sort-objects', () => {
             ignorePattern,
           },
         ],
-      })
-    })
-
-    it('skips object declarations when objectDeclarations is disabled', async () => {
-      await valid({
-        code: dedent`
-          let obj = {
-            c: 'c',
-            a: 'a',
-            b: 'b',
-          }
-
-          let { a, b, c } = obj
-        `,
-        options: [
-          {
-            objectDeclarations: false,
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-          {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-        ],
-        output: dedent`
-          let obj = {
-            c: 'c',
-            a: 'a',
-            b: 'b',
-          }
-
-          let { a, b, c } = obj
-        `,
-        code: dedent`
-          let obj = {
-            c: 'c',
-            a: 'a',
-            b: 'b',
-          }
-
-          let { c, b, a } = obj
-        `,
-        options: [
-          {
-            objectDeclarations: false,
-          },
-        ],
-      })
-    })
-
-    it('skips destructured objects when destructuredObjects is disabled', async () => {
-      await valid({
-        code: dedent`
-          let obj = {
-            a: 'a',
-            b: 'b',
-            c: 'c',
-          }
-
-          let { b, c, a } = obj
-        `,
-        options: [
-          {
-            destructuredObjects: false,
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-          {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-        ],
-        output: dedent`
-          let obj = {
-            a: 'a',
-            b: 'b',
-            c: 'c',
-          }
-
-          let { c, a, b } = obj
-        `,
-        code: dedent`
-          let obj = {
-            c: 'c',
-            b: 'b',
-            a: 'a',
-          }
-
-          let { c, a, b } = obj
-        `,
-        options: [
-          {
-            destructuredObjects: false,
-          },
-        ],
-      })
-    })
-
-    it('applies groups configuration to destructured objects based on groups attribute', async () => {
-      await invalid({
-        options: [
-          {
-            customGroups: [
-              {
-                elementNamePattern: 'c',
-                groupName: 'top',
-              },
-            ],
-            destructuredObjects: { groups: true },
-            groups: ['top', 'unknown'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'top',
-              right: 'c',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        output: dedent`
-          let { c, a, b } = obj
-        `,
-        code: dedent`
-          let { a, c, b } = obj
-        `,
-      })
-
-      await invalid({
-        options: [
-          {
-            customGroups: [
-              {
-                elementNamePattern: 'c',
-                groupName: 'top',
-              },
-            ],
-
-            destructuredObjects: { groups: false },
-            groups: ['top', 'unknown'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              rightGroup: 'unknown',
-              leftGroup: 'top',
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        output: dedent`
-          let { a, b, c } = obj
-        `,
-        code: dedent`
-          let { a, c, b } = obj
-        `,
       })
     })
 
