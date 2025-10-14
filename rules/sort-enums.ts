@@ -28,6 +28,7 @@ import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { singleCustomGroupJsonSchema } from './sort-enums/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -55,13 +56,12 @@ interface SortEnumsSortingNode
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
+  sortByValue: 'ifNumericEnum',
   partitionByComment: false,
   partitionByNewLine: false,
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
-  forceNumericSort: false,
   type: 'alphabetical',
-  sortByValue: false,
   ignoreCase: true,
   locales: 'en-US',
   customGroups: [],
@@ -202,9 +202,7 @@ export default createEslintRule<Options, MessageId>({
       let nodes = formattedMembers.flat()
 
       let isNumericEnum = nodes.every(
-        sortingNode =>
-          sortingNode.numericValue !== null &&
-          !Number.isNaN(sortingNode.numericValue),
+        sortingNode => sortingNode.numericValue !== null,
       )
 
       let nodeValueGetter = computeNodeValueGetter({
@@ -262,14 +260,10 @@ export default createEslintRule<Options, MessageId>({
       {
         properties: {
           ...commonJsonSchemas,
-          forceNumericSort: {
-            description:
-              'Will always sort numeric enums by their value regardless of the sort type specified.',
-            type: 'boolean',
-          },
           sortByValue: {
-            description: 'Compare enum values instead of names.',
-            type: 'boolean',
+            description: 'Specifies whether to sort enums by value.',
+            enum: ['always', 'ifNumericEnum', 'never'],
+            type: 'string',
           },
           customGroups: buildCustomGroupsArrayJsonSchema({
             singleCustomGroupJsonSchema,
@@ -307,9 +301,12 @@ function getBinaryExpressionNumberValue(
   leftExpression: TSESTree.PrivateIdentifier | TSESTree.Expression,
   rightExpression: TSESTree.Expression,
   operator: string,
-): number {
+): number | null {
   let left = getExpressionNumberValue(leftExpression)
   let right = getExpressionNumberValue(rightExpression)
+  if (left === null || right === null) {
+    return null
+  }
   switch (operator) {
     case '**':
       return left ** right
@@ -335,11 +332,40 @@ function getBinaryExpressionNumberValue(
       return left ^ right
     /* v8 ignore next 2 - Unsure if we can reach it */
     default:
-      return Number.NaN
+      return null
   }
 }
 
-function getExpressionNumberValue(expression: TSESTree.Node): number {
+function computeNodeValueGetter({
+  isNumericEnum,
+  options,
+}: {
+  options: Pick<Required<Options[number]>, 'sortByValue'>
+  isNumericEnum: boolean
+}): NodeValueGetterFunction<SortEnumsSortingNode> | null {
+  switch (options.sortByValue) {
+    case 'ifNumericEnum':
+      if (!isNumericEnum) {
+        return null
+      }
+      break
+    case 'always':
+      break
+    case 'never':
+      return null
+    /* v8 ignore next 2 */
+    default:
+      throw new UnreachableCaseError(options.sortByValue)
+  }
+  return sortingNode => {
+    if (isNumericEnum) {
+      return sortingNode.numericValue!.toString()
+    }
+    return sortingNode.value ?? ''
+  }
+}
+
+function getExpressionNumberValue(expression: TSESTree.Node): number | null {
   switch (expression.type) {
     case 'BinaryExpression':
       return getBinaryExpressionNumberValue(
@@ -353,55 +379,20 @@ function getExpressionNumberValue(expression: TSESTree.Node): number {
         expression.operator,
       )
     case 'Literal':
-      return typeof expression.value === 'number'
-        ? expression.value
-        : Number.NaN
+      return typeof expression.value === 'number' ? expression.value : null
     default:
-      return Number.NaN
+      return null
   }
-}
-
-function computeNodeValueGetter({
-  isNumericEnum,
-  options,
-}: {
-  options: Pick<Required<Options[number]>, 'forceNumericSort' | 'sortByValue'>
-  isNumericEnum: boolean
-}): NodeValueGetterFunction<SortEnumsSortingNode> | null {
-  return options.sortByValue || (isNumericEnum && options.forceNumericSort)
-    ? sortingNode => {
-        if (isNumericEnum) {
-          return sortingNode.numericValue!.toString()
-        }
-        return sortingNode.value ?? ''
-      }
-    : null
-}
-
-function computeOptionType({
-  isNumericEnum,
-  options,
-}: {
-  options: Pick<
-    Required<Options[number]>,
-    'forceNumericSort' | 'sortByValue' | 'type'
-  >
-  isNumericEnum: boolean
-}): TypeOption {
-  /**
-   * If the enum is numeric, and we sort by value, always use the `natural` sort
-   * type, which will correctly sort them.
-   */
-  return isNumericEnum && (options.forceNumericSort || options.sortByValue)
-    ? 'natural'
-    : options.type
 }
 
 function getUnaryExpressionNumberValue(
   argumentExpression: TSESTree.Expression,
   operator: string,
-): number {
+): number | null {
   let argument = getExpressionNumberValue(argumentExpression)
+  if (argument === null) {
+    return null
+  }
   switch (operator) {
     case '+':
       return argument
@@ -411,6 +402,26 @@ function getUnaryExpressionNumberValue(
       return ~argument
     /* v8 ignore next 2 - Unsure if we can reach it */
     default:
-      return Number.NaN
+      return null
   }
+}
+
+function computeOptionType({
+  isNumericEnum,
+  options,
+}: {
+  options: Pick<Required<Options[number]>, 'sortByValue' | 'type'>
+  isNumericEnum: boolean
+}): TypeOption {
+  /**
+   * If the enum is numeric, and we sort by value, always use the `natural` sort
+   * type, which will correctly sort them.
+   */
+  if (!isNumericEnum) {
+    return options.type
+  }
+  if (options.sortByValue === 'never') {
+    return options.type
+  }
+  return 'natural'
 }
