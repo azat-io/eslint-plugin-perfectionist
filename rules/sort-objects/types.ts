@@ -30,6 +30,12 @@ export type Options = Partial<
      */
     useConfigurationIf: {
       /**
+       * Specifies whether to only match destructured objects or regular
+       * objects.
+       */
+      objectType?: 'non-destructured' | 'destructured'
+
+      /**
        * Regular expression pattern to match against the comment associated to
        * the name of the object.
        */
@@ -62,15 +68,6 @@ export type Options = Partial<
     customGroups: CustomGroupsOption<SingleCustomGroup>
 
     /**
-     * Controls sorting of destructured objects in destructuring assignments.
-     * Can be a boolean to enable/disable sorting, or an object to configure
-     * whether to maintain groups in destructured objects.
-     *
-     * @default true
-     */
-    destructuredObjects: { groups: boolean } | boolean
-
-    /**
      * Partition object members by comment delimiters. Members separated by
      * specific comments are sorted independently.
      */
@@ -93,15 +90,6 @@ export type Options = Partial<
      * separated by empty lines are sorted independently.
      */
     partitionByNewLine: boolean
-
-    /**
-     * Whether to sort object declarations (variable declarations with object
-     * literals). When false, only sorts objects in other contexts like function
-     * arguments.
-     *
-     * @default true
-     */
-    objectDeclarations: boolean
 
     /**
      * Regular expression pattern to ignore certain objects from sorting.

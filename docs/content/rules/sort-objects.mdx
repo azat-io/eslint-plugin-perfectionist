@@ -299,22 +299,6 @@ Specifies whether this rule should be applied to styled-components like librarie
 - `true` — Apply the rule to styled-components.
 - `false` — Disable the rule for styled-components.
 
-### objectDeclarations
-
-<sub>default: `true`</sub>
-
-Specifies whether to sort standard object declarations.
-
-### destructuredObjects
-
-<sub>
-  type: `boolean | { groups: boolean }`
-</sub>
-<sub>default: `true`</sub>
-
-Specifies whether to sort destructured objects.
-The `groups` attribute specifies whether to use groups to sort destructured objects.
-
 ### useConfigurationIf
 
 <sub>
@@ -325,6 +309,7 @@ The `groups` attribute specifies whether to use groups to sort destructured obje
     callingFunctionNamePattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
     declarationMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
     declarationCommentMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+    objectType?: 'destructured' | 'non-destructured'
   }
   ```
 </sub>
@@ -419,6 +404,26 @@ Example configuration:
       type: 'unsorted', // Don't sort objects with a "do not sort" comment
       useConfigurationIf: {
         declarationCommentMatchesPattern: '^do not sort$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `objectType` — Specifies what type of object to match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-objects': [
+    'error',
+    {
+      type: 'unsorted', // Don't sort destructured objects
+      useConfigurationIf: {
+        objectType: 'destructured',
       },
     },
     {
@@ -702,8 +707,6 @@ let user = {
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
-                  objectDeclarations: true,
-                  destructuredObjects: true,
                   styledComponents: true,
                   useConfigurationIf: {},
                   groups: [],
@@ -736,8 +739,6 @@ let user = {
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
-                objectDeclarations: true,
-                destructuredObjects: true,
                 styledComponents: true,
                 useConfigurationIf: {},
                 groups: [],
