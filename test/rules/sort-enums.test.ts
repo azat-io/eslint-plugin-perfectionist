@@ -649,7 +649,7 @@ describe('sort-enums', () => {
         options: [
           {
             ...options,
-            sortByValue: true,
+            sortByValue: 'always',
           },
         ],
       })
@@ -2180,7 +2180,7 @@ describe('sort-enums', () => {
         options: [
           {
             ...options,
-            sortByValue: true,
+            sortByValue: 'always',
           },
         ],
       })
@@ -3655,7 +3655,7 @@ describe('sort-enums', () => {
         options: [
           {
             ...options,
-            sortByValue: true,
+            sortByValue: 'always',
           },
         ],
       })
@@ -4895,7 +4895,7 @@ describe('sort-enums', () => {
           `,
           options: [
             {
-              sortByValue: true,
+              sortByValue: 'always',
               type,
             },
           ],

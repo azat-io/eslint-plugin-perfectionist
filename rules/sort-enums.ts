@@ -261,16 +261,9 @@ export default createEslintRule<Options, MessageId>({
         properties: {
           ...commonJsonSchemas,
           sortByValue: {
-            oneOf: [
-              {
-                type: 'boolean',
-              },
-              {
-                enum: ['ifNumericEnum'],
-                type: 'string',
-              },
-            ],
             description: 'Specifies whether to sort enums by value.',
+            enum: ['always', 'ifNumericEnum', 'never'],
+            type: 'string',
           },
           customGroups: buildCustomGroupsArrayJsonSchema({
             singleCustomGroupJsonSchema,
@@ -356,10 +349,10 @@ function computeNodeValueGetter({
         return null
       }
       break
-    case false:
-      return null
-    case true:
+    case 'always':
       break
+    case 'never':
+      return null
     /* v8 ignore next 2 */
     default:
       throw new UnreachableCaseError(options.sortByValue)
@@ -427,7 +420,7 @@ function computeOptionType({
   if (!isNumericEnum) {
     return options.type
   }
-  if (!options.sortByValue) {
+  if (options.sortByValue === 'never') {
     return options.type
   }
   return 'natural'
