@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte'
+  function portal(node: HTMLElement): {
+    destroy(): void
+  } {
+    document.body.append(node)
 
-  let reference: HTMLElement | null = null
-
-  onMount(() => {
-    document.body.append(reference!)
-  })
-
-  onDestroy(() => {
-    reference!.remove()
-  })
+    return {
+      destroy() {
+        node.remove()
+      },
+    }
+  }
 </script>
 
-<div bind:this={reference}>
+<div use:portal>
   <slot />
 </div>
