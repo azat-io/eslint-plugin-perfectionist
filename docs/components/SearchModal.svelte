@@ -492,9 +492,15 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    gap: var(--space-s);
+    gap: var(--space-m);
     min-block-size: 0;
     overflow-block: auto;
+    outline: none;
+    border-radius: var(--border-radius);
+
+    &:focus-visible {
+      box-shadow: 0 0 0 3px var(--color-overlay-brand);
+    }
   }
 
   .message {
@@ -539,7 +545,7 @@
     &.link-active {
       outline: none;
       background: var(--color-background-tertiary);
-      border-color: var(--color-border-secondary);
+      border-color: var(--color-border-brand);
     }
   }
 
@@ -571,7 +577,7 @@
 
   .item-active .list-link {
     background: var(--color-background-tertiary);
-    border-color: var(--color-border-secondary);
+    border-color: var(--color-border-brand);
   }
 
   @keyframes scale-up {
