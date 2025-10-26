@@ -1181,6 +1181,105 @@ describe('sort-regexp', () => {
         options: [options],
       })
     })
+
+    it('keeps hyphen at the end when it is a literal character', async () => {
+      await valid({
+        code: dedent`
+          /[abc-]/
+        `,
+        options: [options],
+      })
+    })
+
+    it('keeps hyphen at the beginning when it is a literal character', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+            data: { right: 'a', left: '-' },
+          },
+        ],
+        output: dedent`
+          /[abc-]/
+        `,
+        code: dedent`
+          /[-abc]/
+        `,
+        options: [options],
+      })
+    })
+
+    it('does not move hyphen from edge to middle', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+            data: { right: 'a', left: 'z' },
+          },
+        ],
+        output: dedent`
+          /[axz-]/
+        `,
+        code: dedent`
+          /[zxa-]/
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts character class with escaped hyphen normally', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+            data: { right: 'a', left: 'z' },
+          },
+        ],
+        output: dedent(String.raw`
+          /[axz\-]/
+        `),
+        code: dedent(String.raw`
+          /[z\-xa]/
+        `),
+        options: [options],
+      })
+    })
+
+    it('does not create accidental range from literal hyphen', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+            data: { right: 'a', left: 'z' },
+          },
+        ],
+        output: dedent`
+          /[az-]/
+        `,
+        code: dedent`
+          /[za-]/
+        `,
+        options: [options],
+      })
+    })
+
+    it('preserves range when hyphen is part of range', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+            data: { right: '0-9', left: 'z' },
+          },
+        ],
+        output: dedent`
+          /[0-9a-fz]/
+        `,
+        code: dedent`
+          /[z0-9a-f]/
+        `,
+        options: [options],
+      })
+    })
   })
 
   describe('natural', () => {
@@ -1405,11 +1504,6 @@ describe('sort-regexp', () => {
     })
 
     it('sorts character classes', async () => {
-      let customOptions = {
-        ...options,
-        type: 'natural',
-      } as const
-
       await invalid({
         errors: [
           {
@@ -1423,7 +1517,7 @@ describe('sort-regexp', () => {
         code: dedent`
           /[312]/
         `,
-        options: [customOptions],
+        options: [options],
       })
     })
 
@@ -2358,6 +2452,105 @@ describe('sort-regexp', () => {
         options: [options],
       })
     })
+
+    it('keeps hyphen at the end when it is a literal character', async () => {
+      await valid({
+        code: dedent`
+          /[abc-]/
+        `,
+        options: [options],
+      })
+    })
+
+    it('keeps hyphen at the beginning when it is a literal character', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+            data: { right: 'a', left: '-' },
+          },
+        ],
+        output: dedent`
+          /[abc-]/
+        `,
+        code: dedent`
+          /[-abc]/
+        `,
+        options: [options],
+      })
+    })
+
+    it('does not move hyphen from edge to middle', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+            data: { right: 'a', left: 'z' },
+          },
+        ],
+        output: dedent`
+          /[axz-]/
+        `,
+        code: dedent`
+          /[zxa-]/
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts character class with escaped hyphen normally', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+            data: { right: 'a', left: 'z' },
+          },
+        ],
+        output: dedent(String.raw`
+          /[axz\-]/
+        `),
+        code: dedent(String.raw`
+          /[z\-xa]/
+        `),
+        options: [options],
+      })
+    })
+
+    it('does not create accidental range from literal hyphen', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+            data: { right: 'a', left: 'z' },
+          },
+        ],
+        output: dedent`
+          /[az-]/
+        `,
+        code: dedent`
+          /[za-]/
+        `,
+        options: [options],
+      })
+    })
+
+    it('preserves range when hyphen is part of range', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+            data: { right: '0-9', left: 'z' },
+          },
+        ],
+        output: dedent`
+          /[0-9a-fz]/
+        `,
+        code: dedent`
+          /[z0-9a-f]/
+        `,
+        options: [options],
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -2786,6 +2979,50 @@ describe('sort-regexp', () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
       ).resolves.not.toThrow()
+    })
+
+    it('does not report when rule is disabled for entire file', async () => {
+      await valid({
+        code: dedent`
+          /* eslint-disable rule-to-test/sort-regexp */
+          /pattern/igmus
+        `,
+      })
+    })
+
+    it('does not report when rule is disabled for next line', async () => {
+      await valid({
+        code: dedent`
+          // eslint-disable-next-line rule-to-test/sort-regexp
+          /pattern/igmus
+        `,
+      })
+    })
+
+    it('does not report when rule is disabled inline', async () => {
+      await valid({
+        code: dedent`
+          /pattern/igmus // eslint-disable-line rule-to-test/sort-regexp
+        `,
+      })
+    })
+
+    it('does not report for alternatives when disabled', async () => {
+      await valid({
+        code: dedent`
+          /* eslint-disable rule-to-test/sort-regexp */
+          /(c|b|a)/
+        `,
+      })
+    })
+
+    it('does not report for character classes when disabled', async () => {
+      await valid({
+        code: dedent`
+          // eslint-disable-next-line rule-to-test/sort-regexp
+          /[zxa]/
+        `,
+      })
     })
   })
 })
