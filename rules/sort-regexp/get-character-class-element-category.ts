@@ -7,7 +7,7 @@ import { isDigitCharacter } from './is-digit-character'
 /**
  * Maps a character class element to a sortable category bucket.
  *
- * @param element - Character class element to categories.
+ * @param element - Character class element to categorize.
  * @returns Numeric category representing the element group.
  */
 export function getCharacterClassElementCategory(
