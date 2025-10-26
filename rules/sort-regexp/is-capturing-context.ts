@@ -1,5 +1,4 @@
 import type {
-  LookaroundAssertion,
   CapturingGroup,
   Alternative,
   Pattern,
@@ -14,7 +13,7 @@ import type {
  */
 export function isCapturingContext(
   node: Alternative['parent'],
-): node is LookaroundAssertion | CapturingGroup | Pattern | Group {
+): node is CapturingGroup | Pattern | Group {
   return (
     node.type === 'CapturingGroup' ||
     node.type === 'Group' ||

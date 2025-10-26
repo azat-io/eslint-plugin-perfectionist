@@ -8,7 +8,7 @@ import type { Alternative } from '@eslint-community/regexpp/ast'
  */
 export function getAlternativeAlias(alternative: Alternative): string | null {
   let [element] = alternative.elements
-  if (element && element.type === 'CapturingGroup' && element.name) {
+  if (element?.type === 'CapturingGroup' && element.name) {
     return element.name
   }
 
