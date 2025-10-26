@@ -558,17 +558,8 @@ describe('sort-regexp', () => {
       })
     })
 
-    it('sorts alternatives with numbers', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { right: '1', left: '20' },
-          },
-        ],
-        output: dedent`
-          /(1|10|2|20|3)/
-        `,
+    it('skips sorting alternatives with shadowed numbers', async () => {
+      await valid({
         code: dedent`
           /(20|1|10|2|3)/
         `,
@@ -598,17 +589,8 @@ describe('sort-regexp', () => {
       })
     })
 
-    it('handles empty alternatives correctly', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { right: '', left: 'b' },
-          },
-        ],
-        output: dedent`
-          /(|a|b)/
-        `,
+    it('skips sorting when empty alternative can shadow others', async () => {
+      await valid({
         code: dedent`
           /(b||a)/
         `,
@@ -696,32 +678,6 @@ describe('sort-regexp', () => {
         `,
         code: dedent`
           /(B|A|C)/u
-        `,
-        options: [options],
-      })
-    })
-
-    it('sorts alternatives with different lengths', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { left: 'zzz', right: 'aa' },
-          },
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { right: 'aaa', left: 'z' },
-          },
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { left: 'aaa', right: 'a' },
-          },
-        ],
-        output: dedent`
-          /(a|aa|aaa|z|zz|zzz)/
-        `,
-        code: dedent`
-          /(zzz|aa|z|aaa|a|zz)/
         `,
         options: [options],
       })
@@ -1201,6 +1157,28 @@ describe('sort-regexp', () => {
         code: dedent`
           /[a-z0-9].(bb|aaa|c)/ig
         `,
+      })
+    })
+
+    it('does not sort alternatives when one is a prefix of another', async () => {
+      await valid({
+        code: dedent`
+          /(ab|a)/
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts alternatives with common prefix but no prefix relationship', async () => {
+      await invalid({
+        errors: [{ messageId: 'unexpectedRegExpOrder' }],
+        output: dedent`
+          /(abc|abd)/
+        `,
+        code: dedent`
+          /(abd|abc)/
+        `,
+        options: [options],
       })
     })
   })
@@ -1769,21 +1747,8 @@ describe('sort-regexp', () => {
       })
     })
 
-    it('sorts alternatives with numbers', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { right: '1', left: '20' },
-          },
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { right: '2', left: '10' },
-          },
-        ],
-        output: dedent`
-          /(1|2|3|10|20)/
-        `,
+    it('skips sorting alternatives with shadowed numbers', async () => {
+      await valid({
         code: dedent`
           /(20|1|10|2|3)/
         `,
@@ -1809,17 +1774,8 @@ describe('sort-regexp', () => {
       })
     })
 
-    it('handles empty alternatives correctly', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { right: '', left: 'b' },
-          },
-        ],
-        output: dedent`
-          /(|a|b)/
-        `,
+    it('skips sorting when empty alternative can shadow others', async () => {
+      await valid({
         code: dedent`
           /(b||a)/
         `,
@@ -1903,32 +1859,6 @@ describe('sort-regexp', () => {
         `,
         code: dedent`
           /(B|A|C)/u
-        `,
-        options: [options],
-      })
-    })
-
-    it('sorts alternatives with different lengths', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { left: 'zzz', right: 'aa' },
-          },
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { right: 'aaa', left: 'z' },
-          },
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { left: 'aaa', right: 'a' },
-          },
-        ],
-        output: dedent`
-          /(a|aa|aaa|z|zz|zzz)/
-        `,
-        code: dedent`
-          /(zzz|aa|z|aaa|a|zz)/
         `,
         options: [options],
       })
@@ -2406,6 +2336,28 @@ describe('sort-regexp', () => {
         `,
       })
     })
+
+    it('does not sort alternatives when one is a prefix of another', async () => {
+      await valid({
+        code: dedent`
+          /(ab|a)/
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts alternatives with common prefix but no prefix relationship', async () => {
+      await invalid({
+        errors: [{ messageId: 'unexpectedRegExpOrder' }],
+        output: dedent`
+          /(abc|abd)/
+        `,
+        code: dedent`
+          /(abd|abc)/
+        `,
+        options: [options],
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -2569,17 +2521,8 @@ describe('sort-regexp', () => {
       })
     })
 
-    it('sorts alternatives with numbers', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { right: '10', left: '1' },
-          },
-        ],
-        output: dedent`
-          /(20|10|1|2|3)/
-        `,
+    it('skips sorting alternatives with shadowed numbers', async () => {
+      await valid({
         code: dedent`
           /(20|1|10|2|3)/
         `,
@@ -2605,17 +2548,8 @@ describe('sort-regexp', () => {
       })
     })
 
-    it('handles empty alternatives correctly', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { right: 'a', left: '' },
-          },
-        ],
-        output: dedent`
-          /(b|a|)/
-        `,
+    it('skips sorting when empty alternative can shadow others', async () => {
+      await valid({
         code: dedent`
           /(b||a)/
         `,
@@ -2747,6 +2681,28 @@ describe('sort-regexp', () => {
         code: dedent`
           /(bbb|cc|a)/
         `,
+      })
+    })
+
+    it('does not sort alternatives when one is a prefix of another', async () => {
+      await valid({
+        code: dedent`
+          /(a|ab)/
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts alternatives with common prefix but no prefix relationship', async () => {
+      await invalid({
+        errors: [{ messageId: 'unexpectedRegExpOrder' }],
+        output: dedent`
+          /(abcd|abd)/
+        `,
+        code: dedent`
+          /(abd|abcd)/
+        `,
+        options: [options],
       })
     })
   })

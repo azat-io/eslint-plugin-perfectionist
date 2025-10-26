@@ -188,6 +188,14 @@ export default createEslintRule<Options, MessageId>({
             return
           }
 
+          if (
+            hasShadowingAlternatives({
+              alternatives: alternative.parent.alternatives,
+            })
+          ) {
+            return
+          }
+
           let nodes = alternative.parent.alternatives.map(currentAlternative =>
             createSortingNode({
               alternative: currentAlternative,
@@ -564,6 +572,28 @@ function getCharacterClassElementValue(
   return rawValue
 }
 
+function hasShadowingAlternatives({
+  alternatives,
+}: {
+  alternatives: Alternative[]
+}): boolean {
+  let rawAlternatives = alternatives.map(alternative => alternative.raw)
+
+  for (let index = 0; index < rawAlternatives.length; index++) {
+    let current = rawAlternatives[index]!
+
+    for (let offset = index + 1; offset < rawAlternatives.length; offset++) {
+      let other = rawAlternatives[offset]!
+
+      if (doesAlternativeShadowOther(current, other)) {
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
 function createFlagSortingNodes({
   eslintDisabledLines,
   literalNode,
@@ -615,6 +645,22 @@ function getAlternativeAlias(alternative: Alternative): string | null {
   }
 
   return null
+}
+
+function doesAlternativeShadowOther(first: string, second: string): boolean {
+  if (first.length === 0 || second.length === 0) {
+    return true
+  }
+
+  if (first.length === second.length) {
+    return first === second
+  }
+
+  if (first.length < second.length) {
+    return second.startsWith(first)
+  }
+
+  return first.startsWith(second)
 }
 
 function getCharacterClassElementSortKey(
