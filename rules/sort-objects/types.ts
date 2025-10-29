@@ -59,6 +59,12 @@ export type Options = Partial<
        * rule is only applied when all property names match this pattern.
        */
       allNamesMatchPattern?: RegexOption
+
+      /**
+       * Specifies whether to only match objects that have exclusively numeric
+       * keys.
+       */
+      hasNumericKeysOnly?: boolean
     }
 
     /**

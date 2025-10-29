@@ -2534,6 +2534,97 @@ describe('sort-objects', () => {
       })
     })
 
+    it('applies configuration when object only has numeric keys', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              hasNumericKeysOnly: true,
+            },
+            type: 'unsorted',
+          },
+        ],
+        code: dedent`
+          const obj = {
+            5: 'five',
+            2: {},
+            3: 'three',
+            8: 'eight',
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            useConfigurationIf: {
+              hasNumericKeysOnly: true,
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        errors: [
+          {
+            data: {
+              right: '1',
+              left: '2',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            '1': 1,
+            2: 2,
+          }
+        `,
+        code: dedent`
+          let obj = {
+            2: 2,
+            '1': 1,
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            useConfigurationIf: {
+              hasNumericKeysOnly: true,
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          let Func = ({
+            a,
+            b,
+          }) => {
+            // ...
+          }
+        `,
+        code: dedent`
+          let Func = ({
+            b,
+            a,
+          }) => {
+            // ...
+          }
+        `,
+      })
+    })
+
     it('skips object declarations when objectType is "destructured"', async () => {
       await valid({
         options: [
