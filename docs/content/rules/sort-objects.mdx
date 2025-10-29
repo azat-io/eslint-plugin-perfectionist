@@ -436,6 +436,9 @@ Example configuration:
 
 - `hasNumericKeysOnly` — If `true`, matches only objects that have exclusively numeric keys.
 
+This option only detects unquoted numeric literal keys (e.g., `1`, `42`).
+Quoted strings like `"1"`, array-wrapped keys like `[1]`, or computed expressions are not detected as numeric keys.
+
 Example configuration:
 ```ts
 {
