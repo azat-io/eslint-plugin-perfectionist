@@ -3,6 +3,8 @@ import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type {
   SortObjectTypesSortingNode,
   Modifier,
@@ -430,6 +432,22 @@ function computeMatchedContextOptions({
       }
     }
 
+    if (
+      options.useConfigurationIf.hasNumericKeysOnly &&
+      !hasNumericKeysOnly(elements)
+    ) {
+      return false
+    }
+
     return true
   })
+}
+
+function hasNumericKeysOnly(typeElements: TSESTree.TypeElement[]): boolean {
+  return typeElements.every(
+    typeElement =>
+      typeElement.type === AST_NODE_TYPES.TSPropertySignature &&
+      typeElement.key.type === 'Literal' &&
+      typeof typeElement.key.value === 'number',
+  )
 }
