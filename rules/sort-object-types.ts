@@ -416,10 +416,13 @@ function computeMatchedContextOptions({
         return false
       }
 
-      return matches(
+      let matchesPattern = matches(
         parentNode.id.name,
         options.useConfigurationIf.declarationMatchesPattern,
       )
+      if (!matchesPattern) {
+        return false
+      }
     }
 
     return true
