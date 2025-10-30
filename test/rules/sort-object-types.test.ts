@@ -2338,6 +2338,60 @@ describe('sort-object-types', () => {
       })
     })
 
+    it('applies configuration when object only has numeric keys', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              hasNumericKeysOnly: true,
+            },
+            type: 'unsorted',
+          },
+        ],
+        code: dedent`
+          type Type = {
+            5: number
+            2: SomeObject
+            3: number
+            8: number
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            useConfigurationIf: {
+              hasNumericKeysOnly: true,
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        errors: [
+          {
+            data: {
+              right: '1',
+              left: '2',
+            },
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type = {
+            '1': number
+            2: number
+          }
+        `,
+        code: dedent`
+          type Type = {
+            2: number
+            '1': number
+          }
+        `,
+      })
+    })
+
     it('detects declaration comment by pattern', async () => {
       await valid({
         options: [
