@@ -1,5 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
@@ -393,6 +394,11 @@ export default createEslintRule<Options, MessageId>({
                 enum: ['destructured', 'non-destructured'],
                 type: 'string',
               },
+              hasNumericKeysOnly: {
+                description:
+                  'Specifies whether to only match objects that have exclusively numeric keys.',
+                type: 'boolean',
+              },
               declarationCommentMatchesPattern: regexJsonSchema,
               callingFunctionNamePattern: regexJsonSchema,
               declarationMatchesPattern: regexJsonSchema,
@@ -528,6 +534,13 @@ function computeMatchedContextOptions({
       }
     }
 
+    if (
+      options.useConfigurationIf.hasNumericKeysOnly &&
+      !hasNumericKeysOnly(nodeObject)
+    ) {
+      return false
+    }
+
     return true
   })
 }
@@ -635,6 +648,25 @@ function isStyledComponents(styledNode: TSESTree.Node): boolean {
     (styledNode.callee.type === 'CallExpression' &&
       isStyledCallExpression(styledNode.callee.callee))
   )
+}
+
+function hasNumericKeysOnly(
+  object: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
+): boolean {
+  switch (object.type) {
+    case AST_NODE_TYPES.ObjectExpression:
+      return object.properties.every(
+        property =>
+          property.type === AST_NODE_TYPES.Property &&
+          property.key.type === 'Literal' &&
+          typeof property.key.value === 'number',
+      )
+    case AST_NODE_TYPES.ObjectPattern:
+      return false
+    /* v8 ignore next 2 */
+    default:
+      throw new UnreachableCaseError(object)
+  }
 }
 
 function getNodeName({
