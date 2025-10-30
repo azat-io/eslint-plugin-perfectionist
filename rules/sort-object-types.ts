@@ -21,6 +21,12 @@ import {
   regexJsonSchema,
 } from '../utils/common-json-schemas'
 import {
+  singleCustomGroupJsonSchema,
+  sortByJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-object-types/types'
+import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
@@ -28,11 +34,6 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
-import {
-  singleCustomGroupJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-object-types/types'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { getCustomGroupsCompareOptions } from './sort-object-types/get-custom-groups-compare-options'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -45,7 +46,6 @@ import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { isNodeFunctionType } from '../utils/is-node-function-type'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { sortByJsonSchema } from './sort-object-types/types'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { computeGroup } from '../utils/compute-group'
