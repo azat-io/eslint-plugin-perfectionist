@@ -344,49 +344,6 @@ export function sortObjectTypeElements<MessageIds extends string>({
   })
 }
 
-function getNodeName({
-  typeElement,
-  sourceCode,
-}: {
-  typeElement: TSESTree.TypeElement
-  sourceCode: TSESLint.SourceCode
-}): string {
-  let name: string
-
-  function formatName(value: string): string {
-    return value.replace(/[,;]$/u, '')
-  }
-
-  if (typeElement.type === 'TSPropertySignature') {
-    if (typeElement.key.type === 'Identifier') {
-      ;({ name } = typeElement.key)
-    } else if (typeElement.key.type === 'Literal') {
-      name = `${typeElement.key.value}`
-    } else {
-      let end: number =
-        typeElement.typeAnnotation?.range.at(0) ??
-        typeElement.range.at(1)! - (typeElement.optional ? '?'.length : 0)
-      name = sourceCode.text.slice(typeElement.range.at(0), end)
-    }
-  } else if (typeElement.type === 'TSIndexSignature') {
-    let endIndex: number =
-      typeElement.typeAnnotation?.range.at(0) ?? typeElement.range.at(1)!
-
-    name = formatName(sourceCode.text.slice(typeElement.range.at(0), endIndex))
-  } else if (
-    typeElement.type === 'TSMethodSignature' &&
-    'name' in typeElement.key
-  ) {
-    ;({ name } = typeElement.key)
-    /* v8 ignore next 8 - Unsure if we can reach it */
-  } else {
-    name = formatName(
-      sourceCode.text.slice(typeElement.range.at(0), typeElement.range.at(1)),
-    )
-  }
-  return name
-}
-
 function computeMatchedContextOptions({
   sourceCode,
   parentNode,
@@ -441,6 +398,49 @@ function computeMatchedContextOptions({
 
     return true
   })
+}
+
+function getNodeName({
+  typeElement,
+  sourceCode,
+}: {
+  typeElement: TSESTree.TypeElement
+  sourceCode: TSESLint.SourceCode
+}): string {
+  let name: string
+
+  function formatName(value: string): string {
+    return value.replace(/[,;]$/u, '')
+  }
+
+  if (typeElement.type === 'TSPropertySignature') {
+    if (typeElement.key.type === 'Identifier') {
+      ;({ name } = typeElement.key)
+    } else if (typeElement.key.type === 'Literal') {
+      name = `${typeElement.key.value}`
+    } else {
+      let end: number =
+        typeElement.typeAnnotation?.range.at(0) ??
+        typeElement.range.at(1)! - (typeElement.optional ? '?'.length : 0)
+      name = sourceCode.text.slice(typeElement.range.at(0), end)
+    }
+  } else if (typeElement.type === 'TSIndexSignature') {
+    let endIndex: number =
+      typeElement.typeAnnotation?.range.at(0) ?? typeElement.range.at(1)!
+
+    name = formatName(sourceCode.text.slice(typeElement.range.at(0), endIndex))
+  } else if (
+    typeElement.type === 'TSMethodSignature' &&
+    'name' in typeElement.key
+  ) {
+    ;({ name } = typeElement.key)
+    /* v8 ignore next 8 - Unsure if we can reach it */
+  } else {
+    name = formatName(
+      sourceCode.text.slice(typeElement.range.at(0), typeElement.range.at(1)),
+    )
+  }
+  return name
 }
 
 function hasNumericKeysOnly(typeElements: TSESTree.TypeElement[]): boolean {
