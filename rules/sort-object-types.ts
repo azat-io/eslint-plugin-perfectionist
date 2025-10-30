@@ -91,6 +91,11 @@ export let jsonSchema: JSONSchema4 = {
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {
+          hasNumericKeysOnly: {
+            description:
+              'Specifies whether to only match types that have exclusively numeric keys.',
+            type: 'boolean',
+          },
           declarationCommentMatchesPattern: regexJsonSchema,
           declarationMatchesPattern: regexJsonSchema,
         },
