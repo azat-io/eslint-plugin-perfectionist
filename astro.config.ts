@@ -67,10 +67,6 @@ export default defineConfig({
     }),
     mdx(),
   ],
-  prefetch: {
-    defaultStrategy: 'viewport',
-    prefetchAll: true,
-  },
   build: {
     inlineStylesheets: 'always',
     format: 'file',
@@ -79,6 +75,9 @@ export default defineConfig({
     clientPrerender: true,
   },
   publicDir: path.join(dirname, './docs/public'),
+  prefetch: {
+    defaultStrategy: 'hover',
+  },
   server: {
     port: 3000,
     host: true,

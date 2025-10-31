@@ -140,7 +140,14 @@ let isProduction = import.meta.env.PROD
       localStorage.setItem('theme', theme)
     }
     initialize()
-    document.addEventListener('astro:after-swap', initialize)
+    let handlerKey = '__perfectionistThemeAfterSwap__'
+    if (!globalThis[handlerKey]) {
+      let handleAfterSwap = () => {
+        initialize()
+      }
+      document.addEventListener('astro:after-swap', handleAfterSwap)
+      globalThis[handlerKey] = handleAfterSwap
+    }
   </script>
 
   <ClientRouter />

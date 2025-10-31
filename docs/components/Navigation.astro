@@ -49,14 +49,48 @@ import IconSun from '../icons/sun.svg'
 <script>
   import { toggleTheme } from '../stores/theme'
 
-  let initToggleTheme = () => {
-    document
-      .getElementById('toggle-theme')!
-      .addEventListener('click', toggleTheme)
+  let controller: AbortController | undefined
+
+  let cleanup = () => {
+    controller?.abort()
+    controller = undefined
   }
 
-  document.addEventListener('astro:after-swap', initToggleTheme)
-  initToggleTheme()
+  let scheduleNext = () => {
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        cleanup()
+      },
+      { once: true },
+    )
+    document.addEventListener(
+      'astro:after-swap',
+      () => {
+        setup()
+      },
+      { once: true },
+    )
+  }
+
+  let setup = () => {
+    cleanup()
+
+    let toggleButton = document.getElementById('toggle-theme')
+    if (!toggleButton) {
+      scheduleNext()
+      return
+    }
+
+    controller = new AbortController()
+    toggleButton.addEventListener('click', toggleTheme, {
+      signal: controller.signal,
+    })
+
+    scheduleNext()
+  }
+
+  setup()
 </script>
 
 <style>

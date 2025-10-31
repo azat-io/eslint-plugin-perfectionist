@@ -33,35 +33,75 @@ let { border = false } = Astro.props
 <script>
   import { toggleMenu } from '../stores/menu-open'
 
-  let initMenu = () => {
-    document
-      .getElementById('menu-button')!
-      .addEventListener('click', toggleMenu)
+  let menuController: AbortController | undefined
+  let scrollController: AbortController | undefined
+
+  let cleanup = () => {
+    menuController?.abort()
+    scrollController?.abort()
+    menuController = undefined
+    scrollController = undefined
   }
 
-  document.addEventListener('astro:after-swap', initMenu)
-  initMenu()
-</script>
+  let setupMenu = () => {
+    let menuButton = document.getElementById('menu-button')
+    if (!menuButton) {
+      return
+    }
 
-<script>
-  let initHeader = () => {
-    let header = document.querySelector('.header')!
-
-    document.addEventListener('scroll', () => {
-      let { scrollY } = globalThis
-
-      if (!header.classList.contains('border')) {
-        if (scrollY > 24) {
-          header.classList.add('scroll')
-        } else {
-          header.classList.remove('scroll')
-        }
-      }
+    menuController = new AbortController()
+    menuButton.addEventListener('click', toggleMenu, {
+      signal: menuController.signal,
     })
   }
 
-  document.addEventListener('astro:after-swap', initHeader)
-  initHeader()
+  let setupScroll = () => {
+    let header = document.querySelector('.header')
+    if (!header) {
+      return
+    }
+
+    let handleScroll = () => {
+      if (header.classList.contains('border')) {
+        return
+      }
+
+      header.classList.toggle('scroll', globalThis.scrollY > 24)
+    }
+
+    scrollController = new AbortController()
+    document.addEventListener('scroll', handleScroll, {
+      signal: scrollController.signal,
+      passive: true,
+    })
+    handleScroll()
+  }
+
+  let scheduleNext = () => {
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        cleanup()
+      },
+      { once: true },
+    )
+    document.addEventListener(
+      'astro:after-swap',
+      () => {
+        setup()
+      },
+      { once: true },
+    )
+  }
+
+  let setup = () => {
+    cleanup()
+    setupMenu()
+    setupScroll()
+    scheduleNext()
+  }
+
+  setup()
 </script>
 
 <style>

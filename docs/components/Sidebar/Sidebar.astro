@@ -31,11 +31,44 @@ let { isMobileOnly = false } = Astro.props
 <script>
   import { toggleMenu, menuOpen } from '../../stores/menu-open'
 
-  let initMenu = async () => {
-    let menu = document.getElementById('menu')!
+  let controller: AbortController | undefined
+  let unsubscribe: undefined | (() => void)
+
+  let cleanup = () => {
+    controller?.abort()
+    controller = undefined
+    unsubscribe?.()
+    unsubscribe = undefined
+  }
+
+  let scheduleNext = () => {
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        cleanup()
+      },
+      { once: true },
+    )
+    document.addEventListener(
+      'astro:after-swap',
+      () => {
+        setup()
+      },
+      { once: true },
+    )
+  }
+
+  let setup = () => {
+    cleanup()
+
+    let menu = document.getElementById('menu')
+    if (!menu) {
+      scheduleNext()
+      return
+    }
 
     menuOpen.set(false)
-    menuOpen.subscribe(menuOpenValue => {
+    unsubscribe = menuOpen.subscribe(menuOpenValue => {
       if (menuOpenValue) {
         menu.classList.add('menu-open')
       } else {
@@ -45,33 +78,80 @@ let { isMobileOnly = false } = Astro.props
       }
     })
 
-    document
-      .getElementById('menu-close-button')!
-      .addEventListener('click', toggleMenu)
+    controller = new AbortController()
+    let closeButton = document.getElementById('menu-close-button')
+    if (closeButton) {
+      closeButton.addEventListener('click', toggleMenu, {
+        signal: controller.signal,
+      })
+    }
+
+    scheduleNext()
   }
 
-  document.addEventListener('astro:after-swap', initMenu)
-  initMenu()
+  setup()
 </script>
 
 <script is:inline>
   const SIDEBAR_SCROLL_POSITION = 'SIDEBAR_SCROLL_POSITION'
 
-  let initSidebarScroll = () => {
-    let savedScrollPosition = sessionStorage.getItem(SIDEBAR_SCROLL_POSITION)
-    if (savedScrollPosition) {
-      let menu = document.getElementById('menu')
-      menu.scrollTop = Number(savedScrollPosition)
-    }
-    let menu = document.getElementById('menu')
-    menu.addEventListener('scrollend', event => {
-      let scrollPosition = event.target.scrollTop
-      sessionStorage.setItem(SIDEBAR_SCROLL_POSITION, scrollPosition)
-    })
+  let controller
+
+  let cleanup = () => {
+    controller?.abort()
+    controller = undefined
   }
 
-  document.addEventListener('astro:after-swap', initSidebarScroll)
-  initSidebarScroll()
+  let scheduleNext = () => {
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        cleanup()
+      },
+      { once: true },
+    )
+    document.addEventListener(
+      'astro:after-swap',
+      () => {
+        setup()
+      },
+      { once: true },
+    )
+  }
+
+  let setup = () => {
+    cleanup()
+
+    let menu = document.getElementById('menu')
+    if (!menu) {
+      scheduleNext()
+      return
+    }
+
+    let savedScrollPosition = sessionStorage.getItem(SIDEBAR_SCROLL_POSITION)
+    if (savedScrollPosition) {
+      menu.scrollTop = Number(savedScrollPosition)
+    }
+
+    controller = new AbortController()
+    menu.addEventListener(
+      'scrollend',
+      event => {
+        let target = event.target
+        if (target && 'scrollTop' in target) {
+          sessionStorage.setItem(
+            SIDEBAR_SCROLL_POSITION,
+            String(target.scrollTop ?? 0),
+          )
+        }
+      },
+      { signal: controller.signal },
+    )
+
+    scheduleNext()
+  }
+
+  setup()
 </script>
 
 <style>
