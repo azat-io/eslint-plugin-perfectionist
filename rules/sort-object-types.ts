@@ -3,6 +3,8 @@ import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type {
   SortObjectTypesSortingNode,
   Modifier,
@@ -91,6 +93,11 @@ export let jsonSchema: JSONSchema4 = {
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {
+          hasNumericKeysOnly: {
+            description:
+              'Specifies whether to only match types that have exclusively numeric keys.',
+            type: 'boolean',
+          },
           declarationCommentMatchesPattern: regexJsonSchema,
           declarationMatchesPattern: regexJsonSchema,
         },
@@ -337,6 +344,62 @@ export function sortObjectTypeElements<MessageIds extends string>({
   })
 }
 
+function computeMatchedContextOptions({
+  sourceCode,
+  parentNode,
+  elements,
+  context,
+}: {
+  parentNode:
+    | TSESTree.TSTypeAliasDeclaration
+    | TSESTree.TSInterfaceDeclaration
+    | null
+  context: TSESLint.RuleContext<string, Options>
+  elements: TSESTree.TypeElement[]
+  sourceCode: TSESLint.SourceCode
+}): Options[number] | undefined {
+  let filteredContextOptions = filterOptionsByAllNamesMatch({
+    nodeNames: elements.map(node =>
+      getNodeName({ typeElement: node, sourceCode }),
+    ),
+    contextOptions: context.options,
+  })
+  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
+    contextOptions: filteredContextOptions,
+    parentNode,
+    sourceCode,
+  })
+
+  return filteredContextOptions.find(options => {
+    if (!options.useConfigurationIf) {
+      return true
+    }
+
+    if (options.useConfigurationIf.declarationMatchesPattern) {
+      if (!parentNode) {
+        return false
+      }
+
+      let matchesPattern = matches(
+        parentNode.id.name,
+        options.useConfigurationIf.declarationMatchesPattern,
+      )
+      if (!matchesPattern) {
+        return false
+      }
+    }
+
+    if (
+      options.useConfigurationIf.hasNumericKeysOnly &&
+      !hasNumericKeysOnly(elements)
+    ) {
+      return false
+    }
+
+    return true
+  })
+}
+
 function getNodeName({
   typeElement,
   sourceCode,
@@ -380,48 +443,11 @@ function getNodeName({
   return name
 }
 
-function computeMatchedContextOptions({
-  sourceCode,
-  parentNode,
-  elements,
-  context,
-}: {
-  parentNode:
-    | TSESTree.TSTypeAliasDeclaration
-    | TSESTree.TSInterfaceDeclaration
-    | null
-  context: TSESLint.RuleContext<string, Options>
-  elements: TSESTree.TypeElement[]
-  sourceCode: TSESLint.SourceCode
-}): Options[number] | undefined {
-  let filteredContextOptions = filterOptionsByAllNamesMatch({
-    nodeNames: elements.map(node =>
-      getNodeName({ typeElement: node, sourceCode }),
-    ),
-    contextOptions: context.options,
-  })
-  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
-    contextOptions: filteredContextOptions,
-    parentNode,
-    sourceCode,
-  })
-
-  return filteredContextOptions.find(options => {
-    if (!options.useConfigurationIf) {
-      return true
-    }
-
-    if (options.useConfigurationIf.declarationMatchesPattern) {
-      if (!parentNode) {
-        return false
-      }
-
-      return matches(
-        parentNode.id.name,
-        options.useConfigurationIf.declarationMatchesPattern,
-      )
-    }
-
-    return true
-  })
+function hasNumericKeysOnly(typeElements: TSESTree.TypeElement[]): boolean {
+  return typeElements.every(
+    typeElement =>
+      typeElement.type === AST_NODE_TYPES.TSPropertySignature &&
+      typeElement.key.type === 'Literal' &&
+      typeof typeElement.key.value === 'number',
+  )
 }

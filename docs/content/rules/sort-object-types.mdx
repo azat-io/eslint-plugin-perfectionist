@@ -285,6 +285,7 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
     allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
     declarationMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
     declarationCommentMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+    hasNumericKeysOnly?: boolean
   }
   ```
 </sub>
@@ -359,6 +360,29 @@ Example configuration:
       type: 'unsorted', // Don't sort object types with a "do not sort" comment
       useConfigurationIf: {
         declarationCommentMatchesPattern: '^do not sort$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `hasNumericKeysOnly` — If `true`, matches only types that have exclusively numeric keys.
+
+This option only detects unquoted numeric literal keys (e.g., `1`, `42`).
+Quoted strings like `"1"`, array-wrapped keys like `[1]`, or computed expressions are not detected as numeric keys.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-object-types': [
+    'error',
+    {
+      type: 'natural', // Sort numeric keys naturally (by numeric value)
+      useConfigurationIf: {
+        hasNumericKeysOnly: true,
       },
     },
     {

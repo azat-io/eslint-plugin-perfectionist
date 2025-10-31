@@ -2411,6 +2411,60 @@ describe('sort-interfaces', () => {
       })
     })
 
+    it('applies configuration when object only has numeric keys', async () => {
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              hasNumericKeysOnly: true,
+            },
+            type: 'unsorted',
+          },
+        ],
+        code: dedent`
+          interface Interface {
+            5: number
+            2: SomeObject
+            3: number
+            8: number
+          }
+        `,
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: '1',
+              left: '2',
+            },
+            messageId: 'unexpectedInterfacePropertiesOrder',
+          },
+        ],
+        options: [
+          {
+            useConfigurationIf: {
+              hasNumericKeysOnly: true,
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        output: dedent`
+          interface Interface {
+            '1': number
+            2: number
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            2: number
+            '1': number
+          }
+        `,
+      })
+    })
+
     it('detects declaration comment by pattern', async () => {
       await valid({
         options: [
