@@ -49,6 +49,12 @@ export type Options = Partial<
        * is only applied when all member names match this pattern.
        */
       allNamesMatchPattern?: RegexOption
+
+      /**
+       * Specifies whether to only match types that have exclusively numeric
+       * keys.
+       */
+      hasNumericKeysOnly?: boolean
     }
 
     /**
