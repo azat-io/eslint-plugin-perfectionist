@@ -42,7 +42,10 @@
 
   onMount(() => {
     mounted = true
-    startKeyUX(globalThis, [focusGroupKeyUX()])
+    let stop = startKeyUX(globalThis, [focusGroupKeyUX()])
+    return () => {
+      stop()
+    }
   })
 </script>
 
