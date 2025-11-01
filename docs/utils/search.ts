@@ -2,9 +2,9 @@ import type { CollectionEntry } from 'astro:content'
 import type { Root as MdastRoot } from 'mdast'
 import type { Parent, Node } from 'unist'
 
+import { toString as mdastToString } from 'mdast-util-to-string'
 import { SKIP as skip, visit } from 'unist-util-visit'
 import remarkFrontmatter from 'remark-frontmatter'
-import { toString } from 'mdast-util-to-string'
 import { toText } from 'hast-util-to-text'
 import remarkRehype from 'remark-rehype'
 import remarkParse from 'remark-parse'
@@ -106,7 +106,7 @@ function getHeadings(tree: MdastRoot): string[] {
   let headings: string[] = []
 
   visit(tree, 'heading', node => {
-    headings.push(normalizeWhitespace(toString(node)))
+    headings.push(normalizeWhitespace(mdastToString(node)))
   })
 
   return headings
