@@ -2,6 +2,7 @@
 import SkipToContent from './SkipToContent.astro'
 import Navigation from './Navigation.astro'
 import IconMenu from '../icons/menu.svg'
+import Search from './Search.svelte'
 import Logo from './Logo.astro'
 
 interface Props {
@@ -27,6 +28,7 @@ let { border = false } = Astro.props
       <span class="title">Perfectionist</span>
     </a>
   </div>
+  <Search client:load />
   <Navigation />
 </header>
 
@@ -109,7 +111,9 @@ let { border = false } = Astro.props
     position: sticky;
     inset-block-start: 0;
     z-index: 2;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: var(--space-m);
     align-items: center;
     justify-content: space-between;
     block-size: var(--header-block-size);

@@ -96,6 +96,8 @@ import IconSun from '../icons/sun.svg'
 <style>
   .navigation {
     display: flex;
+    align-items: start;
+    justify-content: end;
   }
 
   .list {
@@ -139,6 +141,10 @@ import IconSun from '../icons/sun.svg'
     block-size: var(--size-icon-m);
   }
 
+  .item {
+    margin-block: 0;
+  }
+
   .hr,
   .item-text {
     display: none;
@@ -167,7 +173,7 @@ import IconSun from '../icons/sun.svg'
 
     .hr,
     .item-text {
-      display: block;
+      display: inline;
     }
   }
 </style>

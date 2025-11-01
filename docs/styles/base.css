@@ -125,7 +125,7 @@ pre {
   /* stylelint-disable-next-line plugin/use-logical-properties-and-values */
   overflow-y: scroll;
   outline: none;
-  scrollbar-width: thin;
+  scrollbar-width: none;
   border-radius: var(--border-radius);
 
   &:focus-visible {
