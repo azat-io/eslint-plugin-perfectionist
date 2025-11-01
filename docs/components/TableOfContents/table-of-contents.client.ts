@@ -106,3 +106,5 @@ export function setupTableOfContents(): void {
 
   initToc()
 }
+
+setupTableOfContents()
