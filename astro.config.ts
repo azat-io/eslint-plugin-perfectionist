@@ -56,12 +56,7 @@ export default defineConfig({
     ],
   },
   integrations: [
-    svelte({
-      compilerOptions: {
-        cssHash: ({ hash, css }) => `s-${hash(css)}`,
-        discloseVersion: false,
-      },
-    }),
+    svelte(),
     sitemap({
       filter: page => !new RegExp(`^${site}/guide$`, 'u').test(page),
     }),

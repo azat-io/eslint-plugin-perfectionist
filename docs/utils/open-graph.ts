@@ -74,9 +74,9 @@ export async function openGraph(title: string): Promise<ImageResponse> {
               children: [
                 {
                   props: {
-                    height: '250px',
                     src: logoImage,
-                    width: '250px',
+                    height: 250,
+                    width: 250,
                   },
                   type: 'img',
                 },
