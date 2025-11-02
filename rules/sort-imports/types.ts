@@ -34,7 +34,7 @@ export type Options = Partial<{
   tsconfig:
     | {
         /**
-         * Optional filename of the TypeScript config file. @default
+         * Optional filename of the TypeScript config file. `@default`
          * tsconfig.json'.
          */
         filename?: string

@@ -100,7 +100,7 @@ function getEslintDisabledRulesByType(
   if (eslintDisableDirective === trimmedCommentValue) {
     return 'all' as const
   }
-  let regexp = new RegExp(`^${eslintDisableDirective} ((?:.|\\s)*)$`)
+  let regexp = new RegExp(String.raw`^${eslintDisableDirective} ((?:.|\s)*)$`)
   let disabledRulesMatch = trimmedCommentValue.match(regexp)
   let disableRulesMatchValue = disabledRulesMatch?.[1]
   if (!disableRulesMatchValue) {

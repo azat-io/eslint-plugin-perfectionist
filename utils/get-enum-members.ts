@@ -3,7 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 /**
  * Retrieves enum members from a TypeScript enum declaration node.
  *
- * Handles AST shape changes in TS-ESTree @typescript-eslint/types:
+ * Handles AST shape changes in TS-ESTree `@typescript-eslint/types`:
  *
  * - Versions < 8.0.0 store enum members under `body.members`.
  * - Versions ≥ 8.0.0 expose members directly on the enum node as `members`. The
