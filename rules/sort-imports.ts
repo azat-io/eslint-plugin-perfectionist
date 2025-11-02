@@ -373,8 +373,7 @@ export default createEslintRule<Options, MessageId>({
       },
       VariableDeclaration: node => {
         if (
-          node.declarations[0].init &&
-          node.declarations[0].init.type === 'CallExpression' &&
+          node.declarations[0].init?.type === 'CallExpression' &&
           node.declarations[0].init.callee.type === 'Identifier' &&
           node.declarations[0].init.callee.name === 'require' &&
           node.declarations[0].init.arguments[0]?.type === 'Literal'
