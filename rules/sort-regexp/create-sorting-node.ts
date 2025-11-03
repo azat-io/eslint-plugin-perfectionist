@@ -3,15 +3,14 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../../types/sorting-node'
+import type { Selector } from './types'
 import type { Options } from './types'
 
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { createPseudoLiteralNode } from './create-pseudo-literal-node'
 import { getAlternativeAlias } from './get-alternative-alias'
-import { getSortingNodeName } from './get-sorting-node-name'
 import { computeGroup } from '../../utils/compute-group'
-import { getSelector } from './get-selector'
 
 interface CreateSortingNodeParameters {
   sourceCode: TSESLint.SourceCode
@@ -37,12 +36,11 @@ export function createSortingNode({
   options,
 }: CreateSortingNodeParameters): SortingNode<TSESTree.Literal> {
   let alternativeAlias = getAlternativeAlias(alternative)
-  let selector = getSelector({ alternativeAlias })
-  let name = getSortingNodeName({
-    alternativeAlias,
-    alternative,
-    options,
-  })
+  let selector: Selector = alternativeAlias ? 'alias' : 'pattern'
+  let name =
+    !options.ignoreAlias && alternativeAlias
+      ? `${alternativeAlias}: ${alternative.raw}`
+      : alternative.raw
 
   let group = computeGroup({
     customGroupMatcher: customGroup =>

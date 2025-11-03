@@ -2,7 +2,6 @@ import type { CharacterClass } from '@eslint-community/regexpp/ast'
 
 import { getCharacterClassElementCategory } from './get-character-class-element-category'
 import { getCharacterClassElementValue } from './get-character-class-element-value'
-import { getCharacterClassElementRaw } from './get-character-class-element-raw'
 
 export interface CharacterClassElementSortKey {
   normalized: string
@@ -22,6 +21,6 @@ export function getCharacterClassElementSortKey(
   return {
     category: getCharacterClassElementCategory(element),
     normalized: getCharacterClassElementValue(element),
-    raw: getCharacterClassElementRaw(element),
+    raw: element.raw,
   }
 }

@@ -20,7 +20,6 @@ import {
 } from './sort-regexp/types'
 import { createCharacterClassSortingNode } from './sort-regexp/create-character-class-sorting-node'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getCharacterClassElementRaw } from './sort-regexp/get-character-class-element-raw'
 import { hasShadowingAlternatives } from './sort-regexp/has-shadowing-alternatives'
 import { createFlagSortingNodes } from './sort-regexp/create-flag-sorting-nodes'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -290,12 +289,8 @@ export default createEslintRule<Options, MessageId>({
           )
 
           if (needsSort) {
-            let originalRawElements = elements.map(element =>
-              getCharacterClassElementRaw(element),
-            )
-            let sortedRawElements = sortedElements.map(element =>
-              getCharacterClassElementRaw(element),
-            )
+            let originalRawElements = elements.map(element => element.raw)
+            let sortedRawElements = sortedElements.map(element => element.raw)
 
             let mismatchIndex = originalRawElements.findIndex(
               (raw, index) => raw !== sortedRawElements[index],

@@ -1,8 +1,8 @@
 import type { CharacterClass } from '@eslint-community/regexpp/ast'
 
-import { isLowercaseCharacter } from './is-lowercase-character'
-import { isUppercaseCharacter } from './is-uppercase-character'
-import { isDigitCharacter } from './is-digit-character'
+const DIGIT_CHARACTER_PATTERN = /^\p{Nd}$/u
+const LOWERCASE_CHARACTER_PATTERN = /^\p{Ll}$/u
+const UPPERCASE_CHARACTER_PATTERN = /^\p{Lu}$/u
 
 /**
  * Maps a character class element to a sortable category bucket.
@@ -77,4 +77,44 @@ export function getCharacterClassElementCategory(
   }
 
   return category
+}
+
+/**
+ * Determines whether the provided code point is a lowercase letter.
+ *
+ * @param value - Code point to evaluate.
+ * @returns True when the value is lowercase.
+ */
+export function isLowercaseCharacter(value: number): boolean {
+  return LOWERCASE_CHARACTER_PATTERN.test(codePointToString(value))
+}
+
+/**
+ * Determines whether the provided code point is an uppercase letter.
+ *
+ * @param value - Code point to evaluate.
+ * @returns True when the value is uppercase.
+ */
+export function isUppercaseCharacter(value: number): boolean {
+  return UPPERCASE_CHARACTER_PATTERN.test(codePointToString(value))
+}
+
+/**
+ * Checks whether the given code point represents a digit character.
+ *
+ * @param value - Code point to inspect.
+ * @returns True when the value corresponds to a digit character.
+ */
+export function isDigitCharacter(value: number): boolean {
+  return DIGIT_CHARACTER_PATTERN.test(codePointToString(value))
+}
+
+/**
+ * Converts the provided code point into its string representation.
+ *
+ * @param value - Code point to convert.
+ * @returns String representation of the code point.
+ */
+function codePointToString(value: number): string {
+  return String.fromCodePoint(value)
 }
