@@ -1,4 +1,4 @@
-/* Cspell:ignore gimsu igmus yusmig ysumgi Ωmega Δelta */
+/* Cspell:ignore gimsu igmus yusmig ysumgi zyxabc Ωmega Δelta */
 
 import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
@@ -891,6 +891,51 @@ describe('sort-regexp', () => {
       })
     })
 
+    it('sorts alternatives inside single group without affecting backreference', async () => {
+      await invalid({
+        errors: [
+          {
+            data: { right: 'cat', left: 'dog' },
+            messageId: 'unexpectedRegExpOrder',
+          },
+        ],
+        output: dedent(String.raw`
+          /(cat|dog)\s\1/
+        `),
+        code: dedent(String.raw`
+          /(dog|cat)\s\1/
+        `),
+        options: [options],
+      })
+    })
+
+    it('does not sort when multiple groups exist with backreferences', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /(c)(b)(a)\1\2\3/
+        `),
+        options: [options],
+      })
+    })
+
+    it('sorts alternatives with named group backreferences', async () => {
+      await invalid({
+        errors: [
+          {
+            data: { right: 'pet: cat', left: 'pet: dog' },
+            messageId: 'unexpectedRegExpOrder',
+          },
+        ],
+        output: dedent(String.raw`
+          /(?<pet>cat|dog)\s\k<pet>/
+        `),
+        code: dedent(String.raw`
+          /(?<pet>dog|cat)\s\k<pet>/
+        `),
+        options: [options],
+      })
+    })
+
     it('sorts alternatives with non-capturing groups', async () => {
       await invalid({
         errors: [
@@ -1276,6 +1321,42 @@ describe('sort-regexp', () => {
         `,
         code: dedent`
           /[z0-9a-f]/
+        `,
+        options: [options],
+      })
+    })
+
+    it('does not sort character classes with v flag (set operations)', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /[za]/v
+        `),
+        options: [options],
+      })
+    })
+
+    it('does not sort character classes with v flag to avoid breaking set operations', async () => {
+      await valid({
+        code: dedent`
+          /[zyxabc]/v
+        `,
+        options: [options],
+      })
+    })
+
+    it('still sorts flags even with v flag present', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+            data: { right: 'g', left: 'v' },
+          },
+        ],
+        output: dedent`
+          /pattern/gv
+        `,
+        code: dedent`
+          /pattern/vg
         `,
         options: [options],
       })
@@ -2551,6 +2632,42 @@ describe('sort-regexp', () => {
         options: [options],
       })
     })
+
+    it('does not sort character classes with v flag (set operations)', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /[za]/v
+        `),
+        options: [options],
+      })
+    })
+
+    it('does not sort character classes with v flag to avoid breaking set operations', async () => {
+      await valid({
+        code: dedent`
+          /[zyxabc]/v
+        `,
+        options: [options],
+      })
+    })
+
+    it('still sorts flags even with v flag present', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+            data: { right: 'g', left: 'v' },
+          },
+        ],
+        output: dedent`
+          /pattern/gv
+        `,
+        code: dedent`
+          /pattern/vg
+        `,
+        options: [options],
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -2894,6 +3011,24 @@ describe('sort-regexp', () => {
         `,
         code: dedent`
           /(abd|abcd)/
+        `,
+        options: [options],
+      })
+    })
+
+    it('does not sort character classes with v flag (set operations)', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /[za]/v
+        `),
+        options: [options],
+      })
+    })
+
+    it('does not sort character classes with v flag to avoid breaking set operations', async () => {
+      await valid({
+        code: dedent`
+          /[zyxabc]/v
         `,
         options: [options],
       })

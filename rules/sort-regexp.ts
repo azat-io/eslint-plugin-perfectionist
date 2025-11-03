@@ -234,6 +234,10 @@ export default createEslintRule<Options, MessageId>({
             return
           }
 
+          if (literalNode.regex.flags.includes('v')) {
+            return
+          }
+
           let sortedElements = [...elements].toSorted((a, b) => {
             let aKey = getCharacterClassElementSortKey(a)
             let bKey = getCharacterClassElementSortKey(b)
