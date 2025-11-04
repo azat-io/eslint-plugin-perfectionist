@@ -13,6 +13,16 @@ export function hasShadowingAlternatives({
 }: {
   alternatives: Alternative[]
 }): boolean {
+  let hasNegatedCharacterClassAlternative = alternatives.some(alternative => {
+    let firstElement = alternative.elements.at(0)
+
+    return firstElement?.type === 'CharacterClass' && firstElement.negate
+  })
+
+  if (hasNegatedCharacterClassAlternative) {
+    return true
+  }
+
   let rawAlternatives = alternatives.map(alternative => alternative.raw)
 
   for (let index = 0; index < rawAlternatives.length; index++) {

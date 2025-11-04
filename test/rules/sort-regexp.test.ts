@@ -567,6 +567,15 @@ describe('sort-regexp', () => {
       })
     })
 
+    it('does not reorder alternatives when negated character class overlaps literal', async () => {
+      await valid({
+        code: dedent`
+          /(?:\([^)]*\)|[^;])+/
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts alternatives with special characters', async () => {
       await invalid({
         errors: [
@@ -1940,6 +1949,15 @@ describe('sort-regexp', () => {
       })
     })
 
+    it('does not reorder alternatives when negated character class overlaps literal', async () => {
+      await valid({
+        code: dedent`
+          /(?:\([^)]*\)|[^;])+/
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts alternatives with special characters', async () => {
       await invalid({
         errors: [
@@ -2853,6 +2871,15 @@ describe('sort-regexp', () => {
       await valid({
         code: dedent`
           /(20|1|10|2|3)/
+        `,
+        options: [options],
+      })
+    })
+
+    it('does not reorder alternatives when negated character class overlaps literal', async () => {
+      await valid({
+        code: dedent`
+          /(?:\([^)]*\)|[^;])+/
         `,
         options: [options],
       })
