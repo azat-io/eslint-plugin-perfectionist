@@ -576,6 +576,15 @@ describe('sort-regexp', () => {
       })
     })
 
+    it('does not reorder @import alternatives with greedy negated class', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /@import(?:\s*url\([^)]*\).*?|[^;]*);/
+        `),
+        options: [options],
+      })
+    })
+
     it('sorts alternatives with special characters', async () => {
       await invalid({
         errors: [
@@ -1958,6 +1967,15 @@ describe('sort-regexp', () => {
       })
     })
 
+    it('does not reorder @import alternatives with greedy negated class', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /@import(?:\s*url\([^)]*\).*?|[^;]*);/
+        `),
+        options: [options],
+      })
+    })
+
     it('sorts alternatives with special characters', async () => {
       await invalid({
         errors: [
@@ -2881,6 +2899,15 @@ describe('sort-regexp', () => {
         code: dedent`
           /(?:\([^)]*\)|[^;])+/
         `,
+        options: [options],
+      })
+    })
+
+    it('does not reorder @import alternatives with greedy negated class', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /@import(?:\s*url\([^)]*\).*?|[^;]*);/
+        `),
         options: [options],
       })
     })

@@ -16,7 +16,18 @@ export function hasShadowingAlternatives({
   let hasNegatedCharacterClassAlternative = alternatives.some(alternative => {
     let firstElement = alternative.elements.at(0)
 
-    return firstElement?.type === 'CharacterClass' && firstElement.negate
+    if (!firstElement) {
+      return false
+    }
+
+    if (
+      firstElement.type === 'Quantifier' &&
+      firstElement.element.type === 'CharacterClass'
+    ) {
+      return firstElement.element.negate
+    }
+
+    return firstElement.type === 'CharacterClass' && firstElement.negate
   })
 
   if (hasNegatedCharacterClassAlternative) {
