@@ -1308,6 +1308,15 @@ describe('sort-regexp', () => {
       })
     })
 
+    it('keeps literal hyphen last when mixed with character sets', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /[\w$-]/
+        `),
+        options: [options],
+      })
+    })
+
     it('preserves range when hyphen is part of range', async () => {
       await invalid({
         errors: [
@@ -2611,6 +2620,15 @@ describe('sort-regexp', () => {
         code: dedent`
           /[za-]/
         `,
+        options: [options],
+      })
+    })
+
+    it('keeps literal hyphen last when mixed with character sets', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /[\w$-]/
+        `),
         options: [options],
       })
     })

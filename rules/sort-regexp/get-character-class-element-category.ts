@@ -3,6 +3,7 @@ import type { CharacterClass } from '@eslint-community/regexpp/ast'
 const DIGIT_CHARACTER_PATTERN = /^\p{Nd}$/u
 const LOWERCASE_CHARACTER_PATTERN = /^\p{Ll}$/u
 const UPPERCASE_CHARACTER_PATTERN = /^\p{Lu}$/u
+const HYPHEN_CODE_POINT = '-'.codePointAt(0)!
 
 /**
  * Maps a character class element to a sortable category bucket.
@@ -61,6 +62,12 @@ export function getCharacterClassElementCategory(
       break
     }
     case 'Character': {
+      if (element.value === HYPHEN_CODE_POINT) {
+        category = 5
+
+        break
+      }
+
       if (isDigitCharacter(element.value)) {
         category = 0
       } else if (isUppercaseCharacter(element.value)) {
