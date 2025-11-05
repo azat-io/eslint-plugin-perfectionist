@@ -220,7 +220,9 @@ export default createEslintRule<Options, MessageId>({
         modifiers.push('named')
       }
 
-      if (!isNodeOnSingleLine(node)) {
+      if (isNodeOnSingleLine(node)) {
+        modifiers.push('singleline')
+      } else {
         modifiers.push('multiline')
       }
 
