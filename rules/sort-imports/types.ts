@@ -211,6 +211,7 @@ export interface SortImportsSortingNode extends SortingNodeWithDependencies {
  */
 export type Modifier =
   | SideEffectModifier
+  | MultilineModifier
   | WildcardModifier
   | TsEqualsModifier
   | RequireModifier
@@ -266,6 +267,9 @@ type SideEffectModifier = 'side-effect'
 
 /** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
 type IndexTypeSelector = 'index-type'
+
+/** Modifier for multiline imports. */
+type MultilineModifier = 'multiline'
 
 /** Modifier for TypeScript import-equals declarations. */
 type TsEqualsModifier = 'ts-equals'
@@ -366,6 +370,7 @@ export let allDeprecatedSelectors: Selector[] = [
  */
 export let allModifiers: Modifier[] = [
   'default',
+  'multiline',
   'named',
   'require',
   'side-effect',

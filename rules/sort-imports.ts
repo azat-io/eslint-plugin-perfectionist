@@ -40,6 +40,7 @@ import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { singleCustomGroupJsonSchema } from './sort-imports/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { allModifiers, allSelectors } from './sort-imports/types'
@@ -217,6 +218,10 @@ export default createEslintRule<Options, MessageId>({
 
       if (hasSpecifier(node, 'ImportSpecifier')) {
         modifiers.push('named')
+      }
+
+      if (!isNodeOnSingleLine(node)) {
+        modifiers.push('multiline')
       }
 
       group ??=
