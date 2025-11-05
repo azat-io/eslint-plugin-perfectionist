@@ -31,6 +31,7 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { singleCustomGroupJsonSchema } from './sort-jsx-props/types'
+import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { allModifiers, allSelectors } from './sort-jsx-props/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -115,7 +116,7 @@ export default createEslintRule<Options, MessageId>({
             if (attribute.value === null) {
               modifiers.push('shorthand')
             }
-            if (attribute.loc.start.line !== attribute.loc.end.line) {
+            if (!isNodeOnSingleLine(attribute)) {
               modifiers.push('multiline')
             }
             selectors.push('prop')
