@@ -64,28 +64,14 @@ export function getNewlinesBetweenOption({
   let nextNodeGroup = options.groups[nextNodeGroupIndex]
 
   /* NewlinesInside check. */
-  if (
-    typeof nodeGroup === 'string' &&
-    typeof nextNodeGroup === 'string' &&
-    nodeGroup === nextNodeGroup
-  ) {
+  if (typeof nodeGroup === 'string' && nodeGroup === nextNodeGroup) {
     let nodeCustomGroup = options.customGroups.find(
       customGroup => customGroup.groupName === nodeGroup,
     )
-    let nextNodeCustomGroup = options.customGroups.find(
-      customGroup => customGroup.groupName === nextNodeGroup,
-    )
-
-    if (
-      nodeCustomGroup &&
-      nextNodeCustomGroup &&
-      nodeCustomGroup.groupName === nextNodeCustomGroup.groupName
-    ) {
-      if (nodeCustomGroup.newlinesInside !== undefined) {
-        return nodeCustomGroup.newlinesInside
-      }
-      return globalNewlinesBetweenOption
+    if (nodeCustomGroup && nodeCustomGroup.newlinesInside !== undefined) {
+      return nodeCustomGroup.newlinesInside
     }
+    return globalNewlinesBetweenOption
   }
 
   /* Check if a specific newlinesBetween is defined between the two groups. */
