@@ -2635,6 +2635,76 @@ describe('sort-imports', () => {
       })
     })
 
+    it('prioritizes named imports over named multiline imports', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'named-import',
+              leftGroup: 'external',
+              right: './z',
+              left: 'f',
+            },
+            messageId: 'unexpectedImportsGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['named-import', 'external', 'multiline-import'],
+          },
+        ],
+        output: dedent`
+          import {
+            a,
+            b,
+          } from "./z"
+
+          import f from 'f'
+        `,
+        code: dedent`
+          import f from 'f'
+
+          import {
+            a,
+            b,
+          } from "./z"
+        `,
+      })
+    })
+
+    it('prioritizes named imports over named singleline imports', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'named-import',
+              leftGroup: 'external',
+              right: './z',
+              left: 'f',
+            },
+            messageId: 'unexpectedImportsGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['named-import', 'external', 'singleline-import'],
+          },
+        ],
+        output: dedent`
+          import { a } from "./z"
+
+          import f from 'f'
+        `,
+        code: dedent`
+          import f from 'f'
+
+          import { a } from "./z"
+        `,
+      })
+    })
+
     it.each([
       ['filters on element name pattern with string', 'hello'],
       ['filters on element name pattern with array', ['noMatch', 'hello']],

@@ -41,6 +41,7 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
+import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -266,7 +267,7 @@ export default createEslintRule<Options, MessageId>({
 
             selectors.push('member')
 
-            if (property.loc.start.line !== property.loc.end.line) {
+            if (!isNodeOnSingleLine(property)) {
               modifiers.push('multiline')
             }
 
