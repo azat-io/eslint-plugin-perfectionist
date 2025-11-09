@@ -424,7 +424,7 @@ export interface GroupCommentAboveOption {
  *
  * @template T - Type of group identifiers (typically string literals).
  */
-export type GroupsOptions<T> = (
+export type GroupsOptions<T extends string> = (
   | (GroupNewlinesBetweenOption & GroupCommentAboveOption)
   | GroupNewlinesBetweenOption
   | GroupCommentAboveOption
