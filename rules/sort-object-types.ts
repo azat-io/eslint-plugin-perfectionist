@@ -45,6 +45,7 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isMemberOptional } from './sort-object-types/is-member-optional'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { isNodeFunctionType } from '../utils/is-node-function-type'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -225,7 +226,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
       selectors.push('method')
     }
 
-    if (typeElement.loc.start.line !== typeElement.loc.end.line) {
+    if (!isNodeOnSingleLine(typeElement)) {
       modifiers.push('multiline')
     }
 
