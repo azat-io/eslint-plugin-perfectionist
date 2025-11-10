@@ -23,6 +23,7 @@ function computeGroupNames(group: GroupsOptions<string>[number]): string[] {
   }
   if (isNewlinesBetweenOption(group)) {
     return []
+    /* v8 ignore next 3 */
   }
   throw new UnreachableCaseError(group)
 }

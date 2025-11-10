@@ -58,6 +58,7 @@ function doesGroupMatch(group: Group, groupName: string): boolean {
   }
   if (isNewlinesBetweenOption(group)) {
     return false
+    /* v8 ignore next 3 */
   }
   throw new UnreachableCaseError(group)
 }
