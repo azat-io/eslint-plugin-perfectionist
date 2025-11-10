@@ -19,7 +19,7 @@ function computeGroupNames(group: GroupsOptions<string>[number]): string[] {
     return computeStringGroupNames(group)
   }
   if (isCommentAboveOption(group)) {
-    return []
+    return computeStringGroupNames(group.group)
   }
   if (isNewlinesBetweenOption(group)) {
     return []

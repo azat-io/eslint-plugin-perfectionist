@@ -11,8 +11,18 @@ describe('computeGroupsNames', () => {
     expect(computeGroupsNames(['foo'])).toStrictEqual(['foo'])
   })
 
-  it('should return an empty array if the group is a commentAbove object', () => {
-    expect(computeGroupsNames([{ commentAbove: 'foo' }])).toStrictEqual([])
+  describe('when the group is a comment above object', () => {
+    it('should return an array with the group if the group is a string', () => {
+      expect(
+        computeGroupsNames([{ commentAbove: 'foo', group: 'foo' }]),
+      ).toStrictEqual(['foo'])
+    })
+
+    it("should return the groups if it's an array", () => {
+      expect(
+        computeGroupsNames([{ group: ['foo', 'bar'], commentAbove: 'foo' }]),
+      ).toStrictEqual(['foo', 'bar'])
+    })
   })
 
   it('should return an empty array if the group is a newlinesBetween object', () => {
@@ -20,6 +30,13 @@ describe('computeGroupsNames', () => {
   })
 
   it('should concatenate results', () => {
-    expect(computeGroupsNames([['a', 'b'], 'c'])).toStrictEqual(['a', 'b', 'c'])
+    expect(
+      computeGroupsNames([
+        ['a', 'b'],
+        'c',
+        { commentAbove: 'd', group: 'd' },
+        { commentAbove: 'e', group: ['e', 'f'] },
+      ]),
+    ).toStrictEqual(['a', 'b', 'c', 'd', 'e', 'f'])
   })
 })

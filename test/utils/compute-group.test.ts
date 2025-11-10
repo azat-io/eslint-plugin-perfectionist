@@ -15,7 +15,7 @@ describe('computeGroup', () => {
     ).toBe('unknown')
   })
 
-  it('should return the first predefined group encountered that exists in `options.groups`', () => {
+  it('should iterate on each string group encountered in `options.groups`', () => {
     expect(
       computeGroup({
         options: {
@@ -32,6 +32,39 @@ describe('computeGroup', () => {
       computeGroup({
         options: {
           groups: ['group1', ['group2', 'group3'], 'group4'],
+          customGroups: [],
+        },
+        predefinedGroups: ['group3', 'group4'],
+      }),
+    ).toBe('group3')
+  })
+
+  it('should iterate on each string group encountered in a object-based group', () => {
+    expect(
+      computeGroup({
+        options: {
+          groups: [
+            'group1',
+            ['group2'],
+            { commentAbove: 'foo', group: 'group3' },
+            'group4',
+          ],
+          customGroups: [],
+        },
+        predefinedGroups: ['group3', 'group4'],
+      }),
+    ).toBe('group3')
+  })
+
+  it('should iterate on each array group encountered in a object-based group', () => {
+    expect(
+      computeGroup({
+        options: {
+          groups: [
+            'group1',
+            { group: ['group2', 'group3'], commentAbove: 'foo' },
+            'group4',
+          ],
           customGroups: [],
         },
         predefinedGroups: ['group3', 'group4'],

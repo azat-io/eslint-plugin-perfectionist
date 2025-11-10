@@ -11,14 +11,6 @@ describe('is-side-effect-only-group', () => {
     ).toBeFalsy()
   })
 
-  it('should return false if option is a commentAbove option', () => {
-    expect(
-      isSideEffectOnlyGroup({
-        commentAbove: 'foo',
-      }),
-    ).toBeFalsy()
-  })
-
   it.each(['side-effect', 'side-effect-style'])(
     'should return true if option `%s`',
     group => {
@@ -36,6 +28,39 @@ describe('is-side-effect-only-group', () => {
     'should return false if at least one element of a subgroup is not a side-effect group (`%s`)',
     group => {
       expect(isSideEffectOnlyGroup(['group1', group])).toBeFalsy()
+    },
+  )
+
+  it.each(['side-effect', 'side-effect-style'])(
+    'should return true if object-based option has group `%s`',
+    group => {
+      expect(
+        isSideEffectOnlyGroup({
+          commentAbove: 'foo',
+          group,
+        }),
+      ).toBeTruthy()
+    },
+  )
+
+  it('should return true if object-based option has all elements of group is a side-effect group', () => {
+    expect(
+      isSideEffectOnlyGroup({
+        group: ['side-effect', 'side-effect-style'],
+        commentAbove: 'foo',
+      }),
+    ).toBeTruthy()
+  })
+
+  it.each(['side-effect', 'side-effect-style'])(
+    'should return false if object-based option has at least one element of a subgroup that is not a side-effect group (`%s`)',
+    group => {
+      expect(
+        isSideEffectOnlyGroup({
+          group: ['group1', group],
+          commentAbove: 'foo',
+        }),
+      ).toBeFalsy()
     },
   )
 })

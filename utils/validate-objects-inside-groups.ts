@@ -66,9 +66,7 @@ export function validateObjectsInsideGroups({
     }
 
     if (isPreviousElementNonGroupBased) {
-      throw new Error(
-        'Consecutive objects (`newlinesBetween` or `commentAbove` are not allowed: merge them into a single object',
-      )
+      throw new Error('Consecutive `newlinesBetween` objects are not allowed')
     }
     isPreviousElementNonGroupBased = true
   }

@@ -105,27 +105,18 @@ describe('validate-generated-groups-configuration', () => {
     ).toThrow('Invalid group(s): nonAllowedModifier-selector1, myCustomGroup')
   })
 
-  it.each([
-    { groups: [{ newlinesBetween: 1 }, { newlinesBetween: 1 }] },
-    { groups: [{ newlinesBetween: 1 }, { commentAbove: 'foo' }] },
-    { groups: [{ commentAbove: 'foo' }, { commentAbove: 'bar' }] },
-  ] as const)(
-    'throws an error with consecutive newlines/commentAbove objects (%s)',
-    ({ groups }) => {
-      expect(() => {
-        validateGeneratedGroupsConfiguration({
-          options: {
-            groups: [...groups],
-            customGroups: [],
-          },
-          selectors: [],
-          modifiers: [],
-        })
-      }).toThrow(
-        'Consecutive objects (`newlinesBetween` or `commentAbove` are not allowed: merge them into a single object',
-      )
-    },
-  )
+  it('throws an error with consecutive newlinesBetween objects', () => {
+    expect(() => {
+      validateGeneratedGroupsConfiguration({
+        options: {
+          groups: ['unknown', { newlinesBetween: 1 }, { newlinesBetween: 1 }],
+          customGroups: [],
+        },
+        selectors: [],
+        modifiers: [],
+      })
+    }).toThrow('Consecutive `newlinesBetween` objects are not allowed')
+  })
 })
 
 function getAllNonEmptyCombinations(array: string[]): string[][] {

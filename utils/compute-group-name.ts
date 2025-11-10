@@ -8,7 +8,10 @@ import { UnreachableCaseError } from './unreachable-case-error'
  * Computes the name of a group based on the provided group object.
  *
  * @param group - The group object.
- * @returns A string if the group is a string.
+ * @returns A string if:
+ *
+ *   - The group is a string
+ *   - The group is a commentAbove option with a string group.
  */
 export function computeGroupName(
   group: GroupsOptions<string>[number],
@@ -17,7 +20,7 @@ export function computeGroupName(
     return computeStringGroupName(group)
   }
   if (isCommentAboveOption(group)) {
-    return null
+    return computeStringGroupName(group.group)
   }
   if (isNewlinesBetweenOption(group)) {
     return null
