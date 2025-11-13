@@ -399,7 +399,7 @@ export interface GroupWithOverridesOption {
    * Text of the comment to insert above the group. The comment will be
    * formatted as a line comment (// ...).
    */
-  commentAbove: string
+  commentAbove?: string
 }
 
 /**

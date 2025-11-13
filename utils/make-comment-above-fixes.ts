@@ -63,7 +63,8 @@ export function makeCommentAboveFixes({
   let allAutoAddedComments = new Set(
     options.groups
       .filter(group => isGroupWithOverridesOption(group))
-      .map(({ commentAbove }) => commentAbove),
+      .map(({ commentAbove }) => commentAbove)
+      .filter(comment => comment !== undefined),
   )
 
   let fixes: TSESLint.RuleFix[] = []
