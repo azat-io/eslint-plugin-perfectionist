@@ -2,6 +2,7 @@ import type { NodeValueGetterFunction } from '../../utils/compare'
 import type { SortObjectTypesSortingNode, Options } from './types'
 
 import { getCustomGroupsCompareOptions as baseGetCustomGroupsCompareOptions } from '../../utils/get-custom-groups-compare-options'
+import { computeGroupName } from '../../utils/compute-group-name'
 import { buildNodeValueGetter } from './build-node-value-getter'
 
 /** Subset of options needed for determining compare behavior for object types. */
@@ -43,10 +44,10 @@ export function getCustomGroupsCompareOptions(
   let { fallbackSort, customGroups, sortBy, groups } = options
   let fallbackSortBy = fallbackSort.sortBy
   let group = groups[groupIndex]
-  let customGroup =
-    typeof group === 'string'
-      ? customGroups.find(currentGroup => group === currentGroup.groupName)
-      : null
+  let groupName = group ? computeGroupName(group) : null
+  let customGroup = customGroups.find(
+    currentGroup => groupName === currentGroup.groupName,
+  )
 
   if (customGroup) {
     fallbackSortBy = customGroup.fallbackSort?.sortBy ?? fallbackSortBy

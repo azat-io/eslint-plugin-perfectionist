@@ -7,6 +7,8 @@ import type {
 } from '../types/common-options'
 import type { BaseSortNodesByGroupsOptions } from './sort-nodes-by-groups'
 
+import { computeGroupName } from './compute-group-name'
+
 /**
  * Sorting options that can be overridden at the custom group level.
  *
@@ -93,10 +95,10 @@ export function getCustomGroupsCompareOptions(
   let { customGroups, fallbackSort, groups, order, type } = options
 
   let group = groups[groupIndex]
-  let customGroup =
-    typeof group === 'string'
-      ? customGroups.find(currentGroup => group === currentGroup.groupName)
-      : null
+  let groupName = group ? computeGroupName(group) : null
+  let customGroup = customGroups.find(
+    currentGroup => groupName === currentGroup.groupName,
+  )
 
   if (customGroup) {
     fallbackSort = {
