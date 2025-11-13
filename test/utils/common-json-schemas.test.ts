@@ -170,10 +170,12 @@ describe('common-json-schemas', () => {
       expect(groupsJsonSchemaValidator(['group1', 'group2'])).toBeTruthy()
     })
 
-    it('should allow an array of arrays of strings', () => {
-      expect(
-        groupsJsonSchemaValidator([['group1', 'group2'], ['group3']]),
-      ).toBeTruthy()
+    it('should allow an array of non-empty arrays of strings', () => {
+      expect(groupsJsonSchemaValidator([['group1'], ['group3']])).toBeTruthy()
+    })
+
+    it('should not allow empty sub-arrays', () => {
+      expect(groupsJsonSchemaValidator([[], ['group3']])).toBeFalsy()
     })
 
     describe('newlinesBetween', () => {

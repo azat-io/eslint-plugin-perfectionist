@@ -173,6 +173,7 @@ export let groupsJsonSchema: JSONSchema4 = {
           type: 'string',
         },
         type: 'array',
+        minItems: 1,
       },
       {
         properties: {
