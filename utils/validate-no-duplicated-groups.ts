@@ -1,7 +1,6 @@
 import type { GroupsOptions } from '../types/common-options'
 
-import { isNewlinesBetweenOption } from './is-newlines-between-option'
-import { isCommentAboveOption } from './is-comment-above-option'
+import { computeGroupsNames } from './compute-groups-names'
 
 /**
  * Throws an error if a group is specified more than once.
@@ -15,18 +14,15 @@ export function validateNoDuplicatedGroups({
 }: {
   groups: GroupsOptions<string>
 }): void {
-  let flattenGroups = groups.flat()
+  let groupNames = computeGroupsNames(groups)
   let seenGroups = new Set<string>()
   let duplicatedGroups = new Set<string>()
 
-  for (let group of flattenGroups) {
-    if (isNewlinesBetweenOption(group) || isCommentAboveOption(group)) {
-      continue
-    }
-    if (seenGroups.has(group)) {
-      duplicatedGroups.add(group)
+  for (let groupName of groupNames) {
+    if (seenGroups.has(groupName)) {
+      duplicatedGroups.add(groupName)
     } else {
-      seenGroups.add(group)
+      seenGroups.add(groupName)
     }
   }
 
