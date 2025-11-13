@@ -1,7 +1,7 @@
 import type { GroupsOptions } from '../types/common-options'
 
+import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
-import { isCommentAboveOption } from './is-comment-above-option'
 import { UnreachableCaseError } from './unreachable-case-error'
 
 /**
@@ -10,7 +10,7 @@ import { UnreachableCaseError } from './unreachable-case-error'
  * @param group - The group object.
  * @returns A string if:
  *
- *   - The group is a string
+ *   - The group is a string.
  *   - The group is a commentAbove option with a string group.
  */
 export function computeGroupName(
@@ -19,7 +19,7 @@ export function computeGroupName(
   if (typeof group === 'string' || Array.isArray(group)) {
     return computeStringGroupName(group)
   }
-  if (isCommentAboveOption(group)) {
+  if (isGroupWithOverridesOption(group)) {
     return computeStringGroupName(group.group)
   }
   if (isNewlinesBetweenOption(group)) {

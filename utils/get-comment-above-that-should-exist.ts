@@ -3,7 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import type { CustomGroupsOption, GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
-import { isCommentAboveOption } from './is-comment-above-option'
+import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { getCommentsBefore } from './get-comments-before'
 
 /**
@@ -92,7 +92,7 @@ export function getCommentAboveThatShouldExist<T extends SortingNode>({
   }
 
   let rightGroup = options.groups[rightGroupIndex]
-  if (!rightGroup || !isCommentAboveOption(rightGroup)) {
+  if (!rightGroup || !isGroupWithOverridesOption(rightGroup)) {
     return null
   }
 

@@ -384,20 +384,16 @@ export interface AnyOfCustomGroup<SingleCustomGroup> {
 }
 
 /**
- * Configuration for adding comment separators above groups.
- *
- * Automatically inserts a comment above a group to visually separate and label
- * different sections of code. Useful for improving code organization and
- * readability.
+ * Configuration for groups with overriding settings.
  *
  * @example
  *   const groups = [
  *     'imports',
- *     { commentAbove: '// Component Definitions' },
+ *     { group: 'group', commentAbove: '// Component Definitions' },
  *     'components',
  *   ]
  */
-export interface GroupCommentAboveOption {
+export interface GroupWithOverridesOption {
   group: string[] | string
   /**
    * Text of the comment to insert above the group. The comment will be
@@ -428,7 +424,7 @@ export interface GroupCommentAboveOption {
  */
 export type GroupsOptions<T extends string> = (
   | GroupNewlinesBetweenOption
-  | GroupCommentAboveOption
+  | GroupWithOverridesOption
   | T[]
   | T
 )[]

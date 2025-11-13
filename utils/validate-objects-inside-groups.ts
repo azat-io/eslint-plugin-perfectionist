@@ -5,10 +5,8 @@ import { computeGroupsNames } from './compute-groups-names'
 /**
  * Validates that consecutive objects in groups are merged into single objects.
  *
- * Prevents configuration confusion by ensuring that spacing and comment
- * directives are consolidated. Consecutive objects for `newlinesBetween` or
- * `commentAbove` should be merged into a single object for clarity and to avoid
- * ambiguous behavior.
+ * Prevents configuration confusion by ensuring that spacing and object-based
+ * groups are consolidated.
  *
  * @example
  *   // Invalid: Consecutive objects
@@ -16,11 +14,12 @@ import { computeGroupsNames } from './compute-groups-names'
  *     groups: [
  *       'react',
  *       { newlinesBetween: 1 },
- *       { commentAbove: '// External libraries' }, // Error: consecutive objects
+ *       { newlinesBetween: 2 }, // Error: consecutive objects
+ *       { group: 'group', commentAbove: '// External libraries' },
  *       'external',
  *     ],
  *   })
- *   // Throws: Consecutive objects are not allowed: merge them into a single object
+ *   // Throws: Consecutive `newlinesBetween` objects are not allowed
  *
  * @example
  *   // Valid: Merged into single object
