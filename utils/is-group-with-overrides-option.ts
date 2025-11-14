@@ -30,5 +30,5 @@ import type {
 export function isGroupWithOverridesOption(
   groupOption: GroupsOptions<string>[number],
 ): groupOption is GroupWithOverridesOption {
-  return typeof groupOption === 'object' && 'commentAbove' in groupOption
+  return typeof groupOption === 'object' && 'group' in groupOption
 }
