@@ -212,6 +212,18 @@ describe('common-json-schemas', () => {
     })
 
     describe('group with overrides option', () => {
+      it('should not allow less than 2 properties set', () => {
+        expect(groupsJsonSchemaValidator([{ group: 'group' }])).toBeFalsy()
+      })
+
+      it('should not allow group to be undefined', () => {
+        expect(
+          groupsJsonSchemaValidator([
+            { commentAbove: 'foo', type: 'unsorted' },
+          ]),
+        ).toBeFalsy()
+      })
+
       describe('commentAbove', () => {
         it("should allow 'commentAbove' with string group", () => {
           expect(
