@@ -418,8 +418,8 @@ export interface GroupCommentAboveOption {
  *     'imports',
  *     { newlinesBetween: 1 },
  *     'types',
- *     { commentAbove: '// Components' },
- *     ['components', 'hooks'], // Composite group
+ *     { group: 'components', commentAbove: '// Components' }, // Object-based group
+ *     ['services', 'hooks'], // Composite group
  *     { newlinesBetween: 2 },
  *     'utils',
  *   ]
