@@ -219,7 +219,11 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
       | string
       | string[]
       | { newlinesBetween: number }
-      | { group: string | string[]; commentAbove: string }
+      | {
+          group: string | string[];
+          commentAbove?: string;
+          type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+        }
     >
   ```
 </sub>
@@ -254,6 +258,21 @@ Example: `type-export`.
 
 Members that don’t fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option,
 it will automatically be added to the end of the list.
+
+##### Group with overridden settings
+
+You may directly override options for a specific group by using an object with the `group` property and other option overrides.
+
+- `type` — Overrides the [`type`](#type) option for that group.
+
+```ts
+{
+  groups: [
+    'myCustomGroup1',
+    { group: 'myCustomGroup2', type: 'unsorted' }, // Elements from this group will not be sorted
+  ]
+}
+```
 
 ##### Newlines between groups
 

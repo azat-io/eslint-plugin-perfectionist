@@ -466,6 +466,10 @@ Example configuration:
       | string
       | string[]
       | { newlinesBetween: number }
+      | {
+          group: string | string[];
+          type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+        }
     >
   ```
 </sub>
@@ -555,6 +559,21 @@ interface Test {
 - `multiline-member`.
 - `member`.
 - `unknown`.
+
+#### Group with overridden settings
+
+You may directly override options for a specific group by using an object with the `group` property and other option overrides.
+
+- `type` — Overrides the [`type`](#type) option for that group.
+
+```ts
+{
+  groups: [
+    'method',
+    { group: 'multiline-member', type: 'unsorted' }, // Elements from this group will not be sorted
+  ]
+}
+```
 
 ##### Newlines between groups
 

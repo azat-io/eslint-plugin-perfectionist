@@ -291,7 +291,11 @@ If this option is not set, the rule will not search for a `tsconfig.json` file.
       | string
       | string[]
       | { newlinesBetween: number }
-      | { group: string | string[]; commentAbove: string }
+      | {
+          group: string | string[];
+          commentAbove?: string;
+          type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+        }
     >
   ```
 </sub>
@@ -443,6 +447,21 @@ import type { Details } from './data'
 import type { BaseOptions } from './index.d.ts'
 // 'value-ts-equals-import' - TypeScript import-equals imports
 import NotFoundError = ErrorsNamespace.NotFoundError
+```
+
+#### Group with overridden settings
+
+You may directly override options for a specific group by using an object with the `group` property and other option overrides.
+
+- `type` — Overrides the [`type`](#type) option for that group.
+
+```ts
+{
+  groups: [
+    'external',
+    { group: 'sibling', type: 'unsorted' }, // Elements from this group will not be sorted
+  ]
+}
 ```
 
 #### Newlines between groups

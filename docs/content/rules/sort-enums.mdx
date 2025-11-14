@@ -239,6 +239,10 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
       | string
       | string[]
       | { newlinesBetween: number }
+      | {
+          group: string | string[];
+          type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+        }
     >
   ```
 </sub>
@@ -253,6 +257,21 @@ Within a given group, members will be sorted according to the `type`, `order`, `
 
 Individual groups can be combined together by placing them in an array. The order of groups in that array does not matter.
 All members of the groups in the array will be sorted together as if they were part of a single group.
+
+##### Group with overridden settings
+
+You may directly override options for a specific group by using an object with the `group` property and other option overrides.
+
+- `type` — Overrides the [`type`](#type) option for that group.
+
+```ts
+{
+  groups: [
+    'myCustomGroup1',
+    { group: 'myCustomGroup2', type: 'unsorted' }, // Elements from this group will not be sorted
+  ]
+}
+```
 
 #### Newlines between groups
 
