@@ -213,7 +213,14 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
 ### groups
 
 <sub>
-  type: `Array<string | string[]>`
+  type:
+  ```ts
+    Array<
+      | string
+      | string[]
+      | { newlinesBetween?: number; commentAbove?: string }
+    >
+  ```
 </sub>
 <sub>default: `[]`</sub>
 
@@ -268,7 +275,7 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 
 #### Comment above groups
 
-You may place `commentAbove` objects between above your groups to enforce the presence of a comment containing the
+You may place `commentAbove` objects above your groups to enforce the presence of a comment containing the
 content of `commentAbove`.
 
 `newlinesBetween` and `commentAbove` objects can be combined together.
