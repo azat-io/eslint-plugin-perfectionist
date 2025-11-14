@@ -141,32 +141,6 @@ export type Options = Partial<{
 }>[]
 
 /**
- * Union type of all available import selectors. Used to categorize different
- * types of import statements.
- */
-export type Selector =
-  | SideEffectStyleSelector
-  | InternalTypeSelector
-  | ExternalTypeSelector
-  | TsconfigPathSelector
-  | SiblingTypeSelector
-  | BuiltinTypeSelector
-  | SideEffectSelector
-  | ParentTypeSelector
-  | IndexTypeSelector
-  | ExternalSelector
-  | InternalSelector
-  | BuiltinSelector
-  | SiblingSelector
-  | SubpathSelector
-  | ImportSelector
-  | ObjectSelector
-  | ParentSelector
-  | IndexSelector
-  | StyleSelector
-  | TypeSelector
-
-/**
  * Defines a custom group for import categorization.
  *
  * Custom groups allow fine-grained control over how imports are grouped and
@@ -192,6 +166,25 @@ export type SingleCustomGroup = {
    */
   elementNamePattern?: RegexOption
 }
+
+/**
+ * Union type of all available import selectors. Used to categorize different
+ * types of import statements.
+ */
+export type Selector =
+  | SideEffectStyleSelector
+  | TsconfigPathSelector
+  | SideEffectSelector
+  | ExternalSelector
+  | InternalSelector
+  | BuiltinSelector
+  | SiblingSelector
+  | SubpathSelector
+  | ImportSelector
+  | ParentSelector
+  | IndexSelector
+  | StyleSelector
+  | TypeSelector
 
 /**
  * Represents a sorting node for an import statement. Extends the base sorting
@@ -236,12 +229,6 @@ type TypeGroup = JoinWithDash<[TypeModifier, Selector]>
 /** Selector for side-effect imports that are style files (CSS, SCSS, etc.). */
 type SideEffectStyleSelector = 'side-effect-style'
 
-/** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
-type InternalTypeSelector = 'internal-type'
-
-/** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
-type ExternalTypeSelector = 'external-type'
-
 /** Selector for imports using TypeScript path aliases defined in tsconfig.json. */
 type TsconfigPathSelector = 'tsconfig-path'
 
@@ -251,26 +238,14 @@ type TsconfigPathSelector = 'tsconfig-path'
  */
 type ValueGroup = JoinWithDash<[Selector]>
 
-/** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
-type SiblingTypeSelector = 'sibling-type'
-
-/** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
-type BuiltinTypeSelector = 'builtin-type'
-
 /** Selector for side-effect imports (imports without bindings). */
 type SideEffectSelector = 'side-effect'
-
-/** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
-type ParentTypeSelector = 'parent-type'
 
 /** Modifier for side-effect imports. */
 type SideEffectModifier = 'side-effect'
 
 /** Modifier for single-line imports. */
 type SinglelineModifier = 'singleline'
-
-/** @deprecated Since v4.12.0. Will be removed in v5.0.0. */
-type IndexTypeSelector = 'index-type'
 
 /** Modifier for multiline imports. */
 type MultilineModifier = 'multiline'
@@ -307,9 +282,6 @@ type RequireModifier = 'require'
 
 /** Selector for parent module imports (from parent directories). */
 type ParentSelector = 'parent'
-
-/** @deprecated This selector is never matched. Will be removed in v5.0.0. */
-type ObjectSelector = 'object'
 
 /** Base selector for all import statements. */
 type ImportSelector = 'import'
@@ -350,22 +322,6 @@ export let allSelectors: Selector[] = [
   'index',
   'style',
   'type',
-]
-
-/**
- * List of deprecated import selectors. Maintained for backward compatibility
- * but should not be used in new configurations.
- *
- * Will be removed in v5.0.0.
- */
-export let allDeprecatedSelectors: Selector[] = [
-  'internal-type',
-  'external-type',
-  'sibling-type',
-  'builtin-type',
-  'parent-type',
-  'index-type',
-  'object',
 ]
 
 /**

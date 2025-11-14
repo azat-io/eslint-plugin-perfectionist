@@ -520,47 +520,23 @@ describe('sort-imports', () => {
 
     it('groups style imports separately when configured', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'type',
-              ['builtin', 'external'],
-              'internal-type',
-              'internal',
-              ['parent-type', 'sibling-type', 'index-type'],
-              ['parent', 'sibling', 'index'],
-              'style',
-              'unknown',
-            ],
-          },
-        ],
         code: dedent`
           import { a1, a2 } from 'a'
 
           import styles from '../s.css'
           import './t.css'
         `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown', 'style'],
+          },
+        ],
       })
     })
 
     it('groups side-effect imports separately when configured', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'type',
-              ['builtin', 'external'],
-              'internal-type',
-              'internal',
-              ['parent-type', 'sibling-type', 'index-type'],
-              ['parent', 'sibling', 'index'],
-              'side-effect',
-              'unknown',
-            ],
-          },
-        ],
         code: dedent`
           import { A } from '../a'
           import { b } from './b'
@@ -568,6 +544,12 @@ describe('sort-imports', () => {
           import '../c.js'
           import './d'
         `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown', 'side-effect'],
+          },
+        ],
       })
     })
 
@@ -576,33 +558,19 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: ['builtin-type', 'type'],
+            groups: ['type-builtin', 'type-import'],
           },
         ],
         code: dedent`
           import type { Server } from 'http'
 
-          import a from 'a'
+          import type { a } from 'a'
         `,
       })
     })
 
     it('handles imports with semicolons correctly', async () => {
       await invalid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'type',
-              ['builtin', 'external'],
-              'internal-type',
-              'internal',
-              ['parent-type', 'sibling-type', 'index-type'],
-              ['parent', 'sibling', 'index'],
-              'unknown',
-            ],
-          },
-        ],
         errors: [
           {
             data: {
@@ -621,6 +589,7 @@ describe('sort-imports', () => {
           import a from 'a';
           import b from './index';
         `,
+        options: [options],
       })
     })
 
@@ -2176,8 +2145,8 @@ describe('sort-imports', () => {
         errors: [
           {
             data: {
-              leftGroup: 'sibling-type',
-              rightGroup: 'index-type',
+              leftGroup: 'type-sibling',
+              rightGroup: 'type-index',
               right: './index',
               left: './a',
             },
@@ -2187,7 +2156,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: ['index-type', 'sibling-type'],
+            groups: ['type-index', 'type-sibling'],
           },
         ],
         output: dedent`
@@ -2199,53 +2168,6 @@ describe('sort-imports', () => {
           import type a from './a'
 
           import type b from './index'
-        `,
-      })
-    })
-
-    it('prioritizes specific type selectors over generic type group', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: [
-              [
-                'index-type',
-                'internal-type',
-                'external-type',
-                'sibling-type',
-                'builtin-type',
-              ],
-              'type',
-            ],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              rightGroup: 'sibling-type',
-              leftGroup: 'type',
-              right: './b',
-              left: '../a',
-            },
-            messageId: 'unexpectedImportsGroupOrder',
-          },
-        ],
-        output: dedent`
-          import type b from './b'
-          import type c from './index'
-          import type d from 'd'
-          import type e from 'timers'
-
-          import type a from '../a'
-        `,
-        code: dedent`
-          import type a from '../a'
-
-          import type b from './b'
-          import type c from './index'
-          import type d from 'd'
-          import type e from 'timers'
         `,
       })
     })
@@ -4198,47 +4120,23 @@ describe('sort-imports', () => {
 
     it('groups style imports separately when configured', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'type',
-              ['builtin', 'external'],
-              'internal-type',
-              'internal',
-              ['parent-type', 'sibling-type', 'index-type'],
-              ['parent', 'sibling', 'index'],
-              'style',
-              'unknown',
-            ],
-          },
-        ],
         code: dedent`
           import { a1, a2 } from 'a'
 
           import styles from '../s.css'
           import './t.css'
         `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown', 'style'],
+          },
+        ],
       })
     })
 
     it('groups side-effect imports separately when configured', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'type',
-              ['builtin', 'external'],
-              'internal-type',
-              'internal',
-              ['parent-type', 'sibling-type', 'index-type'],
-              ['parent', 'sibling', 'index'],
-              'side-effect',
-              'unknown',
-            ],
-          },
-        ],
         code: dedent`
           import { A } from '../a'
           import { b } from './b'
@@ -4246,6 +4144,12 @@ describe('sort-imports', () => {
           import '../c.js'
           import './d'
         `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown', 'side-effect'],
+          },
+        ],
       })
     })
 
@@ -4254,33 +4158,19 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: ['builtin-type', 'type'],
+            groups: ['type-builtin', 'type-import'],
           },
         ],
         code: dedent`
           import type { Server } from 'http'
 
-          import a from 'a'
+          import type { a } from 'a'
         `,
       })
     })
 
     it('handles imports with semicolons correctly', async () => {
       await invalid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'type',
-              ['builtin', 'external'],
-              'internal-type',
-              'internal',
-              ['parent-type', 'sibling-type', 'index-type'],
-              ['parent', 'sibling', 'index'],
-              'unknown',
-            ],
-          },
-        ],
         errors: [
           {
             data: {
@@ -4299,6 +4189,7 @@ describe('sort-imports', () => {
           import a from 'a';
           import b from './index';
         `,
+        options: [options],
       })
     })
 
@@ -5854,8 +5745,8 @@ describe('sort-imports', () => {
         errors: [
           {
             data: {
-              leftGroup: 'sibling-type',
-              rightGroup: 'index-type',
+              leftGroup: 'type-sibling',
+              rightGroup: 'type-index',
               right: './index',
               left: './a',
             },
@@ -5865,7 +5756,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: ['index-type', 'sibling-type'],
+            groups: ['type-index', 'type-sibling'],
           },
         ],
         output: dedent`
@@ -5877,53 +5768,6 @@ describe('sort-imports', () => {
           import type a from './a'
 
           import type b from './index'
-        `,
-      })
-    })
-
-    it('prioritizes specific type selectors over generic type group', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: [
-              [
-                'index-type',
-                'internal-type',
-                'external-type',
-                'sibling-type',
-                'builtin-type',
-              ],
-              'type',
-            ],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              rightGroup: 'sibling-type',
-              leftGroup: 'type',
-              right: './b',
-              left: '../a',
-            },
-            messageId: 'unexpectedImportsGroupOrder',
-          },
-        ],
-        output: dedent`
-          import type b from './b'
-          import type c from './index'
-          import type d from 'd'
-          import type e from 'timers'
-
-          import type a from '../a'
-        `,
-        code: dedent`
-          import type a from '../a'
-
-          import type b from './b'
-          import type c from './index'
-          import type d from 'd'
-          import type e from 'timers'
         `,
       })
     })
@@ -7751,47 +7595,23 @@ describe('sort-imports', () => {
 
     it('groups style imports separately when configured', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'type',
-              ['builtin', 'external'],
-              'internal-type',
-              'internal',
-              ['parent-type', 'sibling-type', 'index-type'],
-              ['parent', 'sibling', 'index'],
-              'style',
-              'unknown',
-            ],
-          },
-        ],
         code: dedent`
           import { a1, a2 } from 'a'
 
           import styles from '../s.css'
           import './t.css'
         `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown', 'style'],
+          },
+        ],
       })
     })
 
     it('groups side-effect imports separately when configured', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'type',
-              ['builtin', 'external'],
-              'internal-type',
-              'internal',
-              ['parent-type', 'sibling-type', 'index-type'],
-              ['parent', 'sibling', 'index'],
-              'side-effect',
-              'unknown',
-            ],
-          },
-        ],
         code: dedent`
           import { A } from '../a'
           import { b } from './b'
@@ -7799,6 +7619,12 @@ describe('sort-imports', () => {
           import '../c.js'
           import './d'
         `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown', 'side-effect'],
+          },
+        ],
       })
     })
 
@@ -7807,33 +7633,19 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: ['builtin-type', 'type'],
+            groups: ['type-builtin', 'type-import'],
           },
         ],
         code: dedent`
           import type { Server } from 'http'
 
-          import a from 'a'
+          import type { a } from 'a'
         `,
       })
     })
 
     it('handles imports with semicolons correctly', async () => {
       await invalid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'type',
-              ['builtin', 'external'],
-              'internal-type',
-              'internal',
-              ['parent-type', 'sibling-type', 'index-type'],
-              ['parent', 'sibling', 'index'],
-              'unknown',
-            ],
-          },
-        ],
         errors: [
           {
             data: {
@@ -7852,6 +7664,7 @@ describe('sort-imports', () => {
           import a from 'a';
           import b from './index';
         `,
+        options: [options],
       })
     })
 
@@ -7897,33 +7710,6 @@ describe('sort-imports', () => {
 
     it('supports custom import groups with primary and secondary categories', async () => {
       await invalid({
-        options: [
-          {
-            ...options,
-            groups: [
-              'type',
-              'primary',
-              'secondary',
-              ['builtin', 'external'],
-              'internal-type',
-              'internal',
-              ['parent-type', 'sibling-type', 'index-type'],
-              ['parent', 'sibling', 'index'],
-              'unknown',
-            ],
-            customGroups: [
-              {
-                elementNamePattern: ['^t$', '^@a/.+'],
-                groupName: 'primary',
-              },
-              {
-                elementNamePattern: '^@b/.+',
-                groupName: 'secondary',
-                modifiers: ['value'],
-              },
-            ],
-          },
-        ],
         errors: [
           {
             data: {
@@ -7945,6 +7731,23 @@ describe('sort-imports', () => {
               right: 'c',
             },
             messageId: 'missedSpacingBetweenImports',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: ['^t$', '^@a/.+'],
+                groupName: 'primary',
+              },
+              {
+                elementNamePattern: '^@b/.+',
+                groupName: 'secondary',
+                modifiers: ['value'],
+              },
+            ],
+            groups: ['type', 'primary', 'secondary', 'unknown'],
           },
         ],
         output: dedent`
@@ -9476,8 +9279,8 @@ describe('sort-imports', () => {
         errors: [
           {
             data: {
-              leftGroup: 'sibling-type',
-              rightGroup: 'index-type',
+              leftGroup: 'type-sibling',
+              rightGroup: 'type-index',
               right: './index',
               left: './a',
             },
@@ -9487,7 +9290,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: ['index-type', 'sibling-type'],
+            groups: ['type-index', 'type-sibling'],
           },
         ],
         output: dedent`
@@ -9499,67 +9302,6 @@ describe('sort-imports', () => {
           import type a from './a'
 
           import type b from './index'
-        `,
-      })
-    })
-
-    it('prioritizes specific type selectors over generic type group', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'sibling-type',
-              leftGroup: 'type',
-              right: './b',
-              left: '../a',
-            },
-            messageId: 'unexpectedImportsGroupOrder',
-          },
-          {
-            data: {
-              right: './index',
-              left: './b',
-            },
-            messageId: 'unexpectedImportsOrder',
-          },
-          {
-            data: {
-              right: 'timers',
-              left: 'd',
-            },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: [
-              [
-                'index-type',
-                'internal-type',
-                'external-type',
-                'sibling-type',
-                'builtin-type',
-              ],
-              'type',
-            ],
-          },
-        ],
-        output: dedent`
-          import type c from './index'
-          import type e from 'timers'
-          import type b from './b'
-          import type d from 'd'
-
-          import type a from '../a'
-        `,
-        code: dedent`
-          import type a from '../a'
-
-          import type b from './b'
-          import type c from './index'
-          import type d from 'd'
-          import type e from 'timers'
         `,
       })
     })
@@ -11052,13 +10794,13 @@ describe('sort-imports', () => {
           {
             groups: [
               'side-effect-style',
-              'external-type',
-              'internal-type',
-              'builtin-type',
-              'sibling-type',
-              'parent-type',
+              'type-external',
+              'type-internal',
+              'type-builtin',
+              'type-sibling',
+              'type-parent',
               'side-effect',
-              'index-type',
+              'type-index',
               'internal',
               'external',
               'sibling',
@@ -11067,7 +10809,7 @@ describe('sort-imports', () => {
               'parent',
               'index',
               'style',
-              'type',
+              'type-import',
               'myCustomGroup1',
             ],
             customGroups: [
