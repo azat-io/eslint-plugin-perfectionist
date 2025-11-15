@@ -96,20 +96,22 @@ describe('common-json-schemas', () => {
           ).toBeTruthy()
         })
 
+        it('should not allow undefined type', () => {
+          expect(
+            commonJsonSchemaValidator({
+              fallbackSort: {
+                order: 'asc',
+              },
+            }),
+          ).toBeFalsy()
+        })
+
         it('should not allow invalid values', () => {
           expect(
             commonJsonSchemaValidator({
               fallbackSort: {
                 type: 'invalid',
               },
-            }),
-          ).toBeFalsy()
-        })
-
-        it('should not allow the empty object', () => {
-          expect(
-            commonJsonSchemaValidator({
-              fallbackSort: {},
             }),
           ).toBeFalsy()
         })
@@ -120,6 +122,7 @@ describe('common-json-schemas', () => {
           expect(
             commonJsonSchemaValidator({
               fallbackSort: {
+                type: 'alphabetical',
                 order,
               },
             }),
@@ -130,6 +133,7 @@ describe('common-json-schemas', () => {
           expect(
             commonJsonSchemaValidator({
               fallbackSort: {
+                type: 'alphabetical',
                 order: 'invalid',
               },
             }),
@@ -142,6 +146,7 @@ describe('common-json-schemas', () => {
           commonJsonSchemaValidator({
             fallbackSort: {
               somethingElse: 'something',
+              type: 'alphabetical',
             },
           }),
         ).toBeFalsy()
