@@ -4,6 +4,7 @@ import type {
   GroupsOptions,
 } from '../types/common-options'
 
+import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
 import { computeGroupName } from './compute-group-name'
 
@@ -131,6 +132,35 @@ function computeNewlinesBetweenOptionForDifferentGroups({
   return 0
 }
 
+function computeNewlinesInsideOption({
+  globalNewlinesBetweenOption,
+  groupIndex,
+  options,
+}: {
+  options: GetNewlinesBetweenOptionParameters['options']
+  globalNewlinesBetweenOption: NewlinesBetweenOption
+  groupIndex: number
+}): NewlinesBetweenOption {
+  let group = options.groups[groupIndex]
+  if (!group) {
+    return globalNewlinesBetweenOption
+  }
+
+  let groupName = computeGroupName(group)
+  let nodeCustomGroup = options.customGroups.find(
+    customGroup => customGroup.groupName === groupName,
+  )
+
+  let groupOverrideNewlinesInside = isGroupWithOverridesOption(group)
+    ? group.newlinesInside
+    : null
+  return (
+    nodeCustomGroup?.newlinesInside ??
+    groupOverrideNewlinesInside ??
+    globalNewlinesBetweenOption
+  )
+}
+
 /**
  * Inserts newlines settings between groups that don't already have them.
  *
@@ -176,28 +206,6 @@ function buildGroupsWithAllNewlinesBetween(
     returnValue.push(group)
   }
   return returnValue
-}
-
-function computeNewlinesInsideOption({
-  globalNewlinesBetweenOption,
-  groupIndex,
-  options,
-}: {
-  options: GetNewlinesBetweenOptionParameters['options']
-  globalNewlinesBetweenOption: NewlinesBetweenOption
-  groupIndex: number
-}): NewlinesBetweenOption {
-  let group = options.groups[groupIndex]
-  if (!group) {
-    return globalNewlinesBetweenOption
-  }
-
-  let groupName = computeGroupName(group)
-  let nodeCustomGroup = options.customGroups.find(
-    customGroup => customGroup.groupName === groupName,
-  )
-
-  return nodeCustomGroup?.newlinesInside ?? globalNewlinesBetweenOption
 }
 
 /**

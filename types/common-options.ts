@@ -194,6 +194,9 @@ export interface GroupWithOverridesOption {
   /** Name of the group or array of group names for composite groups. */
   group: string[] | string
 
+  /** Specify the exact number of newlines required inside the group. */
+  newlinesInside?: number
+
   /**
    * Text of the comment to insert above the group. The comment will be
    * formatted as a line comment (// ...).
