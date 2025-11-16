@@ -293,6 +293,34 @@ describe('sort-modules', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'A',
+              left: 'B',
+            },
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          interface A {}
+          interface B {}
+        `,
+        code: dedent`
+          interface B {}
+          interface A {}
+        `,
+      })
+    })
+
     it('filters elements based on selector and modifiers', async () => {
       await invalid({
         options: [

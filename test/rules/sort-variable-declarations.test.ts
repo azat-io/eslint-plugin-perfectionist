@@ -1081,6 +1081,36 @@ describe('sort-variable-declarations', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedVariableDeclarationsOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          let
+            a,
+            b,
+        `,
+        code: dedent`
+          let
+            b,
+            a,
+        `,
+      })
+    })
+
     it('applies custom groups based on element selectors', async () => {
       await invalid({
         errors: [

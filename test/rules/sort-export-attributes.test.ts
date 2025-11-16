@@ -109,6 +109,38 @@ describe('sort-export-attributes', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedExportAttributesOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          export { data } from 'module' with {
+            a: 'a',
+            b: 'b',
+          }
+        `,
+        code: dedent`
+          export { data } from 'module' with {
+            b: 'b',
+            a: 'a',
+          }
+        `,
+      })
+    })
+
     it('positions attributes according to group configuration', async () => {
       let grouped = {
         ...options,

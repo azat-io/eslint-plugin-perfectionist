@@ -513,6 +513,38 @@ describe('sort-object-types', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          type Type = {
+            a: string;
+            b: string;
+          }
+        `,
+        code: dedent`
+          type Type = {
+            b: string;
+            a: string;
+          }
+        `,
+      })
+    })
+
     it('filters on selector and modifiers', async () => {
       await invalid({
         options: [

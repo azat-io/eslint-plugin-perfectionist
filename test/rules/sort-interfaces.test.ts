@@ -727,6 +727,38 @@ describe('sort-interfaces', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedInterfacePropertiesOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a: string;
+            b: string;
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            b: string;
+            a: string;
+          }
+        `,
+      })
+    })
+
     it('filters on selector and modifiers', async () => {
       await invalid({
         options: [
