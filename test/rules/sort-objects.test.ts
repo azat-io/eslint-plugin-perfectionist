@@ -227,28 +227,28 @@ describe('sort-objects', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedObjectsOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           let obj = {
-            a: 'a',
             b: 'b',
+            a: 'a',
           }
         `,
         code: dedent`
           let obj = {
-            b: 'b',
             a: 'a',
+            b: 'b',
           }
         `,
       })

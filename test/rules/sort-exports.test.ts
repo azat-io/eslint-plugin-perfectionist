@@ -529,25 +529,25 @@ describe('sort-exports', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedExportsOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
-          export { a } from 'a';
           export { b } from 'b';
+          export { a } from 'a';
         `,
         code: dedent`
-          export { b } from 'b';
           export { a } from 'a';
+          export { b } from 'b';
         `,
       })
     })

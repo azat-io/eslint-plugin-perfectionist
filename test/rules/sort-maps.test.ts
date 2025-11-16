@@ -669,28 +669,28 @@ describe('sort-maps', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           new Map([
-            [a, 1],
             [b, 2],
+            [a, 1],
           ])
         `,
         code: dedent`
           new Map([
-            [b, 2],
             [a, 1],
+            [b, 2],
           ])
         `,
       })

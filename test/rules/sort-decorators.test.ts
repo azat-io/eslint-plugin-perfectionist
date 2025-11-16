@@ -471,45 +471,45 @@ describe('sort-decorators', () => {
     it('allows overriding options in groups', async () => {
       await invalid({
         output: dedent`
-          @A
           @B
+          @A
           class Class {
 
-            @A
             @B
+            @A
             property
 
-            @A
             @B
+            @A
             accessor field
 
-            @A
             @B
+            @A
             method(
-              @A
               @B
+              @A
               parameter) {}
 
           }
         `,
         code: dedent`
-          @B
           @A
+          @B
           class Class {
 
-            @B
             @A
+            @B
             property
 
-            @B
             @A
+            @B
             accessor field
 
-            @B
             @A
+            @B
             method(
-              @B
               @A
+              @B
               parameter) {}
 
           }
@@ -517,15 +517,15 @@ describe('sort-decorators', () => {
         errors: duplicate5Times([
           {
             data: {
-              right: 'A',
-              left: 'B',
+              right: 'B',
+              left: 'A',
             },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
