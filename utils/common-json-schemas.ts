@@ -157,6 +157,11 @@ export let newlinesBetweenJsonSchema: JSONSchema4 = {
   ],
 }
 
+let newlinesInsideJsonSchema: JSONSchema4 = {
+  type: 'number',
+  minimum: 0,
+}
+
 export let groupsJsonSchema: JSONSchema4 = {
   items: {
     oneOf: [
@@ -198,6 +203,7 @@ export let groupsJsonSchema: JSONSchema4 = {
             description: 'Specifies a comment to enforce above the group.',
             type: 'string',
           },
+          newlinesInside: newlinesInsideJsonSchema,
           order: orderJsonSchema,
           type: typeJsonSchema,
         },
@@ -474,10 +480,7 @@ function buildCommonCustomGroupJsonSchemas({
       description: 'Custom group name.',
       type: 'string',
     },
-    newlinesInside: {
-      type: 'number',
-      minimum: 0,
-    },
+    newlinesInside: newlinesInsideJsonSchema,
     order: orderJsonSchema,
     type: typeJsonSchema,
   }
