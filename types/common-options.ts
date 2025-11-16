@@ -181,6 +181,33 @@ export type TypeOption =
   | 'custom'
 
 /**
+ * Configuration for groups with overriding settings.
+ *
+ * @example
+ *   const groups = [
+ *     'imports',
+ *     { group: 'group', commentAbove: '// Component Definitions' },
+ *     'components',
+ *   ]
+ */
+export interface GroupWithOverridesOption {
+  /** Name of the group or array of group names for composite groups. */
+  group: string[] | string
+
+  /**
+   * Text of the comment to insert above the group. The comment will be
+   * formatted as a line comment (// ...).
+   */
+  commentAbove?: string
+
+  /** Same as `order` in CommonOptions - Sort direction for this group. */
+  order?: OrderOption
+
+  /** Same as `type` in CommonOptions - Sorting algorithm to use for this group. */
+  type?: TypeOption
+}
+
+/**
  * Configuration for handling special characters during string comparison.
  *
  * Determines how non-alphanumeric characters are processed when sorting,
@@ -283,27 +310,6 @@ export interface FallbackSortOption {
    * primary sort comparison returns equal.
    */
   type: TypeOption
-}
-
-/**
- * Configuration for groups with overriding settings.
- *
- * @example
- *   const groups = [
- *     'imports',
- *     { group: 'group', commentAbove: '// Component Definitions' },
- *     'components',
- *   ]
- */
-export interface GroupWithOverridesOption {
-  group: string[] | string
-  /**
-   * Text of the comment to insert above the group. The comment will be
-   * formatted as a line comment (// ...).
-   */
-  commentAbove?: string
-  /** Same as `type` in CommonOptions - Sorting algorithm to use for this group. */
-  type?: TypeOption
 }
 
 /**

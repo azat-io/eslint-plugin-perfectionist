@@ -89,6 +89,7 @@ export function getCustomGroupsCompareOptions(
 
   if (group && isGroupWithOverridesOption(group)) {
     type = group.type ?? type
+    order = group.order ?? order
   }
 
   if (customGroup) {
