@@ -7,6 +7,7 @@ import type {
   GroupsOptions,
   RegexOption,
 } from '../../types/common-options'
+import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -55,13 +56,8 @@ export type Options = Partial<
      * their groups and groups are ordered as specified.
      */
     groups: GroupsOptions<Group>
-
-    /**
-     * Whether to partition JSX props by newlines. When true, props separated by
-     * empty lines are sorted independently.
-     */
-    partitionByNewLine: boolean
-  } & CommonOptions
+  } & Pick<CommonPartitionOptions, 'partitionByNewLine'> &
+    CommonOptions
 >[]
 
 /**

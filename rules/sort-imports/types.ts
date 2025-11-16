@@ -2,14 +2,14 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
-  PartitionByCommentOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
-  GroupsOptions,
   CommonOptions,
+  GroupsOptions,
   RegexOption,
 } from '../../types/common-options'
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
+import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -45,12 +45,6 @@ export type Options = Partial<
     /** Custom groups for organizing imports. */
     customGroups: CustomGroupsOption<SingleCustomGroup>
 
-    /**
-     * Partition imports by comment delimiters. Imports separated by specific
-     * comments are sorted independently.
-     */
-    partitionByComment: PartitionByCommentOption
-
     /** Controls the placement of newlines between different groups of imports. */
     newlinesBetween: NewlinesBetweenOption
 
@@ -81,19 +75,14 @@ export type Options = Partial<
     environment: 'node' | 'bun'
 
     /**
-     * Whether to partition imports by newlines. When true, imports separated by
-     * empty lines are sorted independently.
-     */
-    partitionByNewLine: boolean
-
-    /**
      * Controls whether side-effect imports should be sorted. When false,
      * side-effect imports remain in their original positions.
      *
      * @default false
      */
     sortSideEffects: boolean
-  } & CommonOptions
+  } & CommonPartitionOptions &
+    CommonOptions
 >[]
 
 /**

@@ -1,13 +1,13 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type {
-  PartitionByCommentOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
   RegexOption,
 } from '../../types/common-options'
+import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -74,12 +74,6 @@ export type Options = Partial<
     customGroups: CustomGroupsOption<SingleCustomGroup>
 
     /**
-     * Partition object members by comment delimiters. Members separated by
-     * specific comments are sorted independently.
-     */
-    partitionByComment: PartitionByCommentOption
-
-    /**
      * Controls the placement of newlines between different groups of object
      * members.
      */
@@ -90,12 +84,6 @@ export type Options = Partial<
      * within their groups and groups are ordered as specified.
      */
     groups: GroupsOptions<Group>
-
-    /**
-     * Whether to partition object members by newlines. When true, members
-     * separated by empty lines are sorted independently.
-     */
-    partitionByNewLine: boolean
 
     /**
      * Regular expression pattern to ignore certain objects from sorting.
@@ -110,7 +98,8 @@ export type Options = Partial<
      * @default true
      */
     styledComponents: boolean
-  } & CommonOptions
+  } & CommonPartitionOptions &
+    CommonOptions
 >[]
 
 /**

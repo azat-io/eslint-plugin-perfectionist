@@ -2,13 +2,13 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
-  PartitionByCommentOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
   CommonOptions,
   GroupsOptions,
   RegexOption,
 } from '../../types/common-options'
+import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 import type { SortingNode } from '../../types/sorting-node'
 
@@ -32,12 +32,6 @@ export type Options = Partial<
     customGroups: CustomGroupsOption<SingleCustomGroup>
 
     /**
-     * Partition named exports by comment delimiters. Exports separated by
-     * specific comments are sorted independently.
-     */
-    partitionByComment: PartitionByCommentOption
-
-    /**
      * Controls the placement of newlines between different groups of named
      * exports.
      */
@@ -50,19 +44,14 @@ export type Options = Partial<
     groups: GroupsOptions<Group>
 
     /**
-     * Whether to partition named exports by newlines. When true, exports
-     * separated by empty lines are sorted independently.
-     */
-    partitionByNewLine: boolean
-
-    /**
      * Whether to ignore export aliases when sorting. When true, sorts by the
      * original name rather than the alias.
      *
      * @default false
      */
     ignoreAlias: boolean
-  } & CommonOptions
+  } & CommonPartitionOptions &
+    CommonOptions
 >[]
 
 /**
