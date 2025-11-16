@@ -1,47 +1,13 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 import {
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Configuration options for the sort-variable-declarations rule.
- *
- * Controls how multiple variable declarations in a single statement are sorted,
- * such as `const a = 1, b, c = 3;`.
- */
-export type Options = Partial<
-  {
-    /**
-     * Custom groups for organizing variable declarations. Allows defining
-     * groups based on variable names and initialization status.
-     */
-    customGroups: CustomGroupsOption<SingleCustomGroup>
-
-    /**
-     * Controls the placement of newlines between different groups of variable
-     * declarations.
-     */
-    newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Defines the order and grouping of variable declarations. Declarations are
-     * sorted within their groups and groups are ordered as specified.
-     */
-    groups: GroupsOptions<Group>
-  } & CommonPartitionOptions &
-    CommonOptions
->[]
 
 /**
  * Configuration for a single custom group in variable declarations sorting.
@@ -61,6 +27,18 @@ export interface SingleCustomGroup {
    */
   selector?: Selector
 }
+
+/**
+ * Configuration options for the sort-variable-declarations rule.
+ *
+ * Controls how multiple variable declarations in a single statement are sorted,
+ * such as `const a = 1, b, c = 3;`.
+ */
+export type Options = Partial<
+  CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonPartitionOptions &
+    CommonOptions
+>[]
 
 /**
  * Union type of all available selectors for variable declarations.

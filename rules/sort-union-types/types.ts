@@ -1,46 +1,13 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 import {
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Configuration options for the sort-union-types rule.
- *
- * Controls how TypeScript union type members are sorted.
- */
-export type Options = Partial<
-  {
-    /**
-     * Custom groups for organizing union type members. Allows defining groups
-     * based on type patterns and selectors.
-     */
-    customGroups: CustomGroupsOption<SingleCustomGroup>
-
-    /**
-     * Controls the placement of newlines between different groups of union type
-     * members.
-     */
-    newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Defines the order and grouping of union type members. Members are sorted
-     * within their groups and groups are ordered as specified.
-     */
-    groups: GroupsOptions<Group>
-  } & CommonPartitionOptions &
-    CommonOptions
->[]
 
 /**
  * Configuration for a single custom group in union type sorting.
@@ -80,6 +47,17 @@ export type Selector =
   | NamedSelector
   | TupleSelector
   | UnionSelector
+
+/**
+ * Configuration options for the sort-union-types rule.
+ *
+ * Controls how TypeScript union type members are sorted.
+ */
+export type Options = Partial<
+  CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonPartitionOptions &
+    CommonOptions
+>[]
 
 /**
  * Selector for intersection types.

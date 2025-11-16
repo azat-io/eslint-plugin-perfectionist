@@ -1,13 +1,8 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -15,35 +10,6 @@ import {
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Configuration options for the sort-exports rule.
- *
- * This rule enforces consistent ordering of re-export statements (`export ...
- * From '...'`) to improve code organization and maintainability..
- */
-export type Options = Partial<
-  {
-    /**
-     * Custom groups for organizing export statements. Allows defining groups
-     * based on module name patterns and export modifiers.
-     */
-    customGroups: CustomGroupsOption<SingleCustomGroup>
-
-    /**
-     * Controls the placement of newlines between different groups of export
-     * statements.
-     */
-    newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Defines the order and grouping of export statements. Exports are sorted
-     * within their groups and groups are ordered as specified.
-     */
-    groups: GroupsOptions<Group>
-  } & CommonPartitionOptions &
-    CommonOptions
->[]
 
 /**
  * Defines a custom group for export statement categorization.
@@ -78,6 +44,18 @@ export type SingleCustomGroup = {
    */
   elementNamePattern?: RegexOption
 }
+
+/**
+ * Configuration options for the sort-exports rule.
+ *
+ * This rule enforces consistent ordering of re-export statements (`export ...
+ * From '...'`) to improve code organization and maintainability..
+ */
+export type Options = Partial<
+  CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonPartitionOptions &
+    CommonOptions
+>[]
 
 /**
  * Union type of available export modifiers. Distinguishes between value exports

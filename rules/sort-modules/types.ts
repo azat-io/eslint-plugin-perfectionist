@@ -1,13 +1,8 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -15,37 +10,6 @@ import {
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Configuration options for the sort-modules rule.
- *
- * This rule enforces consistent ordering of module-level declarations (classes,
- * interfaces, functions, types, enums) to improve code organization.
- */
-export type SortModulesOptions = [
-  Partial<
-    {
-      /**
-       * Custom groups for organizing module members. Allows defining groups
-       * based on member types, modifiers, and patterns.
-       */
-      customGroups: CustomGroupsOption<SingleCustomGroup>
-
-      /**
-       * Controls the placement of newlines between different groups of module
-       * members.
-       */
-      newlinesBetween: NewlinesBetweenOption
-
-      /**
-       * Defines the order and grouping of module members. Members are sorted
-       * within their groups and groups are ordered as specified.
-       */
-      groups: GroupsOptions<Group>
-    } & CommonPartitionOptions &
-      CommonOptions
-  >,
-]
 
 /**
  * Defines a custom group for module member categorization.
@@ -75,6 +39,20 @@ export type Selector =
   | ClassSelector
   | TypeSelector
   | EnumSelector
+
+/**
+ * Configuration options for the sort-modules rule.
+ *
+ * This rule enforces consistent ordering of module-level declarations (classes,
+ * interfaces, functions, types, enums) to improve code organization.
+ */
+export type SortModulesOptions = [
+  Partial<
+    CommonGroupsOptions<Group, SingleCustomGroup> &
+      CommonPartitionOptions &
+      CommonOptions
+  >,
+]
 
 /**
  * Union type of all available module member modifiers. Used to identify

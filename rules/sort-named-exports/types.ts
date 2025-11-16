@@ -1,14 +1,9 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 import type { SortingNode } from '../../types/sorting-node'
 
@@ -17,42 +12,6 @@ import {
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Configuration options for the sort-named-exports rule.
- *
- * Controls how named exports are sorted within export statements.
- */
-export type Options = Partial<
-  {
-    /**
-     * Custom groups for organizing named exports. Allows defining groups based
-     * on export names and types.
-     */
-    customGroups: CustomGroupsOption<SingleCustomGroup>
-
-    /**
-     * Controls the placement of newlines between different groups of named
-     * exports.
-     */
-    newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Defines the order and grouping of named exports. Exports are sorted
-     * within their groups and groups are ordered as specified.
-     */
-    groups: GroupsOptions<Group>
-
-    /**
-     * Whether to ignore export aliases when sorting. When true, sorts by the
-     * original name rather than the alias.
-     *
-     * @default false
-     */
-    ignoreAlias: boolean
-  } & CommonPartitionOptions &
-    CommonOptions
->[]
 
 /**
  * Configuration for a single custom group in named exports sorting.
@@ -79,6 +38,25 @@ export type SingleCustomGroup = {
    */
   elementNamePattern?: RegexOption
 }
+
+/**
+ * Configuration options for the sort-named-exports rule.
+ *
+ * Controls how named exports are sorted within export statements.
+ */
+export type Options = Partial<
+  {
+    /**
+     * Whether to ignore export aliases when sorting. When true, sorts by the
+     * original name rather than the alias.
+     *
+     * @default false
+     */
+    ignoreAlias: boolean
+  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonPartitionOptions &
+    CommonOptions
+>[]
 
 /** Extended sorting node for named export specifiers. */
 export type SortNamedExportsSortingNode = SortingNode<TSESTree.ExportSpecifier>

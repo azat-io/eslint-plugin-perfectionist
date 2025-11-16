@@ -1,13 +1,8 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 import {
   buildCustomGroupSelectorJsonSchema,
@@ -34,25 +29,8 @@ export type Options = Partial<
        */
       allNamesMatchPattern?: RegexOption
     }
-
-    /**
-     * Custom groups for organizing array elements. Allows defining groups based
-     * on element name patterns and selectors.
-     */
-    customGroups: CustomGroupsOption<SingleCustomGroup>
-
-    /**
-     * Controls the placement of newlines between different groups of array
-     * elements.
-     */
-    newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Defines the order and grouping of array elements. Elements are sorted
-     * within their groups and groups are ordered as specified.
-     */
-    groups: GroupsOptions<Group>
-  } & CommonPartitionOptions &
+  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonPartitionOptions &
     CommonOptions
 >[]
 

@@ -1,13 +1,8 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -15,50 +10,6 @@ import {
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Configuration options for the sort-jsx-props rule.
- *
- * This rule enforces consistent ordering of JSX element props/attributes to
- * improve code readability and maintainability.
- */
-export type Options = Partial<
-  {
-    /**
-     * Conditional configuration based on pattern matching. Allows applying the
-     * rule only to specific JSX elements.
-     */
-    useConfigurationIf: {
-      /**
-       * Regular expression pattern to match against all prop names. The rule is
-       * only applied when all prop names match this pattern.
-       */
-      allNamesMatchPattern?: RegexOption
-
-      /**
-       * Regular expression pattern to match against JSX element tag names. The
-       * rule is only applied to elements with matching tag names.
-       */
-      tagMatchesPattern?: RegexOption
-    }
-
-    /**
-     * Custom groups for organizing JSX props. Allows defining groups based on
-     * prop names, values, and characteristics.
-     */
-    customGroups: CustomGroupsOption<SingleCustomGroup>
-
-    /** Controls the placement of newlines between different groups of JSX props. */
-    newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Defines the order and grouping of JSX props. Props are sorted within
-     * their groups and groups are ordered as specified.
-     */
-    groups: GroupsOptions<Group>
-  } & Pick<CommonPartitionOptions, 'partitionByNewLine'> &
-    CommonOptions
->[]
 
 /**
  * Defines a custom group for JSX prop categorization.
@@ -99,6 +50,36 @@ export interface SingleCustomGroup {
    */
   selector?: Selector
 }
+
+/**
+ * Configuration options for the sort-jsx-props rule.
+ *
+ * This rule enforces consistent ordering of JSX element props/attributes to
+ * improve code readability and maintainability.
+ */
+export type Options = Partial<
+  {
+    /**
+     * Conditional configuration based on pattern matching. Allows applying the
+     * rule only to specific JSX elements.
+     */
+    useConfigurationIf: {
+      /**
+       * Regular expression pattern to match against all prop names. The rule is
+       * only applied when all prop names match this pattern.
+       */
+      allNamesMatchPattern?: RegexOption
+
+      /**
+       * Regular expression pattern to match against JSX element tag names. The
+       * rule is only applied to elements with matching tag names.
+       */
+      tagMatchesPattern?: RegexOption
+    }
+  } & Pick<CommonPartitionOptions, 'partitionByNewLine'> &
+    CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonOptions
+>[]
 
 /**
  * Union type of all available JSX prop modifiers. Used to identify specific

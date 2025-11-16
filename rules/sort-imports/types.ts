@@ -1,15 +1,10 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -42,12 +37,6 @@ export type Options = Partial<
         }
       | undefined
 
-    /** Custom groups for organizing imports. */
-    customGroups: CustomGroupsOption<SingleCustomGroup>
-
-    /** Controls the placement of newlines between different groups of imports. */
-    newlinesBetween: NewlinesBetweenOption
-
     /**
      * Maximum line length for imports. When exceeded, import names are used for
      * sorting instead of the entire line.
@@ -59,12 +48,6 @@ export type Options = Partial<
      * are categorized as 'internal'.
      */
     internalPattern: RegexOption[]
-
-    /**
-     * Defines the order and grouping of imports. Imports are sorted within
-     * their groups and groups are ordered as specified.
-     */
-    groups: GroupsOptions<Group>
 
     /**
      * Runtime environment for resolving built-in modules. Determines which
@@ -81,7 +64,8 @@ export type Options = Partial<
      * @default false
      */
     sortSideEffects: boolean
-  } & CommonPartitionOptions &
+  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonPartitionOptions &
     CommonOptions
 >[]
 

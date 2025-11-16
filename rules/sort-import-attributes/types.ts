@@ -1,14 +1,9 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import { regexJsonSchema } from '../../utils/common-json-schemas'
@@ -43,25 +38,8 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
 }
 
 export type Options = Partial<
-  {
-    /**
-     * Custom groups for organizing import attributes. Allows defining groups
-     * based on attribute names and values.
-     */
-    customGroups: CustomGroupsOption<SingleCustomGroup>
-
-    /**
-     * Controls the placement of newlines between different groups of import
-     * attributes.
-     */
-    newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Defines the order and grouping of import attributes. Attributes are
-     * sorted within their groups and groups are ordered as specified.
-     */
-    groups: GroupsOptions<Group>
-  } & CommonPartitionOptions &
+  CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonPartitionOptions &
     CommonOptions
 >[]
 
