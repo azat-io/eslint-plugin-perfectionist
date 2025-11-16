@@ -91,19 +91,17 @@ export function getCommentAboveThatShouldExist<T extends SortingNode>({
     return null
   }
 
-  let groupAboveRight = options.groups[rightGroupIndex - 1]!
-  if (!isCommentAboveOption(groupAboveRight)) {
+  let rightGroup = options.groups[rightGroupIndex]
+  if (!rightGroup || !isCommentAboveOption(rightGroup)) {
     return null
   }
 
   let matchingCommentsAbove = getCommentsBefore({
     node: sortingNode.node,
     sourceCode,
-  }).find(comment =>
-    commentMatches(comment.value, groupAboveRight.commentAbove),
-  )
+  }).find(comment => commentMatches(comment.value, rightGroup.commentAbove))
   return {
-    comment: groupAboveRight.commentAbove,
+    comment: rightGroup.commentAbove,
     exists: !!matchingCommentsAbove,
   }
 }

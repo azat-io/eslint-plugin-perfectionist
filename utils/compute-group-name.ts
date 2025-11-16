@@ -1,0 +1,37 @@
+import type { GroupsOptions } from '../types/common-options'
+
+import { isNewlinesBetweenOption } from './is-newlines-between-option'
+import { isCommentAboveOption } from './is-comment-above-option'
+import { UnreachableCaseError } from './unreachable-case-error'
+
+/**
+ * Computes the name of a group based on the provided group object.
+ *
+ * @param group - The group object.
+ * @returns A string if:
+ *
+ *   - The group is a string
+ *   - The group is a commentAbove option with a string group.
+ */
+export function computeGroupName(
+  group: GroupsOptions<string>[number],
+): string | null {
+  if (typeof group === 'string' || Array.isArray(group)) {
+    return computeStringGroupName(group)
+  }
+  if (isCommentAboveOption(group)) {
+    return computeStringGroupName(group.group)
+  }
+  if (isNewlinesBetweenOption(group)) {
+    return null
+    /* v8 ignore next 3 */
+  }
+  throw new UnreachableCaseError(group)
+}
+
+function computeStringGroupName(group: string[] | string): string | null {
+  if (typeof group === 'string') {
+    return group
+  }
+  return null
+}

@@ -216,7 +216,14 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
 ### groups
 
 <sub>
-  type: `Array<string | string[]>`
+  type:
+  ```ts
+    Array<
+      | string
+      | string[]
+      | { newlinesBetween: number }
+    >
+  ```
 </sub>
 <sub>default: `[]`</sub>
 

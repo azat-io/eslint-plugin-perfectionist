@@ -285,11 +285,19 @@ If this option is not set, the rule will not search for a `tsconfig.json` file.
 ### groups
 
 <sub>
-  type: `Array<string | string[]>`
+  type:
+  ```ts
+    Array<
+      | string
+      | string[]
+      | { newlinesBetween: number }
+      | { group: string | string[]; commentAbove: string }
+    >
+  ```
 </sub>
 <sub>
   default:
-  ```
+  ```ts
   [
     'type-import',
     ['value-builtin', 'value-external'],
@@ -458,18 +466,14 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 
 #### Comment above groups
 
-You may place `commentAbove` objects between above your groups to enforce the presence of a comment containing the
+You may place `commentAbove` objects alongside their related group(s) to enforce the presence of a comment containing the
 content of `commentAbove`.
-
-`newlinesBetween` and `commentAbove` objects can be combined together.
 
 ```ts
 {
   groups: [
-    { commentAbove: 'Internal imports' },
-    'internal',
-    { commentAbove: 'External imports' },
-    'external',
+    { group: 'internal', commentAbove: 'Internal imports' },
+    { group: 'external', commentAbove: 'External imports' },
   ]
 }
 ```
@@ -589,7 +593,7 @@ you must write a custom group definition that does the same as what the predefin
 
 #### Example
 
-```js
+```ts
    groups: [
 +    'react',                           // [!code ++]
      'type-import',

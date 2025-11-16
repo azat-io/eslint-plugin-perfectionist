@@ -203,7 +203,7 @@ type User = {
 
 `sortBy` option configuration:
 
-```js
+```ts
 {
   sortBy: 'value',
 }
@@ -395,7 +395,14 @@ Example configuration:
 ### groups
 
 <sub>
-  type: `Array<string | string[]>`
+  type:
+  ```ts
+    Array<
+      | string
+      | string[]
+      | { newlinesBetween: number }
+    >
+  ```
 </sub>
 <sub>default: `[]`</sub>
 
@@ -429,7 +436,7 @@ type User = {
 
 `groups` option configuration:
 
-```js
+```ts
 {
   groups: [
     'unknown',
@@ -646,7 +653,7 @@ type User = {
 
 `groups` and `customGroups` configuration:
 
-```js
+```ts
  {
    groups: [
 +    'top',                                  // [!code ++]

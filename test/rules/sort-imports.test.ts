@@ -3345,10 +3345,8 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'Comment above a' },
-              'external',
-              { commentAbove: 'Comment above b' },
-              'unknown',
+              { commentAbove: 'Comment above a', group: ['external'] },
+              { commentAbove: 'Comment above b', group: 'unknown' },
             ],
           },
         ],
@@ -3381,7 +3379,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: [{ commentAbove: 'Comment above' }, 'unknown'],
+            groups: [{ commentAbove: 'Comment above', group: 'unknown' }],
           },
         ],
         output: dedent`
@@ -3423,7 +3421,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: [{ commentAbove: 'Comment above' }, 'external'],
+            groups: [{ commentAbove: 'Comment above', group: 'external' }],
           },
         ],
         code: dedent`
@@ -3468,7 +3466,10 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: ['external', { commentAbove: 'Comment above' }, 'unknown'],
+            groups: [
+              'external',
+              { commentAbove: 'Comment above', group: 'unknown' },
+            ],
           },
         ],
         code: dedent`
@@ -3520,12 +3521,9 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'external' },
-              'external',
-              { commentAbove: 'sibling' },
-              'sibling',
-              { commentAbove: 'internal' },
-              'internal',
+              { commentAbove: 'external', group: 'external' },
+              { commentAbove: 'sibling', group: 'sibling' },
+              { commentAbove: 'internal', group: 'internal' },
             ],
           },
         ],
@@ -3602,6 +3600,20 @@ describe('sort-imports', () => {
           // external
           import b from '~/b'; // Comment after b
         `,
+        options: [
+          {
+            ...options,
+            groups: [
+              { commentAbove: 'external', group: 'external' },
+              { newlinesBetween: 1 },
+              {
+                commentAbove: 'internal or sibling',
+                group: ['internal', 'sibling'],
+              },
+            ],
+            newlinesBetween: 0,
+          },
+        ],
         output: dedent`
           #!/usr/bin/node
           // Some disclaimer
@@ -3616,21 +3628,6 @@ describe('sort-imports', () => {
           // Comment above b
           import b from '~/b'; // Comment after b
         `,
-        options: [
-          {
-            ...options,
-            groups: [
-              { commentAbove: 'external' },
-              'external',
-              {
-                commentAbove: 'internal or sibling',
-                newlinesBetween: 1,
-              },
-              ['internal', 'sibling'],
-            ],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
   })
@@ -6806,10 +6803,8 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'Comment above a' },
-              'external',
-              { commentAbove: 'Comment above b' },
-              'unknown',
+              { commentAbove: 'Comment above a', group: ['external'] },
+              { commentAbove: 'Comment above b', group: 'unknown' },
             ],
           },
         ],
@@ -6842,7 +6837,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: [{ commentAbove: 'Comment above' }, 'unknown'],
+            groups: [{ commentAbove: 'Comment above', group: 'unknown' }],
           },
         ],
         output: dedent`
@@ -6884,7 +6879,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: [{ commentAbove: 'Comment above' }, 'external'],
+            groups: [{ commentAbove: 'Comment above', group: 'external' }],
           },
         ],
         code: dedent`
@@ -6929,7 +6924,10 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: ['external', { commentAbove: 'Comment above' }, 'unknown'],
+            groups: [
+              'external',
+              { commentAbove: 'Comment above', group: 'unknown' },
+            ],
           },
         ],
         code: dedent`
@@ -6981,12 +6979,9 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'external' },
-              'external',
-              { commentAbove: 'sibling' },
-              'sibling',
-              { commentAbove: 'internal' },
-              'internal',
+              { commentAbove: 'external', group: 'external' },
+              { commentAbove: 'sibling', group: 'sibling' },
+              { commentAbove: 'internal', group: 'internal' },
             ],
           },
         ],
@@ -7063,6 +7058,20 @@ describe('sort-imports', () => {
           // external
           import b from '~/b'; // Comment after b
         `,
+        options: [
+          {
+            ...options,
+            groups: [
+              { commentAbove: 'external', group: 'external' },
+              { newlinesBetween: 1 },
+              {
+                commentAbove: 'internal or sibling',
+                group: ['internal', 'sibling'],
+              },
+            ],
+            newlinesBetween: 0,
+          },
+        ],
         output: dedent`
           #!/usr/bin/node
           // Some disclaimer
@@ -7077,21 +7086,6 @@ describe('sort-imports', () => {
           // Comment above b
           import b from '~/b'; // Comment after b
         `,
-        options: [
-          {
-            ...options,
-            groups: [
-              { commentAbove: 'external' },
-              'external',
-              {
-                commentAbove: 'internal or sibling',
-                newlinesBetween: 1,
-              },
-              ['internal', 'sibling'],
-            ],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
   })
@@ -10361,10 +10355,8 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'Comment above a' },
-              'external',
-              { commentAbove: 'Comment above b' },
-              'unknown',
+              { commentAbove: 'Comment above a', group: ['external'] },
+              { commentAbove: 'Comment above b', group: 'unknown' },
             ],
           },
         ],
@@ -10397,7 +10389,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: [{ commentAbove: 'Comment above' }, 'unknown'],
+            groups: [{ commentAbove: 'Comment above', group: 'unknown' }],
           },
         ],
         output: dedent`
@@ -10439,7 +10431,7 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: [{ commentAbove: 'Comment above' }, 'external'],
+            groups: [{ commentAbove: 'Comment above', group: 'external' }],
           },
         ],
         code: dedent`
@@ -10484,7 +10476,10 @@ describe('sort-imports', () => {
         options: [
           {
             ...options,
-            groups: ['external', { commentAbove: 'Comment above' }, 'unknown'],
+            groups: [
+              'external',
+              { commentAbove: 'Comment above', group: 'unknown' },
+            ],
           },
         ],
         code: dedent`
@@ -10536,12 +10531,9 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'external' },
-              'external',
-              { commentAbove: 'sibling' },
-              'sibling',
-              { commentAbove: 'internal' },
-              'internal',
+              { commentAbove: 'external', group: 'external' },
+              { commentAbove: 'sibling', group: 'sibling' },
+              { commentAbove: 'internal', group: 'internal' },
             ],
           },
         ],
@@ -10618,6 +10610,20 @@ describe('sort-imports', () => {
           // external
           import b from '~/b'; // Comment after b
         `,
+        options: [
+          {
+            ...options,
+            groups: [
+              { commentAbove: 'external', group: 'external' },
+              { newlinesBetween: 1 },
+              {
+                commentAbove: 'internal or sibling',
+                group: ['internal', 'sibling'],
+              },
+            ],
+            newlinesBetween: 0,
+          },
+        ],
         output: dedent`
           #!/usr/bin/node
           // Some disclaimer
@@ -10632,21 +10638,6 @@ describe('sort-imports', () => {
           // Comment above b
           import b from '~/b'; // Comment after b
         `,
-        options: [
-          {
-            ...options,
-            groups: [
-              { commentAbove: 'external' },
-              'external',
-              {
-                commentAbove: 'internal or sibling',
-                newlinesBetween: 1,
-              },
-              ['internal', 'sibling'],
-            ],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 

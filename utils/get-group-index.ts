@@ -1,6 +1,10 @@
 import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
+import { isNewlinesBetweenOption } from './is-newlines-between-option'
+import { isCommentAboveOption } from './is-comment-above-option'
+import { UnreachableCaseError } from './unreachable-case-error'
+
 /**
  * Type representing a single group or an array of group names. Used in group
  * configuration where elements can belong to multiple subgroups.
@@ -11,9 +15,9 @@ type Group = GroupsOptions<string>[number]
  * Determines the index of the group that a node belongs to.
  *
  * Searches through the groups array to find which group contains the node.
- * Supports both simple groups (string) and composite groups (array of strings).
- * For composite groups, the node matches if its group is any element in the
- * array.
+ * Supports simple groups (string), composite groups (array of strings) and
+ * objects containing a `group` property. For composite groups, the node matches
+ * if its group is any element in the array.
  *
  * The function returns the index of the matching group. If no group matches, it
  * returns the length of the groups array, which conventionally represents the
@@ -35,17 +39,36 @@ type Group = GroupsOptions<string>[number]
  */
 export function getGroupIndex(groups: Group[], node: SortingNode): number {
   for (let max = groups.length, i = 0; i < max; i++) {
-    let currentGroup = groups[i]
+    let currentGroup = groups[i]!
 
-    if (
-      node.group === currentGroup ||
-      (Array.isArray(currentGroup) &&
-        typeof node.group === 'string' &&
-        currentGroup.includes(node.group))
-    ) {
+    if (doesGroupMatch(currentGroup, node.group)) {
       return i
     }
   }
 
   return groups.length
+}
+
+function doesGroupMatch(group: Group, groupName: string): boolean {
+  if (typeof group === 'string' || Array.isArray(group)) {
+    return doesStringGroupMatch(group, groupName)
+  }
+  if (isCommentAboveOption(group)) {
+    return doesStringGroupMatch(group.group, groupName)
+  }
+  if (isNewlinesBetweenOption(group)) {
+    return false
+    /* v8 ignore next 3 */
+  }
+  throw new UnreachableCaseError(group)
+}
+
+function doesStringGroupMatch(
+  group: string[] | string,
+  groupName: string,
+): boolean {
+  if (typeof group === 'string') {
+    return group === groupName
+  }
+  return group.includes(groupName)
 }

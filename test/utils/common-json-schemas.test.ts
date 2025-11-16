@@ -96,20 +96,22 @@ describe('common-json-schemas', () => {
           ).toBeTruthy()
         })
 
+        it('should not allow undefined type', () => {
+          expect(
+            commonJsonSchemaValidator({
+              fallbackSort: {
+                order: 'asc',
+              },
+            }),
+          ).toBeFalsy()
+        })
+
         it('should not allow invalid values', () => {
           expect(
             commonJsonSchemaValidator({
               fallbackSort: {
                 type: 'invalid',
               },
-            }),
-          ).toBeFalsy()
-        })
-
-        it('should not allow the empty object', () => {
-          expect(
-            commonJsonSchemaValidator({
-              fallbackSort: {},
             }),
           ).toBeFalsy()
         })
@@ -120,6 +122,7 @@ describe('common-json-schemas', () => {
           expect(
             commonJsonSchemaValidator({
               fallbackSort: {
+                type: 'alphabetical',
                 order,
               },
             }),
@@ -130,6 +133,7 @@ describe('common-json-schemas', () => {
           expect(
             commonJsonSchemaValidator({
               fallbackSort: {
+                type: 'alphabetical',
                 order: 'invalid',
               },
             }),
@@ -142,6 +146,7 @@ describe('common-json-schemas', () => {
           commonJsonSchemaValidator({
             fallbackSort: {
               somethingElse: 'something',
+              type: 'alphabetical',
             },
           }),
         ).toBeFalsy()
@@ -170,10 +175,12 @@ describe('common-json-schemas', () => {
       expect(groupsJsonSchemaValidator(['group1', 'group2'])).toBeTruthy()
     })
 
-    it('should allow an array of arrays of strings', () => {
-      expect(
-        groupsJsonSchemaValidator([['group1', 'group2'], ['group3']]),
-      ).toBeTruthy()
+    it('should allow an array of non-empty arrays of strings', () => {
+      expect(groupsJsonSchemaValidator([['group1'], ['group3']])).toBeTruthy()
+    })
+
+    it('should not allow empty sub-arrays', () => {
+      expect(groupsJsonSchemaValidator([[], ['group3']])).toBeFalsy()
     })
 
     describe('newlinesBetween', () => {
@@ -205,14 +212,34 @@ describe('common-json-schemas', () => {
     })
 
     describe('commentAbove', () => {
-      it("should allow 'commentAbove'", () => {
+      it("should allow 'commentAbove' with string group", () => {
         expect(
           groupsJsonSchemaValidator([
             'group1',
-            { commentAbove: 'foo' },
+            { commentAbove: 'foo', group: 'group' },
             'group2',
           ]),
         ).toBeTruthy()
+      })
+
+      it("should allow 'commentAbove' with non-empty string array groups", () => {
+        expect(
+          groupsJsonSchemaValidator([
+            'group1',
+            { commentAbove: 'foo', group: ['group'] },
+            'group2',
+          ]),
+        ).toBeTruthy()
+      })
+
+      it("should not allow 'commentAbove' with empty sub-arrays", () => {
+        expect(
+          groupsJsonSchemaValidator([
+            'group1',
+            { commentAbove: 'foo', group: [] },
+            'group2',
+          ]),
+        ).toBeFalsy()
       })
 
       it('should not allow additional properties', () => {
@@ -226,14 +253,14 @@ describe('common-json-schemas', () => {
       })
     })
 
-    it("should allow 'newlinesBetween' and 'commentAbove'", () => {
+    it("should not allow 'newlinesBetween' and 'commentAbove' in the same object", () => {
       expect(
         groupsJsonSchemaValidator([
           'group1',
           { commentAbove: 'foo', newlinesBetween: 1 },
           'group2',
         ]),
-      ).toBeTruthy()
+      ).toBeFalsy()
     })
 
     it('should not allow the empty object', () => {

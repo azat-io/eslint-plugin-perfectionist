@@ -1209,10 +1209,8 @@ describe('sort-exports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'Type exports' },
-              'type-export',
-              { commentAbove: 'Other exports' },
-              'unknown',
+              { commentAbove: 'Type exports', group: ['type-export'] },
+              { commentAbove: 'Other exports', group: 'unknown' },
             ],
           },
         ],
@@ -1245,7 +1243,7 @@ describe('sort-exports', () => {
         options: [
           {
             ...options,
-            groups: [{ commentAbove: 'Comment above' }, 'unknown'],
+            groups: [{ commentAbove: 'Comment above', group: 'unknown' }],
           },
         ],
         output: dedent`
@@ -1294,7 +1292,7 @@ describe('sort-exports', () => {
         options: [
           {
             ...options,
-            groups: [{ commentAbove: 'Comment above' }, 'unknown'],
+            groups: [{ commentAbove: 'Comment above', group: 'unknown' }],
           },
         ],
       })
@@ -1324,8 +1322,7 @@ describe('sort-exports', () => {
               ...options,
               groups: [
                 'value-export',
-                { commentAbove: 'Comment above' },
-                'unknown',
+                { commentAbove: 'Comment above', group: 'unknown' },
               ],
             },
           ],
@@ -1370,10 +1367,8 @@ describe('sort-exports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'Value exports' },
-              'value-export',
-              { commentAbove: 'Type exports' },
-              'type-export',
+              { commentAbove: 'Value exports', group: 'value-export' },
+              { commentAbove: 'Type exports', group: ['type-export'] },
             ],
           },
         ],
@@ -1418,13 +1413,12 @@ describe('sort-exports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'Value exports' },
-              'value-export',
+              { commentAbove: 'Value exports', group: 'value-export' },
+              { newlinesBetween: 1 },
               {
                 commentAbove: 'Type exports',
-                newlinesBetween: 1,
+                group: ['type-export'],
               },
-              ['type-export'],
             ],
             newlinesBetween: 0,
           },
@@ -2805,10 +2799,8 @@ describe('sort-exports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'Type exports' },
-              'type-export',
-              { commentAbove: 'Other exports' },
-              'unknown',
+              { commentAbove: 'Type exports', group: ['type-export'] },
+              { commentAbove: 'Other exports', group: 'unknown' },
             ],
           },
         ],
@@ -2841,7 +2833,7 @@ describe('sort-exports', () => {
         options: [
           {
             ...options,
-            groups: [{ commentAbove: 'Comment above' }, 'unknown'],
+            groups: [{ commentAbove: 'Comment above', group: 'unknown' }],
           },
         ],
         output: dedent`
@@ -2890,7 +2882,7 @@ describe('sort-exports', () => {
         options: [
           {
             ...options,
-            groups: [{ commentAbove: 'Comment above' }, 'unknown'],
+            groups: [{ commentAbove: 'Comment above', group: 'unknown' }],
           },
         ],
       })
@@ -2920,8 +2912,7 @@ describe('sort-exports', () => {
               ...options,
               groups: [
                 'value-export',
-                { commentAbove: 'Comment above' },
-                'unknown',
+                { commentAbove: 'Comment above', group: 'unknown' },
               ],
             },
           ],
@@ -2966,10 +2957,8 @@ describe('sort-exports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'Value exports' },
-              'value-export',
-              { commentAbove: 'Type exports' },
-              'type-export',
+              { commentAbove: 'Value exports', group: 'value-export' },
+              { commentAbove: 'Type exports', group: ['type-export'] },
             ],
           },
         ],
@@ -3014,13 +3003,12 @@ describe('sort-exports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'Value exports' },
-              'value-export',
+              { commentAbove: 'Value exports', group: 'value-export' },
+              { newlinesBetween: 1 },
               {
                 commentAbove: 'Type exports',
-                newlinesBetween: 1,
+                group: ['type-export'],
               },
-              ['type-export'],
             ],
             newlinesBetween: 0,
           },
@@ -4387,10 +4375,8 @@ describe('sort-exports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'Type exports' },
-              'type-export',
-              { commentAbove: 'Other exports' },
-              'unknown',
+              { commentAbove: 'Type exports', group: ['type-export'] },
+              { commentAbove: 'Other exports', group: 'unknown' },
             ],
           },
         ],
@@ -4423,7 +4409,7 @@ describe('sort-exports', () => {
         options: [
           {
             ...options,
-            groups: [{ commentAbove: 'Comment above' }, 'unknown'],
+            groups: [{ commentAbove: 'Comment above', group: 'unknown' }],
           },
         ],
         output: dedent`
@@ -4472,7 +4458,7 @@ describe('sort-exports', () => {
         options: [
           {
             ...options,
-            groups: [{ commentAbove: 'Comment above' }, 'unknown'],
+            groups: [{ commentAbove: 'Comment above', group: 'unknown' }],
           },
         ],
       })
@@ -4502,8 +4488,7 @@ describe('sort-exports', () => {
               ...options,
               groups: [
                 'value-export',
-                { commentAbove: 'Comment above' },
-                'unknown',
+                { commentAbove: 'Comment above', group: 'unknown' },
               ],
             },
           ],
@@ -4548,10 +4533,8 @@ describe('sort-exports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'Value exports' },
-              'value-export',
-              { commentAbove: 'Type exports' },
-              'type-export',
+              { commentAbove: 'Value exports', group: 'value-export' },
+              { commentAbove: 'Type exports', group: ['type-export'] },
             ],
           },
         ],
@@ -4596,13 +4579,12 @@ describe('sort-exports', () => {
           {
             ...options,
             groups: [
-              { commentAbove: 'Value exports' },
-              'value-export',
+              { commentAbove: 'Value exports', group: 'value-export' },
+              { newlinesBetween: 1 },
               {
                 commentAbove: 'Type exports',
-                newlinesBetween: 1,
+                group: ['type-export'],
               },
-              ['type-export'],
             ],
             newlinesBetween: 0,
           },

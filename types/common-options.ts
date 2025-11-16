@@ -359,6 +359,7 @@ export interface GroupNewlinesBetweenOption {
    * placed between group names to control their spacing.
    */
   newlinesBetween: NewlinesBetweenOption
+  group?: never
 }
 
 /**
@@ -397,6 +398,7 @@ export interface AnyOfCustomGroup<SingleCustomGroup> {
  *   ]
  */
 export interface GroupCommentAboveOption {
+  group: string[] | string
   /**
    * Text of the comment to insert above the group. The comment will be
    * formatted as a line comment (// ...).
@@ -416,16 +418,15 @@ export interface GroupCommentAboveOption {
  *     'imports',
  *     { newlinesBetween: 1 },
  *     'types',
- *     { commentAbove: '// Components' },
- *     ['components', 'hooks'], // Composite group
+ *     { group: 'components', commentAbove: '// Components' }, // Object-based group
+ *     ['services', 'hooks'], // Composite group
  *     { newlinesBetween: 2 },
  *     'utils',
  *   ]
  *
  * @template T - Type of group identifiers (typically string literals).
  */
-export type GroupsOptions<T> = (
-  | (GroupNewlinesBetweenOption & GroupCommentAboveOption)
+export type GroupsOptions<T extends string> = (
   | GroupNewlinesBetweenOption
   | GroupCommentAboveOption
   | T[]

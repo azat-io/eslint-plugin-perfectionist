@@ -18,6 +18,108 @@ describe('get-custom-groups-compare-options', () => {
     order: 'asc',
   }
 
+  it('matches string groups', () => {
+    expect(
+      getCustomGroupsCompareOptions(
+        {
+          ...commonOptions,
+          customGroups: [
+            {
+              groupName: 'group',
+              type: 'unsorted',
+            },
+          ],
+          groups: ['group'],
+        },
+        0,
+      ),
+    ).toStrictEqual({
+      options: {
+        ...commonOptions,
+        type: 'unsorted',
+      },
+      fallbackSortNodeValueGetter: null,
+      nodeValueGetter: null,
+    })
+  })
+
+  it('ignores array sub groups', () => {
+    expect(
+      getCustomGroupsCompareOptions(
+        {
+          ...commonOptions,
+          customGroups: [
+            {
+              groupName: 'group',
+              type: 'unsorted',
+            },
+          ],
+          groups: [['group']],
+        },
+        0,
+      ),
+    ).toStrictEqual({
+      options: {
+        ...commonOptions,
+        type: 'alphabetical',
+      },
+      fallbackSortNodeValueGetter: null,
+      nodeValueGetter: null,
+    })
+  })
+
+  describe('commentAbove groups', () => {
+    it('matches string groups', () => {
+      expect(
+        getCustomGroupsCompareOptions(
+          {
+            ...commonOptions,
+            customGroups: [
+              {
+                groupName: 'group',
+                type: 'unsorted',
+              },
+            ],
+            groups: [{ commentAbove: 'foo', group: 'group' }],
+          },
+          0,
+        ),
+      ).toStrictEqual({
+        options: {
+          ...commonOptions,
+          type: 'unsorted',
+        },
+        fallbackSortNodeValueGetter: null,
+        nodeValueGetter: null,
+      })
+    })
+
+    it('ignores array sub groups', () => {
+      expect(
+        getCustomGroupsCompareOptions(
+          {
+            ...commonOptions,
+            customGroups: [
+              {
+                groupName: 'group',
+                type: 'unsorted',
+              },
+            ],
+            groups: [{ commentAbove: 'foo', group: ['group'] }],
+          },
+          0,
+        ),
+      ).toStrictEqual({
+        options: {
+          ...commonOptions,
+          type: 'alphabetical',
+        },
+        fallbackSortNodeValueGetter: null,
+        nodeValueGetter: null,
+      })
+    })
+  })
+
   it('return the entered options if the group is not linked to a custom group', () => {
     expect(
       getCustomGroupsCompareOptions(
