@@ -124,7 +124,7 @@ function buildFallbackSortJsonSchema({
     },
     description: 'Fallback sort order.',
     additionalProperties: false,
-    minProperties: 1,
+    required: ['type'],
     type: 'object',
   }
 }
