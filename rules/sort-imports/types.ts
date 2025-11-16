@@ -1,15 +1,13 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
   PartitionByCommentOption,
-  SpecialCharactersOption,
   NewlinesBetweenOption,
-  FallbackSortOption,
   CustomGroupsOption,
   GroupsOptions,
-  OrderOption,
+  CommonOptions,
   RegexOption,
-  TypeOption,
 } from '../../types/common-options'
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { JoinWithDash } from '../../types/join-with-dash'
@@ -26,119 +24,77 @@ import {
  * This rule enforces consistent ordering of import statements to improve code
  * organization, readability, and maintainability.
  */
-export type Options = Partial<{
-  /**
-   * TypeScript configuration for resolving module paths. Enables path alias
-   * resolution based on tsconfig.json paths configuration.
-   */
-  tsconfig:
-    | {
-        /**
-         * Optional filename of the TypeScript config file. `@default`
-         * tsconfig.json'.
-         */
-        filename?: string
-        /** Root directory where to search for the TypeScript config file. */
-        rootDir: string
-      }
-    | undefined
+export type Options = Partial<
+  {
+    /**
+     * TypeScript configuration for resolving module paths. Enables path alias
+     * resolution based on tsconfig.json paths configuration.
+     */
+    tsconfig:
+      | {
+          /**
+           * Optional filename of the TypeScript config file. `@default`
+           * tsconfig.json'.
+           */
+          filename?: string
+          /** Root directory where to search for the TypeScript config file. */
+          rootDir: string
+        }
+      | undefined
 
-  /** Custom groups for organizing imports. */
-  customGroups: CustomGroupsOption<SingleCustomGroup>
+    /** Custom groups for organizing imports. */
+    customGroups: CustomGroupsOption<SingleCustomGroup>
 
-  /**
-   * Partition imports by comment delimiters. Imports separated by specific
-   * comments are sorted independently.
-   */
-  partitionByComment: PartitionByCommentOption
+    /**
+     * Partition imports by comment delimiters. Imports separated by specific
+     * comments are sorted independently.
+     */
+    partitionByComment: PartitionByCommentOption
 
-  /**
-   * Controls how special characters in import names are handled during sorting.
-   * Options: 'keep' (default), 'trim', or 'remove'.
-   */
-  specialCharacters: SpecialCharactersOption
+    /** Controls the placement of newlines between different groups of imports. */
+    newlinesBetween: NewlinesBetweenOption
 
-  /**
-   * Locale(s) to use for string comparison. Affects how characters are sorted
-   * in different languages.
-   */
-  locales: NonNullable<Intl.LocalesArgument>
+    /**
+     * Maximum line length for imports. When exceeded, import names are used for
+     * sorting instead of the entire line.
+     */
+    maxLineLength: undefined | number
 
-  /** Controls the placement of newlines between different groups of imports. */
-  newlinesBetween: NewlinesBetweenOption
+    /**
+     * Patterns to identify internal imports. Imports matching these patterns
+     * are categorized as 'internal'.
+     */
+    internalPattern: RegexOption[]
 
-  /**
-   * Maximum line length for imports. When exceeded, import names are used for
-   * sorting instead of the entire line.
-   */
-  maxLineLength: undefined | number
+    /**
+     * Defines the order and grouping of imports. Imports are sorted within
+     * their groups and groups are ordered as specified.
+     */
+    groups: GroupsOptions<Group>
 
-  /**
-   * Fallback sorting configuration for imports with the same primary sort
-   * value. Used to break ties in sorting.
-   */
-  fallbackSort: FallbackSortOption
+    /**
+     * Runtime environment for resolving built-in modules. Determines which
+     * modules are considered built-in.
+     *
+     * @default 'node'
+     */
+    environment: 'node' | 'bun'
 
-  /**
-   * Patterns to identify internal imports. Imports matching these patterns are
-   * categorized as 'internal'.
-   */
-  internalPattern: RegexOption[]
+    /**
+     * Whether to partition imports by newlines. When true, imports separated by
+     * empty lines are sorted independently.
+     */
+    partitionByNewLine: boolean
 
-  /**
-   * Defines the order and grouping of imports. Imports are sorted within their
-   * groups and groups are ordered as specified.
-   */
-  groups: GroupsOptions<Group>
-
-  /**
-   * Runtime environment for resolving built-in modules. Determines which
-   * modules are considered built-in.
-   *
-   * @default 'node'
-   */
-  environment: 'node' | 'bun'
-
-  /**
-   * Whether to partition imports by newlines. When true, imports separated by
-   * empty lines are sorted independently.
-   */
-  partitionByNewLine: boolean
-
-  /**
-   * Controls whether side-effect imports should be sorted. When false,
-   * side-effect imports remain in their original positions.
-   *
-   * @default false
-   */
-  sortSideEffects: boolean
-
-  /**
-   * Whether to perform case-insensitive sorting.
-   *
-   * @default true
-   */
-  ignoreCase: boolean
-
-  /**
-   * Sort direction.
-   *
-   * @default 'asc'
-   */
-  order: OrderOption
-
-  /**
-   * Algorithm to use for sorting. Options: 'alphabetical', 'natural',
-   * 'line-length', 'custom', or 'unsorted'.
-   */
-  type: TypeOption
-
-  /**
-   * Custom alphabet for sorting when using 'custom' type. Characters are sorted
-   * according to their order in this string.
-   */
-  alphabet: string
-}>[]
+    /**
+     * Controls whether side-effect imports should be sorted. When false,
+     * side-effect imports remain in their original positions.
+     *
+     * @default false
+     */
+    sortSideEffects: boolean
+  } & CommonOptions
+>[]
 
 /**
  * Defines a custom group for import categorization.
@@ -168,6 +124,23 @@ export type SingleCustomGroup = {
 }
 
 /**
+ * Represents a sorting node for an import statement. Extends the base sorting
+ * node with dependency information and ignore flag.
+ */
+export interface SortImportsSortingNode
+  extends SortingNodeWithDependencies<
+    | TSESTree.TSImportEqualsDeclaration
+    | TSESTree.VariableDeclaration
+    | TSESTree.ImportDeclaration
+  > {
+  /**
+   * Whether this import should be ignored during sorting. Typically true for
+   * side-effect imports when sortSideEffects is false.
+   */
+  isIgnored: boolean
+}
+
+/**
  * Union type of all available import selectors. Used to categorize different
  * types of import statements.
  */
@@ -185,18 +158,6 @@ export type Selector =
   | IndexSelector
   | StyleSelector
   | TypeSelector
-
-/**
- * Represents a sorting node for an import statement. Extends the base sorting
- * node with dependency information and ignore flag.
- */
-export interface SortImportsSortingNode extends SortingNodeWithDependencies {
-  /**
-   * Whether this import should be ignored during sorting. Typically true for
-   * side-effect imports when sortSideEffects is false.
-   */
-  isIgnored: boolean
-}
 
 /**
  * Union type of all available import modifiers. Used to identify specific
