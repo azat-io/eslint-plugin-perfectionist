@@ -1,7 +1,6 @@
 import type { GroupsOptions } from '../../types/common-options'
 
-import { isNewlinesBetweenOption } from '../../utils/is-newlines-between-option'
-import { isCommentAboveOption } from '../../utils/is-comment-above-option'
+import { computeGroupsNames } from '../../utils/compute-groups-names'
 
 /**
  * Checks if a group is a side-effect-only group.
@@ -16,12 +15,14 @@ import { isCommentAboveOption } from '../../utils/is-comment-above-option'
 export function isSideEffectOnlyGroup(
   group: GroupsOptions<string>[0],
 ): boolean {
-  if (isNewlinesBetweenOption(group) || isCommentAboveOption(group)) {
+  let groupNames = computeGroupsNames([group])
+  if (groupNames.length === 0) {
     return false
   }
-  if (typeof group === 'string') {
-    return group === 'side-effect' || group === 'side-effect-style'
-  }
 
-  return group.every(isSideEffectOnlyGroup)
+  return groupNames.every(isStringGroupSideEffectOnlyGroup)
+}
+
+function isStringGroupSideEffectOnlyGroup(groupName: string): boolean {
+  return groupName === 'side-effect' || groupName === 'side-effect-style'
 }

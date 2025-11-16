@@ -324,11 +324,18 @@ Without `ignoreCallbackDependenciesPatterns: ['^computed$']`, `role` and `userna
 ### groups
 
 <sub>
-  type: `Array<string | string[]>`
+  type:
+  ```ts
+    Array<
+      | string
+      | string[]
+      | { newlinesBetween: number }
+    >
+  ```
 </sub>
 <sub>
   default:
-  ```
+  ```ts
   [
     'index-signature',
     'static-property',
@@ -709,7 +716,7 @@ you must write a custom group definition that does the same as what the predefin
 
 Example:
 
-```js
+```ts
  {
    groups: [
     'static-block',

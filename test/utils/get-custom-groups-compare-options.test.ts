@@ -13,6 +13,92 @@ describe('get-custom-groups-compare-options', () => {
     order: 'asc',
   }
 
+  it('matches string groups', () => {
+    expect(
+      getCustomGroupsCompareOptions(
+        {
+          ...baseOptions,
+          customGroups: [
+            {
+              groupName: 'group',
+              type: 'unsorted',
+            },
+          ],
+          groups: ['group'],
+        },
+        0,
+      ),
+    ).toStrictEqual({
+      ...baseOptions,
+      type: 'unsorted',
+    })
+  })
+
+  it('ignores array sub groups', () => {
+    expect(
+      getCustomGroupsCompareOptions(
+        {
+          ...baseOptions,
+          customGroups: [
+            {
+              groupName: 'group',
+              type: 'unsorted',
+            },
+          ],
+          groups: [['group']],
+        },
+        0,
+      ),
+    ).toStrictEqual({
+      ...baseOptions,
+      type: 'alphabetical',
+    })
+  })
+
+  describe('commentAbove groups', () => {
+    it('matches string groups', () => {
+      expect(
+        getCustomGroupsCompareOptions(
+          {
+            ...baseOptions,
+            customGroups: [
+              {
+                groupName: 'group',
+                type: 'unsorted',
+              },
+            ],
+            groups: [{ commentAbove: 'foo', group: 'group' }],
+          },
+          0,
+        ),
+      ).toStrictEqual({
+        ...baseOptions,
+        type: 'unsorted',
+      })
+    })
+
+    it('ignores array sub groups', () => {
+      expect(
+        getCustomGroupsCompareOptions(
+          {
+            ...baseOptions,
+            customGroups: [
+              {
+                groupName: 'group',
+                type: 'unsorted',
+              },
+            ],
+            groups: [{ commentAbove: 'foo', group: ['group'] }],
+          },
+          0,
+        ),
+      ).toStrictEqual({
+        ...baseOptions,
+        type: 'alphabetical',
+      })
+    })
+  })
+
   it('return the entered options if the group is not linked to a custom group', () => {
     expect(
       getCustomGroupsCompareOptions(

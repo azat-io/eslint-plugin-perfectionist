@@ -4,6 +4,8 @@ import type {
   GroupsOptions,
 } from '../types/common-options'
 
+import { computeGroupsNames } from './compute-groups-names'
+
 /**
  * Parameters for computing the group of an element.
  *
@@ -79,7 +81,7 @@ export function computeGroup<SingleCustomGroup>({
 }: GetGroupParameters<SingleCustomGroup>): 'unknown' | string {
   let group: undefined | string
   // For lookup performance.
-  let groupsSet = new Set(options.groups.flat())
+  let groupsSet = new Set(computeGroupsNames(options.groups))
 
   /**
    * Attempts to set the group if it's valid and not already set.

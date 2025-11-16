@@ -1,5 +1,7 @@
 import type { GroupsOptions } from '../types/common-options'
 
+import { computeGroupsNames } from './compute-groups-names'
+
 /**
  * Validates that consecutive objects in groups are merged into single objects.
  *
@@ -55,18 +57,17 @@ export function validateObjectsInsideGroups({
 }: {
   groups: GroupsOptions<string>
 }): void {
-  let isPreviousElementObject = false
+  let isPreviousElementNonGroupBased = false
   for (let group of groups) {
-    if (typeof group === 'string' || Array.isArray(group)) {
-      isPreviousElementObject = false
+    let [groupName] = computeGroupsNames([group])
+    if (groupName) {
+      isPreviousElementNonGroupBased = false
       continue
     }
 
-    if (isPreviousElementObject) {
-      throw new Error(
-        'Consecutive objects (`newlinesBetween` or `commentAbove` are not allowed: merge them into a single object',
-      )
+    if (isPreviousElementNonGroupBased) {
+      throw new Error('Consecutive `newlinesBetween` objects are not allowed')
     }
-    isPreviousElementObject = true
+    isPreviousElementNonGroupBased = true
   }
 }
