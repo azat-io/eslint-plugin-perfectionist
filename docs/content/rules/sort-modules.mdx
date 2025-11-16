@@ -327,11 +327,18 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
 ### groups
 
 <sub>
-  type: `Array<string | string[]>`
+  type:
+  ```ts
+    Array<
+      | string
+      | string[]
+      | { newlinesBetween: number }
+    >
+  ```
 </sub>
 <sub>
   default:
-  ```
+  ```ts
   [
     'declare-enum',
     'export-enum',
@@ -486,7 +493,7 @@ Custom groups have a higher priority than any predefined group.
 
 Example:
 
-```js
+```ts
  {
    groups: [
     ['export-interface', 'export-type'],

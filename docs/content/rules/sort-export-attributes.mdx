@@ -157,6 +157,16 @@ Controls newlines between groups:
 
 ### groups
 
+<sub>
+  type:
+  ```ts
+    Array<
+      | string
+      | string[]
+      | { newlinesBetween: number }
+    >
+  ```
+</sub>
 <sub>default: `[]`</sub>
 
 Defines the order of attribute groups. Unknown attributes are placed after the last group.

@@ -2,6 +2,7 @@ import type { CustomGroupsOption, GroupsOptions } from '../types/common-options'
 
 import { validateObjectsInsideGroups } from './validate-objects-inside-groups'
 import { validateNoDuplicatedGroups } from './validate-no-duplicated-groups'
+import { computeGroupsNames } from './compute-groups-names'
 
 /** Parameters for validating generated groups configuration. */
 interface ValidateGenerateGroupsConfigurationParameters {
@@ -79,14 +80,11 @@ export function validateGeneratedGroupsConfiguration({
   let availableCustomGroupNames = new Set(
     options.customGroups.map(customGroup => customGroup.groupName),
   )
-  let invalidGroups = options.groups
-    .flat()
-    .filter(group => typeof group === 'string')
-    .filter(
-      group =>
-        !isPredefinedGroup(selectors, modifiers, group) &&
-        !availableCustomGroupNames.has(group),
-    )
+  let invalidGroups = computeGroupsNames(options.groups).filter(
+    group =>
+      !isPredefinedGroup(selectors, modifiers, group) &&
+      !availableCustomGroupNames.has(group),
+  )
   if (invalidGroups.length > 0) {
     throw new Error(`Invalid group(s): ${invalidGroups.join(', ')}`)
   }

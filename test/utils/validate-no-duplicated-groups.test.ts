@@ -9,11 +9,15 @@ describe('validate-no-duplicated-groups', () => {
         groups: [
           ['group1'],
           'group2',
+          'group3',
+          'group4',
           { newlinesBetween: 1 },
           'group1',
           'group2',
+          { commentAbove: 'comment', group: 'group3' },
+          { commentAbove: 'comment', group: ['group4'] },
         ],
       }),
-    ).toThrow('Duplicated group(s): group1, group2')
+    ).toThrow('Duplicated group(s): group1, group2, group3, group4')
   })
 })

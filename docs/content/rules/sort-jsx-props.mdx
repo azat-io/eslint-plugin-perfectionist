@@ -315,7 +315,14 @@ Example configuration:
 ### groups
 
 <sub>
-  type: `Array<string | string[]>`
+  type:
+  ```ts
+    Array<
+      | string
+      | string[]
+      | { newlinesBetween: number }
+    >
+  ```
 </sub>
 <sub>default: `[]`</sub>
 
@@ -457,7 +464,7 @@ Custom groups have a higher priority than any predefined group.
 
 #### Example
 
-```js
+```ts
  {
    groups: [
      'multiline-prop',

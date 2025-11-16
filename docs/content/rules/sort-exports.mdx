@@ -180,7 +180,7 @@ Enables the use of comments to separate the exports into logical groups. This ca
 
 When `true`, the rule will not sort the exports if there is an empty line between them. This helps maintain the defined order of logically separated groups of exports.
 
-```js
+```ts
 // Group 1
 export * from "./atoms";
 export * from "./organisms";
@@ -213,7 +213,15 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
 ### groups
 
 <sub>
-  type: `Array<string | string[]>`
+  type:
+  ```ts
+    Array<
+      | string
+      | string[]
+      | { newlinesBetween: number }
+      | { group: string | string[]; commentAbove: string }
+    >
+  ```
 </sub>
 <sub>default: `[]`</sub>
 
@@ -268,18 +276,14 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 
 #### Comment above groups
 
-You may place `commentAbove` objects between above your groups to enforce the presence of a comment containing the
+You may place `commentAbove` objects alongside their related group(s) to enforce the presence of a comment containing the
 content of `commentAbove`.
-
-`newlinesBetween` and `commentAbove` objects can be combined together.
 
 ```ts
 {
   groups: [
-    { commentAbove: 'Type exports' },
-    'type-export',
-    { commentAbove: 'Value exports' },
-    'value-export',
+    { group: 'type-export', commentAbove: 'Type exports' },
+    { group: 'value-export', commentAbove: 'Value exports' },
   ]
 }
 ```
