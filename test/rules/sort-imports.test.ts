@@ -2627,6 +2627,34 @@ describe('sort-imports', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          import a from 'a'
+          import b from 'b'
+        `,
+        code: dedent`
+          import b from 'b'
+          import a from 'a'
+        `,
+      })
+    })
+
     it.each([
       ['filters on element name pattern with string', 'hello'],
       ['filters on element name pattern with array', ['noMatch', 'hello']],

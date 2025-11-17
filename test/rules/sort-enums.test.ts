@@ -772,6 +772,38 @@ describe('sort-enums', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'A',
+              left: 'B',
+            },
+            messageId: 'unexpectedEnumsOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            A = 'A',
+            B = 'B',
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            B = 'B',
+            A = 'A',
+          }
+        `,
+      })
+    })
+
     it.each([
       ['string pattern', 'HELLO'],
       ['array with string pattern', ['noMatch', 'HELLO']],

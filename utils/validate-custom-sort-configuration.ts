@@ -1,7 +1,11 @@
-import type { TypeOption } from '../types/common-options'
+import type { GroupsOptions, TypeOption } from '../types/common-options'
+
+import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 
 /** Options for custom sort configuration validation. */
 interface Options {
+  groups?: GroupsOptions<string>
+
   /** The sorting type selected by the user. */
   type: TypeOption
 
@@ -22,14 +26,32 @@ interface Options {
  * @param options - Configuration options to validate.
  * @throws {Error} If type is 'custom' but alphabet is empty.
  */
-export function validateCustomSortConfiguration({
-  alphabet,
-  type,
-}: Options): void {
-  if (type !== 'custom') {
+export function validateCustomSortConfiguration(options: Options): void {
+  if (!usesCustomSort(options)) {
     return
   }
-  if (alphabet.length === 0) {
+
+  if (options.alphabet.length === 0) {
     throw new Error('`alphabet` option must not be empty')
   }
+}
+
+function usesCustomSortInGroups(
+  groups: GroupsOptions<string> | undefined,
+): boolean {
+  if (!groups) {
+    return false
+  }
+
+  return groups
+    .filter(isGroupWithOverridesOption)
+    .some(groupWithSettings => groupWithSettings.type === 'custom')
+}
+
+function usesCustomSort(options: Options): boolean {
+  if (options.type === 'custom') {
+    return true
+  }
+
+  return usesCustomSortInGroups(options.groups)
 }

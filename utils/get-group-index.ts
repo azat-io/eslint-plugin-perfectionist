@@ -1,8 +1,8 @@
 import type { GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
+import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
-import { isCommentAboveOption } from './is-comment-above-option'
 import { UnreachableCaseError } from './unreachable-case-error'
 
 /**
@@ -53,7 +53,7 @@ function doesGroupMatch(group: Group, groupName: string): boolean {
   if (typeof group === 'string' || Array.isArray(group)) {
     return doesStringGroupMatch(group, groupName)
   }
-  if (isCommentAboveOption(group)) {
+  if (isGroupWithOverridesOption(group)) {
     return doesStringGroupMatch(group.group, groupName)
   }
   if (isNewlinesBetweenOption(group)) {

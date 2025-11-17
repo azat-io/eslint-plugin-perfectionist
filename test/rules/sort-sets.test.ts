@@ -632,6 +632,39 @@ describe('sort-sets', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          new Set([
+            'a',
+            'b'
+          ])
+        `,
+        code: dedent`
+          new Set([
+            'b',
+            'a'
+          ])
+        `,
+      })
+    })
+
     it('enforces custom group ordering', async () => {
       await invalid({
         errors: [

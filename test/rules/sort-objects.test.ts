@@ -222,6 +222,38 @@ describe('sort-objects', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a: 'a',
+            b: 'b',
+          }
+        `,
+        code: dedent`
+          let obj = {
+            b: 'b',
+            a: 'a',
+          }
+        `,
+      })
+    })
+
     it('allows using regex patterns for custom groups', async () => {
       await valid({
         options: [

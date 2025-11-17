@@ -5,7 +5,7 @@ import type { CustomGroupsOption, GroupsOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getCommentAboveThatShouldExist } from './get-comment-above-that-should-exist'
-import { isCommentAboveOption } from './is-comment-above-option'
+import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { getCommentsBefore } from './get-comments-before'
 import { getGroupIndex } from './get-group-index'
 
@@ -62,8 +62,9 @@ export function makeCommentAboveFixes({
 }: MakeCommentAboveFixesParameters): TSESLint.RuleFix[] {
   let allAutoAddedComments = new Set(
     options.groups
-      .filter(group => isCommentAboveOption(group))
-      .map(({ commentAbove }) => commentAbove),
+      .filter(group => isGroupWithOverridesOption(group))
+      .map(({ commentAbove }) => commentAbove)
+      .filter(comment => comment !== undefined),
   )
 
   let fixes: TSESLint.RuleFix[] = []

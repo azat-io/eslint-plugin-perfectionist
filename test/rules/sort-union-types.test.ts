@@ -1254,6 +1254,36 @@ describe('sort-union-types', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedUnionTypesOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          type T =
+            | a
+            | b
+        `,
+        code: dedent`
+          type T =
+            | b
+            | a
+        `,
+      })
+    })
+
     it('applies custom groups based on element selectors', async () => {
       await invalid({
         errors: [

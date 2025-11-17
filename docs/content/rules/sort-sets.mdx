@@ -20,7 +20,6 @@ Enforce sorted set values.
 
 By keeping sets sorted, developers can quickly scan and verify the values, making the code more predictable and reducing the likelihood of errors. This practice simplifies debugging and enhances the overall clarity of the codebase.
 
-
 ## Try it out
 
 <CodeExample
@@ -275,6 +274,10 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
       | string
       | string[]
       | { newlinesBetween: number }
+      | {
+          group: string | string[];
+          type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+        }
     >
   ```
 </sub>
@@ -296,6 +299,21 @@ Predefined groups are characterized by a selector.
 
 - `literal` — Array elements that are not spread values.
 - `spread` — Array elements that are spread values.
+
+#### Group with overridden settings
+
+You may directly override options for a specific group by using an object with the `group` property and other option overrides.
+
+- `type` — Overrides the [`type`](#type) option for that group.
+
+```ts
+{
+  groups: [
+    'literal',
+    { group: 'spread', type: 'unsorted' }, // Elements from this group will not be sorted
+  ]
+}
+```
 
 #### Newlines between groups
 
