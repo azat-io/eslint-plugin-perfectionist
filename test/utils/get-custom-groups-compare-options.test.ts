@@ -168,27 +168,48 @@ describe('get-custom-groups-compare-options', () => {
     })
   })
 
-  it('overrides "type"', () => {
-    expect(
-      getCustomGroupsCompareOptions(
-        {
-          ...baseOptions,
-          customGroups: [
-            {
-              groupName: 'group',
-              type: 'unsorted',
-            },
-          ],
-          groups: ['group'],
+  describe('"type"', () => {
+    it('overrides "type" with custom groups', () => {
+      expect(
+        getCustomGroupsCompareOptions(
+          {
+            ...baseOptions,
+            customGroups: [
+              {
+                groupName: 'group',
+                type: 'unsorted',
+              },
+            ],
+            groups: [{ type: 'natural', group: 'group' }],
+          },
+          0,
+        ),
+      ).toStrictEqual({
+        ...baseOptions,
+        fallbackSort: {
+          type: 'unsorted',
         },
-        0,
-      ),
-    ).toStrictEqual({
-      ...baseOptions,
-      fallbackSort: {
         type: 'unsorted',
-      },
-      type: 'unsorted',
+      })
+    })
+
+    it('overrides "type" with group with overrides', () => {
+      expect(
+        getCustomGroupsCompareOptions(
+          {
+            ...baseOptions,
+            groups: [{ type: 'unsorted', group: 'group' }],
+            customGroups: [],
+          },
+          0,
+        ),
+      ).toStrictEqual({
+        ...baseOptions,
+        fallbackSort: {
+          type: 'unsorted',
+        },
+        type: 'unsorted',
+      })
     })
   })
 

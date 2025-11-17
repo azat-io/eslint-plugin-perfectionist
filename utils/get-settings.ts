@@ -1,11 +1,9 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type {
-  SpecialCharactersOption,
-  FallbackSortOption,
-  OrderOption,
+  PartitionByCommentOption,
+  CommonOptions,
   RegexOption,
-  TypeOption,
 } from '../types/common-options'
 
 /**
@@ -21,42 +19,15 @@ export type Settings = Partial<{
    * boolean, string, array of strings, or object with block/line specific
    * settings.
    */
-  partitionByComment:
-    | {
-        block?: string[] | boolean | string
-        line?: string[] | boolean | string
-      }
-    | string[]
-    | boolean
-    | string
-
-  /** How to handle special characters in sorting. */
-  specialCharacters: SpecialCharactersOption
-
-  /** Locale(s) to use for locale-aware string comparison. */
-  locales: NonNullable<Intl.LocalesArgument>
-
-  /** Fallback sorting method when primary comparison results in equality. */
-  fallbackSort: FallbackSortOption
+  partitionByComment: PartitionByCommentOption
 
   /** Whether to create partitions at newlines. */
   partitionByNewLine: boolean
 
   /** Pattern to match elements that should be ignored during sorting. */
   ignorePattern: RegexOption
-
-  /** Whether to perform case-insensitive sorting. */
-  ignoreCase: boolean
-
-  /** Sort direction (ascending or descending). */
-  order: OrderOption
-
-  /** Sorting algorithm type. */
-  type: TypeOption
-
-  /** Custom alphabet for 'custom' sort type. */
-  alphabet: string
-}>
+}> &
+  Partial<CommonOptions>
 
 /**
  * Extracts and validates Perfectionist settings from ESLint configuration.

@@ -468,6 +468,70 @@ describe('sort-decorators', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        output: dedent`
+          @A
+          @B
+          class Class {
+
+            @A
+            @B
+            property
+
+            @A
+            @B
+            accessor field
+
+            @A
+            @B
+            method(
+              @A
+              @B
+              parameter) {}
+
+          }
+        `,
+        code: dedent`
+          @B
+          @A
+          class Class {
+
+            @B
+            @A
+            property
+
+            @B
+            @A
+            accessor field
+
+            @B
+            @A
+            method(
+              @B
+              @A
+              parameter) {}
+
+          }
+        `,
+        errors: duplicate5Times([
+          {
+            data: {
+              right: 'A',
+              left: 'B',
+            },
+            messageId: 'unexpectedDecoratorsOrder',
+          },
+        ]),
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+      })
+    })
+
     it.each([
       ['string pattern', 'Hello'],
       ['array of patterns', ['noMatch', 'Hello']],

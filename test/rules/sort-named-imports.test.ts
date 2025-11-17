@@ -780,6 +780,38 @@ describe('sort-named-imports', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedNamedImportsOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          import {
+            a,
+            b,
+          } from 'module'
+        `,
+        code: dedent`
+          import {
+            b,
+            a,
+          } from 'module'
+        `,
+      })
+    })
+
     it('filters on modifier', async () => {
       await invalid({
         errors: [

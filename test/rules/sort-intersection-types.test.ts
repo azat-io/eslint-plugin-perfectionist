@@ -1247,6 +1247,36 @@ describe('sort-intersection-types', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedIntersectionTypesOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          type T =
+            & a
+            & b
+        `,
+        code: dedent`
+          type T =
+            & b
+            & a
+        `,
+      })
+    })
+
     it('filters on selector', async () => {
       await invalid({
         errors: [

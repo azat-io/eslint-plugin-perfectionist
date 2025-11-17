@@ -7,6 +7,7 @@ import type {
 } from '../types/common-options'
 import type { BaseSortNodesByGroupsOptions } from './sort-nodes-by-groups'
 
+import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { computeGroupName } from './compute-group-name'
 
 /**
@@ -53,8 +54,8 @@ interface GroupRelatedOptions {
  * @returns The options for the group.
  */
 /**
- * Retrieves sorting options potentially overridden by a custom group
- * configuration.
+ * Retrieves sorting options potentially overridden by a custom group or group
+ * with settings configuration.
  *
  * Checks if the group at the specified index is a custom group with its own
  * sorting configuration. If so, returns the overridden options (type, order,
@@ -99,6 +100,10 @@ export function getCustomGroupsCompareOptions(
   let customGroup = customGroups.find(
     currentGroup => groupName === currentGroup.groupName,
   )
+
+  if (group && isGroupWithOverridesOption(group)) {
+    type = group.type ?? type
+  }
 
   if (customGroup) {
     fallbackSort = {

@@ -837,6 +837,39 @@ describe('sort-array-includes', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedArrayIncludesOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          [
+            'a',
+            'b'
+          ].includes(value)
+        `,
+        code: dedent`
+          [
+            'b',
+            'a'
+          ].includes(value)
+        `,
+      })
+    })
+
     it('enforces custom group ordering', async () => {
       await invalid({
         errors: [

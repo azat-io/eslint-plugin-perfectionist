@@ -13995,6 +13995,38 @@ describe('sort-classes', () => {
       ).resolves.not.toThrow()
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedClassesOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          class Class {
+            a: string;
+            b: string;
+          }
+        `,
+        code: dedent`
+          class Class {
+            b: string;
+            a: string;
+          }
+        `,
+      })
+    })
+
     it('filters on selector and modifiers', async () => {
       await invalid({
         options: [

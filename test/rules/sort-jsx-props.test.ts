@@ -321,6 +321,38 @@ describe('sort-jsx-props', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedJSXPropsOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          <Element
+            a="a"
+            b="b"
+          />
+        `,
+        code: dedent`
+          <Element
+            b="b"
+            a="a"
+          />
+        `,
+      })
+    })
+
     it('matches props using regex patterns in custom groups', async () => {
       await valid({
         options: [

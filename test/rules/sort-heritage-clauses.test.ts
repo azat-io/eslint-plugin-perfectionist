@@ -183,6 +183,36 @@ describe('sort-heritage-clauses', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          interface Interface extends
+              a,
+              b {}
+        `,
+        code: dedent`
+          interface Interface extends
+              b,
+              a {}
+        `,
+      })
+    })
+
     it('supports regex patterns in custom groups for heritage clauses', async () => {
       await valid({
         options: [

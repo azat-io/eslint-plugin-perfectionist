@@ -1,7 +1,7 @@
 import type { GroupsOptions } from '../types/common-options'
 
+import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
-import { isCommentAboveOption } from './is-comment-above-option'
 import { UnreachableCaseError } from './unreachable-case-error'
 
 /**
@@ -18,7 +18,7 @@ function computeGroupNames(group: GroupsOptions<string>[number]): string[] {
   if (typeof group === 'string' || Array.isArray(group)) {
     return computeStringGroupNames(group)
   }
-  if (isCommentAboveOption(group)) {
+  if (isGroupWithOverridesOption(group)) {
     return computeStringGroupNames(group.group)
   }
   if (isNewlinesBetweenOption(group)) {
