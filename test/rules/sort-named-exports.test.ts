@@ -626,6 +626,38 @@ describe('sort-named-exports', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedNamedExportsOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          export {
+            a,
+            b,
+          }
+        `,
+        code: dedent`
+          export {
+            b,
+            a,
+          }
+        `,
+      })
+    })
+
     it('filters on modifier', async () => {
       await invalid({
         errors: [

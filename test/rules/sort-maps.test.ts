@@ -664,6 +664,38 @@ describe('sort-maps', () => {
       })
     })
 
+    it('allows overriding options in groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedMapElementsOrder',
+          },
+        ],
+        options: [
+          {
+            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            type: 'unsorted',
+          },
+        ],
+        output: dedent`
+          new Map([
+            [a, 1],
+            [b, 2],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [b, 2],
+            [a, 1],
+          ])
+        `,
+      })
+    })
+
     it('applies custom groups based on element name patterns', async () => {
       await invalid({
         errors: [

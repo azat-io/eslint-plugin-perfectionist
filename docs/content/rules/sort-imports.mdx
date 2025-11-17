@@ -291,7 +291,11 @@ If this option is not set, the rule will not search for a `tsconfig.json` file.
       | string
       | string[]
       | { newlinesBetween: number }
-      | { group: string | string[]; commentAbove: string }
+      | {
+          group: string | string[];
+          commentAbove?: string;
+          type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+        }
     >
   ```
 </sub>
@@ -445,6 +449,28 @@ import type { BaseOptions } from './index.d.ts'
 import NotFoundError = ErrorsNamespace.NotFoundError
 ```
 
+#### Group with overridden settings
+
+You may directly override options for a specific group by using an object with the `group` property and other option overrides.
+
+- `type` — Overrides the [`type`](#type) option for that group.
+- `commentAbove` — Enforces the presence of a comment containing the content of `commentAbove` above the top element of the group.
+  - An error will be raised if no comment containing the content of `commentAbove` is found above the top element of the
+  group.
+  - Auto-fixing will add a comment containing the content of `commentAbove` above the top element of the group.
+  - Auto-fixing will also remove invalid auto-added comments (only comments existing in `commentAbove` objects are
+  considered as auto-removable).
+
+```ts
+{
+  groups: [
+    'internal',
+    { group: 'external', commentAbove: 'External imports' },
+    { group: 'sibling', type: 'unsorted' }, // Elements from this group will not be sorted
+  ]
+}
+```
+
 #### Newlines between groups
 
 You may place `newlinesBetween` objects between your groups to enforce the newline behavior between two specific groups.
@@ -463,26 +489,6 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
   ]
 }
 ```
-
-#### Comment above groups
-
-You may place `commentAbove` objects alongside their related group(s) to enforce the presence of a comment containing the
-content of `commentAbove`.
-
-```ts
-{
-  groups: [
-    { group: 'internal', commentAbove: 'Internal imports' },
-    { group: 'external', commentAbove: 'External imports' },
-  ]
-}
-```
-
-- An error will be raised if no comment containing the content of `commentAbove` is found above the top element of the
-group.
-- Auto-fixing will add a comment containing the content of `commentAbove` above the top element of the group.
-- Auto-fixing will also remove invalid auto-added comments (only comments existing in `commentAbove`
-objects are considered as auto-removable).
 
 ### customGroups
 

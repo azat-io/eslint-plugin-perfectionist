@@ -321,6 +321,10 @@ Example configuration:
       | string
       | string[]
       | { newlinesBetween: number }
+      | {
+          group: string | string[];
+          type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+        }
     >
   ```
 </sub>
@@ -348,6 +352,21 @@ The only selector possible for this rule is `prop`.
 - `shorthand` — Matches shorthand props, which are used without a value, typically for boolean props.
 
 Example: `shorthand-prop`.
+
+#### Group with overridden settings
+
+You may directly override options for a specific group by using an object with the `group` property and other option overrides.
+
+- `type` — Overrides the [`type`](#type) option for that group.
+
+```ts
+{
+  groups: [
+    'multiline',
+    { group: 'shorthand', type: 'unsorted' }, // Elements from this group will not be sorted
+  ]
+}
+```
 
 #### Newlines between groups
 
@@ -560,4 +579,4 @@ This rule was introduced in [v0.2.0](https://github.com/azat-io/eslint-plugin-pe
 ## Resources
 
 - [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-jsx-props.ts)
-- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-jsx-props.test.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/rules/sort-jsx-props.test.ts)

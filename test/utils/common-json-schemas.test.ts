@@ -211,45 +211,59 @@ describe('common-json-schemas', () => {
       })
     })
 
-    describe('commentAbove', () => {
-      it("should allow 'commentAbove' with string group", () => {
-        expect(
-          groupsJsonSchemaValidator([
-            'group1',
-            { commentAbove: 'foo', group: 'group' },
-            'group2',
-          ]),
-        ).toBeTruthy()
+    describe('group with overrides option', () => {
+      it('should not allow less than 2 properties set', () => {
+        expect(groupsJsonSchemaValidator([{ group: 'group' }])).toBeFalsy()
       })
 
-      it("should allow 'commentAbove' with non-empty string array groups", () => {
+      it('should not allow group to be undefined', () => {
         expect(
           groupsJsonSchemaValidator([
-            'group1',
-            { commentAbove: 'foo', group: ['group'] },
-            'group2',
-          ]),
-        ).toBeTruthy()
-      })
-
-      it("should not allow 'commentAbove' with empty sub-arrays", () => {
-        expect(
-          groupsJsonSchemaValidator([
-            'group1',
-            { commentAbove: 'foo', group: [] },
-            'group2',
+            { commentAbove: 'foo', type: 'unsorted' },
           ]),
         ).toBeFalsy()
       })
 
-      it('should not allow additional properties', () => {
-        expect(
-          groupsJsonSchemaValidator([
-            'group1',
-            { something: 'something', commentAbove: 'foo' },
-            'group2',
-          ]),
-        ).toBeFalsy()
+      describe('commentAbove', () => {
+        it("should allow 'commentAbove' with string group", () => {
+          expect(
+            groupsJsonSchemaValidator([
+              'group1',
+              { commentAbove: 'foo', group: 'group' },
+              'group2',
+            ]),
+          ).toBeTruthy()
+        })
+
+        it("should allow 'commentAbove' with non-empty string array groups", () => {
+          expect(
+            groupsJsonSchemaValidator([
+              'group1',
+              { commentAbove: 'foo', group: ['group'] },
+              'group2',
+            ]),
+          ).toBeTruthy()
+        })
+
+        it("should not allow 'commentAbove' with empty sub-arrays", () => {
+          expect(
+            groupsJsonSchemaValidator([
+              'group1',
+              { commentAbove: 'foo', group: [] },
+              'group2',
+            ]),
+          ).toBeFalsy()
+        })
+
+        it('should not allow additional properties', () => {
+          expect(
+            groupsJsonSchemaValidator([
+              'group1',
+              { something: 'something', commentAbove: 'foo' },
+              'group2',
+            ]),
+          ).toBeFalsy()
+        })
       })
     })
 
