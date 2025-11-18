@@ -49,7 +49,7 @@ export type SingleCustomGroup = {
  * Configuration options for the sort-exports rule.
  *
  * This rule enforces consistent ordering of re-export statements (`export ...
- * From '...'`) to improve code organization and maintainability..
+ * From '...'`) to improve code organization and maintainability.
  */
 export type Options = Partial<
   CommonGroupsOptions<Group, SingleCustomGroup> &
