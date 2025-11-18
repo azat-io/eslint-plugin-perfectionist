@@ -1,64 +1,10 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  PartitionByCommentOption,
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
+import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 import { regexJsonSchema } from '../../utils/common-json-schemas'
-
-/**
- * Configuration options for the sort-enums rule.
- *
- * This rule enforces consistent ordering of TypeScript enum members to improve
- * code readability and maintainability.
- */
-export type Options = Partial<
-  {
-    /**
-     * Custom groups for organizing enum members. Allows defining groups based
-     * on member name or value patterns.
-     */
-    customGroups: CustomGroupsOption<SingleCustomGroup>
-
-    /**
-     * Whether to sort enum members by their values instead of names. When
-     * "always", compares enum values; when "never", compares enum member
-     * names.
-     *
-     * @default ifNumericEnum
-     */
-    sortByValue: 'ifNumericEnum' | 'always' | 'never'
-
-    /**
-     * Partition enum members by comment delimiters. Members separated by
-     * specific comments are sorted independently.
-     */
-    partitionByComment: PartitionByCommentOption
-
-    /**
-     * Controls the placement of newlines between different groups of enum
-     * members.
-     */
-    newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Defines the order and grouping of enum members. Members are sorted within
-     * their groups and groups are ordered as specified.
-     */
-    groups: GroupsOptions<Group>
-
-    /**
-     * Whether to partition enum members by newlines. When true, members
-     * separated by empty lines are sorted independently.
-     */
-    partitionByNewLine: boolean
-  } & CommonOptions
->[]
 
 /**
  * Defines a custom group for enum member categorization.
@@ -79,6 +25,27 @@ export interface SingleCustomGroup {
    */
   elementNamePattern?: RegexOption
 }
+
+/**
+ * Configuration options for the sort-enums rule.
+ *
+ * This rule enforces consistent ordering of TypeScript enum members to improve
+ * code readability and maintainability.
+ */
+export type Options = Partial<
+  {
+    /**
+     * Whether to sort enum members by their values instead of names. When
+     * "always", compares enum values; when "never", compares enum member
+     * names.
+     *
+     * @default ifNumericEnum
+     */
+    sortByValue: 'ifNumericEnum' | 'always' | 'never'
+  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonPartitionOptions &
+    CommonOptions
+>[]
 
 /**
  * Represents a group identifier for enum member categorization. Can be

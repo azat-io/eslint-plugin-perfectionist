@@ -1259,27 +1259,27 @@ describe('sort-union-types', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           type T =
-            | a
             | b
+            | a
         `,
         code: dedent`
           type T =
-            | b
             | a
+            | b
         `,
       })
     })

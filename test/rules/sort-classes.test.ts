@@ -14000,28 +14000,28 @@ describe('sort-classes', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedClassesOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           class Class {
-            a: string;
             b: string;
+            a: string;
           }
         `,
         code: dedent`
           class Class {
-            b: string;
             a: string;
+            b: string;
           }
         `,
       })

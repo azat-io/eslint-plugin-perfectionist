@@ -1,8 +1,10 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { Options } from './sort-import-attributes/types'
-import type { SortingNode } from '../types/sorting-node'
+import type {
+  SortImportAttributesSortingNode,
+  Options,
+} from './sort-import-attributes/types'
 
 import {
   buildCustomGroupsArrayJsonSchema,
@@ -81,7 +83,7 @@ export default createEslintRule<Options, MessageId>({
         sourceCode,
       })
 
-      let formattedMembers: SortingNode<TSESTree.ImportAttribute>[][] = [[]]
+      let formattedMembers: SortImportAttributesSortingNode[][] = [[]]
       for (let attribute of attributes) {
         let name = getAttributeName(attribute, sourceCode)
 
@@ -97,19 +99,17 @@ export default createEslintRule<Options, MessageId>({
           options,
         })
 
-        let sortingNode: Omit<
-          SortingNode<TSESTree.ImportAttribute>,
-          'partitionId'
-        > = {
-          isEslintDisabled: isNodeEslintDisabled(
-            attribute,
-            eslintDisabledLines,
-          ),
-          size: rangeToDiff(attribute, sourceCode),
-          node: attribute,
-          group,
-          name,
-        }
+        let sortingNode: Omit<SortImportAttributesSortingNode, 'partitionId'> =
+          {
+            isEslintDisabled: isNodeEslintDisabled(
+              attribute,
+              eslintDisabledLines,
+            ),
+            size: rangeToDiff(attribute, sourceCode),
+            node: attribute,
+            group,
+            name,
+          }
 
         let lastSortingNode = formattedMembers.at(-1)?.at(-1)
         if (
@@ -131,11 +131,11 @@ export default createEslintRule<Options, MessageId>({
 
       for (let nodes of formattedMembers) {
         function createSortNodesExcludingEslintDisabled(
-          sortingNodes: SortingNode<TSESTree.ImportAttribute>[],
+          sortingNodes: SortImportAttributesSortingNode[],
         ) {
           return function (
             ignoreEslintDisabledNodes: boolean,
-          ): SortingNode<TSESTree.ImportAttribute>[] {
+          ): SortImportAttributesSortingNode[] {
             return sortNodesByGroups({
               getOptionsByGroupIndex:
                 buildGetCustomGroupOverriddenOptionsFunction(options),

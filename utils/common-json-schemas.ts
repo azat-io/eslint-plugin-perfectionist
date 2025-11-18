@@ -198,6 +198,7 @@ export let groupsJsonSchema: JSONSchema4 = {
             description: 'Specifies a comment to enforce above the group.',
             type: 'string',
           },
+          order: orderJsonSchema,
           type: typeJsonSchema,
         },
         additionalProperties: false,

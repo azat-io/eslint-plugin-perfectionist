@@ -293,8 +293,9 @@ If this option is not set, the rule will not search for a `tsconfig.json` file.
       | { newlinesBetween: number }
       | {
           group: string | string[];
-          commentAbove?: string;
           type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+          order?: 'asc' | 'desc';
+          commentAbove?: string;
         }
     >
   ```
@@ -454,6 +455,7 @@ import NotFoundError = ErrorsNamespace.NotFoundError
 You may directly override options for a specific group by using an object with the `group` property and other option overrides.
 
 - `type` — Overrides the [`type`](#type) option for that group.
+- `order` — Overrides the [`order`](#order) option for that group.
 - `commentAbove` — Enforces the presence of a comment containing the content of `commentAbove` above the top element of the group.
   - An error will be raised if no comment containing the content of `commentAbove` is found above the top element of the
   group.
@@ -734,4 +736,4 @@ This rule was introduced in [v0.9.0](https://github.com/azat-io/eslint-plugin-pe
 ## Resources
 
 - [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-imports.ts)
-- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-imports.test.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/rules/sort-imports.test.ts)

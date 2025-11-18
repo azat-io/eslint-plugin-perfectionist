@@ -298,25 +298,25 @@ describe('sort-modules', () => {
         errors: [
           {
             data: {
-              right: 'A',
-              left: 'B',
+              right: 'B',
+              left: 'A',
             },
             messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
-          interface A {}
           interface B {}
+          interface A {}
         `,
         code: dedent`
-          interface B {}
           interface A {}
+          interface B {}
         `,
       })
     })

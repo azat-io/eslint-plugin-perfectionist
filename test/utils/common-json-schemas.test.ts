@@ -224,6 +224,14 @@ describe('common-json-schemas', () => {
         ).toBeFalsy()
       })
 
+      it('should allow overriding options', () => {
+        expect(
+          groupsJsonSchemaValidator([
+            { type: 'alphabetical', group: 'group', order: 'asc' },
+          ]),
+        ).toBeTruthy()
+      })
+
       describe('commentAbove', () => {
         it("should allow 'commentAbove' with string group", () => {
           expect(

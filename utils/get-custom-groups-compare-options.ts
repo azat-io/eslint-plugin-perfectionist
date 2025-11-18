@@ -1,34 +1,12 @@
 import type {
   CustomGroupsOption,
-  FallbackSortOption,
+  CommonOptions,
   GroupsOptions,
-  OrderOption,
-  TypeOption,
 } from '../types/common-options'
 import type { BaseSortNodesByGroupsOptions } from './sort-nodes-by-groups'
 
 import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { computeGroupName } from './compute-group-name'
-
-/**
- * Sorting options that can be overridden at the custom group level.
- *
- * These options can be specified globally and then overridden for specific
- * custom groups to provide fine-grained control over sorting behavior.
- */
-interface OverridableOptions {
-  /** Fallback sorting method when primary comparison results in equality. */
-  fallbackSort: FallbackSortOption
-
-  /** Sort direction (ascending or descending). */
-  order: OrderOption
-
-  /**
-   * Sorting algorithm type (alphabetical, natural, line-length, custom,
-   * unsorted).
-   */
-  type: TypeOption
-}
 
 /**
  * Options related to group configuration.
@@ -43,6 +21,14 @@ interface GroupRelatedOptions {
   /** Groups configuration defining available groups and their order. */
   groups: GroupsOptions<string>
 }
+
+/**
+ * Sorting options that can be overridden at the custom group level.
+ *
+ * These options can be specified globally and then overridden for specific
+ * custom groups to provide fine-grained control over sorting behavior.
+ */
+type OverridableOptions = Pick<CommonOptions, 'fallbackSort' | 'order' | 'type'>
 
 /**
  * Retrieves the compare options used to sort a given group. If the group is a
@@ -103,6 +89,7 @@ export function getCustomGroupsCompareOptions(
 
   if (group && isGroupWithOverridesOption(group)) {
     type = group.type ?? type
+    order = group.order ?? order
   }
 
   if (customGroup) {

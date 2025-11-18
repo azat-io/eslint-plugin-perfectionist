@@ -188,27 +188,27 @@ describe('sort-heritage-clauses', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           interface Interface extends
-              a,
-              b {}
+              b,
+              a {}
         `,
         code: dedent`
           interface Interface extends
-              b,
-              a {}
+              a,
+              b {}
         `,
       })
     })

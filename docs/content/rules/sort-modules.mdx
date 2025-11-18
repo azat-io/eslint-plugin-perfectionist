@@ -335,7 +335,8 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
       | { newlinesBetween: number }
       | {
           group: string | string[];
-          type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+          type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+          order?: 'asc' | 'desc';
         }
     >
   ```
@@ -549,6 +550,7 @@ Example:
 You may directly override options for a specific group by using an object with the `group` property and other option overrides.
 
 - `type` — Overrides the [`type`](#type) option for that group.
+- `order` — Overrides the [`order`](#order) option for that group.
 
 ```ts
 {
@@ -683,4 +685,4 @@ This rule was introduced in [v4.0.0](https://github.com/azat-io/eslint-plugin-pe
 ## Resources
 
 - [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-modules.ts)
-- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-modules.test.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/rules/sort-modules.test.ts)

@@ -1,13 +1,8 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  PartitionByCommentOption,
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
+import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 import { regexJsonSchema } from '../../utils/common-json-schemas'
 
@@ -30,37 +25,9 @@ export type Options = Partial<
        */
       allNamesMatchPattern?: RegexOption
     }
-
-    /**
-     * Custom groups for organizing Map elements. Allows defining groups based
-     * on key patterns.
-     */
-    customGroups: CustomGroupsOption<SingleCustomGroup>
-
-    /**
-     * Partition Map elements by comment delimiters. Elements separated by
-     * specific comments are sorted independently.
-     */
-    partitionByComment: PartitionByCommentOption
-
-    /**
-     * Controls the placement of newlines between different groups of Map
-     * elements.
-     */
-    newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Defines the order and grouping of Map elements. Elements are sorted
-     * within their groups and groups are ordered as specified.
-     */
-    groups: GroupsOptions<Group>
-
-    /**
-     * Whether to partition Map elements by newlines. When true, elements
-     * separated by empty lines are sorted independently.
-     */
-    partitionByNewLine: boolean
-  } & CommonOptions
+  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonPartitionOptions &
+    CommonOptions
 >[]
 
 /**

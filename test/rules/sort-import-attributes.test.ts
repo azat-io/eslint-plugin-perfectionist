@@ -114,28 +114,28 @@ describe('sort-import-attributes', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedImportAttributesOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           import { data } from 'module' with {
-            a: 'a',
             b: 'b',
+            a: 'a',
           }
         `,
         code: dedent`
           import { data } from 'module' with {
-            b: 'b',
             a: 'a',
+            b: 'b',
           }
         `,
       })

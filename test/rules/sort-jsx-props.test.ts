@@ -326,28 +326,28 @@ describe('sort-jsx-props', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedJSXPropsOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           <Element
-            a="a"
             b="b"
+            a="a"
           />
         `,
         code: dedent`
           <Element
-            b="b"
             a="a"
+            b="b"
           />
         `,
       })
