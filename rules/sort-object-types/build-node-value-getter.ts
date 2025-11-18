@@ -1,6 +1,8 @@
 import type { NodeValueGetterFunction } from '../../utils/compare'
 import type { SortObjectTypesSortingNode } from './types'
 
+import { UnreachableCaseError } from '../../utils/unreachable-case-error'
+
 /**
  * Builds a value getter function for sorting object types.
  *
@@ -10,5 +12,13 @@ import type { SortObjectTypesSortingNode } from './types'
 export function buildNodeValueGetter(
   sortBy: 'value' | 'name',
 ): NodeValueGetterFunction<SortObjectTypesSortingNode> | null {
-  return sortBy === 'value' ? node => node.value ?? '' : null
+  switch (sortBy) {
+    case 'value':
+      return node => node.value ?? ''
+    case 'name':
+      return null
+    /* v8 ignore next 2 */
+    default:
+      throw new UnreachableCaseError(sortBy)
+  }
 }

@@ -777,28 +777,28 @@ describe('sort-enums', () => {
         errors: [
           {
             data: {
-              right: 'A',
-              left: 'B',
+              right: 'B',
+              left: 'A',
             },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           enum Enum {
-            A = 'A',
             B = 'B',
+            A = 'A',
           }
         `,
         code: dedent`
           enum Enum {
-            B = 'B',
             A = 'A',
+            B = 'B',
           }
         `,
       })

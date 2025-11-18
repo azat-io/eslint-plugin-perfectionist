@@ -317,7 +317,8 @@ Example configuration:
       | { newlinesBetween: number }
       | {
           group: string | string[];
-          type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+          type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+          order?: 'asc' | 'desc';
         }
     >
   ```
@@ -346,6 +347,7 @@ Predefined groups are characterized by a selector.
 You may directly override options for a specific group by using an object with the `group` property and other option overrides.
 
 - `type` — Overrides the [`type`](#type) option for that group.
+- `order` — Overrides the [`order`](#order) option for that group.
 
 ```ts
 {
@@ -514,4 +516,4 @@ This rule was introduced in [v0.5.0](https://github.com/azat-io/eslint-plugin-pe
 ## Resources
 
 - [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-array-includes.ts)
-- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-array-includes.test.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/rules/sort-array-includes.test.ts)

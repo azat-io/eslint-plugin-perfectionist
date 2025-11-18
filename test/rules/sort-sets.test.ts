@@ -634,32 +634,32 @@ describe('sort-sets', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
+            type: 'unsorted',
+          },
+        ],
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedSetsOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
-            type: 'unsorted',
-          },
-        ],
         output: dedent`
           new Set([
+            'b',
             'a',
-            'b'
           ])
         `,
         code: dedent`
           new Set([
+            'a',
             'b',
-            'a'
           ])
         `,
       })
@@ -1475,7 +1475,6 @@ describe('sort-sets', () => {
             messageId: 'unexpectedSetsGroupOrder',
           },
         ],
-
         output: dedent`
           new Set([
             'a', // Comment after
@@ -2975,7 +2974,6 @@ describe('sort-sets', () => {
             messageId: 'unexpectedSetsGroupOrder',
           },
         ],
-
         output: dedent`
           new Set([
             'a', // Comment after
@@ -4475,7 +4473,6 @@ describe('sort-sets', () => {
             messageId: 'unexpectedSetsGroupOrder',
           },
         ],
-
         output: dedent`
           new Set([
             'a', // Comment after

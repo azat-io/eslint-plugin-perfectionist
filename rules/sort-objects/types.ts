@@ -1,13 +1,8 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  PartitionByCommentOption,
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
+import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -68,36 +63,6 @@ export type Options = Partial<
     }
 
     /**
-     * Custom groups for organizing object members. Allows defining groups based
-     * on property names, values, and characteristics.
-     */
-    customGroups: CustomGroupsOption<SingleCustomGroup>
-
-    /**
-     * Partition object members by comment delimiters. Members separated by
-     * specific comments are sorted independently.
-     */
-    partitionByComment: PartitionByCommentOption
-
-    /**
-     * Controls the placement of newlines between different groups of object
-     * members.
-     */
-    newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Defines the order and grouping of object members. Members are sorted
-     * within their groups and groups are ordered as specified.
-     */
-    groups: GroupsOptions<Group>
-
-    /**
-     * Whether to partition object members by newlines. When true, members
-     * separated by empty lines are sorted independently.
-     */
-    partitionByNewLine: boolean
-
-    /**
      * Regular expression pattern to ignore certain objects from sorting.
      * Objects with names matching this pattern will not be sorted.
      */
@@ -110,7 +75,9 @@ export type Options = Partial<
      * @default true
      */
     styledComponents: boolean
-  } & CommonOptions
+  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonPartitionOptions &
+    CommonOptions
 >[]
 
 /**

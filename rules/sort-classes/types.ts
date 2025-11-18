@@ -1,13 +1,8 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  PartitionByCommentOption,
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  CommonOptions,
-  GroupsOptions,
-  RegexOption,
-} from '../../types/common-options'
+import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
@@ -15,55 +10,6 @@ import {
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Configuration options for the sort-classes rule.
- *
- * This rule enforces consistent ordering of class members (properties, methods,
- * constructors, etc.) to improve code readability and maintainability.
- */
-export type SortClassesOptions = [
-  Partial<
-    {
-      /**
-       * Custom groups for organizing class members. Allows defining groups
-       * based on member selectors, modifiers, and name patterns.
-       */
-      customGroups: CustomGroupsOption<SingleCustomGroup>
-
-      /**
-       * Regex patterns for function names whose callback argument dependencies
-       * are ignored during class-member sorting. Dependencies inside these
-       * callbacks won't influence the ordering.
-       */
-      ignoreCallbackDependenciesPatterns: RegexOption
-
-      /**
-       * Partition class members by comment delimiters. Members separated by
-       * specific comments are sorted independently.
-       */
-      partitionByComment: PartitionByCommentOption
-
-      /**
-       * Controls the placement of newlines between different groups of class
-       * members.
-       */
-      newlinesBetween: NewlinesBetweenOption
-
-      /**
-       * Defines the order and grouping of class members. Members are sorted
-       * within their groups and groups are ordered as specified.
-       */
-      groups: GroupsOptions<Group>
-
-      /**
-       * Whether to partition class members by newlines. When true, members
-       * separated by empty lines are sorted independently.
-       */
-      partitionByNewLine: boolean
-    } & CommonOptions
-  >,
-]
 
 /**
  * Defines a custom group configuration for class members.
@@ -82,6 +28,27 @@ export type SingleCustomGroup =
   | BaseSingleCustomGroup<StaticBlockSelector>
   | BaseSingleCustomGroup<ConstructorSelector>
   | AdvancedSingleCustomGroup<MethodSelector>
+
+/**
+ * Configuration options for the sort-classes rule.
+ *
+ * This rule enforces consistent ordering of class members (properties, methods,
+ * constructors, etc.) to improve code readability and maintainability.
+ */
+export type SortClassesOptions = [
+  Partial<
+    {
+      /**
+       * Regex patterns for function names whose callback argument dependencies
+       * are ignored during class-member sorting. Dependencies inside these
+       * callbacks won't influence the ordering.
+       */
+      ignoreCallbackDependenciesPatterns: RegexOption
+    } & CommonGroupsOptions<Group, SingleCustomGroup> &
+      CommonPartitionOptions &
+      CommonOptions
+  >,
+]
 
 /**
  * Represents all possible group combinations for non-declare properties.

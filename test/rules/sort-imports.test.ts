@@ -2632,25 +2632,25 @@ describe('sort-imports', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
-          import a from 'a'
           import b from 'b'
+          import a from 'a'
         `,
         code: dedent`
-          import b from 'b'
           import a from 'a'
+          import b from 'b'
         `,
       })
     })

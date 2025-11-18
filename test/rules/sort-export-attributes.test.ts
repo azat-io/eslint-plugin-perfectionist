@@ -114,28 +114,28 @@ describe('sort-export-attributes', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedExportAttributesOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           export { data } from 'module' with {
-            a: 'a',
             b: 'b',
+            a: 'a',
           }
         `,
         code: dedent`
           export { data } from 'module' with {
-            b: 'b',
             a: 'a',
+            b: 'b',
           }
         `,
       })

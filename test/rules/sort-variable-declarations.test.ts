@@ -1086,27 +1086,27 @@ describe('sort-variable-declarations', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedVariableDeclarationsOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           let
-            a,
             b,
+            a,
         `,
         code: dedent`
           let
-            b,
             a,
+            b,
         `,
       })
     })

@@ -224,7 +224,8 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
       | { newlinesBetween: number }
       | {
           group: string | string[];
-          type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+          type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+          order?: 'asc' | 'desc';
         }
     >
   ```
@@ -253,6 +254,7 @@ Predefined groups are characterized by a selector.
 You may directly override options for a specific group by using an object with the `group` property and other option overrides.
 
 - `type` — Overrides the [`type`](#type) option for that group.
+- `order` — Overrides the [`order`](#order) option for that group.
 
 ```ts
 {
@@ -289,7 +291,7 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 </sub>
 <sub>default: `[]`</sub>
 
-Defines custom groups to match specific object type members.
+Defines custom groups to match specific variable declaration members.
 
 A custom group definition may follow one of the two following interfaces:
 
@@ -421,5 +423,5 @@ This rule was introduced in [v3.0.0](https://github.com/azat-io/eslint-plugin-pe
 ## Resources
 
 - [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-variable-declarations.ts)
-- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/sort-variable-declarations.test.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/rules/sort-variable-declarations.test.ts)
 

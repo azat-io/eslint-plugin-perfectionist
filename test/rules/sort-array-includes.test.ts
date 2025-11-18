@@ -842,8 +842,8 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedArrayIncludesOrder',
           },
@@ -851,20 +851,20 @@ describe('sort-array-includes', () => {
         options: [
           {
             ...options,
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           [
+            'b',
             'a',
-            'b'
           ].includes(value)
         `,
         code: dedent`
           [
+            'a',
             'b',
-            'a'
           ].includes(value)
         `,
       })
@@ -1747,7 +1747,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
-
         output: dedent`
           [
             'a', // Comment after
@@ -3521,7 +3520,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
-
         output: dedent`
           [
             'a', // Comment after
@@ -5276,7 +5274,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesGroupOrder',
           },
         ],
-
         output: dedent`
           [
             'a', // Comment after

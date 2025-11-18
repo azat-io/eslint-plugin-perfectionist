@@ -785,28 +785,28 @@ describe('sort-named-imports', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedNamedImportsOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           import {
-            a,
             b,
+            a,
           } from 'module'
         `,
         code: dedent`
           import {
-            b,
             a,
+            b,
           } from 'module'
         `,
       })

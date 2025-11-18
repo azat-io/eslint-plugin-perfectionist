@@ -2,14 +2,13 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
-  PartitionByCommentOption,
-  NewlinesBetweenOption,
   CustomGroupsOption,
   FallbackSortOption,
   CommonOptions,
-  GroupsOptions,
   RegexOption,
 } from '../../types/common-options'
+import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { JoinWithDash } from '../../types/join-with-dash'
 import type { SortingNode } from '../../types/sorting-node'
 
@@ -73,30 +72,6 @@ export type Options = Partial<
     fallbackSort: { sortBy?: 'value' | 'name' } & FallbackSortOption
 
     /**
-     * Partition object type members by comment delimiters. Members separated by
-     * specific comments are sorted independently.
-     */
-    partitionByComment: PartitionByCommentOption
-
-    /**
-     * Controls the placement of newlines between different groups of object
-     * type members.
-     */
-    newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Defines the order and grouping of object type members. Members are sorted
-     * within their groups and groups are ordered as specified.
-     */
-    groups: GroupsOptions<Group>
-
-    /**
-     * Whether to partition object type members by newlines. When true, members
-     * separated by empty lines are sorted independently.
-     */
-    partitionByNewLine: boolean
-
-    /**
      * Determines what to sort by when comparing object type members.
      *
      * - 'name': Sort by the member's property/method name
@@ -105,7 +80,9 @@ export type Options = Partial<
      * @default 'name'
      */
     sortBy: 'value' | 'name'
-  } & Omit<CommonOptions, 'fallbackSort'>
+  } & Omit<CommonGroupsOptions<Group, SingleCustomGroup>, 'customGroups'> &
+    Omit<CommonOptions, 'fallbackSort'> &
+    CommonPartitionOptions
 >[]
 
 /**

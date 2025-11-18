@@ -732,28 +732,28 @@ describe('sort-interfaces', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedInterfacePropertiesOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           interface Interface {
-            a: string;
             b: string;
+            a: string;
           }
         `,
         code: dedent`
           interface Interface {
-            b: string;
             a: string;
+            b: string;
           }
         `,
       })

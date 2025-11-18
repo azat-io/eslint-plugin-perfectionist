@@ -631,28 +631,28 @@ describe('sort-named-exports', () => {
         errors: [
           {
             data: {
-              right: 'a',
-              left: 'b',
+              right: 'b',
+              left: 'a',
             },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown' }],
+            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
             type: 'unsorted',
           },
         ],
         output: dedent`
           export {
-            a,
             b,
+            a,
           }
         `,
         code: dedent`
           export {
-            b,
             a,
+            b,
           }
         `,
       })
