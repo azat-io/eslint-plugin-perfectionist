@@ -57,10 +57,7 @@ export type Options = Partial<
       hasNumericKeysOnly?: boolean
     }
 
-    /**
-     * Custom groups for organizing object type members. Can be a structured
-     * configuration or the deprecated format.
-     */
+    /** Custom groups for organizing object type members. */
     customGroups: CustomGroupsOption<
       SingleCustomGroup,
       {

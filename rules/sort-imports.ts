@@ -45,7 +45,6 @@ import { singleCustomGroupJsonSchema } from './sort-imports/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { allModifiers, allSelectors } from './sort-imports/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { allDeprecatedSelectors } from './sort-imports/types'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { computeGroup } from '../utils/compute-group'
@@ -105,7 +104,7 @@ export default createEslintRule<Options, MessageId>({
     )
 
     validateGeneratedGroupsConfiguration({
-      selectors: [...allSelectors, ...allDeprecatedSelectors],
+      selectors: allSelectors,
       modifiers: allModifiers,
       options,
     })
@@ -160,14 +159,6 @@ export default createEslintRule<Options, MessageId>({
       let group: Group | null = null
 
       if (node.type !== 'VariableDeclaration' && node.importKind === 'type') {
-        if (node.type === 'ImportDeclaration') {
-          for (let selector of commonSelectors) {
-            if (selector !== 'subpath' && selector !== 'tsconfig-path') {
-              selectors.push(`${selector}-type`)
-            }
-          }
-        }
-
         selectors.push('type')
         modifiers.push('type')
       }
