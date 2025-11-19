@@ -585,6 +585,24 @@ describe('sort-regexp', () => {
       })
     })
 
+    it('does not reorder alternatives when character class overlaps multi-character sequence', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /\r\n|[\r\n\u2028\u2029]/
+        `),
+        options: [options],
+      })
+    })
+
+    it('does not reorder alternatives when optional sequence overlaps character class', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /\r?\n|[\r\n]/
+        `),
+        options: [options],
+      })
+    })
+
     it('sorts alternatives with special characters', async () => {
       await invalid({
         errors: [
@@ -773,25 +791,8 @@ describe('sort-regexp', () => {
       })
     })
 
-    it('sorts alternatives with dot wildcard', async () => {
-      await invalid({
-        errors: [
-          {
-            data: { left: 'specific', right: '.+' },
-            messageId: 'unexpectedRegExpOrder',
-          },
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { right: '.*', left: '.+' },
-          },
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { right: '.?', left: '.*' },
-          },
-        ],
-        output: dedent`
-          /(.?|.*|.+|specific)/
-        `,
+    it('skips alternatives with dot wildcard to avoid shadowing', async () => {
+      await valid({
         code: dedent`
           /(specific|.+|.*|.?)/
         `,
@@ -1976,6 +1977,24 @@ describe('sort-regexp', () => {
       })
     })
 
+    it('does not reorder alternatives when character class overlaps multi-character sequence', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /\r\n|[\r\n\u2028\u2029]/
+        `),
+        options: [options],
+      })
+    })
+
+    it('does not reorder alternatives when optional sequence overlaps character class', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /\r?\n|[\r\n]/
+        `),
+        options: [options],
+      })
+    })
+
     it('sorts alternatives with special characters', async () => {
       await invalid({
         errors: [
@@ -2156,21 +2175,8 @@ describe('sort-regexp', () => {
       })
     })
 
-    it('sorts alternatives with dot wildcard', async () => {
-      await invalid({
-        errors: [
-          {
-            data: { left: 'specific', right: '.+' },
-            messageId: 'unexpectedRegExpOrder',
-          },
-          {
-            messageId: 'unexpectedRegExpOrder',
-            data: { right: '.*', left: '.+' },
-          },
-        ],
-        output: dedent`
-          /(.*|.+|.?|specific)/
-        `,
+    it('skips alternatives with dot wildcard to avoid shadowing', async () => {
+      await valid({
         code: dedent`
           /(specific|.+|.*|.?)/
         `,
@@ -2907,6 +2913,24 @@ describe('sort-regexp', () => {
       await valid({
         code: dedent(String.raw`
           /@import(?:\s*url\([^)]*\).*?|[^;]*);/
+        `),
+        options: [options],
+      })
+    })
+
+    it('does not reorder alternatives when character class overlaps multi-character sequence', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /\r\n|[\r\n\u2028\u2029]/
+        `),
+        options: [options],
+      })
+    })
+
+    it('does not reorder alternatives when optional sequence overlaps character class', async () => {
+      await valid({
+        code: dedent(String.raw`
+          /\r?\n|[\r\n]/
         `),
         options: [options],
       })

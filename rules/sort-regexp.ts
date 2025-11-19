@@ -73,6 +73,7 @@ export default createEslintRule<Options, MessageId>({
     })
 
     let { sourceCode, id } = context
+    let literalsWithShadowing = new WeakSet<TSESTree.Literal>()
 
     function handleLiteral(literalNode: TSESTree.Literal): void {
       if (!('regex' in literalNode)) {
@@ -166,8 +167,10 @@ export default createEslintRule<Options, MessageId>({
           if (
             hasShadowingAlternatives({
               alternatives: alternative.parent.alternatives,
+              flags: literalNode.regex.flags,
             })
           ) {
+            literalsWithShadowing.add(literalNode)
             return
           }
 
@@ -225,6 +228,10 @@ export default createEslintRule<Options, MessageId>({
 
       visitRegExpAST(ast, {
         onCharacterClassLeave(characterClass) {
+          if (literalsWithShadowing.has(literalNode)) {
+            return
+          }
+
           let { elements, negate, start, end } = characterClass
           if (!isSortable(elements)) {
             return
