@@ -634,6 +634,15 @@ describe('sort-regexp', () => {
       })
     })
 
+    it('skips sorting when alternatives contain unnamed capturing groups', async () => {
+      await valid({
+        code: dedent`
+          const regex = /\\(.)|(['"])/gsu;
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts alternatives with escaped characters', async () => {
       await invalid({
         errors: [
@@ -800,17 +809,8 @@ describe('sort-regexp', () => {
       })
     })
 
-    it('sorts alternatives with alternation groups', async () => {
-      await invalid({
-        errors: [
-          {
-            data: { right: '(a|b)', left: '(c|d)' },
-            messageId: 'unexpectedRegExpOrder',
-          },
-        ],
-        output: dedent`
-          /((a|b)|(c|d)|(e|f))/
-        `,
+    it('skips sorting when alternatives are unnamed capturing groups', async () => {
+      await valid({
         code: dedent`
           /((c|d)|(a|b)|(e|f))/
         `,
@@ -2184,17 +2184,8 @@ describe('sort-regexp', () => {
       })
     })
 
-    it('sorts alternatives with alternation groups', async () => {
-      await invalid({
-        errors: [
-          {
-            data: { right: '(a|b)', left: '(c|d)' },
-            messageId: 'unexpectedRegExpOrder',
-          },
-        ],
-        output: dedent`
-          /((a|b)|(c|d)|(e|f))/
-        `,
+    it('skips sorting unnamed capturing group alternatives in secondary suite', async () => {
+      await valid({
         code: dedent`
           /((c|d)|(a|b)|(e|f))/
         `,

@@ -10,6 +10,7 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
 } from '../utils/common-json-schemas'
+import { alternativesContainUnnamedCapturingGroups } from './sort-regexp/alternatives-contain-unnamed-capturing-groups'
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { getCharacterClassElementSortKey } from './sort-regexp/get-character-class-element-sort-key'
@@ -161,6 +162,14 @@ export default createEslintRule<Options, MessageId>({
           }
 
           if (alternative !== alternative.parent.alternatives.at(-1)) {
+            return
+          }
+
+          if (
+            alternativesContainUnnamedCapturingGroups(
+              alternative.parent.alternatives,
+            )
+          ) {
             return
           }
 
