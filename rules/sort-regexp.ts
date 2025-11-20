@@ -1,3 +1,4 @@
+import type { CharacterClass } from '@eslint-community/regexpp/ast'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import { parseRegExpLiteral, visitRegExpAST } from '@eslint-community/regexpp'
@@ -43,6 +44,22 @@ type SortRegExpSortingNode = SortingNode<TSESTree.Literal>
 type ResolvedOptions = Required<Options[0]>
 
 type MessageId = 'unexpectedRegExpOrder'
+
+/**
+ * Retrieves the original source text for a character class element.
+ *
+ * @param parameters - Character class element metadata.
+ * @returns Slice of the literal raw string covering the element.
+ */
+function getCharacterClassElementRawText({
+  literalRaw,
+  element,
+}: {
+  element: CharacterClass['elements'][number]
+  literalRaw: string
+}): string {
+  return literalRaw.slice(element.start, element.end)
+}
 
 let defaultOptions: ResolvedOptions = {
   fallbackSort: { type: 'unsorted' },
@@ -309,8 +326,19 @@ export default createEslintRule<Options, MessageId>({
           )
 
           if (needsSort) {
-            let originalRawElements = elements.map(element => element.raw)
-            let sortedRawElements = sortedElements.map(element => element.raw)
+            let literalRaw = literalNode.raw
+            let originalRawElements = elements.map(element =>
+              getCharacterClassElementRawText({
+                literalRaw,
+                element,
+              }),
+            )
+            let sortedRawElements = sortedElements.map(element =>
+              getCharacterClassElementRawText({
+                literalRaw,
+                element,
+              }),
+            )
 
             let mismatchIndex = originalRawElements.findIndex(
               (raw, index) => raw !== sortedRawElements[index],

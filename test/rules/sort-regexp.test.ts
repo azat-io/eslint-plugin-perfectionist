@@ -135,6 +135,23 @@ describe('sort-regexp', () => {
       })
     })
 
+    it('keeps escape sequences intact when sorting character classes', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedRegExpOrder',
+          },
+        ],
+        output: dedent(String.raw`
+          const re = /[,?.()[\]{}*\\\s#^+|$-]/g;
+        `),
+        code: dedent(String.raw`
+          const re = /[-[\]{}()*+?.,\\^$|#\s]/g;
+        `),
+        options: [options],
+      })
+    })
+
     it('sorts character classes with ranges', async () => {
       await invalid({
         errors: [
