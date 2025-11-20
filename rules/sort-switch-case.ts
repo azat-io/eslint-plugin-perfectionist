@@ -23,9 +23,11 @@ interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
 }
 
-type MessageId = 'unexpectedSwitchCaseOrder'
+export const ORDER_ERROR_ID = 'unexpectedSwitchCaseOrder'
 
 type Options = [Partial<CommonOptions>]
+
+type MessageId = typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
@@ -111,9 +113,9 @@ export default createEslintRule<Options, MessageId>({
           }
 
           reportErrors({
-            messageIds: ['unexpectedSwitchCaseOrder'],
             sortedNodes: sortedCaseNameSortingNodes,
             nodes: caseNodesSortingNodeGroup,
+            messageIds: [ORDER_ERROR_ID],
             sourceCode,
             context,
             right,
@@ -189,7 +191,7 @@ export default createEslintRule<Options, MessageId>({
             [LEFT]: defaultCase.name,
             [RIGHT]: lastCase.name,
           },
-          messageId: 'unexpectedSwitchCaseOrder',
+          messageId: ORDER_ERROR_ID,
           node: defaultCase.node,
         })
       }
@@ -262,7 +264,7 @@ export default createEslintRule<Options, MessageId>({
             [RIGHT]: right.name,
             [LEFT]: left.name,
           },
-          messageId: 'unexpectedSwitchCaseOrder',
+          messageId: ORDER_ERROR_ID,
           node: right.node,
         })
       })
@@ -284,7 +286,7 @@ export default createEslintRule<Options, MessageId>({
       recommended: true,
     },
     messages: {
-      unexpectedSwitchCaseOrder: ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     defaultOptions: [defaultOptions],
     type: 'suggestion',

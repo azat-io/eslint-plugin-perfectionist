@@ -38,11 +38,16 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
+export const ORDER_ERROR_ID = 'unexpectedExportAttributesOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedExportAttributesGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenExportAttributes'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenExportAttributes'
+
 type MessageId =
-  | 'missedSpacingBetweenExportAttributes'
-  | 'unexpectedExportAttributesGroupOrder'
-  | 'extraSpacingBetweenExportAttributes'
-  | 'unexpectedExportAttributesOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
@@ -148,10 +153,10 @@ export default createEslintRule<Options, MessageId>({
 
         reportAllErrors<MessageId>({
           availableMessageIds: {
-            missedSpacingBetweenMembers: 'missedSpacingBetweenExportAttributes',
-            extraSpacingBetweenMembers: 'extraSpacingBetweenExportAttributes',
-            unexpectedGroupOrder: 'unexpectedExportAttributesGroupOrder',
-            unexpectedOrder: 'unexpectedExportAttributesOrder',
+            missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+            extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+            unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+            unexpectedOrder: ORDER_ERROR_ID,
           },
           sortNodesExcludingEslintDisabled:
             createSortNodesExcludingEslintDisabled(nodes),
@@ -183,10 +188,10 @@ export default createEslintRule<Options, MessageId>({
       type: 'array',
     },
     messages: {
-      missedSpacingBetweenExportAttributes: MISSED_SPACING_ERROR,
-      extraSpacingBetweenExportAttributes: EXTRA_SPACING_ERROR,
-      unexpectedExportAttributesGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedExportAttributesOrder: ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-export-attributes',

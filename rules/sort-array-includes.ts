@@ -47,11 +47,17 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+export const ORDER_ERROR_ID = 'unexpectedArrayIncludesOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedArrayIncludesGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenArrayIncludesMembers'
+export const MISSED_SPACING_ERROR_ID =
+  'missedSpacingBetweenArrayIncludesMembers'
+
 type MessageId =
-  | 'missedSpacingBetweenArrayIncludesMembers'
-  | 'extraSpacingBetweenArrayIncludesMembers'
-  | 'unexpectedArrayIncludesGroupOrder'
-  | 'unexpectedArrayIncludesOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 type SortArrayIncludesSortingNode = SortingNode<
   TSESTree.SpreadElement | TSESTree.Expression
@@ -108,12 +114,10 @@ export default createEslintRule<Options, MessageId>({
             : node.object.arguments
         sortArray<MessageId>({
           availableMessageIds: {
-            missedSpacingBetweenMembers:
-              'missedSpacingBetweenArrayIncludesMembers',
-            extraSpacingBetweenMembers:
-              'extraSpacingBetweenArrayIncludesMembers',
-            unexpectedGroupOrder: 'unexpectedArrayIncludesGroupOrder',
-            unexpectedOrder: 'unexpectedArrayIncludesOrder',
+            missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+            extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+            unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+            unexpectedOrder: ORDER_ERROR_ID,
           },
           elements,
           context,
@@ -123,10 +127,10 @@ export default createEslintRule<Options, MessageId>({
   }),
   meta: {
     messages: {
-      missedSpacingBetweenArrayIncludesMembers: MISSED_SPACING_ERROR,
-      extraSpacingBetweenArrayIncludesMembers: EXTRA_SPACING_ERROR,
-      unexpectedArrayIncludesGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedArrayIncludesOrder: ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       description: 'Enforce sorted arrays before include method.',

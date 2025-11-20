@@ -36,11 +36,16 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
+export const ORDER_ERROR_ID = 'unexpectedHeritageClausesOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedHeritageClausesGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenHeritageClauses'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenHeritageClauses'
+
 type MessageId =
-  | 'unexpectedHeritageClausesGroupOrder'
-  | 'missedSpacingBetweenHeritageClauses'
-  | 'extraSpacingBetweenHeritageClauses'
-  | 'unexpectedHeritageClausesOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
@@ -78,10 +83,10 @@ export default createEslintRule<Options, MessageId>({
       type: 'array',
     },
     messages: {
-      missedSpacingBetweenHeritageClauses: MISSED_SPACING_ERROR,
-      extraSpacingBetweenHeritageClauses: EXTRA_SPACING_ERROR,
-      unexpectedHeritageClausesGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedHeritageClausesOrder: ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-heritage-clauses',
@@ -192,10 +197,10 @@ function sortHeritageClauses(
 
     reportAllErrors<MessageId>({
       availableMessageIds: {
-        missedSpacingBetweenMembers: 'missedSpacingBetweenHeritageClauses',
-        extraSpacingBetweenMembers: 'extraSpacingBetweenHeritageClauses',
-        unexpectedGroupOrder: 'unexpectedHeritageClausesGroupOrder',
-        unexpectedOrder: 'unexpectedHeritageClausesOrder',
+        missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+        extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+        unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+        unexpectedOrder: ORDER_ERROR_ID,
       },
       sortNodesExcludingEslintDisabled:
         createSortNodesExcludingEslintDisabled(nodes),

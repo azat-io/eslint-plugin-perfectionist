@@ -56,13 +56,20 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+export const ORDER_ERROR_ID = 'unexpectedImportsOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedImportsGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenImports'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenImports'
+export const MISSED_COMMENT_ABOVE_ERROR_ID = 'missedCommentAboveImport'
+export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedImportsDependencyOrder'
+
 export type MessageId =
-  | 'unexpectedImportsDependencyOrder'
-  | 'missedSpacingBetweenImports'
-  | 'unexpectedImportsGroupOrder'
-  | 'extraSpacingBetweenImports'
-  | 'missedCommentAboveImport'
-  | 'unexpectedImportsOrder'
+  | typeof MISSED_COMMENT_ABOVE_ERROR_ID
+  | typeof DEPENDENCY_ORDER_ERROR_ID
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<
   Omit<Options[number], 'maxLineLength' | 'tsconfig'>
@@ -353,12 +360,12 @@ export default createEslintRule<Options, MessageId>({
 
           reportAllErrors<MessageId>({
             availableMessageIds: {
-              unexpectedDependencyOrder: 'unexpectedImportsDependencyOrder',
-              missedSpacingBetweenMembers: 'missedSpacingBetweenImports',
-              extraSpacingBetweenMembers: 'extraSpacingBetweenImports',
-              unexpectedGroupOrder: 'unexpectedImportsGroupOrder',
-              missedCommentAbove: 'missedCommentAboveImport',
-              unexpectedOrder: 'unexpectedImportsOrder',
+              unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
+              missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+              extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+              missedCommentAbove: MISSED_COMMENT_ABOVE_ERROR_ID,
+              unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+              unexpectedOrder: ORDER_ERROR_ID,
             },
             sortNodesExcludingEslintDisabled:
               createSortNodesExcludingEslintDisabled(sortingNodeGroups),
@@ -435,12 +442,12 @@ export default createEslintRule<Options, MessageId>({
       type: 'array',
     },
     messages: {
-      unexpectedImportsDependencyOrder: DEPENDENCY_ORDER_ERROR,
-      missedCommentAboveImport: MISSED_COMMENT_ABOVE_ERROR,
-      missedSpacingBetweenImports: MISSED_SPACING_ERROR,
-      extraSpacingBetweenImports: EXTRA_SPACING_ERROR,
-      unexpectedImportsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedImportsOrder: ORDER_ERROR,
+      [MISSED_COMMENT_ABOVE_ERROR_ID]: MISSED_COMMENT_ABOVE_ERROR,
+      [DEPENDENCY_ORDER_ERROR_ID]: DEPENDENCY_ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-imports',

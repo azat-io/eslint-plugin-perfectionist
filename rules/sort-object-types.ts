@@ -61,11 +61,16 @@ import { matches } from '../utils/matches'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+export const ORDER_ERROR_ID = 'unexpectedObjectTypesOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedObjectTypesGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenObjectTypeMembers'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenObjectTypeMembers'
+
 type MessageId =
-  | 'missedSpacingBetweenObjectTypeMembers'
-  | 'extraSpacingBetweenObjectTypeMembers'
-  | 'unexpectedObjectTypesGroupOrder'
-  | 'unexpectedObjectTypesOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted', sortBy: 'name' },
@@ -125,10 +130,10 @@ export default createEslintRule<Options, MessageId>({
     TSTypeLiteral: node =>
       sortObjectTypeElements<MessageId>({
         availableMessageIds: {
-          missedSpacingBetweenMembers: 'missedSpacingBetweenObjectTypeMembers',
-          extraSpacingBetweenMembers: 'extraSpacingBetweenObjectTypeMembers',
-          unexpectedGroupOrder: 'unexpectedObjectTypesGroupOrder',
-          unexpectedOrder: 'unexpectedObjectTypesOrder',
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
         },
         parentNode:
           node.parent.type === 'TSTypeAliasDeclaration' ? node.parent : null,
@@ -138,10 +143,10 @@ export default createEslintRule<Options, MessageId>({
   }),
   meta: {
     messages: {
-      missedSpacingBetweenObjectTypeMembers: MISSED_SPACING_ERROR,
-      extraSpacingBetweenObjectTypeMembers: EXTRA_SPACING_ERROR,
-      unexpectedObjectTypesGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedObjectTypesOrder: ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-object-types',

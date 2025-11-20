@@ -42,11 +42,16 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
+export const ORDER_ERROR_ID = 'unexpectedNamedImportsOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedNamedImportsGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenNamedImports'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenNamedImports'
+
 type MessageId =
-  | 'unexpectedNamedImportsGroupOrder'
-  | 'missedSpacingBetweenNamedImports'
-  | 'extraSpacingBetweenNamedImports'
-  | 'unexpectedNamedImportsOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
@@ -179,10 +184,10 @@ export default createEslintRule<Options, MessageId>({
       let nodes = formattedMembers.flat()
       reportAllErrors<MessageId>({
         availableMessageIds: {
-          missedSpacingBetweenMembers: 'missedSpacingBetweenNamedImports',
-          extraSpacingBetweenMembers: 'extraSpacingBetweenNamedImports',
-          unexpectedGroupOrder: 'unexpectedNamedImportsGroupOrder',
-          unexpectedOrder: 'unexpectedNamedImportsOrder',
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
         sourceCode,
@@ -216,10 +221,10 @@ export default createEslintRule<Options, MessageId>({
       type: 'array',
     },
     messages: {
-      missedSpacingBetweenNamedImports: MISSED_SPACING_ERROR,
-      extraSpacingBetweenNamedImports: EXTRA_SPACING_ERROR,
-      unexpectedNamedImportsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedNamedImportsOrder: ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-named-imports',

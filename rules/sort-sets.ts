@@ -9,11 +9,16 @@ import {
 import { defaultOptions, jsonSchema, sortArray } from './sort-array-includes'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
+export const ORDER_ERROR_ID = 'unexpectedSetsOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedSetsGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenSetsMembers'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenSetsMembers'
+
 type MessageId =
-  | 'missedSpacingBetweenSetsMembers'
-  | 'extraSpacingBetweenSetsMembers'
-  | 'unexpectedSetsGroupOrder'
-  | 'unexpectedSetsOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 export default createEslintRule<Options, MessageId>({
   create: context => ({
@@ -33,10 +38,10 @@ export default createEslintRule<Options, MessageId>({
             : node.arguments[0].arguments
         sortArray<MessageId>({
           availableMessageIds: {
-            missedSpacingBetweenMembers: 'missedSpacingBetweenSetsMembers',
-            extraSpacingBetweenMembers: 'extraSpacingBetweenSetsMembers',
-            unexpectedGroupOrder: 'unexpectedSetsGroupOrder',
-            unexpectedOrder: 'unexpectedSetsOrder',
+            missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+            extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+            unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+            unexpectedOrder: ORDER_ERROR_ID,
           },
           elements,
           context,
@@ -46,10 +51,10 @@ export default createEslintRule<Options, MessageId>({
   }),
   meta: {
     messages: {
-      missedSpacingBetweenSetsMembers: MISSED_SPACING_ERROR,
-      extraSpacingBetweenSetsMembers: EXTRA_SPACING_ERROR,
-      unexpectedSetsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedSetsOrder: ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-sets',

@@ -41,12 +41,18 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
+export const ORDER_ERROR_ID = 'unexpectedEnumsOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedEnumsGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenEnumsMembers'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenEnumsMembers'
+export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedEnumsDependencyOrder'
+
 type MessageId =
-  | 'missedSpacingBetweenEnumsMembers'
-  | 'extraSpacingBetweenEnumsMembers'
-  | 'unexpectedEnumsDependencyOrder'
-  | 'unexpectedEnumsGroupOrder'
-  | 'unexpectedEnumsOrder'
+  | typeof DEPENDENCY_ORDER_ERROR_ID
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 interface SortEnumsSortingNode
   extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
@@ -241,11 +247,11 @@ export default createEslintRule<Options, MessageId>({
 
       reportAllErrors<MessageId>({
         availableMessageIds: {
-          missedSpacingBetweenMembers: 'missedSpacingBetweenEnumsMembers',
-          extraSpacingBetweenMembers: 'extraSpacingBetweenEnumsMembers',
-          unexpectedDependencyOrder: 'unexpectedEnumsDependencyOrder',
-          unexpectedGroupOrder: 'unexpectedEnumsGroupOrder',
-          unexpectedOrder: 'unexpectedEnumsOrder',
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
         sourceCode,
@@ -278,11 +284,11 @@ export default createEslintRule<Options, MessageId>({
       },
     ],
     messages: {
-      unexpectedEnumsDependencyOrder: DEPENDENCY_ORDER_ERROR,
-      missedSpacingBetweenEnumsMembers: MISSED_SPACING_ERROR,
-      extraSpacingBetweenEnumsMembers: EXTRA_SPACING_ERROR,
-      unexpectedEnumsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedEnumsOrder: ORDER_ERROR,
+      [DEPENDENCY_ORDER_ERROR_ID]: DEPENDENCY_ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-enums',

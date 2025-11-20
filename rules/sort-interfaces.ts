@@ -11,11 +11,16 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 
 export type Options = SortObjectTypesOptions
 
+export const ORDER_ERROR_ID = 'unexpectedInterfacePropertiesOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedInterfacePropertiesGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenInterfaceMembers'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenInterfaceMembers'
+
 type MessageId =
-  | 'unexpectedInterfacePropertiesGroupOrder'
-  | 'missedSpacingBetweenInterfaceMembers'
-  | 'extraSpacingBetweenInterfaceMembers'
-  | 'unexpectedInterfacePropertiesOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
@@ -37,10 +42,10 @@ let defaultOptions: Required<Options[number]> = {
 export default createEslintRule<Options, MessageId>({
   meta: {
     messages: {
-      unexpectedInterfacePropertiesGroupOrder: GROUP_ORDER_ERROR,
-      missedSpacingBetweenInterfaceMembers: MISSED_SPACING_ERROR,
-      extraSpacingBetweenInterfaceMembers: EXTRA_SPACING_ERROR,
-      unexpectedInterfacePropertiesOrder: ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-interfaces',
@@ -56,10 +61,10 @@ export default createEslintRule<Options, MessageId>({
     TSInterfaceDeclaration: node =>
       sortObjectTypeElements<MessageId>({
         availableMessageIds: {
-          missedSpacingBetweenMembers: 'missedSpacingBetweenInterfaceMembers',
-          extraSpacingBetweenMembers: 'extraSpacingBetweenInterfaceMembers',
-          unexpectedGroupOrder: 'unexpectedInterfacePropertiesGroupOrder',
-          unexpectedOrder: 'unexpectedInterfacePropertiesOrder',
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
         },
         elements: node.body.body,
         parentNode: node,

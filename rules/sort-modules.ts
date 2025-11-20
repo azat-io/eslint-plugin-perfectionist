@@ -56,12 +56,18 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+export const ORDER_ERROR_ID = 'unexpectedModulesOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedModulesGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenModulesMembers'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenModulesMembers'
+export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedModulesDependencyOrder'
+
 type MessageId =
-  | 'missedSpacingBetweenModulesMembers'
-  | 'extraSpacingBetweenModulesMembers'
-  | 'unexpectedModulesDependencyOrder'
-  | 'unexpectedModulesGroupOrder'
-  | 'unexpectedModulesOrder'
+  | typeof DEPENDENCY_ORDER_ERROR_ID
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<SortModulesOptions[number]> = {
   groups: [
@@ -110,11 +116,11 @@ export default createEslintRule<SortModulesOptions, MessageId>({
       },
     ],
     messages: {
-      unexpectedModulesDependencyOrder: DEPENDENCY_ORDER_ERROR,
-      missedSpacingBetweenModulesMembers: MISSED_SPACING_ERROR,
-      extraSpacingBetweenModulesMembers: EXTRA_SPACING_ERROR,
-      unexpectedModulesGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedModulesOrder: ORDER_ERROR,
+      [DEPENDENCY_ORDER_ERROR_ID]: DEPENDENCY_ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-modules',
@@ -357,11 +363,11 @@ function analyzeModule({
 
   reportAllErrors<MessageId>({
     availableMessageIds: {
-      missedSpacingBetweenMembers: 'missedSpacingBetweenModulesMembers',
-      extraSpacingBetweenMembers: 'extraSpacingBetweenModulesMembers',
-      unexpectedDependencyOrder: 'unexpectedModulesDependencyOrder',
-      unexpectedGroupOrder: 'unexpectedModulesGroupOrder',
-      unexpectedOrder: 'unexpectedModulesOrder',
+      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+      unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
+      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+      unexpectedOrder: ORDER_ERROR_ID,
     },
     sortNodesExcludingEslintDisabled,
     sourceCode,
