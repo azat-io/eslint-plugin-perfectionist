@@ -323,7 +323,7 @@ export interface FallbackSortOption {
  *
  * @example
  *   // Always require one blank line between elements
- *   const newlines: NewlinesBetweenOption = 'always'
+ *   const newlines: NewlinesBetweenOption = 1
  *
  * @example
  *   // Require exactly 2 blank lines
