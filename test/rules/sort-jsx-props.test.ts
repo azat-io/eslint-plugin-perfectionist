@@ -4,9 +4,14 @@ import { describe, expect, it } from 'vitest'
 import path from 'node:path'
 import dedent from 'dedent'
 
+import rule, {
+  MISSED_SPACING_ERROR_ID,
+  EXTRA_SPACING_ERROR_ID,
+  GROUP_ORDER_ERROR_ID,
+  ORDER_ERROR_ID,
+} from '../../rules/sort-jsx-props'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
-import rule from '../../rules/sort-jsx-props'
 
 describe('sort-jsx-props', () => {
   let { invalid, valid } = createRuleTester({
@@ -76,7 +81,7 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -125,7 +130,7 @@ describe('sort-jsx-props', () => {
               left: 'd:e',
               right: 'b',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -157,14 +162,14 @@ describe('sort-jsx-props', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -226,7 +231,7 @@ describe('sort-jsx-props', () => {
               left: 'aaaaaa',
               right: 'b',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -286,7 +291,7 @@ describe('sort-jsx-props', () => {
               right: 'd',
               left: 'c',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -329,14 +334,14 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenJSXPropsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -413,17 +418,6 @@ describe('sort-jsx-props', () => {
 
     it('groups props by shorthand modifier', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'shorthandElements',
-              leftGroup: 'unknown',
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
         options: [
           {
             customGroups: [
@@ -433,6 +427,17 @@ describe('sort-jsx-props', () => {
               },
             ],
             groups: ['shorthandElements', 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              rightGroup: 'shorthandElements',
+              leftGroup: 'unknown',
+              right: 'a',
+              left: 'b',
+            },
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -479,7 +484,7 @@ describe('sort-jsx-props', () => {
                 leftGroup: 'unknown',
                 left: 'b',
               },
-              messageId: 'unexpectedJSXPropsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -509,17 +514,6 @@ describe('sort-jsx-props', () => {
       'groups props by element value pattern - %s',
       async (_description, elementValuePattern) => {
         await invalid({
-          errors: [
-            {
-              data: {
-                rightGroup: 'valuesStartingWithHello',
-                leftGroup: 'unknown',
-                right: 'z',
-                left: 'b',
-              },
-              messageId: 'unexpectedJSXPropsGroupOrder',
-            },
-          ],
           options: [
             {
               customGroups: [
@@ -529,6 +523,17 @@ describe('sort-jsx-props', () => {
                 },
               ],
               groups: ['valuesStartingWithHello', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'valuesStartingWithHello',
+                leftGroup: 'unknown',
+                right: 'z',
+                left: 'b',
+              },
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -557,21 +562,21 @@ describe('sort-jsx-props', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
@@ -580,7 +585,7 @@ describe('sort-jsx-props', () => {
               right: 'eee',
               left: 'm',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -656,7 +661,7 @@ describe('sort-jsx-props', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -696,7 +701,7 @@ describe('sort-jsx-props', () => {
               right: 'c',
               left: 'm',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -751,7 +756,7 @@ describe('sort-jsx-props', () => {
               right: 'cFoo',
               left: 'a',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -837,14 +842,14 @@ describe('sort-jsx-props', () => {
               right: 'a',
               left: 'd',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'e',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -886,21 +891,21 @@ describe('sort-jsx-props', () => {
               right: 'y',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -946,21 +951,21 @@ describe('sort-jsx-props', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'y',
               left: 'z',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'y',
             },
-            messageId: 'missedSpacingBetweenJSXPropsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -1050,21 +1055,21 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenJSXPropsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1138,7 +1143,7 @@ describe('sort-jsx-props', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'missedSpacingBetweenJSXPropsMembers',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1190,7 +1195,7 @@ describe('sort-jsx-props', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1232,7 +1237,7 @@ describe('sort-jsx-props', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1300,7 +1305,7 @@ describe('sort-jsx-props', () => {
                 right: 'g',
                 left: 'b',
               },
-              messageId: 'unexpectedJSXPropsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
             {
               data: {
@@ -1309,7 +1314,7 @@ describe('sort-jsx-props', () => {
                 right: 'r',
                 left: 'g',
               },
-              messageId: 'unexpectedJSXPropsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1366,7 +1371,7 @@ describe('sort-jsx-props', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedJSXPropsOrder',
+              messageId: ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1438,7 +1443,7 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -1487,7 +1492,7 @@ describe('sort-jsx-props', () => {
               left: 'd:e',
               right: 'b',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -1519,14 +1524,14 @@ describe('sort-jsx-props', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1588,7 +1593,7 @@ describe('sort-jsx-props', () => {
               left: 'aaaaaa',
               right: 'b',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1648,7 +1653,7 @@ describe('sort-jsx-props', () => {
               right: 'd',
               left: 'c',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1728,17 +1733,6 @@ describe('sort-jsx-props', () => {
 
     it('groups props by shorthand modifier', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'shorthandElements',
-              leftGroup: 'unknown',
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
         options: [
           {
             customGroups: [
@@ -1748,6 +1742,17 @@ describe('sort-jsx-props', () => {
               },
             ],
             groups: ['shorthandElements', 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              rightGroup: 'shorthandElements',
+              leftGroup: 'unknown',
+              right: 'a',
+              left: 'b',
+            },
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1794,7 +1799,7 @@ describe('sort-jsx-props', () => {
                 leftGroup: 'unknown',
                 left: 'b',
               },
-              messageId: 'unexpectedJSXPropsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1824,17 +1829,6 @@ describe('sort-jsx-props', () => {
       'groups props by element value pattern - %s',
       async (_description, elementValuePattern) => {
         await invalid({
-          errors: [
-            {
-              data: {
-                rightGroup: 'valuesStartingWithHello',
-                leftGroup: 'unknown',
-                right: 'z',
-                left: 'b',
-              },
-              messageId: 'unexpectedJSXPropsGroupOrder',
-            },
-          ],
           options: [
             {
               customGroups: [
@@ -1844,6 +1838,17 @@ describe('sort-jsx-props', () => {
                 },
               ],
               groups: ['valuesStartingWithHello', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'valuesStartingWithHello',
+                leftGroup: 'unknown',
+                right: 'z',
+                left: 'b',
+              },
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1872,21 +1877,21 @@ describe('sort-jsx-props', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
@@ -1895,7 +1900,7 @@ describe('sort-jsx-props', () => {
               right: 'eee',
               left: 'm',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -1971,7 +1976,7 @@ describe('sort-jsx-props', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2011,7 +2016,7 @@ describe('sort-jsx-props', () => {
               right: 'c',
               left: 'm',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2066,7 +2071,7 @@ describe('sort-jsx-props', () => {
               right: 'cFoo',
               left: 'a',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2152,14 +2157,14 @@ describe('sort-jsx-props', () => {
               right: 'a',
               left: 'd',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'e',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2201,21 +2206,21 @@ describe('sort-jsx-props', () => {
               right: 'y',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -2261,21 +2266,21 @@ describe('sort-jsx-props', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'y',
               left: 'z',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'y',
             },
-            messageId: 'missedSpacingBetweenJSXPropsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -2365,21 +2370,21 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenJSXPropsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2453,7 +2458,7 @@ describe('sort-jsx-props', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'missedSpacingBetweenJSXPropsMembers',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2505,7 +2510,7 @@ describe('sort-jsx-props', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2547,7 +2552,7 @@ describe('sort-jsx-props', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2615,7 +2620,7 @@ describe('sort-jsx-props', () => {
                 right: 'g',
                 left: 'b',
               },
-              messageId: 'unexpectedJSXPropsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
             {
               data: {
@@ -2624,7 +2629,7 @@ describe('sort-jsx-props', () => {
                 right: 'r',
                 left: 'g',
               },
-              messageId: 'unexpectedJSXPropsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2681,7 +2686,7 @@ describe('sort-jsx-props', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedJSXPropsOrder',
+              messageId: ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2753,7 +2758,7 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -2802,7 +2807,7 @@ describe('sort-jsx-props', () => {
               right: 'd:e',
               left: 'b',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -2860,7 +2865,7 @@ describe('sort-jsx-props', () => {
               right: 'f',
               left: 'd',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -2896,7 +2901,7 @@ describe('sort-jsx-props', () => {
               left: 'aaaaaa',
               right: 'b',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2956,14 +2961,14 @@ describe('sort-jsx-props', () => {
               right: 'd',
               left: 'c',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'e',
               left: 'd',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3043,17 +3048,6 @@ describe('sort-jsx-props', () => {
 
     it('groups props by shorthand modifier', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'shorthandElements',
-              leftGroup: 'unknown',
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedJSXPropsGroupOrder',
-          },
-        ],
         options: [
           {
             customGroups: [
@@ -3063,6 +3057,17 @@ describe('sort-jsx-props', () => {
               },
             ],
             groups: ['shorthandElements', 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              rightGroup: 'shorthandElements',
+              leftGroup: 'unknown',
+              right: 'a',
+              left: 'b',
+            },
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3109,7 +3114,7 @@ describe('sort-jsx-props', () => {
                 leftGroup: 'unknown',
                 left: 'b',
               },
-              messageId: 'unexpectedJSXPropsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3139,17 +3144,6 @@ describe('sort-jsx-props', () => {
       'groups props by element value pattern - %s',
       async (_description, elementValuePattern) => {
         await invalid({
-          errors: [
-            {
-              data: {
-                rightGroup: 'valuesStartingWithHello',
-                leftGroup: 'unknown',
-                right: 'z',
-                left: 'b',
-              },
-              messageId: 'unexpectedJSXPropsGroupOrder',
-            },
-          ],
           options: [
             {
               customGroups: [
@@ -3159,6 +3153,17 @@ describe('sort-jsx-props', () => {
                 },
               ],
               groups: ['valuesStartingWithHello', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'valuesStartingWithHello',
+                leftGroup: 'unknown',
+                right: 'z',
+                left: 'b',
+              },
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3187,21 +3192,21 @@ describe('sort-jsx-props', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
@@ -3210,7 +3215,7 @@ describe('sort-jsx-props', () => {
               right: 'eee',
               left: 'm',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -3286,7 +3291,7 @@ describe('sort-jsx-props', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3326,7 +3331,7 @@ describe('sort-jsx-props', () => {
               right: 'c',
               left: 'm',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3381,7 +3386,7 @@ describe('sort-jsx-props', () => {
               right: 'cFoo',
               left: 'a',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3467,14 +3472,14 @@ describe('sort-jsx-props', () => {
               right: 'aaaaa',
               left: 'dd',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'bbbb',
               left: 'e',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3516,21 +3521,21 @@ describe('sort-jsx-props', () => {
               left: 'aaaa',
               right: 'yy',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'bbb',
               left: 'z',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'bbb',
               left: 'z',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -3576,21 +3581,21 @@ describe('sort-jsx-props', () => {
               left: 'aaaa',
               right: 'z',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'yy',
               left: 'z',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'bbb',
               left: 'yy',
             },
-            messageId: 'missedSpacingBetweenJSXPropsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -3680,21 +3685,21 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenJSXPropsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3768,7 +3773,7 @@ describe('sort-jsx-props', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'missedSpacingBetweenJSXPropsMembers',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3820,7 +3825,7 @@ describe('sort-jsx-props', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'extraSpacingBetweenJSXPropsMembers',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3862,7 +3867,7 @@ describe('sort-jsx-props', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3930,7 +3935,7 @@ describe('sort-jsx-props', () => {
                 right: 'g',
                 left: 'b',
               },
-              messageId: 'unexpectedJSXPropsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
             {
               data: {
@@ -3939,7 +3944,7 @@ describe('sort-jsx-props', () => {
                 right: 'r',
                 left: 'g',
               },
-              messageId: 'unexpectedJSXPropsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3996,7 +4001,7 @@ describe('sort-jsx-props', () => {
                 right: 'aa',
                 left: 'b',
               },
-              messageId: 'unexpectedJSXPropsOrder',
+              messageId: ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4073,7 +4078,7 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -4126,7 +4131,7 @@ describe('sort-jsx-props', () => {
               right: 'ba',
               left: 'aa',
             },
-            messageId: 'unexpectedJSXPropsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4173,7 +4178,7 @@ describe('sort-jsx-props', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'missedSpacingBetweenJSXPropsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4268,7 +4273,7 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4297,14 +4302,14 @@ describe('sort-jsx-props', () => {
               right: 'c',
               left: 'd',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4337,7 +4342,7 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4368,7 +4373,7 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4421,7 +4426,7 @@ describe('sort-jsx-props', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
@@ -4430,15 +4435,6 @@ describe('sort-jsx-props', () => {
 
     it('handles rule-specific eslint-disable-next-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedJSXPropsOrder',
-          },
-        ],
         output: dedent`
           <Element
             b="b"
@@ -4455,6 +4451,15 @@ describe('sort-jsx-props', () => {
             a="a"
           />
         `,
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
     })
@@ -4467,7 +4472,7 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4498,15 +4503,6 @@ describe('sort-jsx-props', () => {
             a="a"
           />
         `,
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedJSXPropsOrder',
-          },
-        ],
         code: dedent`
           <Element
             c="c"
@@ -4515,6 +4511,15 @@ describe('sort-jsx-props', () => {
             a="a"
           />
         `,
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
     })
@@ -4527,7 +4532,7 @@ describe('sort-jsx-props', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4580,7 +4585,7 @@ describe('sort-jsx-props', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedJSXPropsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],

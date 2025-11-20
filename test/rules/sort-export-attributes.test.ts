@@ -5,8 +5,12 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
+import rule, {
+  MISSED_SPACING_ERROR_ID,
+  GROUP_ORDER_ERROR_ID,
+  ORDER_ERROR_ID,
+} from '../../rules/sort-export-attributes'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
-import rule from '../../rules/sort-export-attributes'
 import { Alphabet } from '../../utils/alphabet'
 
 describe('sort-export-attributes', () => {
@@ -33,8 +37,8 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -60,12 +64,6 @@ describe('sort-export-attributes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedExportAttributesOrder',
-            data: { right: 'b', left: 'c' },
-          },
-        ],
         output: dedent`
           export { data } from 'module' with {
             a: 'a',
@@ -80,6 +78,12 @@ describe('sort-export-attributes', () => {
             b: 'b',
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -95,8 +99,8 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -117,14 +121,14 @@ describe('sort-export-attributes', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedExportAttributesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenExportAttributes',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -182,7 +186,7 @@ describe('sort-export-attributes', () => {
               right: 'type',
               left: 'mode',
             },
-            messageId: 'unexpectedExportAttributesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -213,8 +217,8 @@ describe('sort-export-attributes', () => {
         ],
         errors: [
           {
-            messageId: 'missedSpacingBetweenExportAttributes',
             data: { right: 'mode', left: 'type' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -237,12 +241,12 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'c', left: 'd' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -277,12 +281,12 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'c', left: 'd' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -331,8 +335,8 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -358,12 +362,6 @@ describe('sort-export-attributes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedExportAttributesOrder',
-            data: { right: 'b', left: 'c' },
-          },
-        ],
         output: dedent`
           export { data } from 'module' with {
             a: 'a',
@@ -378,6 +376,12 @@ describe('sort-export-attributes', () => {
             b: 'b',
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -393,8 +397,8 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'link2', left: 'link10' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -418,8 +422,8 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -457,7 +461,7 @@ describe('sort-export-attributes', () => {
               right: 'type',
               left: 'mode',
             },
-            messageId: 'unexpectedExportAttributesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -488,8 +492,8 @@ describe('sort-export-attributes', () => {
         ],
         errors: [
           {
-            messageId: 'missedSpacingBetweenExportAttributes',
             data: { right: 'mode', left: 'type' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -512,12 +516,12 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'c', left: 'd' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -552,12 +556,12 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'c', left: 'd' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -606,8 +610,8 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'ccc', left: 'a' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -633,12 +637,6 @@ describe('sort-export-attributes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedExportAttributesOrder',
-            data: { right: 'ccc', left: 'a' },
-          },
-        ],
         output: dedent`
           export { data } from 'module' with {
             ccc: 'v',
@@ -653,6 +651,12 @@ describe('sort-export-attributes', () => {
             bb: 'v',
           }
         `,
+        errors: [
+          {
+            data: { right: 'ccc', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -668,8 +672,8 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'ccc', left: 'a' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -693,8 +697,8 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'bb', left: 'a' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -732,7 +736,7 @@ describe('sort-export-attributes', () => {
               right: 'type',
               left: 'mode',
             },
-            messageId: 'unexpectedExportAttributesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -763,8 +767,8 @@ describe('sort-export-attributes', () => {
         ],
         errors: [
           {
-            messageId: 'missedSpacingBetweenExportAttributes',
             data: { right: 'mode', left: 'type' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -787,12 +791,12 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'bb', left: 'a' },
+            messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'ddd', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -827,12 +831,12 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'bb', left: 'a' },
+            messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'ddd', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -886,8 +890,8 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -936,7 +940,7 @@ describe('sort-export-attributes', () => {
               right: 'ba',
               left: 'aa',
             },
-            messageId: 'unexpectedExportAttributesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -973,7 +977,7 @@ describe('sort-export-attributes', () => {
         ],
         errors: [
           {
-            messageId: 'missedSpacingBetweenExportAttributes',
+            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'ab', left: 'ba' },
           },
         ],
@@ -1050,8 +1054,8 @@ describe('sort-export-attributes', () => {
       await invalidWithMissingLiteralValue({
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: "'a': '1'", left: 'b' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1126,8 +1130,8 @@ describe('sort-export-attributes', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
@@ -1154,8 +1158,8 @@ describe('sort-export-attributes', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
@@ -1190,8 +1194,8 @@ describe('sort-export-attributes', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
@@ -1218,8 +1222,8 @@ describe('sort-export-attributes', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
@@ -1244,8 +1248,8 @@ describe('sort-export-attributes', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
@@ -1280,8 +1284,8 @@ describe('sort-export-attributes', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedExportAttributesOrder',
             data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],

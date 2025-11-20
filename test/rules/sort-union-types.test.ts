@@ -3,8 +3,13 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
+import rule, {
+  MISSED_SPACING_ERROR_ID,
+  EXTRA_SPACING_ERROR_ID,
+  GROUP_ORDER_ERROR_ID,
+  ORDER_ERROR_ID,
+} from '../../rules/sort-union-types'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
-import rule from '../../rules/sort-union-types'
 import { Alphabet } from '../../utils/alphabet'
 
 describe('sort-union-types', () => {
@@ -35,7 +40,7 @@ describe('sort-union-types', () => {
               right: "'bbb'",
               left: "'cc'",
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -56,28 +61,28 @@ describe('sort-union-types', () => {
               left: 'string',
               right: 'any',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               left: 'unknown',
               right: 'null',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               left: 'undefined',
               right: 'never',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'bigint',
               left: 'void',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -118,7 +123,7 @@ describe('sort-union-types', () => {
               right: "'aa'",
               left: "'b'",
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: "Omit<T, 'aa' | 'b'>",
@@ -135,14 +140,14 @@ describe('sort-union-types', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'aaa',
               left: 'bb',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: 'type Type = aaa | bb | c',
@@ -159,7 +164,7 @@ describe('sort-union-types', () => {
               right: "{ name: 'aa', status: 'success' }",
               left: "{ name: 'b', status: 'success' }",
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -184,7 +189,7 @@ describe('sort-union-types', () => {
               right: '( value: () => void, ) => D | E',
               left: 'A',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -219,14 +224,14 @@ describe('sort-union-types', () => {
               right: '3',
               left: '4',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: '100',
               left: '5',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -299,7 +304,7 @@ describe('sort-union-types', () => {
               leftGroup: 'object',
               right: 'boolean',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -308,7 +313,7 @@ describe('sort-union-types', () => {
               left: 'boolean',
               right: 'A',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -317,7 +322,7 @@ describe('sort-union-types', () => {
               left: 'keyof A',
               right: 'bigint',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -326,7 +331,7 @@ describe('sort-union-types', () => {
               left: 'null',
               right: '1',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -335,7 +340,7 @@ describe('sort-union-types', () => {
               right: 'A & B',
               left: 'A | B',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -404,14 +409,14 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'D',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'E',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -451,14 +456,14 @@ describe('sort-union-types', () => {
               right: 'BBB',
               left: 'D',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'FFF',
               left: 'GG',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -506,14 +511,14 @@ describe('sort-union-types', () => {
               right: 'BBB',
               left: 'D',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'FFF',
               left: 'GG',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -605,7 +610,7 @@ describe('sort-union-types', () => {
               right: 'BB',
               left: 'C',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -644,7 +649,7 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -737,7 +742,7 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -878,21 +883,21 @@ describe('sort-union-types', () => {
               left: '() => null',
               right: 'Y',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'Z',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'Z',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -930,21 +935,21 @@ describe('sort-union-types', () => {
               right: '{ a: string }',
               left: '() => void',
             },
-            messageId: 'missedSpacingBetweenUnionTypes',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               left: '{ a: string }',
               right: 'A',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: '[A]',
               left: 'A',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -1019,7 +1024,7 @@ describe('sort-union-types', () => {
                 right: 'null',
                 left: 'A',
               },
-              messageId: 'missedSpacingBetweenUnionTypes',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1061,7 +1066,7 @@ describe('sort-union-types', () => {
                 right: 'null',
                 left: 'A',
               },
-              messageId: 'extraSpacingBetweenUnionTypes',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1138,7 +1143,7 @@ describe('sort-union-types', () => {
               right: "'a'",
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -1186,7 +1191,7 @@ describe('sort-union-types', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1218,7 +1223,7 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1239,7 +1244,7 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1262,14 +1267,14 @@ describe('sort-union-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenUnionTypes',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -1309,7 +1314,7 @@ describe('sort-union-types', () => {
               left: 'null',
               right: 'a',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -1365,7 +1370,7 @@ describe('sort-union-types', () => {
                 right: 'helloNamed',
                 left: 'undefined',
               },
-              messageId: 'unexpectedUnionTypesGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1392,21 +1397,21 @@ describe('sort-union-types', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
@@ -1415,7 +1420,7 @@ describe('sort-union-types', () => {
               right: 'eee',
               left: "'m'",
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -1489,7 +1494,7 @@ describe('sort-union-types', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1527,7 +1532,7 @@ describe('sort-union-types', () => {
               left: "'m'",
               right: 'c',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1582,7 +1587,7 @@ describe('sort-union-types', () => {
               right: "'foo'",
               left: 'null',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1645,7 +1650,7 @@ describe('sort-union-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenUnionTypes',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1683,7 +1688,7 @@ describe('sort-union-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1722,7 +1727,7 @@ describe('sort-union-types', () => {
               right: "'bbb'",
               left: "'cc'",
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1743,28 +1748,28 @@ describe('sort-union-types', () => {
               left: 'string',
               right: 'any',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               left: 'unknown',
               right: 'null',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               left: 'undefined',
               right: 'never',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'bigint',
               left: 'void',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1805,7 +1810,7 @@ describe('sort-union-types', () => {
               right: "'aa'",
               left: "'b'",
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: "Omit<T, 'aa' | 'b'>",
@@ -1822,14 +1827,14 @@ describe('sort-union-types', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'aaa',
               left: 'bb',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: 'type Type = aaa | bb | c',
@@ -1846,7 +1851,7 @@ describe('sort-union-types', () => {
               right: "{ name: 'aa', status: 'success' }",
               left: "{ name: 'b', status: 'success' }",
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1871,7 +1876,7 @@ describe('sort-union-types', () => {
               right: '( value: () => void, ) => D | E',
               left: 'A',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1906,14 +1911,14 @@ describe('sort-union-types', () => {
               left: '100',
               right: '2',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: '3',
               left: '4',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1986,7 +1991,7 @@ describe('sort-union-types', () => {
               leftGroup: 'object',
               right: 'boolean',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -1995,7 +2000,7 @@ describe('sort-union-types', () => {
               left: 'boolean',
               right: 'A',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -2004,7 +2009,7 @@ describe('sort-union-types', () => {
               left: 'keyof A',
               right: 'bigint',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -2013,7 +2018,7 @@ describe('sort-union-types', () => {
               left: 'null',
               right: '1',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -2022,7 +2027,7 @@ describe('sort-union-types', () => {
               right: 'A & B',
               left: 'A | B',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -2091,14 +2096,14 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'D',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'E',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2138,14 +2143,14 @@ describe('sort-union-types', () => {
               right: 'BBB',
               left: 'D',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'FFF',
               left: 'GG',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2193,14 +2198,14 @@ describe('sort-union-types', () => {
               right: 'BBB',
               left: 'D',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'FFF',
               left: 'GG',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2292,7 +2297,7 @@ describe('sort-union-types', () => {
               right: 'BB',
               left: 'C',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -2331,7 +2336,7 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -2424,7 +2429,7 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -2565,21 +2570,21 @@ describe('sort-union-types', () => {
               left: '() => null',
               right: 'Y',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'Z',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'Z',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -2617,21 +2622,21 @@ describe('sort-union-types', () => {
               right: '{ a: string }',
               left: '() => void',
             },
-            messageId: 'missedSpacingBetweenUnionTypes',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               left: '{ a: string }',
               right: 'A',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: '[A]',
               left: 'A',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -2706,7 +2711,7 @@ describe('sort-union-types', () => {
                 right: 'null',
                 left: 'A',
               },
-              messageId: 'missedSpacingBetweenUnionTypes',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2748,7 +2753,7 @@ describe('sort-union-types', () => {
                 right: 'null',
                 left: 'A',
               },
-              messageId: 'extraSpacingBetweenUnionTypes',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2825,7 +2830,7 @@ describe('sort-union-types', () => {
               right: "'a'",
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -2873,7 +2878,7 @@ describe('sort-union-types', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2905,7 +2910,7 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2926,7 +2931,7 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2951,7 +2956,7 @@ describe('sort-union-types', () => {
               left: 'null',
               right: 'a',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -3007,7 +3012,7 @@ describe('sort-union-types', () => {
                 right: 'helloNamed',
                 left: 'undefined',
               },
-              messageId: 'unexpectedUnionTypesGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3034,21 +3039,21 @@ describe('sort-union-types', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
@@ -3057,7 +3062,7 @@ describe('sort-union-types', () => {
               right: 'eee',
               left: "'m'",
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -3131,7 +3136,7 @@ describe('sort-union-types', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3169,7 +3174,7 @@ describe('sort-union-types', () => {
               left: "'m'",
               right: 'c',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3224,7 +3229,7 @@ describe('sort-union-types', () => {
               right: "'foo'",
               left: 'null',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3287,7 +3292,7 @@ describe('sort-union-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenUnionTypes',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3325,7 +3330,7 @@ describe('sort-union-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3364,7 +3369,7 @@ describe('sort-union-types', () => {
               right: "'bbb'",
               left: "'cc'",
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3385,21 +3390,21 @@ describe('sort-union-types', () => {
               right: 'unknown',
               left: 'any',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'undefined',
               left: 'null',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'bigint',
               left: 'void',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3440,7 +3445,7 @@ describe('sort-union-types', () => {
               right: "'aa'",
               left: "'b'",
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: "Omit<T, 'aa' | 'b'>",
@@ -3457,14 +3462,14 @@ describe('sort-union-types', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'aaa',
               left: 'bb',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: 'type Type = aaa | bb | c',
@@ -3481,7 +3486,7 @@ describe('sort-union-types', () => {
               right: "{ name: 'aa', status: 'success' }",
               left: "{ name: 'b', status: 'success' }",
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3506,7 +3511,7 @@ describe('sort-union-types', () => {
               right: '( value: () => void, ) => D | E',
               left: 'A',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3541,7 +3546,7 @@ describe('sort-union-types', () => {
               right: '100',
               left: '1',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3614,7 +3619,7 @@ describe('sort-union-types', () => {
               leftGroup: 'object',
               right: 'boolean',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -3623,7 +3628,7 @@ describe('sort-union-types', () => {
               left: 'boolean',
               right: 'A',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -3632,7 +3637,7 @@ describe('sort-union-types', () => {
               left: 'keyof A',
               right: 'bigint',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -3641,7 +3646,7 @@ describe('sort-union-types', () => {
               left: 'null',
               right: '1',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -3650,7 +3655,7 @@ describe('sort-union-types', () => {
               right: 'A & B',
               left: 'A | B',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -3719,14 +3724,14 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'D',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'E',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3766,14 +3771,14 @@ describe('sort-union-types', () => {
               right: 'BBB',
               left: 'D',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'FFF',
               left: 'GG',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3821,14 +3826,14 @@ describe('sort-union-types', () => {
               right: 'BBB',
               left: 'D',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'FFF',
               left: 'GG',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3920,7 +3925,7 @@ describe('sort-union-types', () => {
               right: 'BB',
               left: 'C',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -3959,7 +3964,7 @@ describe('sort-union-types', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -4052,7 +4057,7 @@ describe('sort-union-types', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -4193,21 +4198,21 @@ describe('sort-union-types', () => {
               left: '() => null',
               right: 'YY',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'BBB',
               left: 'Z',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'BBB',
               left: 'Z',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -4245,21 +4250,21 @@ describe('sort-union-types', () => {
               right: '{ a: string }',
               left: '() => void',
             },
-            messageId: 'missedSpacingBetweenUnionTypes',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               left: '{ a: string }',
               right: 'A',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: '[A]',
               left: 'A',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -4334,7 +4339,7 @@ describe('sort-union-types', () => {
                 right: 'null',
                 left: 'A',
               },
-              messageId: 'missedSpacingBetweenUnionTypes',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4376,7 +4381,7 @@ describe('sort-union-types', () => {
                 right: 'null',
                 left: 'A',
               },
-              messageId: 'extraSpacingBetweenUnionTypes',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4453,7 +4458,7 @@ describe('sort-union-types', () => {
               right: "'a'",
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -4501,7 +4506,7 @@ describe('sort-union-types', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4533,7 +4538,7 @@ describe('sort-union-types', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4554,7 +4559,7 @@ describe('sort-union-types', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4579,7 +4584,7 @@ describe('sort-union-types', () => {
               left: 'null',
               right: 'a',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -4635,7 +4640,7 @@ describe('sort-union-types', () => {
                 right: 'helloNamed',
                 left: 'undefined',
               },
-              messageId: 'unexpectedUnionTypesGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4662,21 +4667,21 @@ describe('sort-union-types', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
@@ -4685,7 +4690,7 @@ describe('sort-union-types', () => {
               right: 'eee',
               left: "'m'",
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -4759,7 +4764,7 @@ describe('sort-union-types', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4797,7 +4802,7 @@ describe('sort-union-types', () => {
               left: "'m'",
               right: 'c',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4852,7 +4857,7 @@ describe('sort-union-types', () => {
               right: "'foo'",
               left: 'null',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4915,7 +4920,7 @@ describe('sort-union-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenUnionTypes',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4953,7 +4958,7 @@ describe('sort-union-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenUnionTypes',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4997,7 +5002,7 @@ describe('sort-union-types', () => {
               right: "'bbb'",
               left: "'cc'",
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5039,7 +5044,7 @@ describe('sort-union-types', () => {
               left: "'aa'",
               right: 'ba',
             },
-            messageId: 'unexpectedUnionTypesGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5073,7 +5078,7 @@ describe('sort-union-types', () => {
               right: "'a'",
               left: 'b',
             },
-            messageId: 'missedSpacingBetweenUnionTypes',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -5153,7 +5158,7 @@ describe('sort-union-types', () => {
               right: 'NumberBase.BASE_10',
               left: 'NumberBase.BASE_2',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5194,7 +5199,7 @@ describe('sort-union-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5223,14 +5228,14 @@ describe('sort-union-types', () => {
               right: 'C',
               left: 'D',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'A',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5265,7 +5270,7 @@ describe('sort-union-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5292,7 +5297,7 @@ describe('sort-union-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5319,7 +5324,7 @@ describe('sort-union-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5368,7 +5373,7 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
@@ -5383,7 +5388,7 @@ describe('sort-union-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5410,7 +5415,7 @@ describe('sort-union-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5437,7 +5442,7 @@ describe('sort-union-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5464,7 +5469,7 @@ describe('sort-union-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5513,7 +5518,7 @@ describe('sort-union-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedUnionTypesOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],

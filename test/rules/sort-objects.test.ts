@@ -3,9 +3,15 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
+import rule, {
+  DEPENDENCY_ORDER_ERROR_ID,
+  MISSED_SPACING_ERROR_ID,
+  EXTRA_SPACING_ERROR_ID,
+  GROUP_ORDER_ERROR_ID,
+  ORDER_ERROR_ID,
+} from '../../rules/sort-objects'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
-import rule from '../../rules/sort-objects'
 
 describe('sort-objects', () => {
   let { invalid, valid } = createRuleTester({
@@ -40,7 +46,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -83,7 +89,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -130,21 +136,21 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'x',
               left: 'y',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -194,14 +200,14 @@ describe('sort-objects', () => {
               left: 'c[1]',
               right: 'b()',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               left: 'b()',
               right: 'a',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -230,14 +236,14 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenObjectMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -313,7 +319,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -342,7 +348,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -369,7 +375,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -402,7 +408,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -437,14 +443,14 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
             data: {
               nodeDependentOnRight: 'b',
               right: 'd',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -477,7 +483,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'c',
               right: 'b',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -510,14 +516,14 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
             data: {
               nodeDependentOnRight: 'b',
               right: 'd',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -555,7 +561,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -588,7 +594,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -621,7 +627,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'a',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -929,7 +935,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -955,7 +961,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -981,7 +987,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1007,7 +1013,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1058,7 +1064,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -1102,7 +1108,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1140,7 +1146,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1178,14 +1184,14 @@ describe('sort-objects', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1278,7 +1284,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -1318,7 +1324,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -1416,7 +1422,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -1534,14 +1540,14 @@ describe('sort-objects', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1636,7 +1642,7 @@ describe('sort-objects', () => {
               leftGroup: 'member',
               right: 'method',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1670,7 +1676,7 @@ describe('sort-objects', () => {
               right: 'property',
               left: 'method',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -1724,21 +1730,21 @@ describe('sort-objects', () => {
               right: 'y',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         code: dedent`
@@ -1817,21 +1823,21 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenObjectMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1896,7 +1902,7 @@ describe('sort-objects', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'missedSpacingBetweenObjectMembers',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1948,7 +1954,7 @@ describe('sort-objects', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'extraSpacingBetweenObjectMembers',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2023,7 +2029,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2073,7 +2079,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2107,7 +2113,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2130,7 +2136,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2193,7 +2199,7 @@ describe('sort-objects', () => {
                 right: 'g',
                 left: 'b',
               },
-              messageId: 'unexpectedObjectsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
             {
               data: {
@@ -2202,7 +2208,7 @@ describe('sort-objects', () => {
                 right: 'r',
                 left: 'g',
               },
-              messageId: 'unexpectedObjectsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2240,7 +2246,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2260,7 +2266,7 @@ describe('sort-objects', () => {
               right: 'g',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -2269,7 +2275,7 @@ describe('sort-objects', () => {
               right: 'r',
               left: 'g',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -2278,7 +2284,7 @@ describe('sort-objects', () => {
               right: 'g',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -2287,7 +2293,7 @@ describe('sort-objects', () => {
               right: 'r',
               left: 'g',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -2432,7 +2438,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2459,7 +2465,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2492,7 +2498,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2561,7 +2567,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2617,7 +2623,7 @@ describe('sort-objects', () => {
               right: '1',
               left: '2',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2650,7 +2656,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2702,14 +2708,14 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -2773,14 +2779,14 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -2845,7 +2851,7 @@ describe('sort-objects', () => {
               right: 'c',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2902,7 +2908,7 @@ describe('sort-objects', () => {
                 leftGroup: 'unknown',
                 left: 'method',
               },
-              messageId: 'unexpectedObjectsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2957,7 +2963,7 @@ describe('sort-objects', () => {
                 right: 'z',
                 left: 'y',
               },
-              messageId: 'unexpectedObjectsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2990,21 +2996,21 @@ describe('sort-objects', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
@@ -3013,7 +3019,7 @@ describe('sort-objects', () => {
               left: 'method',
               right: 'eee',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -3089,7 +3095,7 @@ describe('sort-objects', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3129,7 +3135,7 @@ describe('sort-objects', () => {
               left: 'method',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3185,7 +3191,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3262,7 +3268,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenObjectMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3302,7 +3308,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3373,7 +3379,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3416,7 +3422,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3463,21 +3469,21 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'x',
               left: 'y',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3527,14 +3533,14 @@ describe('sort-objects', () => {
               left: 'c[1]',
               right: 'b()',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               left: 'b()',
               right: 'a',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3599,7 +3605,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3628,7 +3634,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3655,7 +3661,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3688,7 +3694,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3723,14 +3729,14 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
             data: {
               nodeDependentOnRight: 'b',
               right: 'd',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3763,7 +3769,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'c',
               right: 'b',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3796,14 +3802,14 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
             data: {
               nodeDependentOnRight: 'b',
               right: 'd',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3841,7 +3847,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3874,7 +3880,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3907,7 +3913,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'a',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4215,7 +4221,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4241,7 +4247,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4267,7 +4273,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4318,7 +4324,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -4362,7 +4368,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4400,7 +4406,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4438,14 +4444,14 @@ describe('sort-objects', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4538,7 +4544,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -4578,7 +4584,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -4676,7 +4682,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -4794,14 +4800,14 @@ describe('sort-objects', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4896,7 +4902,7 @@ describe('sort-objects', () => {
               leftGroup: 'member',
               right: 'method',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4930,7 +4936,7 @@ describe('sort-objects', () => {
               right: 'property',
               left: 'method',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -4984,21 +4990,21 @@ describe('sort-objects', () => {
               right: 'y',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         code: dedent`
@@ -5077,21 +5083,21 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenObjectMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5156,7 +5162,7 @@ describe('sort-objects', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'missedSpacingBetweenObjectMembers',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -5208,7 +5214,7 @@ describe('sort-objects', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'extraSpacingBetweenObjectMembers',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -5283,7 +5289,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5333,7 +5339,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5367,7 +5373,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5390,7 +5396,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5453,7 +5459,7 @@ describe('sort-objects', () => {
                 right: 'g',
                 left: 'b',
               },
-              messageId: 'unexpectedObjectsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
             {
               data: {
@@ -5462,7 +5468,7 @@ describe('sort-objects', () => {
                 right: 'r',
                 left: 'g',
               },
-              messageId: 'unexpectedObjectsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -5493,7 +5499,7 @@ describe('sort-objects', () => {
               right: 'g',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -5502,7 +5508,7 @@ describe('sort-objects', () => {
               right: 'r',
               left: 'g',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -5511,7 +5517,7 @@ describe('sort-objects', () => {
               right: 'g',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -5520,7 +5526,7 @@ describe('sort-objects', () => {
               right: 'r',
               left: 'g',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -5624,7 +5630,7 @@ describe('sort-objects', () => {
               right: 'c',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5681,7 +5687,7 @@ describe('sort-objects', () => {
                 leftGroup: 'unknown',
                 left: 'method',
               },
-              messageId: 'unexpectedObjectsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -5736,7 +5742,7 @@ describe('sort-objects', () => {
                 right: 'z',
                 left: 'y',
               },
-              messageId: 'unexpectedObjectsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -5769,21 +5775,21 @@ describe('sort-objects', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
@@ -5792,7 +5798,7 @@ describe('sort-objects', () => {
               left: 'method',
               right: 'eee',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -5868,7 +5874,7 @@ describe('sort-objects', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5908,7 +5914,7 @@ describe('sort-objects', () => {
               left: 'method',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5964,7 +5970,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6041,7 +6047,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenObjectMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6081,7 +6087,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6152,7 +6158,7 @@ describe('sort-objects', () => {
               right: 'c',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6195,7 +6201,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6242,14 +6248,14 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6299,7 +6305,7 @@ describe('sort-objects', () => {
               right: 'b()',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6364,7 +6370,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6393,7 +6399,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6420,7 +6426,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6453,7 +6459,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6488,14 +6494,14 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
             data: {
               nodeDependentOnRight: 'b',
               right: 'd',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6528,7 +6534,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'c',
               right: 'b',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6561,14 +6567,14 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
             data: {
               nodeDependentOnRight: 'b',
               right: 'd',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6606,14 +6612,14 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6646,7 +6652,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6679,14 +6685,14 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               nodeDependentOnRight: 'a',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6994,7 +7000,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -7020,7 +7026,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -7046,7 +7052,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -7073,14 +7079,14 @@ describe('sort-objects', () => {
               right: 'd',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'f',
               left: 'e',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -7148,7 +7154,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -7186,7 +7192,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'b',
               right: 'a',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -7224,14 +7230,14 @@ describe('sort-objects', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -7324,7 +7330,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -7364,7 +7370,7 @@ describe('sort-objects', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -7462,7 +7468,7 @@ describe('sort-objects', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -7580,14 +7586,14 @@ describe('sort-objects', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -7682,7 +7688,7 @@ describe('sort-objects', () => {
               leftGroup: 'member',
               right: 'method',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -7716,7 +7722,7 @@ describe('sort-objects', () => {
               right: 'property',
               left: 'method',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -7770,21 +7776,21 @@ describe('sort-objects', () => {
               left: 'aaaa',
               right: 'yy',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'bbb',
               left: 'z',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'bbb',
               left: 'z',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         code: dedent`
@@ -7863,21 +7869,21 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenObjectMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -7942,7 +7948,7 @@ describe('sort-objects', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'missedSpacingBetweenObjectMembers',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -7994,7 +8000,7 @@ describe('sort-objects', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'extraSpacingBetweenObjectMembers',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -8069,7 +8075,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -8119,7 +8125,7 @@ describe('sort-objects', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -8153,7 +8159,7 @@ describe('sort-objects', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -8176,7 +8182,7 @@ describe('sort-objects', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -8239,7 +8245,7 @@ describe('sort-objects', () => {
                 right: 'g',
                 left: 'b',
               },
-              messageId: 'unexpectedObjectsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
             {
               data: {
@@ -8248,7 +8254,7 @@ describe('sort-objects', () => {
                 right: 'r',
                 left: 'g',
               },
-              messageId: 'unexpectedObjectsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -8279,7 +8285,7 @@ describe('sort-objects', () => {
               right: 'g',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -8288,7 +8294,7 @@ describe('sort-objects', () => {
               right: 'r',
               left: 'g',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -8297,7 +8303,7 @@ describe('sort-objects', () => {
               right: 'g',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -8306,7 +8312,7 @@ describe('sort-objects', () => {
               right: 'r',
               left: 'g',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -8410,7 +8416,7 @@ describe('sort-objects', () => {
               right: 'c',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -8467,7 +8473,7 @@ describe('sort-objects', () => {
                 leftGroup: 'unknown',
                 left: 'method',
               },
-              messageId: 'unexpectedObjectsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -8522,7 +8528,7 @@ describe('sort-objects', () => {
                 right: 'z',
                 left: 'y',
               },
-              messageId: 'unexpectedObjectsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -8555,21 +8561,21 @@ describe('sort-objects', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
@@ -8578,7 +8584,7 @@ describe('sort-objects', () => {
               left: 'method',
               right: 'eee',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -8654,7 +8660,7 @@ describe('sort-objects', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -8694,7 +8700,7 @@ describe('sort-objects', () => {
               left: 'method',
               right: 'c',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -8750,7 +8756,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -8827,7 +8833,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenObjectMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -8867,7 +8873,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenObjectMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -8943,7 +8949,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -9012,7 +9018,7 @@ describe('sort-objects', () => {
               right: 'ba',
               left: 'aa',
             },
-            messageId: 'unexpectedObjectsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -9059,7 +9065,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'missedSpacingBetweenObjectMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -9086,7 +9092,7 @@ describe('sort-objects', () => {
               nodeDependentOnRight: 'a',
               right: 'b',
             },
-            messageId: 'unexpectedObjectsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -9147,7 +9153,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -9295,7 +9301,7 @@ describe('sort-objects', () => {
               left: 'methods',
               right: 'data',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -9397,7 +9403,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -9466,14 +9472,14 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'a',
               left: 'd',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -9537,7 +9543,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -9566,14 +9572,14 @@ describe('sort-objects', () => {
               right: 'c',
               left: 'd',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -9608,7 +9614,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -9637,7 +9643,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -9664,7 +9670,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -9693,7 +9699,7 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -9744,7 +9750,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
@@ -9775,22 +9781,13 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-        ],
         output: dedent`
           let obj = {
             b = 'b',
@@ -9798,6 +9795,15 @@ describe('sort-objects', () => {
             a = 'a' // eslint-disable-line rule-to-test/sort-objects
           }
         `,
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         code: dedent`
           let obj = {
             c = 'c',
@@ -9831,22 +9837,13 @@ describe('sort-objects', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-        ],
         output: dedent`
           let obj = {
             b = 'b',
@@ -9861,6 +9858,15 @@ describe('sort-objects', () => {
             a = 'a' /* eslint-disable-line rule-to-test/sort-objects */
           }
         `,
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
@@ -9895,7 +9901,7 @@ describe('sort-objects', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedObjectsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],

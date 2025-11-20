@@ -5,9 +5,14 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
+import rule, {
+  MISSED_SPACING_ERROR_ID,
+  EXTRA_SPACING_ERROR_ID,
+  GROUP_ORDER_ERROR_ID,
+  ORDER_ERROR_ID,
+} from '../../rules/sort-decorators'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
-import rule from '../../rules/sort-decorators'
 
 describe('sort-decorators', () => {
   let { invalid, valid } = createRuleTester({
@@ -112,7 +117,7 @@ describe('sort-decorators', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [options],
@@ -271,14 +276,14 @@ describe('sort-decorators', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'C',
               left: 'D',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [options],
@@ -337,7 +342,7 @@ describe('sort-decorators', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [options],
@@ -372,7 +377,7 @@ describe('sort-decorators', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -409,7 +414,7 @@ describe('sort-decorators', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -436,7 +441,7 @@ describe('sort-decorators', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -461,7 +466,7 @@ describe('sort-decorators', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -476,14 +481,14 @@ describe('sort-decorators', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'A',
             },
-            messageId: 'missedSpacingBetweenDecorators',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ]),
         output: dedent`
@@ -622,7 +627,7 @@ describe('sort-decorators', () => {
                 leftGroup: 'unknown',
                 left: 'B',
               },
-              messageId: 'unexpectedDecoratorsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ]),
           options: [
@@ -650,7 +655,7 @@ describe('sort-decorators', () => {
               right: 'aFoo',
               left: 'p',
             },
-            messageId: 'unexpectedDecoratorsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
           {
             data: {
@@ -659,7 +664,7 @@ describe('sort-decorators', () => {
               right: 'bbFoo',
               left: 'oo',
             },
-            messageId: 'unexpectedDecoratorsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -765,7 +770,7 @@ describe('sort-decorators', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
       })
@@ -877,7 +882,7 @@ describe('sort-decorators', () => {
               right: 'cFoo',
               left: 'm',
             },
-            messageId: 'unexpectedDecoratorsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ]),
       })
@@ -940,21 +945,21 @@ describe('sort-decorators', () => {
               right: 'y',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenDecorators',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: 'extraSpacingBetweenDecorators',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -998,21 +1003,21 @@ describe('sort-decorators', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenDecorators',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'y',
               left: 'z',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'y',
             },
-            messageId: 'missedSpacingBetweenDecorators',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -1085,21 +1090,21 @@ describe('sort-decorators', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenDecorators',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: 'extraSpacingBetweenDecorators',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: 'extraSpacingBetweenDecorators',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1162,7 +1167,7 @@ describe('sort-decorators', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'missedSpacingBetweenDecorators',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1212,7 +1217,7 @@ describe('sort-decorators', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'extraSpacingBetweenDecorators',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1311,7 +1316,7 @@ describe('sort-decorators', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedDecoratorsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1353,7 +1358,7 @@ describe('sort-decorators', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1397,7 +1402,7 @@ describe('sort-decorators', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'missedSpacingBetweenDecorators',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1435,7 +1440,7 @@ describe('sort-decorators', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'extraSpacingBetweenDecorators',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1554,14 +1559,14 @@ describe('sort-decorators', () => {
               right: 'a',
               left: 'd',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'b',
               left: 'e',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -1725,14 +1730,14 @@ describe('sort-decorators', () => {
               right: 'Bbb',
               left: 'D',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'Fff',
               left: 'Gg',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -1909,7 +1914,7 @@ describe('sort-decorators', () => {
               right: 'Bb',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -2029,7 +2034,7 @@ describe('sort-decorators', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -2230,7 +2235,7 @@ describe('sort-decorators', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -2590,7 +2595,7 @@ describe('sort-decorators', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [options],
@@ -2749,14 +2754,14 @@ describe('sort-decorators', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'C',
               left: 'D',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [options],
@@ -2815,7 +2820,7 @@ describe('sort-decorators', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [options],
@@ -2850,7 +2855,7 @@ describe('sort-decorators', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -2887,7 +2892,7 @@ describe('sort-decorators', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -2914,7 +2919,7 @@ describe('sort-decorators', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -2939,7 +2944,7 @@ describe('sort-decorators', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -3098,14 +3103,14 @@ describe('sort-decorators', () => {
               right: 'Bbb',
               left: 'D',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'Fff',
               left: 'Gg',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -3282,7 +3287,7 @@ describe('sort-decorators', () => {
               right: 'Bb',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -3402,7 +3407,7 @@ describe('sort-decorators', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -3603,7 +3608,7 @@ describe('sort-decorators', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -3963,7 +3968,7 @@ describe('sort-decorators', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [options],
@@ -4122,14 +4127,14 @@ describe('sort-decorators', () => {
               right: 'AAAA',
               left: 'BBB',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'CC',
               left: 'D',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [options],
@@ -4188,7 +4193,7 @@ describe('sort-decorators', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [options],
@@ -4223,7 +4228,7 @@ describe('sort-decorators', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -4260,7 +4265,7 @@ describe('sort-decorators', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -4287,7 +4292,7 @@ describe('sort-decorators', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -4312,7 +4317,7 @@ describe('sort-decorators', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -4471,14 +4476,14 @@ describe('sort-decorators', () => {
               right: 'Bbb',
               left: 'D',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'Fffff',
               left: 'Gg',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -4655,7 +4660,7 @@ describe('sort-decorators', () => {
               right: 'Bb',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -4775,7 +4780,7 @@ describe('sort-decorators', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -4976,7 +4981,7 @@ describe('sort-decorators', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -5341,7 +5346,7 @@ describe('sort-decorators', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [options],
@@ -5560,7 +5565,7 @@ describe('sort-decorators', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [{}],
@@ -5637,14 +5642,14 @@ describe('sort-decorators', () => {
               right: 'C',
               left: 'D',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'A',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [
@@ -5725,7 +5730,7 @@ describe('sort-decorators', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [{}],
@@ -5792,7 +5797,7 @@ describe('sort-decorators', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [{}],
@@ -5869,7 +5874,7 @@ describe('sort-decorators', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [{}],
@@ -5986,7 +5991,7 @@ describe('sort-decorators', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [{}],
@@ -6053,7 +6058,7 @@ describe('sort-decorators', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [{}],
@@ -6130,7 +6135,7 @@ describe('sort-decorators', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [{}],
@@ -6197,7 +6202,7 @@ describe('sort-decorators', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [{}],
@@ -6314,7 +6319,7 @@ describe('sort-decorators', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedDecoratorsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ]),
         options: [{}],
@@ -6361,14 +6366,14 @@ describe('sort-decorators', () => {
 
 function duplicate5Times(
   errors: TestCaseError<
-    | 'unexpectedDecoratorsGroupOrder'
-    | 'missedSpacingBetweenDecorators'
-    | 'unexpectedDecoratorsOrder'
+    | typeof MISSED_SPACING_ERROR_ID
+    | typeof GROUP_ORDER_ERROR_ID
+    | typeof ORDER_ERROR_ID
   >[],
 ): TestCaseError<
-  | 'unexpectedDecoratorsGroupOrder'
-  | 'missedSpacingBetweenDecorators'
-  | 'unexpectedDecoratorsOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 >[] {
   return Array.from({ length: 5 }, () => errors).flat()
 }

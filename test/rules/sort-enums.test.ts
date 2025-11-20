@@ -3,9 +3,15 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
+import rule, {
+  DEPENDENCY_ORDER_ERROR_ID,
+  MISSED_SPACING_ERROR_ID,
+  EXTRA_SPACING_ERROR_ID,
+  GROUP_ORDER_ERROR_ID,
+  ORDER_ERROR_ID,
+} from '../../rules/sort-enums'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
-import rule from '../../rules/sort-enums'
 
 describe('sort-enums', () => {
   let { invalid, valid } = createRuleTester({
@@ -40,7 +46,7 @@ describe('sort-enums', () => {
               right: 'bbb',
               left: 'cc',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -83,7 +89,7 @@ describe('sort-enums', () => {
               right: '12',
               left: '8',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -137,7 +143,7 @@ describe('sort-enums', () => {
               right: 'false',
               left: 'true',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -188,7 +194,7 @@ describe('sort-enums', () => {
               right: 'aaa',
               left: 'b',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -249,14 +255,14 @@ describe('sort-enums', () => {
               right: 'bbb',
               left: 'd',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'fff',
               left: 'gg',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -321,7 +327,7 @@ describe('sort-enums', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -361,7 +367,7 @@ describe('sort-enums', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -459,7 +465,7 @@ describe('sort-enums', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -557,63 +563,63 @@ describe('sort-enums', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'e',
               left: 'd',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'f',
               left: 'e',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'g',
               left: 'f',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'h',
               left: 'g',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'i',
               left: 'h',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'j',
               left: 'i',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -732,7 +738,7 @@ describe('sort-enums', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -755,7 +761,7 @@ describe('sort-enums', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -780,14 +786,14 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'A',
             },
-            messageId: 'missedSpacingBetweenEnumsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -839,7 +845,7 @@ describe('sort-enums', () => {
                 right: 'HELLO_KEY',
                 left: 'B',
               },
-              messageId: 'unexpectedEnumsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           options: [
@@ -902,7 +908,7 @@ describe('sort-enums', () => {
                 right: 'Z',
                 left: 'B',
               },
-              messageId: 'unexpectedEnumsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -931,21 +937,21 @@ describe('sort-enums', () => {
               right: '_BB',
               left: '_A',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: '_CCC',
               left: '_BB',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: '_DDDD',
               left: '_CCC',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
@@ -954,7 +960,7 @@ describe('sort-enums', () => {
               right: '_EEE',
               left: 'M',
             },
-            messageId: 'unexpectedEnumsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -1030,7 +1036,7 @@ describe('sort-enums', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1070,7 +1076,7 @@ describe('sort-enums', () => {
               right: '_C',
               left: 'M',
             },
-            messageId: 'unexpectedEnumsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1124,7 +1130,7 @@ describe('sort-enums', () => {
               right: 'C_FOO',
               left: 'A',
             },
-            messageId: 'unexpectedEnumsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1177,21 +1183,21 @@ describe('sort-enums', () => {
               right: 'Y',
               left: 'A',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'Z',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'Z',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -1237,21 +1243,21 @@ describe('sort-enums', () => {
               right: 'Z',
               left: 'A',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'Y',
               left: 'Z',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'Y',
             },
-            messageId: 'missedSpacingBetweenEnumsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -1349,21 +1355,21 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: 'missedSpacingBetweenEnumsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'C',
               left: 'B',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'D',
               left: 'C',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1428,7 +1434,7 @@ describe('sort-enums', () => {
                 right: 'B',
                 left: 'A',
               },
-              messageId: 'missedSpacingBetweenEnumsMembers',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1480,7 +1486,7 @@ describe('sort-enums', () => {
                 right: 'B',
                 left: 'A',
               },
-              messageId: 'extraSpacingBetweenEnumsMembers',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1583,7 +1589,7 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1636,7 +1642,7 @@ describe('sort-enums', () => {
               right: 'bbb',
               left: 'cc',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1679,7 +1685,7 @@ describe('sort-enums', () => {
               right: '8',
               left: '12',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1733,7 +1739,7 @@ describe('sort-enums', () => {
               right: 'false',
               left: 'true',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1784,7 +1790,7 @@ describe('sort-enums', () => {
               right: 'aaa',
               left: 'b',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -1845,14 +1851,14 @@ describe('sort-enums', () => {
               right: 'bbb',
               left: 'd',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'fff',
               left: 'gg',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -1917,7 +1923,7 @@ describe('sort-enums', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -1957,7 +1963,7 @@ describe('sort-enums', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -2055,7 +2061,7 @@ describe('sort-enums', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -2153,63 +2159,63 @@ describe('sort-enums', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'e',
               left: 'd',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'f',
               left: 'e',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'g',
               left: 'f',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'h',
               left: 'g',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'i',
               left: 'h',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'j',
               left: 'i',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2310,7 +2316,7 @@ describe('sort-enums', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2333,7 +2339,7 @@ describe('sort-enums', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2370,7 +2376,7 @@ describe('sort-enums', () => {
                 right: 'HELLO_KEY',
                 left: 'B',
               },
-              messageId: 'unexpectedEnumsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           options: [
@@ -2433,7 +2439,7 @@ describe('sort-enums', () => {
                 right: 'Z',
                 left: 'B',
               },
-              messageId: 'unexpectedEnumsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2462,21 +2468,21 @@ describe('sort-enums', () => {
               right: '_BB',
               left: '_A',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: '_CCC',
               left: '_BB',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: '_DDDD',
               left: '_CCC',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
@@ -2485,7 +2491,7 @@ describe('sort-enums', () => {
               right: '_EEE',
               left: 'M',
             },
-            messageId: 'unexpectedEnumsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -2561,7 +2567,7 @@ describe('sort-enums', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2601,7 +2607,7 @@ describe('sort-enums', () => {
               right: '_C',
               left: 'M',
             },
-            messageId: 'unexpectedEnumsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2655,7 +2661,7 @@ describe('sort-enums', () => {
               right: 'C_FOO',
               left: 'A',
             },
-            messageId: 'unexpectedEnumsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2708,21 +2714,21 @@ describe('sort-enums', () => {
               right: 'Y',
               left: 'A',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'Z',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'Z',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -2768,21 +2774,21 @@ describe('sort-enums', () => {
               right: 'Z',
               left: 'A',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'Y',
               left: 'Z',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'Y',
             },
-            messageId: 'missedSpacingBetweenEnumsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -2880,21 +2886,21 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: 'missedSpacingBetweenEnumsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'C',
               left: 'B',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'D',
               left: 'C',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2959,7 +2965,7 @@ describe('sort-enums', () => {
                 right: 'B',
                 left: 'A',
               },
-              messageId: 'missedSpacingBetweenEnumsMembers',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3011,7 +3017,7 @@ describe('sort-enums', () => {
                 right: 'B',
                 left: 'A',
               },
-              messageId: 'extraSpacingBetweenEnumsMembers',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3114,7 +3120,7 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3167,7 +3173,7 @@ describe('sort-enums', () => {
               right: 'bbb',
               left: 'cc',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3210,7 +3216,7 @@ describe('sort-enums', () => {
               right: '12',
               left: '8',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3264,7 +3270,7 @@ describe('sort-enums', () => {
               right: 'false',
               left: 'true',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3315,7 +3321,7 @@ describe('sort-enums', () => {
               right: 'aaa',
               left: 'b',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [options],
@@ -3376,7 +3382,7 @@ describe('sort-enums', () => {
               right: 'bbb',
               left: 'd',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -3441,7 +3447,7 @@ describe('sort-enums', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -3481,7 +3487,7 @@ describe('sort-enums', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -3579,7 +3585,7 @@ describe('sort-enums', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -3677,14 +3683,14 @@ describe('sort-enums', () => {
               right: 'j',
               left: 'i',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'k',
               left: 'j',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3785,7 +3791,7 @@ describe('sort-enums', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3808,7 +3814,7 @@ describe('sort-enums', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3845,7 +3851,7 @@ describe('sort-enums', () => {
                 right: 'HELLO_KEY',
                 left: 'B',
               },
-              messageId: 'unexpectedEnumsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           options: [
@@ -3908,7 +3914,7 @@ describe('sort-enums', () => {
                 right: 'Z',
                 left: 'B',
               },
-              messageId: 'unexpectedEnumsGroupOrder',
+              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3937,21 +3943,21 @@ describe('sort-enums', () => {
               right: '_BB',
               left: '_A',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: '_CCC',
               left: '_BB',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: '_DDDD',
               left: '_CCC',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
@@ -3960,7 +3966,7 @@ describe('sort-enums', () => {
               right: '_EEE',
               left: 'M',
             },
-            messageId: 'unexpectedEnumsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -4036,7 +4042,7 @@ describe('sort-enums', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4076,7 +4082,7 @@ describe('sort-enums', () => {
               right: '_C',
               left: 'M',
             },
-            messageId: 'unexpectedEnumsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4130,7 +4136,7 @@ describe('sort-enums', () => {
               right: 'C_FOO',
               left: 'A',
             },
-            messageId: 'unexpectedEnumsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4183,21 +4189,21 @@ describe('sort-enums', () => {
               left: 'AAAA',
               right: 'YY',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'BBB',
               left: 'Z',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'BBB',
               left: 'Z',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -4243,21 +4249,21 @@ describe('sort-enums', () => {
               left: 'AAAA',
               right: 'Z',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'YY',
               left: 'Z',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'BBB',
               left: 'YY',
             },
-            messageId: 'missedSpacingBetweenEnumsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -4355,21 +4361,21 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: 'missedSpacingBetweenEnumsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'C',
               left: 'B',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: {
               right: 'D',
               left: 'C',
             },
-            messageId: 'extraSpacingBetweenEnumsMembers',
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4434,7 +4440,7 @@ describe('sort-enums', () => {
                 right: 'B',
                 left: 'A',
               },
-              messageId: 'missedSpacingBetweenEnumsMembers',
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4486,7 +4492,7 @@ describe('sort-enums', () => {
                 right: 'B',
                 left: 'A',
               },
-              messageId: 'extraSpacingBetweenEnumsMembers',
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4589,7 +4595,7 @@ describe('sort-enums', () => {
               right: 'BB',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4647,7 +4653,7 @@ describe('sort-enums', () => {
               right: 'bbb',
               left: 'cc',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4716,7 +4722,7 @@ describe('sort-enums', () => {
               right: 'ba',
               left: 'aa',
             },
-            messageId: 'unexpectedEnumsGroupOrder',
+            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4763,7 +4769,7 @@ describe('sort-enums', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'missedSpacingBetweenEnumsMembers',
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4790,7 +4796,7 @@ describe('sort-enums', () => {
               nodeDependentOnRight: 'a',
               right: 'b',
             },
-            messageId: 'unexpectedEnumsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4934,14 +4940,14 @@ describe('sort-enums', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedEnumsOrder',
+              messageId: ORDER_ERROR_ID,
             },
             {
               data: {
                 right: 'c',
                 left: 'a',
               },
-              messageId: 'unexpectedEnumsOrder',
+              messageId: ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4978,14 +4984,14 @@ describe('sort-enums', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedEnumsOrder',
+              messageId: ORDER_ERROR_ID,
             },
             {
               data: {
                 right: 'c',
                 left: 'a',
               },
-              messageId: 'unexpectedEnumsOrder',
+              messageId: ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -5042,7 +5048,7 @@ describe('sort-enums', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5070,7 +5076,7 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5101,7 +5107,7 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5132,7 +5138,7 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5163,7 +5169,7 @@ describe('sort-enums', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5194,7 +5200,7 @@ describe('sort-enums', () => {
               nodeDependentOnRight: 'A',
               right: 'C',
             },
-            messageId: 'unexpectedEnumsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5249,15 +5255,6 @@ describe('sort-enums', () => {
             F = D
           }
         `,
-        errors: [
-          {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
-            messageId: 'unexpectedEnumsOrder',
-          },
-        ],
         code: dedent`
           enum Enum {
             B = F,
@@ -5268,6 +5265,15 @@ describe('sort-enums', () => {
             F = D
           }
         `,
+        errors: [
+          {
+            data: {
+              right: 'A',
+              left: 'B',
+            },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             type: 'alphabetical',
@@ -5284,7 +5290,7 @@ describe('sort-enums', () => {
               nodeDependentOnRight: 'B',
               right: 'A',
             },
-            messageId: 'unexpectedEnumsDependencyOrder',
+            messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5384,7 +5390,7 @@ describe('sort-enums', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -5453,14 +5459,14 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'A',
               left: 'D',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [
@@ -5480,14 +5486,14 @@ describe('sort-enums', () => {
               right: 'C',
               left: 'D',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'A',
               left: 'E',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5540,7 +5546,7 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5569,14 +5575,14 @@ describe('sort-enums', () => {
               right: 'C',
               left: 'D',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
           {
             data: {
               right: 'B',
               left: 'A',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5611,7 +5617,7 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5640,7 +5646,7 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5667,7 +5673,7 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5696,7 +5702,7 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5747,7 +5753,7 @@ describe('sort-enums', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
@@ -5776,7 +5782,7 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
@@ -5789,7 +5795,7 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5832,22 +5838,13 @@ describe('sort-enums', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
-            messageId: 'unexpectedEnumsOrder',
-          },
-        ],
         output: dedent`
           enum Enum {
             B = 'B',
@@ -5855,6 +5852,15 @@ describe('sort-enums', () => {
             A = 'A' /* eslint-disable-line rule-to-test/sort-enums */
           }
         `,
+        errors: [
+          {
+            data: {
+              right: 'B',
+              left: 'C',
+            },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         code: dedent`
           enum Enum {
             C = 'C',
@@ -5896,7 +5902,7 @@ describe('sort-enums', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: 'unexpectedEnumsOrder',
+            messageId: ORDER_ERROR_ID,
           },
         ],
         options: [{}],
