@@ -847,17 +847,32 @@ describe('sort-array-includes', () => {
             },
             messageId: 'unexpectedArrayIncludesOrder',
           },
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'missedSpacingBetweenArrayIncludesMembers',
+          },
         ],
         options: [
           {
             ...options,
-            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
+            groups: [
+              {
+                type: 'alphabetical',
+                newlinesInside: 1,
+                group: 'unknown',
+                order: 'desc',
+              },
+            ],
             type: 'unsorted',
           },
         ],
         output: dedent`
           [
             'b',
+
             'a',
           ].includes(value)
         `,

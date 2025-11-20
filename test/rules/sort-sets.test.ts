@@ -634,13 +634,6 @@ describe('sort-sets', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        options: [
-          {
-            ...options,
-            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
-            type: 'unsorted',
-          },
-        ],
         errors: [
           {
             data: {
@@ -649,10 +642,32 @@ describe('sort-sets', () => {
             },
             messageId: 'unexpectedSetsOrder',
           },
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'missedSpacingBetweenSetsMembers',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: [
+              {
+                type: 'alphabetical',
+                newlinesInside: 1,
+                group: 'unknown',
+                order: 'desc',
+              },
+            ],
+            type: 'unsorted',
+          },
         ],
         output: dedent`
           new Set([
             'b',
+
             'a',
           ])
         `,

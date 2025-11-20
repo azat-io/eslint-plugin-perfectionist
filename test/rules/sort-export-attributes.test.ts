@@ -119,16 +119,31 @@ describe('sort-export-attributes', () => {
             },
             messageId: 'unexpectedExportAttributesOrder',
           },
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'missedSpacingBetweenExportAttributes',
+          },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
+            groups: [
+              {
+                type: 'alphabetical',
+                newlinesInside: 1,
+                group: 'unknown',
+                order: 'desc',
+              },
+            ],
             type: 'unsorted',
           },
         ],
         output: dedent`
           export { data } from 'module' with {
             b: 'b',
+
             a: 'a',
           }
         `,
