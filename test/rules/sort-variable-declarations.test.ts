@@ -1091,16 +1091,31 @@ describe('sort-variable-declarations', () => {
             },
             messageId: 'unexpectedVariableDeclarationsOrder',
           },
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+          },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
+            groups: [
+              {
+                type: 'alphabetical',
+                newlinesInside: 1,
+                group: 'unknown',
+                order: 'desc',
+              },
+            ],
             type: 'unsorted',
           },
         ],
         output: dedent`
           let
             b,
+
             a,
         `,
         code: dedent`

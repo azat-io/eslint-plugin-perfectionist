@@ -227,7 +227,12 @@ describe('common-json-schemas', () => {
       it('should allow overriding options', () => {
         expect(
           groupsJsonSchemaValidator([
-            { type: 'alphabetical', group: 'group', order: 'asc' },
+            {
+              type: 'alphabetical',
+              newlinesInside: 1,
+              group: 'group',
+              order: 'asc',
+            },
           ]),
         ).toBeTruthy()
       })

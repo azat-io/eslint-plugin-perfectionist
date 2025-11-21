@@ -470,23 +470,44 @@ describe('sort-decorators', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
+        errors: duplicate5Times([
+          {
+            data: {
+              right: 'B',
+              left: 'A',
+            },
+            messageId: 'unexpectedDecoratorsOrder',
+          },
+          {
+            data: {
+              right: 'B',
+              left: 'A',
+            },
+            messageId: 'missedSpacingBetweenDecorators',
+          },
+        ]),
         output: dedent`
           @B
+
           @A
           class Class {
 
             @B
+
             @A
             property
 
             @B
+
             @A
             accessor field
 
             @B
+
             @A
             method(
               @B
+
               @A
               parameter) {}
 
@@ -514,18 +535,16 @@ describe('sort-decorators', () => {
 
           }
         `,
-        errors: duplicate5Times([
-          {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
-            messageId: 'unexpectedDecoratorsOrder',
-          },
-        ]),
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
+            groups: [
+              {
+                type: 'alphabetical',
+                newlinesInside: 1,
+                group: 'unknown',
+                order: 'desc',
+              },
+            ],
             type: 'unsorted',
           },
         ],
@@ -6342,10 +6361,14 @@ describe('sort-decorators', () => {
 
 function duplicate5Times(
   errors: TestCaseError<
-    'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
+    | 'unexpectedDecoratorsGroupOrder'
+    | 'missedSpacingBetweenDecorators'
+    | 'unexpectedDecoratorsOrder'
   >[],
 ): TestCaseError<
-  'unexpectedDecoratorsGroupOrder' | 'unexpectedDecoratorsOrder'
+  | 'unexpectedDecoratorsGroupOrder'
+  | 'missedSpacingBetweenDecorators'
+  | 'unexpectedDecoratorsOrder'
 >[] {
   return Array.from({ length: 5 }, () => errors).flat()
 }

@@ -119,16 +119,31 @@ describe('sort-import-attributes', () => {
             },
             messageId: 'unexpectedImportAttributesOrder',
           },
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'missedSpacingBetweenImportAttributes',
+          },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
+            groups: [
+              {
+                type: 'alphabetical',
+                newlinesInside: 1,
+                group: 'unknown',
+                order: 'desc',
+              },
+            ],
             type: 'unsorted',
           },
         ],
         output: dedent`
           import { data } from 'module' with {
             b: 'b',
+
             a: 'a',
           }
         `,

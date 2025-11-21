@@ -782,16 +782,31 @@ describe('sort-enums', () => {
             },
             messageId: 'unexpectedEnumsOrder',
           },
+          {
+            data: {
+              right: 'B',
+              left: 'A',
+            },
+            messageId: 'missedSpacingBetweenEnumsMembers',
+          },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
+            groups: [
+              {
+                type: 'alphabetical',
+                newlinesInside: 1,
+                group: 'unknown',
+                order: 'desc',
+              },
+            ],
             type: 'unsorted',
           },
         ],
         output: dedent`
           enum Enum {
             B = 'B',
+
             A = 'A',
           }
         `,

@@ -303,15 +303,30 @@ describe('sort-modules', () => {
             },
             messageId: 'unexpectedModulesOrder',
           },
+          {
+            data: {
+              right: 'B',
+              left: 'A',
+            },
+            messageId: 'missedSpacingBetweenModulesMembers',
+          },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
+            groups: [
+              {
+                type: 'alphabetical',
+                newlinesInside: 1,
+                group: 'unknown',
+                order: 'desc',
+              },
+            ],
             type: 'unsorted',
           },
         ],
         output: dedent`
           interface B {}
+
           interface A {}
         `,
         code: dedent`

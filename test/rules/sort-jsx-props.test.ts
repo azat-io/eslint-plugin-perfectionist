@@ -331,16 +331,31 @@ describe('sort-jsx-props', () => {
             },
             messageId: 'unexpectedJSXPropsOrder',
           },
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'missedSpacingBetweenJSXPropsMembers',
+          },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
+            groups: [
+              {
+                type: 'alphabetical',
+                newlinesInside: 1,
+                group: 'unknown',
+                order: 'desc',
+              },
+            ],
             type: 'unsorted',
           },
         ],
         output: dedent`
           <Element
             b="b"
+
             a="a"
           />
         `,

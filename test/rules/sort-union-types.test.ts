@@ -1264,16 +1264,31 @@ describe('sort-union-types', () => {
             },
             messageId: 'unexpectedUnionTypesOrder',
           },
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'missedSpacingBetweenUnionTypes',
+          },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
+            groups: [
+              {
+                type: 'alphabetical',
+                newlinesInside: 1,
+                group: 'unknown',
+                order: 'desc',
+              },
+            ],
             type: 'unsorted',
           },
         ],
         output: dedent`
           type T =
             | b
+
             | a
         `,
         code: dedent`
