@@ -145,15 +145,20 @@ When `true`, an empty line between attributes creates a partition. Each partitio
 
 ### newlinesBetween
 
-<sub>type: `number | 'ignore' | 'always' | 'never'`</sub>
+<sub>type: `number | 'ignore'`</sub>
 <sub>default: `'ignore'`</sub>
 
-Controls newlines between groups:
+Specifies how to handle newlines between groups.
 
-- `'ignore'` — Do not report spacing issues.
-- `'always'` — Require a blank line between groups, forbid blank lines inside a group.
-- `'never'` — Forbid blank lines between groups.
-- `number` — Require exactly that many newlines between groups; forbid inside a group.
+- `'ignore'` — Do not report errors related to newlines.
+- `0` — No newlines are allowed.
+- Any other number — Enforce this number of newlines between each group, and forbid newlines inside groups.
+
+You can also enforce the newline behavior between two specific groups through the `groups` options.
+
+See the [`groups`](#newlines-between-groups) option.
+
+This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
 ### groups
 
@@ -168,6 +173,7 @@ Controls newlines between groups:
           group: string | string[];
           type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
           order?: 'asc' | 'desc';
+          newlinesInside?: number;
         }
     >
   ```
@@ -181,11 +187,13 @@ You can mix predefined (none for this rule) and custom groups. Typical usage is 
 Example: put any attribute starting with `type` before others, and require a newline between groups.
 
 ```ts
-groups: ['type-attrs', 'unknown']
-customGroups: [
-  { groupName: 'type-attrs', elementNamePattern: '^type' },
-]
-newlinesBetween: 'always'
+{
+  groups: ['type-attrs', 'unknown'],
+  customGroups: [
+    { groupName: 'type-attrs', elementNamePattern: '^type' },
+  ],
+  newlinesBetween: 1
+}
 ```
 
 #### Group with overridden settings
@@ -194,6 +202,7 @@ You may directly override options for a specific group by using an object with t
 
 - `type` — Overrides the [`type`](#type) option for that group.
 - `order` — Overrides the [`order`](#order) option for that group.
+- `newlinesInside` — Enforces a specific newline behavior between elements of the group.
 
 ```ts
 {
@@ -237,7 +246,7 @@ type CustomGroup = {
   type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted'
   order?: 'asc' | 'desc'
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
-  newlinesInside?: 'always' | 'never' | number
+  newlinesInside?: number
 }[]
 ```
 

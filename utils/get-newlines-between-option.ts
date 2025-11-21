@@ -4,7 +4,9 @@ import type {
   GroupsOptions,
 } from '../types/common-options'
 
+import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
+import { computeGroupName } from './compute-group-name'
 
 /**
  * Parameters for determining newlines requirement between nodes.
@@ -53,69 +55,110 @@ export function getNewlinesBetweenOption({
   nextNodeGroupIndex,
   nodeGroupIndex,
   options,
-}: GetNewlinesBetweenOptionParameters): 'ignore' | number {
-  let globalNewlinesBetweenOption = getGlobalNewlinesBetweenOption({
+}: GetNewlinesBetweenOptionParameters): NewlinesBetweenOption {
+  let globalNewlinesBetweenOption = computeGlobalNewlinesBetweenOption({
     newlinesBetween: options.newlinesBetween,
     nextNodeGroupIndex,
     nodeGroupIndex,
   })
 
-  let nodeGroup = options.groups[nodeGroupIndex]
-  let nextNodeGroup = options.groups[nextNodeGroupIndex]
-
   /* NewlinesInside check. */
-  if (typeof nodeGroup === 'string' && nodeGroup === nextNodeGroup) {
-    let nodeCustomGroup = options.customGroups.find(
-      customGroup => customGroup.groupName === nodeGroup,
-    )
-    if (nodeCustomGroup && nodeCustomGroup.newlinesInside !== undefined) {
-      return nodeCustomGroup.newlinesInside
-    }
-    return globalNewlinesBetweenOption
+  if (nodeGroupIndex === nextNodeGroupIndex) {
+    return computeNewlinesInsideOption({
+      globalNewlinesBetweenOption,
+      groupIndex: nodeGroupIndex,
+      options,
+    })
   }
 
   /* Check if a specific newlinesBetween is defined between the two groups. */
   if (nextNodeGroupIndex >= nodeGroupIndex + 2) {
-    if (nextNodeGroupIndex === nodeGroupIndex + 2) {
-      let groupBetween = options.groups[nodeGroupIndex + 1]!
-      if (isNewlinesBetweenOption(groupBetween)) {
-        return groupBetween.newlinesBetween
-      }
-    } else {
-      let relevantGroups = options.groups.slice(
-        nodeGroupIndex,
-        nextNodeGroupIndex + 1,
-      )
-      let groupsWithAllNewlinesBetween = buildGroupsWithAllNewlinesBetween(
-        relevantGroups,
-        globalNewlinesBetweenOption,
-      )
-      let newlinesBetweenOptions = new Set(
-        groupsWithAllNewlinesBetween
-          .filter(isNewlinesBetweenOption)
-          .map(group => group.newlinesBetween),
-      )
-
-      let numberNewlinesBetween = [...newlinesBetweenOptions].filter(
-        option => typeof option === 'number',
-      )
-      let maxNewlinesBetween =
-        numberNewlinesBetween.length > 0
-          ? Math.max(...numberNewlinesBetween)
-          : null
-      if (maxNewlinesBetween !== null && maxNewlinesBetween >= 1) {
-        return maxNewlinesBetween
-      }
-      if (newlinesBetweenOptions.has('ignore')) {
-        return 'ignore'
-      }
-      if (maxNewlinesBetween === 0) {
-        return 0
-      }
-    }
+    return computeNewlinesBetweenOptionForDifferentGroups({
+      globalNewlinesBetweenOption,
+      nextNodeGroupIndex,
+      nodeGroupIndex,
+      options,
+    })
   }
 
   return globalNewlinesBetweenOption
+}
+
+function computeNewlinesBetweenOptionForDifferentGroups({
+  globalNewlinesBetweenOption,
+  nextNodeGroupIndex,
+  nodeGroupIndex,
+  options,
+}: {
+  options: GetNewlinesBetweenOptionParameters['options']
+  globalNewlinesBetweenOption: NewlinesBetweenOption
+  nextNodeGroupIndex: number
+  nodeGroupIndex: number
+}): NewlinesBetweenOption {
+  if (nextNodeGroupIndex === nodeGroupIndex + 2) {
+    let groupBetween = options.groups[nodeGroupIndex + 1]!
+    if (isNewlinesBetweenOption(groupBetween)) {
+      return groupBetween.newlinesBetween
+    }
+    return globalNewlinesBetweenOption
+  }
+
+  let relevantGroups = options.groups.slice(
+    nodeGroupIndex,
+    nextNodeGroupIndex + 1,
+  )
+  let groupsWithAllNewlinesBetween = buildGroupsWithAllNewlinesBetween(
+    relevantGroups,
+    globalNewlinesBetweenOption,
+  )
+  let newlinesBetweenOptions = new Set(
+    groupsWithAllNewlinesBetween
+      .filter(isNewlinesBetweenOption)
+      .map(group => group.newlinesBetween),
+  )
+
+  let numberNewlinesBetween = [...newlinesBetweenOptions].filter(
+    option => typeof option === 'number',
+  )
+  let maxNewlinesBetween =
+    numberNewlinesBetween.length > 0 ? Math.max(...numberNewlinesBetween) : null
+
+  if (maxNewlinesBetween !== null && maxNewlinesBetween >= 1) {
+    return maxNewlinesBetween
+  }
+  if (newlinesBetweenOptions.has('ignore')) {
+    return 'ignore'
+  }
+  return 0
+}
+
+function computeNewlinesInsideOption({
+  globalNewlinesBetweenOption,
+  groupIndex,
+  options,
+}: {
+  options: GetNewlinesBetweenOptionParameters['options']
+  globalNewlinesBetweenOption: NewlinesBetweenOption
+  groupIndex: number
+}): NewlinesBetweenOption {
+  let group = options.groups[groupIndex]
+  if (!group) {
+    return globalNewlinesBetweenOption
+  }
+
+  let groupName = computeGroupName(group)
+  let nodeCustomGroup = options.customGroups.find(
+    customGroup => customGroup.groupName === groupName,
+  )
+
+  let groupOverrideNewlinesInside = isGroupWithOverridesOption(group)
+    ? group.newlinesInside
+    : null
+  return (
+    nodeCustomGroup?.newlinesInside ??
+    groupOverrideNewlinesInside ??
+    globalNewlinesBetweenOption
+  )
 }
 
 /**
@@ -145,7 +188,7 @@ export function getNewlinesBetweenOption({
  */
 function buildGroupsWithAllNewlinesBetween(
   groups: GroupsOptions<string>,
-  globalNewlinesBetweenOption: 'ignore' | number,
+  globalNewlinesBetweenOption: NewlinesBetweenOption,
 ): GroupsOptions<string> {
   let returnValue: GroupsOptions<string> = []
   for (let i = 0; i < groups.length; i++) {
@@ -179,7 +222,7 @@ function buildGroupsWithAllNewlinesBetween(
  * @param params.nodeGroupIndex - Index of the current/first group.
  * @returns Number of required newlines or 'ignore'.
  */
-function getGlobalNewlinesBetweenOption({
+function computeGlobalNewlinesBetweenOption({
   nextNodeGroupIndex,
   newlinesBetween,
   nodeGroupIndex,
@@ -187,7 +230,7 @@ function getGlobalNewlinesBetweenOption({
   newlinesBetween: NewlinesBetweenOption
   nextNodeGroupIndex: number
   nodeGroupIndex: number
-}): 'ignore' | number {
+}): NewlinesBetweenOption {
   if (newlinesBetween === 'ignore') {
     return 'ignore'
   }

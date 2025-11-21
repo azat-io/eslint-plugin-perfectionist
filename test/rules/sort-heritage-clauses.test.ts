@@ -193,16 +193,31 @@ describe('sort-heritage-clauses', () => {
             },
             messageId: 'unexpectedHeritageClausesOrder',
           },
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'missedSpacingBetweenHeritageClauses',
+          },
         ],
         options: [
           {
-            groups: [{ type: 'alphabetical', group: 'unknown', order: 'desc' }],
+            groups: [
+              {
+                type: 'alphabetical',
+                newlinesInside: 1,
+                group: 'unknown',
+                order: 'desc',
+              },
+            ],
             type: 'unsorted',
           },
         ],
         output: dedent`
           interface Interface extends
               b,
+
               a {}
         `,
         code: dedent`
