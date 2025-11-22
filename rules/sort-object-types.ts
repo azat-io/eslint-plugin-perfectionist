@@ -45,6 +45,7 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isMemberOptional } from './sort-object-types/is-member-optional'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { isNodeFunctionType } from '../utils/is-node-function-type'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -327,10 +328,15 @@ export function sortObjectTypeElements<MessageIds extends string>({
           }
         },
         isNodeIgnoredForGroup: (node, groupOptions) => {
-          if (groupOptions.sortBy === 'value') {
-            return !node.value
+          switch (groupOptions.sortBy) {
+            case 'value':
+              return !node.value
+            case 'name':
+              return false
+            /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+            default:
+              throw new UnreachableCaseError(groupOptions.sortBy)
           }
-          return false
         },
         ignoreEslintDisabledNodes,
         groups: options.groups,
