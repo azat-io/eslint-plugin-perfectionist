@@ -90,6 +90,111 @@ export function hasShadowingAlternatives({
   return false
 }
 
+function isComplementaryCharacterClass(
+  characterClass: CharacterClass,
+): boolean {
+  // Unicode set aware classes never map into character-class matchers.
+  /* c8 ignore next 3 */
+  if (characterClass.unicodeSets) {
+    return false
+  }
+
+  let { elements } = characterClass as {
+    elements?: CharacterClass['elements']
+  }
+
+  if (!elements) {
+    return false
+  }
+
+  // Empty-negated classes (e.g. `[^]`) are normalized before reaching here.
+  /* c8 ignore next 3 */
+  if (characterClass.negate && elements.length === 0) {
+    return true
+  }
+
+  let seen = new Map<string, boolean>()
+
+  for (let element of elements) {
+    if (element.type !== 'CharacterSet') {
+      continue
+    }
+
+    let identifier = getCharacterSetIdentifier(element)
+
+    // String-based property escapes are filtered earlier.
+    /* c8 ignore next 3 */
+    if (!identifier) {
+      continue
+    }
+
+    let previousNegation = seen.get(identifier)
+
+    if (previousNegation === undefined) {
+      seen.set(identifier, element.negate)
+      continue
+    }
+
+    if (previousNegation !== element.negate) {
+      return true
+    }
+  }
+
+  return false
+}
+
+function hasShadowingDirection({
+  matcherContext,
+  shorterPaths,
+  longerPaths,
+}: {
+  matcherContext: MatcherEvaluationContext
+  shorterPaths: FirstCharacterPath[]
+  longerPaths: FirstCharacterPath[]
+}): boolean {
+  for (let longerPath of longerPaths) {
+    if (!longerPath.requiresMore && !longerPath.canMatchMore) {
+      continue
+    }
+
+    let longerNeedsWildcardOverlap = longerPath.matcher.type !== 'character'
+
+    for (let shorterPath of shorterPaths) {
+      if (shorterPath.requiresMore) {
+        continue
+      }
+
+      if (shorterPath.canMatchMore) {
+        continue
+      }
+
+      if (shorterPath.matcher.type === 'character') {
+        continue
+      }
+
+      if (longerNeedsWildcardOverlap) {
+        if (isWildcardMatcher(shorterPath.matcher)) {
+          return true
+        }
+
+        continue
+      }
+
+      if (
+        doMatchersOverlap({
+          right: shorterPath.matcher,
+          left: longerPath.matcher,
+          matcherContext,
+        })
+      ) {
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
 function characterSetContainsCodePoint({
   matcherContext,
   characterSet,
@@ -186,44 +291,6 @@ function hasFirstCharacterShadowing({
   return false
 }
 
-function hasShadowingDirection({
-  matcherContext,
-  shorterPaths,
-  longerPaths,
-}: {
-  matcherContext: MatcherEvaluationContext
-  shorterPaths: FirstCharacterPath[]
-  longerPaths: FirstCharacterPath[]
-}): boolean {
-  for (let longerPath of longerPaths) {
-    if (!longerPath.requiresMore) {
-      continue
-    }
-
-    for (let shorterPath of shorterPaths) {
-      if (shorterPath.requiresMore) {
-        continue
-      }
-
-      if (shorterPath.matcher.type === 'character') {
-        continue
-      }
-
-      if (
-        doMatchersOverlap({
-          right: shorterPath.matcher,
-          left: longerPath.matcher,
-          matcherContext,
-        })
-      ) {
-        return true
-      }
-    }
-  }
-
-  return false
-}
-
 function unicodePropertyContainsCodePoint({
   propertySet,
   codePoint,
@@ -250,6 +317,38 @@ function unicodePropertyContainsCodePoint({
   }
 
   return cached.test(String.fromCodePoint(codePoint))
+}
+
+function doMatchersOverlap({
+  matcherContext,
+  right,
+  left,
+}: {
+  right: CharacterMatcherCharacterClass | CharacterMatcherCharacterSet
+  matcherContext: MatcherEvaluationContext
+  left: CharacterMatcher
+}): boolean {
+  // Left is always a literal character in reachable flows.
+  /* c8 ignore next 3 */
+  if (left.type !== 'character') {
+    return false
+  }
+
+  if (right.type === 'character-class') {
+    return matcherContainsCharacter({
+      characterClass: right.value,
+      codePoint: left.value,
+      matcherContext,
+    })
+  }
+
+  return (
+    characterSetContainsCodePoint({
+      characterSet: right.value,
+      codePoint: left.value,
+      matcherContext,
+    }) ?? false
+  )
 }
 
 function classElementContainsCodePoint({
@@ -284,36 +383,6 @@ function classElementContainsCodePoint({
   }
 }
 
-function doMatchersOverlap({
-  matcherContext,
-  right,
-  left,
-}: {
-  right: CharacterMatcherCharacterClass | CharacterMatcherCharacterSet
-  matcherContext: MatcherEvaluationContext
-  left: CharacterMatcher
-}): boolean {
-  if (left.type !== 'character') {
-    return false
-  }
-
-  if (right.type === 'character-class') {
-    return matcherContainsCharacter({
-      characterClass: right.value,
-      codePoint: left.value,
-      matcherContext,
-    })
-  }
-
-  return (
-    characterSetContainsCodePoint({
-      characterSet: right.value,
-      codePoint: left.value,
-      matcherContext,
-    }) ?? false
-  )
-}
-
 function characterClassContainsCodePoint({
   characterClass,
   matcherContext,
@@ -345,6 +414,27 @@ function characterClassContainsCodePoint({
   return characterClass.negate ? !isMatched : isMatched
 }
 
+function getCharacterSetIdentifier(characterSet: CharacterSet): string | null {
+  switch (characterSet.kind) {
+    case 'property': {
+      if (characterSet.strings) {
+        return null
+      }
+
+      return `${characterSet.key}:${characterSet.value ?? ''}`
+    }
+    case 'digit':
+    case 'space':
+    case 'word':
+    case 'any': {
+      return characterSet.kind
+    }
+    default: {
+      return null
+    }
+  }
+}
+
 function matcherContainsCharacter({
   matcherContext,
   characterClass,
@@ -361,6 +451,16 @@ function matcherContainsCharacter({
       codePoint,
     }) ?? false
   )
+}
+
+function isWildcardMatcher(
+  matcher: CharacterMatcherCharacterClass | CharacterMatcherCharacterSet,
+): boolean {
+  if (matcher.type === 'character-set') {
+    return matcher.value.kind === 'any'
+  }
+
+  return isComplementaryCharacterClass(matcher.value)
 }
 
 function matchesAnyCharacterSet({

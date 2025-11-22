@@ -826,6 +826,15 @@ describe('sort-regexp', () => {
       })
     })
 
+    it('keeps escape alternatives before wildcard fallback', async () => {
+      await valid({
+        code: dedent(String.raw`
+          const UNESCAPE = /\\([0-9A-Fa-f]{1,6}[ \f\n\r\t]?|[\s\S])/g;
+        `),
+        options: [options],
+      })
+    })
+
     it('skips sorting when alternatives are unnamed capturing groups', async () => {
       await valid({
         code: dedent`
@@ -2197,6 +2206,15 @@ describe('sort-regexp', () => {
         code: dedent`
           /(specific|.+|.*|.?)/
         `,
+        options: [options],
+      })
+    })
+
+    it('keeps escape alternatives before wildcard fallback', async () => {
+      await valid({
+        code: dedent(String.raw`
+          const UNESCAPE = /\\([0-9A-Fa-f]{1,6}[ \f\n\r\t]?|[\s\S])/g;
+        `),
         options: [options],
       })
     })

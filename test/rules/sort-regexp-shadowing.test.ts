@@ -36,10 +36,12 @@ function expectDotAllOverlapFor(codePoint: number): void {
   let longerPath = {
     matcher: { type: 'character', value: codePoint },
     requiresMore: true,
+    canMatchMore: true,
   } as FirstCharacterPath
   let shorterPath = {
     matcher: { type: 'character-class', value: wildcardClass },
     requiresMore: false,
+    canMatchMore: false,
   } as FirstCharacterPath
   let spy = vi.spyOn(firstCharacterPathsModule, 'getFirstCharacterPaths')
 
@@ -205,6 +207,30 @@ describe('sort-regexp shadowing helpers', () => {
         kind: 'digit',
         negate: false,
       },
+    ])
+  })
+
+  it('marks alternatives that can optionally consume additional characters', () => {
+    let paths = getFirstCharacterPaths(
+      getAlternative(/[0-9a-f]{1,6}[\t\n\f\r ]?/iu),
+    )
+
+    expect(paths).toEqual([
+      expect.objectContaining({
+        requiresMore: false,
+        canMatchMore: true,
+      }),
+    ])
+  })
+
+  it('keeps wildcard alternatives as single-character matches', () => {
+    let paths = getFirstCharacterPaths(getAlternative(/[\s\S]/u))
+
+    expect(paths).toEqual([
+      expect.objectContaining({
+        canMatchMore: false,
+        requiresMore: false,
+      }),
     ])
   })
 
@@ -615,12 +641,14 @@ describe('hasShadowingAlternatives', () => {
         {
           matcher: { type: 'character', value: code('z') },
           requiresMore: true,
+          canMatchMore: true,
         },
       ])
       .mockImplementationOnce(() => [
         {
           matcher: { type: 'character-class', value: characterClass },
           requiresMore: false,
+          canMatchMore: false,
         },
       ])
 
@@ -642,12 +670,14 @@ describe('hasShadowingAlternatives', () => {
           {
             matcher: { type: 'character', value: code('a') },
             requiresMore: true,
+            canMatchMore: true,
           },
         ],
         [
           {
             matcher: { type: 'character-class', value: negatedClass },
             requiresMore: false,
+            canMatchMore: false,
           },
         ],
       ]),
@@ -656,11 +686,20 @@ describe('hasShadowingAlternatives', () => {
 
   it('skips overlaps when character classes rely on string-based property escapes', () => {
     let literal = parseRegExpLiteral(/ab|cd/u)
-    // eslint-disable-next-line regexp/no-useless-character-class
-    let emojiClassLiteral = parseRegExpLiteral(/[\p{RGI_Emoji}]/v)
-    let emojiClass = emojiClassLiteral.pattern.alternatives[0]!
+    let emojiClassWrapper = parseRegExpLiteral(/[ab]/u)
+    let emojiClass = emojiClassWrapper.pattern.alternatives[0]!
       .elements[0]! as CharacterClass
+    let emojiSet = parseRegExpLiteral(/\p{RGI_Emoji}/v).pattern.alternatives[0]!
+      .elements[0]! as CharacterSet
+
     emojiClass.unicodeSets = false
+    emojiClass.elements = [
+      {
+        ...emojiSet,
+        parent: emojiClass,
+        strings: true,
+      } as CharacterClassElement,
+    ]
     let spy = vi.spyOn(firstCharacterPathsModule, 'getFirstCharacterPaths')
 
     spy
@@ -668,12 +707,14 @@ describe('hasShadowingAlternatives', () => {
         {
           matcher: { type: 'character', value: code('x') },
           requiresMore: true,
+          canMatchMore: true,
         },
       ])
       .mockImplementationOnce(() => [
         {
           matcher: { type: 'character-class', value: emojiClass },
           requiresMore: false,
+          canMatchMore: false,
         },
       ])
 
@@ -696,12 +737,14 @@ describe('hasShadowingAlternatives', () => {
         {
           matcher: { type: 'character', value: code('a') },
           requiresMore: true,
+          canMatchMore: true,
         },
       ])
       .mockImplementationOnce(() => [
         {
           matcher: { type: 'character-set', value: emojiSet },
           requiresMore: false,
+          canMatchMore: false,
         },
       ])
 
@@ -726,12 +769,14 @@ describe('hasShadowingAlternatives', () => {
         {
           matcher: { type: 'character', value: code('x') },
           requiresMore: true,
+          canMatchMore: true,
         },
       ])
       .mockImplementationOnce(() => [
         {
           matcher: { type: 'character-class', value: unicodeClass },
           requiresMore: false,
+          canMatchMore: false,
         },
       ])
 
@@ -754,5 +799,199 @@ describe('hasShadowingAlternatives', () => {
     for (let codePoint of codePoints) {
       expectDotAllOverlapFor(codePoint)
     }
+  })
+
+  it('detects overlaps when wildcard matchers originate from character sets', () => {
+    let classLiteral = parseRegExpLiteral(/[a-z]b/u)
+    let classMatcher = classLiteral.pattern.alternatives[0]!
+      .elements[0]! as CharacterClass
+    let dotLiteral = parseRegExpLiteral(/./u)
+    let dotMatcher = dotLiteral.pattern.alternatives[0]!
+      .elements[0]! as CharacterSet
+
+    expect(
+      analyzeShadowingWithPaths([
+        [
+          {
+            matcher: { type: 'character-class', value: classMatcher },
+            requiresMore: true,
+            canMatchMore: true,
+          },
+        ],
+        [
+          {
+            matcher: { type: 'character-set', value: dotMatcher },
+            requiresMore: false,
+            canMatchMore: false,
+          },
+        ],
+      ]),
+    ).toBeTruthy()
+  })
+
+  it('detects overlaps when complementary property escapes form a wildcard class', () => {
+    let propertyWrapper = parseRegExpLiteral(/[a-z]/u)
+    let propertyClass = propertyWrapper.pattern.alternatives[0]!
+      .elements[0]! as CharacterClass
+    let asciiSet = parseRegExpLiteral(/\p{ASCII}/u).pattern.alternatives[0]!
+      .elements[0]! as CharacterSet
+    let nonAsciiSet = parseRegExpLiteral(/\P{ASCII}/u).pattern.alternatives[0]!
+      .elements[0]! as CharacterSet
+
+    propertyClass.elements = [
+      {
+        ...asciiSet,
+        parent: propertyClass,
+      } as CharacterClassElement,
+      {
+        ...nonAsciiSet,
+        parent: propertyClass,
+      } as CharacterClassElement,
+    ]
+    let classMatcher = parseRegExpLiteral(/[a-z]z/u).pattern.alternatives[0]!
+      .elements[0]! as CharacterClass
+
+    expect(
+      analyzeShadowingWithPaths([
+        [
+          {
+            matcher: { type: 'character-class', value: classMatcher },
+            requiresMore: true,
+            canMatchMore: true,
+          },
+        ],
+        [
+          {
+            matcher: { type: 'character-class', value: propertyClass },
+            requiresMore: false,
+            canMatchMore: false,
+          },
+        ],
+      ]),
+    ).toBeTruthy()
+  })
+
+  it('ignores string-based property escapes when checking wildcard classes', () => {
+    let emojiClassWrapper = parseRegExpLiteral(/[ab]/u)
+    let emojiClass = emojiClassWrapper.pattern.alternatives[0]!
+      .elements[0]! as CharacterClass
+    let emojiSet = parseRegExpLiteral(/\p{RGI_Emoji}/v).pattern.alternatives[0]!
+      .elements[0]! as CharacterSet
+
+    emojiClass.unicodeSets = false
+    emojiClass.elements = [
+      {
+        ...emojiSet,
+        parent: emojiClass,
+        strings: true,
+      } as CharacterClassElement,
+    ]
+    let classMatcher = parseRegExpLiteral(/[a-z]n/u).pattern.alternatives[0]!
+      .elements[0]! as CharacterClass
+
+    expect(
+      analyzeShadowingWithPaths([
+        [
+          {
+            matcher: { type: 'character-class', value: classMatcher },
+            requiresMore: true,
+            canMatchMore: true,
+          },
+        ],
+        [
+          {
+            matcher: { type: 'character-class', value: emojiClass },
+            requiresMore: false,
+            canMatchMore: false,
+          },
+        ],
+      ]),
+    ).toBeFalsy()
+  })
+
+  it('falls back gracefully when encountering unknown character set kinds', () => {
+    let patchedClass = parseRegExpLiteral(/[a-z]n/u).pattern.alternatives[0]!
+      .elements[0]! as CharacterClass
+    let wildcardClass = parseRegExpLiteral(/[\s\S]/u).pattern.alternatives[0]!
+      .elements[0]! as CharacterClass
+
+    let mutableElements =
+      wildcardClass.elements as unknown as CharacterClassElement[]
+
+    for (let index = 0; index < mutableElements.length; index++) {
+      let element = mutableElements[index]!
+
+      if (element.type === 'CharacterSet') {
+        mutableElements[index] = {
+          ...element,
+          kind: 'custom-kind',
+        } as unknown as CharacterClassElement
+      }
+    }
+
+    expect(
+      analyzeShadowingWithPaths([
+        [
+          {
+            matcher: { type: 'character-class', value: patchedClass },
+            requiresMore: true,
+            canMatchMore: true,
+          },
+        ],
+        [
+          {
+            matcher: { type: 'character-class', value: wildcardClass },
+            requiresMore: false,
+            canMatchMore: false,
+          },
+        ],
+      ]),
+    ).toBeFalsy()
+  })
+
+  it('skips wildcard detection when a class is missing its element list', () => {
+    let patchedClass = parseRegExpLiteral(/[a-z]n/u).pattern.alternatives[0]!
+      .elements[0]! as CharacterClass
+    let wildcardClass = parseRegExpLiteral(/[\s\S]/u).pattern.alternatives[0]!
+      .elements[0]! as CharacterClass
+
+    ;(
+      wildcardClass as unknown as { elements?: CharacterClass['elements'] }
+    ).elements = undefined
+
+    expect(
+      analyzeShadowingWithPaths([
+        [
+          {
+            matcher: { type: 'character-class', value: patchedClass },
+            requiresMore: true,
+            canMatchMore: true,
+          },
+        ],
+        [
+          {
+            matcher: { type: 'character-class', value: wildcardClass },
+            requiresMore: false,
+            canMatchMore: false,
+          },
+        ],
+      ]),
+    ).toBeFalsy()
+  })
+
+  it('detects overlaps when wildcard character sets follow multi-character classes', () => {
+    expect(analyzeShadowing(/[a-z]a|./u)).toBeTruthy()
+  })
+
+  it('detects overlaps when a wildcard branch could swallow escaped code points', () => {
+    let literal = parseRegExpLiteral(/\\(?:[0-9a-f]{1,6}[\t\n\f\r ]?|[\s\S])/iu)
+    let group = literal.pattern.alternatives[0]!.elements[1]! as CapturingGroup
+
+    expect(
+      hasShadowingAlternatives({
+        alternatives: group.alternatives,
+        flags: literal.flags.raw,
+      }),
+    ).toBeTruthy()
   })
 })

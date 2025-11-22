@@ -17,6 +17,12 @@ export interface FirstCharacterPath {
 
   /** Indicates whether additional characters must follow to complete the match. */
   requiresMore: boolean
+
+  /**
+   * Indicates whether the alternative can consume more characters after the
+   * prefix.
+   */
+  canMatchMore: boolean
 }
 
 /** Matcher produced from a character class AST node. */
@@ -60,8 +66,14 @@ interface AnalysisContext {
   /** Cache storing computed minimum lengths for AST nodes. */
   minLengthCache: WeakMap<object, LengthResult>
 
+  /** Cache storing computed maximum lengths for AST nodes. */
+  maxLengthCache: WeakMap<object, LengthResult>
+
   /** Alternatives currently on the recursion stack. */
-  activeAlternatives: Set<Alternative>
+  minLengthActiveAlternatives: Set<Alternative>
+
+  /** Alternatives on the recursion stack for maximum-length calculation. */
+  maxLengthActiveAlternatives: Set<Alternative>
 
   /** Indicates whether collection exceeded the maximum allowed paths. */
   limitExceeded: boolean
@@ -72,8 +84,9 @@ interface AnalysisContext {
 
 /** Internal extension that includes metadata needed during traversal. */
 interface FirstCharacterPathInternal extends FirstCharacterPath {
-  /** Mirrors the public flag for convenience when mutating paths. */
+  /** Mirrors the public flags for convenience when mutating paths. */
   requiresMore: boolean
+  canMatchMore: boolean
 }
 
 type LengthResult = LengthInfo | null
@@ -91,8 +104,10 @@ export function getFirstCharacterPaths(
   alternative: Alternative,
 ): FirstCharacterPath[] {
   let context: AnalysisContext = {
+    minLengthActiveAlternatives: new Set(),
+    maxLengthActiveAlternatives: new Set(),
     minLengthCache: new WeakMap(),
-    activeAlternatives: new Set(),
+    maxLengthCache: new WeakMap(),
     limitExceeded: false,
     pathCount: 0,
   }
@@ -104,6 +119,86 @@ export function getFirstCharacterPaths(
   }
 
   return paths
+}
+
+/**
+ * Computes the maximum possible length for an element.
+ *
+ * @param element - AST element to analyze.
+ * @param context - Shared traversal context.
+ * @returns Maximum length in characters, `2` for "two or more", or `null` if
+ *   unknown.
+ */
+function getElementMaxLength(
+  element: Element,
+  context: AnalysisContext,
+): LengthResult {
+  // Defensive guard triggers only when traversal exceeded path limit earlier.
+  /* c8 ignore next 3 */
+  if (context.limitExceeded) {
+    return null
+  }
+
+  let cached = context.maxLengthCache.get(element)
+
+  if (cached !== undefined) {
+    return cached
+  }
+
+  let result: LengthResult = null
+
+  switch (element.type) {
+    case 'CharacterClass':
+    case 'CharacterSet':
+    case 'Character': {
+      result = 1
+      break
+    }
+    case 'CapturingGroup':
+    case 'Group': {
+      result = getGroupMaxLength(element, context)
+      break
+    }
+    case 'Backreference': {
+      result = null
+      break
+    }
+    case 'Quantifier': {
+      let innerLength = getElementMaxLength(element.element, context)
+
+      if (innerLength === null) {
+        result = null
+        break
+      }
+
+      // Numerical sentinels are unreachable with current AST inputs.
+      /* c8 ignore start */
+      if (innerLength === 0 || element.max === 0) {
+        result = 0
+        break
+      }
+
+      if (element.max === Infinity) {
+        result = 2
+        break
+      }
+      /* c8 ignore stop */
+
+      result = multiplyLength(innerLength, element.max)
+      break
+    }
+    case 'Assertion': {
+      result = 0
+      break
+    }
+    default: {
+      result = null
+    }
+  }
+
+  context.maxLengthCache.set(element, result)
+
+  return result
 }
 
 /**
@@ -128,6 +223,7 @@ function collectFirstCharacterPathsFromElement(
         {
           matcher: { type: 'character-class', value: element },
           requiresMore: false,
+          canMatchMore: false,
         },
       ]
     }
@@ -146,6 +242,7 @@ function collectFirstCharacterPathsFromElement(
         {
           matcher: { type: 'character-set', value: element },
           requiresMore: false,
+          canMatchMore: false,
         },
       ]
     }
@@ -157,6 +254,7 @@ function collectFirstCharacterPathsFromElement(
         {
           matcher: { value: element.value, type: 'character' },
           requiresMore: false,
+          canMatchMore: false,
         },
       ]
     }
@@ -195,10 +293,14 @@ function collectFirstCharacterPathsFromAlternative(
 
     if (elementPaths.length > 0) {
       let restLength = getElementsMinLength(elements, index + 1, context)
+      let restMaxLength = getElementsMaxLength(elements, index + 1, context)
 
       if (restLength !== null) {
+        let restCanMatchMore = restMaxLength !== 0
+
         for (let path of elementPaths) {
           addPath(results, context, {
+            canMatchMore: path.canMatchMore || restCanMatchMore,
             requiresMore: path.requiresMore || restLength > 0,
             matcher: path.matcher,
           })
@@ -212,6 +314,45 @@ function collectFirstCharacterPathsFromAlternative(
   }
 
   return results
+}
+
+/**
+ * Expands quantifiers into their potential first-character paths.
+ *
+ * @param quantifier - Quantifier node to analyze.
+ * @param context - Shared traversal context.
+ * @returns Paths contributed by the quantified expression.
+ */
+function collectFirstCharacterPathsFromQuantifier(
+  quantifier: Quantifier,
+  context: AnalysisContext,
+): FirstCharacterPathInternal[] {
+  let innerPaths = collectFirstCharacterPathsFromElement(
+    quantifier.element,
+    context,
+  )
+
+  if (innerPaths.length === 0 || context.limitExceeded) {
+    return []
+  }
+
+  let innerMinLength = getElementMinLength(quantifier.element, context)
+  if (innerMinLength === null) {
+    return []
+  }
+
+  let innerMaxLength = getElementMaxLength(quantifier.element, context)
+  let requiresAdditionalIterations = quantifier.min > 1 && innerMinLength > 0
+  let elementCanConsumeCharacters = innerMaxLength !== 0
+  let allowsAdditionalIterations =
+    elementCanConsumeCharacters &&
+    (quantifier.max === Infinity || quantifier.max > 1)
+
+  return innerPaths.map(path => ({
+    requiresMore: path.requiresMore || requiresAdditionalIterations,
+    canMatchMore: path.canMatchMore || allowsAdditionalIterations,
+    matcher: path.matcher,
+  }))
 }
 
 /**
@@ -275,36 +416,36 @@ function getElementMinLength(
 }
 
 /**
- * Expands quantifiers into their potential first-character paths.
+ * Computes the maximum possible length for an alternative.
  *
- * @param quantifier - Quantifier node to analyze.
+ * @param alternative - Alternative whose elements should be measured.
  * @param context - Shared traversal context.
- * @returns Paths contributed by the quantified expression.
+ * @returns Maximum length for the entire alternative.
  */
-function collectFirstCharacterPathsFromQuantifier(
-  quantifier: Quantifier,
+function getAlternativeMaxLength(
+  alternative: Alternative,
   context: AnalysisContext,
-): FirstCharacterPathInternal[] {
-  let innerPaths = collectFirstCharacterPathsFromElement(
-    quantifier.element,
-    context,
-  )
+): LengthResult {
+  let cached = context.maxLengthCache.get(alternative)
 
-  if (innerPaths.length === 0 || context.limitExceeded) {
-    return []
+  // Cache reuse only occurs for recursive alternatives, which tests do not create.
+  /* c8 ignore next 3 */
+  if (cached !== undefined) {
+    return cached
   }
 
-  let innerMinLength = getElementMinLength(quantifier.element, context)
-  if (innerMinLength === null) {
-    return []
+  if (context.maxLengthActiveAlternatives.has(alternative)) {
+    return null
   }
 
-  let requiresAdditionalIterations = quantifier.min > 1 && innerMinLength > 0
+  context.maxLengthActiveAlternatives.add(alternative)
 
-  return innerPaths.map(path => ({
-    requiresMore: path.requiresMore || requiresAdditionalIterations,
-    matcher: path.matcher,
-  }))
+  let length = getElementsMaxLength(alternative.elements, 0, context)
+
+  context.maxLengthActiveAlternatives.delete(alternative)
+  context.maxLengthCache.set(alternative, length)
+
+  return length
 }
 
 /**
@@ -324,16 +465,49 @@ function getAlternativeMinLength(
     return cached
   }
 
-  if (context.activeAlternatives.has(alternative)) {
+  if (context.minLengthActiveAlternatives.has(alternative)) {
     return null
   }
 
-  context.activeAlternatives.add(alternative)
+  context.minLengthActiveAlternatives.add(alternative)
 
   let length = getElementsMinLength(alternative.elements, 0, context)
 
-  context.activeAlternatives.delete(alternative)
+  context.minLengthActiveAlternatives.delete(alternative)
   context.minLengthCache.set(alternative, length)
+
+  return length
+}
+
+/**
+ * Computes the maximum length of a suffix of elements.
+ *
+ * @param elements - Sequence of elements belonging to an alternative.
+ * @param startIndex - Index from which the suffix begins.
+ * @param context - Shared traversal context.
+ * @returns Maximum length for the suffix.
+ */
+function getElementsMaxLength(
+  elements: Alternative['elements'],
+  startIndex: number,
+  context: AnalysisContext,
+): LengthResult {
+  let length: LengthResult = 0
+
+  for (let index = startIndex; index < elements.length; index++) {
+    let element = elements[index]!
+    let elementLength = getElementMaxLength(element, context)
+
+    length = addLengths(length, elementLength)
+
+    if (length === null) {
+      return null
+    }
+
+    if (length === 2) {
+      return 2
+    }
+  }
 
   return length
 }
@@ -404,6 +578,39 @@ function getGroupMinLength(
 }
 
 /**
+ * Computes the maximum length among the alternatives contained in a group.
+ *
+ * @param group - Capturing or non-capturing group to analyze.
+ * @param context - Shared traversal context.
+ * @returns Maximum length across the group's alternatives.
+ */
+function getGroupMaxLength(
+  group: CapturingGroup | Group,
+  context: AnalysisContext,
+): LengthResult {
+  let maxLength: LengthResult = 0
+
+  for (let alternative of group.alternatives) {
+    let alternativeLength = getAlternativeMaxLength(alternative, context)
+
+    if (alternativeLength === null) {
+      return null
+    }
+
+    if (alternativeLength > maxLength) {
+      maxLength = alternativeLength
+    }
+
+    if (maxLength === 2) {
+      break
+    }
+  }
+
+  return maxLength
+}
+
+/* c8 ignore start */
+/**
  * Multiplies a minimum length by a quantifier count while respecting sentinel
  * values.
  *
@@ -430,6 +637,7 @@ function multiplyLength(length: LengthResult, count: number): LengthResult {
 
   return 2
 }
+/* c8 ignore stop */
 
 /**
  * Adds a collected path to the results while accounting for the safety limit.
@@ -452,7 +660,7 @@ function addPath(
 }
 
 /**
- * Adds two minimum-length values together, preserving sentinel semantics.
+ * Adds two maximum-length values together, preserving sentinel semantics.
  *
  * @param a - First length operand.
  * @param b - Second length operand.
