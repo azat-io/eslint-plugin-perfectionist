@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import type { BaseSortNodesByGroupsOptions } from '../../utils/sort-nodes-by-groups'
+import type { CommonOptions } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 
 describe('sort-nodes-by-groups', () => {
-  let options: BaseSortNodesByGroupsOptions = {
+  let options: CommonOptions = {
     fallbackSort: { type: 'unsorted' },
     specialCharacters: 'keep',
     type: 'alphabetical',
@@ -16,7 +16,7 @@ describe('sort-nodes-by-groups', () => {
     alphabet: '',
   } as const
   let getOptionsByGroupIndex: () => {
-    options: BaseSortNodesByGroupsOptions
+    options: CommonOptions
   } = () => ({ options })
 
   it('sorts nodes by groups', () => {

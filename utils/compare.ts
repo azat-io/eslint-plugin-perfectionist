@@ -31,16 +31,13 @@ interface CompareParameters<T extends SortingNode> {
   fallbackSortNodeValueGetter?: NodeValueGetterFunction<T> | null
 
   /**
-   * Sorting options including type, order, and additional configuration. May
-   * include maxLineLength for line-length sorting.
-   */
-  options: { maxLineLength?: number } & CommonOptions
-
-  /**
    * Optional custom value getter for primary sorting. If not provided, defaults
    * to node.name.
    */
   nodeValueGetter?: NodeValueGetterFunction<T> | null
+
+  /** Sorting options including type, order, and additional configuration. */
+  options: CommonOptions
 
   /** First node to compare. */
   a: T
@@ -227,8 +224,8 @@ function computeCompareValue<T extends SortingNode>({
   a,
   b,
 }: {
-  options: { maxLineLength?: number } & CommonOptions
   nodeValueGetter: NodeValueGetterFunction<T>
+  options: CommonOptions
   a: T
   b: T
 }): number {

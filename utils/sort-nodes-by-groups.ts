@@ -6,25 +6,13 @@ import { getGroupIndex } from './get-group-index'
 import { sortNodes } from './sort-nodes'
 
 /**
- * Base options for group-based sorting operations. Extends common sorting
- * options with group-specific settings.
- */
-export type BaseSortNodesByGroupsOptions = {
-  /**
-   * Maximum line length for sorting by line-length. Lines exceeding this length
-   * are sorted differently.
-   */
-  maxLineLength?: number
-} & CommonOptions
-
-/**
  * Parameters for sorting nodes by groups.
  *
  * @template Options - Sorting options type extending base options.
  * @template T - Type of sorting node.
  */
 interface SortNodesByGroupsParameters<
-  Options extends BaseSortNodesByGroupsOptions,
+  Options extends CommonOptions,
   T extends SortingNode,
 > {
   getOptionsByGroupIndex(groupIndex: number): {
@@ -105,7 +93,7 @@ interface SortNodesByGroupsParameters<
  */
 export function sortNodesByGroups<
   T extends SortingNode,
-  Options extends BaseSortNodesByGroupsOptions,
+  Options extends CommonOptions,
 >({
   ignoreEslintDisabledNodes,
   getOptionsByGroupIndex,
