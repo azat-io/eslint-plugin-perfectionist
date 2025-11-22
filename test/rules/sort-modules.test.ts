@@ -289,16 +289,6 @@ describe('sort-modules', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'A' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'B', left: 'A' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             groups: [
@@ -310,6 +300,16 @@ describe('sort-modules', () => {
               },
             ],
             type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'B', left: 'A' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -720,25 +720,6 @@ describe('sort-modules', () => {
 
     it('sorts elements within custom group blocks', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'class',
-              left: 'func',
-              right: 'C',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'aFunction', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'anotherFunction', left: 'D' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             customGroups: [
@@ -757,6 +738,25 @@ describe('sort-modules', () => {
               },
             ],
             groups: [['exportInterfacesAndAsyncFunctions', 'class'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              leftGroup: 'unknown',
+              rightGroup: 'class',
+              left: 'func',
+              right: 'C',
+            },
+            messageId: GROUP_ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'aFunction', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'anotherFunction', left: 'D' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -860,8 +860,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'B', left: 'A' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -893,8 +893,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'B', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -1775,8 +1775,8 @@ describe('sort-modules', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'z' },
           },
         ],
         options: [
@@ -1825,8 +1825,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1842,16 +1842,16 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'z', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'z', left: 'A' },
           },
           {
             data: { right: 'y', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'B', left: 'y' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'y' },
           },
         ],
         options: [
@@ -1908,16 +1908,16 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -1974,8 +1974,8 @@ describe('sort-modules', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -2019,8 +2019,8 @@ describe('sort-modules', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -2143,12 +2143,6 @@ describe('sort-modules', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           function a() {}
 
@@ -2165,6 +2159,12 @@ describe('sort-modules', () => {
           function c() {}
           function b() {}
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -2438,12 +2438,6 @@ describe('sort-modules', () => {
 
     it('ignores exported decorated classes when sorting', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           @B
           class B {}
@@ -2464,6 +2458,12 @@ describe('sort-modules', () => {
           @B
           class B {}
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -3137,25 +3137,6 @@ describe('sort-modules', () => {
 
     it('sorts elements within custom group blocks', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'class',
-              left: 'func',
-              right: 'C',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'aFunction', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'anotherFunction', left: 'D' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             customGroups: [
@@ -3174,6 +3155,25 @@ describe('sort-modules', () => {
               },
             ],
             groups: [['exportInterfacesAndAsyncFunctions', 'class'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              leftGroup: 'unknown',
+              rightGroup: 'class',
+              left: 'func',
+              right: 'C',
+            },
+            messageId: GROUP_ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'aFunction', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'anotherFunction', left: 'D' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3277,8 +3277,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'B', left: 'A' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -3310,8 +3310,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'B', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -4192,8 +4192,8 @@ describe('sort-modules', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'z' },
           },
         ],
         options: [
@@ -4242,8 +4242,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -4259,16 +4259,16 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'z', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'z', left: 'A' },
           },
           {
             data: { right: 'y', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'B', left: 'y' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'y' },
           },
         ],
         options: [
@@ -4325,16 +4325,16 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -4391,8 +4391,8 @@ describe('sort-modules', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4436,8 +4436,8 @@ describe('sort-modules', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4560,12 +4560,6 @@ describe('sort-modules', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           function a() {}
 
@@ -4582,6 +4576,12 @@ describe('sort-modules', () => {
           function c() {}
           function b() {}
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -4855,12 +4855,6 @@ describe('sort-modules', () => {
 
     it('ignores exported decorated classes when sorting', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           @B
           class B {}
@@ -4881,6 +4875,12 @@ describe('sort-modules', () => {
           @B
           class B {}
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -5555,25 +5555,6 @@ describe('sort-modules', () => {
 
     it('sorts elements within custom group blocks', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'class',
-              left: 'func',
-              right: 'C',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'aFunction', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'anotherFunction', left: 'D' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             customGroups: [
@@ -5592,6 +5573,25 @@ describe('sort-modules', () => {
               },
             ],
             groups: [['exportInterfacesAndAsyncFunctions', 'class'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              leftGroup: 'unknown',
+              rightGroup: 'class',
+              left: 'func',
+              right: 'C',
+            },
+            messageId: GROUP_ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'aFunction', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'anotherFunction', left: 'D' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5695,8 +5695,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'B', left: 'A' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -5728,8 +5728,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'B', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -6619,8 +6619,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -6705,16 +6705,16 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -6771,8 +6771,8 @@ describe('sort-modules', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -6816,8 +6816,8 @@ describe('sort-modules', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -6940,12 +6940,6 @@ describe('sort-modules', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           function a() {}
 
@@ -6962,6 +6956,12 @@ describe('sort-modules', () => {
           function c() {}
           function bb() {}
         `,
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -7235,12 +7235,6 @@ describe('sort-modules', () => {
 
     it('ignores exported decorated classes when sorting', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'BB', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           @B
           class BB {}
@@ -7261,6 +7255,12 @@ describe('sort-modules', () => {
           @B
           class BB {}
         `,
+        errors: [
+          {
+            data: { right: 'BB', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -7493,8 +7493,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -7539,18 +7539,18 @@ describe('sort-modules', () => {
 
     it('uses alphabetical ascending order by default', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           function a() {}
           function A() {}
           function b() {}
           function B() {}
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         code: dedent`
           function b() {}
           function B() {}
@@ -7963,12 +7963,6 @@ describe('sort-modules', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           function b() {}
           function c() {}
@@ -7981,6 +7975,12 @@ describe('sort-modules', () => {
           // eslint-disable-next-line
           function a() {}
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
     })
@@ -8021,12 +8021,6 @@ describe('sort-modules', () => {
 
     it('handles eslint-disable with class dependencies', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class B extends A {}
           class C {}
@@ -8039,6 +8033,12 @@ describe('sort-modules', () => {
           // eslint-disable-next-line
           class A {}
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
     })
@@ -8067,12 +8067,6 @@ describe('sort-modules', () => {
 
     it('handles block eslint-disable-next-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           function b() {}
           function c() {}
@@ -8085,23 +8079,29 @@ describe('sort-modules', () => {
           /* eslint-disable-next-line */
           function a() {}
         `,
-        options: [{}],
-      })
-    })
-
-    it('handles inline block eslint-disable-line comments', async () => {
-      await invalid({
         errors: [
           {
             data: { right: 'b', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [{}],
+      })
+    })
+
+    it('handles inline block eslint-disable-line comments', async () => {
+      await invalid({
         output: dedent`
           function b() {}
           function c() {}
           function a() {} /* eslint-disable-line */
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         code: dedent`
           function c() {}
           function b() {}
@@ -8145,12 +8145,6 @@ describe('sort-modules', () => {
 
     it('handles rule-specific eslint-disable-next-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           function b() {}
           function c() {}
@@ -8163,18 +8157,18 @@ describe('sort-modules', () => {
           // eslint-disable-next-line rule-to-test/sort-modules
           function a() {}
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
     })
 
     it('handles rule-specific inline eslint-disable-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           function b() {}
           function c() {}
@@ -8185,6 +8179,12 @@ describe('sort-modules', () => {
           function b() {}
           function a() {} // eslint-disable-line rule-to-test/sort-modules
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
     })
@@ -8197,30 +8197,24 @@ describe('sort-modules', () => {
           /* eslint-disable-next-line rule-to-test/sort-modules */
           function a() {}
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         code: dedent`
           function c() {}
           function b() {}
           /* eslint-disable-next-line rule-to-test/sort-modules */
           function a() {}
         `,
-        options: [{}],
-      })
-    })
-
-    it('handles rule-specific inline block eslint-disable-line comments', async () => {
-      await invalid({
         errors: [
           {
             data: { right: 'b', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [{}],
+      })
+    })
+
+    it('handles rule-specific inline block eslint-disable-line comments', async () => {
+      await invalid({
         output: dedent`
           function b() {}
           function c() {}
@@ -8231,6 +8225,12 @@ describe('sort-modules', () => {
           function b() {}
           function a() {} /* eslint-disable-line rule-to-test/sort-modules */
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
     })

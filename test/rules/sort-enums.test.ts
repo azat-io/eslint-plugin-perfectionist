@@ -40,12 +40,6 @@ describe('sort-enums', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'bbb', left: 'cc' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             aaaa = 'a',
@@ -62,6 +56,12 @@ describe('sort-enums', () => {
             d = 'd',
           }
         `,
+        errors: [
+          {
+            data: { right: 'bbb', left: 'cc' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -80,12 +80,6 @@ describe('sort-enums', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: '12', left: '8' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             '1' = 'a',
@@ -102,6 +96,12 @@ describe('sort-enums', () => {
             '12' = 'b',
           }
         `,
+        errors: [
+          {
+            data: { right: '12', left: '8' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -303,16 +303,16 @@ describe('sort-enums', () => {
             e = 'e',
           }
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -340,18 +340,18 @@ describe('sort-enums', () => {
 
     it('ignores block comments when line partition is enabled', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -435,18 +435,18 @@ describe('sort-enums', () => {
 
     it('ignores line comments when block partition is enabled', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -720,16 +720,6 @@ describe('sort-enums', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'A' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'B', left: 'A' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             groups: [
@@ -741,6 +731,16 @@ describe('sort-enums', () => {
               },
             ],
             type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'B', left: 'A' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -1101,16 +1101,16 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'Y', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'Y', left: 'A' },
           },
           {
             data: { right: 'B', left: 'Z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'B', left: 'Z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'Z' },
           },
         ],
         options: [
@@ -1150,20 +1150,6 @@ describe('sort-enums', () => {
 
     it('enforces single newline between groups when newlinesBetween is 1', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'Z', left: 'A' },
-            messageId: EXTRA_SPACING_ERROR_ID,
-          },
-          {
-            data: { right: 'Y', left: 'Z' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'B', left: 'Y' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
@@ -1179,6 +1165,20 @@ describe('sort-enums', () => {
             ],
             groups: ['a', 'unknown', 'b'],
             newlinesBetween: 1,
+          },
+        ],
+        errors: [
+          {
+            messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'Z', left: 'A' },
+          },
+          {
+            data: { right: 'Y', left: 'Z' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'Y' },
           },
         ],
         output: dedent`
@@ -1255,16 +1255,16 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: { right: 'B', left: 'A' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'A' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'C', left: 'B' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'D', left: 'C' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'D', left: 'C' },
           },
         ],
         output: dedent`
@@ -1325,8 +1325,8 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: { right: 'B', left: 'A' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'B', left: 'A' },
             },
           ],
           output: dedent`
@@ -1374,8 +1374,8 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: { right: 'B', left: 'A' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'B', left: 'A' },
             },
           ],
           output: dedent`
@@ -1472,12 +1472,6 @@ describe('sort-enums', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             A = 'A',
@@ -1498,6 +1492,12 @@ describe('sort-enums', () => {
             B = 'B',
           }
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
   })
@@ -1522,12 +1522,6 @@ describe('sort-enums', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'bbb', left: 'cc' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             aaaa = 'a',
@@ -1544,6 +1538,12 @@ describe('sort-enums', () => {
             d = 'd',
           }
         `,
+        errors: [
+          {
+            data: { right: 'bbb', left: 'cc' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -1562,12 +1562,6 @@ describe('sort-enums', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: '8', left: '12' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             '1' = 'a',
@@ -1584,6 +1578,12 @@ describe('sort-enums', () => {
             '8' = 'c',
           }
         `,
+        errors: [
+          {
+            data: { right: '8', left: '12' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -1785,16 +1785,16 @@ describe('sort-enums', () => {
             e = 'e',
           }
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -1822,18 +1822,18 @@ describe('sort-enums', () => {
 
     it('ignores block comments when line partition is enabled', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1917,18 +1917,18 @@ describe('sort-enums', () => {
 
     it('ignores line comments when block partition is enabled', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2524,16 +2524,16 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'Y', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'Y', left: 'A' },
           },
           {
             data: { right: 'B', left: 'Z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'B', left: 'Z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'Z' },
           },
         ],
         options: [
@@ -2573,20 +2573,6 @@ describe('sort-enums', () => {
 
     it('enforces single newline between groups when newlinesBetween is 1', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'Z', left: 'A' },
-            messageId: EXTRA_SPACING_ERROR_ID,
-          },
-          {
-            data: { right: 'Y', left: 'Z' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'B', left: 'Y' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
@@ -2602,6 +2588,20 @@ describe('sort-enums', () => {
             ],
             groups: ['a', 'unknown', 'b'],
             newlinesBetween: 1,
+          },
+        ],
+        errors: [
+          {
+            messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'Z', left: 'A' },
+          },
+          {
+            data: { right: 'Y', left: 'Z' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'Y' },
           },
         ],
         output: dedent`
@@ -2678,16 +2678,16 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: { right: 'B', left: 'A' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'A' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'C', left: 'B' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'D', left: 'C' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'D', left: 'C' },
           },
         ],
         output: dedent`
@@ -2748,8 +2748,8 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: { right: 'B', left: 'A' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'B', left: 'A' },
             },
           ],
           output: dedent`
@@ -2797,8 +2797,8 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: { right: 'B', left: 'A' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'B', left: 'A' },
             },
           ],
           output: dedent`
@@ -2895,12 +2895,6 @@ describe('sort-enums', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             A = 'A',
@@ -2921,6 +2915,12 @@ describe('sort-enums', () => {
             B = 'B',
           }
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
   })
@@ -2945,12 +2945,6 @@ describe('sort-enums', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'bbb', left: 'cc' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             aaaa = 'a',
@@ -2967,6 +2961,12 @@ describe('sort-enums', () => {
             d = 'd',
           }
         `,
+        errors: [
+          {
+            data: { right: 'bbb', left: 'cc' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -2985,12 +2985,6 @@ describe('sort-enums', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: '12', left: '8' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             '12' = 'b',
@@ -3007,6 +3001,12 @@ describe('sort-enums', () => {
             '12' = 'b',
           }
         `,
+        errors: [
+          {
+            data: { right: '12', left: '8' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -3204,16 +3204,16 @@ describe('sort-enums', () => {
             e = 'e',
           }
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -3241,18 +3241,18 @@ describe('sort-enums', () => {
 
     it('ignores block comments when line partition is enabled', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'AA', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3336,18 +3336,18 @@ describe('sort-enums', () => {
 
     it('ignores line comments when block partition is enabled', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'AA', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3431,16 +3431,6 @@ describe('sort-enums', () => {
 
     it('sorts enum members by their values', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'j', left: 'i' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'k', left: 'j' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             'k' = undefined,
@@ -3471,6 +3461,16 @@ describe('sort-enums', () => {
             'k' = undefined,
           }
         `,
+        errors: [
+          {
+            data: { right: 'j', left: 'i' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'k', left: 'j' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -4075,16 +4075,16 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: { right: 'B', left: 'A' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'A' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'C', left: 'B' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'D', left: 'C' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'D', left: 'C' },
           },
         ],
         output: dedent`
@@ -4145,8 +4145,8 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: { right: 'B', left: 'A' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'B', left: 'A' },
             },
           ],
           output: dedent`
@@ -4194,8 +4194,8 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: { right: 'B', left: 'A' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'B', left: 'A' },
             },
           ],
           output: dedent`
@@ -4292,12 +4292,6 @@ describe('sort-enums', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'BB', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             AAA = 'AAA',
@@ -4318,6 +4312,12 @@ describe('sort-enums', () => {
             BB = 'BB',
           }
         `,
+        errors: [
+          {
+            data: { right: 'BB', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
   })
@@ -4347,12 +4347,6 @@ describe('sort-enums', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'bbb', left: 'cc' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             aaaa = 'a',
@@ -4369,6 +4363,12 @@ describe('sort-enums', () => {
             d = 'd',
           }
         `,
+        errors: [
+          {
+            data: { right: 'bbb', left: 'cc' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -4462,8 +4462,8 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4802,12 +4802,6 @@ describe('sort-enums', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             B = 0,
@@ -4822,6 +4816,12 @@ describe('sort-enums', () => {
             A = 1 | 2 | B | Enum.B,
           }
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             type: 'alphabetical',
@@ -4830,12 +4830,6 @@ describe('sort-enums', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             A = AnotherEnum.B,
@@ -4850,6 +4844,12 @@ describe('sort-enums', () => {
             C = 'C',
           }
         `,
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             type: 'alphabetical',
@@ -5180,12 +5180,6 @@ describe('sort-enums', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             B = 'B',
@@ -5202,6 +5196,12 @@ describe('sort-enums', () => {
             A = 'A'
           }
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
@@ -5242,12 +5242,6 @@ describe('sort-enums', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             B = A,
@@ -5264,16 +5258,16 @@ describe('sort-enums', () => {
             A = 'A'
           }
         `,
-        options: [{}],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [{}],
+      })
+
+      await invalid({
         output: dedent`
           enum Enum {
             B = 'B',
@@ -5288,16 +5282,16 @@ describe('sort-enums', () => {
             A = 'A' // eslint-disable-line
           }
         `,
-        options: [{}],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [{}],
+      })
+
+      await invalid({
         output: dedent`
           enum Enum {
             B = 'B',
@@ -5314,16 +5308,16 @@ describe('sort-enums', () => {
             A = 'A'
           }
         `,
-        options: [{}],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [{}],
+      })
+
+      await invalid({
         output: dedent`
           enum Enum {
             B = 'B',
@@ -5338,6 +5332,12 @@ describe('sort-enums', () => {
             A = 'A' /* eslint-disable-line */
           }
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
@@ -5402,12 +5402,6 @@ describe('sort-enums', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           enum Enum {
             B = 'B',
@@ -5422,6 +5416,12 @@ describe('sort-enums', () => {
             A = 'A' // eslint-disable-line rule-to-test/sort-enums
           }
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
@@ -5459,12 +5459,6 @@ describe('sort-enums', () => {
             A = 'A' /* eslint-disable-line rule-to-test/sort-enums */
           }
         `,
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         code: dedent`
           enum Enum {
             C = 'C',
@@ -5472,6 +5466,12 @@ describe('sort-enums', () => {
             A = 'A' /* eslint-disable-line rule-to-test/sort-enums */
           }
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 

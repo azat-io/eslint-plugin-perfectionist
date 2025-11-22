@@ -167,12 +167,6 @@ describe('sort-intersection-types', () => {
 
     it('sorts intersections with parentheses', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: '( A: () => void, ) => B & C', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type = {
             t:
@@ -193,6 +187,12 @@ describe('sort-intersection-types', () => {
               & C
           }
         `,
+        errors: [
+          {
+            data: { right: '( A: () => void, ) => B & C', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -419,16 +419,6 @@ describe('sort-intersection-types', () => {
 
     it('allows to use partition comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'BBB', left: 'D' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'FFF', left: 'GG' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type T =
             // Part: A
@@ -459,15 +449,6 @@ describe('sort-intersection-types', () => {
             // Not partition comment
             FFF
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: '^Part',
-          },
-        ],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: 'BBB', left: 'D' },
@@ -478,6 +459,15 @@ describe('sort-intersection-types', () => {
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [
+          {
+            ...options,
+            partitionByComment: '^Part',
+          },
+        ],
+      })
+
+      await invalid({
         output: dedent`
           type T =
             // Part: A
@@ -508,6 +498,16 @@ describe('sort-intersection-types', () => {
             // Not partition comment
             & FFF
         `,
+        errors: [
+          {
+            data: { right: 'BBB', left: 'D' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'FFF', left: 'GG' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -561,16 +561,16 @@ describe('sort-intersection-types', () => {
             /* Other */
             E
         `,
-        errors: [
-          {
-            data: { right: 'BB', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'BB', left: 'C' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -597,18 +597,18 @@ describe('sort-intersection-types', () => {
 
     it('ignores block comments when line comments are specified', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -687,18 +687,18 @@ describe('sort-intersection-types', () => {
 
     it('ignores line comments when block comments are specified', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -838,8 +838,8 @@ describe('sort-intersection-types', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'B', left: 'Z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'Z' },
           },
         ],
         options: [
@@ -1115,12 +1115,6 @@ describe('sort-intersection-types', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type =
             & a
@@ -1130,6 +1124,12 @@ describe('sort-intersection-types', () => {
             & b
             & c
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         code: dedent`
           type Type =
             & a
@@ -1182,16 +1182,6 @@ describe('sort-intersection-types', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             groups: [
@@ -1203,6 +1193,16 @@ describe('sort-intersection-types', () => {
               },
             ],
             type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1549,8 +1549,8 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1584,8 +1584,8 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1751,50 +1751,50 @@ describe('sort-intersection-types', () => {
 
     it('sorts intersections with parentheses', async () => {
       await invalid({
+        output: dedent`
+          type Type = {
+            t:
+              & ((
+                  A: () => void,
+                ) => B & C)
+              & B
+              & C
+          }
+        `,
+        code: dedent`
+          type Type = {
+            t:
+              & B
+              & ((
+                  A: () => void,
+                ) => B & C)
+              & C
+          }
+        `,
         errors: [
           {
             data: { right: '( A: () => void, ) => B & C', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
-        output: dedent`
-          type Type = {
-            t:
-              & ((
-                  A: () => void,
-                ) => B & C)
-              & B
-              & C
-          }
-        `,
-        code: dedent`
-          type Type = {
-            t:
-              & B
-              & ((
-                  A: () => void,
-                ) => B & C)
-              & C
-          }
-        `,
         options: [options],
       })
     })
 
     it('sorts intersections with comment at the end', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: '{ value3: 3 }', left: '{ value4: 4 }' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Step =  { value1: 1 } & { value2: 2 } & { value3: 3 } & { value4: 4 } & { value5: 5 } & { value100: 100 }; // Comment
         `,
         code: dedent`
           type Step =  { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Comment
         `,
+        errors: [
+          {
+            data: { right: '{ value3: 3 }', left: '{ value4: 4 }' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -1999,16 +1999,6 @@ describe('sort-intersection-types', () => {
 
     it('allows to use partition comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'BBB', left: 'D' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'FFF', left: 'GG' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type T =
             // Part: A
@@ -2039,15 +2029,6 @@ describe('sort-intersection-types', () => {
             // Not partition comment
             FFF
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: '^Part',
-          },
-        ],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: 'BBB', left: 'D' },
@@ -2058,6 +2039,15 @@ describe('sort-intersection-types', () => {
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [
+          {
+            ...options,
+            partitionByComment: '^Part',
+          },
+        ],
+      })
+
+      await invalid({
         output: dedent`
           type T =
             // Part: A
@@ -2088,6 +2078,16 @@ describe('sort-intersection-types', () => {
             // Not partition comment
             & FFF
         `,
+        errors: [
+          {
+            data: { right: 'BBB', left: 'D' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'FFF', left: 'GG' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -2141,16 +2141,16 @@ describe('sort-intersection-types', () => {
             /* Other */
             E
         `,
-        errors: [
-          {
-            data: { right: 'BB', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'BB', left: 'C' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -2177,18 +2177,18 @@ describe('sort-intersection-types', () => {
 
     it('ignores block comments when line comments are specified', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2267,18 +2267,18 @@ describe('sort-intersection-types', () => {
 
     it('ignores line comments when block comments are specified', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2418,8 +2418,8 @@ describe('sort-intersection-types', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'B', left: 'Z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'Z' },
           },
         ],
         options: [
@@ -2695,12 +2695,6 @@ describe('sort-intersection-types', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type =
             & a
@@ -2710,6 +2704,12 @@ describe('sort-intersection-types', () => {
             & b
             & c
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         code: dedent`
           type Type =
             & a
@@ -3090,8 +3090,8 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -3125,8 +3125,8 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -3285,12 +3285,6 @@ describe('sort-intersection-types', () => {
 
     it('sorts intersections with parentheses', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: '( A: () => void, ) => B & C', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type = {
             t:
@@ -3311,21 +3305,27 @@ describe('sort-intersection-types', () => {
               & C
           }
         `,
+        errors: [
+          {
+            data: { right: '( A: () => void, ) => B & C', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
 
     it('sorts intersections with comment at the end', async () => {
       await invalid({
+        output: dedent`
+          type Step =  { value100: 100 } & { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 }; // Comment
+        `,
         errors: [
           {
             data: { right: '{ value100: 100 }', left: '{ value5: 5 }' },
             messageId: ORDER_ERROR_ID,
           },
         ],
-        output: dedent`
-          type Step =  { value100: 100 } & { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 }; // Comment
-        `,
         code: dedent`
           type Step =  { value1: 1 } & { value2: 2 } & { value4: 4 } & { value3: 3 } & { value5: 5 } & { value100: 100 }; // Comment
         `,
@@ -3533,16 +3533,6 @@ describe('sort-intersection-types', () => {
 
     it('allows to use partition comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'BBB', left: 'D' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'FFF', left: 'GG' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type T =
             // Part: A
@@ -3573,15 +3563,6 @@ describe('sort-intersection-types', () => {
             // Not partition comment
             FFF
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: '^Part',
-          },
-        ],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: 'BBB', left: 'D' },
@@ -3592,6 +3573,15 @@ describe('sort-intersection-types', () => {
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [
+          {
+            ...options,
+            partitionByComment: '^Part',
+          },
+        ],
+      })
+
+      await invalid({
         output: dedent`
           type T =
             // Part: A
@@ -3622,6 +3612,16 @@ describe('sort-intersection-types', () => {
             // Not partition comment
             & FFF
         `,
+        errors: [
+          {
+            data: { right: 'BBB', left: 'D' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'FFF', left: 'GG' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -3675,16 +3675,16 @@ describe('sort-intersection-types', () => {
             /* Other */
             E
         `,
-        errors: [
-          {
-            data: { right: 'BB', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'BB', left: 'C' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -3711,18 +3711,18 @@ describe('sort-intersection-types', () => {
 
     it('ignores block comments when line comments are specified', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'AA', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3801,18 +3801,18 @@ describe('sort-intersection-types', () => {
 
     it('ignores line comments when block comments are specified', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'AA', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4229,12 +4229,6 @@ describe('sort-intersection-types', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type =
             & aaa
@@ -4253,6 +4247,12 @@ describe('sort-intersection-types', () => {
             & c
             & bb
         `,
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -4624,8 +4624,8 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -4659,8 +4659,8 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -4771,17 +4771,17 @@ describe('sort-intersection-types', () => {
 
     it('enforces newlines between groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: "'a'", left: 'b' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             groups: ['named', 'literal'],
             newlinesBetween: 1,
+          },
+        ],
+        errors: [
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: "'a'", left: 'b' },
           },
         ],
         output: dedent`
@@ -4886,12 +4886,6 @@ describe('sort-intersection-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type T =
             B
@@ -4899,6 +4893,12 @@ describe('sort-intersection-types', () => {
             // eslint-disable-next-line
             & A
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         code: dedent`
           type T =
             C
@@ -4966,12 +4966,6 @@ describe('sort-intersection-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type T =
             B
@@ -4986,6 +4980,12 @@ describe('sort-intersection-types', () => {
             /* eslint-disable-next-line */
             & A
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
@@ -5044,12 +5044,6 @@ describe('sort-intersection-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type T =
             B
@@ -5064,16 +5058,16 @@ describe('sort-intersection-types', () => {
             // eslint-disable-next-line rule-to-test/sort-intersection-types
             & A
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type T =
             B
@@ -5086,6 +5080,12 @@ describe('sort-intersection-types', () => {
             & B
             & A // eslint-disable-line rule-to-test/sort-intersection-types
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
@@ -5114,12 +5114,6 @@ describe('sort-intersection-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type T =
             B
@@ -5132,6 +5126,12 @@ describe('sort-intersection-types', () => {
             & B
             & A /* eslint-disable-line rule-to-test/sort-intersection-types */
         `,
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 

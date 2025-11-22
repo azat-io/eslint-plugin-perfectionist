@@ -102,21 +102,6 @@ describe('sort-classes', () => {
             ],
           },
         ],
-        errors: [
-          {
-            data: { right: 'd', left: 'e' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              leftGroup: 'static-method',
-              rightGroup: 'constructor',
-              right: 'constructor',
-              left: 'f',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             static a = 'a'
@@ -171,6 +156,21 @@ describe('sort-classes', () => {
             k() {}
           }
         `,
+        errors: [
+          {
+            data: { right: 'd', left: 'e' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: {
+              leftGroup: 'static-method',
+              rightGroup: 'constructor',
+              right: 'constructor',
+              left: 'f',
+            },
+            messageId: GROUP_ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -1497,6 +1497,17 @@ describe('sort-classes', () => {
       })
 
       await invalid({
+        options: [
+          {
+            ...options,
+            groups: [
+              ['static-property', 'private-property', 'property'],
+              'constructor',
+              ['static-method', 'private-method', 'method'],
+              'unknown',
+            ],
+          },
+        ],
         errors: [
           {
             data: {
@@ -1508,17 +1519,6 @@ describe('sort-classes', () => {
           {
             data: { right: 'a', left: 'b' },
             messageId: ORDER_ERROR_ID,
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: [
-              ['static-property', 'private-property', 'property'],
-              'constructor',
-              ['static-method', 'private-method', 'method'],
-              'unknown',
-            ],
           },
         ],
         output: dedent`
@@ -2121,20 +2121,6 @@ describe('sort-classes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'onSortChanged', left: 'updateTable' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'onPaginationChanged', left: 'onSortChanged' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'onValueChanged', left: 'setFormValue' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             // Region: Table
@@ -2179,6 +2165,20 @@ describe('sort-classes', () => {
             protected onValueChanged() {}
           }
         `,
+        errors: [
+          {
+            data: { right: 'onSortChanged', left: 'updateTable' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'onPaginationChanged', left: 'onSortChanged' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'onValueChanged', left: 'setFormValue' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -3444,12 +3444,6 @@ describe('sort-classes', () => {
 
     it('detects and ignores circular dependencies', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             a
@@ -3468,6 +3462,12 @@ describe('sort-classes', () => {
             g = this.b
           }
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -3835,16 +3835,16 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'y', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'y', left: 'a' },
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -3947,16 +3947,16 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -4017,8 +4017,8 @@ describe('sort-classes', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4066,8 +4066,8 @@ describe('sort-classes', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4202,12 +4202,6 @@ describe('sort-classes', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             a
@@ -4228,6 +4222,12 @@ describe('sort-classes', () => {
             b
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -4614,21 +4614,6 @@ describe('sort-classes', () => {
             ],
           },
         ],
-        errors: [
-          {
-            data: { right: 'd', left: 'e' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              leftGroup: 'static-method',
-              rightGroup: 'constructor',
-              right: 'constructor',
-              left: 'f',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             static a = 'a'
@@ -4683,6 +4668,21 @@ describe('sort-classes', () => {
             k() {}
           }
         `,
+        errors: [
+          {
+            data: { right: 'd', left: 'e' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: {
+              leftGroup: 'static-method',
+              rightGroup: 'constructor',
+              right: 'constructor',
+              left: 'f',
+            },
+            messageId: GROUP_ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -6009,6 +6009,17 @@ describe('sort-classes', () => {
       })
 
       await invalid({
+        options: [
+          {
+            ...options,
+            groups: [
+              ['static-property', 'private-property', 'property'],
+              'constructor',
+              ['static-method', 'private-method', 'method'],
+              'unknown',
+            ],
+          },
+        ],
         errors: [
           {
             data: {
@@ -6020,17 +6031,6 @@ describe('sort-classes', () => {
           {
             data: { right: 'a', left: 'b' },
             messageId: ORDER_ERROR_ID,
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: [
-              ['static-property', 'private-property', 'property'],
-              'constructor',
-              ['static-method', 'private-method', 'method'],
-              'unknown',
-            ],
           },
         ],
         output: dedent`
@@ -6633,20 +6633,6 @@ describe('sort-classes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'onSortChanged', left: 'updateTable' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'onPaginationChanged', left: 'onSortChanged' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'onValueChanged', left: 'setFormValue' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             // Region: Table
@@ -6691,6 +6677,20 @@ describe('sort-classes', () => {
             protected onValueChanged() {}
           }
         `,
+        errors: [
+          {
+            data: { right: 'onSortChanged', left: 'updateTable' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'onPaginationChanged', left: 'onSortChanged' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'onValueChanged', left: 'setFormValue' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -7956,12 +7956,6 @@ describe('sort-classes', () => {
 
     it('detects and ignores circular dependencies', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             a
@@ -7980,6 +7974,12 @@ describe('sort-classes', () => {
             g = this.b
           }
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -8347,16 +8347,16 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'y', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'y', left: 'a' },
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -8459,16 +8459,16 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -8529,8 +8529,8 @@ describe('sort-classes', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -8578,8 +8578,8 @@ describe('sort-classes', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -8714,12 +8714,6 @@ describe('sort-classes', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             a
@@ -8740,6 +8734,12 @@ describe('sort-classes', () => {
             b
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -10818,12 +10818,6 @@ describe('sort-classes', () => {
             ],
           },
         ],
-        errors: [
-          {
-            data: { right: 'bb', left: 'x' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class A {
             bb() {}
@@ -10842,6 +10836,12 @@ describe('sort-classes', () => {
             set c() {}
           }
         `,
+        errors: [
+          {
+            data: { right: 'bb', left: 'x' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -12803,12 +12803,12 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: { right: 'z', left: 'y' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'z', left: 'y' },
           },
         ],
         code: dedent`
@@ -12911,16 +12911,16 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -12981,8 +12981,8 @@ describe('sort-classes', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -13030,8 +13030,8 @@ describe('sort-classes', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -13166,12 +13166,6 @@ describe('sort-classes', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             aaa
@@ -13192,6 +13186,12 @@ describe('sort-classes', () => {
             bb
           }
         `,
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -13541,8 +13541,8 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -13595,16 +13595,6 @@ describe('sort-classes', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             groups: [
@@ -13616,6 +13606,16 @@ describe('sort-classes', () => {
               },
             ],
             type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -14360,16 +14360,6 @@ describe('sort-classes', () => {
 
     it('allows to use newlinesInside: 1', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'c', left: 'b' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-          {
-            data: { right: 'd', left: 'c' },
-            messageId: EXTRA_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             customGroups: [
@@ -14380,6 +14370,16 @@ describe('sort-classes', () => {
               },
             ],
             groups: ['unknown', 'methodsWithNewlinesInside'],
+          },
+        ],
+        errors: [
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'c', left: 'b' },
+          },
+          {
+            messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -14421,8 +14421,8 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -15200,12 +15200,6 @@ describe('sort-classes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             b
@@ -15222,6 +15216,12 @@ describe('sort-classes', () => {
             a
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
@@ -15262,12 +15262,6 @@ describe('sort-classes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             b = this.a
@@ -15284,6 +15278,12 @@ describe('sort-classes', () => {
             a
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
@@ -15312,12 +15312,6 @@ describe('sort-classes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             b
@@ -15334,16 +15328,16 @@ describe('sort-classes', () => {
             a
           }
         `,
-        options: [{}],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: 'b', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [{}],
+      })
+
+      await invalid({
         output: dedent`
           class Class {
             b
@@ -15351,6 +15345,12 @@ describe('sort-classes', () => {
             a /* eslint-disable-line */
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         code: dedent`
           class Class {
             c
@@ -15396,12 +15396,6 @@ describe('sort-classes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             b
@@ -15418,16 +15412,16 @@ describe('sort-classes', () => {
             a
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             b
@@ -15442,6 +15436,12 @@ describe('sort-classes', () => {
             a // eslint-disable-line rule-to-test/sort-classes
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
@@ -15472,12 +15472,6 @@ describe('sort-classes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class {
             b
@@ -15492,6 +15486,12 @@ describe('sort-classes', () => {
             a /* eslint-disable-line rule-to-test/sort-classes */
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 

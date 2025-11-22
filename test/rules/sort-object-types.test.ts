@@ -76,12 +76,6 @@ describe('sort-object-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           let Func = (arguments: {
             a: 'aaa'
@@ -100,6 +94,12 @@ describe('sort-object-types', () => {
             // ...
           }
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -505,16 +505,6 @@ describe('sort-object-types', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             groups: [
@@ -526,6 +516,16 @@ describe('sort-object-types', () => {
               },
             ],
             type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1077,8 +1077,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1114,8 +1114,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1352,16 +1352,16 @@ describe('sort-object-types', () => {
             e: string
           }
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -1389,12 +1389,6 @@ describe('sort-object-types', () => {
 
     it('ignores block comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
@@ -1417,6 +1411,12 @@ describe('sort-object-types', () => {
             a: string
           }
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -1484,18 +1484,18 @@ describe('sort-object-types', () => {
 
     it('ignores line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1651,16 +1651,16 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'y', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'y', left: 'a' },
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -1720,16 +1720,16 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -1790,8 +1790,8 @@ describe('sort-object-types', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1844,8 +1844,8 @@ describe('sort-object-types', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1980,12 +1980,6 @@ describe('sort-object-types', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type = {
             a: string
@@ -2006,6 +2000,12 @@ describe('sort-object-types', () => {
             b: string
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -2251,12 +2251,6 @@ describe('sort-object-types', () => {
           },
           options,
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type = {
             a: {
@@ -2273,6 +2267,12 @@ describe('sort-object-types', () => {
             }
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -2358,12 +2358,6 @@ describe('sort-object-types', () => {
           },
           options,
         ],
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           // Do NOT ignore me
           type Type = {
@@ -2378,6 +2372,12 @@ describe('sort-object-types', () => {
             a: string
           }
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -2577,12 +2577,6 @@ describe('sort-object-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           let Func = (arguments: {
             a: 'aaa'
@@ -2601,6 +2595,12 @@ describe('sort-object-types', () => {
             // ...
           }
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -3544,8 +3544,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -3581,8 +3581,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -3819,16 +3819,16 @@ describe('sort-object-types', () => {
             e: string
           }
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -3856,12 +3856,6 @@ describe('sort-object-types', () => {
 
     it('ignores block comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
@@ -3884,6 +3878,12 @@ describe('sort-object-types', () => {
             a: string
           }
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -3951,18 +3951,18 @@ describe('sort-object-types', () => {
 
     it('ignores line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4118,16 +4118,16 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'y', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'y', left: 'a' },
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -4187,16 +4187,16 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -4257,8 +4257,8 @@ describe('sort-object-types', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4311,8 +4311,8 @@ describe('sort-object-types', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4447,12 +4447,6 @@ describe('sort-object-types', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type = {
             a: string
@@ -4473,6 +4467,12 @@ describe('sort-object-types', () => {
             b: string
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -4718,12 +4718,6 @@ describe('sort-object-types', () => {
           },
           options,
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type = {
             a: {
@@ -4740,6 +4734,12 @@ describe('sort-object-types', () => {
             }
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -4939,12 +4939,6 @@ describe('sort-object-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           let Func = (arguments: {
             a: 'aaa'
@@ -4963,6 +4957,12 @@ describe('sort-object-types', () => {
             // ...
           }
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -5907,8 +5907,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -5944,8 +5944,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -6178,16 +6178,16 @@ describe('sort-object-types', () => {
             e: string
           }
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -6215,12 +6215,6 @@ describe('sort-object-types', () => {
 
     it('ignores block comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'aa', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
@@ -6243,6 +6237,12 @@ describe('sort-object-types', () => {
             aa: string
           }
         `,
+        errors: [
+          {
+            data: { right: 'aa', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -6310,18 +6310,18 @@ describe('sort-object-types', () => {
 
     it('ignores line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'aa', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'aa', left: 'b' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6549,16 +6549,16 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -6619,8 +6619,8 @@ describe('sort-object-types', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -6673,8 +6673,8 @@ describe('sort-object-types', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -6809,12 +6809,6 @@ describe('sort-object-types', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type = {
             a: string
@@ -6835,6 +6829,12 @@ describe('sort-object-types', () => {
             bb: string
           }
         `,
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -7080,12 +7080,6 @@ describe('sort-object-types', () => {
           },
           options,
         ],
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type = {
             a: {
@@ -7102,6 +7096,12 @@ describe('sort-object-types', () => {
             }
           }
         `,
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -7208,12 +7208,6 @@ describe('sort-object-types', () => {
 
     it('handles fallbackSort option', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'bb', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
@@ -7229,6 +7223,12 @@ describe('sort-object-types', () => {
             a: string;
           }
         `,
+        errors: [
+          {
+            data: { right: 'bb', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         code: dedent`
           type Type = {
             a: string;
@@ -7248,12 +7248,6 @@ describe('sort-object-types', () => {
             },
           },
         ],
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type = {
             bb: string;
@@ -7261,6 +7255,12 @@ describe('sort-object-types', () => {
             c: string;
           }
         `,
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         code: dedent`
           type Type = {
             c: string;
@@ -7280,12 +7280,6 @@ describe('sort-object-types', () => {
             },
           },
         ],
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type = {
             bb: string;
@@ -7300,6 +7294,12 @@ describe('sort-object-types', () => {
             a: number;
           }
         `,
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
   })
@@ -7441,8 +7441,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -7695,12 +7695,6 @@ describe('sort-object-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type = {
             b: string
@@ -7717,6 +7711,12 @@ describe('sort-object-types', () => {
             a: string
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
@@ -7757,12 +7757,6 @@ describe('sort-object-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           type Type = {
             b: string
@@ -7777,6 +7771,12 @@ describe('sort-object-types', () => {
             a: string // eslint-disable-line
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 
@@ -7789,12 +7789,6 @@ describe('sort-object-types', () => {
             a: string
           }
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         code: dedent`
           type Type = {
             c: string
@@ -7803,16 +7797,16 @@ describe('sort-object-types', () => {
             a: string
           }
         `,
-        options: [{}],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: 'b', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [{}],
+      })
+
+      await invalid({
         output: dedent`
           type Type = {
             b: string
@@ -7827,6 +7821,12 @@ describe('sort-object-types', () => {
             a: string /* eslint-disable-line */
           }
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 

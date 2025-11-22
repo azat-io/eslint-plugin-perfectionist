@@ -146,12 +146,6 @@ describe('sort-maps', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: '1', left: '2' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           new Map([
             [1, 'one'],
@@ -166,6 +160,12 @@ describe('sort-maps', () => {
             [3, 'three'],
           ])
         `,
+        errors: [
+          {
+            data: { right: '1', left: '2' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -357,16 +357,16 @@ describe('sort-maps', () => {
             [e, 'e'],
           ])
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -394,18 +394,18 @@ describe('sort-maps', () => {
 
     it('ignores block comments when line comments are specified', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: "'a'", left: "'b'" },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: "'a'", left: "'b'" },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -489,18 +489,18 @@ describe('sort-maps', () => {
 
     it('ignores line comments when block comments are specified', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: "'a'", left: "'b'" },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: "'a'", left: "'b'" },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -635,16 +635,6 @@ describe('sort-maps', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             groups: [
@@ -656,6 +646,16 @@ describe('sort-maps', () => {
               },
             ],
             type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -953,16 +953,16 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'y', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'y', left: 'a' },
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'z' },
           },
         ],
         options: [
@@ -1028,16 +1028,16 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -1098,8 +1098,8 @@ describe('sort-maps', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1152,8 +1152,8 @@ describe('sort-maps', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1294,12 +1294,6 @@ describe('sort-maps', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           new Map([
             [a, 'a'],
@@ -1320,6 +1314,12 @@ describe('sort-maps', () => {
             [b, 'b'],
           ])
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -1530,12 +1530,6 @@ describe('sort-maps', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: '1', left: '2' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           new Map([
             [1, 'one'],
@@ -1550,6 +1544,12 @@ describe('sort-maps', () => {
             [3, 'three'],
           ])
         `,
+        errors: [
+          {
+            data: { right: '1', left: '2' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -1741,16 +1741,16 @@ describe('sort-maps', () => {
             [e, 'e'],
           ])
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -1778,18 +1778,18 @@ describe('sort-maps', () => {
 
     it('ignores block comments when line comments are specified', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: "'a'", left: "'b'" },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: "'a'", left: "'b'" },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1873,18 +1873,18 @@ describe('sort-maps', () => {
 
     it('ignores line comments when block comments are specified', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: "'a'", left: "'b'" },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: "'a'", left: "'b'" },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2296,16 +2296,16 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'y', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'y', left: 'a' },
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'z' },
           },
         ],
         options: [
@@ -2371,16 +2371,16 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -2441,8 +2441,8 @@ describe('sort-maps', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -2495,8 +2495,8 @@ describe('sort-maps', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -2637,12 +2637,6 @@ describe('sort-maps', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           new Map([
             [a, 'a'],
@@ -2663,6 +2657,12 @@ describe('sort-maps', () => {
             [b, 'b'],
           ])
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -2873,12 +2873,6 @@ describe('sort-maps', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: '3', left: '1' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           new Map([
             [3, 'three'],
@@ -2893,6 +2887,12 @@ describe('sort-maps', () => {
             [3, 'three'],
           ])
         `,
+        errors: [
+          {
+            data: { right: '3', left: '1' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -3084,16 +3084,16 @@ describe('sort-maps', () => {
             [e, 'e'],
           ])
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -3121,18 +3121,18 @@ describe('sort-maps', () => {
 
     it('ignores block comments when line comments are specified', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: "'aa'", left: "'b'" },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: "'aa'", left: "'b'" },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3216,18 +3216,18 @@ describe('sort-maps', () => {
 
     it('ignores line comments when block comments are specified', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: "'aa'", left: "'b'" },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: "'aa'", left: "'b'" },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3717,16 +3717,16 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -3787,8 +3787,8 @@ describe('sort-maps', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -3841,8 +3841,8 @@ describe('sort-maps', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -3983,12 +3983,6 @@ describe('sort-maps', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           new Map([
             [aaa, 'a'],
@@ -4009,6 +4003,12 @@ describe('sort-maps', () => {
             [bb, 'b'],
           ])
         `,
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -4226,8 +4226,8 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4386,12 +4386,6 @@ describe('sort-maps', () => {
 
     it('handles inline eslint-disable comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           new Map([
             [b, 'b'],
@@ -4408,16 +4402,16 @@ describe('sort-maps', () => {
             [a, 'a']
           ])
         `,
-        options: [{}],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: 'b', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [{}],
+      })
+
+      await invalid({
         output: dedent`
           new Map([
             [b, 'b'],
@@ -4432,16 +4426,16 @@ describe('sort-maps', () => {
             [a, 'a'] // eslint-disable-line
           ])
         `,
-        options: [{}],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: 'b', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [{}],
+      })
+
+      await invalid({
         output: dedent`
           new Map([
             [b, 'b'],
@@ -4458,16 +4452,16 @@ describe('sort-maps', () => {
             [a, 'a']
           ])
         `,
-        options: [{}],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: 'b', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
+        options: [{}],
+      })
+
+      await invalid({
         output: dedent`
           new Map([
             [b, 'b'],
@@ -4482,6 +4476,12 @@ describe('sort-maps', () => {
             [a, 'a'] /* eslint-disable-line */
           ])
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
     })
@@ -4550,12 +4550,6 @@ describe('sort-maps', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           new Map([
             [b, 'b'],
@@ -4570,6 +4564,12 @@ describe('sort-maps', () => {
             [a, 'a'] // eslint-disable-line rule-to-test/sort-maps
           ])
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [{}],
       })
 

@@ -463,16 +463,6 @@ describe('sort-decorators', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: duplicate5Times([
-          {
-            data: { right: 'B', left: 'A' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'B', left: 'A' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ]),
         output: dedent`
           @B
 
@@ -535,6 +525,16 @@ describe('sort-decorators', () => {
             type: 'unsorted',
           },
         ],
+        errors: duplicate5Times([
+          {
+            data: { right: 'B', left: 'A' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'B', left: 'A' },
+          },
+        ]),
       })
     })
 
@@ -920,16 +920,16 @@ describe('sort-decorators', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'y', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'y', left: 'a' },
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'z' },
           },
         ],
         options: [
@@ -967,20 +967,6 @@ describe('sort-decorators', () => {
 
     it('adds newlines between groups when newlinesBetween is 1', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'z', left: 'a' },
-            messageId: EXTRA_SPACING_ERROR_ID,
-          },
-          {
-            data: { right: 'y', left: 'z' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'b', left: 'y' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
@@ -996,6 +982,20 @@ describe('sort-decorators', () => {
             ],
             groups: ['a', 'unknown', 'b'],
             newlinesBetween: 1,
+          },
+        ],
+        errors: [
+          {
+            messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'z', left: 'a' },
+          },
+          {
+            data: { right: 'y', left: 'z' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'y' },
           },
         ],
         output: dedent`
@@ -1047,16 +1047,16 @@ describe('sort-decorators', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -1115,8 +1115,8 @@ describe('sort-decorators', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1162,8 +1162,8 @@ describe('sort-decorators', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1341,8 +1341,8 @@ describe('sort-decorators', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1376,8 +1376,8 @@ describe('sort-decorators', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`

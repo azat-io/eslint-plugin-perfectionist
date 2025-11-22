@@ -510,12 +510,6 @@ describe('sort-switch-case', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           switch (x) {
             case AA:
@@ -532,6 +526,12 @@ describe('sort-switch-case', () => {
               break;
           }
         `,
+        errors: [
+          {
+            data: { right: 'AA', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -1498,12 +1498,6 @@ describe('sort-switch-case', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           switch (x) {
             case AA:
@@ -1520,6 +1514,12 @@ describe('sort-switch-case', () => {
               break;
           }
         `,
+        errors: [
+          {
+            data: { right: 'AA', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -2486,12 +2486,6 @@ describe('sort-switch-case', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           switch (x) {
             case AA:
@@ -2508,6 +2502,12 @@ describe('sort-switch-case', () => {
               break;
           }
         `,
+        errors: [
+          {
+            data: { right: 'AA', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })

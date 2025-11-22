@@ -101,16 +101,6 @@ describe('sort-heritage-clauses', () => {
 
     it('preserves comments when sorting heritage clauses', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'c', left: 'd' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           interface Interface extends
             /**
@@ -143,18 +133,22 @@ describe('sort-heritage-clauses', () => {
             c {
           }
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'c', left: 'd' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
 
     it('sorts heritage clauses with inline comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           interface Interface extends
             a // Comment A
@@ -169,22 +163,18 @@ describe('sort-heritage-clauses', () => {
             {
           }
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             groups: [
@@ -196,6 +186,16 @@ describe('sort-heritage-clauses', () => {
               },
             ],
             type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -531,16 +531,16 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'y', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'y', left: 'a' },
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'z' },
           },
         ],
         options: [
@@ -580,20 +580,6 @@ describe('sort-heritage-clauses', () => {
 
     it('adds newlines between groups when newlinesBetween is 1', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'z', left: 'a' },
-            messageId: EXTRA_SPACING_ERROR_ID,
-          },
-          {
-            data: { right: 'y', left: 'z' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'b', left: 'y' },
-            messageId: MISSED_SPACING_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
@@ -609,6 +595,20 @@ describe('sort-heritage-clauses', () => {
             ],
             groups: ['a', 'unknown', 'b'],
             newlinesBetween: 1,
+          },
+        ],
+        errors: [
+          {
+            messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'z', left: 'a' },
+          },
+          {
+            data: { right: 'y', left: 'z' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'y' },
           },
         ],
         output: dedent`
@@ -662,16 +662,16 @@ describe('sort-heritage-clauses', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
-            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -732,8 +732,8 @@ describe('sort-heritage-clauses', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: MISSED_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -781,8 +781,8 @@ describe('sort-heritage-clauses', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: EXTRA_SPACING_ERROR_ID,
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -924,12 +924,6 @@ describe('sort-heritage-clauses', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           class Class implements
             a,
@@ -950,6 +944,12 @@ describe('sort-heritage-clauses', () => {
             b
           {}
         `,
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
       })
     })
 
@@ -969,8 +969,8 @@ describe('sort-heritage-clauses', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1006,8 +1006,8 @@ describe('sort-heritage-clauses', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1169,16 +1169,16 @@ describe('sort-heritage-clauses', () => {
             E
           {}
         `,
-        errors: [
-          {
-            data: { right: 'Bb', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: ['Partition Comment', 'Part:', 'Other'],
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'Bb', left: 'C' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -1206,18 +1206,18 @@ describe('sort-heritage-clauses', () => {
 
     it('ignores block comments when line comments are partition boundaries', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1301,18 +1301,18 @@ describe('sort-heritage-clauses', () => {
 
     it('ignores line comments when block comments are partition boundaries', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1477,16 +1477,6 @@ describe('sort-heritage-clauses', () => {
 
     it('preserves comments when sorting heritage clauses', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'c', left: 'd' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           interface Interface extends
             /**
@@ -1519,18 +1509,22 @@ describe('sort-heritage-clauses', () => {
             c {
           }
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'c', left: 'd' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
 
     it('sorts heritage clauses with inline comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           interface Interface extends
             a // Comment A
@@ -1545,6 +1539,12 @@ describe('sort-heritage-clauses', () => {
             {
           }
         `,
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -1726,12 +1726,6 @@ describe('sort-heritage-clauses', () => {
 
     it('sorts namespaced heritage clauses', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           interface Interface extends
             A.aaa,
@@ -1739,6 +1733,12 @@ describe('sort-heritage-clauses', () => {
             C.c {
           }
         `,
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         code: dedent`
           interface Interface extends
             A.aaa,
@@ -1752,16 +1752,6 @@ describe('sort-heritage-clauses', () => {
 
     it('preserves comments when sorting heritage clauses', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'aaaa', left: 'bbb' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'cc', left: 'd' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           interface Interface extends
             /**
@@ -1794,18 +1784,22 @@ describe('sort-heritage-clauses', () => {
             cc {
           }
         `,
+        errors: [
+          {
+            data: { right: 'aaaa', left: 'bbb' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'cc', left: 'd' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
 
     it('sorts heritage clauses with inline comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'aa', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         output: dedent`
           interface Interface extends
             aa // Comment A
@@ -1820,6 +1814,12 @@ describe('sort-heritage-clauses', () => {
             {
           }
         `,
+        errors: [
+          {
+            data: { right: 'aa', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [options],
       })
     })
@@ -2154,12 +2154,6 @@ describe('sort-heritage-clauses', () => {
 
       it('sorts heritage clauses with eslint-disable-next-line comments', async () => {
         await invalid({
-          errors: [
-            {
-              data: { right: 'B', left: 'C' },
-              messageId: ORDER_ERROR_ID,
-            },
-          ],
           output: dedent`
             interface Interface extends
               B,
@@ -2176,16 +2170,16 @@ describe('sort-heritage-clauses', () => {
               A
             {}
           `,
+          errors: [
+            {
+              data: { right: 'B', left: 'C' },
+              messageId: ORDER_ERROR_ID,
+            },
+          ],
           options: [{}],
         })
 
         await invalid({
-          errors: [
-            {
-              data: { right: 'B', left: 'C' },
-              messageId: ORDER_ERROR_ID,
-            },
-          ],
           output: dedent`
             interface Interface extends
               B,
@@ -2202,18 +2196,18 @@ describe('sort-heritage-clauses', () => {
               A
             {}
           `,
+          errors: [
+            {
+              data: { right: 'B', left: 'C' },
+              messageId: ORDER_ERROR_ID,
+            },
+          ],
           options: [{}],
         })
       })
 
       it('sorts heritage clauses with eslint-disable-line comments', async () => {
         await invalid({
-          errors: [
-            {
-              data: { right: 'B', left: 'C' },
-              messageId: ORDER_ERROR_ID,
-            },
-          ],
           output: dedent`
             interface Interface extends
               B,
@@ -2228,16 +2222,16 @@ describe('sort-heritage-clauses', () => {
               A // eslint-disable-line
             {}
           `,
+          errors: [
+            {
+              data: { right: 'B', left: 'C' },
+              messageId: ORDER_ERROR_ID,
+            },
+          ],
           options: [{}],
         })
 
         await invalid({
-          errors: [
-            {
-              data: { right: 'B', left: 'C' },
-              messageId: ORDER_ERROR_ID,
-            },
-          ],
           output: dedent`
             interface Interface extends
               B,
@@ -2252,6 +2246,12 @@ describe('sort-heritage-clauses', () => {
               A /* eslint-disable-line */
             {}
           `,
+          errors: [
+            {
+              data: { right: 'B', left: 'C' },
+              messageId: ORDER_ERROR_ID,
+            },
+          ],
           options: [{}],
         })
       })
@@ -2359,12 +2359,6 @@ describe('sort-heritage-clauses', () => {
           })
 
           await invalid({
-            errors: [
-              {
-                data: { right: 'B', left: 'C' },
-                messageId: ORDER_ERROR_ID,
-              },
-            ],
             output: dedent`
               ${declaration}
                 B,
@@ -2379,6 +2373,12 @@ describe('sort-heritage-clauses', () => {
                 A // eslint-disable-line rule-to-test/sort-heritage-clauses
               {}
             `,
+            errors: [
+              {
+                data: { right: 'B', left: 'C' },
+                messageId: ORDER_ERROR_ID,
+              },
+            ],
             options: [{}],
           })
 
@@ -2409,12 +2409,6 @@ describe('sort-heritage-clauses', () => {
           })
 
           await invalid({
-            errors: [
-              {
-                data: { right: 'B', left: 'C' },
-                messageId: ORDER_ERROR_ID,
-              },
-            ],
             output: dedent`
               ${declaration}
                 B,
@@ -2429,6 +2423,12 @@ describe('sort-heritage-clauses', () => {
                 A /* eslint-disable-line rule-to-test/sort-heritage-clauses */
               {}
             `,
+            errors: [
+              {
+                data: { right: 'B', left: 'C' },
+                messageId: ORDER_ERROR_ID,
+              },
+            ],
             options: [{}],
           })
         },
