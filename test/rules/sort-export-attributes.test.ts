@@ -117,17 +117,11 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],

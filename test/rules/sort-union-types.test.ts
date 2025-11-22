@@ -36,10 +36,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'bbb'",
-              left: "'cc'",
-            },
+            data: { right: "'bbb'", left: "'cc'" },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -78,10 +75,7 @@ describe('sort-union-types', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'bigint',
-              left: 'void',
-            },
+            data: { right: 'bigint', left: 'void' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -119,10 +113,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'aa'",
-              left: "'b'",
-            },
+            data: { right: "'aa'", left: "'b'" },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -136,17 +127,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'aaa',
-              left: 'bb',
-            },
+            data: { right: 'aaa', left: 'bb' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -185,10 +170,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '( value: () => void, ) => D | E',
-              left: 'A',
-            },
+            data: { right: '( value: () => void, ) => D | E', left: 'A' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -220,17 +202,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '3',
-              left: '4',
-            },
+            data: { right: '3', left: '4' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: '100',
-              left: '5',
-            },
+            data: { right: '100', left: '5' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -405,17 +381,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'E',
-            },
+            data: { right: 'B', left: 'E' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -452,17 +422,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -507,17 +471,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -606,10 +564,7 @@ describe('sort-union-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -645,10 +600,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -738,10 +690,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -886,17 +835,11 @@ describe('sort-union-types', () => {
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -931,10 +874,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '{ a: string }',
-              left: '() => void',
-            },
+            data: { right: '{ a: string }', left: '() => void' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -945,10 +885,7 @@ describe('sort-union-types', () => {
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: '[A]',
-              left: 'A',
-            },
+            data: { right: '[A]', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -1020,10 +957,7 @@ describe('sort-union-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -1062,10 +996,7 @@ describe('sort-union-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
@@ -1187,10 +1118,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1219,10 +1147,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1240,10 +1165,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1263,17 +1185,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -1393,24 +1309,15 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
+            data: { right: 'bb', left: 'a' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
+            data: { right: 'ccc', left: 'bb' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -1490,10 +1397,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1646,10 +1550,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -1684,10 +1585,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -1723,10 +1621,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'bbb'",
-              left: "'cc'",
-            },
+            data: { right: "'bbb'", left: "'cc'" },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1765,10 +1660,7 @@ describe('sort-union-types', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'bigint',
-              left: 'void',
-            },
+            data: { right: 'bigint', left: 'void' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1806,10 +1698,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'aa'",
-              left: "'b'",
-            },
+            data: { right: "'aa'", left: "'b'" },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1823,17 +1712,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'aaa',
-              left: 'bb',
-            },
+            data: { right: 'aaa', left: 'bb' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1872,10 +1755,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '( value: () => void, ) => D | E',
-              left: 'A',
-            },
+            data: { right: '( value: () => void, ) => D | E', left: 'A' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1914,10 +1794,7 @@ describe('sort-union-types', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: '3',
-              left: '4',
-            },
+            data: { right: '3', left: '4' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2092,17 +1969,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'E',
-            },
+            data: { right: 'B', left: 'E' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2139,17 +2010,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2194,17 +2059,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2293,10 +2152,7 @@ describe('sort-union-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2332,10 +2188,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2425,10 +2278,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2573,17 +2423,11 @@ describe('sort-union-types', () => {
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -2618,10 +2462,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '{ a: string }',
-              left: '() => void',
-            },
+            data: { right: '{ a: string }', left: '() => void' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -2632,10 +2473,7 @@ describe('sort-union-types', () => {
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: '[A]',
-              left: 'A',
-            },
+            data: { right: '[A]', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -2707,10 +2545,7 @@ describe('sort-union-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -2749,10 +2584,7 @@ describe('sort-union-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
@@ -2874,10 +2706,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2906,10 +2735,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2927,10 +2753,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3035,24 +2858,15 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
+            data: { right: 'bb', left: 'a' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
+            data: { right: 'ccc', left: 'bb' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -3132,10 +2946,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3288,10 +3099,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -3326,10 +3134,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -3365,10 +3170,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'bbb'",
-              left: "'cc'",
-            },
+            data: { right: "'bbb'", left: "'cc'" },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3386,24 +3188,15 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'unknown',
-              left: 'any',
-            },
+            data: { right: 'unknown', left: 'any' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'undefined',
-              left: 'null',
-            },
+            data: { right: 'undefined', left: 'null' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'bigint',
-              left: 'void',
-            },
+            data: { right: 'bigint', left: 'void' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3441,10 +3234,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'aa'",
-              left: "'b'",
-            },
+            data: { right: "'aa'", left: "'b'" },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3458,17 +3248,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'aaa',
-              left: 'bb',
-            },
+            data: { right: 'aaa', left: 'bb' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3507,10 +3291,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '( value: () => void, ) => D | E',
-              left: 'A',
-            },
+            data: { right: '( value: () => void, ) => D | E', left: 'A' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3542,10 +3323,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '100',
-              left: '1',
-            },
+            data: { right: '100', left: '1' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3720,17 +3498,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'E',
-            },
+            data: { right: 'B', left: 'E' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3767,17 +3539,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3822,17 +3588,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3921,10 +3681,7 @@ describe('sort-union-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3960,10 +3717,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4053,10 +3807,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4201,17 +3952,11 @@ describe('sort-union-types', () => {
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'Z',
-            },
+            data: { right: 'BBB', left: 'Z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'Z',
-            },
+            data: { right: 'BBB', left: 'Z' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -4246,10 +3991,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '{ a: string }',
-              left: '() => void',
-            },
+            data: { right: '{ a: string }', left: '() => void' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -4260,10 +4002,7 @@ describe('sort-union-types', () => {
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: '[A]',
-              left: 'A',
-            },
+            data: { right: '[A]', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -4335,10 +4074,7 @@ describe('sort-union-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -4377,10 +4113,7 @@ describe('sort-union-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
@@ -4502,10 +4235,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4534,10 +4264,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4555,10 +4282,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4663,24 +4387,15 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
+            data: { right: 'bb', left: 'a' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
+            data: { right: 'ccc', left: 'bb' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -4760,10 +4475,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4916,10 +4628,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -4954,10 +4663,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -4998,10 +4704,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'bbb'",
-              left: "'cc'",
-            },
+            data: { right: "'bbb'", left: "'cc'" },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5074,10 +4777,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'a'",
-              left: 'b',
-            },
+            data: { right: "'a'", left: 'b' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -5154,10 +4854,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'NumberBase.BASE_10',
-              left: 'NumberBase.BASE_2',
-            },
+            data: { right: 'NumberBase.BASE_10', left: 'NumberBase.BASE_2' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5195,10 +4892,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5224,17 +4918,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'C',
-              left: 'D',
-            },
+            data: { right: 'C', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5266,10 +4954,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5293,10 +4978,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5320,10 +5002,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5369,10 +5048,7 @@ describe('sort-union-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5384,10 +5060,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5411,10 +5084,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5438,10 +5108,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5465,10 +5132,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5514,10 +5178,7 @@ describe('sort-union-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],

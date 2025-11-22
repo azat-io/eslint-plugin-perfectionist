@@ -42,10 +42,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'cc',
-            },
+            data: { right: 'bbb', left: 'cc' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -85,10 +82,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '12',
-              left: '8',
-            },
+            data: { right: '12', left: '8' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -139,10 +133,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'false',
-              left: 'true',
-            },
+            data: { right: 'false', left: 'true' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -190,10 +181,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'aaa',
-              left: 'b',
-            },
+            data: { right: 'aaa', left: 'b' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -251,17 +239,11 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
+            data: { right: 'bbb', left: 'd' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'fff',
-              left: 'gg',
-            },
+            data: { right: 'fff', left: 'gg' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -323,10 +305,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -363,10 +342,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -461,10 +437,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -559,66 +532,39 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
+            data: { right: 'c', left: 'b' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
+            data: { right: 'd', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'e',
-              left: 'd',
-            },
+            data: { right: 'e', left: 'd' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'f',
-              left: 'e',
-            },
+            data: { right: 'f', left: 'e' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'g',
-              left: 'f',
-            },
+            data: { right: 'g', left: 'f' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'h',
-              left: 'g',
-            },
+            data: { right: 'h', left: 'g' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'i',
-              left: 'h',
-            },
+            data: { right: 'i', left: 'h' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'j',
-              left: 'i',
-            },
+            data: { right: 'j', left: 'i' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -734,10 +680,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -757,10 +700,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -782,17 +722,11 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -933,24 +867,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '_BB',
-              left: '_A',
-            },
+            data: { right: '_BB', left: '_A' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: '_CCC',
-              left: '_BB',
-            },
+            data: { right: '_CCC', left: '_BB' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: '_DDDD',
-              left: '_CCC',
-            },
+            data: { right: '_DDDD', left: '_CCC' },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -1032,10 +957,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1179,24 +1101,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'Y',
-              left: 'A',
-            },
+            data: { right: 'Y', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -1239,24 +1152,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'Z',
-              left: 'A',
-            },
+            data: { right: 'Z', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'Y',
-              left: 'Z',
-            },
+            data: { right: 'Y', left: 'Z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'Y',
-            },
+            data: { right: 'B', left: 'Y' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -1351,24 +1255,15 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'C',
-              left: 'B',
-            },
+            data: { right: 'C', left: 'B' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'D',
-              left: 'C',
-            },
+            data: { right: 'D', left: 'C' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -1430,10 +1325,7 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -1482,10 +1374,7 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
@@ -1585,10 +1474,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1638,10 +1524,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'cc',
-            },
+            data: { right: 'bbb', left: 'cc' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1681,10 +1564,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '8',
-              left: '12',
-            },
+            data: { right: '8', left: '12' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1735,10 +1615,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'false',
-              left: 'true',
-            },
+            data: { right: 'false', left: 'true' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1786,10 +1663,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'aaa',
-              left: 'b',
-            },
+            data: { right: 'aaa', left: 'b' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1847,17 +1721,11 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
+            data: { right: 'bbb', left: 'd' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'fff',
-              left: 'gg',
-            },
+            data: { right: 'fff', left: 'gg' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1919,10 +1787,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1959,10 +1824,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2057,10 +1919,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2155,66 +2014,39 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
+            data: { right: 'c', left: 'b' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
+            data: { right: 'd', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'e',
-              left: 'd',
-            },
+            data: { right: 'e', left: 'd' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'f',
-              left: 'e',
-            },
+            data: { right: 'f', left: 'e' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'g',
-              left: 'f',
-            },
+            data: { right: 'g', left: 'f' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'h',
-              left: 'g',
-            },
+            data: { right: 'h', left: 'g' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'i',
-              left: 'h',
-            },
+            data: { right: 'i', left: 'h' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'j',
-              left: 'i',
-            },
+            data: { right: 'j', left: 'i' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2312,10 +2144,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2335,10 +2164,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2464,24 +2290,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '_BB',
-              left: '_A',
-            },
+            data: { right: '_BB', left: '_A' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: '_CCC',
-              left: '_BB',
-            },
+            data: { right: '_CCC', left: '_BB' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: '_DDDD',
-              left: '_CCC',
-            },
+            data: { right: '_DDDD', left: '_CCC' },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -2563,10 +2380,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2710,24 +2524,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'Y',
-              left: 'A',
-            },
+            data: { right: 'Y', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -2770,24 +2575,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'Z',
-              left: 'A',
-            },
+            data: { right: 'Z', left: 'A' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'Y',
-              left: 'Z',
-            },
+            data: { right: 'Y', left: 'Z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'Y',
-            },
+            data: { right: 'B', left: 'Y' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -2882,24 +2678,15 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'C',
-              left: 'B',
-            },
+            data: { right: 'C', left: 'B' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'D',
-              left: 'C',
-            },
+            data: { right: 'D', left: 'C' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -2961,10 +2748,7 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -3013,10 +2797,7 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
@@ -3116,10 +2897,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3169,10 +2947,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'cc',
-            },
+            data: { right: 'bbb', left: 'cc' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3212,10 +2987,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '12',
-              left: '8',
-            },
+            data: { right: '12', left: '8' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3266,10 +3038,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'false',
-              left: 'true',
-            },
+            data: { right: 'false', left: 'true' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3317,10 +3086,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'aaa',
-              left: 'b',
-            },
+            data: { right: 'aaa', left: 'b' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3378,10 +3144,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
+            data: { right: 'bbb', left: 'd' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3443,10 +3206,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3483,10 +3243,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3581,10 +3338,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3679,17 +3433,11 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'j',
-              left: 'i',
-            },
+            data: { right: 'j', left: 'i' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'k',
-              left: 'j',
-            },
+            data: { right: 'k', left: 'j' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3787,10 +3535,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3810,10 +3555,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3939,24 +3681,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '_BB',
-              left: '_A',
-            },
+            data: { right: '_BB', left: '_A' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: '_CCC',
-              left: '_BB',
-            },
+            data: { right: '_CCC', left: '_BB' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: '_DDDD',
-              left: '_CCC',
-            },
+            data: { right: '_DDDD', left: '_CCC' },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -4038,10 +3771,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4192,17 +3922,11 @@ describe('sort-enums', () => {
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'Z',
-            },
+            data: { right: 'BBB', left: 'Z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'Z',
-            },
+            data: { right: 'BBB', left: 'Z' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -4252,17 +3976,11 @@ describe('sort-enums', () => {
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'YY',
-              left: 'Z',
-            },
+            data: { right: 'YY', left: 'Z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'YY',
-            },
+            data: { right: 'BBB', left: 'YY' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -4357,24 +4075,15 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'C',
-              left: 'B',
-            },
+            data: { right: 'C', left: 'B' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: {
-              right: 'D',
-              left: 'C',
-            },
+            data: { right: 'D', left: 'C' },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -4436,10 +4145,7 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -4488,10 +4194,7 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
@@ -4591,10 +4294,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4649,10 +4349,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'cc',
-            },
+            data: { right: 'bbb', left: 'cc' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4765,10 +4462,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -4792,10 +4486,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-            },
+            data: { nodeDependentOnRight: 'a', right: 'b' },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -4936,17 +4627,11 @@ describe('sort-enums', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'a',
-                left: 'b',
-              },
+              data: { right: 'a', left: 'b' },
               messageId: ORDER_ERROR_ID,
             },
             {
-              data: {
-                right: 'c',
-                left: 'a',
-              },
+              data: { right: 'c', left: 'a' },
               messageId: ORDER_ERROR_ID,
             },
           ],
@@ -4980,17 +4665,11 @@ describe('sort-enums', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'a',
-                left: 'b',
-              },
+              data: { right: 'a', left: 'b' },
               messageId: ORDER_ERROR_ID,
             },
             {
-              data: {
-                right: 'c',
-                left: 'a',
-              },
+              data: { right: 'c', left: 'a' },
               messageId: ORDER_ERROR_ID,
             },
           ],
@@ -5044,10 +4723,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5072,10 +4748,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5103,10 +4776,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5134,10 +4804,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5165,10 +4832,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5196,10 +4860,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'A',
-              right: 'C',
-            },
+            data: { nodeDependentOnRight: 'A', right: 'C' },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -5267,10 +4928,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5286,10 +4944,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'B',
-              right: 'A',
-            },
+            data: { nodeDependentOnRight: 'B', right: 'A' },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -5386,10 +5041,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5455,17 +5107,11 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5482,17 +5128,11 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'C',
-              left: 'D',
-            },
+            data: { right: 'C', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'A',
-              left: 'E',
-            },
+            data: { right: 'A', left: 'E' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5542,10 +5182,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5571,17 +5208,11 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'C',
-              left: 'D',
-            },
+            data: { right: 'C', left: 'D' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5613,10 +5244,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5642,10 +5270,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5669,10 +5294,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5698,10 +5320,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5749,10 +5368,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5778,10 +5394,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5791,10 +5404,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5834,10 +5444,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5854,10 +5461,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5898,10 +5502,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: ORDER_ERROR_ID,
           },
         ],
