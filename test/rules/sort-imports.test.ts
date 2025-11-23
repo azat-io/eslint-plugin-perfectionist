@@ -13,14 +13,6 @@ import dedent from 'dedent'
 import type { Options } from '../../rules/sort-imports/types'
 import type { MessageId } from '../../rules/sort-imports'
 
-import {
-  MISSED_COMMENT_ABOVE_ERROR_ID,
-  DEPENDENCY_ORDER_ERROR_ID,
-  MISSED_SPACING_ERROR_ID,
-  EXTRA_SPACING_ERROR_ID,
-  GROUP_ORDER_ERROR_ID,
-  ORDER_ERROR_ID,
-} from '../../rules/sort-imports'
 import * as readClosestTsConfigUtilities from '../../rules/sort-imports/read-closest-ts-config-by-path'
 import * as getTypescriptImportUtilities from '../../rules/sort-imports/get-typescript-import'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
@@ -72,7 +64,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -125,7 +117,7 @@ describe('sort-imports', () => {
               right: 'e/a',
               left: 'e/b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
@@ -134,14 +126,14 @@ describe('sort-imports', () => {
               right: '~/i',
               left: '~/b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: './d',
               left: '~/i',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -150,21 +142,21 @@ describe('sort-imports', () => {
               left: './d',
               right: 'fs',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: '~/c',
               left: 'fs',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               right: '../../h',
               left: '../f',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -173,7 +165,7 @@ describe('sort-imports', () => {
               right: './index.d.ts',
               left: '../../h',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -182,14 +174,14 @@ describe('sort-imports', () => {
               right: 't',
               left: '.',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: './style.css',
               left: 't',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -273,7 +265,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: '.',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -282,7 +274,7 @@ describe('sort-imports', () => {
               left: '~/c',
               right: 't',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -291,7 +283,7 @@ describe('sort-imports', () => {
               left: '../../e',
               right: '~/b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         code: dedent`
@@ -340,14 +332,14 @@ describe('sort-imports', () => {
               right: '~/b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
           {
             data: {
               right: '~/d',
               left: '~/c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
         ],
         code: dedent`
@@ -392,7 +384,7 @@ describe('sort-imports', () => {
               right: '../b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -401,7 +393,7 @@ describe('sort-imports', () => {
               left: 'console.log',
               right: 'c/c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -454,14 +446,14 @@ describe('sort-imports', () => {
               left: '../t',
               right: '~/u',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
           {
             data: {
               left: '~/u',
               right: 'v',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
         ],
         options: [
@@ -585,7 +577,7 @@ describe('sort-imports', () => {
               right: './index',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -609,7 +601,7 @@ describe('sort-imports', () => {
               right: './b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
           {
             data: {
@@ -618,7 +610,7 @@ describe('sort-imports', () => {
               left: './b',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         code: dedent`
@@ -670,14 +662,14 @@ describe('sort-imports', () => {
               right: '#c',
               left: '#b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               right: '#b',
               left: '#c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -737,7 +729,7 @@ describe('sort-imports', () => {
               right: 'bun:test',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -775,7 +767,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -818,7 +810,7 @@ describe('sort-imports', () => {
               right: 'e/a',
               left: 'e/b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
@@ -827,28 +819,28 @@ describe('sort-imports', () => {
               left: '~/b',
               right: 'fs',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: '~/c',
               left: 'fs',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               left: '../../h',
               right: '.',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               left: '../../h',
               right: '.',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -930,21 +922,21 @@ describe('sort-imports', () => {
               left: 'bbb',
               right: 'e',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: 'aaaa',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: '../d',
               left: 'aaaa',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         options: [
@@ -980,14 +972,14 @@ describe('sort-imports', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: 'aaa',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -1018,14 +1010,14 @@ describe('sort-imports', () => {
               right: './b-side-effect',
               left: './b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               left: './a-side-effect',
               right: './a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -1061,7 +1053,7 @@ describe('sort-imports', () => {
               left: './z-side-effect.scss',
               right: './b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -1070,14 +1062,14 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './a-side-effect',
               right: './a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -1114,7 +1106,7 @@ describe('sort-imports', () => {
               left: './z-side-effect.scss',
               right: './b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -1123,14 +1115,14 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './a-side-effect',
               right: './a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -1167,7 +1159,7 @@ describe('sort-imports', () => {
               left: './z-side-effect.scss',
               right: './b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -1176,14 +1168,14 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: './g-side-effect.css',
               left: './b-side-effect',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -1192,14 +1184,14 @@ describe('sort-imports', () => {
               rightGroup: 'side-effect',
               right: './a-side-effect',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './a-side-effect',
               right: './a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -1239,14 +1231,14 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './b-side-effect.scss',
               right: './g-side-effect',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -1255,14 +1247,14 @@ describe('sort-imports', () => {
               left: './g-side-effect',
               leftGroup: 'unknown',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './a-side-effect.css',
               right: './a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -1364,21 +1356,21 @@ describe('sort-imports', () => {
                 right: '~/y',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenImports',
             },
             {
               data: {
                 right: '~/b',
                 left: '~/z',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedImportsOrder',
             },
             {
               data: {
                 right: '~/b',
                 left: '~/z',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenImports',
             },
           ],
           code: dedent`
@@ -1455,7 +1447,7 @@ describe('sort-imports', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenImports',
             },
           ],
           output: dedent`
@@ -1530,7 +1522,7 @@ describe('sort-imports', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -1638,7 +1630,7 @@ describe('sort-imports', () => {
               right: './a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -1686,7 +1678,7 @@ describe('sort-imports', () => {
               right: './b',
               left: './c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -1716,7 +1708,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -1735,7 +1727,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -1756,14 +1748,14 @@ describe('sort-imports', () => {
               left: './organisms',
               right: './atoms',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               left: './second-folder',
               right: './folder',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -1828,14 +1820,14 @@ describe('sort-imports', () => {
               right: './bbb',
               left: './d',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: './fff',
               left: './gg',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -1894,7 +1886,7 @@ describe('sort-imports', () => {
               right: './bb',
               left: './c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -1932,7 +1924,7 @@ describe('sort-imports', () => {
               right: './a',
               left: './b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -2020,7 +2012,7 @@ describe('sort-imports', () => {
               right: './a',
               left: './b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -2125,7 +2117,7 @@ describe('sort-imports', () => {
               rightGroup: 'style',
               left: './a.js',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -2158,7 +2150,7 @@ describe('sort-imports', () => {
               right: './index',
               left: './a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2190,7 +2182,7 @@ describe('sort-imports', () => {
               right: './index',
               left: './a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2222,7 +2214,7 @@ describe('sort-imports', () => {
               right: 'style.css',
               left: 'something',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2254,7 +2246,7 @@ describe('sort-imports', () => {
               leftGroup: 'style',
               left: 'style.css',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2327,7 +2319,7 @@ describe('sort-imports', () => {
               right: 'style.css',
               left: 'timers',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         before: () => {
@@ -2350,7 +2342,7 @@ describe('sort-imports', () => {
               left: './a',
               right: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2382,7 +2374,7 @@ describe('sort-imports', () => {
               right: 'z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2414,7 +2406,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2447,7 +2439,7 @@ describe('sort-imports', () => {
               right: 'z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2479,7 +2471,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2511,7 +2503,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2543,7 +2535,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2575,7 +2567,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2613,7 +2605,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2643,14 +2635,14 @@ describe('sort-imports', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         options: [
@@ -2699,7 +2691,7 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2734,21 +2726,21 @@ describe('sort-imports', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
@@ -2757,7 +2749,7 @@ describe('sort-imports', () => {
               left: './jjjjj',
               right: 'eee',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -2830,7 +2822,7 @@ describe('sort-imports', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -2867,7 +2859,7 @@ describe('sort-imports', () => {
               left: './something',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -2919,14 +2911,14 @@ describe('sort-imports', () => {
               right: './c',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: './index',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -2970,7 +2962,7 @@ describe('sort-imports', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenImports',
             },
           ],
           output: dedent`
@@ -3009,7 +3001,7 @@ describe('sort-imports', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -3032,7 +3024,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -3058,7 +3050,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -3084,7 +3076,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -3110,7 +3102,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -3177,14 +3169,14 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
           {
             data: {
               left: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -3206,7 +3198,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         output: dedent`
@@ -3238,7 +3230,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -3269,14 +3261,14 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'yImport.y1.y2',
               right: 'z',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         output: dedent`
@@ -3327,7 +3319,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -3352,7 +3344,7 @@ describe('sort-imports', () => {
               right: '@/a',
               left: 'b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         options: [
@@ -3382,14 +3374,14 @@ describe('sort-imports', () => {
               missedCommentAbove: 'Comment above a',
               right: 'a',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
           {
             data: {
               missedCommentAbove: 'Comment above b',
               right: './b',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
         ],
         options: [
@@ -3424,7 +3416,7 @@ describe('sort-imports', () => {
               missedCommentAbove: 'Comment above',
               right: 'a',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
         ],
         options: [
@@ -3451,14 +3443,14 @@ describe('sort-imports', () => {
               missedCommentAbove: 'Comment above',
               right: 'b',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -3540,14 +3532,14 @@ describe('sort-imports', () => {
               missedCommentAbove: 'internal',
               right: '~/d',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
           {
             data: {
               right: '~/c',
               left: '~/d',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
@@ -3556,7 +3548,7 @@ describe('sort-imports', () => {
               right: './b',
               left: '~/c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -3565,7 +3557,7 @@ describe('sort-imports', () => {
               left: './b',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -3611,7 +3603,7 @@ describe('sort-imports', () => {
               missedCommentAbove: 'internal or sibling',
               right: './c',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
           {
             data: {
@@ -3620,21 +3612,21 @@ describe('sort-imports', () => {
               left: './c',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: '~/b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               missedCommentAbove: 'internal or sibling',
               right: '~/b',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
         ],
         code: dedent`
@@ -3705,7 +3697,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -3758,7 +3750,7 @@ describe('sort-imports', () => {
               right: 'e/a',
               left: 'e/b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
@@ -3767,14 +3759,14 @@ describe('sort-imports', () => {
               right: '~/i',
               left: '~/b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: './d',
               left: '~/i',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -3783,21 +3775,21 @@ describe('sort-imports', () => {
               left: './d',
               right: 'fs',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: '~/c',
               left: 'fs',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               right: '../../h',
               left: '../f',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -3806,7 +3798,7 @@ describe('sort-imports', () => {
               right: './index.d.ts',
               left: '../../h',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -3815,14 +3807,14 @@ describe('sort-imports', () => {
               right: 't',
               left: '.',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: './style.css',
               left: 't',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -3906,7 +3898,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: '.',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -3915,7 +3907,7 @@ describe('sort-imports', () => {
               left: '~/c',
               right: 't',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -3924,7 +3916,7 @@ describe('sort-imports', () => {
               left: '../../e',
               right: '~/b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         code: dedent`
@@ -3973,14 +3965,14 @@ describe('sort-imports', () => {
               right: '~/b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
           {
             data: {
               right: '~/d',
               left: '~/c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
         ],
         code: dedent`
@@ -4025,7 +4017,7 @@ describe('sort-imports', () => {
               right: '../b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -4034,7 +4026,7 @@ describe('sort-imports', () => {
               left: 'console.log',
               right: 'c/c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -4087,21 +4079,21 @@ describe('sort-imports', () => {
               left: '../t',
               right: '~/u',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
           {
             data: {
               left: '~/u',
               right: 'v',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               left: '~/u',
               right: 'v',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
         ],
         options: [
@@ -4225,7 +4217,7 @@ describe('sort-imports', () => {
               right: './index',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -4249,7 +4241,7 @@ describe('sort-imports', () => {
               right: './b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
           {
             data: {
@@ -4258,7 +4250,7 @@ describe('sort-imports', () => {
               left: './b',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         code: dedent`
@@ -4310,14 +4302,14 @@ describe('sort-imports', () => {
               right: '#c',
               left: '#b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               right: '#b',
               left: '#c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -4377,7 +4369,7 @@ describe('sort-imports', () => {
               right: 'bun:test',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -4415,7 +4407,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -4458,7 +4450,7 @@ describe('sort-imports', () => {
               right: 'e/a',
               left: 'e/b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
@@ -4467,28 +4459,28 @@ describe('sort-imports', () => {
               left: '~/b',
               right: 'fs',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: '~/c',
               left: 'fs',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               left: '../../h',
               right: '.',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               left: '../../h',
               right: '.',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -4570,21 +4562,21 @@ describe('sort-imports', () => {
               left: 'bbb',
               right: 'e',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: 'aaaa',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: '../d',
               left: 'aaaa',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         options: [
@@ -4620,14 +4612,14 @@ describe('sort-imports', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: 'aaa',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -4658,14 +4650,14 @@ describe('sort-imports', () => {
               right: './b-side-effect',
               left: './b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               left: './a-side-effect',
               right: './a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -4701,7 +4693,7 @@ describe('sort-imports', () => {
               left: './z-side-effect.scss',
               right: './b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -4710,14 +4702,14 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './a-side-effect',
               right: './a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -4754,7 +4746,7 @@ describe('sort-imports', () => {
               left: './z-side-effect.scss',
               right: './b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -4763,14 +4755,14 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './a-side-effect',
               right: './a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -4807,7 +4799,7 @@ describe('sort-imports', () => {
               left: './z-side-effect.scss',
               right: './b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -4816,14 +4808,14 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: './g-side-effect.css',
               left: './b-side-effect',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -4832,14 +4824,14 @@ describe('sort-imports', () => {
               rightGroup: 'side-effect',
               right: './a-side-effect',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './a-side-effect',
               right: './a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -4879,14 +4871,14 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './b-side-effect.scss',
               right: './g-side-effect',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -4895,14 +4887,14 @@ describe('sort-imports', () => {
               left: './g-side-effect',
               leftGroup: 'unknown',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './a-side-effect.css',
               right: './a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -5004,21 +4996,21 @@ describe('sort-imports', () => {
                 right: '~/y',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenImports',
             },
             {
               data: {
                 right: '~/b',
                 left: '~/z',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedImportsOrder',
             },
             {
               data: {
                 right: '~/b',
                 left: '~/z',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenImports',
             },
           ],
           code: dedent`
@@ -5095,7 +5087,7 @@ describe('sort-imports', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenImports',
             },
           ],
           output: dedent`
@@ -5170,7 +5162,7 @@ describe('sort-imports', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -5278,7 +5270,7 @@ describe('sort-imports', () => {
               right: './a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -5326,7 +5318,7 @@ describe('sort-imports', () => {
               right: './b',
               left: './c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -5356,7 +5348,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -5375,7 +5367,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -5396,14 +5388,14 @@ describe('sort-imports', () => {
               left: './organisms',
               right: './atoms',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               left: './second-folder',
               right: './folder',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -5468,14 +5460,14 @@ describe('sort-imports', () => {
               right: './bbb',
               left: './d',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: './fff',
               left: './gg',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -5534,7 +5526,7 @@ describe('sort-imports', () => {
               right: './bb',
               left: './c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -5572,7 +5564,7 @@ describe('sort-imports', () => {
               right: './a',
               left: './b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -5660,7 +5652,7 @@ describe('sort-imports', () => {
               right: './a',
               left: './b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -5765,7 +5757,7 @@ describe('sort-imports', () => {
               rightGroup: 'style',
               left: './a.js',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -5798,7 +5790,7 @@ describe('sort-imports', () => {
               right: './index',
               left: './a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -5830,7 +5822,7 @@ describe('sort-imports', () => {
               right: './index',
               left: './a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -5862,7 +5854,7 @@ describe('sort-imports', () => {
               right: 'style.css',
               left: 'something',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -5894,7 +5886,7 @@ describe('sort-imports', () => {
               leftGroup: 'style',
               left: 'style.css',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -5918,6 +5910,24 @@ describe('sort-imports', () => {
 
     it('prioritizes style imports over other import types', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              right: '#subpath',
+              left: './index',
+            },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: {
+              leftGroup: 'builtin',
+              rightGroup: 'style',
+              right: 'style.css',
+              left: 'timers',
+            },
+            messageId: 'unexpectedImportsGroupOrder',
+          },
+        ],
         options: [
           {
             ...options,
@@ -5935,24 +5945,6 @@ describe('sort-imports', () => {
               ],
             ],
             tsconfig: { rootDir: '.' },
-          },
-        ],
-        errors: [
-          {
-            data: {
-              right: '#subpath',
-              left: './index',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              leftGroup: 'builtin',
-              rightGroup: 'style',
-              right: 'style.css',
-              left: 'timers',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5997,7 +5989,7 @@ describe('sort-imports', () => {
               left: './a',
               right: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -6029,7 +6021,7 @@ describe('sort-imports', () => {
               right: 'z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -6061,7 +6053,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -6094,7 +6086,7 @@ describe('sort-imports', () => {
               right: 'z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -6126,7 +6118,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -6158,7 +6150,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -6190,7 +6182,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -6233,7 +6225,7 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -6268,21 +6260,21 @@ describe('sort-imports', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
@@ -6291,7 +6283,7 @@ describe('sort-imports', () => {
               left: './jjjjj',
               right: 'eee',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -6364,7 +6356,7 @@ describe('sort-imports', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -6401,7 +6393,7 @@ describe('sort-imports', () => {
               left: './something',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -6453,14 +6445,14 @@ describe('sort-imports', () => {
               right: './c',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: './index',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -6490,7 +6482,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -6516,7 +6508,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -6542,7 +6534,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -6568,7 +6560,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -6635,14 +6627,14 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
           {
             data: {
               left: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -6664,7 +6656,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         output: dedent`
@@ -6696,7 +6688,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -6727,14 +6719,14 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'yImport.y1.y2',
               right: 'z',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         output: dedent`
@@ -6785,7 +6777,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -6810,7 +6802,7 @@ describe('sort-imports', () => {
               right: '@/a',
               left: 'b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         options: [
@@ -6840,14 +6832,14 @@ describe('sort-imports', () => {
               missedCommentAbove: 'Comment above a',
               right: 'a',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
           {
             data: {
               missedCommentAbove: 'Comment above b',
               right: './b',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
         ],
         options: [
@@ -6882,7 +6874,7 @@ describe('sort-imports', () => {
               missedCommentAbove: 'Comment above',
               right: 'a',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
         ],
         options: [
@@ -6909,14 +6901,14 @@ describe('sort-imports', () => {
               missedCommentAbove: 'Comment above',
               right: 'b',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -6998,14 +6990,14 @@ describe('sort-imports', () => {
               missedCommentAbove: 'internal',
               right: '~/d',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
           {
             data: {
               right: '~/c',
               left: '~/d',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
@@ -7014,7 +7006,7 @@ describe('sort-imports', () => {
               right: './b',
               left: '~/c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -7023,7 +7015,7 @@ describe('sort-imports', () => {
               left: './b',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -7069,7 +7061,7 @@ describe('sort-imports', () => {
               missedCommentAbove: 'internal or sibling',
               right: './c',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
           {
             data: {
@@ -7078,21 +7070,21 @@ describe('sort-imports', () => {
               left: './c',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: '~/b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               missedCommentAbove: 'internal or sibling',
               right: '~/b',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
         ],
         code: dedent`
@@ -7163,7 +7155,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -7218,14 +7210,14 @@ describe('sort-imports', () => {
               right: '~/i',
               left: '~/b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: './d',
               left: '~/i',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -7234,35 +7226,35 @@ describe('sort-imports', () => {
               left: './d',
               right: 'fs',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: '~/c',
               left: 'fs',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               right: '~/i',
               left: '~/c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: '../f',
               left: '.',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: '../../h',
               left: '../f',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -7271,7 +7263,7 @@ describe('sort-imports', () => {
               right: './index.d.ts',
               left: '../../h',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -7280,28 +7272,28 @@ describe('sort-imports', () => {
               right: 't',
               left: '.',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: './style.css',
               left: 't',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               left: './style.css',
               right: '../j',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: '../k',
               left: '../j',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -7385,7 +7377,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: '.',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -7394,7 +7386,7 @@ describe('sort-imports', () => {
               left: '~/c',
               right: 't',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -7403,7 +7395,7 @@ describe('sort-imports', () => {
               left: '../../e',
               right: '~/b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         code: dedent`
@@ -7452,14 +7444,14 @@ describe('sort-imports', () => {
               right: '~/b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
           {
             data: {
               right: '~/d',
               left: '~/c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
         ],
         code: dedent`
@@ -7504,7 +7496,7 @@ describe('sort-imports', () => {
               right: '../b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -7513,7 +7505,7 @@ describe('sort-imports', () => {
               left: 'console.log',
               right: 'c/c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -7566,14 +7558,14 @@ describe('sort-imports', () => {
               left: '../t',
               right: '~/u',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
           {
             data: {
               left: '~/u',
               right: 'v',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
         ],
         options: [
@@ -7697,7 +7689,7 @@ describe('sort-imports', () => {
               right: './index',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -7721,7 +7713,7 @@ describe('sort-imports', () => {
               right: './b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
           {
             data: {
@@ -7730,7 +7722,7 @@ describe('sort-imports', () => {
               left: './b',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         code: dedent`
@@ -7761,21 +7753,21 @@ describe('sort-imports', () => {
               right: '@a/a1',
               left: 't',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
           {
             data: {
               right: '@b/b1',
               left: '@a/a2',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               left: '@b/b3',
               right: 'c',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         options: [
@@ -7848,14 +7840,14 @@ describe('sort-imports', () => {
               right: '#c',
               left: '#b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               right: '#b',
               left: '#c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -7915,7 +7907,7 @@ describe('sort-imports', () => {
               right: 'bun:test',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -7953,7 +7945,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -7998,42 +7990,42 @@ describe('sort-imports', () => {
               left: '~/b',
               right: 'fs',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: '~/c',
               left: 'fs',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               right: '~/i',
               left: '~/c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               left: '../../h',
               right: '.',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
           {
             data: {
               right: '../j',
               left: '.',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: '../k',
               left: '../j',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -8115,21 +8107,21 @@ describe('sort-imports', () => {
               left: 'bbb',
               right: 'e',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: 'aaaa',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: '../d',
               left: 'aaaa',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         options: [
@@ -8165,14 +8157,14 @@ describe('sort-imports', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: 'aaa',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -8219,7 +8211,7 @@ describe('sort-imports', () => {
               right: './aa',
               left: './b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -8239,7 +8231,7 @@ describe('sort-imports', () => {
               left: './z-side-effect.scss',
               right: './b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -8248,14 +8240,14 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './a-side-effect',
               right: './a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -8292,7 +8284,7 @@ describe('sort-imports', () => {
               left: './z-side-effect.scss',
               right: './b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -8301,14 +8293,14 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './a-side-effect',
               right: './a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -8345,7 +8337,7 @@ describe('sort-imports', () => {
               left: './z-side-effect.scss',
               right: './b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -8354,14 +8346,14 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: './g-side-effect.css',
               left: './b-side-effect',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -8370,14 +8362,14 @@ describe('sort-imports', () => {
               rightGroup: 'side-effect',
               right: './a-side-effect',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './a-side-effect',
               right: './a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -8417,14 +8409,14 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './b-side-effect.scss',
               right: './g-side-effect',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -8433,14 +8425,14 @@ describe('sort-imports', () => {
               left: './g-side-effect',
               leftGroup: 'unknown',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: './a-side-effect.css',
               right: './a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -8542,21 +8534,21 @@ describe('sort-imports', () => {
                 right: '~/y',
                 left: 'aaaa',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenImports',
             },
             {
               data: {
                 right: '~/bb',
                 left: '~/z',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedImportsOrder',
             },
             {
               data: {
                 right: '~/bb',
                 left: '~/z',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenImports',
             },
           ],
           code: dedent`
@@ -8633,7 +8625,7 @@ describe('sort-imports', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenImports',
             },
           ],
           output: dedent`
@@ -8708,7 +8700,7 @@ describe('sort-imports', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -8816,7 +8808,7 @@ describe('sort-imports', () => {
               right: './a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -8864,7 +8856,7 @@ describe('sort-imports', () => {
               right: './bb',
               left: './c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -8894,7 +8886,7 @@ describe('sort-imports', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -8913,7 +8905,7 @@ describe('sort-imports', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -8950,7 +8942,7 @@ describe('sort-imports', () => {
               right: './shared',
               left: './atoms',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -8999,14 +8991,14 @@ describe('sort-imports', () => {
               right: './bbb',
               left: './d',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: './fff',
               left: './gg',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -9065,7 +9057,7 @@ describe('sort-imports', () => {
               right: './bb',
               left: './c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -9103,7 +9095,7 @@ describe('sort-imports', () => {
               right: './aa',
               left: './b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -9191,7 +9183,7 @@ describe('sort-imports', () => {
               right: './aa',
               left: './b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -9296,7 +9288,7 @@ describe('sort-imports', () => {
               rightGroup: 'style',
               left: './a.js',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -9329,7 +9321,7 @@ describe('sort-imports', () => {
               right: './index',
               left: './a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9361,7 +9353,7 @@ describe('sort-imports', () => {
               right: './index',
               left: './a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9393,7 +9385,7 @@ describe('sort-imports', () => {
               right: 'style.css',
               left: 'something',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9425,7 +9417,7 @@ describe('sort-imports', () => {
               leftGroup: 'style',
               left: 'style.css',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9455,28 +9447,28 @@ describe('sort-imports', () => {
               right: './index',
               left: './b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: '#subpath',
               left: './index',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               left: '#subpath',
               right: '$path',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: 'timers',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
@@ -9485,7 +9477,7 @@ describe('sort-imports', () => {
               right: 'style.css',
               left: 'timers',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9549,7 +9541,7 @@ describe('sort-imports', () => {
               left: './aa',
               right: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9581,7 +9573,7 @@ describe('sort-imports', () => {
               right: 'z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9613,7 +9605,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9646,7 +9638,7 @@ describe('sort-imports', () => {
               right: 'z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9678,7 +9670,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9710,7 +9702,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9742,7 +9734,7 @@ describe('sort-imports', () => {
               right: './z',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9785,7 +9777,7 @@ describe('sort-imports', () => {
               leftGroup: 'unknown',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9820,21 +9812,21 @@ describe('sort-imports', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
@@ -9843,7 +9835,7 @@ describe('sort-imports', () => {
               left: './jjjjj',
               right: 'eee',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -9916,7 +9908,7 @@ describe('sort-imports', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -9953,7 +9945,7 @@ describe('sort-imports', () => {
               left: './something',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -10005,14 +9997,14 @@ describe('sort-imports', () => {
               right: './c',
               left: './b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: './index',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -10042,7 +10034,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -10068,7 +10060,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -10094,7 +10086,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -10120,7 +10112,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -10187,14 +10179,14 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
           {
             data: {
               left: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -10216,7 +10208,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         output: dedent`
@@ -10248,7 +10240,7 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         options: [
@@ -10279,14 +10271,14 @@ describe('sort-imports', () => {
               nodeDependentOnRight: 'yImport.y1.y2',
               right: 'z',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'aImport.a1.a2',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         output: dedent`
@@ -10337,7 +10329,7 @@ describe('sort-imports', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -10362,7 +10354,7 @@ describe('sort-imports', () => {
               right: '@/a',
               left: 'b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         options: [
@@ -10392,14 +10384,14 @@ describe('sort-imports', () => {
               missedCommentAbove: 'Comment above a',
               right: 'a',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
           {
             data: {
               missedCommentAbove: 'Comment above b',
               right: './b',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
         ],
         options: [
@@ -10434,7 +10426,7 @@ describe('sort-imports', () => {
               missedCommentAbove: 'Comment above',
               right: 'a',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
         ],
         options: [
@@ -10461,14 +10453,14 @@ describe('sort-imports', () => {
               missedCommentAbove: 'Comment above',
               right: 'b',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
           {
             data: {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -10550,14 +10542,14 @@ describe('sort-imports', () => {
               missedCommentAbove: 'internal',
               right: '~/d',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
           {
             data: {
               right: '~/cc',
               left: '~/d',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
@@ -10566,7 +10558,7 @@ describe('sort-imports', () => {
               right: './bbb',
               left: '~/cc',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -10575,7 +10567,7 @@ describe('sort-imports', () => {
               left: './bbb',
               right: 'aaaa',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         options: [
@@ -10621,7 +10613,7 @@ describe('sort-imports', () => {
               missedCommentAbove: 'internal or sibling',
               right: './c',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
           {
             data: {
@@ -10630,21 +10622,21 @@ describe('sort-imports', () => {
               left: './c',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: '~/b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
               missedCommentAbove: 'internal or sibling',
               right: '~/b',
             },
-            messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
+            messageId: 'missedCommentAboveImport',
           },
         ],
         code: dedent`
@@ -10734,21 +10726,21 @@ describe('sort-imports', () => {
               right: 'app/components/LongName',
               left: 'IWillNotBeSplitUp',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               left: 'app/components/LongName',
               right: 'app/components/Short',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               left: 'IWillNotBePutOntoNewLines',
               right: 'IWillDefinitelyBeSplitUp',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [
@@ -10789,7 +10781,7 @@ describe('sort-imports', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -10897,7 +10889,7 @@ describe('sort-imports', () => {
               right: '~/b',
               left: '~/c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -10944,7 +10936,7 @@ describe('sort-imports', () => {
               left: 'node:fs/promises',
               right: 'react',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -10987,7 +10979,7 @@ describe('sort-imports', () => {
               left: '~/hooks/useClient',
               right: '~/data',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -10996,7 +10988,7 @@ describe('sort-imports', () => {
               leftGroup: 'side-effect',
               left: '~/data',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -11196,7 +11188,7 @@ describe('sort-imports', () => {
               leftGroup: 'sibling',
               rightGroup: 'utils',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -11205,7 +11197,7 @@ describe('sort-imports', () => {
               left: '~/utils/ws.ts',
               leftGroup: 'utils',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
@@ -11214,14 +11206,14 @@ describe('sort-imports', () => {
               leftGroup: 'services',
               rightGroup: 'stores',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               left: '~/stores/userStore.ts',
               right: '~/utils/dateTime.ts',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
           {
             data: {
@@ -11230,14 +11222,14 @@ describe('sort-imports', () => {
               leftGroup: 'composable',
               rightGroup: 'stores',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsGroupOrder',
           },
           {
             data: {
               right: '~/composable/useDebounce.ts',
               left: '~/stores/cartStore.ts',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -11595,7 +11587,7 @@ describe('sort-imports', () => {
               right: './b',
               left: './c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -11620,14 +11612,14 @@ describe('sort-imports', () => {
               right: './c',
               left: './d',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
           {
             data: {
               right: './b',
               left: './a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -11658,7 +11650,7 @@ describe('sort-imports', () => {
               right: './b',
               left: './c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -11681,7 +11673,7 @@ describe('sort-imports', () => {
               right: './b',
               left: './c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -11706,7 +11698,7 @@ describe('sort-imports', () => {
               right: './b',
               left: './c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -11749,7 +11741,7 @@ describe('sort-imports', () => {
               right: './a',
               left: './b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [{}],
@@ -11774,13 +11766,22 @@ describe('sort-imports', () => {
               right: './b',
               left: './c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [{}],
       })
 
       await invalid({
+        errors: [
+          {
+            data: {
+              right: './b',
+              left: './c',
+            },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
         output: dedent`
           import { b } from './b'
           import { c } from './c'
@@ -11791,15 +11792,6 @@ describe('sort-imports', () => {
           import { b } from './b'
           import { a } from './a' // eslint-disable-line rule-to-test/sort-imports
         `,
-        errors: [
-          {
-            data: {
-              right: './b',
-              left: './c',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
@@ -11822,13 +11814,22 @@ describe('sort-imports', () => {
               right: './b',
               left: './c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [{}],
       })
 
       await invalid({
+        errors: [
+          {
+            data: {
+              right: './b',
+              left: './c',
+            },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
         output: dedent`
           import { b } from './b'
           import { c } from './c'
@@ -11839,15 +11840,6 @@ describe('sort-imports', () => {
           import { b } from './b'
           import { a } from './a' /* eslint-disable-line rule-to-test/sort-imports */
         `,
-        errors: [
-          {
-            data: {
-              right: './b',
-              left: './c',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
@@ -11878,7 +11870,7 @@ describe('sort-imports', () => {
               right: './a',
               left: './b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         options: [{}],

@@ -3,15 +3,9 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
-import rule, {
-  DEPENDENCY_ORDER_ERROR_ID,
-  MISSED_SPACING_ERROR_ID,
-  EXTRA_SPACING_ERROR_ID,
-  GROUP_ORDER_ERROR_ID,
-  ORDER_ERROR_ID,
-} from '../../rules/sort-modules'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
+import rule from '../../rules/sort-modules'
 
 describe('sort-modules', () => {
   let { invalid, valid } = createRuleTester({
@@ -28,6 +22,44 @@ describe('sort-modules', () => {
 
     it('sorts modules according to group hierarchy', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'export-interface',
+              left: 'FindUserInput',
+              right: 'CacheType',
+              rightGroup: 'enum',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'export-function',
+              left: 'assertInputIsCorrect',
+              leftGroup: 'function',
+              right: 'findUser',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'export-function',
+              right: 'FindAllUsersInput',
+              rightGroup: 'export-type',
+              left: 'findUser',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'export-function',
+              left: 'findAllUsers',
+              rightGroup: 'class',
+              right: 'Cache',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
         output: dedent`
           enum CacheType {
             ALWAYS = 'ALWAYS',
@@ -112,44 +144,6 @@ describe('sort-modules', () => {
             // Some logic
           }
         `,
-        errors: [
-          {
-            data: {
-              leftGroup: 'export-interface',
-              left: 'FindUserInput',
-              right: 'CacheType',
-              rightGroup: 'enum',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              rightGroup: 'export-function',
-              left: 'assertInputIsCorrect',
-              leftGroup: 'function',
-              right: 'findUser',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              leftGroup: 'export-function',
-              right: 'FindAllUsersInput',
-              rightGroup: 'export-type',
-              left: 'findUser',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              leftGroup: 'export-function',
-              left: 'findAllUsers',
-              rightGroup: 'class',
-              right: 'Cache',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -162,14 +156,14 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -202,14 +196,14 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -307,14 +301,14 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'B',
               left: 'A',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
         ],
         options: [
@@ -373,7 +367,7 @@ describe('sort-modules', () => {
               right: 'C',
               left: 'B',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -421,7 +415,7 @@ describe('sort-modules', () => {
                 leftGroup: 'unknown',
                 left: 'func',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedModulesGroupOrder',
             },
           ],
           output: dedent`
@@ -460,14 +454,14 @@ describe('sort-modules', () => {
                 left: 'func',
                 right: 'C',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedModulesGroupOrder',
             },
             {
               data: {
                 right: 'AnotherClass',
                 left: 'C',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedModulesOrder',
             },
           ],
           options: [
@@ -541,7 +535,7 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -571,7 +565,7 @@ describe('sort-modules', () => {
               right: 'aFunction',
               left: 'DDDD',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
@@ -580,14 +574,14 @@ describe('sort-modules', () => {
               leftGroup: 'unknown',
               left: 'G',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
               right: 'yetAnotherFunction',
               left: 'anotherFunction',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [
@@ -677,7 +671,7 @@ describe('sort-modules', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -713,7 +707,7 @@ describe('sort-modules', () => {
               left: 'Interface',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -755,21 +749,21 @@ describe('sort-modules', () => {
               left: 'func',
               right: 'C',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
               right: 'aFunction',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'anotherFunction',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [
@@ -897,7 +891,7 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -933,7 +927,7 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -958,7 +952,7 @@ describe('sort-modules', () => {
               right: 'Interface',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -990,7 +984,7 @@ describe('sort-modules', () => {
               right: 'Interface',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -1022,7 +1016,7 @@ describe('sort-modules', () => {
               right: 'Type',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -1054,7 +1048,7 @@ describe('sort-modules', () => {
               right: 'Class',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -1086,7 +1080,7 @@ describe('sort-modules', () => {
               left: 'Interface',
               right: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -1118,7 +1112,7 @@ describe('sort-modules', () => {
               left: 'Interface',
               right: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -1150,7 +1144,7 @@ describe('sort-modules', () => {
               left: 'Interface',
               right: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -1182,7 +1176,7 @@ describe('sort-modules', () => {
               right: 'Enum',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -1523,7 +1517,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'A',
               right: 'B',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         options: [options],
@@ -1598,7 +1592,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'A',
               right: 'B',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         options: [
@@ -1644,7 +1638,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [options],
@@ -1674,7 +1668,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'B',
               right: 'A',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         output: dedent`
@@ -1704,7 +1698,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'B',
               right: 'A',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         options: [
@@ -1736,7 +1730,7 @@ describe('sort-modules', () => {
               right: 'SomeClass',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
@@ -1745,7 +1739,7 @@ describe('sort-modules', () => {
               left: 'SomeClass',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -1822,21 +1816,21 @@ describe('sort-modules', () => {
               right: 'y',
               left: 'A',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
         ],
         options: [
@@ -1889,7 +1883,7 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -1909,21 +1903,21 @@ describe('sort-modules', () => {
               right: 'z',
               left: 'A',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
           {
             data: {
               right: 'y',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'B',
               left: 'y',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
         ],
         options: [
@@ -1984,21 +1978,21 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -2059,7 +2053,7 @@ describe('sort-modules', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenModulesMembers',
             },
           ],
           output: dedent`
@@ -2107,7 +2101,7 @@ describe('sort-modules', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenModulesMembers',
             },
           ],
           output: dedent`
@@ -2190,7 +2184,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'B',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -2236,7 +2230,7 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2266,7 +2260,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2285,7 +2279,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2304,7 +2298,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2325,7 +2319,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2344,7 +2338,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2365,7 +2359,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2384,7 +2378,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2403,7 +2397,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2424,7 +2418,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2443,7 +2437,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2464,7 +2458,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2483,7 +2477,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2502,7 +2496,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2523,7 +2517,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2542,7 +2536,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2561,7 +2555,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2582,7 +2576,7 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2623,6 +2617,44 @@ describe('sort-modules', () => {
 
     it('sorts modules according to group hierarchy', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'export-interface',
+              left: 'FindUserInput',
+              right: 'CacheType',
+              rightGroup: 'enum',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'export-function',
+              left: 'assertInputIsCorrect',
+              leftGroup: 'function',
+              right: 'findUser',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'export-function',
+              right: 'FindAllUsersInput',
+              rightGroup: 'export-type',
+              left: 'findUser',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'export-function',
+              left: 'findAllUsers',
+              rightGroup: 'class',
+              right: 'Cache',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
         output: dedent`
           enum CacheType {
             ALWAYS = 'ALWAYS',
@@ -2707,44 +2739,6 @@ describe('sort-modules', () => {
             // Some logic
           }
         `,
-        errors: [
-          {
-            data: {
-              leftGroup: 'export-interface',
-              left: 'FindUserInput',
-              right: 'CacheType',
-              rightGroup: 'enum',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              rightGroup: 'export-function',
-              left: 'assertInputIsCorrect',
-              leftGroup: 'function',
-              right: 'findUser',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              leftGroup: 'export-function',
-              right: 'FindAllUsersInput',
-              rightGroup: 'export-type',
-              left: 'findUser',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              leftGroup: 'export-function',
-              left: 'findAllUsers',
-              rightGroup: 'class',
-              right: 'Cache',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -2757,14 +2751,14 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2797,14 +2791,14 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -2925,7 +2919,7 @@ describe('sort-modules', () => {
               right: 'C',
               left: 'B',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -2973,7 +2967,7 @@ describe('sort-modules', () => {
                 leftGroup: 'unknown',
                 left: 'func',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedModulesGroupOrder',
             },
           ],
           output: dedent`
@@ -3012,14 +3006,14 @@ describe('sort-modules', () => {
                 left: 'func',
                 right: 'C',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedModulesGroupOrder',
             },
             {
               data: {
                 right: 'AnotherClass',
                 left: 'C',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedModulesOrder',
             },
           ],
           options: [
@@ -3093,7 +3087,7 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -3123,7 +3117,7 @@ describe('sort-modules', () => {
               right: 'aFunction',
               left: 'DDDD',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
@@ -3132,14 +3126,14 @@ describe('sort-modules', () => {
               leftGroup: 'unknown',
               left: 'G',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
               right: 'yetAnotherFunction',
               left: 'anotherFunction',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [
@@ -3229,7 +3223,7 @@ describe('sort-modules', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -3265,7 +3259,7 @@ describe('sort-modules', () => {
               left: 'Interface',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -3307,21 +3301,21 @@ describe('sort-modules', () => {
               left: 'func',
               right: 'C',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
               right: 'aFunction',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'anotherFunction',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [
@@ -3449,7 +3443,7 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -3485,7 +3479,7 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -3510,7 +3504,7 @@ describe('sort-modules', () => {
               right: 'Interface',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -3542,7 +3536,7 @@ describe('sort-modules', () => {
               right: 'Interface',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -3574,7 +3568,7 @@ describe('sort-modules', () => {
               right: 'Type',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -3606,7 +3600,7 @@ describe('sort-modules', () => {
               right: 'Class',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -3638,7 +3632,7 @@ describe('sort-modules', () => {
               left: 'Interface',
               right: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -3670,7 +3664,7 @@ describe('sort-modules', () => {
               left: 'Interface',
               right: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -3702,7 +3696,7 @@ describe('sort-modules', () => {
               left: 'Interface',
               right: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -3734,7 +3728,7 @@ describe('sort-modules', () => {
               right: 'Enum',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -4075,7 +4069,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'A',
               right: 'B',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         options: [options],
@@ -4150,7 +4144,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'A',
               right: 'B',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         options: [
@@ -4196,7 +4190,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [options],
@@ -4226,7 +4220,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'B',
               right: 'A',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         output: dedent`
@@ -4256,7 +4250,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'B',
               right: 'A',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         options: [
@@ -4288,7 +4282,7 @@ describe('sort-modules', () => {
               right: 'SomeClass',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
@@ -4297,7 +4291,7 @@ describe('sort-modules', () => {
               left: 'SomeClass',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -4374,21 +4368,21 @@ describe('sort-modules', () => {
               right: 'y',
               left: 'A',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
         ],
         options: [
@@ -4441,7 +4435,7 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -4461,21 +4455,21 @@ describe('sort-modules', () => {
               right: 'z',
               left: 'A',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
           {
             data: {
               right: 'y',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'B',
               left: 'y',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
         ],
         options: [
@@ -4536,21 +4530,21 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -4611,7 +4605,7 @@ describe('sort-modules', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenModulesMembers',
             },
           ],
           output: dedent`
@@ -4659,7 +4653,7 @@ describe('sort-modules', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenModulesMembers',
             },
           ],
           output: dedent`
@@ -4742,7 +4736,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'B',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -4788,7 +4782,7 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -4818,7 +4812,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -4837,7 +4831,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -4856,7 +4850,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -4877,7 +4871,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -4896,7 +4890,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -4917,7 +4911,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -4936,7 +4930,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -4955,7 +4949,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -4976,7 +4970,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -4995,7 +4989,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -5016,7 +5010,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -5035,7 +5029,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -5054,7 +5048,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -5075,7 +5069,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -5094,7 +5088,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -5113,7 +5107,7 @@ describe('sort-modules', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -5134,7 +5128,7 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -5175,6 +5169,44 @@ describe('sort-modules', () => {
 
     it('sorts modules according to group hierarchy', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'export-interface',
+              left: 'FindUserInput',
+              right: 'CacheType',
+              rightGroup: 'enum',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'export-function',
+              left: 'assertInputIsCorrect',
+              leftGroup: 'function',
+              right: 'findUser',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'export-function',
+              right: 'FindAllUsersInput',
+              rightGroup: 'export-type',
+              left: 'findUser',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'export-function',
+              left: 'findAllUsers',
+              rightGroup: 'class',
+              right: 'Cache',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
         output: dedent`
           enum CacheType {
             ALWAYS = 'ALWAYS',
@@ -5260,44 +5292,6 @@ describe('sort-modules', () => {
             // Some logic
           }
         `,
-        errors: [
-          {
-            data: {
-              leftGroup: 'export-interface',
-              left: 'FindUserInput',
-              right: 'CacheType',
-              rightGroup: 'enum',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              rightGroup: 'export-function',
-              left: 'assertInputIsCorrect',
-              leftGroup: 'function',
-              right: 'findUser',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              leftGroup: 'export-function',
-              right: 'FindAllUsersInput',
-              rightGroup: 'export-type',
-              left: 'findUser',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              leftGroup: 'export-function',
-              left: 'findAllUsers',
-              rightGroup: 'class',
-              right: 'Cache',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -5310,14 +5304,14 @@ describe('sort-modules', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -5350,14 +5344,14 @@ describe('sort-modules', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -5478,7 +5472,7 @@ describe('sort-modules', () => {
               right: 'C',
               left: 'B',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -5526,7 +5520,7 @@ describe('sort-modules', () => {
                 leftGroup: 'unknown',
                 left: 'func',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedModulesGroupOrder',
             },
           ],
           output: dedent`
@@ -5565,14 +5559,14 @@ describe('sort-modules', () => {
                 left: 'func',
                 right: 'C',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedModulesGroupOrder',
             },
             {
               data: {
                 right: 'AnotherClass',
                 left: 'C',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedModulesOrder',
             },
           ],
           options: [
@@ -5646,7 +5640,7 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -5676,7 +5670,7 @@ describe('sort-modules', () => {
               right: 'aFunction',
               left: 'DDDD',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
@@ -5685,14 +5679,14 @@ describe('sort-modules', () => {
               leftGroup: 'unknown',
               left: 'G',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
               right: 'yetAnotherFunction',
               left: 'anotherFunction',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [
@@ -5782,7 +5776,7 @@ describe('sort-modules', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -5818,7 +5812,7 @@ describe('sort-modules', () => {
               left: 'Interface',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -5860,21 +5854,21 @@ describe('sort-modules', () => {
               left: 'func',
               right: 'C',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
               right: 'aFunction',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'anotherFunction',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [
@@ -6002,7 +5996,7 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -6038,7 +6032,7 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'A',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -6063,7 +6057,7 @@ describe('sort-modules', () => {
               right: 'Interface',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -6095,7 +6089,7 @@ describe('sort-modules', () => {
               right: 'Interface',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -6127,7 +6121,7 @@ describe('sort-modules', () => {
               right: 'Type',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -6159,7 +6153,7 @@ describe('sort-modules', () => {
               right: 'Class',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -6191,7 +6185,7 @@ describe('sort-modules', () => {
               left: 'Interface',
               right: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -6223,7 +6217,7 @@ describe('sort-modules', () => {
               left: 'Interface',
               right: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -6255,7 +6249,7 @@ describe('sort-modules', () => {
               left: 'Interface',
               right: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -6287,7 +6281,7 @@ describe('sort-modules', () => {
               right: 'Enum',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         options: [
@@ -6628,7 +6622,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'A',
               right: 'B',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         options: [options],
@@ -6703,7 +6697,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'A',
               right: 'B',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         options: [
@@ -6749,7 +6743,7 @@ describe('sort-modules', () => {
               right: 'AAA',
               left: 'BB',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [options],
@@ -6779,7 +6773,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'B',
               right: 'A',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         output: dedent`
@@ -6809,7 +6803,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'B',
               right: 'A',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         options: [
@@ -6886,21 +6880,21 @@ describe('sort-modules', () => {
               left: 'AAAA',
               right: 'yy',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
           {
             data: {
               right: 'bbb',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'bbb',
               left: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
         ],
         options: [
@@ -6953,7 +6947,7 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -6973,21 +6967,21 @@ describe('sort-modules', () => {
               left: 'AAAA',
               right: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
           {
             data: {
               right: 'yy',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'BBB',
               left: 'yy',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
         ],
         options: [
@@ -7048,21 +7042,21 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -7123,7 +7117,7 @@ describe('sort-modules', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenModulesMembers',
             },
           ],
           output: dedent`
@@ -7171,7 +7165,7 @@ describe('sort-modules', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenModulesMembers',
             },
           ],
           output: dedent`
@@ -7254,7 +7248,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'B',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -7300,7 +7294,7 @@ describe('sort-modules', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7330,7 +7324,7 @@ describe('sort-modules', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7349,7 +7343,7 @@ describe('sort-modules', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7368,7 +7362,7 @@ describe('sort-modules', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7389,7 +7383,7 @@ describe('sort-modules', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7408,7 +7402,7 @@ describe('sort-modules', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7429,7 +7423,7 @@ describe('sort-modules', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7448,7 +7442,7 @@ describe('sort-modules', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7467,7 +7461,7 @@ describe('sort-modules', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7488,7 +7482,7 @@ describe('sort-modules', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7507,7 +7501,7 @@ describe('sort-modules', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7528,7 +7522,7 @@ describe('sort-modules', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7547,7 +7541,7 @@ describe('sort-modules', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7566,7 +7560,7 @@ describe('sort-modules', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7587,7 +7581,7 @@ describe('sort-modules', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7606,7 +7600,7 @@ describe('sort-modules', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7625,7 +7619,7 @@ describe('sort-modules', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7646,7 +7640,7 @@ describe('sort-modules', () => {
               right: 'BB',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -7692,6 +7686,44 @@ describe('sort-modules', () => {
 
     it('sorts modules according to group hierarchy', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'export-interface',
+              left: 'FindUserInput',
+              right: 'CacheType',
+              rightGroup: 'enum',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'export-function',
+              left: 'assertInputIsCorrect',
+              leftGroup: 'function',
+              right: 'findUser',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'export-function',
+              right: 'FindAllUsersInput',
+              rightGroup: 'export-type',
+              left: 'findUser',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'export-function',
+              left: 'findAllUsers',
+              rightGroup: 'class',
+              right: 'Cache',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
         output: dedent`
           enum CacheType {
             ALWAYS = 'ALWAYS',
@@ -7776,44 +7808,6 @@ describe('sort-modules', () => {
             // Some logic
           }
         `,
-        errors: [
-          {
-            data: {
-              leftGroup: 'export-interface',
-              left: 'FindUserInput',
-              right: 'CacheType',
-              rightGroup: 'enum',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              rightGroup: 'export-function',
-              left: 'assertInputIsCorrect',
-              leftGroup: 'function',
-              right: 'findUser',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              leftGroup: 'export-function',
-              right: 'FindAllUsersInput',
-              rightGroup: 'export-type',
-              left: 'findUser',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              leftGroup: 'export-function',
-              left: 'findAllUsers',
-              rightGroup: 'class',
-              right: 'Cache',
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -7862,7 +7856,7 @@ describe('sort-modules', () => {
               right: 'ba',
               left: 'aa',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesGroupOrder',
           },
         ],
         output: dedent`
@@ -7905,7 +7899,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenModulesMembers',
           },
         ],
         output: dedent`
@@ -7928,7 +7922,7 @@ describe('sort-modules', () => {
               nodeDependentOnRight: 'A',
               right: 'B',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
         output: dedent`
@@ -7959,7 +7953,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -8059,7 +8053,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [
@@ -8124,14 +8118,14 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'a',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [
@@ -8169,7 +8163,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [
@@ -8253,7 +8247,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [
@@ -8354,14 +8348,14 @@ describe('sort-modules', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -8407,7 +8401,7 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -8434,14 +8428,14 @@ describe('sort-modules', () => {
               right: 'c',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -8474,7 +8468,7 @@ describe('sort-modules', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -8501,7 +8495,7 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -8526,7 +8520,7 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -8553,7 +8547,7 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -8598,7 +8592,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [{}],
@@ -8613,7 +8607,7 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -8640,7 +8634,7 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -8659,21 +8653,21 @@ describe('sort-modules', () => {
 
     it('handles rule-specific block eslint-disable-next-line comments', async () => {
       await invalid({
-        output: dedent`
-          function b() {}
-          function c() {}
-          /* eslint-disable-next-line rule-to-test/sort-modules */
-          function a() {}
-        `,
         errors: [
           {
             data: {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
+        output: dedent`
+          function b() {}
+          function c() {}
+          /* eslint-disable-next-line rule-to-test/sort-modules */
+          function a() {}
+        `,
         code: dedent`
           function c() {}
           function b() {}
@@ -8692,7 +8686,7 @@ describe('sort-modules', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -8737,7 +8731,7 @@ describe('sort-modules', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         options: [{}],

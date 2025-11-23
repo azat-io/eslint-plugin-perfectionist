@@ -3,13 +3,8 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
-import rule, {
-  MISSED_SPACING_ERROR_ID,
-  EXTRA_SPACING_ERROR_ID,
-  GROUP_ORDER_ERROR_ID,
-  ORDER_ERROR_ID,
-} from '../../rules/sort-intersection-types'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import rule from '../../rules/sort-intersection-types'
 import { Alphabet } from '../../utils/alphabet'
 
 describe('sort-intersection-types', () => {
@@ -40,7 +35,7 @@ describe('sort-intersection-types', () => {
               right: "{ label: 'bb' }",
               left: "{ label: 'c' }",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -61,28 +56,28 @@ describe('sort-intersection-types', () => {
               left: '{ stringValue: string }',
               right: '{ anyValue: any }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               left: '{ unknownValue: unknown }',
               right: '{ nullValue: null }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               left: '{ undefinedValue: undefined }',
               right: '{ neverValue: never }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: '{ bigintValue: bigint }',
               left: '{ voidValue: void }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -123,7 +118,7 @@ describe('sort-intersection-types', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: 'Omit<T, AA & B>',
@@ -140,7 +135,7 @@ describe('sort-intersection-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: 'type Type = A & B & C',
@@ -157,7 +152,7 @@ describe('sort-intersection-types', () => {
               right: "{ name: A, status: 'aa' }",
               left: "{ name: B, status: 'b' }",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -182,7 +177,7 @@ describe('sort-intersection-types', () => {
               right: '( A: () => void, ) => B & C',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -217,14 +212,14 @@ describe('sort-intersection-types', () => {
               right: '{ value3: 3 }',
               left: '{ value4: 4 }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: '{ value100: 100 }',
               left: '{ value5: 5 }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -297,7 +292,7 @@ describe('sort-intersection-types', () => {
               leftGroup: 'object',
               right: 'boolean',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
           {
             data: {
@@ -306,7 +301,7 @@ describe('sort-intersection-types', () => {
               left: 'boolean',
               right: 'A',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
           {
             data: {
@@ -315,7 +310,7 @@ describe('sort-intersection-types', () => {
               left: 'keyof A',
               right: 'bigint',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
           {
             data: {
@@ -324,7 +319,7 @@ describe('sort-intersection-types', () => {
               left: 'null',
               right: '1',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
           {
             data: {
@@ -333,7 +328,7 @@ describe('sort-intersection-types', () => {
               right: 'A & B',
               left: 'A | B',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         options: [
@@ -402,14 +397,14 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'B',
               left: 'E',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -449,14 +444,14 @@ describe('sort-intersection-types', () => {
               right: 'BBB',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'FFF',
               left: 'GG',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -504,14 +499,14 @@ describe('sort-intersection-types', () => {
               right: 'BBB',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'FFF',
               left: 'GG',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -603,7 +598,7 @@ describe('sort-intersection-types', () => {
               right: 'BB',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         options: [
@@ -642,7 +637,7 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         options: [
@@ -735,7 +730,7 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         options: [
@@ -876,21 +871,21 @@ describe('sort-intersection-types', () => {
               left: '() => null',
               right: 'Y',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
           {
             data: {
               right: 'B',
               left: 'Z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'B',
               left: 'Z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
         options: [
@@ -928,21 +923,21 @@ describe('sort-intersection-types', () => {
               right: '{ a: string }',
               left: '() => void',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenIntersectionTypes',
           },
           {
             data: {
               left: '{ a: string }',
               right: 'A',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
           {
             data: {
               right: '[A]',
               left: 'A',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
         options: [
@@ -1017,7 +1012,7 @@ describe('sort-intersection-types', () => {
                 right: 'null',
                 left: 'A',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenIntersectionTypes',
             },
           ],
           output: dedent`
@@ -1059,7 +1054,7 @@ describe('sort-intersection-types', () => {
                 right: 'null',
                 left: 'A',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenIntersectionTypes',
             },
           ],
           output: dedent`
@@ -1136,7 +1131,7 @@ describe('sort-intersection-types', () => {
               right: "'a'",
               left: 'B',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         options: [
@@ -1184,7 +1179,7 @@ describe('sort-intersection-types', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -1216,7 +1211,7 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -1237,7 +1232,7 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -1260,14 +1255,14 @@ describe('sort-intersection-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenIntersectionTypes',
           },
         ],
         options: [
@@ -1307,7 +1302,7 @@ describe('sort-intersection-types', () => {
               left: 'null',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         options: [
@@ -1363,7 +1358,7 @@ describe('sort-intersection-types', () => {
                 right: 'helloNamed',
                 left: 'undefined',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
             },
           ],
           output: dedent`
@@ -1390,21 +1385,21 @@ describe('sort-intersection-types', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
@@ -1413,7 +1408,7 @@ describe('sort-intersection-types', () => {
               right: 'eee',
               left: "'m'",
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         options: [
@@ -1487,7 +1482,7 @@ describe('sort-intersection-types', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -1525,7 +1520,7 @@ describe('sort-intersection-types', () => {
               left: "'m'",
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         output: dedent`
@@ -1580,7 +1575,7 @@ describe('sort-intersection-types', () => {
               right: "'foo'",
               left: 'null',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         output: dedent`
@@ -1643,7 +1638,7 @@ describe('sort-intersection-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenIntersectionTypes',
           },
         ],
         output: dedent`
@@ -1681,7 +1676,7 @@ describe('sort-intersection-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
         output: dedent`
@@ -1720,7 +1715,7 @@ describe('sort-intersection-types', () => {
               right: "{ label: 'bb' }",
               left: "{ label: 'c' }",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -1741,28 +1736,28 @@ describe('sort-intersection-types', () => {
               left: '{ stringValue: string }',
               right: '{ anyValue: any }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               left: '{ unknownValue: unknown }',
               right: '{ nullValue: null }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               left: '{ undefinedValue: undefined }',
               right: '{ neverValue: never }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: '{ bigintValue: bigint }',
               left: '{ voidValue: void }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -1803,7 +1798,7 @@ describe('sort-intersection-types', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: 'Omit<T, AA & B>',
@@ -1820,7 +1815,7 @@ describe('sort-intersection-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: 'type Type = A & B & C',
@@ -1837,7 +1832,7 @@ describe('sort-intersection-types', () => {
               right: "{ name: A, status: 'aa' }",
               left: "{ name: B, status: 'b' }",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -1862,7 +1857,7 @@ describe('sort-intersection-types', () => {
               right: '( A: () => void, ) => B & C',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -1897,7 +1892,7 @@ describe('sort-intersection-types', () => {
               right: '{ value3: 3 }',
               left: '{ value4: 4 }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -1970,7 +1965,7 @@ describe('sort-intersection-types', () => {
               leftGroup: 'object',
               right: 'boolean',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
           {
             data: {
@@ -1979,7 +1974,7 @@ describe('sort-intersection-types', () => {
               left: 'boolean',
               right: 'A',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
           {
             data: {
@@ -1988,7 +1983,7 @@ describe('sort-intersection-types', () => {
               left: 'keyof A',
               right: 'bigint',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
           {
             data: {
@@ -1997,7 +1992,7 @@ describe('sort-intersection-types', () => {
               left: 'null',
               right: '1',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
           {
             data: {
@@ -2006,7 +2001,7 @@ describe('sort-intersection-types', () => {
               right: 'A & B',
               left: 'A | B',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         options: [
@@ -2075,14 +2070,14 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'B',
               left: 'E',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -2122,14 +2117,14 @@ describe('sort-intersection-types', () => {
               right: 'BBB',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'FFF',
               left: 'GG',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -2177,14 +2172,14 @@ describe('sort-intersection-types', () => {
               right: 'BBB',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'FFF',
               left: 'GG',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -2276,7 +2271,7 @@ describe('sort-intersection-types', () => {
               right: 'BB',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         options: [
@@ -2315,7 +2310,7 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         options: [
@@ -2408,7 +2403,7 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         options: [
@@ -2549,21 +2544,21 @@ describe('sort-intersection-types', () => {
               left: '() => null',
               right: 'Y',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
           {
             data: {
               right: 'B',
               left: 'Z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'B',
               left: 'Z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
         options: [
@@ -2601,21 +2596,21 @@ describe('sort-intersection-types', () => {
               right: '{ a: string }',
               left: '() => void',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenIntersectionTypes',
           },
           {
             data: {
               left: '{ a: string }',
               right: 'A',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
           {
             data: {
               right: '[A]',
               left: 'A',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
         options: [
@@ -2690,7 +2685,7 @@ describe('sort-intersection-types', () => {
                 right: 'null',
                 left: 'A',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenIntersectionTypes',
             },
           ],
           output: dedent`
@@ -2732,7 +2727,7 @@ describe('sort-intersection-types', () => {
                 right: 'null',
                 left: 'A',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenIntersectionTypes',
             },
           ],
           output: dedent`
@@ -2809,7 +2804,7 @@ describe('sort-intersection-types', () => {
               right: "'a'",
               left: 'B',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         options: [
@@ -2857,7 +2852,7 @@ describe('sort-intersection-types', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -2889,7 +2884,7 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -2910,7 +2905,7 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -2935,7 +2930,7 @@ describe('sort-intersection-types', () => {
               left: 'null',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         options: [
@@ -2991,7 +2986,7 @@ describe('sort-intersection-types', () => {
                 right: 'helloNamed',
                 left: 'undefined',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
             },
           ],
           output: dedent`
@@ -3018,21 +3013,21 @@ describe('sort-intersection-types', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
@@ -3041,7 +3036,7 @@ describe('sort-intersection-types', () => {
               right: 'eee',
               left: "'m'",
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         options: [
@@ -3115,7 +3110,7 @@ describe('sort-intersection-types', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -3153,7 +3148,7 @@ describe('sort-intersection-types', () => {
               left: "'m'",
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         output: dedent`
@@ -3208,7 +3203,7 @@ describe('sort-intersection-types', () => {
               right: "'foo'",
               left: 'null',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         output: dedent`
@@ -3271,7 +3266,7 @@ describe('sort-intersection-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenIntersectionTypes',
           },
         ],
         output: dedent`
@@ -3309,7 +3304,7 @@ describe('sort-intersection-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
         output: dedent`
@@ -3348,7 +3343,7 @@ describe('sort-intersection-types', () => {
               right: "{ label: 'bb' }",
               left: "{ label: 'c' }",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -3369,21 +3364,21 @@ describe('sort-intersection-types', () => {
               right: '{ unknownValue: unknown }',
               left: '{ anyValue: any }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: '{ undefinedValue: undefined }',
               left: '{ nullValue: null }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: '{ bigintValue: bigint }',
               left: '{ voidValue: void }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -3424,7 +3419,7 @@ describe('sort-intersection-types', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: 'Omit<T, AA & B>',
@@ -3441,7 +3436,7 @@ describe('sort-intersection-types', () => {
               right: 'BB',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: 'type Type = AAA & BB & C',
@@ -3458,7 +3453,7 @@ describe('sort-intersection-types', () => {
               right: "{ name: A, status: 'aa' }",
               left: "{ name: B, status: 'b' }",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -3483,7 +3478,7 @@ describe('sort-intersection-types', () => {
               right: '( A: () => void, ) => B & C',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -3518,7 +3513,7 @@ describe('sort-intersection-types', () => {
               right: '{ value100: 100 }',
               left: '{ value5: 5 }',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -3591,7 +3586,7 @@ describe('sort-intersection-types', () => {
               leftGroup: 'object',
               right: 'boolean',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
           {
             data: {
@@ -3600,7 +3595,7 @@ describe('sort-intersection-types', () => {
               left: 'boolean',
               right: 'A',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
           {
             data: {
@@ -3609,7 +3604,7 @@ describe('sort-intersection-types', () => {
               left: 'keyof A',
               right: 'bigint',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
           {
             data: {
@@ -3618,7 +3613,7 @@ describe('sort-intersection-types', () => {
               left: 'null',
               right: '1',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
           {
             data: {
@@ -3627,7 +3622,7 @@ describe('sort-intersection-types', () => {
               right: 'A & B',
               left: 'A | B',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         options: [
@@ -3696,14 +3691,14 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'B',
               left: 'E',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -3743,14 +3738,14 @@ describe('sort-intersection-types', () => {
               right: 'BBB',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'FFF',
               left: 'GG',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -3798,14 +3793,14 @@ describe('sort-intersection-types', () => {
               right: 'BBB',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'FFF',
               left: 'GG',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -3897,7 +3892,7 @@ describe('sort-intersection-types', () => {
               right: 'BB',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         options: [
@@ -3936,7 +3931,7 @@ describe('sort-intersection-types', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         options: [
@@ -4029,7 +4024,7 @@ describe('sort-intersection-types', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         options: [
@@ -4170,21 +4165,21 @@ describe('sort-intersection-types', () => {
               left: '() => null',
               right: 'YY',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
           {
             data: {
               right: 'BBB',
               left: 'Z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'BBB',
               left: 'Z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
         options: [
@@ -4222,21 +4217,21 @@ describe('sort-intersection-types', () => {
               right: '{ a: string }',
               left: '() => void',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenIntersectionTypes',
           },
           {
             data: {
               left: '{ a: string }',
               right: 'A',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
           {
             data: {
               right: '[A]',
               left: 'A',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
         options: [
@@ -4311,7 +4306,7 @@ describe('sort-intersection-types', () => {
                 right: 'null',
                 left: 'A',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenIntersectionTypes',
             },
           ],
           output: dedent`
@@ -4353,7 +4348,7 @@ describe('sort-intersection-types', () => {
                 right: 'null',
                 left: 'A',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenIntersectionTypes',
             },
           ],
           output: dedent`
@@ -4430,7 +4425,7 @@ describe('sort-intersection-types', () => {
               right: "'a'",
               left: 'B',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         options: [
@@ -4478,7 +4473,7 @@ describe('sort-intersection-types', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -4510,7 +4505,7 @@ describe('sort-intersection-types', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -4531,7 +4526,7 @@ describe('sort-intersection-types', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -4556,7 +4551,7 @@ describe('sort-intersection-types', () => {
               left: 'null',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         options: [
@@ -4612,7 +4607,7 @@ describe('sort-intersection-types', () => {
                 right: 'helloNamed',
                 left: 'undefined',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedIntersectionTypesGroupOrder',
             },
           ],
           output: dedent`
@@ -4639,21 +4634,21 @@ describe('sort-intersection-types', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
@@ -4662,7 +4657,7 @@ describe('sort-intersection-types', () => {
               right: 'eee',
               left: "'m'",
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         options: [
@@ -4736,7 +4731,7 @@ describe('sort-intersection-types', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -4774,7 +4769,7 @@ describe('sort-intersection-types', () => {
               left: "'m'",
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         output: dedent`
@@ -4829,7 +4824,7 @@ describe('sort-intersection-types', () => {
               right: "'foo'",
               left: 'null',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         output: dedent`
@@ -4892,7 +4887,7 @@ describe('sort-intersection-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenIntersectionTypes',
           },
         ],
         output: dedent`
@@ -4930,7 +4925,7 @@ describe('sort-intersection-types', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
         output: dedent`
@@ -4974,7 +4969,7 @@ describe('sort-intersection-types', () => {
               right: "{ label: 'bb' }",
               left: "{ label: 'c' }",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -5016,7 +5011,7 @@ describe('sort-intersection-types', () => {
               left: "'aa'",
               right: 'ba',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesGroupOrder',
           },
         ],
         output: dedent`
@@ -5050,7 +5045,7 @@ describe('sort-intersection-types', () => {
               right: "'a'",
               left: 'b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenIntersectionTypes',
           },
         ],
         options: [
@@ -5130,7 +5125,7 @@ describe('sort-intersection-types', () => {
               right: 'NumberBase.BASE_10',
               left: 'NumberBase.BASE_2',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -5171,7 +5166,7 @@ describe('sort-intersection-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -5198,14 +5193,14 @@ describe('sort-intersection-types', () => {
               right: 'C',
               left: 'D',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
             data: {
               right: 'B',
               left: 'A',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -5238,7 +5233,7 @@ describe('sort-intersection-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -5263,7 +5258,7 @@ describe('sort-intersection-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -5290,7 +5285,7 @@ describe('sort-intersection-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -5337,7 +5332,7 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         options: [{}],
@@ -5350,7 +5345,7 @@ describe('sort-intersection-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -5377,7 +5372,7 @@ describe('sort-intersection-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -5396,6 +5391,15 @@ describe('sort-intersection-types', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: {
+              right: 'B',
+              left: 'C',
+            },
+            messageId: 'unexpectedIntersectionTypesOrder',
+          },
+        ],
         output: dedent`
           type T =
               B
@@ -5410,15 +5414,6 @@ describe('sort-intersection-types', () => {
               /* eslint-disable-next-line rule-to-test/sort-intersection-types */
               & A
         `,
-        errors: [
-          {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
@@ -5429,7 +5424,7 @@ describe('sort-intersection-types', () => {
               right: 'B',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         output: dedent`
@@ -5476,7 +5471,7 @@ describe('sort-intersection-types', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
         options: [{}],

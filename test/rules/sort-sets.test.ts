@@ -3,14 +3,9 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
-import rule, {
-  MISSED_SPACING_ERROR_ID,
-  EXTRA_SPACING_ERROR_ID,
-  GROUP_ORDER_ERROR_ID,
-  ORDER_ERROR_ID,
-} from '../../rules/sort-sets'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
+import rule from '../../rules/sort-sets'
 
 describe('sort-sets', () => {
   let { invalid, valid } = createRuleTester({
@@ -47,7 +42,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -93,7 +88,7 @@ describe('sort-sets', () => {
               right: '...bbbb',
               left: '...ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -129,7 +124,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -162,7 +157,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -200,14 +195,14 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -254,7 +249,7 @@ describe('sort-sets', () => {
               right: '...d',
               left: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
           {
             data: {
@@ -263,7 +258,7 @@ describe('sort-sets', () => {
               right: '...b',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -297,6 +292,22 @@ describe('sort-sets', () => {
       ]
 
       await invalid({
+        errors: [
+          {
+            data: {
+              right: 'bbb',
+              left: 'd',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+          {
+            data: {
+              right: 'fff',
+              left: 'gg',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+        ],
         output: dedent`
           new Set([
             // Part: A
@@ -329,22 +340,6 @@ describe('sort-sets', () => {
             'fff',
           ])
         `,
-        errors: [
-          {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              right: 'fff',
-              left: 'gg',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: partitionOptions,
       })
     })
@@ -409,7 +404,7 @@ describe('sort-sets', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         options: multiplePatternOptions,
@@ -453,7 +448,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -595,7 +590,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -620,7 +615,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -645,14 +640,14 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenSetsMembers',
           },
         ],
         options: [
@@ -695,7 +690,7 @@ describe('sort-sets', () => {
               right: '...b',
               left: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         options: [
@@ -743,7 +738,7 @@ describe('sort-sets', () => {
               left: '...b',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -792,7 +787,7 @@ describe('sort-sets', () => {
                 leftGroup: 'unknown',
                 left: 'b',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedSetsGroupOrder',
             },
           ],
           output: dedent`
@@ -838,21 +833,21 @@ describe('sort-sets', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
@@ -861,7 +856,7 @@ describe('sort-sets', () => {
               left: '...m',
               right: 'eee',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -924,7 +919,7 @@ describe('sort-sets', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -966,7 +961,7 @@ describe('sort-sets', () => {
               left: '...m',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -1024,7 +1019,7 @@ describe('sort-sets', () => {
               right: '...foo',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -1117,7 +1112,7 @@ describe('sort-sets', () => {
                 right: 'g',
                 left: 'b',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedSetsGroupOrder',
             },
             {
               data: {
@@ -1126,7 +1121,7 @@ describe('sort-sets', () => {
                 right: 'r',
                 left: 'g',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedSetsGroupOrder',
             },
           ],
           output: dedent`
@@ -1170,21 +1165,21 @@ describe('sort-sets', () => {
               right: 'y',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenSetsMembers',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenSetsMembers',
           },
         ],
         code: dedent`
@@ -1266,21 +1261,21 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenSetsMembers',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenSetsMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenSetsMembers',
           },
         ],
         output: dedent`
@@ -1347,7 +1342,7 @@ describe('sort-sets', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenSetsMembers',
             },
           ],
           output: dedent`
@@ -1401,7 +1396,7 @@ describe('sort-sets', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenSetsMembers',
             },
           ],
           output: dedent`
@@ -1492,7 +1487,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -1538,7 +1533,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -1594,7 +1589,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -1640,7 +1635,7 @@ describe('sort-sets', () => {
               right: '...bbbb',
               left: '...ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -1676,7 +1671,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -1709,7 +1704,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -1747,14 +1742,14 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -1801,7 +1796,7 @@ describe('sort-sets', () => {
               right: '...d',
               left: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
           {
             data: {
@@ -1810,7 +1805,7 @@ describe('sort-sets', () => {
               right: '...b',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -1844,6 +1839,22 @@ describe('sort-sets', () => {
       ]
 
       await invalid({
+        errors: [
+          {
+            data: {
+              right: 'bbb',
+              left: 'd',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+          {
+            data: {
+              right: 'fff',
+              left: 'gg',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+        ],
         output: dedent`
           new Set([
             // Part: A
@@ -1876,22 +1887,6 @@ describe('sort-sets', () => {
             'fff',
           ])
         `,
-        errors: [
-          {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              right: 'fff',
-              left: 'gg',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: partitionOptions,
       })
     })
@@ -1956,7 +1951,7 @@ describe('sort-sets', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         options: multiplePatternOptions,
@@ -2000,7 +1995,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -2142,7 +2137,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -2167,7 +2162,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -2194,7 +2189,7 @@ describe('sort-sets', () => {
               right: '...b',
               left: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         options: [
@@ -2242,7 +2237,7 @@ describe('sort-sets', () => {
               left: '...b',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -2291,7 +2286,7 @@ describe('sort-sets', () => {
                 leftGroup: 'unknown',
                 left: 'b',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedSetsGroupOrder',
             },
           ],
           output: dedent`
@@ -2337,21 +2332,21 @@ describe('sort-sets', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
@@ -2360,7 +2355,7 @@ describe('sort-sets', () => {
               left: '...m',
               right: 'eee',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -2423,7 +2418,7 @@ describe('sort-sets', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -2465,7 +2460,7 @@ describe('sort-sets', () => {
               left: '...m',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -2523,7 +2518,7 @@ describe('sort-sets', () => {
               right: '...foo',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -2616,7 +2611,7 @@ describe('sort-sets', () => {
                 right: 'g',
                 left: 'b',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedSetsGroupOrder',
             },
             {
               data: {
@@ -2625,7 +2620,7 @@ describe('sort-sets', () => {
                 right: 'r',
                 left: 'g',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedSetsGroupOrder',
             },
           ],
           output: dedent`
@@ -2669,21 +2664,21 @@ describe('sort-sets', () => {
               right: 'y',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenSetsMembers',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenSetsMembers',
           },
         ],
         code: dedent`
@@ -2765,21 +2760,21 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenSetsMembers',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenSetsMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenSetsMembers',
           },
         ],
         output: dedent`
@@ -2846,7 +2841,7 @@ describe('sort-sets', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenSetsMembers',
             },
           ],
           output: dedent`
@@ -2900,7 +2895,7 @@ describe('sort-sets', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenSetsMembers',
             },
           ],
           output: dedent`
@@ -2991,7 +2986,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -3037,7 +3032,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -3087,6 +3082,15 @@ describe('sort-sets', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: {
+              right: 'bbbb',
+              left: 'ccc',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+        ],
         output: dedent`
           new Set([
             'aaaaa',
@@ -3097,15 +3101,6 @@ describe('sort-sets', () => {
             ...other,
           ])
         `,
-        errors: [
-          {
-            data: {
-              right: 'bbbb',
-              left: 'ccc',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         code: dedent`
           new Set([
             'aaaaa',
@@ -3139,7 +3134,7 @@ describe('sort-sets', () => {
               right: '...bb',
               left: '...c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -3175,7 +3170,7 @@ describe('sort-sets', () => {
               right: 'aaaa',
               left: 'bbb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -3208,7 +3203,7 @@ describe('sort-sets', () => {
               right: 'bbb',
               left: 'cc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -3246,14 +3241,14 @@ describe('sort-sets', () => {
               right: 'aaaaa',
               left: 'dd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'bbbb',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -3300,7 +3295,7 @@ describe('sort-sets', () => {
               right: '...d',
               left: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
           {
             data: {
@@ -3309,7 +3304,7 @@ describe('sort-sets', () => {
               right: '...b',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -3343,6 +3338,22 @@ describe('sort-sets', () => {
       ]
 
       await invalid({
+        errors: [
+          {
+            data: {
+              right: 'bbb',
+              left: 'd',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+          {
+            data: {
+              right: 'fff',
+              left: 'gg',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+        ],
         output: dedent`
           new Set([
             // Part: A
@@ -3375,22 +3386,6 @@ describe('sort-sets', () => {
             'fff',
           ])
         `,
-        errors: [
-          {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              right: 'fff',
-              left: 'gg',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: partitionOptions,
       })
     })
@@ -3455,7 +3450,7 @@ describe('sort-sets', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         options: multiplePatternOptions,
@@ -3499,7 +3494,7 @@ describe('sort-sets', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -3641,7 +3636,7 @@ describe('sort-sets', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -3666,7 +3661,7 @@ describe('sort-sets', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -3693,7 +3688,7 @@ describe('sort-sets', () => {
               right: '...b',
               left: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         options: [
@@ -3741,7 +3736,7 @@ describe('sort-sets', () => {
               left: '...b',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -3790,7 +3785,7 @@ describe('sort-sets', () => {
                 leftGroup: 'unknown',
                 left: 'b',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedSetsGroupOrder',
             },
           ],
           output: dedent`
@@ -3836,21 +3831,21 @@ describe('sort-sets', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
@@ -3859,7 +3854,7 @@ describe('sort-sets', () => {
               left: '...m',
               right: 'eee',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -3922,7 +3917,7 @@ describe('sort-sets', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -3964,7 +3959,7 @@ describe('sort-sets', () => {
               left: '...m',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -4022,7 +4017,7 @@ describe('sort-sets', () => {
               right: '...foo',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -4115,7 +4110,7 @@ describe('sort-sets', () => {
                 right: 'g',
                 left: 'b',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedSetsGroupOrder',
             },
             {
               data: {
@@ -4124,7 +4119,7 @@ describe('sort-sets', () => {
                 right: 'r',
                 left: 'g',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedSetsGroupOrder',
             },
           ],
           output: dedent`
@@ -4168,21 +4163,21 @@ describe('sort-sets', () => {
               left: 'aaaa',
               right: 'yy',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenSetsMembers',
           },
           {
             data: {
               right: 'bbb',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'bbb',
               left: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenSetsMembers',
           },
         ],
         code: dedent`
@@ -4264,21 +4259,21 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenSetsMembers',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenSetsMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenSetsMembers',
           },
         ],
         output: dedent`
@@ -4345,7 +4340,7 @@ describe('sort-sets', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenSetsMembers',
             },
           ],
           output: dedent`
@@ -4399,7 +4394,7 @@ describe('sort-sets', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenSetsMembers',
             },
           ],
           output: dedent`
@@ -4490,7 +4485,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -4536,7 +4531,7 @@ describe('sort-sets', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -4595,7 +4590,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -4665,7 +4660,7 @@ describe('sort-sets', () => {
               right: 'ba',
               left: 'aa',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
@@ -4714,7 +4709,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenSetsMembers',
           },
         ],
         output: dedent`
@@ -4777,14 +4772,14 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'c',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -4838,7 +4833,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -4869,14 +4864,14 @@ describe('sort-sets', () => {
               right: 'c',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -4913,7 +4908,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -4942,7 +4937,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -4973,7 +4968,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -5026,7 +5021,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         options: [{}],
@@ -5035,6 +5030,15 @@ describe('sort-sets', () => {
 
     it('handles rule-specific eslint-disable comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+        ],
         output: dedent`
           new Set([
             'b',
@@ -5051,15 +5055,6 @@ describe('sort-sets', () => {
             'a',
           ])
         `,
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
@@ -5072,7 +5067,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -5095,6 +5090,15 @@ describe('sort-sets', () => {
 
     it('handles block-style rule-specific eslint-disable comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedSetsOrder',
+          },
+        ],
         output: dedent`
           new Set([
             'b',
@@ -5111,15 +5115,6 @@ describe('sort-sets', () => {
             'a',
           ])
         `,
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
@@ -5132,7 +5127,7 @@ describe('sort-sets', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         output: dedent`
@@ -5185,7 +5180,7 @@ describe('sort-sets', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSetsOrder',
           },
         ],
         options: [{}],

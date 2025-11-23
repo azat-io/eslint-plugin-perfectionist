@@ -3,14 +3,9 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
-import rule, {
-  MISSED_SPACING_ERROR_ID,
-  EXTRA_SPACING_ERROR_ID,
-  GROUP_ORDER_ERROR_ID,
-  ORDER_ERROR_ID,
-} from '../../rules/sort-maps'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
+import rule from '../../rules/sort-maps'
 
 describe('sort-maps', () => {
   let { invalid, valid } = createRuleTester({
@@ -49,6 +44,15 @@ describe('sort-maps', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: {
+              right: "'a'",
+              left: "'b'",
+            },
+            messageId: 'unexpectedMapElementsOrder',
+          },
+        ],
         output: dedent`
           new Map([
             ['c', 'cc'],
@@ -67,15 +71,6 @@ describe('sort-maps', () => {
             ['a', 'aa'],
           ])
         `,
-        errors: [
-          {
-            data: {
-              right: "'a'",
-              left: "'b'",
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -120,7 +115,7 @@ describe('sort-maps', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -158,7 +153,7 @@ describe('sort-maps', () => {
               right: '1',
               left: '2',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -199,14 +194,14 @@ describe('sort-maps', () => {
               right: 'cc',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'bbb',
               left: 'cc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -237,14 +232,14 @@ describe('sort-maps', () => {
               right: 'a',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -318,14 +313,14 @@ describe('sort-maps', () => {
               right: 'bbb',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'fff',
               left: 'gg',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -390,7 +385,7 @@ describe('sort-maps', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -430,7 +425,7 @@ describe('sort-maps', () => {
               right: "'a'",
               left: "'b'",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -528,7 +523,7 @@ describe('sort-maps', () => {
               right: "'a'",
               left: "'b'",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -677,14 +672,14 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenMapElementsMembers',
           },
         ],
         options: [
@@ -718,6 +713,17 @@ describe('sort-maps', () => {
 
     it('applies custom groups based on element name patterns', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'keysStartingWithHello',
+              leftGroup: 'unknown',
+              right: "'helloKey'",
+              left: "'b'",
+            },
+            messageId: 'unexpectedMapElementsGroupOrder',
+          },
+        ],
         options: [
           {
             customGroups: [
@@ -727,17 +733,6 @@ describe('sort-maps', () => {
               },
             ],
             groups: ['keysStartingWithHello', 'unknown'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              rightGroup: 'keysStartingWithHello',
-              leftGroup: 'unknown',
-              right: "'helloKey'",
-              left: "'b'",
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -765,21 +760,21 @@ describe('sort-maps', () => {
               right: '_bb',
               left: '_a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: '_ccc',
               left: '_bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: '_dddd',
               left: '_ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
@@ -788,7 +783,7 @@ describe('sort-maps', () => {
               right: '_eee',
               left: 'm',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         options: [
@@ -864,7 +859,7 @@ describe('sort-maps', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -904,7 +899,7 @@ describe('sort-maps', () => {
               right: "'_c'",
               left: "'m'",
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         output: dedent`
@@ -958,7 +953,7 @@ describe('sort-maps', () => {
               right: "'...foo'",
               left: "'a'",
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         output: dedent`
@@ -1011,21 +1006,21 @@ describe('sort-maps', () => {
               right: 'y',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenMapElementsMembers',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenMapElementsMembers',
           },
         ],
         options: [
@@ -1095,21 +1090,21 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenMapElementsMembers',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenMapElementsMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenMapElementsMembers',
           },
         ],
         output: dedent`
@@ -1174,7 +1169,7 @@ describe('sort-maps', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenMapElementsMembers',
             },
           ],
           output: dedent`
@@ -1231,7 +1226,7 @@ describe('sort-maps', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenMapElementsMembers',
             },
           ],
           output: dedent`
@@ -1334,7 +1329,7 @@ describe('sort-maps', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         output: dedent`
@@ -1378,7 +1373,7 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -1453,7 +1448,7 @@ describe('sort-maps', () => {
                 right: 'g',
                 left: 'b',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedMapElementsGroupOrder',
             },
             {
               data: {
@@ -1462,7 +1457,7 @@ describe('sort-maps', () => {
                 right: 'r',
                 left: 'g',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedMapElementsGroupOrder',
             },
           ],
           output: dedent`
@@ -1514,6 +1509,15 @@ describe('sort-maps', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: {
+              right: "'a'",
+              left: "'b'",
+            },
+            messageId: 'unexpectedMapElementsOrder',
+          },
+        ],
         output: dedent`
           new Map([
             ['c', 'cc'],
@@ -1532,15 +1536,6 @@ describe('sort-maps', () => {
             ['a', 'aa'],
           ])
         `,
-        errors: [
-          {
-            data: {
-              right: "'a'",
-              left: "'b'",
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -1585,7 +1580,7 @@ describe('sort-maps', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -1623,7 +1618,7 @@ describe('sort-maps', () => {
               right: '1',
               left: '2',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -1664,14 +1659,14 @@ describe('sort-maps', () => {
               right: 'cc',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'bbb',
               left: 'cc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -1702,14 +1697,14 @@ describe('sort-maps', () => {
               right: 'a',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -1783,14 +1778,14 @@ describe('sort-maps', () => {
               right: 'bbb',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'fff',
               left: 'gg',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -1855,7 +1850,7 @@ describe('sort-maps', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -1895,7 +1890,7 @@ describe('sort-maps', () => {
               right: "'a'",
               left: "'b'",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -1993,7 +1988,7 @@ describe('sort-maps', () => {
               right: "'a'",
               left: "'b'",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -2136,6 +2131,17 @@ describe('sort-maps', () => {
 
     it('applies custom groups based on element name patterns', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'keysStartingWithHello',
+              leftGroup: 'unknown',
+              right: "'helloKey'",
+              left: "'b'",
+            },
+            messageId: 'unexpectedMapElementsGroupOrder',
+          },
+        ],
         options: [
           {
             customGroups: [
@@ -2145,17 +2151,6 @@ describe('sort-maps', () => {
               },
             ],
             groups: ['keysStartingWithHello', 'unknown'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              rightGroup: 'keysStartingWithHello',
-              leftGroup: 'unknown',
-              right: "'helloKey'",
-              left: "'b'",
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2183,21 +2178,21 @@ describe('sort-maps', () => {
               right: '_bb',
               left: '_a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: '_ccc',
               left: '_bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: '_dddd',
               left: '_ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
@@ -2206,7 +2201,7 @@ describe('sort-maps', () => {
               right: '_eee',
               left: 'm',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         options: [
@@ -2282,7 +2277,7 @@ describe('sort-maps', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -2322,7 +2317,7 @@ describe('sort-maps', () => {
               right: "'_c'",
               left: "'m'",
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         output: dedent`
@@ -2376,7 +2371,7 @@ describe('sort-maps', () => {
               right: "'...foo'",
               left: "'a'",
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         output: dedent`
@@ -2429,21 +2424,21 @@ describe('sort-maps', () => {
               right: 'y',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenMapElementsMembers',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenMapElementsMembers',
           },
         ],
         options: [
@@ -2513,21 +2508,21 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenMapElementsMembers',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenMapElementsMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenMapElementsMembers',
           },
         ],
         output: dedent`
@@ -2592,7 +2587,7 @@ describe('sort-maps', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenMapElementsMembers',
             },
           ],
           output: dedent`
@@ -2649,7 +2644,7 @@ describe('sort-maps', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenMapElementsMembers',
             },
           ],
           output: dedent`
@@ -2752,7 +2747,7 @@ describe('sort-maps', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         output: dedent`
@@ -2796,7 +2791,7 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -2871,7 +2866,7 @@ describe('sort-maps', () => {
                 right: 'g',
                 left: 'b',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedMapElementsGroupOrder',
             },
             {
               data: {
@@ -2880,7 +2875,7 @@ describe('sort-maps', () => {
                 right: 'r',
                 left: 'g',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedMapElementsGroupOrder',
             },
           ],
           output: dedent`
@@ -2932,6 +2927,15 @@ describe('sort-maps', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: {
+              right: "'a'",
+              left: "'b'",
+            },
+            messageId: 'unexpectedMapElementsOrder',
+          },
+        ],
         output: dedent`
           new Map([
             ['c', 'cc'],
@@ -2950,15 +2954,6 @@ describe('sort-maps', () => {
             ['a', 'aa'],
           ])
         `,
-        errors: [
-          {
-            data: {
-              right: "'a'",
-              left: "'b'",
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -3003,7 +2998,7 @@ describe('sort-maps', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -3041,7 +3036,7 @@ describe('sort-maps', () => {
               right: '3',
               left: '1',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -3082,14 +3077,14 @@ describe('sort-maps', () => {
               right: 'cc',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'bbb',
               left: 'cc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -3120,14 +3115,14 @@ describe('sort-maps', () => {
               right: 'a',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -3201,14 +3196,14 @@ describe('sort-maps', () => {
               right: 'bbb',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'fff',
               left: 'gg',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -3273,7 +3268,7 @@ describe('sort-maps', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -3313,7 +3308,7 @@ describe('sort-maps', () => {
               right: "'aa'",
               left: "'b'",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -3411,7 +3406,7 @@ describe('sort-maps', () => {
               right: "'aa'",
               left: "'b'",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -3554,6 +3549,17 @@ describe('sort-maps', () => {
 
     it('applies custom groups based on element name patterns', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'keysStartingWithHello',
+              leftGroup: 'unknown',
+              right: "'helloKey'",
+              left: "'b'",
+            },
+            messageId: 'unexpectedMapElementsGroupOrder',
+          },
+        ],
         options: [
           {
             customGroups: [
@@ -3563,17 +3569,6 @@ describe('sort-maps', () => {
               },
             ],
             groups: ['keysStartingWithHello', 'unknown'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              rightGroup: 'keysStartingWithHello',
-              leftGroup: 'unknown',
-              right: "'helloKey'",
-              left: "'b'",
-            },
-            messageId: GROUP_ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3601,21 +3596,21 @@ describe('sort-maps', () => {
               right: '_bb',
               left: '_a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: '_ccc',
               left: '_bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: '_dddd',
               left: '_ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
@@ -3624,7 +3619,7 @@ describe('sort-maps', () => {
               right: '_eee',
               left: 'm',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         options: [
@@ -3700,7 +3695,7 @@ describe('sort-maps', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -3740,7 +3735,7 @@ describe('sort-maps', () => {
               right: "'_c'",
               left: "'m'",
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         output: dedent`
@@ -3794,7 +3789,7 @@ describe('sort-maps', () => {
               right: "'...foo'",
               left: "'a'",
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         output: dedent`
@@ -3847,21 +3842,21 @@ describe('sort-maps', () => {
               left: 'aaaa',
               right: 'yy',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenMapElementsMembers',
           },
           {
             data: {
               right: 'bbb',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'bbb',
               left: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenMapElementsMembers',
           },
         ],
         options: [
@@ -3931,21 +3926,21 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenMapElementsMembers',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenMapElementsMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenMapElementsMembers',
           },
         ],
         output: dedent`
@@ -4010,7 +4005,7 @@ describe('sort-maps', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenMapElementsMembers',
             },
           ],
           output: dedent`
@@ -4067,7 +4062,7 @@ describe('sort-maps', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenMapElementsMembers',
             },
           ],
           output: dedent`
@@ -4170,7 +4165,7 @@ describe('sort-maps', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         output: dedent`
@@ -4214,7 +4209,7 @@ describe('sort-maps', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -4289,7 +4284,7 @@ describe('sort-maps', () => {
                 right: 'g',
                 left: 'b',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedMapElementsGroupOrder',
             },
             {
               data: {
@@ -4298,7 +4293,7 @@ describe('sort-maps', () => {
                 right: 'r',
                 left: 'g',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedMapElementsGroupOrder',
             },
           ],
           output: dedent`
@@ -4349,7 +4344,7 @@ describe('sort-maps', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -4414,7 +4409,7 @@ describe('sort-maps', () => {
               right: 'ba',
               left: 'aa',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsGroupOrder',
           },
         ],
         output: dedent`
@@ -4461,7 +4456,7 @@ describe('sort-maps', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenMapElementsMembers',
           },
         ],
         output: dedent`
@@ -4538,7 +4533,7 @@ describe('sort-maps', () => {
               right: "'EUR'",
               left: "'USD'",
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
       })
@@ -4596,7 +4591,7 @@ describe('sort-maps', () => {
               left: '1_000',
               right: '100',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [
@@ -4629,7 +4624,7 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -4658,7 +4653,7 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -4685,7 +4680,7 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -4714,7 +4709,7 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -4767,7 +4762,7 @@ describe('sort-maps', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [{}],
@@ -4798,7 +4793,7 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [{}],
@@ -4811,7 +4806,7 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`
@@ -4854,13 +4849,22 @@ describe('sort-maps', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [{}],
       })
 
       await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedMapElementsOrder',
+          },
+        ],
         output: dedent`
           new Map([
             [b, 'b'],
@@ -4875,15 +4879,6 @@ describe('sort-maps', () => {
             [a, 'a'] /* eslint-disable-line rule-to-test/sort-maps */
           ])
         `,
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
@@ -4918,7 +4913,7 @@ describe('sort-maps', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         options: [{}],
@@ -4933,14 +4928,14 @@ describe('sort-maps', () => {
               right: 'c',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedMapElementsOrder',
           },
         ],
         output: dedent`

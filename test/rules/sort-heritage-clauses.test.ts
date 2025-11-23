@@ -3,13 +3,8 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
-import rule, {
-  MISSED_SPACING_ERROR_ID,
-  EXTRA_SPACING_ERROR_ID,
-  GROUP_ORDER_ERROR_ID,
-  ORDER_ERROR_ID,
-} from '../../rules/sort-heritage-clauses'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import rule from '../../rules/sort-heritage-clauses'
 import { Alphabet } from '../../utils/alphabet'
 
 describe('sort-heritage-clauses', () => {
@@ -55,7 +50,7 @@ describe('sort-heritage-clauses', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -84,7 +79,7 @@ describe('sort-heritage-clauses', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -113,14 +108,14 @@ describe('sort-heritage-clauses', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
           {
             data: {
               right: 'c',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -167,7 +162,7 @@ describe('sort-heritage-clauses', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -196,14 +191,14 @@ describe('sort-heritage-clauses', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenHeritageClauses',
           },
         ],
         options: [
@@ -317,7 +312,7 @@ describe('sort-heritage-clauses', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -342,7 +337,7 @@ describe('sort-heritage-clauses', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -368,6 +363,17 @@ describe('sort-heritage-clauses', () => {
       'groups elements by name pattern - %s',
       async (_, elementNamePattern) => {
         await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'heritageClausesContainingHello',
+                right: 'HelloInterface',
+                leftGroup: 'unknown',
+                left: 'B',
+              },
+              messageId: 'unexpectedHeritageClausesGroupOrder',
+            },
+          ],
           options: [
             {
               customGroups: [
@@ -377,17 +383,6 @@ describe('sort-heritage-clauses', () => {
                 },
               ],
               groups: ['heritageClausesContainingHello', 'unknown'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                rightGroup: 'heritageClausesContainingHello',
-                right: 'HelloInterface',
-                leftGroup: 'unknown',
-                left: 'B',
-              },
-              messageId: GROUP_ORDER_ERROR_ID,
             },
           ],
           output: dedent`
@@ -414,7 +409,7 @@ describe('sort-heritage-clauses', () => {
               right: 'aFoo',
               left: 'p',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesGroupOrder',
           },
           {
             data: {
@@ -423,7 +418,7 @@ describe('sort-heritage-clauses', () => {
               right: 'bbFoo',
               left: 'oo',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesGroupOrder',
           },
         ],
         options: [
@@ -481,7 +476,7 @@ describe('sort-heritage-clauses', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -519,7 +514,7 @@ describe('sort-heritage-clauses', () => {
               right: 'cFoo',
               left: 'm',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesGroupOrder',
           },
         ],
         output: dedent`
@@ -565,21 +560,21 @@ describe('sort-heritage-clauses', () => {
               right: 'y',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenHeritageClauses',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenHeritageClauses',
           },
         ],
         options: [
@@ -625,21 +620,21 @@ describe('sort-heritage-clauses', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenHeritageClauses',
           },
           {
             data: {
               right: 'y',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
           {
             data: {
               right: 'b',
               left: 'y',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenHeritageClauses',
           },
         ],
         options: [
@@ -714,21 +709,21 @@ describe('sort-heritage-clauses', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenHeritageClauses',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenHeritageClauses',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenHeritageClauses',
           },
         ],
         output: dedent`
@@ -793,7 +788,7 @@ describe('sort-heritage-clauses', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenHeritageClauses',
             },
           ],
           output: dedent`
@@ -845,7 +840,7 @@ describe('sort-heritage-clauses', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenHeritageClauses',
             },
           ],
           output: dedent`
@@ -949,7 +944,7 @@ describe('sort-heritage-clauses', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesGroupOrder',
           },
         ],
         output: dedent`
@@ -993,7 +988,7 @@ describe('sort-heritage-clauses', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -1039,7 +1034,7 @@ describe('sort-heritage-clauses', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenHeritageClauses',
           },
         ],
         output: dedent`
@@ -1079,7 +1074,7 @@ describe('sort-heritage-clauses', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenHeritageClauses',
           },
         ],
         output: dedent`
@@ -1106,14 +1101,14 @@ describe('sort-heritage-clauses', () => {
               right: 'a',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
           {
             data: {
               right: 'b',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -1149,6 +1144,22 @@ describe('sort-heritage-clauses', () => {
 
     it('sorts heritageClauses within partition comment boundaries', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              right: 'Bbb',
+              left: 'D',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+          {
+            data: {
+              right: 'Fff',
+              left: 'Gg',
+            },
+            messageId: 'unexpectedHeritageClausesOrder',
+          },
+        ],
         output: dedent`
           class Class implements
             // Part: A
@@ -1181,22 +1192,6 @@ describe('sort-heritage-clauses', () => {
             Fff
           {}
         `,
-        errors: [
-          {
-            data: {
-              right: 'Bbb',
-              left: 'D',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: {
-              right: 'Fff',
-              left: 'Gg',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
@@ -1259,7 +1254,7 @@ describe('sort-heritage-clauses', () => {
               right: 'Bb',
               left: 'C',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         options: [
@@ -1299,7 +1294,7 @@ describe('sort-heritage-clauses', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         options: [
@@ -1397,7 +1392,7 @@ describe('sort-heritage-clauses', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         options: [
@@ -1524,7 +1519,7 @@ describe('sort-heritage-clauses', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -1553,7 +1548,7 @@ describe('sort-heritage-clauses', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -1582,14 +1577,14 @@ describe('sort-heritage-clauses', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
           {
             data: {
               right: 'c',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -1636,7 +1631,7 @@ describe('sort-heritage-clauses', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -1741,7 +1736,7 @@ describe('sort-heritage-clauses', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -1766,7 +1761,7 @@ describe('sort-heritage-clauses', () => {
               right: 'A',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -1820,7 +1815,7 @@ describe('sort-heritage-clauses', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -1849,7 +1844,7 @@ describe('sort-heritage-clauses', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -1878,14 +1873,14 @@ describe('sort-heritage-clauses', () => {
               right: 'aaaa',
               left: 'bbb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
           {
             data: {
               right: 'cc',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -1932,7 +1927,7 @@ describe('sort-heritage-clauses', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -2037,7 +2032,7 @@ describe('sort-heritage-clauses', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -2062,7 +2057,7 @@ describe('sort-heritage-clauses', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -2121,7 +2116,7 @@ describe('sort-heritage-clauses', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -2150,7 +2145,7 @@ describe('sort-heritage-clauses', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -2217,7 +2212,7 @@ describe('sort-heritage-clauses', () => {
               right: 'ba',
               left: 'aa',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesGroupOrder',
           },
         ],
         output: dedent`
@@ -2264,7 +2259,7 @@ describe('sort-heritage-clauses', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
         output: dedent`
@@ -2304,7 +2299,7 @@ describe('sort-heritage-clauses', () => {
                 right: 'B',
                 left: 'C',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
           output: dedent`
@@ -2333,7 +2328,7 @@ describe('sort-heritage-clauses', () => {
                 right: 'B',
                 left: 'C',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
           output: dedent`
@@ -2364,7 +2359,7 @@ describe('sort-heritage-clauses', () => {
                 right: 'B',
                 left: 'C',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
           output: dedent`
@@ -2391,7 +2386,7 @@ describe('sort-heritage-clauses', () => {
                 right: 'B',
                 left: 'C',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
           output: dedent`
@@ -2420,14 +2415,14 @@ describe('sort-heritage-clauses', () => {
                 right: 'C',
                 left: 'D',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedHeritageClausesOrder',
             },
             {
               data: {
                 right: 'B',
                 left: 'A',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
           output: dedent`
@@ -2484,7 +2479,7 @@ describe('sort-heritage-clauses', () => {
                 right: 'A',
                 left: 'B',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
           options: [{}],
@@ -2498,6 +2493,15 @@ describe('sort-heritage-clauses', () => {
         'sorts %s with rule-specific eslint-disable comments',
         async (_description, declaration) => {
           await invalid({
+            errors: [
+              {
+                data: {
+                  right: 'B',
+                  left: 'C',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
             output: dedent`
               ${declaration}
                 B,
@@ -2514,15 +2518,6 @@ describe('sort-heritage-clauses', () => {
                 A
               {}
             `,
-            errors: [
-              {
-                data: {
-                  right: 'B',
-                  left: 'C',
-                },
-                messageId: ORDER_ERROR_ID,
-              },
-            ],
             options: [{}],
           })
 
@@ -2533,7 +2528,7 @@ describe('sort-heritage-clauses', () => {
                   right: 'B',
                   left: 'C',
                 },
-                messageId: ORDER_ERROR_ID,
+                messageId: 'unexpectedHeritageClausesOrder',
               },
             ],
             output: dedent`
@@ -2554,6 +2549,15 @@ describe('sort-heritage-clauses', () => {
           })
 
           await invalid({
+            errors: [
+              {
+                data: {
+                  right: 'B',
+                  left: 'C',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
             output: dedent`
               ${declaration}
                 B,
@@ -2570,15 +2574,6 @@ describe('sort-heritage-clauses', () => {
                 A
               {}
             `,
-            errors: [
-              {
-                data: {
-                  right: 'B',
-                  left: 'C',
-                },
-                messageId: ORDER_ERROR_ID,
-              },
-            ],
             options: [{}],
           })
 
@@ -2589,7 +2584,7 @@ describe('sort-heritage-clauses', () => {
                   right: 'B',
                   left: 'C',
                 },
-                messageId: ORDER_ERROR_ID,
+                messageId: 'unexpectedHeritageClausesOrder',
               },
             ],
             output: dedent`
@@ -2643,7 +2638,7 @@ describe('sort-heritage-clauses', () => {
                 right: 'A',
                 left: 'B',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
           options: [{}],
@@ -2680,7 +2675,7 @@ describe('sort-heritage-clauses', () => {
                 right: 'A',
                 left: 'B',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
           options: [{}],

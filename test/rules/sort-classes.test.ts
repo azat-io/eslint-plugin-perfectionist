@@ -3,14 +3,8 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
-import rule, {
-  DEPENDENCY_ORDER_ERROR_ID,
-  MISSED_SPACING_ERROR_ID,
-  EXTRA_SPACING_ERROR_ID,
-  GROUP_ORDER_ERROR_ID,
-  ORDER_ERROR_ID,
-} from '../../rules/sort-classes'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import rule from '../../rules/sort-classes'
 
 describe('sort-classes', () => {
   let { invalid, valid } = createRuleTester({
@@ -108,7 +102,7 @@ describe('sort-classes', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -117,7 +111,7 @@ describe('sort-classes', () => {
               right: 'constructor',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -187,7 +181,7 @@ describe('sort-classes', () => {
               right: 'o',
               left: 'p',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -196,7 +190,7 @@ describe('sort-classes', () => {
               right: 'static',
               left: 'o',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -205,7 +199,7 @@ describe('sort-classes', () => {
               leftGroup: 'static-block',
               left: 'static',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -214,14 +208,14 @@ describe('sort-classes', () => {
               rightGroup: 'async-function-property',
               right: 'n',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
               right: 'm',
               left: 'n',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -230,7 +224,7 @@ describe('sort-classes', () => {
               right: 'l',
               left: 'm',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -239,7 +233,7 @@ describe('sort-classes', () => {
               right: 'k',
               left: 'l',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -248,7 +242,7 @@ describe('sort-classes', () => {
               right: 'j',
               left: 'k',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -257,7 +251,7 @@ describe('sort-classes', () => {
               right: 'i',
               left: 'j',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -266,7 +260,7 @@ describe('sort-classes', () => {
               right: 'h',
               left: 'i',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -275,7 +269,7 @@ describe('sort-classes', () => {
               right: 'g',
               left: 'h',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -284,7 +278,7 @@ describe('sort-classes', () => {
               right: 'f',
               left: 'g',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -293,7 +287,7 @@ describe('sort-classes', () => {
               right: 'e',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -302,7 +296,7 @@ describe('sort-classes', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -311,7 +305,7 @@ describe('sort-classes', () => {
               right: 'c',
               left: 'd',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -321,7 +315,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -332,7 +326,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -457,7 +451,7 @@ describe('sort-classes', () => {
               right: 'fields',
               left: 'method',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -495,7 +489,7 @@ describe('sort-classes', () => {
               leftGroup: 'property',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -537,7 +531,7 @@ describe('sort-classes', () => {
               leftGroup: 'method',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -575,7 +569,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -613,7 +607,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -651,7 +645,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -689,7 +683,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -727,7 +721,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -773,7 +767,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -822,7 +816,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -865,7 +859,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -903,7 +897,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -945,7 +939,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -987,7 +981,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -1037,7 +1031,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -1080,7 +1074,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -1118,7 +1112,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -1156,7 +1150,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -1194,7 +1188,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -1232,7 +1226,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -1270,7 +1264,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -1310,7 +1304,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -1354,7 +1348,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -1403,7 +1397,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -1446,7 +1440,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -1509,14 +1503,14 @@ describe('sort-classes', () => {
               left: 'key in O',
               right: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         options: [
@@ -1569,7 +1563,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -1626,7 +1620,7 @@ describe('sort-classes', () => {
               left: '[k: string];',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -1693,14 +1687,14 @@ describe('sort-classes', () => {
               right: '#somePrivateProperty',
               leftGroup: 'static-method',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
               right: '#someOtherPrivateProperty',
               left: '#somePrivateProperty',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -1709,14 +1703,14 @@ describe('sort-classes', () => {
               rightGroup: 'static-property',
               right: 'someStaticProperty',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
               right: '#someStaticPrivateProperty',
               left: 'someStaticProperty',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -1725,7 +1719,7 @@ describe('sort-classes', () => {
               leftGroup: 'static-method',
               left: 'aStaticMethod',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -1821,14 +1815,14 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'x',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'c',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -1896,7 +1890,7 @@ describe('sort-classes', () => {
               right: 'lastName',
               left: 'email',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -2014,7 +2008,7 @@ describe('sort-classes', () => {
               left: 'message',
               right: 'prop',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
       })
@@ -2030,7 +2024,7 @@ describe('sort-classes', () => {
               right: '#active',
               left: 'toggle',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -2039,7 +2033,7 @@ describe('sort-classes', () => {
               right: 'finished',
               left: '#active',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -2142,21 +2136,21 @@ describe('sort-classes', () => {
               right: 'onSortChanged',
               left: 'updateTable',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'onPaginationChanged',
               left: 'onSortChanged',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'onValueChanged',
               left: 'setFormValue',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -2281,7 +2275,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'aaa',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -2310,7 +2304,7 @@ describe('sort-classes', () => {
               left: 'getAaa',
               right: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -2343,7 +2337,7 @@ describe('sort-classes', () => {
               right: 'c',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -2372,7 +2366,7 @@ describe('sort-classes', () => {
               left: 'getAaa',
               right: '#b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -2405,7 +2399,7 @@ describe('sort-classes', () => {
               left: 'getAaa',
               right: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -2739,35 +2733,35 @@ describe('sort-classes', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'a',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'd',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'e',
               right: 'c',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'b',
               right: 'z',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -2815,7 +2809,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'a',
               right: 'c',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -3456,14 +3450,14 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'a',
               right: 'c',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -3501,7 +3495,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -3580,7 +3574,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'b',
               right: 'a',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -3614,7 +3608,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'b',
               right: 'a',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         options: [
@@ -3660,14 +3654,14 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'aaa',
               right: 'left',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'aaa',
               right: 'right',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -3733,7 +3727,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'i',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -3742,7 +3736,7 @@ describe('sort-classes', () => {
               right: 'method3',
               left: 'z',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -3751,7 +3745,7 @@ describe('sort-classes', () => {
               left: 'method3',
               right: 'y',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -3760,7 +3754,7 @@ describe('sort-classes', () => {
               left: 'method1',
               right: 'x',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -3804,7 +3798,7 @@ describe('sort-classes', () => {
               right: 'someMethod',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -3813,7 +3807,7 @@ describe('sort-classes', () => {
               left: 'someMethod',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -3905,21 +3899,21 @@ describe('sort-classes', () => {
               right: 'y',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
         ],
         code: dedent`
@@ -3965,14 +3959,14 @@ describe('sort-classes', () => {
                 right: 'method',
                 left: 'method',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenClassMembers',
             },
             {
               data: {
                 right: 'method',
                 left: 'method',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenClassMembers',
             },
           ],
           output: dedent`
@@ -4032,21 +4026,21 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenClassMembers',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
         ],
         output: dedent`
@@ -4111,7 +4105,7 @@ describe('sort-classes', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenClassMembers',
             },
           ],
           output: dedent`
@@ -4163,7 +4157,7 @@ describe('sort-classes', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenClassMembers',
             },
           ],
           output: dedent`
@@ -4254,7 +4248,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -4304,7 +4298,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4338,7 +4332,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4361,7 +4355,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4384,7 +4378,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4409,7 +4403,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4432,7 +4426,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4457,7 +4451,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4480,7 +4474,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4505,7 +4499,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4528,7 +4522,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4553,7 +4547,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4576,7 +4570,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4601,7 +4595,7 @@ describe('sort-classes', () => {
               right: '[key: number]',
               left: '[key: string]',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4624,7 +4618,7 @@ describe('sort-classes', () => {
               right: '[key: number]',
               left: '[key: string]',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -4651,7 +4645,7 @@ describe('sort-classes', () => {
               right: 'static',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -4758,7 +4752,7 @@ describe('sort-classes', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -4767,7 +4761,7 @@ describe('sort-classes', () => {
               right: 'constructor',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -4837,7 +4831,7 @@ describe('sort-classes', () => {
               right: 'o',
               left: 'p',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4846,7 +4840,7 @@ describe('sort-classes', () => {
               right: 'static',
               left: 'o',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4855,7 +4849,7 @@ describe('sort-classes', () => {
               leftGroup: 'static-block',
               left: 'static',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4864,14 +4858,14 @@ describe('sort-classes', () => {
               rightGroup: 'async-function-property',
               right: 'n',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
               right: 'm',
               left: 'n',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -4880,7 +4874,7 @@ describe('sort-classes', () => {
               right: 'l',
               left: 'm',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4889,7 +4883,7 @@ describe('sort-classes', () => {
               right: 'k',
               left: 'l',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4898,7 +4892,7 @@ describe('sort-classes', () => {
               right: 'j',
               left: 'k',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4907,7 +4901,7 @@ describe('sort-classes', () => {
               right: 'i',
               left: 'j',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4916,7 +4910,7 @@ describe('sort-classes', () => {
               right: 'h',
               left: 'i',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4925,7 +4919,7 @@ describe('sort-classes', () => {
               right: 'g',
               left: 'h',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4934,7 +4928,7 @@ describe('sort-classes', () => {
               right: 'f',
               left: 'g',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4943,7 +4937,7 @@ describe('sort-classes', () => {
               right: 'e',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4952,7 +4946,7 @@ describe('sort-classes', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4961,7 +4955,7 @@ describe('sort-classes', () => {
               right: 'c',
               left: 'd',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4971,7 +4965,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -4982,7 +4976,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -5107,7 +5101,7 @@ describe('sort-classes', () => {
               right: 'fields',
               left: 'method',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -5145,7 +5139,7 @@ describe('sort-classes', () => {
               leftGroup: 'property',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -5187,7 +5181,7 @@ describe('sort-classes', () => {
               leftGroup: 'method',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -5225,7 +5219,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -5263,7 +5257,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -5301,7 +5295,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -5339,7 +5333,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -5377,7 +5371,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -5423,7 +5417,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -5472,7 +5466,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -5515,7 +5509,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -5553,7 +5547,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -5595,7 +5589,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -5637,7 +5631,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -5687,7 +5681,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -5730,7 +5724,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -5768,7 +5762,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -5806,7 +5800,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -5844,7 +5838,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -5882,7 +5876,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -5920,7 +5914,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -5960,7 +5954,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -6004,7 +5998,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -6053,7 +6047,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -6096,7 +6090,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -6159,14 +6153,14 @@ describe('sort-classes', () => {
               left: 'key in O',
               right: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         options: [
@@ -6219,7 +6213,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -6276,7 +6270,7 @@ describe('sort-classes', () => {
               left: '[k: string];',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -6343,14 +6337,14 @@ describe('sort-classes', () => {
               right: '#somePrivateProperty',
               leftGroup: 'static-method',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
               right: '#someOtherPrivateProperty',
               left: '#somePrivateProperty',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -6359,14 +6353,14 @@ describe('sort-classes', () => {
               rightGroup: 'static-property',
               right: 'someStaticProperty',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
               right: '#someStaticPrivateProperty',
               left: 'someStaticProperty',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -6375,7 +6369,7 @@ describe('sort-classes', () => {
               leftGroup: 'static-method',
               left: 'aStaticMethod',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -6471,14 +6465,14 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'x',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'c',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -6546,7 +6540,7 @@ describe('sort-classes', () => {
               right: 'lastName',
               left: 'email',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -6664,7 +6658,7 @@ describe('sort-classes', () => {
               left: 'message',
               right: 'prop',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
       })
@@ -6680,7 +6674,7 @@ describe('sort-classes', () => {
               right: '#active',
               left: 'toggle',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -6689,7 +6683,7 @@ describe('sort-classes', () => {
               right: 'finished',
               left: '#active',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -6792,21 +6786,21 @@ describe('sort-classes', () => {
               right: 'onSortChanged',
               left: 'updateTable',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'onPaginationChanged',
               left: 'onSortChanged',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'onValueChanged',
               left: 'setFormValue',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -6931,7 +6925,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'aaa',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -6960,7 +6954,7 @@ describe('sort-classes', () => {
               left: 'getAaa',
               right: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -6993,7 +6987,7 @@ describe('sort-classes', () => {
               right: 'c',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -7022,7 +7016,7 @@ describe('sort-classes', () => {
               left: 'getAaa',
               right: '#b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -7055,7 +7049,7 @@ describe('sort-classes', () => {
               left: 'getAaa',
               right: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -7389,35 +7383,35 @@ describe('sort-classes', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'a',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'd',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'e',
               right: 'c',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'b',
               right: 'z',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -7465,7 +7459,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'a',
               right: 'c',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -8106,14 +8100,14 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'a',
               right: 'c',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -8151,7 +8145,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -8230,7 +8224,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'b',
               right: 'a',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -8264,7 +8258,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'b',
               right: 'a',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         options: [
@@ -8310,14 +8304,14 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'aaa',
               right: 'left',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'aaa',
               right: 'right',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -8383,7 +8377,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'i',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -8392,7 +8386,7 @@ describe('sort-classes', () => {
               right: 'method3',
               left: 'z',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -8401,7 +8395,7 @@ describe('sort-classes', () => {
               left: 'method3',
               right: 'y',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -8410,7 +8404,7 @@ describe('sort-classes', () => {
               left: 'method1',
               right: 'x',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -8454,7 +8448,7 @@ describe('sort-classes', () => {
               right: 'someMethod',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -8463,7 +8457,7 @@ describe('sort-classes', () => {
               left: 'someMethod',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -8555,21 +8549,21 @@ describe('sort-classes', () => {
               right: 'y',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'b',
               left: 'z',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
         ],
         code: dedent`
@@ -8615,14 +8609,14 @@ describe('sort-classes', () => {
                 right: 'method',
                 left: 'method',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenClassMembers',
             },
             {
               data: {
                 right: 'method',
                 left: 'method',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenClassMembers',
             },
           ],
           output: dedent`
@@ -8682,21 +8676,21 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenClassMembers',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
         ],
         output: dedent`
@@ -8761,7 +8755,7 @@ describe('sort-classes', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenClassMembers',
             },
           ],
           output: dedent`
@@ -8813,7 +8807,7 @@ describe('sort-classes', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenClassMembers',
             },
           ],
           output: dedent`
@@ -8904,7 +8898,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -8954,7 +8948,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -8988,7 +8982,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9011,7 +9005,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9034,7 +9028,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9059,7 +9053,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9082,7 +9076,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9107,7 +9101,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9130,7 +9124,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9155,7 +9149,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9178,7 +9172,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9203,7 +9197,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9226,7 +9220,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9251,7 +9245,7 @@ describe('sort-classes', () => {
               right: '[key: number]',
               left: '[key: string]',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9274,7 +9268,7 @@ describe('sort-classes', () => {
               right: '[key: number]',
               left: '[key: string]',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -9301,7 +9295,7 @@ describe('sort-classes', () => {
               right: 'static',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -9464,7 +9458,7 @@ describe('sort-classes', () => {
               right: 'constructor',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
       })
@@ -9480,7 +9474,7 @@ describe('sort-classes', () => {
               right: 'o',
               left: 'p',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9489,7 +9483,7 @@ describe('sort-classes', () => {
               right: 'static',
               left: 'o',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9498,7 +9492,7 @@ describe('sort-classes', () => {
               leftGroup: 'static-block',
               left: 'static',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9507,7 +9501,7 @@ describe('sort-classes', () => {
               rightGroup: 'async-function-property',
               right: 'n',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9516,7 +9510,7 @@ describe('sort-classes', () => {
               right: 'l',
               left: 'm',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9525,7 +9519,7 @@ describe('sort-classes', () => {
               right: 'k',
               left: 'l',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9534,7 +9528,7 @@ describe('sort-classes', () => {
               right: 'j',
               left: 'k',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9543,7 +9537,7 @@ describe('sort-classes', () => {
               right: 'i',
               left: 'j',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9552,7 +9546,7 @@ describe('sort-classes', () => {
               right: 'h',
               left: 'i',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9561,7 +9555,7 @@ describe('sort-classes', () => {
               right: 'g',
               left: 'h',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9570,7 +9564,7 @@ describe('sort-classes', () => {
               right: 'f',
               left: 'g',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9579,7 +9573,7 @@ describe('sort-classes', () => {
               right: 'e',
               left: 'f',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9588,7 +9582,7 @@ describe('sort-classes', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9597,7 +9591,7 @@ describe('sort-classes', () => {
               right: 'c',
               left: 'd',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9607,7 +9601,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -9618,7 +9612,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -9743,7 +9737,7 @@ describe('sort-classes', () => {
               right: 'fields',
               left: 'method',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -9781,7 +9775,7 @@ describe('sort-classes', () => {
               leftGroup: 'property',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -9823,7 +9817,7 @@ describe('sort-classes', () => {
               leftGroup: 'method',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -9861,7 +9855,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -9899,7 +9893,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -9937,7 +9931,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -9975,7 +9969,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -10013,7 +10007,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -10059,7 +10053,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -10108,7 +10102,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -10151,7 +10145,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -10189,7 +10183,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -10231,7 +10225,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -10273,7 +10267,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -10323,7 +10317,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -10366,7 +10360,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -10404,7 +10398,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -10442,7 +10436,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -10480,7 +10474,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -10518,7 +10512,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -10556,7 +10550,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -10596,7 +10590,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -10640,7 +10634,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -10689,7 +10683,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'a',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -10732,7 +10726,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -10832,7 +10826,7 @@ describe('sort-classes', () => {
               left: 'key in O',
               right: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
       })
@@ -10848,7 +10842,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -10905,7 +10899,7 @@ describe('sort-classes', () => {
               left: '[k: string];',
               right: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -10972,14 +10966,14 @@ describe('sort-classes', () => {
               right: '#somePrivateProperty',
               leftGroup: 'static-method',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
               right: '#someOtherPrivateProperty',
               left: '#somePrivateProperty',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -10988,14 +10982,14 @@ describe('sort-classes', () => {
               rightGroup: 'static-property',
               right: 'someStaticProperty',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
               right: '#someStaticPrivateProperty',
               left: 'someStaticProperty',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -11004,7 +10998,7 @@ describe('sort-classes', () => {
               leftGroup: 'static-method',
               left: 'aStaticMethod',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -11100,7 +11094,7 @@ describe('sort-classes', () => {
               right: 'bb',
               left: 'x',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -11168,7 +11162,7 @@ describe('sort-classes', () => {
               right: 'lastName',
               left: 'email',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -11286,7 +11280,7 @@ describe('sort-classes', () => {
               left: 'message',
               right: 'prop',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
       })
@@ -11302,7 +11296,7 @@ describe('sort-classes', () => {
               right: '#active',
               left: 'toggle',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -11311,7 +11305,7 @@ describe('sort-classes', () => {
               right: 'finished',
               left: '#active',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -11415,35 +11409,35 @@ describe('sort-classes', () => {
               right: 'onSortChanged',
               left: 'updateTable',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'onPaginationChanged',
               left: 'onSortChanged',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'disableForm',
               left: 'clearForm',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'setFormValue',
               left: 'disableForm',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'onValueChanged',
               left: 'setFormValue',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -11568,7 +11562,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'aaa',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -11597,7 +11591,7 @@ describe('sort-classes', () => {
               left: 'getAaa',
               right: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -11630,7 +11624,7 @@ describe('sort-classes', () => {
               right: 'c',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -11659,7 +11653,7 @@ describe('sort-classes', () => {
               left: 'getAaa',
               right: '#b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -11692,7 +11686,7 @@ describe('sort-classes', () => {
               left: 'getAaa',
               right: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -12026,28 +12020,28 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'd',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'e',
               right: 'c',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'b',
               right: 'z',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -12095,7 +12089,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'a',
               right: 'c',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -12736,21 +12730,21 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'b',
               right: 'c',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'a',
               right: 'c',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -12788,14 +12782,14 @@ describe('sort-classes', () => {
               right: 'e',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'g',
               left: 'f',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -12875,7 +12869,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'b',
               right: 'a',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -12909,7 +12903,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'b',
               right: 'a',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         options: [
@@ -12955,14 +12949,14 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'aaa',
               right: 'left',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
           {
             data: {
               nodeDependentOnRight: 'aaa',
               right: 'right',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -13028,7 +13022,7 @@ describe('sort-classes', () => {
               right: 'z',
               left: 'i',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -13037,7 +13031,7 @@ describe('sort-classes', () => {
               left: 'method3',
               right: 'y',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -13046,7 +13040,7 @@ describe('sort-classes', () => {
               left: 'method1',
               right: 'x',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -13146,14 +13140,14 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
           {
             data: {
               right: 'z',
               left: 'y',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
         ],
         code: dedent`
@@ -13199,14 +13193,14 @@ describe('sort-classes', () => {
                 right: 'method',
                 left: 'method',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenClassMembers',
             },
             {
               data: {
                 right: 'method',
                 left: 'method',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenClassMembers',
             },
           ],
           output: dedent`
@@ -13266,21 +13260,21 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenClassMembers',
           },
           {
             data: {
               right: 'c',
               left: 'b',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
         ],
         output: dedent`
@@ -13345,7 +13339,7 @@ describe('sort-classes', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: MISSED_SPACING_ERROR_ID,
+              messageId: 'missedSpacingBetweenClassMembers',
             },
           ],
           output: dedent`
@@ -13397,7 +13391,7 @@ describe('sort-classes', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenClassMembers',
             },
           ],
           output: dedent`
@@ -13488,7 +13482,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -13538,7 +13532,7 @@ describe('sort-classes', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -13572,7 +13566,7 @@ describe('sort-classes', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -13595,7 +13589,7 @@ describe('sort-classes', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -13618,7 +13612,7 @@ describe('sort-classes', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -13643,7 +13637,7 @@ describe('sort-classes', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -13666,7 +13660,7 @@ describe('sort-classes', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -13691,7 +13685,7 @@ describe('sort-classes', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -13714,7 +13708,7 @@ describe('sort-classes', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -13739,7 +13733,7 @@ describe('sort-classes', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -13762,7 +13756,7 @@ describe('sort-classes', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -13787,7 +13781,7 @@ describe('sort-classes', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -13810,7 +13804,7 @@ describe('sort-classes', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -13837,7 +13831,7 @@ describe('sort-classes', () => {
               right: 'static',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -13900,7 +13894,7 @@ describe('sort-classes', () => {
               right: 'ba',
               left: 'aa',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -13947,7 +13941,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenClassMembers',
           },
         ],
         output: dedent`
@@ -13974,7 +13968,7 @@ describe('sort-classes', () => {
               nodeDependentOnRight: 'a',
               right: 'b',
             },
-            messageId: DEPENDENCY_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
         output: dedent`
@@ -14009,14 +14003,14 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenClassMembers',
           },
         ],
         options: [
@@ -14079,7 +14073,7 @@ describe('sort-classes', () => {
               right: 'c',
               left: 'b',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -14121,7 +14115,7 @@ describe('sort-classes', () => {
                 right: 'constructor',
                 left: 'b',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
             {
               data: {
@@ -14130,7 +14124,7 @@ describe('sort-classes', () => {
                 leftGroup: 'unknown',
                 left: 'method',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           options: [
@@ -14210,7 +14204,7 @@ describe('sort-classes', () => {
                 right: 'z',
                 left: 'y',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
           ],
           output: dedent`
@@ -14255,7 +14249,7 @@ describe('sort-classes', () => {
                 right: 'constructor',
                 left: 'b',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
             {
               data: {
@@ -14264,14 +14258,14 @@ describe('sort-classes', () => {
                 right: 'property',
                 left: 'method',
               },
-              messageId: GROUP_ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesGroupOrder',
             },
             {
               data: {
                 right: 'anotherProperty',
                 left: 'property',
               },
-              messageId: ORDER_ERROR_ID,
+              messageId: 'unexpectedClassesOrder',
             },
           ],
           options: [
@@ -14357,7 +14351,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -14389,21 +14383,21 @@ describe('sort-classes', () => {
               right: 'bb',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'ccc',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'dddd',
               left: 'ccc',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -14412,7 +14406,7 @@ describe('sort-classes', () => {
               left: 'method',
               right: 'eee',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -14516,7 +14510,7 @@ describe('sort-classes', () => {
               right: 'fooBar',
               left: 'fooZar',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -14544,7 +14538,7 @@ describe('sort-classes', () => {
               left: 'constructor',
               right: 'd',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -14553,7 +14547,7 @@ describe('sort-classes', () => {
               left: 'method',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -14615,7 +14609,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'a',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -14624,7 +14618,7 @@ describe('sort-classes', () => {
               left: 'method',
               right: 'c',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -14633,7 +14627,7 @@ describe('sort-classes', () => {
               leftGroup: 'unknown',
               left: 'd',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         options: [
@@ -14795,14 +14789,14 @@ describe('sort-classes', () => {
               right: 'c',
               left: 'b',
             },
-            messageId: MISSED_SPACING_ERROR_ID,
+            messageId: 'missedSpacingBetweenClassMembers',
           },
           {
             data: {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
         ],
         options: [
@@ -14860,7 +14854,7 @@ describe('sort-classes', () => {
               right: 'd',
               left: 'c',
             },
-            messageId: EXTRA_SPACING_ERROR_ID,
+            messageId: 'extraSpacingBetweenClassMembers',
           },
         ],
         output: dedent`
@@ -14896,14 +14890,14 @@ describe('sort-classes', () => {
                 right: 'method',
                 left: 'method',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenClassMembers',
             },
             {
               data: {
                 right: 'method',
                 left: 'method',
               },
-              messageId: EXTRA_SPACING_ERROR_ID,
+              messageId: 'extraSpacingBetweenClassMembers',
             },
           ],
           options: [
@@ -15007,7 +15001,7 @@ describe('sort-classes', () => {
               right: 'log10',
               left: 'log1p',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
       })
@@ -15023,7 +15017,7 @@ describe('sort-classes', () => {
               right: 'protectedMethod',
               left: 'privateMethod',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -15032,7 +15026,7 @@ describe('sort-classes', () => {
               right: 'publicMethod',
               rightGroup: 'method',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -15041,7 +15035,7 @@ describe('sort-classes', () => {
               left: 'publicMethod',
               leftGroup: 'method',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -15050,7 +15044,7 @@ describe('sort-classes', () => {
               right: 'protectedStaticMethod',
               left: 'privateStaticMethod',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -15059,7 +15053,7 @@ describe('sort-classes', () => {
               right: 'publicStaticMethod',
               rightGroup: 'static-method',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -15068,7 +15062,7 @@ describe('sort-classes', () => {
               rightGroup: 'constructor',
               right: 'constructor',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -15077,14 +15071,14 @@ describe('sort-classes', () => {
               right: 'privateProperty',
               left: 'constructor',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
               right: 'privateAccessorProperty',
               left: 'privateProperty',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -15093,7 +15087,7 @@ describe('sort-classes', () => {
               left: 'privateAccessorProperty',
               right: 'protectedProperty',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -15102,21 +15096,21 @@ describe('sort-classes', () => {
               right: 'publicProperty',
               rightGroup: 'property',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
               right: 'publicAccessorProperty',
               left: 'publicProperty',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'publicGetMethod',
               left: 'publicSetMethod',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
@@ -15125,7 +15119,7 @@ describe('sort-classes', () => {
               rightGroup: 'static-block',
               right: 'static',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -15134,7 +15128,7 @@ describe('sort-classes', () => {
               leftGroup: 'static-block',
               left: 'static',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -15143,7 +15137,7 @@ describe('sort-classes', () => {
               right: 'protectedStaticProperty',
               left: 'privateStaticProperty',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -15152,7 +15146,7 @@ describe('sort-classes', () => {
               right: 'publicStaticProperty',
               rightGroup: 'static-property',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
           {
             data: {
@@ -15161,7 +15155,7 @@ describe('sort-classes', () => {
               leftGroup: 'static-property',
               right: '[key: string]',
             },
-            messageId: GROUP_ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesGroupOrder',
           },
         ],
         output: dedent`
@@ -15301,7 +15295,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         options: [
@@ -15370,14 +15364,14 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'a',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         options: [
@@ -15417,7 +15411,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -15511,7 +15505,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -15624,14 +15618,14 @@ describe('sort-classes', () => {
               right: 'd',
               left: 'e',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -15683,7 +15677,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -15712,14 +15706,14 @@ describe('sort-classes', () => {
               right: 'c',
               left: 'd',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
           {
             data: {
               right: 'b',
               left: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -15754,7 +15748,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -15783,7 +15777,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -15810,7 +15804,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -15839,7 +15833,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -15890,7 +15884,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         options: [{}],
@@ -15903,7 +15897,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -15932,7 +15926,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -15953,6 +15947,15 @@ describe('sort-classes', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedClassesOrder',
+          },
+        ],
         output: dedent`
           class Class {
             b
@@ -15969,15 +15972,6 @@ describe('sort-classes', () => {
             a
           }
         `,
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
@@ -15988,7 +15982,7 @@ describe('sort-classes', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         output: dedent`
@@ -16039,7 +16033,7 @@ describe('sort-classes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedClassesOrder',
           },
         ],
         options: [{}],

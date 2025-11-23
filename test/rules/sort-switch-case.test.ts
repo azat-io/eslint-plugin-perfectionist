@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
-import rule, { ORDER_ERROR_ID } from '../../rules/sort-switch-case'
+import rule from '../../rules/sort-switch-case'
 import { Alphabet } from '../../utils/alphabet'
 
 describe('sort-switch-case', () => {
@@ -84,7 +84,7 @@ describe('sort-switch-case', () => {
               right: 'aaa',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -125,7 +125,7 @@ describe('sort-switch-case', () => {
               right: 'aaa',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -201,7 +201,7 @@ describe('sort-switch-case', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -285,7 +285,7 @@ describe('sort-switch-case', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -384,7 +384,7 @@ describe('sort-switch-case', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -451,14 +451,14 @@ describe('sort-switch-case', () => {
               right: 'cccc',
               left: 'ee',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'bbbbb',
               left: 'f',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -513,7 +513,7 @@ describe('sort-switch-case', () => {
               right: 'wwww',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -540,7 +540,7 @@ describe('sort-switch-case', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -593,28 +593,28 @@ describe('sort-switch-case', () => {
               right: 'DD',
               left: 'E',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'CCC',
               left: 'DD',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'BBBB',
               left: 'CCC',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'AAAAA',
               left: 'BBBB',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -677,7 +677,7 @@ describe('sort-switch-case', () => {
               left: 'default',
               right: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -706,14 +706,14 @@ describe('sort-switch-case', () => {
               right: 'default',
               left: 'default',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'somethingElse',
               left: 'default',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -800,7 +800,7 @@ describe('sort-switch-case', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -823,7 +823,7 @@ describe('sort-switch-case', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -846,7 +846,7 @@ describe('sort-switch-case', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -869,7 +869,7 @@ describe('sort-switch-case', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -904,7 +904,7 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [{}],
@@ -927,7 +927,7 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [{}],
@@ -940,21 +940,21 @@ describe('sort-switch-case', () => {
               left: 'default',
               right: 'x',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'x',
               left: 'y',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -1049,7 +1049,7 @@ describe('sort-switch-case', () => {
               left: 'default',
               right: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -1135,7 +1135,7 @@ describe('sort-switch-case', () => {
               right: 'aaa',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -1176,7 +1176,7 @@ describe('sort-switch-case', () => {
               right: 'aaa',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -1252,7 +1252,7 @@ describe('sort-switch-case', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -1336,7 +1336,7 @@ describe('sort-switch-case', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -1435,7 +1435,7 @@ describe('sort-switch-case', () => {
               right: 'b',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -1502,14 +1502,14 @@ describe('sort-switch-case', () => {
               right: 'cccc',
               left: 'ee',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'bbbbb',
               left: 'f',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -1564,7 +1564,7 @@ describe('sort-switch-case', () => {
               right: 'wwww',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -1591,7 +1591,7 @@ describe('sort-switch-case', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -1644,28 +1644,28 @@ describe('sort-switch-case', () => {
               right: 'DD',
               left: 'E',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'CCC',
               left: 'DD',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'BBBB',
               left: 'CCC',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'AAAAA',
               left: 'BBBB',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -1728,7 +1728,7 @@ describe('sort-switch-case', () => {
               left: 'default',
               right: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -1757,14 +1757,14 @@ describe('sort-switch-case', () => {
               right: 'default',
               left: 'default',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'somethingElse',
               left: 'default',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -1851,7 +1851,7 @@ describe('sort-switch-case', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -1874,7 +1874,7 @@ describe('sort-switch-case', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -1897,7 +1897,7 @@ describe('sort-switch-case', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -1920,7 +1920,7 @@ describe('sort-switch-case', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -1955,7 +1955,7 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [{}],
@@ -1978,7 +1978,7 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [{}],
@@ -1991,21 +1991,21 @@ describe('sort-switch-case', () => {
               left: 'default',
               right: 'x',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'x',
               left: 'y',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -2100,7 +2100,7 @@ describe('sort-switch-case', () => {
               left: 'default',
               right: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -2186,7 +2186,7 @@ describe('sort-switch-case', () => {
               right: 'aaa',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -2227,7 +2227,7 @@ describe('sort-switch-case', () => {
               right: 'aaa',
               left: 'bb',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -2303,7 +2303,7 @@ describe('sort-switch-case', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -2387,7 +2387,7 @@ describe('sort-switch-case', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -2486,7 +2486,7 @@ describe('sort-switch-case', () => {
               right: 'bb',
               left: 'c',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -2553,14 +2553,14 @@ describe('sort-switch-case', () => {
               right: 'cccc',
               left: 'ee',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'bbbbb',
               left: 'f',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -2615,7 +2615,7 @@ describe('sort-switch-case', () => {
               right: 'wwww',
               left: 'z',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -2642,7 +2642,7 @@ describe('sort-switch-case', () => {
               right: 'AA',
               left: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -2695,28 +2695,28 @@ describe('sort-switch-case', () => {
               right: 'DD',
               left: 'E',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'CCC',
               left: 'DD',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'BBBB',
               left: 'CCC',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'AAAAA',
               left: 'BBBB',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -2779,7 +2779,7 @@ describe('sort-switch-case', () => {
               left: 'default',
               right: 'B',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -2808,14 +2808,14 @@ describe('sort-switch-case', () => {
               right: 'default',
               left: 'default',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'somethingElse',
               left: 'default',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -2902,7 +2902,7 @@ describe('sort-switch-case', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -2925,7 +2925,7 @@ describe('sort-switch-case', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -2948,7 +2948,7 @@ describe('sort-switch-case', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -2971,7 +2971,7 @@ describe('sort-switch-case', () => {
               right: 'aa',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -3006,7 +3006,7 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [{}],
@@ -3029,7 +3029,7 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [{}],
@@ -3042,21 +3042,21 @@ describe('sort-switch-case', () => {
               left: 'default',
               right: 'x',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'x',
               left: 'y',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'a',
               left: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -3151,7 +3151,7 @@ describe('sort-switch-case', () => {
               left: 'default',
               right: 'a',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         output: dedent`
@@ -3248,14 +3248,14 @@ describe('sort-switch-case', () => {
               right: 'cccc',
               left: 'ee',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
             data: {
               right: 'bbbbb',
               left: 'f',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
         options: [options],
@@ -3350,7 +3350,7 @@ describe('sort-switch-case', () => {
               left: 'default',
               right: 'b',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
       })
@@ -3403,7 +3403,7 @@ describe('sort-switch-case', () => {
               left: 'default',
               right: 'add',
             },
-            messageId: ORDER_ERROR_ID,
+            messageId: 'unexpectedSwitchCaseOrder',
           },
         ],
       })
