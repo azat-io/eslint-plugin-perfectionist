@@ -21,13 +21,16 @@ import {
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import {
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-exports/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
-import { singleCustomGroupJsonSchema } from './sort-exports/types'
-import { allModifiers, allSelectors } from './sort-exports/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'

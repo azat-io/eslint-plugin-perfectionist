@@ -20,13 +20,17 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
+import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import {
+  singleCustomGroupJsonSchema,
+  allSelectors,
+} from './sort-variable-declarations/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { singleCustomGroupJsonSchema } from './sort-variable-declarations/types'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -82,6 +86,11 @@ export default createEslintRule<Options, MessageId>({
 
       validateCustomSortConfiguration(options)
       validateNewlinesAndPartitionConfiguration(options)
+      validateGeneratedGroupsConfiguration({
+        selectors: allSelectors,
+        modifiers: [],
+        options,
+      })
 
       let { sourceCode, id } = context
       let eslintDisabledLines = getEslintDisabledLines({

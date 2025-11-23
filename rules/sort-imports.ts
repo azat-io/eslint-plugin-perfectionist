@@ -30,6 +30,11 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
+import {
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-imports/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
@@ -41,9 +46,7 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
-import { singleCustomGroupJsonSchema } from './sort-imports/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { allModifiers, allSelectors } from './sort-imports/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'

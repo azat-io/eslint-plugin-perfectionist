@@ -21,7 +21,6 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getCustomGroupOverriddenOptions } from '../utils/get-custom-groups-compare-options'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
@@ -90,11 +89,6 @@ export default createEslintRule<Options, MessageId>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
-      validateGeneratedGroupsConfiguration({
-        selectors: [],
-        modifiers: [],
-        options,
-      })
       validateNewlinesAndPartitionConfiguration(options)
 
       let { sourceCode, id } = context

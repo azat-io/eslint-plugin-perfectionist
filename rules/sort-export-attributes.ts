@@ -22,7 +22,6 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { singleCustomGroupJsonSchema } from './sort-export-attributes/types'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -76,11 +75,6 @@ export default createEslintRule<Options, MessageId>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
-      validateGeneratedGroupsConfiguration({
-        selectors: [],
-        modifiers: [],
-        options,
-      })
       validateNewlinesAndPartitionConfiguration(options)
 
       let eslintDisabledLines = getEslintDisabledLines({
