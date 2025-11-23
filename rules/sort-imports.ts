@@ -309,7 +309,7 @@ export default createEslintRule<Options, MessageId>({
             ): SortImportsSortingNode[] {
               let nodesSortedByGroups = nodeGroups.flatMap(nodes =>
                 sortNodesByGroups({
-                  isNodeIgnoredForGroup: (_node, _groupOptions, groupIndex) => {
+                  isNodeIgnoredForGroup: ({ groupIndex }) => {
                     if (options.sortSideEffects) {
                       return false
                     }

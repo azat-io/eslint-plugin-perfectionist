@@ -327,7 +327,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
             nodeValueGetter,
           }
         },
-        isNodeIgnoredForGroup: (node, groupOptions) => {
+        isNodeIgnoredForGroup: ({ groupOptions, node }) => {
           switch (groupOptions.sortBy) {
             case 'value':
               return !node.value

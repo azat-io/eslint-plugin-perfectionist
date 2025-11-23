@@ -95,8 +95,8 @@ describe('sort-nodes-by-groups', () => {
       let nodeF = createTestNode({ group: 'group1', name: 'f' })
       expect(
         sortNodesByGroups({
+          isNodeIgnoredForGroup: ({ node }) => node === nodeB,
           nodes: [nodeF, nodeE, nodeD, nodeC, nodeB, nodeA],
-          isNodeIgnoredForGroup: node => node === nodeB,
           ignoreEslintDisabledNodes: false,
           groups: ['group1', 'group2'],
           optionsByGroupIndexComputer,

@@ -20,11 +20,11 @@ interface SortNodesByGroupsParameters<
     nodeValueGetter?: NodeValueGetterFunction<T> | null
     options: Options
   }
-  isNodeIgnoredForGroup?(
-    node: T,
-    groupOptions: Options,
-    groupIndex: number,
-  ): boolean
+  isNodeIgnoredForGroup?(props: {
+    groupOptions: Options
+    groupIndex: number
+    node: T
+  }): boolean
   ignoreEslintDisabledNodes: boolean
   isNodeIgnored?(node: T): boolean
   groups: GroupsOptions<string>
@@ -132,7 +132,11 @@ export function sortNodesByGroups<
 
     let groupIgnoredNodes = new Set(
       nodesToPush.filter(node =>
-        isNodeIgnoredForGroup?.(node, options, groupIndex),
+        isNodeIgnoredForGroup?.({
+          groupOptions: options,
+          groupIndex,
+          node,
+        }),
       ),
     )
 
