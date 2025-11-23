@@ -108,10 +108,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -267,17 +264,11 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
           {
-            data: {
-              right: 'C',
-              left: 'D',
-            },
+            data: { right: 'C', left: 'D' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -333,10 +324,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -472,17 +460,11 @@ describe('sort-decorators', () => {
       await invalid({
         errors: duplicate5Times([
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: 'unexpectedDecoratorsOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: 'missedSpacingBetweenDecorators',
           },
         ]),
@@ -761,10 +743,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -936,24 +915,15 @@ describe('sort-decorators', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
+            data: { right: 'y', left: 'a' },
             messageId: 'extraSpacingBetweenDecorators',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
+            data: { right: 'b', left: 'z' },
             messageId: 'unexpectedDecoratorsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
+            data: { right: 'b', left: 'z' },
             messageId: 'extraSpacingBetweenDecorators',
           },
         ],
@@ -994,24 +964,15 @@ describe('sort-decorators', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'z',
-              left: 'a',
-            },
+            data: { right: 'z', left: 'a' },
             messageId: 'extraSpacingBetweenDecorators',
           },
           {
-            data: {
-              right: 'y',
-              left: 'z',
-            },
+            data: { right: 'y', left: 'z' },
             messageId: 'unexpectedDecoratorsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'y',
-            },
+            data: { right: 'b', left: 'y' },
             messageId: 'missedSpacingBetweenDecorators',
           },
         ],
@@ -1081,24 +1042,15 @@ describe('sort-decorators', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenDecorators',
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
+            data: { right: 'c', left: 'b' },
             messageId: 'extraSpacingBetweenDecorators',
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
+            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenDecorators',
           },
         ],
@@ -1158,10 +1110,7 @@ describe('sort-decorators', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenDecorators',
             },
           ],
@@ -1208,10 +1157,7 @@ describe('sort-decorators', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenDecorators',
             },
           ],
@@ -1349,10 +1295,7 @@ describe('sort-decorators', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ],
@@ -1393,10 +1336,7 @@ describe('sort-decorators', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenDecorators',
           },
         ],
@@ -1431,10 +1371,7 @@ describe('sort-decorators', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenDecorators',
           },
         ],
@@ -1550,17 +1487,11 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'a',
-              left: 'd',
-            },
+            data: { right: 'a', left: 'd' },
             messageId: 'unexpectedDecoratorsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'e',
-            },
+            data: { right: 'b', left: 'e' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -1721,17 +1652,11 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'Bbb',
-              left: 'D',
-            },
+            data: { right: 'Bbb', left: 'D' },
             messageId: 'unexpectedDecoratorsOrder',
           },
           {
-            data: {
-              right: 'Fff',
-              left: 'Gg',
-            },
+            data: { right: 'Fff', left: 'Gg' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -1905,10 +1830,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'Bb',
-              left: 'C',
-            },
+            data: { right: 'Bb', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -2025,10 +1947,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -2226,10 +2145,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -2586,10 +2502,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -2745,17 +2658,11 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
           {
-            data: {
-              right: 'C',
-              left: 'D',
-            },
+            data: { right: 'C', left: 'D' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -2811,10 +2718,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -3094,17 +2998,11 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'Bbb',
-              left: 'D',
-            },
+            data: { right: 'Bbb', left: 'D' },
             messageId: 'unexpectedDecoratorsOrder',
           },
           {
-            data: {
-              right: 'Fff',
-              left: 'Gg',
-            },
+            data: { right: 'Fff', left: 'Gg' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -3278,10 +3176,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'Bb',
-              left: 'C',
-            },
+            data: { right: 'Bb', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -3398,10 +3293,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -3599,10 +3491,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -3959,10 +3848,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -4118,17 +4004,11 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'AAAA',
-              left: 'BBB',
-            },
+            data: { right: 'AAAA', left: 'BBB' },
             messageId: 'unexpectedDecoratorsOrder',
           },
           {
-            data: {
-              right: 'CC',
-              left: 'D',
-            },
+            data: { right: 'CC', left: 'D' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -4184,10 +4064,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -4467,17 +4344,11 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'Bbb',
-              left: 'D',
-            },
+            data: { right: 'Bbb', left: 'D' },
             messageId: 'unexpectedDecoratorsOrder',
           },
           {
-            data: {
-              right: 'Fffff',
-              left: 'Gg',
-            },
+            data: { right: 'Fffff', left: 'Gg' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -4651,10 +4522,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'Bb',
-              left: 'C',
-            },
+            data: { right: 'Bb', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -4771,10 +4639,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -4972,10 +4837,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -5337,10 +5199,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -5556,10 +5415,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -5633,17 +5489,11 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'C',
-              left: 'D',
-            },
+            data: { right: 'C', left: 'D' },
             messageId: 'unexpectedDecoratorsOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -5721,10 +5571,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -5788,10 +5635,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -5865,10 +5709,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -5982,10 +5823,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -6049,10 +5887,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -6126,10 +5961,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -6193,10 +6025,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),
@@ -6310,10 +6139,7 @@ describe('sort-decorators', () => {
         `,
         errors: duplicate5Times([
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedDecoratorsOrder',
           },
         ]),

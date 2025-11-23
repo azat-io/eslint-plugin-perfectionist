@@ -113,17 +113,11 @@ describe('sort-export-attributes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedExportAttributesOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenExportAttributes',
           },
         ],

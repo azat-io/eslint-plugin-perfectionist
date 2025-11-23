@@ -31,10 +31,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'bbb'",
-              left: "'cc'",
-            },
+            data: { right: "'bbb'", left: "'cc'" },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -73,10 +70,7 @@ describe('sort-union-types', () => {
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'bigint',
-              left: 'void',
-            },
+            data: { right: 'bigint', left: 'void' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -114,10 +108,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'aa'",
-              left: "'b'",
-            },
+            data: { right: "'aa'", left: "'b'" },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -131,17 +122,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'aaa',
-              left: 'bb',
-            },
+            data: { right: 'aaa', left: 'bb' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -180,10 +165,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '( value: () => void, ) => D | E',
-              left: 'A',
-            },
+            data: { right: '( value: () => void, ) => D | E', left: 'A' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -215,17 +197,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '3',
-              left: '4',
-            },
+            data: { right: '3', left: '4' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: '100',
-              left: '5',
-            },
+            data: { right: '100', left: '5' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -400,17 +376,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'E',
-            },
+            data: { right: 'B', left: 'E' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -447,17 +417,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -502,17 +466,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -601,10 +559,7 @@ describe('sort-union-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -640,10 +595,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -733,10 +685,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -881,17 +830,11 @@ describe('sort-union-types', () => {
             messageId: 'extraSpacingBetweenUnionTypes',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: 'extraSpacingBetweenUnionTypes',
           },
         ],
@@ -926,10 +869,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '{ a: string }',
-              left: '() => void',
-            },
+            data: { right: '{ a: string }', left: '() => void' },
             messageId: 'missedSpacingBetweenUnionTypes',
           },
           {
@@ -940,10 +880,7 @@ describe('sort-union-types', () => {
             messageId: 'extraSpacingBetweenUnionTypes',
           },
           {
-            data: {
-              right: '[A]',
-              left: 'A',
-            },
+            data: { right: '[A]', left: 'A' },
             messageId: 'extraSpacingBetweenUnionTypes',
           },
         ],
@@ -1015,10 +952,7 @@ describe('sort-union-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: 'missedSpacingBetweenUnionTypes',
             },
           ],
@@ -1057,10 +991,7 @@ describe('sort-union-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: 'extraSpacingBetweenUnionTypes',
             },
           ],
@@ -1182,10 +1113,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -1214,10 +1142,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -1235,10 +1160,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -1258,17 +1180,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenUnionTypes',
           },
         ],
@@ -1388,24 +1304,15 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
+            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
+            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
@@ -1485,10 +1392,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -1641,10 +1545,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenUnionTypes',
           },
         ],
@@ -1679,10 +1580,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenUnionTypes',
           },
         ],
@@ -1718,10 +1616,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'bbb'",
-              left: "'cc'",
-            },
+            data: { right: "'bbb'", left: "'cc'" },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -1760,10 +1655,7 @@ describe('sort-union-types', () => {
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'bigint',
-              left: 'void',
-            },
+            data: { right: 'bigint', left: 'void' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -1801,10 +1693,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'aa'",
-              left: "'b'",
-            },
+            data: { right: "'aa'", left: "'b'" },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -1818,17 +1707,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'aaa',
-              left: 'bb',
-            },
+            data: { right: 'aaa', left: 'bb' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -1867,10 +1750,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '( value: () => void, ) => D | E',
-              left: 'A',
-            },
+            data: { right: '( value: () => void, ) => D | E', left: 'A' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -1909,10 +1789,7 @@ describe('sort-union-types', () => {
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: '3',
-              left: '4',
-            },
+            data: { right: '3', left: '4' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -2087,17 +1964,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'E',
-            },
+            data: { right: 'B', left: 'E' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -2134,17 +2005,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -2189,17 +2054,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -2288,10 +2147,7 @@ describe('sort-union-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -2327,10 +2183,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -2420,10 +2273,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -2568,17 +2418,11 @@ describe('sort-union-types', () => {
             messageId: 'extraSpacingBetweenUnionTypes',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: 'extraSpacingBetweenUnionTypes',
           },
         ],
@@ -2613,10 +2457,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '{ a: string }',
-              left: '() => void',
-            },
+            data: { right: '{ a: string }', left: '() => void' },
             messageId: 'missedSpacingBetweenUnionTypes',
           },
           {
@@ -2627,10 +2468,7 @@ describe('sort-union-types', () => {
             messageId: 'extraSpacingBetweenUnionTypes',
           },
           {
-            data: {
-              right: '[A]',
-              left: 'A',
-            },
+            data: { right: '[A]', left: 'A' },
             messageId: 'extraSpacingBetweenUnionTypes',
           },
         ],
@@ -2702,10 +2540,7 @@ describe('sort-union-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: 'missedSpacingBetweenUnionTypes',
             },
           ],
@@ -2744,10 +2579,7 @@ describe('sort-union-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: 'extraSpacingBetweenUnionTypes',
             },
           ],
@@ -2869,10 +2701,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -2901,10 +2730,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -2922,10 +2748,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -3030,24 +2853,15 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
+            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
+            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
@@ -3127,10 +2941,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -3283,10 +3094,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenUnionTypes',
           },
         ],
@@ -3321,10 +3129,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenUnionTypes',
           },
         ],
@@ -3360,10 +3165,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'bbb'",
-              left: "'cc'",
-            },
+            data: { right: "'bbb'", left: "'cc'" },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -3381,24 +3183,15 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'unknown',
-              left: 'any',
-            },
+            data: { right: 'unknown', left: 'any' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'undefined',
-              left: 'null',
-            },
+            data: { right: 'undefined', left: 'null' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'bigint',
-              left: 'void',
-            },
+            data: { right: 'bigint', left: 'void' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -3436,10 +3229,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'aa'",
-              left: "'b'",
-            },
+            data: { right: "'aa'", left: "'b'" },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -3453,17 +3243,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'aaa',
-              left: 'bb',
-            },
+            data: { right: 'aaa', left: 'bb' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -3502,10 +3286,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '( value: () => void, ) => D | E',
-              left: 'A',
-            },
+            data: { right: '( value: () => void, ) => D | E', left: 'A' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -3537,10 +3318,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '100',
-              left: '1',
-            },
+            data: { right: '100', left: '1' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -3715,17 +3493,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'E',
-            },
+            data: { right: 'B', left: 'E' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -3762,17 +3534,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -3817,17 +3583,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -3916,10 +3676,7 @@ describe('sort-union-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -3955,10 +3712,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -4048,10 +3802,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -4196,17 +3947,11 @@ describe('sort-union-types', () => {
             messageId: 'extraSpacingBetweenUnionTypes',
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'Z',
-            },
+            data: { right: 'BBB', left: 'Z' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'Z',
-            },
+            data: { right: 'BBB', left: 'Z' },
             messageId: 'extraSpacingBetweenUnionTypes',
           },
         ],
@@ -4241,10 +3986,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '{ a: string }',
-              left: '() => void',
-            },
+            data: { right: '{ a: string }', left: '() => void' },
             messageId: 'missedSpacingBetweenUnionTypes',
           },
           {
@@ -4255,10 +3997,7 @@ describe('sort-union-types', () => {
             messageId: 'extraSpacingBetweenUnionTypes',
           },
           {
-            data: {
-              right: '[A]',
-              left: 'A',
-            },
+            data: { right: '[A]', left: 'A' },
             messageId: 'extraSpacingBetweenUnionTypes',
           },
         ],
@@ -4330,10 +4069,7 @@ describe('sort-union-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: 'missedSpacingBetweenUnionTypes',
             },
           ],
@@ -4372,10 +4108,7 @@ describe('sort-union-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: 'extraSpacingBetweenUnionTypes',
             },
           ],
@@ -4497,10 +4230,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -4529,10 +4259,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -4550,10 +4277,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -4658,24 +4382,15 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
+            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
+            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
@@ -4755,10 +4470,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -4911,10 +4623,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenUnionTypes',
           },
         ],
@@ -4949,10 +4658,7 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenUnionTypes',
           },
         ],
@@ -4993,10 +4699,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'bbb'",
-              left: "'cc'",
-            },
+            data: { right: "'bbb'", left: "'cc'" },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -5069,10 +4772,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'a'",
-              left: 'b',
-            },
+            data: { right: "'a'", left: 'b' },
             messageId: 'missedSpacingBetweenUnionTypes',
           },
         ],
@@ -5149,10 +4849,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'NumberBase.BASE_10',
-              left: 'NumberBase.BASE_2',
-            },
+            data: { right: 'NumberBase.BASE_10', left: 'NumberBase.BASE_2' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -5190,10 +4887,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -5219,17 +4913,11 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'C',
-              left: 'D',
-            },
+            data: { right: 'C', left: 'D' },
             messageId: 'unexpectedUnionTypesOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -5261,10 +4949,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -5288,10 +4973,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -5315,10 +4997,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -5364,10 +5043,7 @@ describe('sort-union-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -5379,10 +5055,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -5406,10 +5079,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -5433,10 +5103,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -5460,10 +5127,7 @@ describe('sort-union-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],
@@ -5509,10 +5173,7 @@ describe('sort-union-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedUnionTypesOrder',
           },
         ],

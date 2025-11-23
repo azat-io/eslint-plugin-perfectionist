@@ -34,10 +34,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -63,17 +60,11 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'E',
-            },
+            data: { right: 'B', left: 'E' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -121,10 +112,7 @@ describe('sort-named-exports', () => {
             messageId: 'unexpectedNamedExportsGroupOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -219,10 +207,7 @@ describe('sort-named-exports', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -259,10 +244,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -357,10 +339,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -499,10 +478,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -520,10 +496,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -543,10 +516,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -568,10 +538,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -598,10 +565,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -630,17 +594,11 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenNamedExports',
           },
         ],
@@ -769,24 +727,15 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
+            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
+            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
@@ -868,10 +817,7 @@ describe('sort-named-exports', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -1016,24 +962,15 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
+            data: { right: 'y', left: 'a' },
             messageId: 'extraSpacingBetweenNamedExports',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
+            data: { right: 'b', left: 'z' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
+            data: { right: 'b', left: 'z' },
             messageId: 'extraSpacingBetweenNamedExports',
           },
         ],
@@ -1100,24 +1037,15 @@ describe('sort-named-exports', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenNamedExports',
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
+            data: { right: 'c', left: 'b' },
             messageId: 'extraSpacingBetweenNamedExports',
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
+            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenNamedExports',
           },
         ],
@@ -1179,10 +1107,7 @@ describe('sort-named-exports', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenNamedExports',
             },
           ],
@@ -1236,10 +1161,7 @@ describe('sort-named-exports', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenNamedExports',
             },
           ],
@@ -1383,10 +1305,7 @@ describe('sort-named-exports', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -1434,10 +1353,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -1463,17 +1379,11 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'E',
-            },
+            data: { right: 'B', left: 'E' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -1521,10 +1431,7 @@ describe('sort-named-exports', () => {
             messageId: 'unexpectedNamedExportsGroupOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -1619,10 +1526,7 @@ describe('sort-named-exports', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -1659,10 +1563,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -1757,10 +1658,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -1899,10 +1797,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -1920,10 +1815,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -1943,10 +1835,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -1968,10 +1857,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -1998,10 +1884,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -2122,24 +2005,15 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
+            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
+            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
@@ -2221,10 +2095,7 @@ describe('sort-named-exports', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -2369,24 +2240,15 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
+            data: { right: 'y', left: 'a' },
             messageId: 'extraSpacingBetweenNamedExports',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
+            data: { right: 'b', left: 'z' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
+            data: { right: 'b', left: 'z' },
             messageId: 'extraSpacingBetweenNamedExports',
           },
         ],
@@ -2453,24 +2315,15 @@ describe('sort-named-exports', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenNamedExports',
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
+            data: { right: 'c', left: 'b' },
             messageId: 'extraSpacingBetweenNamedExports',
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
+            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenNamedExports',
           },
         ],
@@ -2532,10 +2385,7 @@ describe('sort-named-exports', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenNamedExports',
             },
           ],
@@ -2589,10 +2439,7 @@ describe('sort-named-exports', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenNamedExports',
             },
           ],
@@ -2736,10 +2583,7 @@ describe('sort-named-exports', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -2787,10 +2631,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -2816,17 +2657,11 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AAAAA',
-              left: 'DD',
-            },
+            data: { right: 'AAAAA', left: 'DD' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'BBBB',
-              left: 'E',
-            },
+            data: { right: 'BBBB', left: 'E' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -2874,10 +2709,7 @@ describe('sort-named-exports', () => {
             messageId: 'unexpectedNamedExportsGroupOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -2972,10 +2804,7 @@ describe('sort-named-exports', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -3012,10 +2841,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -3110,10 +2936,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -3252,10 +3075,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -3273,10 +3093,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
+            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -3296,10 +3113,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
+            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -3321,10 +3135,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
+            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -3351,10 +3162,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
+            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -3475,24 +3283,15 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
+            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
+            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
@@ -3574,10 +3373,7 @@ describe('sort-named-exports', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -3729,17 +3525,11 @@ describe('sort-named-exports', () => {
             messageId: 'extraSpacingBetweenNamedExports',
           },
           {
-            data: {
-              right: 'bbb',
-              left: 'z',
-            },
+            data: { right: 'bbb', left: 'z' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'bbb',
-              left: 'z',
-            },
+            data: { right: 'bbb', left: 'z' },
             messageId: 'extraSpacingBetweenNamedExports',
           },
         ],
@@ -3806,24 +3596,15 @@ describe('sort-named-exports', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenNamedExports',
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
+            data: { right: 'c', left: 'b' },
             messageId: 'extraSpacingBetweenNamedExports',
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
+            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenNamedExports',
           },
         ],
@@ -3885,10 +3666,7 @@ describe('sort-named-exports', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenNamedExports',
             },
           ],
@@ -3942,10 +3720,7 @@ describe('sort-named-exports', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenNamedExports',
             },
           ],
@@ -4089,10 +3864,7 @@ describe('sort-named-exports', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4145,10 +3917,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4211,10 +3980,7 @@ describe('sort-named-exports', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'missedSpacingBetweenNamedExports',
           },
         ],
@@ -4253,10 +4019,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4284,10 +4047,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4313,10 +4073,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4344,10 +4101,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4371,10 +4125,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4400,10 +4151,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4429,10 +4177,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4460,10 +4205,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4487,10 +4229,7 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4540,10 +4279,7 @@ describe('sort-named-exports', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4577,10 +4313,7 @@ describe('sort-named-exports', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],
@@ -4592,17 +4325,11 @@ describe('sort-named-exports', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
+            data: { right: 'c', left: 'd' },
             messageId: 'unexpectedNamedExportsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedNamedExportsOrder',
           },
         ],

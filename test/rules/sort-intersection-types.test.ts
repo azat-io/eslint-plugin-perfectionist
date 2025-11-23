@@ -31,10 +31,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "{ label: 'bb' }",
-              left: "{ label: 'c' }",
-            },
+            data: { right: "{ label: 'bb' }", left: "{ label: 'c' }" },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -114,10 +111,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -131,10 +125,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -173,10 +164,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '( A: () => void, ) => B & C',
-              left: 'B',
-            },
+            data: { right: '( A: () => void, ) => B & C', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -208,17 +196,11 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '{ value3: 3 }',
-              left: '{ value4: 4 }',
-            },
+            data: { right: '{ value3: 3 }', left: '{ value4: 4 }' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: '{ value100: 100 }',
-              left: '{ value5: 5 }',
-            },
+            data: { right: '{ value100: 100 }', left: '{ value5: 5 }' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -393,17 +375,11 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'E',
-            },
+            data: { right: 'B', left: 'E' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -440,17 +416,11 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -495,17 +465,11 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -594,10 +558,7 @@ describe('sort-intersection-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -633,10 +594,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -726,10 +684,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -874,17 +829,11 @@ describe('sort-intersection-types', () => {
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
@@ -919,10 +868,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '{ a: string }',
-              left: '() => void',
-            },
+            data: { right: '{ a: string }', left: '() => void' },
             messageId: 'missedSpacingBetweenIntersectionTypes',
           },
           {
@@ -933,10 +879,7 @@ describe('sort-intersection-types', () => {
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
           {
-            data: {
-              right: '[A]',
-              left: 'A',
-            },
+            data: { right: '[A]', left: 'A' },
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
@@ -1008,10 +951,7 @@ describe('sort-intersection-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: 'missedSpacingBetweenIntersectionTypes',
             },
           ],
@@ -1050,10 +990,7 @@ describe('sort-intersection-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: 'extraSpacingBetweenIntersectionTypes',
             },
           ],
@@ -1175,10 +1112,7 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -1207,10 +1141,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -1228,10 +1159,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -1251,17 +1179,11 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenIntersectionTypes',
           },
         ],
@@ -1381,24 +1303,15 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
+            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
+            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
@@ -1478,10 +1391,7 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -1634,10 +1544,7 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenIntersectionTypes',
           },
         ],
@@ -1672,10 +1579,7 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
@@ -1711,10 +1615,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "{ label: 'bb' }",
-              left: "{ label: 'c' }",
-            },
+            data: { right: "{ label: 'bb' }", left: "{ label: 'c' }" },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -1794,10 +1695,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -1811,10 +1709,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -1853,10 +1748,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '( A: () => void, ) => B & C',
-              left: 'B',
-            },
+            data: { right: '( A: () => void, ) => B & C', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -1888,10 +1780,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '{ value3: 3 }',
-              left: '{ value4: 4 }',
-            },
+            data: { right: '{ value3: 3 }', left: '{ value4: 4 }' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -2066,17 +1955,11 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'E',
-            },
+            data: { right: 'B', left: 'E' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -2113,17 +1996,11 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -2168,17 +2045,11 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -2267,10 +2138,7 @@ describe('sort-intersection-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -2306,10 +2174,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -2399,10 +2264,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -2547,17 +2409,11 @@ describe('sort-intersection-types', () => {
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
@@ -2592,10 +2448,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '{ a: string }',
-              left: '() => void',
-            },
+            data: { right: '{ a: string }', left: '() => void' },
             messageId: 'missedSpacingBetweenIntersectionTypes',
           },
           {
@@ -2606,10 +2459,7 @@ describe('sort-intersection-types', () => {
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
           {
-            data: {
-              right: '[A]',
-              left: 'A',
-            },
+            data: { right: '[A]', left: 'A' },
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
@@ -2681,10 +2531,7 @@ describe('sort-intersection-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: 'missedSpacingBetweenIntersectionTypes',
             },
           ],
@@ -2723,10 +2570,7 @@ describe('sort-intersection-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: 'extraSpacingBetweenIntersectionTypes',
             },
           ],
@@ -2848,10 +2692,7 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -2880,10 +2721,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -2901,10 +2739,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -3009,24 +2844,15 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
+            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
+            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
@@ -3106,10 +2932,7 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -3262,10 +3085,7 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenIntersectionTypes',
           },
         ],
@@ -3300,10 +3120,7 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
@@ -3339,10 +3156,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "{ label: 'bb' }",
-              left: "{ label: 'c' }",
-            },
+            data: { right: "{ label: 'bb' }", left: "{ label: 'c' }" },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -3415,10 +3229,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -3432,10 +3243,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -3474,10 +3282,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '( A: () => void, ) => B & C',
-              left: 'B',
-            },
+            data: { right: '( A: () => void, ) => B & C', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -3509,10 +3314,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '{ value100: 100 }',
-              left: '{ value5: 5 }',
-            },
+            data: { right: '{ value100: 100 }', left: '{ value5: 5 }' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -3687,17 +3489,11 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'E',
-            },
+            data: { right: 'B', left: 'E' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -3734,17 +3530,11 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -3789,17 +3579,11 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BBB',
-              left: 'D',
-            },
+            data: { right: 'BBB', left: 'D' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'FFF',
-              left: 'GG',
-            },
+            data: { right: 'FFF', left: 'GG' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -3888,10 +3672,7 @@ describe('sort-intersection-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -3927,10 +3708,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -4020,10 +3798,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -4168,17 +3943,11 @@ describe('sort-intersection-types', () => {
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'Z',
-            },
+            data: { right: 'BBB', left: 'Z' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'Z',
-            },
+            data: { right: 'BBB', left: 'Z' },
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
@@ -4213,10 +3982,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '{ a: string }',
-              left: '() => void',
-            },
+            data: { right: '{ a: string }', left: '() => void' },
             messageId: 'missedSpacingBetweenIntersectionTypes',
           },
           {
@@ -4227,10 +3993,7 @@ describe('sort-intersection-types', () => {
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
           {
-            data: {
-              right: '[A]',
-              left: 'A',
-            },
+            data: { right: '[A]', left: 'A' },
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
@@ -4302,10 +4065,7 @@ describe('sort-intersection-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: 'missedSpacingBetweenIntersectionTypes',
             },
           ],
@@ -4344,10 +4104,7 @@ describe('sort-intersection-types', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'null',
-                left: 'A',
-              },
+              data: { right: 'null', left: 'A' },
               messageId: 'extraSpacingBetweenIntersectionTypes',
             },
           ],
@@ -4469,10 +4226,7 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -4501,10 +4255,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -4522,10 +4273,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -4630,24 +4378,15 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
+            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
+            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
@@ -4727,10 +4466,7 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -4883,10 +4619,7 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenIntersectionTypes',
           },
         ],
@@ -4921,10 +4654,7 @@ describe('sort-intersection-types', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenIntersectionTypes',
           },
         ],
@@ -4965,10 +4695,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "{ label: 'bb' }",
-              left: "{ label: 'c' }",
-            },
+            data: { right: "{ label: 'bb' }", left: "{ label: 'c' }" },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -5041,10 +4768,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'a'",
-              left: 'b',
-            },
+            data: { right: "'a'", left: 'b' },
             messageId: 'missedSpacingBetweenIntersectionTypes',
           },
         ],
@@ -5121,10 +4845,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'NumberBase.BASE_10',
-              left: 'NumberBase.BASE_2',
-            },
+            data: { right: 'NumberBase.BASE_10', left: 'NumberBase.BASE_2' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -5162,10 +4883,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -5189,17 +4907,11 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'C',
-              left: 'D',
-            },
+            data: { right: 'C', left: 'D' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -5229,10 +4941,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -5254,10 +4963,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -5281,10 +4987,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -5328,10 +5031,7 @@ describe('sort-intersection-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -5341,10 +5041,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -5368,10 +5065,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -5393,10 +5087,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -5420,10 +5111,7 @@ describe('sort-intersection-types', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
@@ -5467,10 +5155,7 @@ describe('sort-intersection-types', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],

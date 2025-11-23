@@ -46,10 +46,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'a'",
-              left: "'b'",
-            },
+            data: { right: "'a'", left: "'b'" },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -111,10 +108,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
+            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -149,10 +143,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '1',
-              left: '2',
-            },
+            data: { right: '1', left: '2' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -190,17 +181,11 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'cc',
-              left: 'd',
-            },
+            data: { right: 'cc', left: 'd' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'bbb',
-              left: 'cc',
-            },
+            data: { right: 'bbb', left: 'cc' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -228,17 +213,11 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'd',
-            },
+            data: { right: 'a', left: 'd' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'e',
-            },
+            data: { right: 'b', left: 'e' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -309,17 +288,11 @@ describe('sort-maps', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
+            data: { right: 'bbb', left: 'd' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'fff',
-              left: 'gg',
-            },
+            data: { right: 'fff', left: 'gg' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -381,10 +354,7 @@ describe('sort-maps', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -421,10 +391,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'a'",
-              left: "'b'",
-            },
+            data: { right: "'a'", left: "'b'" },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -519,10 +486,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'a'",
-              left: "'b'",
-            },
+            data: { right: "'a'", left: "'b'" },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -668,17 +632,11 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenMapElementsMembers',
           },
         ],
@@ -756,24 +714,15 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '_bb',
-              left: '_a',
-            },
+            data: { right: '_bb', left: '_a' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: '_ccc',
-              left: '_bb',
-            },
+            data: { right: '_ccc', left: '_bb' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: '_dddd',
-              left: '_ccc',
-            },
+            data: { right: '_dddd', left: '_ccc' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
@@ -855,10 +804,7 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -1002,24 +948,15 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
+            data: { right: 'y', left: 'a' },
             messageId: 'extraSpacingBetweenMapElementsMembers',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
+            data: { right: 'b', left: 'z' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
+            data: { right: 'b', left: 'z' },
             messageId: 'extraSpacingBetweenMapElementsMembers',
           },
         ],
@@ -1086,24 +1023,15 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenMapElementsMembers',
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
+            data: { right: 'c', left: 'b' },
             messageId: 'extraSpacingBetweenMapElementsMembers',
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
+            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenMapElementsMembers',
           },
         ],
@@ -1165,10 +1093,7 @@ describe('sort-maps', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenMapElementsMembers',
             },
           ],
@@ -1222,10 +1147,7 @@ describe('sort-maps', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenMapElementsMembers',
             },
           ],
@@ -1369,10 +1291,7 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -1511,10 +1430,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'a'",
-              left: "'b'",
-            },
+            data: { right: "'a'", left: "'b'" },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -1576,10 +1492,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
+            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -1614,10 +1527,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '1',
-              left: '2',
-            },
+            data: { right: '1', left: '2' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -1655,17 +1565,11 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'cc',
-              left: 'd',
-            },
+            data: { right: 'cc', left: 'd' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'bbb',
-              left: 'cc',
-            },
+            data: { right: 'bbb', left: 'cc' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -1693,17 +1597,11 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'd',
-            },
+            data: { right: 'a', left: 'd' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'e',
-            },
+            data: { right: 'b', left: 'e' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -1774,17 +1672,11 @@ describe('sort-maps', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
+            data: { right: 'bbb', left: 'd' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'fff',
-              left: 'gg',
-            },
+            data: { right: 'fff', left: 'gg' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -1846,10 +1738,7 @@ describe('sort-maps', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -1886,10 +1775,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'a'",
-              left: "'b'",
-            },
+            data: { right: "'a'", left: "'b'" },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -1984,10 +1870,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'a'",
-              left: "'b'",
-            },
+            data: { right: "'a'", left: "'b'" },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -2174,24 +2057,15 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '_bb',
-              left: '_a',
-            },
+            data: { right: '_bb', left: '_a' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: '_ccc',
-              left: '_bb',
-            },
+            data: { right: '_ccc', left: '_bb' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: '_dddd',
-              left: '_ccc',
-            },
+            data: { right: '_dddd', left: '_ccc' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
@@ -2273,10 +2147,7 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -2420,24 +2291,15 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
+            data: { right: 'y', left: 'a' },
             messageId: 'extraSpacingBetweenMapElementsMembers',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
+            data: { right: 'b', left: 'z' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
+            data: { right: 'b', left: 'z' },
             messageId: 'extraSpacingBetweenMapElementsMembers',
           },
         ],
@@ -2504,24 +2366,15 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenMapElementsMembers',
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
+            data: { right: 'c', left: 'b' },
             messageId: 'extraSpacingBetweenMapElementsMembers',
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
+            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenMapElementsMembers',
           },
         ],
@@ -2583,10 +2436,7 @@ describe('sort-maps', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenMapElementsMembers',
             },
           ],
@@ -2640,10 +2490,7 @@ describe('sort-maps', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenMapElementsMembers',
             },
           ],
@@ -2787,10 +2634,7 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -2929,10 +2773,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'a'",
-              left: "'b'",
-            },
+            data: { right: "'a'", left: "'b'" },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -2994,10 +2835,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
+            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -3032,10 +2870,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '3',
-              left: '1',
-            },
+            data: { right: '3', left: '1' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -3073,17 +2908,11 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'cc',
-              left: 'd',
-            },
+            data: { right: 'cc', left: 'd' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'bbb',
-              left: 'cc',
-            },
+            data: { right: 'bbb', left: 'cc' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -3111,17 +2940,11 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'd',
-            },
+            data: { right: 'a', left: 'd' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'e',
-            },
+            data: { right: 'b', left: 'e' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -3192,17 +3015,11 @@ describe('sort-maps', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
+            data: { right: 'bbb', left: 'd' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'fff',
-              left: 'gg',
-            },
+            data: { right: 'fff', left: 'gg' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -3264,10 +3081,7 @@ describe('sort-maps', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -3304,10 +3118,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'aa'",
-              left: "'b'",
-            },
+            data: { right: "'aa'", left: "'b'" },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -3402,10 +3213,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: "'aa'",
-              left: "'b'",
-            },
+            data: { right: "'aa'", left: "'b'" },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -3592,24 +3400,15 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '_bb',
-              left: '_a',
-            },
+            data: { right: '_bb', left: '_a' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: '_ccc',
-              left: '_bb',
-            },
+            data: { right: '_ccc', left: '_bb' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: '_dddd',
-              left: '_ccc',
-            },
+            data: { right: '_dddd', left: '_ccc' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
@@ -3691,10 +3490,7 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -3845,17 +3641,11 @@ describe('sort-maps', () => {
             messageId: 'extraSpacingBetweenMapElementsMembers',
           },
           {
-            data: {
-              right: 'bbb',
-              left: 'z',
-            },
+            data: { right: 'bbb', left: 'z' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'bbb',
-              left: 'z',
-            },
+            data: { right: 'bbb', left: 'z' },
             messageId: 'extraSpacingBetweenMapElementsMembers',
           },
         ],
@@ -3922,24 +3712,15 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenMapElementsMembers',
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
+            data: { right: 'c', left: 'b' },
             messageId: 'extraSpacingBetweenMapElementsMembers',
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
+            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenMapElementsMembers',
           },
         ],
@@ -4001,10 +3782,7 @@ describe('sort-maps', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenMapElementsMembers',
             },
           ],
@@ -4058,10 +3836,7 @@ describe('sort-maps', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenMapElementsMembers',
             },
           ],
@@ -4205,10 +3980,7 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4340,10 +4112,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
+            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4452,10 +4221,7 @@ describe('sort-maps', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'missedSpacingBetweenMapElementsMembers',
           },
         ],
@@ -4529,10 +4295,7 @@ describe('sort-maps', () => {
         `,
         errors: [
           {
-            data: {
-              right: "'EUR'",
-              left: "'USD'",
-            },
+            data: { right: "'EUR'", left: "'USD'" },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4620,10 +4383,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4649,10 +4409,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4676,10 +4433,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4705,10 +4459,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4758,10 +4509,7 @@ describe('sort-maps', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4789,10 +4537,7 @@ describe('sort-maps', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4802,10 +4547,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4845,10 +4587,7 @@ describe('sort-maps', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4858,10 +4597,7 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4909,10 +4645,7 @@ describe('sort-maps', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],
@@ -4924,17 +4657,11 @@ describe('sort-maps', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
+            data: { right: 'c', left: 'd' },
             messageId: 'unexpectedMapElementsOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedMapElementsOrder',
           },
         ],

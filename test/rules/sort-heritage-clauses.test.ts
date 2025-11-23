@@ -46,10 +46,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -75,10 +72,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -104,17 +98,11 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
           {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
+            data: { right: 'c', left: 'd' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -158,10 +146,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -187,17 +172,11 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenHeritageClauses',
           },
         ],
@@ -308,10 +287,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -333,10 +309,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -472,10 +445,7 @@ describe('sort-heritage-clauses', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -556,24 +526,15 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
+            data: { right: 'y', left: 'a' },
             messageId: 'extraSpacingBetweenHeritageClauses',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
+            data: { right: 'b', left: 'z' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
+            data: { right: 'b', left: 'z' },
             messageId: 'extraSpacingBetweenHeritageClauses',
           },
         ],
@@ -616,24 +577,15 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'z',
-              left: 'a',
-            },
+            data: { right: 'z', left: 'a' },
             messageId: 'extraSpacingBetweenHeritageClauses',
           },
           {
-            data: {
-              right: 'y',
-              left: 'z',
-            },
+            data: { right: 'y', left: 'z' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'y',
-            },
+            data: { right: 'b', left: 'y' },
             messageId: 'missedSpacingBetweenHeritageClauses',
           },
         ],
@@ -705,24 +657,15 @@ describe('sort-heritage-clauses', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenHeritageClauses',
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
+            data: { right: 'c', left: 'b' },
             messageId: 'extraSpacingBetweenHeritageClauses',
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
+            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenHeritageClauses',
           },
         ],
@@ -784,10 +727,7 @@ describe('sort-heritage-clauses', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenHeritageClauses',
             },
           ],
@@ -836,10 +776,7 @@ describe('sort-heritage-clauses', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
+              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenHeritageClauses',
             },
           ],
@@ -984,10 +921,7 @@ describe('sort-heritage-clauses', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1030,10 +964,7 @@ describe('sort-heritage-clauses', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenHeritageClauses',
           },
         ],
@@ -1070,10 +1001,7 @@ describe('sort-heritage-clauses', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenHeritageClauses',
           },
         ],
@@ -1097,17 +1025,11 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'd',
-            },
+            data: { right: 'a', left: 'd' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'e',
-            },
+            data: { right: 'b', left: 'e' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1146,17 +1068,11 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'Bbb',
-              left: 'D',
-            },
+            data: { right: 'Bbb', left: 'D' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
           {
-            data: {
-              right: 'Fff',
-              left: 'Gg',
-            },
+            data: { right: 'Fff', left: 'Gg' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1250,10 +1166,7 @@ describe('sort-heritage-clauses', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'Bb',
-              left: 'C',
-            },
+            data: { right: 'Bb', left: 'C' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1290,10 +1203,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1388,10 +1298,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1515,10 +1422,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1544,10 +1448,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1573,17 +1474,11 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
           {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
+            data: { right: 'c', left: 'd' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1627,10 +1522,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1732,10 +1624,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1757,10 +1646,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1811,10 +1697,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1840,10 +1723,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1869,17 +1749,11 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aaaa',
-              left: 'bbb',
-            },
+            data: { right: 'aaaa', left: 'bbb' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
           {
-            data: {
-              right: 'cc',
-              left: 'd',
-            },
+            data: { right: 'cc', left: 'd' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -1923,10 +1797,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
+            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -2028,10 +1899,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -2053,10 +1921,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -2112,10 +1977,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -2141,10 +2003,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
+            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -2255,10 +2114,7 @@ describe('sort-heritage-clauses', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedHeritageClausesOrder',
           },
         ],
@@ -2295,10 +2151,7 @@ describe('sort-heritage-clauses', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'C',
-              },
+              data: { right: 'B', left: 'C' },
               messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
@@ -2324,10 +2177,7 @@ describe('sort-heritage-clauses', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'C',
-              },
+              data: { right: 'B', left: 'C' },
               messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
@@ -2355,10 +2205,7 @@ describe('sort-heritage-clauses', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'C',
-              },
+              data: { right: 'B', left: 'C' },
               messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
@@ -2382,10 +2229,7 @@ describe('sort-heritage-clauses', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'C',
-              },
+              data: { right: 'B', left: 'C' },
               messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
@@ -2411,17 +2255,11 @@ describe('sort-heritage-clauses', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'C',
-                left: 'D',
-              },
+              data: { right: 'C', left: 'D' },
               messageId: 'unexpectedHeritageClausesOrder',
             },
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
@@ -2475,10 +2313,7 @@ describe('sort-heritage-clauses', () => {
           `,
           errors: [
             {
-              data: {
-                right: 'A',
-                left: 'B',
-              },
+              data: { right: 'A', left: 'B' },
               messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
@@ -2495,10 +2330,7 @@ describe('sort-heritage-clauses', () => {
           await invalid({
             errors: [
               {
-                data: {
-                  right: 'B',
-                  left: 'C',
-                },
+                data: { right: 'B', left: 'C' },
                 messageId: 'unexpectedHeritageClausesOrder',
               },
             ],
@@ -2524,10 +2356,7 @@ describe('sort-heritage-clauses', () => {
           await invalid({
             errors: [
               {
-                data: {
-                  right: 'B',
-                  left: 'C',
-                },
+                data: { right: 'B', left: 'C' },
                 messageId: 'unexpectedHeritageClausesOrder',
               },
             ],
@@ -2551,10 +2380,7 @@ describe('sort-heritage-clauses', () => {
           await invalid({
             errors: [
               {
-                data: {
-                  right: 'B',
-                  left: 'C',
-                },
+                data: { right: 'B', left: 'C' },
                 messageId: 'unexpectedHeritageClausesOrder',
               },
             ],
@@ -2580,10 +2406,7 @@ describe('sort-heritage-clauses', () => {
           await invalid({
             errors: [
               {
-                data: {
-                  right: 'B',
-                  left: 'C',
-                },
+                data: { right: 'B', left: 'C' },
                 messageId: 'unexpectedHeritageClausesOrder',
               },
             ],
@@ -2634,10 +2457,7 @@ describe('sort-heritage-clauses', () => {
           `,
           errors: [
             {
-              data: {
-                right: 'A',
-                left: 'B',
-              },
+              data: { right: 'A', left: 'B' },
               messageId: 'unexpectedHeritageClausesOrder',
             },
           ],
@@ -2671,10 +2491,7 @@ describe('sort-heritage-clauses', () => {
           `,
           errors: [
             {
-              data: {
-                right: 'A',
-                left: 'B',
-              },
+              data: { right: 'A', left: 'B' },
               messageId: 'unexpectedHeritageClausesOrder',
             },
           ],

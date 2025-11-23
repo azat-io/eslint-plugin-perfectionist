@@ -36,10 +36,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'cc',
-            },
+            data: { right: 'bbb', left: 'cc' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -79,10 +76,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '12',
-              left: '8',
-            },
+            data: { right: '12', left: '8' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -133,10 +127,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'false',
-              left: 'true',
-            },
+            data: { right: 'false', left: 'true' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -184,10 +175,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'aaa',
-              left: 'b',
-            },
+            data: { right: 'aaa', left: 'b' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -245,17 +233,11 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
+            data: { right: 'bbb', left: 'd' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'fff',
-              left: 'gg',
-            },
+            data: { right: 'fff', left: 'gg' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -317,10 +299,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -357,10 +336,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -455,10 +431,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -553,66 +526,39 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
+            data: { right: 'c', left: 'b' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
+            data: { right: 'd', left: 'c' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'e',
-              left: 'd',
-            },
+            data: { right: 'e', left: 'd' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'f',
-              left: 'e',
-            },
+            data: { right: 'f', left: 'e' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'g',
-              left: 'f',
-            },
+            data: { right: 'g', left: 'f' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'h',
-              left: 'g',
-            },
+            data: { right: 'h', left: 'g' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'i',
-              left: 'h',
-            },
+            data: { right: 'i', left: 'h' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'j',
-              left: 'i',
-            },
+            data: { right: 'j', left: 'i' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -728,10 +674,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -751,10 +694,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -776,17 +716,11 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: 'missedSpacingBetweenEnumsMembers',
           },
         ],
@@ -927,24 +861,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '_BB',
-              left: '_A',
-            },
+            data: { right: '_BB', left: '_A' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: '_CCC',
-              left: '_BB',
-            },
+            data: { right: '_CCC', left: '_BB' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: '_DDDD',
-              left: '_CCC',
-            },
+            data: { right: '_DDDD', left: '_CCC' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
@@ -1026,10 +951,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -1173,24 +1095,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'Y',
-              left: 'A',
-            },
+            data: { right: 'Y', left: 'A' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
         ],
@@ -1233,24 +1146,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'Z',
-              left: 'A',
-            },
+            data: { right: 'Z', left: 'A' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
           {
-            data: {
-              right: 'Y',
-              left: 'Z',
-            },
+            data: { right: 'Y', left: 'Z' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Y',
-            },
+            data: { right: 'B', left: 'Y' },
             messageId: 'missedSpacingBetweenEnumsMembers',
           },
         ],
@@ -1345,24 +1249,15 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: 'missedSpacingBetweenEnumsMembers',
           },
           {
-            data: {
-              right: 'C',
-              left: 'B',
-            },
+            data: { right: 'C', left: 'B' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
           {
-            data: {
-              right: 'D',
-              left: 'C',
-            },
+            data: { right: 'D', left: 'C' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
         ],
@@ -1424,10 +1319,7 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: 'missedSpacingBetweenEnumsMembers',
             },
           ],
@@ -1476,10 +1368,7 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: 'extraSpacingBetweenEnumsMembers',
             },
           ],
@@ -1579,10 +1468,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -1632,10 +1518,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'cc',
-            },
+            data: { right: 'bbb', left: 'cc' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -1675,10 +1558,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '8',
-              left: '12',
-            },
+            data: { right: '8', left: '12' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -1729,10 +1609,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'false',
-              left: 'true',
-            },
+            data: { right: 'false', left: 'true' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -1780,10 +1657,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'aaa',
-              left: 'b',
-            },
+            data: { right: 'aaa', left: 'b' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -1841,17 +1715,11 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
+            data: { right: 'bbb', left: 'd' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'fff',
-              left: 'gg',
-            },
+            data: { right: 'fff', left: 'gg' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -1913,10 +1781,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -1953,10 +1818,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -2051,10 +1913,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -2149,66 +2008,39 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
+            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
+            data: { right: 'c', left: 'b' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
+            data: { right: 'd', left: 'c' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'e',
-              left: 'd',
-            },
+            data: { right: 'e', left: 'd' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'f',
-              left: 'e',
-            },
+            data: { right: 'f', left: 'e' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'g',
-              left: 'f',
-            },
+            data: { right: 'g', left: 'f' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'h',
-              left: 'g',
-            },
+            data: { right: 'h', left: 'g' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'i',
-              left: 'h',
-            },
+            data: { right: 'i', left: 'h' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'j',
-              left: 'i',
-            },
+            data: { right: 'j', left: 'i' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -2306,10 +2138,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -2329,10 +2158,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -2458,24 +2284,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '_BB',
-              left: '_A',
-            },
+            data: { right: '_BB', left: '_A' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: '_CCC',
-              left: '_BB',
-            },
+            data: { right: '_CCC', left: '_BB' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: '_DDDD',
-              left: '_CCC',
-            },
+            data: { right: '_DDDD', left: '_CCC' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
@@ -2557,10 +2374,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -2704,24 +2518,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'Y',
-              left: 'A',
-            },
+            data: { right: 'Y', left: 'A' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Z',
-            },
+            data: { right: 'B', left: 'Z' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
         ],
@@ -2764,24 +2569,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'Z',
-              left: 'A',
-            },
+            data: { right: 'Z', left: 'A' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
           {
-            data: {
-              right: 'Y',
-              left: 'Z',
-            },
+            data: { right: 'Y', left: 'Z' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'Y',
-            },
+            data: { right: 'B', left: 'Y' },
             messageId: 'missedSpacingBetweenEnumsMembers',
           },
         ],
@@ -2876,24 +2672,15 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: 'missedSpacingBetweenEnumsMembers',
           },
           {
-            data: {
-              right: 'C',
-              left: 'B',
-            },
+            data: { right: 'C', left: 'B' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
           {
-            data: {
-              right: 'D',
-              left: 'C',
-            },
+            data: { right: 'D', left: 'C' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
         ],
@@ -2955,10 +2742,7 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: 'missedSpacingBetweenEnumsMembers',
             },
           ],
@@ -3007,10 +2791,7 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: 'extraSpacingBetweenEnumsMembers',
             },
           ],
@@ -3110,10 +2891,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -3163,10 +2941,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'cc',
-            },
+            data: { right: 'bbb', left: 'cc' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -3206,10 +2981,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '12',
-              left: '8',
-            },
+            data: { right: '12', left: '8' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -3260,10 +3032,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'false',
-              left: 'true',
-            },
+            data: { right: 'false', left: 'true' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -3311,10 +3080,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'aaa',
-              left: 'b',
-            },
+            data: { right: 'aaa', left: 'b' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -3372,10 +3138,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
+            data: { right: 'bbb', left: 'd' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -3437,10 +3200,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
+            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -3477,10 +3237,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -3575,10 +3332,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -3673,17 +3427,11 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'j',
-              left: 'i',
-            },
+            data: { right: 'j', left: 'i' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'k',
-              left: 'j',
-            },
+            data: { right: 'k', left: 'j' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -3781,10 +3529,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -3804,10 +3549,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
+            data: { right: 'AA', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -3933,24 +3675,15 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '_BB',
-              left: '_A',
-            },
+            data: { right: '_BB', left: '_A' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: '_CCC',
-              left: '_BB',
-            },
+            data: { right: '_CCC', left: '_BB' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: '_DDDD',
-              left: '_CCC',
-            },
+            data: { right: '_DDDD', left: '_CCC' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
@@ -4032,10 +3765,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -4186,17 +3916,11 @@ describe('sort-enums', () => {
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'Z',
-            },
+            data: { right: 'BBB', left: 'Z' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'Z',
-            },
+            data: { right: 'BBB', left: 'Z' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
         ],
@@ -4246,17 +3970,11 @@ describe('sort-enums', () => {
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
           {
-            data: {
-              right: 'YY',
-              left: 'Z',
-            },
+            data: { right: 'YY', left: 'Z' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'YY',
-            },
+            data: { right: 'BBB', left: 'YY' },
             messageId: 'missedSpacingBetweenEnumsMembers',
           },
         ],
@@ -4351,24 +4069,15 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: 'missedSpacingBetweenEnumsMembers',
           },
           {
-            data: {
-              right: 'C',
-              left: 'B',
-            },
+            data: { right: 'C', left: 'B' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
           {
-            data: {
-              right: 'D',
-              left: 'C',
-            },
+            data: { right: 'D', left: 'C' },
             messageId: 'extraSpacingBetweenEnumsMembers',
           },
         ],
@@ -4430,10 +4139,7 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: 'missedSpacingBetweenEnumsMembers',
             },
           ],
@@ -4482,10 +4188,7 @@ describe('sort-enums', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'B',
-                left: 'A',
-              },
+              data: { right: 'B', left: 'A' },
               messageId: 'extraSpacingBetweenEnumsMembers',
             },
           ],
@@ -4585,10 +4288,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
+            data: { right: 'BB', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -4643,10 +4343,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'cc',
-            },
+            data: { right: 'bbb', left: 'cc' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -4759,10 +4456,7 @@ describe('sort-enums', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'missedSpacingBetweenEnumsMembers',
           },
         ],
@@ -4786,10 +4480,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-            },
+            data: { nodeDependentOnRight: 'a', right: 'b' },
             messageId: 'unexpectedEnumsDependencyOrder',
           },
         ],
@@ -4930,17 +4621,11 @@ describe('sort-enums', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'a',
-                left: 'b',
-              },
+              data: { right: 'a', left: 'b' },
               messageId: 'unexpectedEnumsOrder',
             },
             {
-              data: {
-                right: 'c',
-                left: 'a',
-              },
+              data: { right: 'c', left: 'a' },
               messageId: 'unexpectedEnumsOrder',
             },
           ],
@@ -4974,17 +4659,11 @@ describe('sort-enums', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'a',
-                left: 'b',
-              },
+              data: { right: 'a', left: 'b' },
               messageId: 'unexpectedEnumsOrder',
             },
             {
-              data: {
-                right: 'c',
-                left: 'a',
-              },
+              data: { right: 'c', left: 'a' },
               messageId: 'unexpectedEnumsOrder',
             },
           ],
@@ -5038,10 +4717,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
+            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5066,10 +4742,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5097,10 +4770,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5128,10 +4798,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5159,10 +4826,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5190,10 +4854,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'A',
-              right: 'C',
-            },
+            data: { nodeDependentOnRight: 'A', right: 'C' },
             messageId: 'unexpectedEnumsDependencyOrder',
           },
         ],
@@ -5251,10 +4912,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5280,10 +4938,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'B',
-              right: 'A',
-            },
+            data: { nodeDependentOnRight: 'B', right: 'A' },
             messageId: 'unexpectedEnumsDependencyOrder',
           },
         ],
@@ -5380,10 +5035,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5449,17 +5101,11 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'A',
-              left: 'D',
-            },
+            data: { right: 'A', left: 'D' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5476,17 +5122,11 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'C',
-              left: 'D',
-            },
+            data: { right: 'C', left: 'D' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'A',
-              left: 'E',
-            },
+            data: { right: 'A', left: 'E' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5536,10 +5176,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5565,17 +5202,11 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'C',
-              left: 'D',
-            },
+            data: { right: 'C', left: 'D' },
             messageId: 'unexpectedEnumsOrder',
           },
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
+            data: { right: 'B', left: 'A' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5607,10 +5238,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5636,10 +5264,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5663,10 +5288,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5692,10 +5314,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5743,10 +5362,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5772,10 +5388,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5785,10 +5398,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5828,10 +5438,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5841,10 +5448,7 @@ describe('sort-enums', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
+            data: { right: 'B', left: 'C' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
@@ -5892,10 +5496,7 @@ describe('sort-enums', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
+            data: { right: 'A', left: 'B' },
             messageId: 'unexpectedEnumsOrder',
           },
         ],
