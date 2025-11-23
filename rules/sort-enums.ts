@@ -1,9 +1,8 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { NodeValueGetterFunction } from '../utils/compare/compare'
+import type { SortEnumsSortingNode, Options } from './sort-enums/types'
 import type { TypeOption } from '../types/common-options'
-import type { Options } from './sort-enums/types'
 
 import {
   buildCustomGroupsArrayJsonSchema,
@@ -52,12 +51,6 @@ type MessageId =
   | typeof EXTRA_SPACING_ERROR_ID
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
-
-interface SortEnumsSortingNode
-  extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
-  numericValue: number | null
-  value: string | null
-}
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
