@@ -27,10 +27,10 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getCustomGroupOverriddenOptions } from '../utils/get-custom-groups-compare-options'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
@@ -311,38 +311,14 @@ export default createEslintRule<Options, MessageId>({
             ): SortImportsSortingNode[] {
               let nodesSortedByGroups = nodeGroups.flatMap(nodes =>
                 sortNodesByGroups({
-                  getOptionsByGroupIndex: groupIndex => {
-                    let customGroupOverriddenOptions =
-                      getCustomGroupOverriddenOptions({
-                        groupIndex,
-                        options,
-                      })
-
+                  isNodeIgnoredForGroup: (_node, _groupOptions, groupIndex) => {
                     if (options.sortSideEffects) {
-                      return {
-                        options: {
-                          ...options,
-                          ...customGroupOverriddenOptions,
-                        },
-                      }
+                      return false
                     }
-                    let overriddenOptions = {
-                      ...options,
-                      ...customGroupOverriddenOptions,
-                    }
-                    return {
-                      options: {
-                        ...overriddenOptions,
-                        type:
-                          overriddenOptions.groups[groupIndex] &&
-                          isSideEffectOnlyGroup(
-                            overriddenOptions.groups[groupIndex],
-                          )
-                            ? 'unsorted'
-                            : overriddenOptions.type,
-                      },
-                    }
+                    return isSideEffectOnlyGroup(options.groups[groupIndex])
                   },
+                  getOptionsByGroupIndex:
+                    buildGetCustomGroupOverriddenOptionsFunction(options),
                   isNodeIgnored: node => node.isIgnored,
                   ignoreEslintDisabledNodes,
                   groups: options.groups,

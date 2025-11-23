@@ -13,8 +13,12 @@ import { computeGroupsNames } from '../../utils/compute-groups-names'
  * @returns True if the group is a side-effect-only group, false otherwise.
  */
 export function isSideEffectOnlyGroup(
-  group: GroupsOptions<string>[0],
+  group: GroupsOptions<string>[0] | undefined,
 ): boolean {
+  if (!group) {
+    return false
+  }
+
   let groupNames = computeGroupsNames([group])
   if (groupNames.length === 0) {
     return false

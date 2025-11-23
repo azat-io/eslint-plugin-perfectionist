@@ -20,7 +20,11 @@ interface SortNodesByGroupsParameters<
     nodeValueGetter?: NodeValueGetterFunction<T> | null
     options: Options
   }
-  isNodeIgnoredForGroup?(node: T, groupOptions: Options): boolean
+  isNodeIgnoredForGroup?(
+    node: T,
+    groupOptions: Options,
+    groupIndex: number,
+  ): boolean
   ignoreEslintDisabledNodes: boolean
   isNodeIgnored?(node: T): boolean
   groups: GroupsOptions<string>
@@ -118,15 +122,18 @@ export function sortNodesByGroups<
   }
 
   let sortedNodes: T[] = []
-  for (let groupIndex of Object.keys(nodesByNonIgnoredGroupIndex).toSorted(
-    (a, b) => Number(a) - Number(b),
-  )) {
+  for (let groupIndexString of Object.keys(
+    nodesByNonIgnoredGroupIndex,
+  ).toSorted((a, b) => Number(a) - Number(b))) {
+    let groupIndex = Number(groupIndexString)
     let { fallbackSortNodeValueGetter, nodeValueGetter, options } =
-      getOptionsByGroupIndex(Number(groupIndex))
-    let nodesToPush = nodesByNonIgnoredGroupIndex[Number(groupIndex)]!
+      getOptionsByGroupIndex(groupIndex)
+    let nodesToPush = nodesByNonIgnoredGroupIndex[groupIndex]!
 
     let groupIgnoredNodes = new Set(
-      nodesToPush.filter(node => isNodeIgnoredForGroup?.(node, options)),
+      nodesToPush.filter(node =>
+        isNodeIgnoredForGroup?.(node, options, groupIndex),
+      ),
     )
 
     sortedNodes.push(
