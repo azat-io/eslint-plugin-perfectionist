@@ -20,7 +20,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import {
@@ -278,7 +278,7 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
       return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
         return sortNodesByGroups({
           optionsByGroupIndexComputer:
-            buildGetCustomGroupOverriddenOptionsFunction(options),
+            buildDefaultOptionsByGroupIndexComputer(options),
           ignoreEslintDisabledNodes,
           groups: options.groups,
           nodes: sortingNodes,

@@ -1,7 +1,7 @@
 import type { NodeValueGetterFunction } from '../../utils/compare'
 import type { SortObjectTypesSortingNode, Options } from './types'
 
-import { getCustomGroupsCompareOptions as baseGetCustomGroupsCompareOptions } from '../../utils/get-custom-groups-compare-options'
+import { getCustomGroupsCompareOptions as baseGetCustomGroupsCompareOptions } from '../../utils/build-default-options-by-group-index-computer'
 import { computeGroupName } from '../../utils/compute-group-name'
 import { buildNodeValueGetter } from './build-node-value-getter'
 

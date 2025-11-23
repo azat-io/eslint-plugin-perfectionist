@@ -19,7 +19,7 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -172,7 +172,7 @@ export default createEslintRule<Options, MessageId>({
             ): SortingNode[] {
               return sortNodesByGroups({
                 optionsByGroupIndexComputer:
-                  buildGetCustomGroupOverriddenOptionsFunction(options),
+                  buildDefaultOptionsByGroupIndexComputer(options),
                 ignoreEslintDisabledNodes,
                 groups: options.groups,
                 nodes: sortingNodes,

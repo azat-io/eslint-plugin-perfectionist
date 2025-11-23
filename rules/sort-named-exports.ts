@@ -20,12 +20,12 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-named-exports/types'
-import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -176,7 +176,7 @@ export default createEslintRule<Options, MessageId>({
         return formattedMembers.flatMap(groupedNodes =>
           sortNodesByGroups({
             optionsByGroupIndexComputer:
-              buildGetCustomGroupOverriddenOptionsFunction(options),
+              buildDefaultOptionsByGroupIndexComputer(options),
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes: groupedNodes,

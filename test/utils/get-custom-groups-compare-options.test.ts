@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { CommonOptions } from '../../types/common-options'
 
-import { getCustomGroupsCompareOptions } from '../../utils/get-custom-groups-compare-options'
+import { getCustomGroupsCompareOptions } from '../../utils/build-default-options-by-group-index-computer'
 
 describe('get-custom-groups-compare-options', () => {
   let baseOptions: Pick<CommonOptions, 'fallbackSort' | 'order' | 'type'> = {

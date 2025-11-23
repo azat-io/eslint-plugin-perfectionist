@@ -120,14 +120,14 @@ export function getCustomGroupsCompareOptions(
  *
  * @example
  *   const getOverriddenOptions =
- *     buildGetCustomGroupOverriddenOptionsFunction(options)
+ *     buildDefaultOptionsByGroupIndexComputer(options)
  *   const group1Options = getOverriddenOptions(0)
  *   const group2Options = getOverriddenOptions(1)
  *
  * @param options - Base sorting options with group configuration.
  * @returns Function that takes a group index and returns overridden options.
  */
-export function buildGetCustomGroupOverriddenOptionsFunction(
+export function buildDefaultOptionsByGroupIndexComputer(
   options: GroupRelatedOptions & CommonOptions,
 ): (groupIndex: number) => {
   options: CommonOptions

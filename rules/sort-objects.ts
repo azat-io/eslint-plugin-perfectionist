@@ -25,7 +25,7 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
-import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -354,7 +354,7 @@ export default createEslintRule<Options, MessageId>({
         let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
           sortNodesByGroups({
             optionsByGroupIndexComputer:
-              buildGetCustomGroupOverriddenOptionsFunction(options),
+              buildDefaultOptionsByGroupIndexComputer(options),
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes,
