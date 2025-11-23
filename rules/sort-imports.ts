@@ -71,10 +71,7 @@ export type MessageId =
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
 
-let defaultOptions: Required<
-  Omit<Options[number], 'maxLineLength' | 'tsconfig'>
-> &
-  Pick<Options[number], 'maxLineLength' | 'tsconfig'> = {
+let defaultOptions: Required<Options[number]> = {
   groups: [
     'type-import',
     ['value-builtin', 'value-external'],
@@ -90,6 +87,8 @@ let defaultOptions: Required<
   partitionByComment: false,
   partitionByNewLine: false,
   specialCharacters: 'keep',
+  tsconfig: { rootDir: '' },
+  maxLineLength: Infinity,
   sortSideEffects: false,
   type: 'alphabetical',
   environment: 'node',
@@ -119,10 +118,10 @@ export default createEslintRule<Options, MessageId>({
     validateNewlinesAndPartitionConfiguration(options)
     validateSideEffectsConfiguration(options)
 
-    let tsconfigRootDirectory = options.tsconfig?.rootDir
+    let tsconfigRootDirectory = options.tsconfig.rootDir
     let tsConfigOutput = tsconfigRootDirectory
       ? readClosestTsConfigByPath({
-          tsconfigFilename: options.tsconfig?.filename ?? 'tsconfig.json',
+          tsconfigFilename: options.tsconfig.filename ?? 'tsconfig.json',
           tsconfigRootDir: tsconfigRootDirectory,
           filePath: context.physicalFilename,
           contextCwd: context.cwd,
@@ -236,11 +235,7 @@ export default createEslintRule<Options, MessageId>({
         (node as TSESTree.ImportDeclaration).specifiers,
       )
       let size = rangeToDiff(node, sourceCode)
-      if (
-        hasMultipleImportDeclarations &&
-        options.maxLineLength &&
-        size > options.maxLineLength
-      ) {
+      if (hasMultipleImportDeclarations && size > options.maxLineLength) {
         size = name.length + 10
       }
       sortingNodesWithoutPartitionId.push({
@@ -510,39 +505,6 @@ function computeDependencyNames({
   return returnValue
 }
 
-function computeGroupExceptUnknown({
-  selectors,
-  modifiers,
-  options,
-  name,
-}: {
-  options: Omit<Required<Options[number]>, 'maxLineLength' | 'tsconfig'>
-  selectors: Selector[]
-  modifiers: Modifier[]
-  name: string
-}): string | null {
-  let predefinedGroups = generatePredefinedGroups({
-    cache: cachedGroupsByModifiersAndSelectors,
-    selectors,
-    modifiers,
-  })
-  let computedCustomGroup = computeGroup({
-    customGroupMatcher: customGroup =>
-      doesCustomGroupMatch({
-        elementName: name,
-        customGroup,
-        modifiers,
-        selectors,
-      }),
-    predefinedGroups,
-    options,
-  })
-  if (computedCustomGroup === 'unknown') {
-    return null
-  }
-  return computedCustomGroup
-}
-
 function getNodeName({
   sourceCode,
   node,
@@ -568,6 +530,39 @@ function getNodeName({
   let callExpression = node.declarations[0].init as TSESTree.CallExpression
   let { value } = callExpression.arguments[0] as TSESTree.Literal
   return value!.toString()
+}
+
+function computeGroupExceptUnknown({
+  selectors,
+  modifiers,
+  options,
+  name,
+}: {
+  options: Required<Options[number]>
+  selectors: Selector[]
+  modifiers: Modifier[]
+  name: string
+}): string | null {
+  let predefinedGroups = generatePredefinedGroups({
+    cache: cachedGroupsByModifiersAndSelectors,
+    selectors,
+    modifiers,
+  })
+  let computedCustomGroup = computeGroup({
+    customGroupMatcher: customGroup =>
+      doesCustomGroupMatch({
+        elementName: name,
+        customGroup,
+        modifiers,
+        selectors,
+      }),
+    predefinedGroups,
+    options,
+  })
+  if (computedCustomGroup === 'unknown') {
+    return null
+  }
+  return computedCustomGroup
 }
 
 function computeDependencies(
