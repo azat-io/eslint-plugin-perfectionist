@@ -1,8 +1,8 @@
+import type { NodeValueGetterFunction } from './compare/compare'
 import type { CommonOptions } from '../types/common-options'
-import type { NodeValueGetterFunction } from './compare'
 import type { SortingNode } from '../types/sorting-node'
 
-import { compare } from './compare'
+import { compare } from './compare/compare'
 
 /**
  * Parameters for the core sorting operation.

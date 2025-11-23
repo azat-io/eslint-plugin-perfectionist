@@ -1,7 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { NodeValueGetterFunction } from '../utils/compare'
+import type { NodeValueGetterFunction } from '../utils/compare/compare'
 import type { TypeOption } from '../types/common-options'
 import type { Options } from './sort-enums/types'
 

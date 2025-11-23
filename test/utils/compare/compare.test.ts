@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import type { SortingNode } from '../../types/sorting-node'
+import type { SortingNode } from '../../../types/sorting-node'
 
-import { Alphabet } from '../../utils/alphabet'
-import { compare } from '../../utils/compare'
+import { compare } from '../../../utils/compare/compare'
+import { Alphabet } from '../../../utils/alphabet'
 
 describe('compare', () => {
   describe('alphabetical', () => {

@@ -1,13 +1,11 @@
 import { compare as createNaturalCompare } from 'natural-orderby'
 
-import type {
-  SpecialCharactersOption,
-  CommonOptions,
-} from '../types/common-options'
-import type { SortingNode } from '../types/sorting-node'
+import type { CommonOptions } from '../../types/common-options'
+import type { SortingNode } from '../../types/sorting-node'
 
-import { convertBooleanToSign } from './convert-boolean-to-sign'
-import { UnreachableCaseError } from './unreachable-case-error'
+import { convertBooleanToSign } from '../convert-boolean-to-sign'
+import { UnreachableCaseError } from '../unreachable-case-error'
+import { buildStringFormatter } from './build-string-formatter'
 
 /**
  * Function that extracts a string value from a sorting node for comparison.
@@ -163,7 +161,10 @@ function getCustomSortingFunction<T extends SortingNode>(
   }: Pick<CommonOptions, 'specialCharacters' | 'ignoreCase' | 'alphabet'>,
   nodeValueGetter: NodeValueGetterFunction<T>,
 ): SortingFunction<T> {
-  let formatString = getFormatStringFunction(ignoreCase, specialCharacters)
+  let formatString = buildStringFormatter({
+    specialCharacters,
+    ignoreCase,
+  })
   let indexByCharacters = alphabetCache.get(alphabet)
 
   if (!indexByCharacters) {
@@ -255,58 +256,6 @@ function computeCompareValue<T extends SortingNode>({
 }
 
 /**
- * Creates a function that formats strings for comparison.
- *
- * Applies transformations based on the provided options:
- *
- * - Case normalization (lowercase if ignoreCase is true)
- * - Special character handling (keep, trim, or remove)
- * - Whitespace removal (always applied).
- *
- * @param ignoreCase - Whether to convert strings to lowercase.
- * @param specialCharacters - How to handle special characters:
- *
- *   - 'keep': Keep all characters as-is
- *   - 'trim': Remove leading special characters
- *   - 'remove': Remove all special characters.
- *
- * @returns Function that formats a string for comparison.
- * @throws {UnreachableCaseError} If an unknown special characters option is
- *   specified.
- */
-function getFormatStringFunction(
-  ignoreCase: boolean,
-  specialCharacters: SpecialCharactersOption,
-) {
-  return (value: string) => {
-    let valueToCompare = value
-    if (ignoreCase) {
-      valueToCompare = valueToCompare.toLowerCase()
-    }
-    switch (specialCharacters) {
-      case 'remove':
-        valueToCompare = valueToCompare.replaceAll(
-          /[^a-z\u{C0}-\u{24F}\u{1E00}-\u{1EFF}]+/giu,
-          '',
-        )
-        break
-      case 'trim':
-        valueToCompare = valueToCompare.replaceAll(
-          /^[^a-z\u{C0}-\u{24F}\u{1E00}-\u{1EFF}]+/giu,
-          '',
-        )
-        break
-      case 'keep':
-        break
-      /* v8 ignore next 2 */
-      default:
-        throw new UnreachableCaseError(specialCharacters)
-    }
-    return valueToCompare.replaceAll(/\s/gu, '')
-  }
-}
-
-/**
  * Creates a natural sorting function that handles numbers intelligently.
  *
  * Natural sorting treats numeric portions of strings as numbers rather than
@@ -336,7 +285,10 @@ function getNaturalSortingFunction<T extends SortingNode>(
   let naturalCompare = createNaturalCompare({
     locale: locales.toString(),
   })
-  let formatString = getFormatStringFunction(ignoreCase, specialCharacters)
+  let formatString = buildStringFormatter({
+    specialCharacters,
+    ignoreCase,
+  })
   return (aNode: T, bNode: T) =>
     naturalCompare(
       formatString(nodeValueGetter(aNode)),
@@ -367,7 +319,10 @@ function getAlphabeticalSortingFunction<T extends SortingNode>(
   }: Pick<CommonOptions, 'specialCharacters' | 'ignoreCase' | 'locales'>,
   nodeValueGetter: NodeValueGetterFunction<T>,
 ): SortingFunction<T> {
-  let formatString = getFormatStringFunction(ignoreCase, specialCharacters)
+  let formatString = buildStringFormatter({
+    specialCharacters,
+    ignoreCase,
+  })
   return (aNode: T, bNode: T) =>
     formatString(nodeValueGetter(aNode)).localeCompare(
       formatString(nodeValueGetter(bNode)),

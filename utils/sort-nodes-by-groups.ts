@@ -1,5 +1,5 @@
 import type { CommonOptions, GroupsOptions } from '../types/common-options'
-import type { NodeValueGetterFunction } from './compare'
+import type { NodeValueGetterFunction } from './compare/compare'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getGroupIndex } from './get-group-index'

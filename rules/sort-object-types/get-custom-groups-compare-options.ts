@@ -1,4 +1,4 @@
-import type { NodeValueGetterFunction } from '../../utils/compare'
+import type { NodeValueGetterFunction } from '../../utils/compare/compare'
 import type { SortObjectTypesSortingNode, Options } from './types'
 
 import { getCustomGroupsCompareOptions as baseGetCustomGroupsCompareOptions } from '../../utils/build-default-options-by-group-index-computer'
