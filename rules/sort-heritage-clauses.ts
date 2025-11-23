@@ -186,7 +186,7 @@ function sortHeritageClauses(
     ) {
       return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
         return sortNodesByGroups({
-          getOptionsByGroupIndex:
+          optionsByGroupIndexComputer:
             buildGetCustomGroupOverriddenOptionsFunction(options),
           ignoreEslintDisabledNodes,
           groups: options.groups,

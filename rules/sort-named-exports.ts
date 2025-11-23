@@ -175,7 +175,7 @@ export default createEslintRule<Options, MessageId>({
       ): SortNamedExportsSortingNode[] {
         return formattedMembers.flatMap(groupedNodes =>
           sortNodesByGroups({
-            getOptionsByGroupIndex:
+            optionsByGroupIndexComputer:
               buildGetCustomGroupOverriddenOptionsFunction(options),
             ignoreEslintDisabledNodes,
             groups: options.groups,

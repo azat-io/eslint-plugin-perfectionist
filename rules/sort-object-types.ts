@@ -312,7 +312,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
   ): SortObjectTypesSortingNode[] {
     return formattedMembers.flatMap(groupedNodes =>
       sortNodesByGroups({
-        getOptionsByGroupIndex: groupIndex => {
+        optionsByGroupIndexComputer: groupIndex => {
           let {
             fallbackSortNodeValueGetter,
             options: overriddenOptions,

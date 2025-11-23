@@ -315,7 +315,7 @@ export default createEslintRule<Options, MessageId>({
                     }
                     return isSideEffectOnlyGroup(options.groups[groupIndex])
                   },
-                  getOptionsByGroupIndex:
+                  optionsByGroupIndexComputer:
                     buildGetCustomGroupOverriddenOptionsFunction(options),
                   isNodeIgnored: node => node.isIgnored,
                   ignoreEslintDisabledNodes,

@@ -15,7 +15,7 @@ interface SortNodesByGroupsParameters<
   Options extends CommonOptions,
   T extends SortingNode,
 > {
-  getOptionsByGroupIndex(groupIndex: number): {
+  optionsByGroupIndexComputer(groupIndex: number): {
     fallbackSortNodeValueGetter?: NodeValueGetterFunction<T> | null
     nodeValueGetter?: NodeValueGetterFunction<T> | null
     options: Options
@@ -56,7 +56,7 @@ interface SortNodesByGroupsParameters<
  *   sortNodesByGroups({
  *     groups: ['external', 'internal'],
  *     nodes,
- *     getOptionsByGroupIndex: index => ({
+ *     optionsByGroupIndexComputer: index => ({
  *       options: { type: 'alphabetical', order: 'asc' },
  *     }),
  *   })
@@ -99,8 +99,8 @@ export function sortNodesByGroups<
   T extends SortingNode,
   Options extends CommonOptions,
 >({
+  optionsByGroupIndexComputer,
   ignoreEslintDisabledNodes,
-  getOptionsByGroupIndex,
   isNodeIgnoredForGroup,
   isNodeIgnored,
   groups,
@@ -127,7 +127,7 @@ export function sortNodesByGroups<
   ).toSorted((a, b) => Number(a) - Number(b))) {
     let groupIndex = Number(groupIndexString)
     let { fallbackSortNodeValueGetter, nodeValueGetter, options } =
-      getOptionsByGroupIndex(groupIndex)
+      optionsByGroupIndexComputer(groupIndex)
     let nodesToPush = nodesByNonIgnoredGroupIndex[groupIndex]!
 
     let groupIgnoredNodes = new Set(

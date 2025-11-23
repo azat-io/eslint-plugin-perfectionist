@@ -251,7 +251,7 @@ export function sortArray<MessageIds extends string>({
   ): SortArrayIncludesSortingNode[] {
     return formattedMembers.flatMap(nodes =>
       sortNodesByGroups({
-        getOptionsByGroupIndex:
+        optionsByGroupIndexComputer:
           buildGetCustomGroupOverriddenOptionsFunction(options),
         ignoreEslintDisabledNodes,
         groups: options.groups,

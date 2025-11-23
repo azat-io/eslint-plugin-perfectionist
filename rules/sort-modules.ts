@@ -347,7 +347,7 @@ function analyzeModule({
       sortNodesByGroups({
         isNodeIgnored: sortingNode =>
           getGroupIndex(options.groups, sortingNode) === options.groups.length,
-        getOptionsByGroupIndex:
+        optionsByGroupIndexComputer:
           buildGetCustomGroupOverriddenOptionsFunction(options),
         ignoreEslintDisabledNodes,
         groups: options.groups,

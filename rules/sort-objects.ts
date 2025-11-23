@@ -353,7 +353,7 @@ export default createEslintRule<Options, MessageId>({
       ): SortingNodeWithDependencies[] {
         let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
           sortNodesByGroups({
-            getOptionsByGroupIndex:
+            optionsByGroupIndexComputer:
               buildGetCustomGroupOverriddenOptionsFunction(options),
             ignoreEslintDisabledNodes,
             groups: options.groups,

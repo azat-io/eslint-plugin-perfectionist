@@ -136,7 +136,7 @@ export default createEslintRule<Options, MessageId>({
             ignoreEslintDisabledNodes: boolean,
           ): SortExportAttributesSortingNode[] {
             return sortNodesByGroups({
-              getOptionsByGroupIndex:
+              optionsByGroupIndexComputer:
                 buildGetCustomGroupOverriddenOptionsFunction(options),
               ignoreEslintDisabledNodes,
               groups: options.groups,

@@ -262,7 +262,7 @@ function sortDecorators(
   ): SortDecoratorsSortingNode[] {
     return formattedMembers.flatMap(nodes =>
       sortNodesByGroups({
-        getOptionsByGroupIndex:
+        optionsByGroupIndexComputer:
           buildGetCustomGroupOverriddenOptionsFunction(options),
         ignoreEslintDisabledNodes,
         groups: options.groups,

@@ -186,7 +186,7 @@ export default createEslintRule<Options, MessageId>({
         function createSortNodesExcludingEslintDisabled(nodes: SortingNode[]) {
           return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
             return sortNodesByGroups({
-              getOptionsByGroupIndex:
+              optionsByGroupIndexComputer:
                 buildGetCustomGroupOverriddenOptionsFunction(options),
               ignoreEslintDisabledNodes,
               groups: options.groups,
