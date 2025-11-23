@@ -72,8 +72,8 @@ describe('sort-jsx-props', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         options: [options],
@@ -150,12 +150,12 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'd', left: 'e' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'd', left: 'e' },
           },
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -314,16 +314,6 @@ describe('sort-jsx-props', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: 'unexpectedJSXPropsOrder',
-          },
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: 'missedSpacingBetweenJSXPropsMembers',
-          },
-        ],
         options: [
           {
             groups: [
@@ -335,6 +325,16 @@ describe('sort-jsx-props', () => {
               },
             ],
             type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'a' },
+          },
+          {
+            messageId: 'missedSpacingBetweenJSXPropsMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -538,12 +538,12 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'bb', left: 'a' },
           },
           {
-            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'ccc', left: 'bb' },
           },
           {
             data: { right: 'dddd', left: 'ccc' },
@@ -806,12 +806,12 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'd' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'a', left: 'd' },
           },
           {
-            data: { right: 'b', left: 'e' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'e' },
           },
         ],
         output: dedent`
@@ -849,16 +849,16 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
             data: { right: 'y', left: 'a' },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'z' },
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: 'extraSpacingBetweenJSXPropsMembers',
+            data: { right: 'b', left: 'z' },
           },
         ],
         options: [
@@ -900,16 +900,16 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'z', left: 'a' },
             messageId: 'extraSpacingBetweenJSXPropsMembers',
+            data: { right: 'z', left: 'a' },
           },
           {
-            data: { right: 'y', left: 'z' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'y', left: 'z' },
           },
           {
-            data: { right: 'b', left: 'y' },
             messageId: 'missedSpacingBetweenJSXPropsMembers',
+            data: { right: 'b', left: 'y' },
           },
         ],
         options: [
@@ -995,16 +995,16 @@ describe('sort-jsx-props', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenJSXPropsMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
             data: { right: 'c', left: 'b' },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenJSXPropsMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -1074,8 +1074,8 @@ describe('sort-jsx-props', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenJSXPropsMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1123,8 +1123,8 @@ describe('sort-jsx-props', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenJSXPropsMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1296,8 +1296,8 @@ describe('sort-jsx-props', () => {
         await invalid({
           errors: [
             {
-              data: { right: 'a', left: 'b' },
               messageId: 'unexpectedJSXPropsOrder',
+              data: { right: 'a', left: 'b' },
             },
           ],
           output: dedent`
@@ -1365,8 +1365,8 @@ describe('sort-jsx-props', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         options: [options],
@@ -1443,12 +1443,12 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'd', left: 'e' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'd', left: 'e' },
           },
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -1790,12 +1790,12 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'bb', left: 'a' },
           },
           {
-            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'ccc', left: 'bb' },
           },
           {
             data: { right: 'dddd', left: 'ccc' },
@@ -2058,12 +2058,12 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'd' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'a', left: 'd' },
           },
           {
-            data: { right: 'b', left: 'e' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'e' },
           },
         ],
         output: dedent`
@@ -2101,16 +2101,16 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
             data: { right: 'y', left: 'a' },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'z' },
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: 'extraSpacingBetweenJSXPropsMembers',
+            data: { right: 'b', left: 'z' },
           },
         ],
         options: [
@@ -2152,16 +2152,16 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'z', left: 'a' },
             messageId: 'extraSpacingBetweenJSXPropsMembers',
+            data: { right: 'z', left: 'a' },
           },
           {
-            data: { right: 'y', left: 'z' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'y', left: 'z' },
           },
           {
-            data: { right: 'b', left: 'y' },
             messageId: 'missedSpacingBetweenJSXPropsMembers',
+            data: { right: 'b', left: 'y' },
           },
         ],
         options: [
@@ -2247,16 +2247,16 @@ describe('sort-jsx-props', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenJSXPropsMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
             data: { right: 'c', left: 'b' },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenJSXPropsMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -2326,8 +2326,8 @@ describe('sort-jsx-props', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenJSXPropsMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -2375,8 +2375,8 @@ describe('sort-jsx-props', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenJSXPropsMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -2548,8 +2548,8 @@ describe('sort-jsx-props', () => {
         await invalid({
           errors: [
             {
-              data: { right: 'a', left: 'b' },
               messageId: 'unexpectedJSXPropsOrder',
+              data: { right: 'a', left: 'b' },
             },
           ],
           output: dedent`
@@ -2617,8 +2617,8 @@ describe('sort-jsx-props', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         options: [options],
@@ -2663,8 +2663,8 @@ describe('sort-jsx-props', () => {
         `,
         errors: [
           {
-            data: { right: 'd:e', left: 'b' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'd:e', left: 'b' },
           },
         ],
         options: [options],
@@ -2718,8 +2718,8 @@ describe('sort-jsx-props', () => {
         `,
         errors: [
           {
-            data: { right: 'f', left: 'd' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'f', left: 'd' },
           },
         ],
         options: [options],
@@ -2818,8 +2818,8 @@ describe('sort-jsx-props', () => {
             messageId: 'unexpectedJSXPropsGroupOrder',
           },
           {
-            data: { right: 'e', left: 'd' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'e', left: 'd' },
           },
         ],
         output: dedent`
@@ -3039,12 +3039,12 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'bb', left: 'a' },
           },
           {
-            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'ccc', left: 'bb' },
           },
           {
             data: { right: 'dddd', left: 'ccc' },
@@ -3311,8 +3311,8 @@ describe('sort-jsx-props', () => {
             messageId: 'unexpectedJSXPropsOrder',
           },
           {
-            data: { right: 'bbbb', left: 'e' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'bbbb', left: 'e' },
           },
         ],
         output: dedent`
@@ -3357,12 +3357,12 @@ describe('sort-jsx-props', () => {
             messageId: 'extraSpacingBetweenJSXPropsMembers',
           },
           {
-            data: { right: 'bbb', left: 'z' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'bbb', left: 'z' },
           },
           {
-            data: { right: 'bbb', left: 'z' },
             messageId: 'extraSpacingBetweenJSXPropsMembers',
+            data: { right: 'bbb', left: 'z' },
           },
         ],
         options: [
@@ -3411,12 +3411,12 @@ describe('sort-jsx-props', () => {
             messageId: 'extraSpacingBetweenJSXPropsMembers',
           },
           {
-            data: { right: 'yy', left: 'z' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'yy', left: 'z' },
           },
           {
-            data: { right: 'bbb', left: 'yy' },
             messageId: 'missedSpacingBetweenJSXPropsMembers',
+            data: { right: 'bbb', left: 'yy' },
           },
         ],
         options: [
@@ -3502,16 +3502,16 @@ describe('sort-jsx-props', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenJSXPropsMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: 'extraSpacingBetweenJSXPropsMembers',
             data: { right: 'c', left: 'b' },
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenJSXPropsMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -3581,8 +3581,8 @@ describe('sort-jsx-props', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenJSXPropsMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -3630,8 +3630,8 @@ describe('sort-jsx-props', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenJSXPropsMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -3803,8 +3803,8 @@ describe('sort-jsx-props', () => {
         await invalid({
           errors: [
             {
-              data: { right: 'aa', left: 'b' },
               messageId: 'unexpectedJSXPropsOrder',
+              data: { right: 'aa', left: 'b' },
             },
           ],
           output: dedent`
@@ -3877,8 +3877,8 @@ describe('sort-jsx-props', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         options: [options],
@@ -3974,8 +3974,8 @@ describe('sort-jsx-props', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'missedSpacingBetweenJSXPropsMembers',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4066,8 +4066,8 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -4092,12 +4092,12 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'c', left: 'd' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'c', left: 'd' },
           },
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -4124,12 +4124,6 @@ describe('sort-jsx-props', () => {
 
     it('handles block eslint-disable-next-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedJSXPropsOrder',
-          },
-        ],
         output: dedent`
           <Element
             b="b"
@@ -4146,6 +4140,12 @@ describe('sort-jsx-props', () => {
             a="a"
           />
         `,
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
     })
@@ -4154,8 +4154,8 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -4204,8 +4204,8 @@ describe('sort-jsx-props', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [{}],
@@ -4214,12 +4214,6 @@ describe('sort-jsx-props', () => {
 
     it('handles rule-specific eslint-disable-next-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedJSXPropsOrder',
-          },
-        ],
         output: dedent`
           <Element
             b="b"
@@ -4236,18 +4230,18 @@ describe('sort-jsx-props', () => {
             a="a"
           />
         `,
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
     })
 
     it('handles rule-specific eslint-disable-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedJSXPropsOrder',
-          },
-        ],
         output: dedent`
           <Element
             b="b"
@@ -4262,6 +4256,12 @@ describe('sort-jsx-props', () => {
             a="a" // eslint-disable-line rule-to-test/sort-jsx-props
           />
         `,
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
     })
@@ -4276,12 +4276,6 @@ describe('sort-jsx-props', () => {
             a="a"
           />
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedJSXPropsOrder',
-          },
-        ],
         code: dedent`
           <Element
             c="c"
@@ -4290,18 +4284,18 @@ describe('sort-jsx-props', () => {
             a="a"
           />
         `,
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
     })
 
     it('handles rule-specific inline block eslint-disable-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedJSXPropsOrder',
-          },
-        ],
         output: dedent`
           <Element
             b="b"
@@ -4316,6 +4310,12 @@ describe('sort-jsx-props', () => {
             a="a" /* eslint-disable-line rule-to-test/sort-jsx-props */
           />
         `,
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
     })
@@ -4348,8 +4348,8 @@ describe('sort-jsx-props', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [{}],

@@ -80,8 +80,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'aaa', left: 'bb' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aaa', left: 'bb' },
           },
         ],
         options: [options],
@@ -118,8 +118,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'aaa', left: 'bb' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aaa', left: 'bb' },
           },
         ],
         options: [options],
@@ -191,8 +191,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [options],
@@ -272,8 +272,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [options],
@@ -368,8 +368,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         options: [options],
@@ -432,12 +432,12 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'cccc', left: 'ee' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'cccc', left: 'ee' },
           },
           {
-            data: { right: 'bbbbb', left: 'f' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'bbbbb', left: 'f' },
           },
         ],
         options: [options],
@@ -488,8 +488,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'wwww', left: 'z' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'wwww', left: 'z' },
           },
         ],
         options: [options],
@@ -510,12 +510,6 @@ describe('sort-switch-case', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: 'unexpectedSwitchCaseOrder',
-          },
-        ],
         output: dedent`
           switch (x) {
             case AA:
@@ -532,6 +526,12 @@ describe('sort-switch-case', () => {
               break;
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'AA', left: 'B' },
+          },
+        ],
         options: [options],
       })
     })
@@ -562,16 +562,16 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedSwitchCaseOrder',
             data: { right: 'DD', left: 'E' },
-            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
+            messageId: 'unexpectedSwitchCaseOrder',
             data: { right: 'CCC', left: 'DD' },
-            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
-            data: { right: 'BBBB', left: 'CCC' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'BBBB', left: 'CCC' },
           },
           {
             data: { right: 'AAAAA', left: 'BBBB' },
@@ -751,8 +751,8 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -771,8 +771,8 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -791,8 +791,8 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -811,8 +811,8 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -886,12 +886,12 @@ describe('sort-switch-case', () => {
             messageId: 'unexpectedSwitchCaseOrder',
           },
           {
-            data: { right: 'x', left: 'y' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'x', left: 'y' },
           },
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -1068,8 +1068,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'aaa', left: 'bb' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aaa', left: 'bb' },
           },
         ],
         options: [options],
@@ -1106,8 +1106,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'aaa', left: 'bb' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aaa', left: 'bb' },
           },
         ],
         options: [options],
@@ -1179,8 +1179,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [options],
@@ -1260,8 +1260,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [options],
@@ -1356,8 +1356,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         options: [options],
@@ -1420,12 +1420,12 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'cccc', left: 'ee' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'cccc', left: 'ee' },
           },
           {
-            data: { right: 'bbbbb', left: 'f' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'bbbbb', left: 'f' },
           },
         ],
         options: [options],
@@ -1476,8 +1476,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'wwww', left: 'z' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'wwww', left: 'z' },
           },
         ],
         options: [options],
@@ -1498,12 +1498,6 @@ describe('sort-switch-case', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: 'unexpectedSwitchCaseOrder',
-          },
-        ],
         output: dedent`
           switch (x) {
             case AA:
@@ -1520,6 +1514,12 @@ describe('sort-switch-case', () => {
               break;
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'AA', left: 'B' },
+          },
+        ],
         options: [options],
       })
     })
@@ -1550,16 +1550,16 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedSwitchCaseOrder',
             data: { right: 'DD', left: 'E' },
-            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
+            messageId: 'unexpectedSwitchCaseOrder',
             data: { right: 'CCC', left: 'DD' },
-            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
-            data: { right: 'BBBB', left: 'CCC' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'BBBB', left: 'CCC' },
           },
           {
             data: { right: 'AAAAA', left: 'BBBB' },
@@ -1739,8 +1739,8 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -1759,8 +1759,8 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -1779,8 +1779,8 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -1799,8 +1799,8 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -1874,12 +1874,12 @@ describe('sort-switch-case', () => {
             messageId: 'unexpectedSwitchCaseOrder',
           },
           {
-            data: { right: 'x', left: 'y' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'x', left: 'y' },
           },
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2056,8 +2056,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'aaa', left: 'bb' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aaa', left: 'bb' },
           },
         ],
         options: [options],
@@ -2094,8 +2094,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'aaa', left: 'bb' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aaa', left: 'bb' },
           },
         ],
         options: [options],
@@ -2167,8 +2167,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [options],
@@ -2248,8 +2248,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [options],
@@ -2344,8 +2344,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [options],
@@ -2408,12 +2408,12 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'cccc', left: 'ee' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'cccc', left: 'ee' },
           },
           {
-            data: { right: 'bbbbb', left: 'f' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'bbbbb', left: 'f' },
           },
         ],
         options: [options],
@@ -2464,8 +2464,8 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'wwww', left: 'z' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'wwww', left: 'z' },
           },
         ],
         options: [options],
@@ -2486,12 +2486,6 @@ describe('sort-switch-case', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: 'unexpectedSwitchCaseOrder',
-          },
-        ],
         output: dedent`
           switch (x) {
             case AA:
@@ -2508,6 +2502,12 @@ describe('sort-switch-case', () => {
               break;
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'AA', left: 'B' },
+          },
+        ],
         options: [options],
       })
     })
@@ -2538,16 +2538,16 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedSwitchCaseOrder',
             data: { right: 'DD', left: 'E' },
-            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
+            messageId: 'unexpectedSwitchCaseOrder',
             data: { right: 'CCC', left: 'DD' },
-            messageId: 'unexpectedSwitchCaseOrder',
           },
           {
-            data: { right: 'BBBB', left: 'CCC' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'BBBB', left: 'CCC' },
           },
           {
             data: { right: 'AAAAA', left: 'BBBB' },
@@ -2727,8 +2727,8 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -2747,8 +2747,8 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -2767,8 +2767,8 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -2787,8 +2787,8 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -2862,12 +2862,12 @@ describe('sort-switch-case', () => {
             messageId: 'unexpectedSwitchCaseOrder',
           },
           {
-            data: { right: 'x', left: 'y' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'x', left: 'y' },
           },
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -3055,12 +3055,12 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'cccc', left: 'ee' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'cccc', left: 'ee' },
           },
           {
-            data: { right: 'bbbbb', left: 'f' },
             messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'bbbbb', left: 'f' },
           },
         ],
         options: [options],

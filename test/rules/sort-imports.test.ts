@@ -60,8 +60,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -123,8 +123,8 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: './d', left: '~/i' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: './d', left: '~/i' },
           },
           {
             data: {
@@ -136,8 +136,8 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: '~/c', left: 'fs' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '~/c', left: 'fs' },
           },
           {
             data: { right: '../../h', left: '../f' },
@@ -310,12 +310,12 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '~/b', left: 'a' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: '~/b', left: 'a' },
           },
           {
-            data: { right: '~/d', left: '~/c' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: '~/d', left: '~/c' },
           },
         ],
         code: dedent`
@@ -356,8 +356,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '../b', left: 'a' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '../b', left: 'a' },
           },
           {
             data: {
@@ -546,8 +546,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './index', left: 'a' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: './index', left: 'a' },
           },
         ],
         output: dedent`
@@ -567,8 +567,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './b', left: 'a' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: './b', left: 'a' },
           },
           {
             data: {
@@ -625,12 +625,12 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '#c', left: '#b' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '#c', left: '#b' },
           },
           {
-            data: { right: '#b', left: '#c' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: '#b', left: '#c' },
           },
         ],
         output: dedent`
@@ -724,8 +724,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -777,8 +777,8 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: '~/c', left: 'fs' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '~/c', left: 'fs' },
           },
           {
             data: {
@@ -877,12 +877,12 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: 'aaaa', left: 'e' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'aaaa', left: 'e' },
           },
           {
-            data: { right: '../d', left: 'aaaa' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '../d', left: 'aaaa' },
           },
         ],
         options: [
@@ -914,12 +914,12 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'bb', left: 'c' },
           },
           {
-            data: { right: 'aaa', left: 'bb' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'aaa', left: 'bb' },
           },
         ],
         options: [
@@ -1286,16 +1286,16 @@ describe('sort-imports', () => {
         await invalid({
           errors: [
             {
-              data: { right: '~/y', left: 'a' },
               messageId: 'extraSpacingBetweenImports',
+              data: { right: '~/y', left: 'a' },
             },
             {
               data: { right: '~/b', left: '~/z' },
               messageId: 'unexpectedImportsOrder',
             },
             {
-              data: { right: '~/b', left: '~/z' },
               messageId: 'extraSpacingBetweenImports',
+              data: { right: '~/b', left: '~/z' },
             },
           ],
           code: dedent`
@@ -1368,8 +1368,8 @@ describe('sort-imports', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenImports',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1440,8 +1440,8 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1591,12 +1591,6 @@ describe('sort-imports', () => {
             newlinesBetween,
           },
         ],
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         output: dedent`
           import a from 'a';
 
@@ -1613,6 +1607,12 @@ describe('sort-imports', () => {
           import { c } from './c';
           import { b } from './b';
         `,
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
       })
     })
 
@@ -1620,8 +1620,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -1636,8 +1636,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -1819,18 +1819,18 @@ describe('sort-imports', () => {
 
     it('ignores block comments when line comment partitioning is enabled', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: './a', left: './b' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -1904,18 +1904,18 @@ describe('sort-imports', () => {
 
     it('ignores line comments when block comment partitioning is enabled', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: './a', left: './b' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -2524,16 +2524,6 @@ describe('sort-imports', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: 'unexpectedImportsOrder',
-          },
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: 'missedSpacingBetweenImports',
-          },
-        ],
         options: [
           {
             groups: [
@@ -2545,6 +2535,16 @@ describe('sort-imports', () => {
               },
             ],
             type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'b', left: 'a' },
+          },
+          {
+            messageId: 'missedSpacingBetweenImports',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -2611,12 +2611,12 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'bb', left: 'a' },
           },
           {
-            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'ccc', left: 'bb' },
           },
           {
             data: { right: 'dddd', left: 'ccc' },
@@ -2832,8 +2832,8 @@ describe('sort-imports', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenImports',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -2868,8 +2868,8 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -3156,8 +3156,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -3176,17 +3176,17 @@ describe('sort-imports', () => {
 
     it('treats @ symbol pattern as internal imports', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: '@/a', left: 'b' },
-            messageId: 'missedSpacingBetweenImports',
-          },
-        ],
         options: [
           {
             ...options,
             groups: ['external', 'internal'],
             newlinesBetween: 1,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'missedSpacingBetweenImports',
+            data: { right: '@/a', left: 'b' },
           },
         ],
         output: dedent`
@@ -3269,8 +3269,8 @@ describe('sort-imports', () => {
             messageId: 'missedCommentAboveImport',
           },
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -3426,8 +3426,8 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: '~/b', left: 'a' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '~/b', left: 'a' },
           },
           {
             data: { missedCommentAbove: 'internal or sibling', right: '~/b' },
@@ -3498,8 +3498,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -3561,8 +3561,8 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: './d', left: '~/i' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: './d', left: '~/i' },
           },
           {
             data: {
@@ -3574,8 +3574,8 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: '~/c', left: 'fs' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '~/c', left: 'fs' },
           },
           {
             data: { right: '../../h', left: '../f' },
@@ -3748,12 +3748,12 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '~/b', left: 'a' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: '~/b', left: 'a' },
           },
           {
-            data: { right: '~/d', left: '~/c' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: '~/d', left: '~/c' },
           },
         ],
         code: dedent`
@@ -3794,8 +3794,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '../b', left: 'a' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '../b', left: 'a' },
           },
           {
             data: {
@@ -3991,8 +3991,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './index', left: 'a' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: './index', left: 'a' },
           },
         ],
         output: dedent`
@@ -4012,8 +4012,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './b', left: 'a' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: './b', left: 'a' },
           },
           {
             data: {
@@ -4070,12 +4070,12 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '#c', left: '#b' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '#c', left: '#b' },
           },
           {
-            data: { right: '#b', left: '#c' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: '#b', left: '#c' },
           },
         ],
         output: dedent`
@@ -4169,8 +4169,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4222,8 +4222,8 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: '~/c', left: 'fs' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '~/c', left: 'fs' },
           },
           {
             data: {
@@ -4322,12 +4322,12 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: 'aaaa', left: 'e' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'aaaa', left: 'e' },
           },
           {
-            data: { right: '../d', left: 'aaaa' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '../d', left: 'aaaa' },
           },
         ],
         options: [
@@ -4359,12 +4359,12 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'bb', left: 'c' },
           },
           {
-            data: { right: 'aaa', left: 'bb' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'aaa', left: 'bb' },
           },
         ],
         options: [
@@ -4731,16 +4731,16 @@ describe('sort-imports', () => {
         await invalid({
           errors: [
             {
-              data: { right: '~/y', left: 'a' },
               messageId: 'extraSpacingBetweenImports',
+              data: { right: '~/y', left: 'a' },
             },
             {
               data: { right: '~/b', left: '~/z' },
               messageId: 'unexpectedImportsOrder',
             },
             {
-              data: { right: '~/b', left: '~/z' },
               messageId: 'extraSpacingBetweenImports',
+              data: { right: '~/b', left: '~/z' },
             },
           ],
           code: dedent`
@@ -4813,8 +4813,8 @@ describe('sort-imports', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenImports',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4885,8 +4885,8 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -5036,12 +5036,6 @@ describe('sort-imports', () => {
             newlinesBetween,
           },
         ],
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         output: dedent`
           import a from 'a';
 
@@ -5058,6 +5052,12 @@ describe('sort-imports', () => {
           import { c } from './c';
           import { b } from './b';
         `,
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
       })
     })
 
@@ -5065,8 +5065,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -5081,8 +5081,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -5264,18 +5264,18 @@ describe('sort-imports', () => {
 
     it('ignores block comments when line comment partitioning is enabled', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: './a', left: './b' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -5349,18 +5349,18 @@ describe('sort-imports', () => {
 
     it('ignores line comments when block comment partitioning is enabled', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: './a', left: './b' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -5610,21 +5610,6 @@ describe('sort-imports', () => {
 
     it('prioritizes style imports over other import types', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: '#subpath', left: './index' },
-            messageId: 'unexpectedImportsOrder',
-          },
-          {
-            data: {
-              leftGroup: 'builtin',
-              rightGroup: 'style',
-              right: 'style.css',
-              left: 'timers',
-            },
-            messageId: 'unexpectedImportsGroupOrder',
-          },
-        ],
         options: [
           {
             ...options,
@@ -5642,6 +5627,21 @@ describe('sort-imports', () => {
               ],
             ],
             tsconfig: { rootDir: '.' },
+          },
+        ],
+        errors: [
+          {
+            data: { right: '#subpath', left: './index' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: {
+              leftGroup: 'builtin',
+              rightGroup: 'style',
+              right: 'style.css',
+              left: 'timers',
+            },
+            messageId: 'unexpectedImportsGroupOrder',
           },
         ],
         output: dedent`
@@ -5953,12 +5953,12 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'bb', left: 'a' },
           },
           {
-            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'ccc', left: 'bb' },
           },
           {
             data: { right: 'dddd', left: 'ccc' },
@@ -6428,8 +6428,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -6448,17 +6448,17 @@ describe('sort-imports', () => {
 
     it('treats @ symbol pattern as internal imports', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: '@/a', left: 'b' },
-            messageId: 'missedSpacingBetweenImports',
-          },
-        ],
         options: [
           {
             ...options,
             groups: ['external', 'internal'],
             newlinesBetween: 1,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'missedSpacingBetweenImports',
+            data: { right: '@/a', left: 'b' },
           },
         ],
         output: dedent`
@@ -6541,8 +6541,8 @@ describe('sort-imports', () => {
             messageId: 'missedCommentAboveImport',
           },
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -6698,8 +6698,8 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: '~/b', left: 'a' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '~/b', left: 'a' },
           },
           {
             data: { missedCommentAbove: 'internal or sibling', right: '~/b' },
@@ -6770,8 +6770,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -6829,8 +6829,8 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: './d', left: '~/i' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: './d', left: '~/i' },
           },
           {
             data: {
@@ -6842,16 +6842,16 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: '~/c', left: 'fs' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '~/c', left: 'fs' },
           },
           {
             data: { right: '~/i', left: '~/c' },
             messageId: 'unexpectedImportsOrder',
           },
           {
-            data: { right: '../f', left: '.' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: '../f', left: '.' },
           },
           {
             data: { right: '../../h', left: '../f' },
@@ -7035,12 +7035,12 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '~/b', left: 'a' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: '~/b', left: 'a' },
           },
           {
-            data: { right: '~/d', left: '~/c' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: '~/d', left: '~/c' },
           },
         ],
         code: dedent`
@@ -7081,8 +7081,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '../b', left: 'a' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '../b', left: 'a' },
           },
           {
             data: {
@@ -7271,8 +7271,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './index', left: 'a' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: './index', left: 'a' },
           },
         ],
         output: dedent`
@@ -7292,8 +7292,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './b', left: 'a' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: './b', left: 'a' },
           },
           {
             data: {
@@ -7327,23 +7327,6 @@ describe('sort-imports', () => {
 
     it('supports custom import groups with primary and secondary categories', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: '@a/a1', left: 't' },
-            messageId: 'extraSpacingBetweenImports',
-          },
-          {
-            data: { right: '@b/b1', left: '@a/a2' },
-            messageId: 'missedSpacingBetweenImports',
-          },
-          {
-            data: {
-              left: '@b/b3',
-              right: 'c',
-            },
-            messageId: 'missedSpacingBetweenImports',
-          },
-        ],
         options: [
           {
             ...options,
@@ -7359,6 +7342,23 @@ describe('sort-imports', () => {
               },
             ],
             groups: ['type', 'primary', 'secondary', 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenImports',
+            data: { right: '@a/a1', left: 't' },
+          },
+          {
+            messageId: 'missedSpacingBetweenImports',
+            data: { right: '@b/b1', left: '@a/a2' },
+          },
+          {
+            data: {
+              left: '@b/b3',
+              right: 'c',
+            },
+            messageId: 'missedSpacingBetweenImports',
           },
         ],
         output: dedent`
@@ -7410,12 +7410,12 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '#c', left: '#b' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '#c', left: '#b' },
           },
           {
-            data: { right: '#b', left: '#c' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: '#b', left: '#c' },
           },
         ],
         output: dedent`
@@ -7509,8 +7509,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -7558,8 +7558,8 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: '~/c', left: 'fs' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '~/c', left: 'fs' },
           },
           {
             data: { right: '~/i', left: '~/c' },
@@ -7573,8 +7573,8 @@ describe('sort-imports', () => {
             messageId: 'extraSpacingBetweenImports',
           },
           {
-            data: { right: '../j', left: '.' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: '../j', left: '.' },
           },
           {
             data: { right: '../k', left: '../j' },
@@ -7663,12 +7663,12 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: 'aaaa', left: 'e' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'aaaa', left: 'e' },
           },
           {
-            data: { right: '../d', left: 'aaaa' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '../d', left: 'aaaa' },
           },
         ],
         options: [
@@ -7700,12 +7700,12 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'bb', left: 'c' },
           },
           {
-            data: { right: 'aaa', left: 'bb' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'aaa', left: 'bb' },
           },
         ],
         options: [
@@ -8065,16 +8065,16 @@ describe('sort-imports', () => {
         await invalid({
           errors: [
             {
-              data: { right: '~/y', left: 'aaaa' },
               messageId: 'extraSpacingBetweenImports',
+              data: { right: '~/y', left: 'aaaa' },
             },
             {
               data: { right: '~/bb', left: '~/z' },
               messageId: 'unexpectedImportsOrder',
             },
             {
-              data: { right: '~/bb', left: '~/z' },
               messageId: 'extraSpacingBetweenImports',
+              data: { right: '~/bb', left: '~/z' },
             },
           ],
           code: dedent`
@@ -8147,8 +8147,8 @@ describe('sort-imports', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenImports',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -8219,8 +8219,8 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenImports',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -8370,12 +8370,6 @@ describe('sort-imports', () => {
             newlinesBetween,
           },
         ],
-        errors: [
-          {
-            data: { right: './bb', left: './c' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         output: dedent`
           import a from 'a';
 
@@ -8392,6 +8386,12 @@ describe('sort-imports', () => {
           import { c } from './c';
           import { b } from './bb';
         `,
+        errors: [
+          {
+            data: { right: './bb', left: './c' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
       })
     })
 
@@ -8399,8 +8399,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -8415,8 +8415,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -8588,18 +8588,18 @@ describe('sort-imports', () => {
 
     it('ignores block comments when line comment partitioning is enabled', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: './aa', left: './b' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: './aa', left: './b' },
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -8673,18 +8673,18 @@ describe('sort-imports', () => {
 
     it('ignores line comments when block comment partitioning is enabled', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: './aa', left: './b' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            data: { right: './aa', left: './b' },
+            messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
@@ -9292,12 +9292,12 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'a' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'bb', left: 'a' },
           },
           {
-            data: { right: 'ccc', left: 'bb' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'ccc', left: 'bb' },
           },
           {
             data: { right: 'dddd', left: 'ccc' },
@@ -9767,8 +9767,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -9787,17 +9787,17 @@ describe('sort-imports', () => {
 
     it('treats @ symbol pattern as internal imports', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: '@/a', left: 'b' },
-            messageId: 'missedSpacingBetweenImports',
-          },
-        ],
         options: [
           {
             ...options,
             groups: ['external', 'internal'],
             newlinesBetween: 1,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'missedSpacingBetweenImports',
+            data: { right: '@/a', left: 'b' },
           },
         ],
         output: dedent`
@@ -9880,8 +9880,8 @@ describe('sort-imports', () => {
             messageId: 'missedCommentAboveImport',
           },
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -10037,8 +10037,8 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsGroupOrder',
           },
           {
-            data: { right: '~/b', left: 'a' },
             messageId: 'missedSpacingBetweenImports',
+            data: { right: '~/b', left: 'a' },
           },
           {
             data: { missedCommentAbove: 'internal or sibling', right: '~/b' },
@@ -10183,8 +10183,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -10286,12 +10286,6 @@ describe('sort-imports', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: '~/b', left: '~/c' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         output: dedent`
           import a from '~/a'
           import b from '~/b'
@@ -10304,6 +10298,12 @@ describe('sort-imports', () => {
           import b from '~/b'
           import d from '~/d'
         `,
+        errors: [
+          {
+            data: { right: '~/b', left: '~/c' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
       })
     })
 
@@ -10981,12 +10981,6 @@ describe('sort-imports', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         output: dedent`
           import { b } from './b'
           import { c } from './c'
@@ -10999,6 +10993,12 @@ describe('sort-imports', () => {
           // eslint-disable-next-line
           import { a } from './a'
         `,
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
         options: [{}],
       })
 
@@ -11035,12 +11035,6 @@ describe('sort-imports', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         output: dedent`
           import { b } from './b'
           import { c } from './c'
@@ -11051,16 +11045,16 @@ describe('sort-imports', () => {
           import { b } from './b'
           import { a } from './a' // eslint-disable-line
         `,
-        options: [{}],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: './b', left: './c' },
             messageId: 'unexpectedImportsOrder',
           },
         ],
+        options: [{}],
+      })
+
+      await invalid({
         output: dedent`
           import { b } from './b'
           import { c } from './c'
@@ -11073,16 +11067,16 @@ describe('sort-imports', () => {
           /* eslint-disable-next-line */
           import { a } from './a'
         `,
-        options: [{}],
-      })
-
-      await invalid({
         errors: [
           {
             data: { right: './b', left: './c' },
             messageId: 'unexpectedImportsOrder',
           },
         ],
+        options: [{}],
+      })
+
+      await invalid({
         output: dedent`
           import { b } from './b'
           import { c } from './c'
@@ -11093,6 +11087,12 @@ describe('sort-imports', () => {
           import { b } from './b'
           import { a } from './a' /* eslint-disable-line */
         `,
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
         options: [{}],
       })
 
@@ -11149,12 +11149,6 @@ describe('sort-imports', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         output: dedent`
           import { b } from './b'
           import { c } from './c'
@@ -11165,6 +11159,12 @@ describe('sort-imports', () => {
           import { b } from './b'
           import { a } from './a' // eslint-disable-line rule-to-test/sort-imports
         `,
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
         options: [{}],
       })
 
@@ -11191,12 +11191,6 @@ describe('sort-imports', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         output: dedent`
           import { b } from './b'
           import { c } from './c'
@@ -11207,6 +11201,12 @@ describe('sort-imports', () => {
           import { b } from './b'
           import { a } from './a' /* eslint-disable-line rule-to-test/sort-imports */
         `,
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
         options: [{}],
       })
 

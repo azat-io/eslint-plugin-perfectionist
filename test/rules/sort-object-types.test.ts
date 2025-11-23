@@ -34,8 +34,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -71,12 +71,6 @@ describe('sort-object-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           let Func = (arguments: {
             a: 'aaa'
@@ -95,6 +89,12 @@ describe('sort-object-types', () => {
             // ...
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: [options],
       })
     })
@@ -206,8 +206,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -500,16 +500,6 @@ describe('sort-object-types', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: 'missedSpacingBetweenObjectTypeMembers',
-          },
-        ],
         options: [
           {
             groups: [
@@ -521,6 +511,16 @@ describe('sort-object-types', () => {
               },
             ],
             type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'a' },
+          },
+          {
+            messageId: 'missedSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -709,16 +709,16 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedObjectTypesOrder',
             data: { right: 'bb', left: 'a' },
-            messageId: 'unexpectedObjectTypesOrder',
           },
           {
+            messageId: 'unexpectedObjectTypesOrder',
             data: { right: 'ccc', left: 'bb' },
-            messageId: 'unexpectedObjectTypesOrder',
           },
           {
-            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'dddd', left: 'ccc' },
           },
           {
             data: {
@@ -838,8 +838,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -870,8 +870,8 @@ describe('sort-object-types', () => {
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
           {
-            data: { right: 'fooA', left: 'fooB' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'fooA', left: 'fooB' },
           },
           {
             data: {
@@ -1072,8 +1072,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1109,8 +1109,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1156,12 +1156,6 @@ describe('sort-object-types', () => {
 
     it('allows to use in class methods', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             async method (data: {
@@ -1180,6 +1174,12 @@ describe('sort-object-types', () => {
             }) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: [options],
       })
     })
@@ -1208,12 +1208,12 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'd', left: 'e' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'd', left: 'e' },
           },
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -1283,12 +1283,12 @@ describe('sort-object-types', () => {
         `,
         errors: [
           {
-            data: { right: 'bbb', left: 'd' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bbb', left: 'd' },
           },
           {
-            data: { right: 'fff', left: 'gg' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'fff', left: 'gg' },
           },
         ],
         options: [
@@ -1349,8 +1349,8 @@ describe('sort-object-types', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [
@@ -1384,18 +1384,18 @@ describe('sort-object-types', () => {
 
     it('ignores block comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -1479,18 +1479,18 @@ describe('sort-object-types', () => {
 
     it('ignores line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -1646,16 +1646,16 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
             data: { right: 'y', left: 'a' },
-            messageId: 'extraSpacingBetweenObjectTypeMembers',
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'z' },
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: 'extraSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -1715,16 +1715,16 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
             data: { right: 'c', left: 'b' },
-            messageId: 'extraSpacingBetweenObjectTypeMembers',
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenObjectTypeMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -1785,8 +1785,8 @@ describe('sort-object-types', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenObjectTypeMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1839,8 +1839,8 @@ describe('sort-object-types', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenObjectTypeMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1975,12 +1975,6 @@ describe('sort-object-types', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           type Type = {
             a: string
@@ -2001,6 +1995,12 @@ describe('sort-object-types', () => {
             b: string
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
       })
     })
 
@@ -2008,8 +2008,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2028,8 +2028,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2048,8 +2048,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2216,8 +2216,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2248,8 +2248,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -2303,8 +2303,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: '1', left: '2' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: '1', left: '2' },
           },
         ],
         output: dedent`
@@ -2355,8 +2355,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2380,8 +2380,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -2409,12 +2409,12 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'z' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'z' },
           },
           {
-            data: { right: 'y', left: 'a' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'y', left: 'a' },
           },
         ],
         output: dedent`
@@ -2535,8 +2535,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -2572,12 +2572,6 @@ describe('sort-object-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           let Func = (arguments: {
             a: 'aaa'
@@ -2596,6 +2590,12 @@ describe('sort-object-types', () => {
             // ...
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: [options],
       })
     })
@@ -2714,8 +2714,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -3176,16 +3176,16 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedObjectTypesOrder',
             data: { right: 'bb', left: 'a' },
-            messageId: 'unexpectedObjectTypesOrder',
           },
           {
+            messageId: 'unexpectedObjectTypesOrder',
             data: { right: 'ccc', left: 'bb' },
-            messageId: 'unexpectedObjectTypesOrder',
           },
           {
-            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'dddd', left: 'ccc' },
           },
           {
             data: {
@@ -3305,8 +3305,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -3337,8 +3337,8 @@ describe('sort-object-types', () => {
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
           {
-            data: { right: 'fooA', left: 'fooB' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'fooA', left: 'fooB' },
           },
           {
             data: {
@@ -3539,8 +3539,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -3576,8 +3576,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -3623,12 +3623,6 @@ describe('sort-object-types', () => {
 
     it('allows to use in class methods', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             async method (data: {
@@ -3647,6 +3641,12 @@ describe('sort-object-types', () => {
             }) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: [options],
       })
     })
@@ -3675,12 +3675,12 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'd', left: 'e' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'd', left: 'e' },
           },
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -3750,12 +3750,12 @@ describe('sort-object-types', () => {
         `,
         errors: [
           {
-            data: { right: 'bbb', left: 'd' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bbb', left: 'd' },
           },
           {
-            data: { right: 'fff', left: 'gg' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'fff', left: 'gg' },
           },
         ],
         options: [
@@ -3816,8 +3816,8 @@ describe('sort-object-types', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [
@@ -3851,18 +3851,18 @@ describe('sort-object-types', () => {
 
     it('ignores block comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -3946,18 +3946,18 @@ describe('sort-object-types', () => {
 
     it('ignores line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4113,16 +4113,16 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
             data: { right: 'y', left: 'a' },
-            messageId: 'extraSpacingBetweenObjectTypeMembers',
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'z' },
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: 'extraSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -4182,16 +4182,16 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
             data: { right: 'c', left: 'b' },
-            messageId: 'extraSpacingBetweenObjectTypeMembers',
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenObjectTypeMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -4252,8 +4252,8 @@ describe('sort-object-types', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenObjectTypeMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4306,8 +4306,8 @@ describe('sort-object-types', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenObjectTypeMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4442,12 +4442,6 @@ describe('sort-object-types', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           type Type = {
             a: string
@@ -4468,6 +4462,12 @@ describe('sort-object-types', () => {
             b: string
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
       })
     })
 
@@ -4475,8 +4475,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4495,8 +4495,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4515,8 +4515,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4683,8 +4683,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4715,8 +4715,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -4742,8 +4742,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -4771,12 +4771,12 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'z' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'z' },
           },
           {
-            data: { right: 'y', left: 'a' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'y', left: 'a' },
           },
         ],
         output: dedent`
@@ -4897,8 +4897,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -4934,12 +4934,6 @@ describe('sort-object-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           let Func = (arguments: {
             a: 'aaa'
@@ -4958,6 +4952,12 @@ describe('sort-object-types', () => {
             // ...
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: [options],
       })
     })
@@ -4983,8 +4983,8 @@ describe('sort-object-types', () => {
             messageId: 'unexpectedObjectTypesOrder',
           },
           {
-            data: { right: 'value', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'value', left: 'b' },
           },
         ],
         output: dedent`
@@ -5034,8 +5034,8 @@ describe('sort-object-types', () => {
             messageId: 'unexpectedObjectTypesOrder',
           },
           {
-            data: { right: 'func', left: '8' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'func', left: '8' },
           },
           {
             data: { right: 'arrowFunc', left: 'func' },
@@ -5077,8 +5077,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -5539,16 +5539,16 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedObjectTypesOrder',
             data: { right: 'bb', left: 'a' },
-            messageId: 'unexpectedObjectTypesOrder',
           },
           {
+            messageId: 'unexpectedObjectTypesOrder',
             data: { right: 'ccc', left: 'bb' },
-            messageId: 'unexpectedObjectTypesOrder',
           },
           {
-            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'dddd', left: 'ccc' },
           },
           {
             data: {
@@ -5668,8 +5668,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -5700,8 +5700,8 @@ describe('sort-object-types', () => {
             messageId: 'unexpectedObjectTypesGroupOrder',
           },
           {
-            data: { right: 'fooA', left: 'fooB' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'fooA', left: 'fooB' },
           },
           {
             data: {
@@ -5902,8 +5902,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -5939,8 +5939,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'extraSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -5986,12 +5986,6 @@ describe('sort-object-types', () => {
 
     it('allows to use in class methods', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             async method (data: {
@@ -6010,6 +6004,12 @@ describe('sort-object-types', () => {
             }) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: [options],
       })
     })
@@ -6038,12 +6038,12 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'd', left: 'e' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'd', left: 'e' },
           },
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -6113,8 +6113,8 @@ describe('sort-object-types', () => {
         `,
         errors: [
           {
-            data: { right: 'bbb', left: 'd' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bbb', left: 'd' },
           },
         ],
         options: [
@@ -6175,8 +6175,8 @@ describe('sort-object-types', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [
@@ -6210,18 +6210,18 @@ describe('sort-object-types', () => {
 
     it('ignores block comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'aa', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -6305,18 +6305,18 @@ describe('sort-object-types', () => {
 
     it('ignores line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'aa', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -6479,12 +6479,12 @@ describe('sort-object-types', () => {
             messageId: 'extraSpacingBetweenObjectTypeMembers',
           },
           {
-            data: { right: 'bbb', left: 'z' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bbb', left: 'z' },
           },
           {
-            data: { right: 'bbb', left: 'z' },
             messageId: 'extraSpacingBetweenObjectTypeMembers',
+            data: { right: 'bbb', left: 'z' },
           },
         ],
         code: dedent`
@@ -6544,16 +6544,16 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
             data: { right: 'c', left: 'b' },
-            messageId: 'extraSpacingBetweenObjectTypeMembers',
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenObjectTypeMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -6614,8 +6614,8 @@ describe('sort-object-types', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenObjectTypeMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -6668,8 +6668,8 @@ describe('sort-object-types', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenObjectTypeMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -6804,12 +6804,6 @@ describe('sort-object-types', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           type Type = {
             a: string
@@ -6830,6 +6824,12 @@ describe('sort-object-types', () => {
             bb: string
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bb', left: 'c' },
+          },
+        ],
       })
     })
 
@@ -6837,8 +6837,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -6857,8 +6857,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -6877,8 +6877,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7045,8 +7045,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7077,8 +7077,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         output: dedent`
@@ -7104,8 +7104,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -7133,12 +7133,12 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aaa', left: 'z' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'aaa', left: 'z' },
           },
           {
-            data: { right: 'yy', left: 'aaa' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'yy', left: 'aaa' },
           },
         ],
         output: dedent`
@@ -7203,18 +7203,18 @@ describe('sort-object-types', () => {
 
     it('handles fallbackSort option', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'bb', left: 'a' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         options: [
           {
             ...options,
             fallbackSort: {
               type: 'alphabetical',
             },
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bb', left: 'a' },
           },
         ],
         output: dedent`
@@ -7234,12 +7234,6 @@ describe('sort-object-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         options: [
           {
             ...options,
@@ -7249,6 +7243,12 @@ describe('sort-object-types', () => {
             },
           },
         ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bb', left: 'c' },
+          },
+        ],
         output: dedent`
           type Type = {
             bb: string;
@@ -7266,12 +7266,6 @@ describe('sort-object-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         options: [
           {
             ...options,
@@ -7279,6 +7273,12 @@ describe('sort-object-types', () => {
               type: 'alphabetical',
               sortBy: 'value',
             },
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         output: dedent`
@@ -7325,8 +7325,8 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -7436,8 +7436,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'missedSpacingBetweenObjectTypeMembers',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -7522,8 +7522,8 @@ describe('sort-object-types', () => {
         `,
         errors: [
           {
-            data: { right: 'log10', left: 'log2' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'log10', left: 'log2' },
           },
         ],
       })
@@ -7619,8 +7619,8 @@ describe('sort-object-types', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -7652,12 +7652,12 @@ describe('sort-object-types', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
           },
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -7690,12 +7690,6 @@ describe('sort-object-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           type Type = {
             b: string
@@ -7712,18 +7706,24 @@ describe('sort-object-types', () => {
             a: string
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
         errors: [
           {
-            data: { right: 'c', left: 'd' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'c', left: 'd' },
           },
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -7752,12 +7752,6 @@ describe('sort-object-types', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           type Type = {
             b: string
@@ -7772,16 +7766,16 @@ describe('sort-object-types', () => {
             a: string // eslint-disable-line
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           type Type = {
             b: string
@@ -7798,16 +7792,16 @@ describe('sort-object-types', () => {
             a: string
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           type Type = {
             b: string
@@ -7822,6 +7816,12 @@ describe('sort-object-types', () => {
             a: string /* eslint-disable-line */
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
@@ -7852,8 +7852,8 @@ describe('sort-object-types', () => {
         `,
         errors: [
           {
+            messageId: 'unexpectedObjectTypesOrder',
             data: { right: 'a', left: 'b' },
-            messageId: 'unexpectedObjectTypesOrder',
           },
         ],
         options: [{}],
@@ -7878,20 +7878,14 @@ describe('sort-object-types', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         output: dedent`
           type Type = {
             b: string
@@ -7906,6 +7900,12 @@ describe('sort-object-types', () => {
             a: string // eslint-disable-line rule-to-test/sort-object-types
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
@@ -7928,8 +7928,8 @@ describe('sort-object-types', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         options: [{}],
@@ -7943,12 +7943,6 @@ describe('sort-object-types', () => {
             a: string /* eslint-disable-line rule-to-test/sort-object-types */
           }
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedObjectTypesOrder',
-          },
-        ],
         code: dedent`
           type Type = {
             c: string
@@ -7956,6 +7950,12 @@ describe('sort-object-types', () => {
             a: string /* eslint-disable-line rule-to-test/sort-object-types */
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
@@ -7986,8 +7986,8 @@ describe('sort-object-types', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [{}],

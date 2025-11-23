@@ -56,8 +56,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: '{ bb }', left: 'aaa' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: '{ bb }', left: 'aaa' },
           },
           {
             data: {
@@ -155,8 +155,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aaa', right: 'bb' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'aaa', right: 'bb' },
           },
         ],
         output: dedent`
@@ -175,8 +175,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'b', right: 'a' },
           },
         ],
         output: dedent`
@@ -195,8 +195,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'y', right: 'x' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'y', right: 'x' },
           },
         ],
         output: dedent`
@@ -215,8 +215,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'sum', right: 'arr' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'sum', right: 'arr' },
           },
         ],
         output: dedent`
@@ -255,8 +255,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'a', right: 'c' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'a', right: 'c' },
           },
         ],
         output: dedent`
@@ -505,8 +505,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'b', right: 'a' },
           },
         ],
         options: [
@@ -534,8 +534,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'b', right: 'a' },
           },
         ],
         options: [
@@ -563,12 +563,12 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'd' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'd' },
           },
           {
-            data: { right: 'b', left: 'e' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'e' },
           },
         ],
         output: dedent`
@@ -602,16 +602,6 @@ describe('sort-variable-declarations', () => {
 
     it('sorts within comment-defined partitions', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'bbb', left: 'd' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
-          },
-          {
-            data: { right: 'fff', left: 'gg' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
-          },
-        ],
         output: dedent`
           const
             // Part: A
@@ -642,6 +632,16 @@ describe('sort-variable-declarations', () => {
             // Not partition comment
             fff = 'FFF'
         `,
+        errors: [
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'bbb', left: 'd' },
+          },
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'fff', left: 'gg' },
+          },
+        ],
         options: [
           {
             ...options,
@@ -697,8 +697,8 @@ describe('sort-variable-declarations', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [
@@ -733,8 +733,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -823,8 +823,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -961,8 +961,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -979,8 +979,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -1031,12 +1031,12 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         options: [
@@ -1155,16 +1155,16 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedVariableDeclarationsOrder',
             data: { right: 'bb', left: 'a' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
           },
           {
+            messageId: 'unexpectedVariableDeclarationsOrder',
             data: { right: 'ccc', left: 'bb' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
           },
           {
-            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'dddd', left: 'ccc' },
           },
           {
             data: {
@@ -1243,8 +1243,8 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'fooBar', left: 'fooZar' },
           },
         ],
         output: dedent`
@@ -1382,16 +1382,16 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
             data: { right: 'y', left: 'a' },
-            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'z' },
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'b', left: 'z' },
           },
         ],
         options: [
@@ -1431,16 +1431,16 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'z', left: 'a' },
             messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'z', left: 'a' },
           },
           {
-            data: { right: 'y', left: 'z' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'y', left: 'z' },
           },
           {
-            data: { right: 'b', left: 'y' },
             messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'b', left: 'y' },
           },
         ],
         options: [
@@ -1509,16 +1509,16 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
             data: { right: 'c', left: 'b' },
-            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -1577,8 +1577,8 @@ describe('sort-variable-declarations', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1624,8 +1624,8 @@ describe('sort-variable-declarations', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -1762,8 +1762,8 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -1925,8 +1925,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aaa', right: 'bb' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'aaa', right: 'bb' },
           },
         ],
         output: dedent`
@@ -1945,8 +1945,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'b', right: 'a' },
           },
         ],
         output: dedent`
@@ -1965,8 +1965,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'y', right: 'x' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'y', right: 'x' },
           },
         ],
         output: dedent`
@@ -1985,8 +1985,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'sum', right: 'arr' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'sum', right: 'arr' },
           },
         ],
         output: dedent`
@@ -2025,8 +2025,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'a', right: 'c' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'a', right: 'c' },
           },
         ],
         output: dedent`
@@ -2275,8 +2275,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'b', right: 'a' },
           },
         ],
         options: [
@@ -2304,8 +2304,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'b', right: 'a' },
           },
         ],
         options: [
@@ -2333,12 +2333,12 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'd' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'd' },
           },
           {
-            data: { right: 'b', left: 'e' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'e' },
           },
         ],
         output: dedent`
@@ -2372,16 +2372,6 @@ describe('sort-variable-declarations', () => {
 
     it('sorts within comment-defined partitions', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'bbb', left: 'd' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
-          },
-          {
-            data: { right: 'fff', left: 'gg' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
-          },
-        ],
         output: dedent`
           const
             // Part: A
@@ -2412,6 +2402,16 @@ describe('sort-variable-declarations', () => {
             // Not partition comment
             fff = 'FFF'
         `,
+        errors: [
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'bbb', left: 'd' },
+          },
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'fff', left: 'gg' },
+          },
+        ],
         options: [
           {
             ...options,
@@ -2467,8 +2467,8 @@ describe('sort-variable-declarations', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [
@@ -2503,8 +2503,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -2593,8 +2593,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -2731,8 +2731,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2749,8 +2749,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2886,16 +2886,16 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedVariableDeclarationsOrder',
             data: { right: 'bb', left: 'a' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
           },
           {
+            messageId: 'unexpectedVariableDeclarationsOrder',
             data: { right: 'ccc', left: 'bb' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
           },
           {
-            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'dddd', left: 'ccc' },
           },
           {
             data: {
@@ -2974,8 +2974,8 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'fooBar', left: 'fooZar' },
           },
         ],
         output: dedent`
@@ -3113,16 +3113,16 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
             data: { right: 'y', left: 'a' },
-            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'z' },
           },
           {
-            data: { right: 'b', left: 'z' },
             messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'b', left: 'z' },
           },
         ],
         options: [
@@ -3162,16 +3162,16 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'z', left: 'a' },
             messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'z', left: 'a' },
           },
           {
-            data: { right: 'y', left: 'z' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'y', left: 'z' },
           },
           {
-            data: { right: 'b', left: 'y' },
             messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'b', left: 'y' },
           },
         ],
         options: [
@@ -3240,16 +3240,16 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
             data: { right: 'c', left: 'b' },
-            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -3308,8 +3308,8 @@ describe('sort-variable-declarations', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -3355,8 +3355,8 @@ describe('sort-variable-declarations', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -3493,8 +3493,8 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -3561,8 +3561,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: '{ bb }', left: 'aaa' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: '{ bb }', left: 'aaa' },
           },
         ],
         output: dedent`
@@ -3653,8 +3653,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aaa', right: 'bb' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'aaa', right: 'bb' },
           },
         ],
         output: dedent`
@@ -3673,8 +3673,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'b', right: 'a' },
           },
         ],
         output: dedent`
@@ -3693,8 +3693,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'y', right: 'x' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'y', right: 'x' },
           },
         ],
         output: dedent`
@@ -3713,8 +3713,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'sum', right: 'arr' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'sum', right: 'arr' },
           },
         ],
         output: dedent`
@@ -3753,8 +3753,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aaa', right: 'c' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'aaa', right: 'c' },
           },
         ],
         output: dedent`
@@ -4003,8 +4003,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'b', right: 'a' },
           },
         ],
         options: [
@@ -4032,8 +4032,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'b', right: 'a' },
           },
         ],
         options: [
@@ -4061,12 +4061,12 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'd' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'd' },
           },
           {
-            data: { right: 'b', left: 'e' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'e' },
           },
         ],
         output: dedent`
@@ -4100,16 +4100,6 @@ describe('sort-variable-declarations', () => {
 
     it('sorts within comment-defined partitions', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'bbb', left: 'd' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
-          },
-          {
-            data: { right: 'fff', left: 'gg' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
-          },
-        ],
         output: dedent`
           const
             // Part: A
@@ -4140,6 +4130,16 @@ describe('sort-variable-declarations', () => {
             // Not partition comment
             fff = 'FFF'
         `,
+        errors: [
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'bbb', left: 'd' },
+          },
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'fff', left: 'gg' },
+          },
+        ],
         options: [
           {
             ...options,
@@ -4195,8 +4195,8 @@ describe('sort-variable-declarations', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [
@@ -4231,8 +4231,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         options: [
@@ -4321,8 +4321,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         options: [
@@ -4459,8 +4459,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -4477,8 +4477,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -4614,16 +4614,16 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedVariableDeclarationsOrder',
             data: { right: 'bb', left: 'a' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
           },
           {
+            messageId: 'unexpectedVariableDeclarationsOrder',
             data: { right: 'ccc', left: 'bb' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
           },
           {
-            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'dddd', left: 'ccc' },
           },
           {
             data: {
@@ -4702,8 +4702,8 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'fooBar', left: 'fooZar' },
           },
         ],
         output: dedent`
@@ -4848,12 +4848,12 @@ describe('sort-variable-declarations', () => {
             messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
           },
           {
-            data: { right: 'bbb', left: 'z' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'bbb', left: 'z' },
           },
           {
-            data: { right: 'bbb', left: 'z' },
             messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'bbb', left: 'z' },
           },
         ],
         options: [
@@ -4900,12 +4900,12 @@ describe('sort-variable-declarations', () => {
             messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
           },
           {
-            data: { right: 'yy', left: 'z' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'yy', left: 'z' },
           },
           {
-            data: { right: 'bbb', left: 'yy' },
             messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'bbb', left: 'yy' },
           },
         ],
         options: [
@@ -4974,16 +4974,16 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
             data: { right: 'c', left: 'b' },
-            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
           },
           {
-            data: { right: 'd', left: 'c' },
             messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -5042,8 +5042,8 @@ describe('sort-variable-declarations', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -5089,8 +5089,8 @@ describe('sort-variable-declarations', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
               messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -5227,8 +5227,8 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         output: dedent`
@@ -5329,8 +5329,8 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'missedSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -5351,8 +5351,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'a', right: 'b' },
             messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+            data: { nodeDependentOnRight: 'a', right: 'b' },
           },
         ],
         output: dedent`
@@ -5391,8 +5391,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -5417,12 +5417,12 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'c', left: 'd' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'c', left: 'd' },
           },
           {
-            data: { right: 'b', left: 'a' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -5453,8 +5453,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -5479,8 +5479,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -5503,8 +5503,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -5527,8 +5527,8 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -5573,8 +5573,8 @@ describe('sort-variable-declarations', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [{}],
@@ -5583,12 +5583,6 @@ describe('sort-variable-declarations', () => {
 
     it('handles rule-specific eslint-disable comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
-          },
-        ],
         output: dedent`
           let
             b,
@@ -5603,14 +5597,20 @@ describe('sort-variable-declarations', () => {
             // eslint-disable-next-line rule-to-test/sort-variable-declarations
             a
         `,
+        errors: [
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -5631,12 +5631,6 @@ describe('sort-variable-declarations', () => {
 
     it('handles rule-specific block eslint-disable comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: 'unexpectedVariableDeclarationsOrder',
-          },
-        ],
         output: dedent`
           let
             b,
@@ -5651,14 +5645,20 @@ describe('sort-variable-declarations', () => {
             /* eslint-disable-next-line rule-to-test/sort-variable-declarations */
             a
         `,
+        errors: [
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -5703,8 +5703,8 @@ describe('sort-variable-declarations', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
             messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [{}],
