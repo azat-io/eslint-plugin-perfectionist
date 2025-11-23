@@ -132,13 +132,10 @@ export default createEslintRule<Options, MessageId>({
 
       let formattedMembers: SortEnumsSortingNode[][] = members.reduce(
         (accumulator: SortEnumsSortingNode[][], member) => {
-          let dependencies: string[] = []
-          if (member.initializer) {
-            dependencies = extractDependencies(
-              member.initializer,
-              enumDeclaration.id.name,
-            )
-          }
+          let dependencies = extractDependencies(
+            member.initializer!,
+            enumDeclaration.id.name,
+          )
 
           let name =
             member.id.type === 'Literal'
@@ -160,16 +157,12 @@ export default createEslintRule<Options, MessageId>({
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
           let sortingNode: Omit<SortEnumsSortingNode, 'partitionId'> = {
-            numericValue: member.initializer
-              ? getExpressionNumberValue(
-                  member.initializer,
-                ) /* v8 ignore next - Unsure how we can reach that case */
-              : null,
             value:
               member.initializer?.type === 'Literal'
                 ? (member.initializer.value?.toString() ?? null)
                 : null,
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
+            numericValue: getExpressionNumberValue(member.initializer!),
             size: rangeToDiff(member, sourceCode),
             dependencyNames: [name],
             node: member,
@@ -329,7 +322,7 @@ function getBinaryExpressionNumberValue(
       return left & right
     case '^':
       return left ^ right
-    /* v8 ignore next 2 - Unsure if we can reach it */
+    /* v8 ignore next 2 -- @preserve Unsure if we can reach it. */
     default:
       return null
   }
@@ -352,7 +345,7 @@ function computeNodeValueGetter({
       break
     case 'never':
       return null
-    /* v8 ignore next 2 */
+    /* v8 ignore next 2 -- @preserve Unsure if we can reach it. */
     default:
       throw new UnreachableCaseError(options.sortByValue)
   }
@@ -399,7 +392,7 @@ function getUnaryExpressionNumberValue(
       return -argument
     case '~':
       return ~argument
-    /* v8 ignore next 2 - Unsure if we can reach it */
+    /* v8 ignore next 2 -- @preserve Unsure if we can reach it. */
     default:
       return null
   }

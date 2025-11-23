@@ -20,6 +20,45 @@ describe('sort-modules', () => {
       order: 'asc',
     } as const
 
+    it('ignores empty files', async () => {
+      await valid({
+        options: [options],
+        code: '',
+      })
+    })
+
+    it('ignores files with single statement', async () => {
+      await valid({
+        code: dedent`
+          const a = 1
+        `,
+        options: [options],
+      })
+    })
+
+    it('handles export without declaration', async () => {
+      await valid({
+        code: dedent`
+          const foo = 1
+          const bar = 2
+          export { foo, bar }
+        `,
+        options: [options],
+      })
+    })
+
+    it('handles module declaration without body', async () => {
+      await valid({
+        code: dedent`
+          namespace A {
+            const a = 1
+          }
+          declare module 'foo'
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts modules according to group hierarchy', async () => {
       await invalid({
         errors: [

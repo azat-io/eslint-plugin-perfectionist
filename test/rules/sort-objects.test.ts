@@ -967,6 +967,16 @@ describe('sort-objects', () => {
         `,
         options: [options],
       })
+
+      await valid({
+        code: dedent`
+          let {
+            a: { nested } = { nested: 'default' },
+            b,
+          } = obj;
+        `,
+        options: [options],
+      })
     })
 
     it('detects and handles circular dependencies', async () => {

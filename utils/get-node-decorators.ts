@@ -32,7 +32,8 @@ type NodeWithDecorator = {
 export function getNodeDecorators(
   node: NodeWithDecorator,
 ): TSESTree.Decorator[] {
-  /* v8 ignore next 2 */
-  // eslint-disable-next-line typescript/no-unnecessary-condition
-  return node.decorators ?? []
+  return (
+    // eslint-disable-next-line typescript/no-unnecessary-condition
+    node.decorators ?? []
+  )
 }

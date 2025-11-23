@@ -21,10 +21,11 @@ function computeGroupNames(group: GroupsOptions<string>[number]): string[] {
   if (isGroupWithOverridesOption(group)) {
     return computeStringGroupNames(group.group)
   }
+  /* v8 ignore else -- @preserve Exhaustive guard for unsupported group option. */
   if (isNewlinesBetweenOption(group)) {
     return []
-    /* v8 ignore next 3 */
   }
+  /* v8 ignore next -- @preserve Exhaustive guard for unsupported group option. */
   throw new UnreachableCaseError(group)
 }
 

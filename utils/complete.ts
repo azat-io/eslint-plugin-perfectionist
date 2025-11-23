@@ -101,6 +101,7 @@ function isDeepEqual(a: unknown, b: unknown): boolean {
     }
 
     for (let [index, element] of a.entries()) {
+      /* v8 ignore else -- @preserve Guard clause primarily for defensive programming; equality branch is impractical to hit in current unit tests. */
       if (!isDeepEqual(element, b[index])) {
         return false
       }
