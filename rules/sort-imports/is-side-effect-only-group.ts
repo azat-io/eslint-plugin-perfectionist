@@ -1,5 +1,6 @@
 import type { GroupsOptions } from '../../types/common-options'
 
+import { isStringGroupSideEffectOnlyGroup } from './is-string-group-side-effect-only-group'
 import { computeGroupsNames } from '../../utils/compute-groups-names'
 
 /**
@@ -25,8 +26,4 @@ export function isSideEffectOnlyGroup(
   }
 
   return groupNames.every(isStringGroupSideEffectOnlyGroup)
-}
-
-function isStringGroupSideEffectOnlyGroup(groupName: string): boolean {
-  return groupName === 'side-effect' || groupName === 'side-effect-style'
 }
