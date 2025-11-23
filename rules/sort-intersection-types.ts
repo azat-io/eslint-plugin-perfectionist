@@ -9,10 +9,10 @@ import {
 import { sortUnionOrIntersectionTypes, jsonSchema } from './sort-union-types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
-export const ORDER_ERROR_ID = 'unexpectedIntersectionTypesOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedIntersectionTypesGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenIntersectionTypes'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenIntersectionTypes'
+const ORDER_ERROR_ID = 'unexpectedIntersectionTypesOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedIntersectionTypesGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenIntersectionTypes'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenIntersectionTypes'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID

@@ -56,12 +56,12 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-export const ORDER_ERROR_ID = 'unexpectedImportsOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedImportsGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenImports'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenImports'
-export const MISSED_COMMENT_ABOVE_ERROR_ID = 'missedCommentAboveImport'
-export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedImportsDependencyOrder'
+const ORDER_ERROR_ID = 'unexpectedImportsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedImportsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenImports'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenImports'
+const MISSED_COMMENT_ABOVE_ERROR_ID = 'missedCommentAboveImport'
+const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedImportsDependencyOrder'
 
 export type MessageId =
   | typeof MISSED_COMMENT_ABOVE_ERROR_ID

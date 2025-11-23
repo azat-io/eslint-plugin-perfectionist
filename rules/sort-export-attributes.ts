@@ -38,10 +38,10 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-export const ORDER_ERROR_ID = 'unexpectedExportAttributesOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedExportAttributesGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenExportAttributes'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenExportAttributes'
+const ORDER_ERROR_ID = 'unexpectedExportAttributesOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedExportAttributesGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenExportAttributes'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenExportAttributes'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID

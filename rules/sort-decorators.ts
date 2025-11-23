@@ -40,10 +40,10 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-export const ORDER_ERROR_ID = 'unexpectedDecoratorsOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedDecoratorsGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenDecorators'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenDecorators'
+const ORDER_ERROR_ID = 'unexpectedDecoratorsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedDecoratorsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenDecorators'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenDecorators'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID

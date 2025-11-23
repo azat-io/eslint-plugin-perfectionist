@@ -36,10 +36,10 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-export const ORDER_ERROR_ID = 'unexpectedHeritageClausesOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedHeritageClausesGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenHeritageClauses'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenHeritageClauses'
+const ORDER_ERROR_ID = 'unexpectedHeritageClausesOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedHeritageClausesGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenHeritageClauses'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenHeritageClauses'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID

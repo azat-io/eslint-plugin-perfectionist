@@ -47,10 +47,10 @@ import { matches } from '../utils/matches'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-export const ORDER_ERROR_ID = 'unexpectedJSXPropsOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedJSXPropsGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenJSXPropsMembers'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenJSXPropsMembers'
+const ORDER_ERROR_ID = 'unexpectedJSXPropsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedJSXPropsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenJSXPropsMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenJSXPropsMembers'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID

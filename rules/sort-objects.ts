@@ -56,11 +56,11 @@ import { matches } from '../utils/matches'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-export const ORDER_ERROR_ID = 'unexpectedObjectsOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedObjectsGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenObjectMembers'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenObjectMembers'
-export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedObjectsDependencyOrder'
+const ORDER_ERROR_ID = 'unexpectedObjectsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedObjectsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenObjectMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenObjectMembers'
+const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedObjectsDependencyOrder'
 
 type MessageId =
   | typeof DEPENDENCY_ORDER_ERROR_ID

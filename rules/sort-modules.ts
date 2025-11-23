@@ -56,11 +56,11 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-export const ORDER_ERROR_ID = 'unexpectedModulesOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedModulesGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenModulesMembers'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenModulesMembers'
-export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedModulesDependencyOrder'
+const ORDER_ERROR_ID = 'unexpectedModulesOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedModulesGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenModulesMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenModulesMembers'
+const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedModulesDependencyOrder'
 
 type MessageId =
   | typeof DEPENDENCY_ORDER_ERROR_ID

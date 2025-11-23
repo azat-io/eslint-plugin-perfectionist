@@ -37,10 +37,10 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-export const ORDER_ERROR_ID = 'unexpectedMapElementsOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedMapElementsGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenMapElementsMembers'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenMapElementsMembers'
+const ORDER_ERROR_ID = 'unexpectedMapElementsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedMapElementsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenMapElementsMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenMapElementsMembers'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID

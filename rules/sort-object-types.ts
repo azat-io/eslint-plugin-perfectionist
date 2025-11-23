@@ -61,10 +61,10 @@ import { matches } from '../utils/matches'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-export const ORDER_ERROR_ID = 'unexpectedObjectTypesOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedObjectTypesGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenObjectTypeMembers'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenObjectTypeMembers'
+const ORDER_ERROR_ID = 'unexpectedObjectTypesOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedObjectTypesGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenObjectTypeMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenObjectTypeMembers'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID

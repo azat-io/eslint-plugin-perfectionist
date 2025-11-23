@@ -47,11 +47,10 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-export const ORDER_ERROR_ID = 'unexpectedArrayIncludesOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedArrayIncludesGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenArrayIncludesMembers'
-export const MISSED_SPACING_ERROR_ID =
-  'missedSpacingBetweenArrayIncludesMembers'
+const ORDER_ERROR_ID = 'unexpectedArrayIncludesOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedArrayIncludesGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenArrayIncludesMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenArrayIncludesMembers'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID

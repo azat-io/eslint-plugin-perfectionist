@@ -23,7 +23,7 @@ interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
 }
 
-export const ORDER_ERROR_ID = 'unexpectedSwitchCaseOrder'
+const ORDER_ERROR_ID = 'unexpectedSwitchCaseOrder'
 
 type Options = [Partial<CommonOptions>]
 

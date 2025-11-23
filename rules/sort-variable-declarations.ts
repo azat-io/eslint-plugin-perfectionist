@@ -40,13 +40,12 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-export const ORDER_ERROR_ID = 'unexpectedVariableDeclarationsOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedVariableDeclarationsGroupOrder'
-export const EXTRA_SPACING_ERROR_ID =
-  'extraSpacingBetweenVariableDeclarationsMembers'
-export const MISSED_SPACING_ERROR_ID =
+const ORDER_ERROR_ID = 'unexpectedVariableDeclarationsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedVariableDeclarationsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenVariableDeclarationsMembers'
+const MISSED_SPACING_ERROR_ID =
   'missedSpacingBetweenVariableDeclarationsMembers'
-export const DEPENDENCY_ORDER_ERROR_ID =
+const DEPENDENCY_ORDER_ERROR_ID =
   'unexpectedVariableDeclarationsDependencyOrder'
 
 type MessageId =

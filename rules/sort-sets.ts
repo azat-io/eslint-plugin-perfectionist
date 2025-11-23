@@ -9,10 +9,10 @@ import {
 import { defaultOptions, jsonSchema, sortArray } from './sort-array-includes'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
-export const ORDER_ERROR_ID = 'unexpectedSetsOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedSetsGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenSetsMembers'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenSetsMembers'
+const ORDER_ERROR_ID = 'unexpectedSetsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedSetsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenSetsMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenSetsMembers'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID

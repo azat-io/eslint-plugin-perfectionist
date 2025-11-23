@@ -11,10 +11,10 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 
 export type Options = SortObjectTypesOptions
 
-export const ORDER_ERROR_ID = 'unexpectedInterfacePropertiesOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedInterfacePropertiesGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenInterfaceMembers'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenInterfaceMembers'
+const ORDER_ERROR_ID = 'unexpectedInterfacePropertiesOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedInterfacePropertiesGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenInterfaceMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenInterfaceMembers'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID

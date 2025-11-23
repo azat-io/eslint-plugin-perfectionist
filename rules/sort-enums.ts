@@ -41,11 +41,11 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-export const ORDER_ERROR_ID = 'unexpectedEnumsOrder'
-export const GROUP_ORDER_ERROR_ID = 'unexpectedEnumsGroupOrder'
-export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenEnumsMembers'
-export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenEnumsMembers'
-export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedEnumsDependencyOrder'
+const ORDER_ERROR_ID = 'unexpectedEnumsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedEnumsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenEnumsMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenEnumsMembers'
+const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedEnumsDependencyOrder'
 
 type MessageId =
   | typeof DEPENDENCY_ORDER_ERROR_ID
