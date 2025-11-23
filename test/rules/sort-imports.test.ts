@@ -633,8 +633,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: '#c', left: '#b' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: { right: '#b', left: '#c' },
@@ -1376,8 +1376,8 @@ describe('sort-imports', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1448,8 +1448,8 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1599,6 +1599,12 @@ describe('sort-imports', () => {
             newlinesBetween,
           },
         ],
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import a from 'a';
 
@@ -1615,12 +1621,6 @@ describe('sort-imports', () => {
           import { c } from './c';
           import { b } from './b';
         `,
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -1792,16 +1792,16 @@ describe('sort-imports', () => {
           /* Other */
           import e from './e'
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: './bb', left: './c' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -1827,18 +1827,18 @@ describe('sort-imports', () => {
 
     it('ignores block comments when line comment partitioning is enabled', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: './a', left: './b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1912,18 +1912,18 @@ describe('sort-imports', () => {
 
     it('ignores line comments when block comment partitioning is enabled', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: './a', left: './b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2532,6 +2532,16 @@ describe('sort-imports', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             groups: [
@@ -2543,16 +2553,6 @@ describe('sort-imports', () => {
               },
             ],
             type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -2840,8 +2840,8 @@ describe('sort-imports', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2876,8 +2876,8 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3184,17 +3184,17 @@ describe('sort-imports', () => {
 
     it('treats @ symbol pattern as internal imports', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: '@/a', left: 'b' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             groups: ['external', 'internal'],
             newlinesBetween: 1,
-          },
-        ],
-        errors: [
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: '@/a', left: 'b' },
           },
         ],
         output: dedent`
@@ -3434,8 +3434,8 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: '~/b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: { missedCommentAbove: 'internal or sibling', right: '~/b' },
@@ -4078,8 +4078,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: '#c', left: '#b' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: { right: '#b', left: '#c' },
@@ -4821,8 +4821,8 @@ describe('sort-imports', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4893,8 +4893,8 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5044,6 +5044,12 @@ describe('sort-imports', () => {
             newlinesBetween,
           },
         ],
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import a from 'a';
 
@@ -5060,12 +5066,6 @@ describe('sort-imports', () => {
           import { c } from './c';
           import { b } from './b';
         `,
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -5237,16 +5237,16 @@ describe('sort-imports', () => {
           /* Other */
           import e from './e'
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: './bb', left: './c' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -5272,18 +5272,18 @@ describe('sort-imports', () => {
 
     it('ignores block comments when line comment partitioning is enabled', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: './a', left: './b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5357,18 +5357,18 @@ describe('sort-imports', () => {
 
     it('ignores line comments when block comment partitioning is enabled', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: './a', left: './b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6456,17 +6456,17 @@ describe('sort-imports', () => {
 
     it('treats @ symbol pattern as internal imports', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: '@/a', left: 'b' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             groups: ['external', 'internal'],
             newlinesBetween: 1,
-          },
-        ],
-        errors: [
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: '@/a', left: 'b' },
           },
         ],
         output: dedent`
@@ -6706,8 +6706,8 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: '~/b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: { missedCommentAbove: 'internal or sibling', right: '~/b' },
@@ -7335,23 +7335,6 @@ describe('sort-imports', () => {
 
     it('supports custom import groups with primary and secondary categories', async () => {
       await invalid({
-        options: [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: ['^t$', '^@a/.+'],
-                groupName: 'primary',
-              },
-              {
-                elementNamePattern: '^@b/.+',
-                groupName: 'secondary',
-                modifiers: ['value'],
-              },
-            ],
-            groups: ['type', 'primary', 'secondary', 'unknown'],
-          },
-        ],
         errors: [
           {
             data: { right: '@a/a1', left: 't' },
@@ -7367,6 +7350,23 @@ describe('sort-imports', () => {
               right: 'c',
             },
             messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: ['^t$', '^@a/.+'],
+                groupName: 'primary',
+              },
+              {
+                elementNamePattern: '^@b/.+',
+                groupName: 'secondary',
+                modifiers: ['value'],
+              },
+            ],
+            groups: ['type', 'primary', 'secondary', 'unknown'],
           },
         ],
         output: dedent`
@@ -7418,8 +7418,8 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: '#c', left: '#b' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: { right: '#b', left: '#c' },
@@ -8155,8 +8155,8 @@ describe('sort-imports', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -8227,8 +8227,8 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -8378,6 +8378,12 @@ describe('sort-imports', () => {
             newlinesBetween,
           },
         ],
+        errors: [
+          {
+            data: { right: './bb', left: './c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import a from 'a';
 
@@ -8394,12 +8400,6 @@ describe('sort-imports', () => {
           import { c } from './c';
           import { b } from './bb';
         `,
-        errors: [
-          {
-            data: { right: './bb', left: './c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -8455,17 +8455,17 @@ describe('sort-imports', () => {
           import { AnotherNamed } from './second-folder';
           import { Named } from './folder';
         `,
+        errors: [
+          {
+            data: { right: './shared', left: './atoms' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             newlinesBetween: 'ignore',
             partitionByNewLine: true,
-          },
-        ],
-        errors: [
-          {
-            data: { right: './shared', left: './atoms' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
       })
@@ -8561,16 +8561,16 @@ describe('sort-imports', () => {
           /* Other */
           import e from './e'
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: './bb', left: './c' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -8596,18 +8596,18 @@ describe('sort-imports', () => {
 
     it('ignores block comments when line comment partitioning is enabled', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: './aa', left: './b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: './aa', left: './b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -8681,18 +8681,18 @@ describe('sort-imports', () => {
 
     it('ignores line comments when block comment partitioning is enabled', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: './aa', left: './b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: './aa', left: './b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -9795,17 +9795,17 @@ describe('sort-imports', () => {
 
     it('treats @ symbol pattern as internal imports', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: '@/a', left: 'b' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             groups: ['external', 'internal'],
             newlinesBetween: 1,
-          },
-        ],
-        errors: [
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: '@/a', left: 'b' },
           },
         ],
         output: dedent`
@@ -10045,8 +10045,8 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: '~/b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
             data: { missedCommentAbove: 'internal or sibling', right: '~/b' },
@@ -10294,6 +10294,12 @@ describe('sort-imports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: '~/b', left: '~/c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import a from '~/a'
           import b from '~/b'
@@ -10306,12 +10312,6 @@ describe('sort-imports', () => {
           import b from '~/b'
           import d from '~/d'
         `,
-        errors: [
-          {
-            data: { right: '~/b', left: '~/c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -10989,6 +10989,12 @@ describe('sort-imports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import { b } from './b'
           import { c } from './c'
@@ -11001,12 +11007,6 @@ describe('sort-imports', () => {
           // eslint-disable-next-line
           import { a } from './a'
         `,
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
@@ -11043,6 +11043,12 @@ describe('sort-imports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import { b } from './b'
           import { c } from './c'
@@ -11053,16 +11059,16 @@ describe('sort-imports', () => {
           import { b } from './b'
           import { a } from './a' // eslint-disable-line
         `,
+        options: [{}],
+      })
+
+      await invalid({
         errors: [
           {
             data: { right: './b', left: './c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
-        options: [{}],
-      })
-
-      await invalid({
         output: dedent`
           import { b } from './b'
           import { c } from './c'
@@ -11075,16 +11081,16 @@ describe('sort-imports', () => {
           /* eslint-disable-next-line */
           import { a } from './a'
         `,
+        options: [{}],
+      })
+
+      await invalid({
         errors: [
           {
             data: { right: './b', left: './c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
-        options: [{}],
-      })
-
-      await invalid({
         output: dedent`
           import { b } from './b'
           import { c } from './c'
@@ -11095,12 +11101,6 @@ describe('sort-imports', () => {
           import { b } from './b'
           import { a } from './a' /* eslint-disable-line */
         `,
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 

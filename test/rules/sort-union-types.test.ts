@@ -168,6 +168,12 @@ describe('sort-union-types', () => {
 
     it('sorts unions with parentheses', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: '( value: () => void, ) => D | E', left: 'A' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type Type = {
             x:
@@ -188,12 +194,6 @@ describe('sort-union-types', () => {
               | B[]
           }
         `,
-        errors: [
-          {
-            data: { right: '( value: () => void, ) => D | E', left: 'A' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -420,6 +420,16 @@ describe('sort-union-types', () => {
 
     it('creates partitions based on matching comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'BBB', left: 'D' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'FFF', left: 'GG' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type T =
             // Part: A
@@ -450,6 +460,15 @@ describe('sort-union-types', () => {
             // Not partition comment
             FFF
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: '^Part',
+          },
+        ],
+      })
+
+      await invalid({
         errors: [
           {
             data: { right: 'BBB', left: 'D' },
@@ -460,15 +479,6 @@ describe('sort-union-types', () => {
             messageId: ORDER_ERROR_ID,
           },
         ],
-        options: [
-          {
-            ...options,
-            partitionByComment: '^Part',
-          },
-        ],
-      })
-
-      await invalid({
         output: dedent`
           type T =
             // Part: A
@@ -499,16 +509,6 @@ describe('sort-union-types', () => {
             // Not partition comment
             | FFF
         `,
-        errors: [
-          {
-            data: { right: 'BBB', left: 'D' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'FFF', left: 'GG' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
@@ -562,16 +562,16 @@ describe('sort-union-types', () => {
             /* Other */
             E
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: 'BB', left: 'C' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -598,18 +598,18 @@ describe('sort-union-types', () => {
 
     it('ignores block comments when line comments are specified', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -688,18 +688,18 @@ describe('sort-union-types', () => {
 
     it('ignores line comments when block comments are specified', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -839,8 +839,8 @@ describe('sort-union-types', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'B', left: 'Z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -1116,6 +1116,12 @@ describe('sort-union-types', () => {
             newlinesBetween: 0,
           },
         ],
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type Type =
             | a
@@ -1125,12 +1131,6 @@ describe('sort-union-types', () => {
             | b
             | c
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         code: dedent`
           type Type =
             | a
@@ -1183,6 +1183,16 @@ describe('sort-union-types', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             groups: [
@@ -1194,16 +1204,6 @@ describe('sort-union-types', () => {
               },
             ],
             type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1550,8 +1550,8 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1585,8 +1585,8 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1753,6 +1753,12 @@ describe('sort-union-types', () => {
 
     it('sorts unions with parentheses', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: '( value: () => void, ) => D | E', left: 'A' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type Type = {
             x:
@@ -1773,12 +1779,6 @@ describe('sort-union-types', () => {
               | B[]
           }
         `,
-        errors: [
-          {
-            data: { right: '( value: () => void, ) => D | E', left: 'A' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -2008,6 +2008,16 @@ describe('sort-union-types', () => {
 
     it('creates partitions based on matching comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'BBB', left: 'D' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'FFF', left: 'GG' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type T =
             // Part: A
@@ -2038,6 +2048,15 @@ describe('sort-union-types', () => {
             // Not partition comment
             FFF
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: '^Part',
+          },
+        ],
+      })
+
+      await invalid({
         errors: [
           {
             data: { right: 'BBB', left: 'D' },
@@ -2048,15 +2067,6 @@ describe('sort-union-types', () => {
             messageId: ORDER_ERROR_ID,
           },
         ],
-        options: [
-          {
-            ...options,
-            partitionByComment: '^Part',
-          },
-        ],
-      })
-
-      await invalid({
         output: dedent`
           type T =
             // Part: A
@@ -2087,16 +2097,6 @@ describe('sort-union-types', () => {
             // Not partition comment
             | FFF
         `,
-        errors: [
-          {
-            data: { right: 'BBB', left: 'D' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'FFF', left: 'GG' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
@@ -2150,16 +2150,16 @@ describe('sort-union-types', () => {
             /* Other */
             E
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: 'BB', left: 'C' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -2186,18 +2186,18 @@ describe('sort-union-types', () => {
 
     it('ignores block comments when line comments are specified', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2276,18 +2276,18 @@ describe('sort-union-types', () => {
 
     it('ignores line comments when block comments are specified', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2427,8 +2427,8 @@ describe('sort-union-types', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'B', left: 'Z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -2704,6 +2704,12 @@ describe('sort-union-types', () => {
             newlinesBetween: 0,
           },
         ],
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type Type =
             | a
@@ -2713,12 +2719,6 @@ describe('sort-union-types', () => {
             | b
             | c
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         code: dedent`
           type Type =
             | a
@@ -3099,8 +3099,8 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3134,8 +3134,8 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3289,6 +3289,12 @@ describe('sort-union-types', () => {
 
     it('sorts unions with parentheses', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: '( value: () => void, ) => D | E', left: 'A' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type Type = {
             x:
@@ -3309,12 +3315,6 @@ describe('sort-union-types', () => {
               | B[]
           }
         `,
-        errors: [
-          {
-            data: { right: '( value: () => void, ) => D | E', left: 'A' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -3537,6 +3537,16 @@ describe('sort-union-types', () => {
 
     it('creates partitions based on matching comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'BBB', left: 'D' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'FFF', left: 'GG' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type T =
             // Part: A
@@ -3567,6 +3577,15 @@ describe('sort-union-types', () => {
             // Not partition comment
             FFF
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: '^Part',
+          },
+        ],
+      })
+
+      await invalid({
         errors: [
           {
             data: { right: 'BBB', left: 'D' },
@@ -3577,15 +3596,6 @@ describe('sort-union-types', () => {
             messageId: ORDER_ERROR_ID,
           },
         ],
-        options: [
-          {
-            ...options,
-            partitionByComment: '^Part',
-          },
-        ],
-      })
-
-      await invalid({
         output: dedent`
           type T =
             // Part: A
@@ -3616,16 +3626,6 @@ describe('sort-union-types', () => {
             // Not partition comment
             | FFF
         `,
-        errors: [
-          {
-            data: { right: 'BBB', left: 'D' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'FFF', left: 'GG' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [
           {
             ...options,
@@ -3679,16 +3679,16 @@ describe('sort-union-types', () => {
             /* Other */
             E
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: 'BB', left: 'C' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -3715,18 +3715,18 @@ describe('sort-union-types', () => {
 
     it('ignores block comments when line comments are specified', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'AA', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3805,18 +3805,18 @@ describe('sort-union-types', () => {
 
     it('ignores line comments when block comments are specified', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'AA', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4233,6 +4233,12 @@ describe('sort-union-types', () => {
             newlinesBetween: 0,
           },
         ],
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type Type =
             | a
@@ -4242,12 +4248,6 @@ describe('sort-union-types', () => {
             | bb
             | c
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         code: dedent`
           type Type =
             | a
@@ -4628,8 +4628,8 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4663,8 +4663,8 @@ describe('sort-union-types', () => {
         ],
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4775,17 +4775,17 @@ describe('sort-union-types', () => {
 
     it('adds newlines between groups when configured', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: "'a'", left: 'b' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             groups: ['named', 'literal'],
             newlinesBetween: 1,
-          },
-        ],
-        errors: [
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: "'a'", left: 'b' },
           },
         ],
         output: dedent`
@@ -4890,6 +4890,12 @@ describe('sort-union-types', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type T =
             B
@@ -4897,12 +4903,6 @@ describe('sort-union-types', () => {
             // eslint-disable-next-line
             | A
         `,
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         code: dedent`
           type T =
             C
@@ -4976,6 +4976,12 @@ describe('sort-union-types', () => {
 
     it('handles block eslint-disable comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type T =
             B
@@ -4990,12 +4996,6 @@ describe('sort-union-types', () => {
             /* eslint-disable-next-line */
             | A
         `,
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
@@ -5058,6 +5058,12 @@ describe('sort-union-types', () => {
 
     it('handles rule-specific eslint-disable comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type T =
             B
@@ -5072,16 +5078,16 @@ describe('sort-union-types', () => {
             // eslint-disable-next-line rule-to-test/sort-union-types
             | A
         `,
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type T =
             B
@@ -5094,18 +5100,18 @@ describe('sort-union-types', () => {
             | B
             | A // eslint-disable-line rule-to-test/sort-union-types
         `,
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
 
     it('handles rule-specific block eslint-disable comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type T =
             B
@@ -5120,16 +5126,16 @@ describe('sort-union-types', () => {
             /* eslint-disable-next-line rule-to-test/sort-union-types */
             | A
         `,
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'B', left: 'C' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           type T =
             B
@@ -5142,12 +5148,6 @@ describe('sort-union-types', () => {
             | B
             | A /* eslint-disable-line rule-to-test/sort-union-types */
         `,
-        errors: [
-          {
-            data: { right: 'B', left: 'C' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })

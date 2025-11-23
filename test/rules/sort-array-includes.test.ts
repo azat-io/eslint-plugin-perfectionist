@@ -172,6 +172,12 @@ describe('sort-array-includes', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Array(
             'a',
@@ -188,12 +194,6 @@ describe('sort-array-includes', () => {
             'd',
           ).includes(value)
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -802,6 +802,16 @@ describe('sort-array-includes', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -814,16 +824,6 @@ describe('sort-array-includes', () => {
               },
             ],
             type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1311,16 +1311,16 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         code: dedent`
@@ -1368,16 +1368,16 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'z', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'y', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'y' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1456,16 +1456,16 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1528,8 +1528,8 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1579,8 +1579,8 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1711,6 +1711,12 @@ describe('sort-array-includes', () => {
       ]
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           [
             'a',
@@ -1731,12 +1737,6 @@ describe('sort-array-includes', () => {
             'b',
           ].includes(value)
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: partitionOptions,
       })
     })
@@ -1897,6 +1897,12 @@ describe('sort-array-includes', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Array(
             'a',
@@ -1913,12 +1919,6 @@ describe('sort-array-includes', () => {
             'd',
           ).includes(value)
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -2994,16 +2994,16 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         code: dedent`
@@ -3051,16 +3051,16 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'z', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'y', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'y' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3139,16 +3139,16 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3211,8 +3211,8 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3262,8 +3262,8 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3394,6 +3394,12 @@ describe('sort-array-includes', () => {
       ]
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           [
             'a',
@@ -3414,12 +3420,6 @@ describe('sort-array-includes', () => {
             'b',
           ].includes(value)
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: partitionOptions,
       })
     })
@@ -3564,6 +3564,12 @@ describe('sort-array-includes', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'bbb', left: 'cc' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Array(
             'aaaa',
@@ -3580,12 +3586,6 @@ describe('sort-array-includes', () => {
             'd',
           ).includes(value)
         `,
-        errors: [
-          {
-            data: { right: 'bbb', left: 'cc' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -4812,16 +4812,16 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4884,8 +4884,8 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4935,8 +4935,8 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -5067,6 +5067,12 @@ describe('sort-array-includes', () => {
       ]
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           [
             'aaa',
@@ -5087,12 +5093,6 @@ describe('sort-array-includes', () => {
             'bb',
           ].includes(value)
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: partitionOptions,
       })
     })
@@ -5125,6 +5125,12 @@ describe('sort-array-includes', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           [
             'a',
@@ -5141,12 +5147,6 @@ describe('sort-array-includes', () => {
             'd',
           ].includes(value)
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: customAlphabetOptions,
       })
     })
@@ -5243,8 +5243,8 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'a', left: 'b' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5364,6 +5364,12 @@ describe('sort-array-includes', () => {
         })
 
         await invalid({
+          errors: [
+            {
+              data: { right: 'b', left: 'c' },
+              messageId: ORDER_ERROR_ID,
+            },
+          ],
           output: dedent`
             [
               'b',
@@ -5380,18 +5386,18 @@ describe('sort-array-includes', () => {
               'a',
             ].includes(value)
           `,
-          errors: [
-            {
-              data: { right: 'b', left: 'c' },
-              messageId: ORDER_ERROR_ID,
-            },
-          ],
           options: [{}],
         })
       })
 
       it('handles inline eslint-disable comments', async () => {
         await invalid({
+          errors: [
+            {
+              data: { right: 'b', left: 'c' },
+              messageId: ORDER_ERROR_ID,
+            },
+          ],
           output: dedent`
             [
               'b',
@@ -5406,12 +5412,6 @@ describe('sort-array-includes', () => {
               'a', // eslint-disable-line
             ].includes(value)
           `,
-          errors: [
-            {
-              data: { right: 'b', left: 'c' },
-              messageId: ORDER_ERROR_ID,
-            },
-          ],
           options: [{}],
         })
       })

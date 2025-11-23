@@ -41,6 +41,12 @@ describe('sort-sets', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set([
             'a',
@@ -61,12 +67,6 @@ describe('sort-sets', () => {
             ...other,
           ])
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -147,6 +147,12 @@ describe('sort-sets', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set(new Array(
             'a',
@@ -163,12 +169,6 @@ describe('sort-sets', () => {
             'd',
           ))
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -603,6 +603,16 @@ describe('sort-sets', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -615,16 +625,6 @@ describe('sort-sets', () => {
               },
             ],
             type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1112,16 +1112,16 @@ describe('sort-sets', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         code: dedent`
@@ -1199,16 +1199,16 @@ describe('sort-sets', () => {
       await invalid({
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1271,8 +1271,8 @@ describe('sort-sets', () => {
         await invalid({
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1322,8 +1322,8 @@ describe('sort-sets', () => {
         await invalid({
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1454,6 +1454,12 @@ describe('sort-sets', () => {
       ]
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set([
             'a',
@@ -1474,12 +1480,6 @@ describe('sort-sets', () => {
             'b',
           ])
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: partitionOptions,
       })
     })
@@ -1507,6 +1507,12 @@ describe('sort-sets', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set([
             'a',
@@ -1527,12 +1533,6 @@ describe('sort-sets', () => {
             ...other,
           ])
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -1613,6 +1613,12 @@ describe('sort-sets', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set(new Array(
             'a',
@@ -1629,12 +1635,6 @@ describe('sort-sets', () => {
             'd',
           ))
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -2536,16 +2536,16 @@ describe('sort-sets', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         code: dedent`
@@ -2623,16 +2623,16 @@ describe('sort-sets', () => {
       await invalid({
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2695,8 +2695,8 @@ describe('sort-sets', () => {
         await invalid({
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2746,8 +2746,8 @@ describe('sort-sets', () => {
         await invalid({
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2878,6 +2878,12 @@ describe('sort-sets', () => {
       ]
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set([
             'a',
@@ -2898,12 +2904,6 @@ describe('sort-sets', () => {
             'b',
           ])
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: partitionOptions,
       })
     })
@@ -2941,6 +2941,12 @@ describe('sort-sets', () => {
             ...other,
           ])
         `,
+        errors: [
+          {
+            data: { right: 'bbbb', left: 'ccc' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         code: dedent`
           new Set([
             'aaaaa',
@@ -2951,12 +2957,6 @@ describe('sort-sets', () => {
             ...other,
           ])
         `,
-        errors: [
-          {
-            data: { right: 'bbbb', left: 'ccc' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -3037,6 +3037,12 @@ describe('sort-sets', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'bbb', left: 'cc' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set(new Array(
             'aaaa',
@@ -3053,12 +3059,6 @@ describe('sort-sets', () => {
             'd',
           ))
         `,
-        errors: [
-          {
-            data: { right: 'bbb', left: 'cc' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -4050,16 +4050,16 @@ describe('sort-sets', () => {
       await invalid({
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4122,8 +4122,8 @@ describe('sort-sets', () => {
         await invalid({
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4173,8 +4173,8 @@ describe('sort-sets', () => {
         await invalid({
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4305,6 +4305,12 @@ describe('sort-sets', () => {
       ]
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set([
             'aaa',
@@ -4325,12 +4331,6 @@ describe('sort-sets', () => {
             'bb',
           ])
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: partitionOptions,
       })
     })
@@ -4479,8 +4479,8 @@ describe('sort-sets', () => {
       await invalid({
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'a', left: 'b' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4592,6 +4592,12 @@ describe('sort-sets', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set([
             'b',
@@ -4608,12 +4614,6 @@ describe('sort-sets', () => {
             'a',
           ])
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
@@ -4658,6 +4658,12 @@ describe('sort-sets', () => {
 
     it('handles inline eslint-disable-line comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set([
             'b',
@@ -4672,18 +4678,18 @@ describe('sort-sets', () => {
             'a', // eslint-disable-line
           ])
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
 
     it('handles block-style eslint-disable comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set([
             'b',
@@ -4700,18 +4706,18 @@ describe('sort-sets', () => {
             'a',
           ])
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
 
     it('handles inline block-style eslint-disable comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set([
             'b',
@@ -4726,12 +4732,6 @@ describe('sort-sets', () => {
             'a', /* eslint-disable-line */
           ])
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
@@ -4802,6 +4802,12 @@ describe('sort-sets', () => {
 
     it('handles inline rule-specific eslint-disable comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set([
             'b',
@@ -4816,12 +4822,6 @@ describe('sort-sets', () => {
             'a', // eslint-disable-line rule-to-test/sort-sets
           ])
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
@@ -4856,6 +4856,12 @@ describe('sort-sets', () => {
 
     it('handles inline block-style rule-specific eslint-disable comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           new Set([
             'b',
@@ -4870,12 +4876,6 @@ describe('sort-sets', () => {
             'a', /* eslint-disable-line rule-to-test/sort-sets */
           ])
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })

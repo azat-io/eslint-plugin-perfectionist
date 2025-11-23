@@ -115,6 +115,16 @@ describe('sort-export-attributes', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             groups: [
@@ -126,16 +136,6 @@ describe('sort-export-attributes', () => {
               },
             ],
             type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`

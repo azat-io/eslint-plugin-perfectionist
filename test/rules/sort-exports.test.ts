@@ -115,6 +115,12 @@ describe('sort-exports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           export { a1 as aX } from './a'
           export { default as b } from './b'
@@ -125,12 +131,6 @@ describe('sort-exports', () => {
           export { c1, c2 } from './c'
           export { default as b } from './b'
         `,
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -268,16 +268,16 @@ describe('sort-exports', () => {
           /* Other */
           export * from './e'
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: './bb', left: './c' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -303,18 +303,18 @@ describe('sort-exports', () => {
 
     it('ignores line comments when using block comment partitions', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: './a', left: './b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -499,6 +499,16 @@ describe('sort-exports', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             groups: [
@@ -510,16 +520,6 @@ describe('sort-exports', () => {
               },
             ],
             type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -838,16 +838,16 @@ describe('sort-exports', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -932,16 +932,16 @@ describe('sort-exports', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -998,8 +998,8 @@ describe('sort-exports', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1043,8 +1043,8 @@ describe('sort-exports', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1133,6 +1133,12 @@ describe('sort-exports', () => {
             newlinesBetween: 0,
           },
         ],
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           export { a } from 'a'
 
@@ -1149,12 +1155,6 @@ describe('sort-exports', () => {
           export { c } from 'c'
           export { b } from 'b'
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -1493,6 +1493,12 @@ describe('sort-exports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           export { a1 as aX } from './a'
           export { default as b } from './b'
@@ -1503,12 +1509,6 @@ describe('sort-exports', () => {
           export { c1, c2 } from './c'
           export { default as b } from './b'
         `,
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -1646,16 +1646,16 @@ describe('sort-exports', () => {
           /* Other */
           export * from './e'
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: './bb', left: './c' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -1681,18 +1681,18 @@ describe('sort-exports', () => {
 
     it('ignores line comments when using block comment partitions', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: './a', left: './b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2179,16 +2179,16 @@ describe('sort-exports', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -2273,16 +2273,16 @@ describe('sort-exports', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2339,8 +2339,8 @@ describe('sort-exports', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2384,8 +2384,8 @@ describe('sort-exports', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2486,8 +2486,8 @@ describe('sort-exports', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2531,8 +2531,8 @@ describe('sort-exports', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2621,6 +2621,12 @@ describe('sort-exports', () => {
             newlinesBetween: 0,
           },
         ],
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           export { a } from 'a'
 
@@ -2637,12 +2643,6 @@ describe('sort-exports', () => {
           export { c } from 'c'
           export { b } from 'b'
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -2981,6 +2981,12 @@ describe('sort-exports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           export { default as b } from './b'
           export { a1 as aX } from './a'
@@ -2991,12 +2997,6 @@ describe('sort-exports', () => {
           export { c1, c2 } from './c'
           export { default as b } from './b'
         `,
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -3124,16 +3124,16 @@ describe('sort-exports', () => {
           /* Other */
           export * from './e'
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: './bb', left: './c' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -3159,18 +3159,18 @@ describe('sort-exports', () => {
 
     it('ignores line comments when using block comment partitions', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: './aa', left: './b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: './aa', left: './b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3655,6 +3655,16 @@ describe('sort-exports', () => {
 
     it('removes newlines when newlinesBetween is 0', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -3666,16 +3676,6 @@ describe('sort-exports', () => {
             ],
             groups: ['a', 'unknown'],
             newlinesBetween: 0,
-          },
-        ],
-        errors: [
-          {
-            messageId: EXTRA_SPACING_ERROR_ID,
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: EXTRA_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -3747,16 +3747,16 @@ describe('sort-exports', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3813,8 +3813,8 @@ describe('sort-exports', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3858,8 +3858,8 @@ describe('sort-exports', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3960,8 +3960,8 @@ describe('sort-exports', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4005,8 +4005,8 @@ describe('sort-exports', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4095,6 +4095,12 @@ describe('sort-exports', () => {
             newlinesBetween: 0,
           },
         ],
+        errors: [
+          {
+            data: { right: 'bbb', left: 'cc' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           export { a } from 'aaaa'
 
@@ -4111,12 +4117,6 @@ describe('sort-exports', () => {
           export { c } from 'cc'
           export { b } from 'bbb'
         `,
-        errors: [
-          {
-            data: { right: 'bbb', left: 'cc' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -4447,8 +4447,8 @@ describe('sort-exports', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'a', left: 'b' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4486,6 +4486,12 @@ describe('sort-exports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: '~/b', left: '~/c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           export { a } from '~/a'
           export { b } from '~/b'
@@ -4498,12 +4504,6 @@ describe('sort-exports', () => {
           export { b } from '~/b'
           export { d } from '~/d'
         `,
-        errors: [
-          {
-            data: { right: '~/b', left: '~/c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -4534,6 +4534,12 @@ describe('sort-exports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           export { b } from './b'
           export { c } from './c'
@@ -4546,12 +4552,6 @@ describe('sort-exports', () => {
           // eslint-disable-next-line
           export { a } from './a'
         `,
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
@@ -4592,6 +4592,12 @@ describe('sort-exports', () => {
 
     it('handles eslint-disable-line comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           export { b } from './b'
           export { c } from './c'
@@ -4602,18 +4608,18 @@ describe('sort-exports', () => {
           export { b } from './b'
           export { a } from './a' // eslint-disable-line
         `,
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
 
     it('handles block eslint-disable-next-line comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           export { b } from './b'
           export { c } from './c'
@@ -4626,18 +4632,18 @@ describe('sort-exports', () => {
           /* eslint-disable-next-line */
           export { a } from './a'
         `,
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
 
     it('handles block eslint-disable-line comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           export { b } from './b'
           export { c } from './c'
@@ -4648,12 +4654,6 @@ describe('sort-exports', () => {
           export { b } from './b'
           export { a } from './a' /* eslint-disable-line */
         `,
-        errors: [
-          {
-            data: { right: './b', left: './c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })

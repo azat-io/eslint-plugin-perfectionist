@@ -47,6 +47,12 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             a: string
@@ -61,12 +67,6 @@ describe('sort-interfaces', () => {
             b: 'b1' | 'b2',
           }
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -168,6 +168,12 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: '[key: string]', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             [key: string]: string
@@ -182,12 +188,6 @@ describe('sort-interfaces', () => {
             b: string
           }
         `,
-        errors: [
-          {
-            data: { right: '[key: string]', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -336,6 +336,12 @@ describe('sort-interfaces', () => {
 
     it('sorts interfaces with comments on the same line', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             a: string | number // Comment A
@@ -348,18 +354,18 @@ describe('sort-interfaces', () => {
             a: string | number // Comment A
           }
         `,
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
 
     it('sorts interfaces with semi and comments on the same line', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             a: 'aaa'; // Comment A
@@ -372,12 +378,6 @@ describe('sort-interfaces', () => {
             a: 'aaa'; // Comment A
           }
         `,
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -701,6 +701,16 @@ describe('sort-interfaces', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             groups: [
@@ -712,16 +722,6 @@ describe('sort-interfaces', () => {
               },
             ],
             type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1267,8 +1267,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1304,8 +1304,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1493,16 +1493,16 @@ describe('sort-interfaces', () => {
             e: string;
           }
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -1548,6 +1548,12 @@ describe('sort-interfaces', () => {
 
     it('ignores block comments when using line partition', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -1570,12 +1576,6 @@ describe('sort-interfaces', () => {
             a: string
           }
         `,
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -1643,6 +1643,12 @@ describe('sort-interfaces', () => {
 
     it('ignores line comments when using block partition', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -1665,12 +1671,6 @@ describe('sort-interfaces', () => {
             a: string
           }
         `,
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -1792,16 +1792,16 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         code: dedent`
@@ -1861,16 +1861,16 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1931,8 +1931,8 @@ describe('sort-interfaces', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1980,8 +1980,8 @@ describe('sort-interfaces', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2116,6 +2116,12 @@ describe('sort-interfaces', () => {
             newlinesBetween: 0,
           },
         ],
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             a
@@ -2136,12 +2142,6 @@ describe('sort-interfaces', () => {
             b
           }
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -2419,6 +2419,12 @@ describe('sort-interfaces', () => {
           },
           options,
         ],
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           // Do NOT ignore me
           interface Interface {
@@ -2433,12 +2439,6 @@ describe('sort-interfaces', () => {
             a: string
           }
         `,
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -2608,6 +2608,12 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             a: string
@@ -2622,12 +2628,6 @@ describe('sort-interfaces', () => {
             b: 'b1' | 'b2',
           }
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -2729,6 +2729,12 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: '[key: string]', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             [key: string]: string
@@ -2743,12 +2749,6 @@ describe('sort-interfaces', () => {
             b: string
           }
         `,
-        errors: [
-          {
-            data: { right: '[key: string]', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -2897,6 +2897,12 @@ describe('sort-interfaces', () => {
 
     it('sorts interfaces with comments on the same line', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             a: string | number // Comment A
@@ -2909,18 +2915,18 @@ describe('sort-interfaces', () => {
             a: string | number // Comment A
           }
         `,
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
 
     it('sorts interfaces with semi and comments on the same line', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             a: 'aaa'; // Comment A
@@ -2933,12 +2939,6 @@ describe('sort-interfaces', () => {
             a: 'aaa'; // Comment A
           }
         `,
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -3787,8 +3787,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3824,8 +3824,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4013,16 +4013,16 @@ describe('sort-interfaces', () => {
             e: string;
           }
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -4068,6 +4068,12 @@ describe('sort-interfaces', () => {
 
     it('ignores block comments when using line partition', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -4090,12 +4096,6 @@ describe('sort-interfaces', () => {
             a: string
           }
         `,
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -4163,6 +4163,12 @@ describe('sort-interfaces', () => {
 
     it('ignores line comments when using block partition', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -4185,12 +4191,6 @@ describe('sort-interfaces', () => {
             a: string
           }
         `,
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -4312,16 +4312,16 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         code: dedent`
@@ -4381,16 +4381,16 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4451,8 +4451,8 @@ describe('sort-interfaces', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4500,8 +4500,8 @@ describe('sort-interfaces', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4636,6 +4636,12 @@ describe('sort-interfaces', () => {
             newlinesBetween: 0,
           },
         ],
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             a
@@ -4656,12 +4662,6 @@ describe('sort-interfaces', () => {
             b
           }
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -5023,6 +5023,12 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             b: 'b1' | 'b2',
@@ -5037,12 +5043,6 @@ describe('sort-interfaces', () => {
             b: 'b1' | 'b2',
           }
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -5095,6 +5095,12 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'd-d', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             'b-b': string
@@ -5111,12 +5117,6 @@ describe('sort-interfaces', () => {
             c: string
           }
         `,
-        errors: [
-          {
-            data: { right: 'd-d', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -5134,6 +5134,12 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: '[key: string]', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             [key: string]: string
@@ -5148,12 +5154,6 @@ describe('sort-interfaces', () => {
             b: string
           }
         `,
-        errors: [
-          {
-            data: { right: '[key: string]', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -5301,6 +5301,12 @@ describe('sort-interfaces', () => {
 
     it('sorts interfaces with comments on the same line', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             a: string | number // Comment A
@@ -5313,18 +5319,18 @@ describe('sort-interfaces', () => {
             a: string | number // Comment A
           }
         `,
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
 
     it('sorts interfaces with semi and comments on the same line', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             a: 'aaa'; // Comment A
@@ -5337,12 +5343,6 @@ describe('sort-interfaces', () => {
             a: 'aaa'; // Comment A
           }
         `,
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -6191,8 +6191,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6228,8 +6228,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6413,16 +6413,16 @@ describe('sort-interfaces', () => {
             e: string;
           }
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -6468,6 +6468,12 @@ describe('sort-interfaces', () => {
 
     it('ignores block comments when using line partition', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'aa', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -6490,12 +6496,6 @@ describe('sort-interfaces', () => {
             aa: string
           }
         `,
-        errors: [
-          {
-            data: { right: 'aa', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -6563,6 +6563,12 @@ describe('sort-interfaces', () => {
 
     it('ignores line comments when using block partition', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'aa', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -6585,12 +6591,6 @@ describe('sort-interfaces', () => {
             aa: string
           }
         `,
-        errors: [
-          {
-            data: { right: 'aa', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -6784,16 +6784,16 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -6854,8 +6854,8 @@ describe('sort-interfaces', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -6903,8 +6903,8 @@ describe('sort-interfaces', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -7039,6 +7039,12 @@ describe('sort-interfaces', () => {
             newlinesBetween: 0,
           },
         ],
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             aaa
@@ -7059,12 +7065,6 @@ describe('sort-interfaces', () => {
             bb
           }
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
 
@@ -7395,6 +7395,12 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             a: string
@@ -7409,12 +7415,6 @@ describe('sort-interfaces', () => {
             b: 'b1' | 'b2',
           }
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -7508,8 +7508,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'a', left: 'b' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -7653,6 +7653,12 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             b: string
@@ -7667,12 +7673,6 @@ describe('sort-interfaces', () => {
             a: string // eslint-disable-line
           }
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
@@ -7703,6 +7703,12 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           interface Interface {
             b: string
@@ -7717,12 +7723,6 @@ describe('sort-interfaces', () => {
             a: string /* eslint-disable-line */
           }
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 

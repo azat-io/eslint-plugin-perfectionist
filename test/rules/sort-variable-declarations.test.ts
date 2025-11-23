@@ -219,17 +219,17 @@ describe('sort-variable-declarations', () => {
       })
 
       await invalid({
-        output: dedent`
-          const arr = [1, 2, 3],
-                sum = arr.reduce((acc, val) => acc + val, 0),
-                avg = sum / arr.length;
-        `,
         errors: [
           {
             data: { nodeDependentOnRight: 'sum', right: 'arr' },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
+        output: dedent`
+          const arr = [1, 2, 3],
+                sum = arr.reduce((acc, val) => acc + val, 0),
+                avg = sum / arr.length;
+        `,
         code: dedent`
           const sum = arr.reduce((acc, val) => acc + val, 0),
                 arr = [1, 2, 3],
@@ -701,16 +701,16 @@ describe('sort-variable-declarations', () => {
             /* Other */
             e = 'E'
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -737,18 +737,18 @@ describe('sort-variable-declarations', () => {
 
     it('ignores block comments when line comments are partition boundaries', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -827,18 +827,18 @@ describe('sort-variable-declarations', () => {
 
     it('ignores line comments when block comments are partition boundaries', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1035,6 +1035,16 @@ describe('sort-variable-declarations', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             groups: [
@@ -1046,16 +1056,6 @@ describe('sort-variable-declarations', () => {
               },
             ],
             type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1388,16 +1388,16 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -1435,6 +1435,20 @@ describe('sort-variable-declarations', () => {
 
     it('adds newlines between groups when newlinesBetween is 1', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'z', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
+          },
+          {
+            data: { right: 'y', left: 'z' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'y' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -1450,20 +1464,6 @@ describe('sort-variable-declarations', () => {
             ],
             groups: ['a', 'unknown', 'b'],
             newlinesBetween: 1,
-          },
-        ],
-        errors: [
-          {
-            messageId: EXTRA_SPACING_ERROR_ID,
-            data: { right: 'z', left: 'a' },
-          },
-          {
-            data: { right: 'y', left: 'z' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'y' },
           },
         ],
         output: dedent`
@@ -1515,16 +1515,16 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1583,8 +1583,8 @@ describe('sort-variable-declarations', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1630,8 +1630,8 @@ describe('sort-variable-declarations', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1989,17 +1989,17 @@ describe('sort-variable-declarations', () => {
       })
 
       await invalid({
-        output: dedent`
-          const arr = [1, 2, 3],
-                sum = arr.reduce((acc, val) => acc + val, 0),
-                avg = sum / arr.length;
-        `,
         errors: [
           {
             data: { nodeDependentOnRight: 'sum', right: 'arr' },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
+        output: dedent`
+          const arr = [1, 2, 3],
+                sum = arr.reduce((acc, val) => acc + val, 0),
+                avg = sum / arr.length;
+        `,
         code: dedent`
           const sum = arr.reduce((acc, val) => acc + val, 0),
                 arr = [1, 2, 3],
@@ -2471,16 +2471,16 @@ describe('sort-variable-declarations', () => {
             /* Other */
             e = 'E'
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -2507,18 +2507,18 @@ describe('sort-variable-declarations', () => {
 
     it('ignores block comments when line comments are partition boundaries', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2597,18 +2597,18 @@ describe('sort-variable-declarations', () => {
 
     it('ignores line comments when block comments are partition boundaries', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3119,16 +3119,16 @@ describe('sort-variable-declarations', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -3166,6 +3166,20 @@ describe('sort-variable-declarations', () => {
 
     it('adds newlines between groups when newlinesBetween is 1', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'z', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
+          },
+          {
+            data: { right: 'y', left: 'z' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'y' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -3181,20 +3195,6 @@ describe('sort-variable-declarations', () => {
             ],
             groups: ['a', 'unknown', 'b'],
             newlinesBetween: 1,
-          },
-        ],
-        errors: [
-          {
-            messageId: EXTRA_SPACING_ERROR_ID,
-            data: { right: 'z', left: 'a' },
-          },
-          {
-            data: { right: 'y', left: 'z' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'y' },
           },
         ],
         output: dedent`
@@ -3246,16 +3246,16 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3314,8 +3314,8 @@ describe('sort-variable-declarations', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3361,8 +3361,8 @@ describe('sort-variable-declarations', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3717,17 +3717,17 @@ describe('sort-variable-declarations', () => {
       })
 
       await invalid({
-        output: dedent`
-          const arr = [1, 2, 3],
-                sum = arr.reduce((acc, val) => acc + val, 0),
-                avg = sum / arr.length;
-        `,
         errors: [
           {
             data: { nodeDependentOnRight: 'sum', right: 'arr' },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
+        output: dedent`
+          const arr = [1, 2, 3],
+                sum = arr.reduce((acc, val) => acc + val, 0),
+                avg = sum / arr.length;
+        `,
         code: dedent`
           const sum = arr.reduce((acc, val) => acc + val, 0),
                 arr = [1, 2, 3],
@@ -4199,16 +4199,16 @@ describe('sort-variable-declarations', () => {
             /* Other */
             e = 'E'
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: 'bb', left: 'c' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -4235,18 +4235,18 @@ describe('sort-variable-declarations', () => {
 
     it('ignores block comments when line comments are partition boundaries', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'aa', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'aa', left: 'b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4325,18 +4325,18 @@ describe('sort-variable-declarations', () => {
 
     it('ignores line comments when block comments are partition boundaries', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'aa', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'aa', left: 'b' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4980,16 +4980,16 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5048,8 +5048,8 @@ describe('sort-variable-declarations', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -5095,8 +5095,8 @@ describe('sort-variable-declarations', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -5335,8 +5335,8 @@ describe('sort-variable-declarations', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'a', left: 'b' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -5589,6 +5589,12 @@ describe('sort-variable-declarations', () => {
 
     it('handles rule-specific eslint-disable comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           let
             b,
@@ -5603,16 +5609,16 @@ describe('sort-variable-declarations', () => {
             // eslint-disable-next-line rule-to-test/sort-variable-declarations
             a
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           let
             b,
@@ -5625,18 +5631,18 @@ describe('sort-variable-declarations', () => {
             b,
             a // eslint-disable-line rule-to-test/sort-variable-declarations
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
 
     it('handles rule-specific block eslint-disable comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           let
             b,
@@ -5651,16 +5657,16 @@ describe('sort-variable-declarations', () => {
             /* eslint-disable-next-line rule-to-test/sort-variable-declarations */
             a
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           let
             b,
@@ -5673,12 +5679,6 @@ describe('sort-variable-declarations', () => {
             b,
             a /* eslint-disable-line rule-to-test/sort-variable-declarations */
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })

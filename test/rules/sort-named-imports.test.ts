@@ -64,6 +64,12 @@ describe('sort-named-imports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'BBB', left: 'CC' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import {
             AAAA,
@@ -80,12 +86,6 @@ describe('sort-named-imports', () => {
             D,
           } from 'module'
         `,
-        errors: [
-          {
-            data: { right: 'BBB', left: 'CC' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -418,16 +418,16 @@ describe('sort-named-imports', () => {
             E,
           } from 'module'
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: 'BB', left: 'C' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -435,18 +435,18 @@ describe('sort-named-imports', () => {
 
     it('ignores block comments when line comments are used for partitions', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -530,18 +530,18 @@ describe('sort-named-imports', () => {
 
     it('ignores line comments when block comments are used for partitions', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -739,6 +739,16 @@ describe('sort-named-imports', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             groups: [
@@ -750,16 +760,6 @@ describe('sort-named-imports', () => {
               },
             ],
             type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1103,16 +1103,16 @@ describe('sort-named-imports', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -1178,16 +1178,16 @@ describe('sort-named-imports', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1248,8 +1248,8 @@ describe('sort-named-imports', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1297,8 +1297,8 @@ describe('sort-named-imports', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1439,6 +1439,12 @@ describe('sort-named-imports', () => {
             newlinesBetween: 0,
           },
         ],
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import {
             a,
@@ -1459,12 +1465,6 @@ describe('sort-named-imports', () => {
             b,
           } from 'module'
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
   })
@@ -1514,6 +1514,12 @@ describe('sort-named-imports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'BBB', left: 'CC' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import {
             AAAA,
@@ -1530,12 +1536,6 @@ describe('sort-named-imports', () => {
             D,
           } from 'module'
         `,
-        errors: [
-          {
-            data: { right: 'BBB', left: 'CC' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -1868,16 +1868,16 @@ describe('sort-named-imports', () => {
             E,
           } from 'module'
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: 'BB', left: 'C' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -1885,18 +1885,18 @@ describe('sort-named-imports', () => {
 
     it('ignores block comments when line comments are used for partitions', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1980,18 +1980,18 @@ describe('sort-named-imports', () => {
 
     it('ignores line comments when block comments are used for partitions', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'A', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'A', left: 'B' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2512,16 +2512,16 @@ describe('sort-named-imports', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -2587,16 +2587,16 @@ describe('sort-named-imports', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2657,8 +2657,8 @@ describe('sort-named-imports', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2706,8 +2706,8 @@ describe('sort-named-imports', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2848,6 +2848,12 @@ describe('sort-named-imports', () => {
             newlinesBetween: 0,
           },
         ],
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import {
             a,
@@ -2868,12 +2874,6 @@ describe('sort-named-imports', () => {
             b,
           } from 'module'
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
   })
@@ -2923,6 +2923,12 @@ describe('sort-named-imports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'BBB', left: 'CC' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import {
             AAAA,
@@ -2939,12 +2945,6 @@ describe('sort-named-imports', () => {
             D,
           } from 'module'
         `,
-        errors: [
-          {
-            data: { right: 'BBB', left: 'CC' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -3270,16 +3270,16 @@ describe('sort-named-imports', () => {
             E,
           } from 'module'
         `,
-        options: [
-          {
-            ...options,
-            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
-          },
-        ],
         errors: [
           {
             data: { right: 'BB', left: 'C' },
             messageId: ORDER_ERROR_ID,
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: ['Partition Comment', 'Part:', 'Other'],
           },
         ],
       })
@@ -3287,18 +3287,18 @@ describe('sort-named-imports', () => {
 
     it('ignores block comments when line comments are used for partitions', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'AA', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               line: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3382,18 +3382,18 @@ describe('sort-named-imports', () => {
 
     it('ignores line comments when block comments are used for partitions', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'AA', left: 'B' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
             partitionByComment: {
               block: true,
             },
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'AA', left: 'B' },
-            messageId: ORDER_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3992,16 +3992,16 @@ describe('sort-named-imports', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4062,8 +4062,8 @@ describe('sort-named-imports', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4111,8 +4111,8 @@ describe('sort-named-imports', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -4253,6 +4253,12 @@ describe('sort-named-imports', () => {
             newlinesBetween: 0,
           },
         ],
+        errors: [
+          {
+            data: { right: 'bb', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import {
             aaa,
@@ -4273,12 +4279,6 @@ describe('sort-named-imports', () => {
             bb,
           } from 'module'
         `,
-        errors: [
-          {
-            data: { right: 'bb', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
       })
     })
   })
@@ -4360,8 +4360,8 @@ describe('sort-named-imports', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'a', left: 'b' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4425,6 +4425,12 @@ describe('sort-named-imports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import {
             b,
@@ -4441,12 +4447,6 @@ describe('sort-named-imports', () => {
             a
           } from 'module'
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
@@ -4487,6 +4487,12 @@ describe('sort-named-imports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import {
             b,
@@ -4501,16 +4507,16 @@ describe('sort-named-imports', () => {
             a // eslint-disable-line
           } from 'module'
         `,
+        options: [{}],
+      })
+
+      await invalid({
         errors: [
           {
             data: { right: 'b', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
-        options: [{}],
-      })
-
-      await invalid({
         output: dedent`
           import {
             b,
@@ -4527,16 +4533,16 @@ describe('sort-named-imports', () => {
             a
           } from 'module'
         `,
+        options: [{}],
+      })
+
+      await invalid({
         errors: [
           {
             data: { right: 'b', left: 'c' },
             messageId: ORDER_ERROR_ID,
           },
         ],
-        options: [{}],
-      })
-
-      await invalid({
         output: dedent`
           import {
             b,
@@ -4551,12 +4557,6 @@ describe('sort-named-imports', () => {
             a /* eslint-disable-line */
           } from 'module'
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 
@@ -4621,6 +4621,12 @@ describe('sort-named-imports', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           import {
             b,
@@ -4635,12 +4641,6 @@ describe('sort-named-imports', () => {
             a // eslint-disable-line rule-to-test/sort-named-imports
           } from 'module'
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
 

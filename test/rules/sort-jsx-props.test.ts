@@ -153,6 +153,16 @@ describe('sort-jsx-props', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'd', left: 'e' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           let Component = () => (
             <Element
@@ -179,16 +189,6 @@ describe('sort-jsx-props', () => {
             />
           )
         `,
-        errors: [
-          {
-            data: { right: 'd', left: 'e' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -319,6 +319,16 @@ describe('sort-jsx-props', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             groups: [
@@ -330,16 +340,6 @@ describe('sort-jsx-props', () => {
               },
             ],
             type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            data: { right: 'b', left: 'a' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -854,16 +854,16 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -903,6 +903,20 @@ describe('sort-jsx-props', () => {
 
     it('adds newlines between groups when newlinesBetween is 1', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'z', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
+          },
+          {
+            data: { right: 'y', left: 'z' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'y' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -918,20 +932,6 @@ describe('sort-jsx-props', () => {
             ],
             groups: ['a', 'unknown', 'b'],
             newlinesBetween: 1,
-          },
-        ],
-        errors: [
-          {
-            messageId: EXTRA_SPACING_ERROR_ID,
-            data: { right: 'z', left: 'a' },
-          },
-          {
-            data: { right: 'y', left: 'z' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'y' },
           },
         ],
         output: dedent`
@@ -1000,16 +1000,16 @@ describe('sort-jsx-props', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -1079,8 +1079,8 @@ describe('sort-jsx-props', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1128,8 +1128,8 @@ describe('sort-jsx-props', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -1446,6 +1446,16 @@ describe('sort-jsx-props', () => {
       })
 
       await invalid({
+        errors: [
+          {
+            data: { right: 'd', left: 'e' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'a', left: 'b' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           let Component = () => (
             <Element
@@ -1472,16 +1482,6 @@ describe('sort-jsx-props', () => {
             />
           )
         `,
-        errors: [
-          {
-            data: { right: 'd', left: 'e' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            data: { right: 'a', left: 'b' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [options],
       })
     })
@@ -2106,16 +2106,16 @@ describe('sort-jsx-props', () => {
       await invalid({
         errors: [
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'y', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
             data: { right: 'b', left: 'z' },
             messageId: ORDER_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'b', left: 'z' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         options: [
@@ -2155,6 +2155,20 @@ describe('sort-jsx-props', () => {
 
     it('adds newlines between groups when newlinesBetween is 1', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'z', left: 'a' },
+            messageId: EXTRA_SPACING_ERROR_ID,
+          },
+          {
+            data: { right: 'y', left: 'z' },
+            messageId: ORDER_ERROR_ID,
+          },
+          {
+            data: { right: 'b', left: 'y' },
+            messageId: MISSED_SPACING_ERROR_ID,
+          },
+        ],
         options: [
           {
             ...options,
@@ -2170,20 +2184,6 @@ describe('sort-jsx-props', () => {
             ],
             groups: ['a', 'unknown', 'b'],
             newlinesBetween: 1,
-          },
-        ],
-        errors: [
-          {
-            messageId: EXTRA_SPACING_ERROR_ID,
-            data: { right: 'z', left: 'a' },
-          },
-          {
-            data: { right: 'y', left: 'z' },
-            messageId: ORDER_ERROR_ID,
-          },
-          {
-            messageId: MISSED_SPACING_ERROR_ID,
-            data: { right: 'b', left: 'y' },
           },
         ],
         output: dedent`
@@ -2252,16 +2252,16 @@ describe('sort-jsx-props', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -2331,8 +2331,8 @@ describe('sort-jsx-props', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -2380,8 +2380,8 @@ describe('sort-jsx-props', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3507,16 +3507,16 @@ describe('sort-jsx-props', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'b', left: 'a' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'c', left: 'b' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            messageId: EXTRA_SPACING_ERROR_ID,
             data: { right: 'd', left: 'c' },
+            messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -3586,8 +3586,8 @@ describe('sort-jsx-props', () => {
           ],
           errors: [
             {
-              messageId: MISSED_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3635,8 +3635,8 @@ describe('sort-jsx-props', () => {
           ],
           errors: [
             {
-              messageId: EXTRA_SPACING_ERROR_ID,
               data: { right: 'b', left: 'a' },
+              messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
           output: dedent`
@@ -3979,8 +3979,8 @@ describe('sort-jsx-props', () => {
         ],
         errors: [
           {
-            messageId: MISSED_SPACING_ERROR_ID,
             data: { right: 'a', left: 'b' },
+            messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
         output: dedent`
@@ -4069,6 +4069,12 @@ describe('sort-jsx-props', () => {
 
     it('sorts props with eslint-disable-line comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           <Element
             b="b"
@@ -4083,12 +4089,6 @@ describe('sort-jsx-props', () => {
             a="a" // eslint-disable-line
           />
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
@@ -4129,6 +4129,12 @@ describe('sort-jsx-props', () => {
 
     it('handles block eslint-disable-next-line comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           <Element
             b="b"
@@ -4145,18 +4151,18 @@ describe('sort-jsx-props', () => {
             a="a"
           />
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
 
     it('handles inline block eslint-disable-line comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           <Element
             b="b"
@@ -4171,12 +4177,6 @@ describe('sort-jsx-props', () => {
             a="a" /* eslint-disable-line */
           />
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
@@ -4247,6 +4247,12 @@ describe('sort-jsx-props', () => {
 
     it('handles rule-specific eslint-disable-line comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           <Element
             b="b"
@@ -4261,12 +4267,6 @@ describe('sort-jsx-props', () => {
             a="a" // eslint-disable-line rule-to-test/sort-jsx-props
           />
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
@@ -4301,6 +4301,12 @@ describe('sort-jsx-props', () => {
 
     it('handles rule-specific inline block eslint-disable-line comments', async () => {
       await invalid({
+        errors: [
+          {
+            data: { right: 'b', left: 'c' },
+            messageId: ORDER_ERROR_ID,
+          },
+        ],
         output: dedent`
           <Element
             b="b"
@@ -4315,12 +4321,6 @@ describe('sort-jsx-props', () => {
             a="a" /* eslint-disable-line rule-to-test/sort-jsx-props */
           />
         `,
-        errors: [
-          {
-            data: { right: 'b', left: 'c' },
-            messageId: ORDER_ERROR_ID,
-          },
-        ],
         options: [{}],
       })
     })
