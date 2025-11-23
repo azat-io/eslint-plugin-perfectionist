@@ -42,7 +42,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -82,7 +85,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -126,15 +132,24 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'x', left: 'y' },
+            data: {
+              right: 'x',
+              left: 'y',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -217,11 +232,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -294,7 +315,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -320,7 +344,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -344,7 +371,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'c' },
+            data: {
+              right: 'a',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -374,7 +404,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -406,11 +439,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
-            data: { nodeDependentOnRight: 'b', right: 'd' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'd',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -440,7 +479,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'c', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'c',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -470,11 +512,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
-            data: { nodeDependentOnRight: 'b', right: 'd' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'd',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -509,7 +557,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -539,7 +590,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -569,7 +623,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'a', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'a',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -1003,7 +1060,10 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1044,7 +1104,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'a',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -1079,7 +1142,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'a',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -1114,11 +1180,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'd', left: 'e' },
+            data: {
+              right: 'd',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1208,7 +1280,10 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1245,7 +1320,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1340,7 +1418,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1455,11 +1536,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'd', left: 'e' },
+            data: {
+              right: 'd',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1639,15 +1726,24 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'y', left: 'a' },
+            data: {
+              right: 'y',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
+            data: {
+              right: 'b',
+              left: 'z',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
+            data: {
+              right: 'b',
+              left: 'z',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -1723,15 +1819,24 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'c', left: 'b' },
+            data: {
+              right: 'c',
+              left: 'b',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
+            data: {
+              right: 'd',
+              left: 'c',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -1793,7 +1898,10 @@ describe('sort-objects', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
+              data: {
+                right: 'b',
+                left: 'a',
+              },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -1842,7 +1950,10 @@ describe('sort-objects', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
+              data: {
+                right: 'b',
+                left: 'a',
+              },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
@@ -1964,7 +2075,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1995,7 +2109,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2015,7 +2132,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2122,7 +2242,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2311,7 +2434,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2335,7 +2461,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2365,7 +2494,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2431,7 +2563,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2484,7 +2619,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: '1', left: '2' },
+            data: {
+              right: '1',
+              left: '2',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2514,7 +2652,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2563,11 +2704,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2628,11 +2775,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2839,15 +2992,24 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'a' },
+            data: {
+              right: 'bb',
+              left: 'a',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'ccc', left: 'bb' },
+            data: {
+              right: 'ccc',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'dddd', left: 'ccc' },
+            data: {
+              right: 'dddd',
+              left: 'ccc',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -2929,7 +3091,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'fooBar', left: 'fooZar' },
+            data: {
+              right: 'fooBar',
+              left: 'fooZar',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3099,7 +3264,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -3136,7 +3304,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -3204,7 +3375,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3244,7 +3418,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3288,15 +3465,24 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'x', left: 'y' },
+            data: {
+              right: 'x',
+              left: 'y',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3415,7 +3601,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3441,7 +3630,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3465,7 +3657,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'c' },
+            data: {
+              right: 'a',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3495,7 +3690,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3527,11 +3725,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
-            data: { nodeDependentOnRight: 'b', right: 'd' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'd',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -3561,7 +3765,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'c', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'c',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -3591,11 +3798,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
-            data: { nodeDependentOnRight: 'b', right: 'd' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'd',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -3630,7 +3843,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -3660,7 +3876,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -3690,7 +3909,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'a', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'a',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -4098,7 +4320,10 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4139,7 +4364,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'a',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -4174,7 +4402,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'a',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -4209,11 +4440,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'd', left: 'e' },
+            data: {
+              right: 'd',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4303,7 +4540,10 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4340,7 +4580,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4435,7 +4678,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4550,11 +4796,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'd', left: 'e' },
+            data: {
+              right: 'd',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4734,15 +4986,24 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'y', left: 'a' },
+            data: {
+              right: 'y',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
+            data: {
+              right: 'b',
+              left: 'z',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'z' },
+            data: {
+              right: 'b',
+              left: 'z',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -4818,15 +5079,24 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'c', left: 'b' },
+            data: {
+              right: 'c',
+              left: 'b',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
+            data: {
+              right: 'd',
+              left: 'c',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -4888,7 +5158,10 @@ describe('sort-objects', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
+              data: {
+                right: 'b',
+                left: 'a',
+              },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -4937,7 +5210,10 @@ describe('sort-objects', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
+              data: {
+                right: 'b',
+                left: 'a',
+              },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
@@ -5059,7 +5335,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5090,7 +5369,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5110,7 +5392,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5486,15 +5771,24 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'a' },
+            data: {
+              right: 'bb',
+              left: 'a',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'ccc', left: 'bb' },
+            data: {
+              right: 'ccc',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'dddd', left: 'ccc' },
+            data: {
+              right: 'dddd',
+              left: 'ccc',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -5576,7 +5870,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'fooBar', left: 'fooZar' },
+            data: {
+              right: 'fooBar',
+              left: 'fooZar',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5746,7 +6043,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -5783,7 +6083,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -5851,7 +6154,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'c', left: 'b' },
+            data: {
+              right: 'c',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5891,7 +6197,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5935,11 +6244,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5986,7 +6301,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b()', left: 'a' },
+            data: {
+              right: 'b()',
+              left: 'a',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6048,7 +6366,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6074,7 +6395,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6098,7 +6422,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'c' },
+            data: {
+              right: 'a',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6128,7 +6455,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6160,11 +6490,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
-            data: { nodeDependentOnRight: 'b', right: 'd' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'd',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6194,7 +6530,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'c', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'c',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6224,11 +6563,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
-            data: { nodeDependentOnRight: 'b', right: 'd' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'd',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6263,11 +6608,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6297,7 +6648,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6327,11 +6681,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { nodeDependentOnRight: 'a', right: 'c' },
+            data: {
+              nodeDependentOnRight: 'a',
+              right: 'c',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6715,11 +7075,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'd', left: 'c' },
+            data: {
+              right: 'd',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'f', left: 'e' },
+            data: {
+              right: 'f',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6784,7 +7150,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'a',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6819,7 +7188,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
+            data: {
+              nodeDependentOnRight: 'b',
+              right: 'a',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6854,11 +7226,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'd', left: 'e' },
+            data: {
+              right: 'd',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6948,7 +7326,10 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6985,7 +7366,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
+            data: {
+              right: 'aa',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -7080,7 +7464,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
+            data: {
+              right: 'aa',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -7195,11 +7582,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'd', left: 'e' },
+            data: {
+              right: 'd',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -7386,11 +7779,17 @@ describe('sort-objects', () => {
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'bbb', left: 'z' },
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'bbb', left: 'z' },
+            data: {
+              right: 'bbb',
+              left: 'z',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -7466,15 +7865,24 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'c', left: 'b' },
+            data: {
+              right: 'c',
+              left: 'b',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: 'd', left: 'c' },
+            data: {
+              right: 'd',
+              left: 'c',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -7536,7 +7944,10 @@ describe('sort-objects', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
+              data: {
+                right: 'b',
+                left: 'a',
+              },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -7585,7 +7996,10 @@ describe('sort-objects', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
+              data: {
+                right: 'b',
+                left: 'a',
+              },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
@@ -7707,7 +8121,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -7738,7 +8155,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
+            data: {
+              right: 'aa',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -7758,7 +8178,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
+            data: {
+              right: 'aa',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -8134,15 +8557,24 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'a' },
+            data: {
+              right: 'bb',
+              left: 'a',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'ccc', left: 'bb' },
+            data: {
+              right: 'ccc',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'dddd', left: 'ccc' },
+            data: {
+              right: 'dddd',
+              left: 'ccc',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -8224,7 +8656,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'fooBar', left: 'fooZar' },
+            data: {
+              right: 'fooBar',
+              left: 'fooZar',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -8394,7 +8829,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -8431,7 +8869,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -8504,7 +8945,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -8617,7 +9061,10 @@ describe('sort-objects', () => {
         ],
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -8641,7 +9088,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'a', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'a',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -8699,7 +9149,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -8946,7 +9399,10 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9012,11 +9468,17 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'd' },
+            data: {
+              right: 'a',
+              left: 'd',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9077,7 +9539,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9103,11 +9568,17 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'c', left: 'd' },
+            data: {
+              right: 'c',
+              left: 'd',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9139,7 +9610,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9165,7 +9639,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9189,7 +9666,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9215,7 +9695,10 @@ describe('sort-objects', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9263,7 +9746,10 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9291,7 +9777,10 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9308,7 +9797,10 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9341,7 +9833,10 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9365,7 +9860,10 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9399,7 +9897,10 @@ describe('sort-objects', () => {
         `,
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],

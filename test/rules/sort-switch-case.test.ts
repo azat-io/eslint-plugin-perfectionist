@@ -80,7 +80,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'aaa', left: 'bb' },
+            data: {
+              right: 'aaa',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -118,7 +121,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'aaa', left: 'bb' },
+            data: {
+              right: 'aaa',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -191,7 +197,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -272,7 +281,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -368,7 +380,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -432,11 +447,17 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'cccc', left: 'ee' },
+            data: {
+              right: 'cccc',
+              left: 'ee',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'bbbbb', left: 'f' },
+            data: {
+              right: 'bbbbb',
+              left: 'f',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -488,7 +509,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'wwww', left: 'z' },
+            data: {
+              right: 'wwww',
+              left: 'z',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -512,7 +536,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'AA', left: 'B' },
+            data: {
+              right: 'AA',
+              left: 'B',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -562,19 +589,31 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'DD', left: 'E' },
+            data: {
+              right: 'DD',
+              left: 'E',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'CCC', left: 'DD' },
+            data: {
+              right: 'CCC',
+              left: 'DD',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'BBBB', left: 'CCC' },
+            data: {
+              right: 'BBBB',
+              left: 'CCC',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'AAAAA', left: 'BBBB' },
+            data: {
+              right: 'AAAAA',
+              left: 'BBBB',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -663,11 +702,17 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'default', left: 'default' },
+            data: {
+              right: 'default',
+              left: 'default',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'somethingElse', left: 'default' },
+            data: {
+              right: 'somethingElse',
+              left: 'default',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -751,7 +796,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -771,7 +819,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -791,7 +842,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -811,7 +865,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -886,11 +943,17 @@ describe('sort-switch-case', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'x', left: 'y' },
+            data: {
+              right: 'x',
+              left: 'y',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1068,7 +1131,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'aaa', left: 'bb' },
+            data: {
+              right: 'aaa',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1106,7 +1172,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'aaa', left: 'bb' },
+            data: {
+              right: 'aaa',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1179,7 +1248,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1260,7 +1332,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1356,7 +1431,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'b', left: 'c' },
+            data: {
+              right: 'b',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1420,11 +1498,17 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'cccc', left: 'ee' },
+            data: {
+              right: 'cccc',
+              left: 'ee',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'bbbbb', left: 'f' },
+            data: {
+              right: 'bbbbb',
+              left: 'f',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1476,7 +1560,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'wwww', left: 'z' },
+            data: {
+              right: 'wwww',
+              left: 'z',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1500,7 +1587,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'AA', left: 'B' },
+            data: {
+              right: 'AA',
+              left: 'B',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1550,19 +1640,31 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'DD', left: 'E' },
+            data: {
+              right: 'DD',
+              left: 'E',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'CCC', left: 'DD' },
+            data: {
+              right: 'CCC',
+              left: 'DD',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'BBBB', left: 'CCC' },
+            data: {
+              right: 'BBBB',
+              left: 'CCC',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'AAAAA', left: 'BBBB' },
+            data: {
+              right: 'AAAAA',
+              left: 'BBBB',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1651,11 +1753,17 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'default', left: 'default' },
+            data: {
+              right: 'default',
+              left: 'default',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'somethingElse', left: 'default' },
+            data: {
+              right: 'somethingElse',
+              left: 'default',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1739,7 +1847,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1759,7 +1870,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1779,7 +1893,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1799,7 +1916,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1874,11 +1994,17 @@ describe('sort-switch-case', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'x', left: 'y' },
+            data: {
+              right: 'x',
+              left: 'y',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2056,7 +2182,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'aaa', left: 'bb' },
+            data: {
+              right: 'aaa',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2094,7 +2223,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'aaa', left: 'bb' },
+            data: {
+              right: 'aaa',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2167,7 +2299,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2248,7 +2383,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2344,7 +2482,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2408,11 +2549,17 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'cccc', left: 'ee' },
+            data: {
+              right: 'cccc',
+              left: 'ee',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'bbbbb', left: 'f' },
+            data: {
+              right: 'bbbbb',
+              left: 'f',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2464,7 +2611,10 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'wwww', left: 'z' },
+            data: {
+              right: 'wwww',
+              left: 'z',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2488,7 +2638,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'AA', left: 'B' },
+            data: {
+              right: 'AA',
+              left: 'B',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2538,19 +2691,31 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'DD', left: 'E' },
+            data: {
+              right: 'DD',
+              left: 'E',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'CCC', left: 'DD' },
+            data: {
+              right: 'CCC',
+              left: 'DD',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'BBBB', left: 'CCC' },
+            data: {
+              right: 'BBBB',
+              left: 'CCC',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'AAAAA', left: 'BBBB' },
+            data: {
+              right: 'AAAAA',
+              left: 'BBBB',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2639,11 +2804,17 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'default', left: 'default' },
+            data: {
+              right: 'default',
+              left: 'default',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'somethingElse', left: 'default' },
+            data: {
+              right: 'somethingElse',
+              left: 'default',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2727,7 +2898,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
+            data: {
+              right: 'aa',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2747,7 +2921,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
+            data: {
+              right: 'aa',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2767,7 +2944,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
+            data: {
+              right: 'aa',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2787,7 +2967,10 @@ describe('sort-switch-case', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
+            data: {
+              right: 'aa',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2862,11 +3045,17 @@ describe('sort-switch-case', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'x', left: 'y' },
+            data: {
+              right: 'x',
+              left: 'y',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3055,11 +3244,17 @@ describe('sort-switch-case', () => {
         `,
         errors: [
           {
-            data: { right: 'cccc', left: 'ee' },
+            data: {
+              right: 'cccc',
+              left: 'ee',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'bbbbb', left: 'f' },
+            data: {
+              right: 'bbbbb',
+              left: 'f',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],

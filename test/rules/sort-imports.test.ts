@@ -68,7 +68,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -118,7 +121,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'e/a', left: 'e/b' },
+            data: {
+              right: 'e/a',
+              left: 'e/b',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -131,7 +137,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: './d', left: '~/i' },
+            data: {
+              right: './d',
+              left: '~/i',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -144,11 +153,17 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: '~/c', left: 'fs' },
+            data: {
+              right: '~/c',
+              left: 'fs',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { right: '../../h', left: '../f' },
+            data: {
+              right: '../../h',
+              left: '../f',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -170,7 +185,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: './style.css', left: 't' },
+            data: {
+              right: './style.css',
+              left: 't',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -318,11 +336,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '~/b', left: 'a' },
+            data: {
+              right: '~/b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: '~/d', left: '~/c' },
+            data: {
+              right: '~/d',
+              left: '~/c',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -364,7 +388,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '../b', left: 'a' },
+            data: {
+              right: '../b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -554,7 +581,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './index', left: 'a' },
+            data: {
+              right: './index',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -575,7 +605,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './b', left: 'a' },
+            data: {
+              right: './b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
@@ -633,11 +666,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '#c', left: '#b' },
+            data: {
+              right: '#c',
+              left: '#b',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { right: '#b', left: '#c' },
+            data: {
+              right: '#b',
+              left: '#c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -732,7 +771,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -772,7 +814,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'e/a', left: 'e/b' },
+            data: {
+              right: 'e/a',
+              left: 'e/b',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -785,7 +830,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: '~/c', left: 'fs' },
+            data: {
+              right: '~/c',
+              left: 'fs',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -885,11 +933,17 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: 'aaaa', left: 'e' },
+            data: {
+              right: 'aaaa',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: '../d', left: 'aaaa' },
+            data: {
+              right: '../d',
+              left: 'aaaa',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -922,11 +976,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'aaa', left: 'bb' },
+            data: {
+              right: 'aaa',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -954,7 +1014,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './b-side-effect', left: './b' },
+            data: {
+              right: './b-side-effect',
+              left: './b',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -1116,7 +1179,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: './g-side-effect.css', left: './b-side-effect' },
+            data: {
+              right: './g-side-effect.css',
+              left: './b-side-effect',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -1294,15 +1360,24 @@ describe('sort-imports', () => {
         await invalid({
           errors: [
             {
-              data: { right: '~/y', left: 'a' },
+              data: {
+                right: '~/y',
+                left: 'a',
+              },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
             {
-              data: { right: '~/b', left: '~/z' },
+              data: {
+                right: '~/b',
+                left: '~/z',
+              },
               messageId: ORDER_ERROR_ID,
             },
             {
-              data: { right: '~/b', left: '~/z' },
+              data: {
+                right: '~/b',
+                left: '~/z',
+              },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
@@ -1376,7 +1451,10 @@ describe('sort-imports', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
+              data: {
+                right: 'b',
+                left: 'a',
+              },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -1448,7 +1526,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -1601,7 +1682,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: './b', left: './c' },
+            data: {
+              right: './b',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1628,7 +1712,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1644,7 +1731,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1734,11 +1824,17 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './bbb', left: './d' },
+            data: {
+              right: './bbb',
+              left: './d',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: './fff', left: './gg' },
+            data: {
+              right: './fff',
+              left: './gg',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1794,7 +1890,10 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './bb', left: './c' },
+            data: {
+              right: './bb',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1829,7 +1928,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './a', left: './b' },
+            data: {
+              right: './a',
+              left: './b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -1914,7 +2016,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './a', left: './b' },
+            data: {
+              right: './a',
+              left: './b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2534,11 +2639,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -2619,15 +2730,24 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'a' },
+            data: {
+              right: 'bb',
+              left: 'a',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'ccc', left: 'bb' },
+            data: {
+              right: 'ccc',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'dddd', left: 'ccc' },
+            data: {
+              right: 'dddd',
+              left: 'ccc',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -2706,7 +2826,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: 'fooBar', left: 'fooZar' },
+            data: {
+              right: 'fooBar',
+              left: 'fooZar',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2799,7 +2922,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: './index', left: 'e' },
+            data: {
+              right: './index',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -2840,7 +2966,10 @@ describe('sort-imports', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
+              data: {
+                right: 'b',
+                left: 'a',
+              },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -2876,7 +3005,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -2896,7 +3028,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -2919,7 +3054,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -2942,7 +3080,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -2965,7 +3106,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -3029,7 +3173,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
@@ -3055,7 +3202,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -3084,7 +3234,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -3112,11 +3265,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'yImport.y1.y2', right: 'z' },
+            data: {
+              nodeDependentOnRight: 'yImport.y1.y2',
+              right: 'z',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -3164,7 +3323,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3186,7 +3348,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '@/a', left: 'b' },
+            data: {
+              right: '@/a',
+              left: 'b',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -3213,11 +3378,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'Comment above a', right: 'a' },
+            data: {
+              missedCommentAbove: 'Comment above a',
+              right: 'a',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
           {
-            data: { missedCommentAbove: 'Comment above b', right: './b' },
+            data: {
+              missedCommentAbove: 'Comment above b',
+              right: './b',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
         ],
@@ -3249,7 +3420,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'Comment above', right: 'a' },
+            data: {
+              missedCommentAbove: 'Comment above',
+              right: 'a',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
         ],
@@ -3273,11 +3447,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'Comment above', right: 'b' },
+            data: {
+              missedCommentAbove: 'Comment above',
+              right: 'b',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3356,11 +3536,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'internal', right: '~/d' },
+            data: {
+              missedCommentAbove: 'internal',
+              right: '~/d',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
           {
-            data: { right: '~/c', left: '~/d' },
+            data: {
+              right: '~/c',
+              left: '~/d',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -3421,7 +3607,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'internal or sibling', right: './c' },
+            data: {
+              missedCommentAbove: 'internal or sibling',
+              right: './c',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
           {
@@ -3434,11 +3623,17 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: '~/b', left: 'a' },
+            data: {
+              right: '~/b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { missedCommentAbove: 'internal or sibling', right: '~/b' },
+            data: {
+              missedCommentAbove: 'internal or sibling',
+              right: '~/b',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
         ],
@@ -3506,7 +3701,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -3556,7 +3754,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'e/a', left: 'e/b' },
+            data: {
+              right: 'e/a',
+              left: 'e/b',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -3569,7 +3770,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: './d', left: '~/i' },
+            data: {
+              right: './d',
+              left: '~/i',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -3582,11 +3786,17 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: '~/c', left: 'fs' },
+            data: {
+              right: '~/c',
+              left: 'fs',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { right: '../../h', left: '../f' },
+            data: {
+              right: '../../h',
+              left: '../f',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -3608,7 +3818,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: './style.css', left: 't' },
+            data: {
+              right: './style.css',
+              left: 't',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -3756,11 +3969,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '~/b', left: 'a' },
+            data: {
+              right: '~/b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: '~/d', left: '~/c' },
+            data: {
+              right: '~/d',
+              left: '~/c',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -3802,7 +4021,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '../b', left: 'a' },
+            data: {
+              right: '../b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -3999,7 +4221,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './index', left: 'a' },
+            data: {
+              right: './index',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -4020,7 +4245,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './b', left: 'a' },
+            data: {
+              right: './b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
@@ -4078,11 +4306,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '#c', left: '#b' },
+            data: {
+              right: '#c',
+              left: '#b',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { right: '#b', left: '#c' },
+            data: {
+              right: '#b',
+              left: '#c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4177,7 +4411,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4217,7 +4454,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'e/a', left: 'e/b' },
+            data: {
+              right: 'e/a',
+              left: 'e/b',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -4230,7 +4470,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: '~/c', left: 'fs' },
+            data: {
+              right: '~/c',
+              left: 'fs',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -4330,11 +4573,17 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: 'aaaa', left: 'e' },
+            data: {
+              right: 'aaaa',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: '../d', left: 'aaaa' },
+            data: {
+              right: '../d',
+              left: 'aaaa',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -4367,11 +4616,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'aaa', left: 'bb' },
+            data: {
+              right: 'aaa',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -4399,7 +4654,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './b-side-effect', left: './b' },
+            data: {
+              right: './b-side-effect',
+              left: './b',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -4561,7 +4819,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: './g-side-effect.css', left: './b-side-effect' },
+            data: {
+              right: './g-side-effect.css',
+              left: './b-side-effect',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -4739,15 +5000,24 @@ describe('sort-imports', () => {
         await invalid({
           errors: [
             {
-              data: { right: '~/y', left: 'a' },
+              data: {
+                right: '~/y',
+                left: 'a',
+              },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
             {
-              data: { right: '~/b', left: '~/z' },
+              data: {
+                right: '~/b',
+                left: '~/z',
+              },
               messageId: ORDER_ERROR_ID,
             },
             {
-              data: { right: '~/b', left: '~/z' },
+              data: {
+                right: '~/b',
+                left: '~/z',
+              },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
@@ -4821,7 +5091,10 @@ describe('sort-imports', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
+              data: {
+                right: 'b',
+                left: 'a',
+              },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -4893,7 +5166,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -5046,7 +5322,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: './b', left: './c' },
+            data: {
+              right: './b',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5073,7 +5352,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5089,7 +5371,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5179,11 +5464,17 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './bbb', left: './d' },
+            data: {
+              right: './bbb',
+              left: './d',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: './fff', left: './gg' },
+            data: {
+              right: './fff',
+              left: './gg',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5239,7 +5530,10 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './bb', left: './c' },
+            data: {
+              right: './bb',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5274,7 +5568,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './a', left: './b' },
+            data: {
+              right: './a',
+              left: './b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5359,7 +5656,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './a', left: './b' },
+            data: {
+              right: './a',
+              left: './b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -5639,7 +5939,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: '#subpath', left: './index' },
+            data: {
+              right: '#subpath',
+              left: './index',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -5961,15 +6264,24 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'a' },
+            data: {
+              right: 'bb',
+              left: 'a',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'ccc', left: 'bb' },
+            data: {
+              right: 'ccc',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'dddd', left: 'ccc' },
+            data: {
+              right: 'dddd',
+              left: 'ccc',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -6048,7 +6360,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: 'fooBar', left: 'fooZar' },
+            data: {
+              right: 'fooBar',
+              left: 'fooZar',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6141,7 +6456,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: './index', left: 'e' },
+            data: {
+              right: './index',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6168,7 +6486,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6191,7 +6512,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6214,7 +6538,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6237,7 +6564,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6301,7 +6631,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
@@ -6327,7 +6660,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6356,7 +6692,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6384,11 +6723,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'yImport.y1.y2', right: 'z' },
+            data: {
+              nodeDependentOnRight: 'yImport.y1.y2',
+              right: 'z',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -6436,7 +6781,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6458,7 +6806,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '@/a', left: 'b' },
+            data: {
+              right: '@/a',
+              left: 'b',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -6485,11 +6836,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'Comment above a', right: 'a' },
+            data: {
+              missedCommentAbove: 'Comment above a',
+              right: 'a',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
           {
-            data: { missedCommentAbove: 'Comment above b', right: './b' },
+            data: {
+              missedCommentAbove: 'Comment above b',
+              right: './b',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
         ],
@@ -6521,7 +6878,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'Comment above', right: 'a' },
+            data: {
+              missedCommentAbove: 'Comment above',
+              right: 'a',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
         ],
@@ -6545,11 +6905,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'Comment above', right: 'b' },
+            data: {
+              missedCommentAbove: 'Comment above',
+              right: 'b',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6628,11 +6994,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'internal', right: '~/d' },
+            data: {
+              missedCommentAbove: 'internal',
+              right: '~/d',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
           {
-            data: { right: '~/c', left: '~/d' },
+            data: {
+              right: '~/c',
+              left: '~/d',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -6693,7 +7065,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'internal or sibling', right: './c' },
+            data: {
+              missedCommentAbove: 'internal or sibling',
+              right: './c',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
           {
@@ -6706,11 +7081,17 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: '~/b', left: 'a' },
+            data: {
+              right: '~/b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { missedCommentAbove: 'internal or sibling', right: '~/b' },
+            data: {
+              missedCommentAbove: 'internal or sibling',
+              right: '~/b',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
         ],
@@ -6778,7 +7159,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -6837,7 +7221,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: './d', left: '~/i' },
+            data: {
+              right: './d',
+              left: '~/i',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -6850,19 +7237,31 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: '~/c', left: 'fs' },
+            data: {
+              right: '~/c',
+              left: 'fs',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { right: '~/i', left: '~/c' },
+            data: {
+              right: '~/i',
+              left: '~/c',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: '../f', left: '.' },
+            data: {
+              right: '../f',
+              left: '.',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: '../../h', left: '../f' },
+            data: {
+              right: '../../h',
+              left: '../f',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -6884,7 +7283,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: './style.css', left: 't' },
+            data: {
+              right: './style.css',
+              left: 't',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -6895,7 +7297,10 @@ describe('sort-imports', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: '../k', left: '../j' },
+            data: {
+              right: '../k',
+              left: '../j',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -7043,11 +7448,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '~/b', left: 'a' },
+            data: {
+              right: '~/b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: '~/d', left: '~/c' },
+            data: {
+              right: '~/d',
+              left: '~/c',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -7089,7 +7500,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '../b', left: 'a' },
+            data: {
+              right: '../b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -7279,7 +7693,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './index', left: 'a' },
+            data: {
+              right: './index',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -7300,7 +7717,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './b', left: 'a' },
+            data: {
+              right: './b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
@@ -7337,11 +7757,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '@a/a1', left: 't' },
+            data: {
+              right: '@a/a1',
+              left: 't',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: '@b/b1', left: '@a/a2' },
+            data: {
+              right: '@b/b1',
+              left: '@a/a2',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -7418,11 +7844,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '#c', left: '#b' },
+            data: {
+              right: '#c',
+              left: '#b',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { right: '#b', left: '#c' },
+            data: {
+              right: '#b',
+              left: '#c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -7517,7 +7949,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -7566,11 +8001,17 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: '~/c', left: 'fs' },
+            data: {
+              right: '~/c',
+              left: 'fs',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { right: '~/i', left: '~/c' },
+            data: {
+              right: '~/i',
+              left: '~/c',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -7581,11 +8022,17 @@ describe('sort-imports', () => {
             messageId: EXTRA_SPACING_ERROR_ID,
           },
           {
-            data: { right: '../j', left: '.' },
+            data: {
+              right: '../j',
+              left: '.',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: '../k', left: '../j' },
+            data: {
+              right: '../k',
+              left: '../j',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -7671,11 +8118,17 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: 'aaaa', left: 'e' },
+            data: {
+              right: 'aaaa',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: '../d', left: 'aaaa' },
+            data: {
+              right: '../d',
+              left: 'aaaa',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -7708,11 +8161,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'c' },
+            data: {
+              right: 'bb',
+              left: 'c',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'aaa', left: 'bb' },
+            data: {
+              right: 'aaa',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -7756,7 +8215,10 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './aa', left: './b' },
+            data: {
+              right: './aa',
+              left: './b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -7895,7 +8357,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: './g-side-effect.css', left: './b-side-effect' },
+            data: {
+              right: './g-side-effect.css',
+              left: './b-side-effect',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
@@ -8073,15 +8538,24 @@ describe('sort-imports', () => {
         await invalid({
           errors: [
             {
-              data: { right: '~/y', left: 'aaaa' },
+              data: {
+                right: '~/y',
+                left: 'aaaa',
+              },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
             {
-              data: { right: '~/bb', left: '~/z' },
+              data: {
+                right: '~/bb',
+                left: '~/z',
+              },
               messageId: ORDER_ERROR_ID,
             },
             {
-              data: { right: '~/bb', left: '~/z' },
+              data: {
+                right: '~/bb',
+                left: '~/z',
+              },
               messageId: EXTRA_SPACING_ERROR_ID,
             },
           ],
@@ -8155,7 +8629,10 @@ describe('sort-imports', () => {
           ],
           errors: [
             {
-              data: { right: 'b', left: 'a' },
+              data: {
+                right: 'b',
+                left: 'a',
+              },
               messageId: MISSED_SPACING_ERROR_ID,
             },
           ],
@@ -8227,7 +8704,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: 'b', left: 'a' },
+            data: {
+              right: 'b',
+              left: 'a',
+            },
             messageId: EXTRA_SPACING_ERROR_ID,
           },
         ],
@@ -8380,7 +8860,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: './bb', left: './c' },
+            data: {
+              right: './bb',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -8407,7 +8890,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
+            data: {
+              right: 'aa',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -8423,7 +8909,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
+            data: {
+              right: 'aa',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -8457,7 +8946,10 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './shared', left: './atoms' },
+            data: {
+              right: './shared',
+              left: './atoms',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -8503,11 +8995,17 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './bbb', left: './d' },
+            data: {
+              right: './bbb',
+              left: './d',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: './fff', left: './gg' },
+            data: {
+              right: './fff',
+              left: './gg',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -8563,7 +9061,10 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './bb', left: './c' },
+            data: {
+              right: './bb',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -8598,7 +9099,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './aa', left: './b' },
+            data: {
+              right: './aa',
+              left: './b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -8683,7 +9187,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './aa', left: './b' },
+            data: {
+              right: './aa',
+              left: './b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -8944,11 +9451,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './index', left: './b' },
+            data: {
+              right: './index',
+              left: './b',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: '#subpath', left: './index' },
+            data: {
+              right: '#subpath',
+              left: './index',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -8959,7 +9472,10 @@ describe('sort-imports', () => {
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'timers', left: 'd' },
+            data: {
+              right: 'timers',
+              left: 'd',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -9300,15 +9816,24 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'bb', left: 'a' },
+            data: {
+              right: 'bb',
+              left: 'a',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'ccc', left: 'bb' },
+            data: {
+              right: 'ccc',
+              left: 'bb',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: 'dddd', left: 'ccc' },
+            data: {
+              right: 'dddd',
+              left: 'ccc',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -9387,7 +9912,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { right: 'fooBar', left: 'fooZar' },
+            data: {
+              right: 'fooBar',
+              left: 'fooZar',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9480,7 +10008,10 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: './index', left: 'e' },
+            data: {
+              right: './index',
+              left: 'e',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9507,7 +10038,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -9530,7 +10064,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -9553,7 +10090,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -9576,7 +10116,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -9640,7 +10183,10 @@ describe('sort-imports', () => {
         ],
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
@@ -9666,7 +10212,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -9695,7 +10244,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -9723,11 +10275,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { nodeDependentOnRight: 'yImport.y1.y2', right: 'z' },
+            data: {
+              nodeDependentOnRight: 'yImport.y1.y2',
+              right: 'z',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
           {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            data: {
+              nodeDependentOnRight: 'aImport.a1.a2',
+              right: 'b',
+            },
             messageId: DEPENDENCY_ORDER_ERROR_ID,
           },
         ],
@@ -9775,7 +10333,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'aa', left: 'b' },
+            data: {
+              right: 'aa',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9797,7 +10358,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '@/a', left: 'b' },
+            data: {
+              right: '@/a',
+              left: 'b',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
         ],
@@ -9824,11 +10388,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'Comment above a', right: 'a' },
+            data: {
+              missedCommentAbove: 'Comment above a',
+              right: 'a',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
           {
-            data: { missedCommentAbove: 'Comment above b', right: './b' },
+            data: {
+              missedCommentAbove: 'Comment above b',
+              right: './b',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
         ],
@@ -9860,7 +10430,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'Comment above', right: 'a' },
+            data: {
+              missedCommentAbove: 'Comment above',
+              right: 'a',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
         ],
@@ -9884,11 +10457,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'Comment above', right: 'b' },
+            data: {
+              missedCommentAbove: 'Comment above',
+              right: 'b',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
           {
-            data: { right: 'aa', left: 'b' },
+            data: {
+              right: 'aa',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -9967,11 +10546,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'internal', right: '~/d' },
+            data: {
+              missedCommentAbove: 'internal',
+              right: '~/d',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
           {
-            data: { right: '~/cc', left: '~/d' },
+            data: {
+              right: '~/cc',
+              left: '~/d',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
@@ -10032,7 +10617,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { missedCommentAbove: 'internal or sibling', right: './c' },
+            data: {
+              missedCommentAbove: 'internal or sibling',
+              right: './c',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
           {
@@ -10045,11 +10633,17 @@ describe('sort-imports', () => {
             messageId: GROUP_ORDER_ERROR_ID,
           },
           {
-            data: { right: '~/b', left: 'a' },
+            data: {
+              right: '~/b',
+              left: 'a',
+            },
             messageId: MISSED_SPACING_ERROR_ID,
           },
           {
-            data: { missedCommentAbove: 'internal or sibling', right: '~/b' },
+            data: {
+              missedCommentAbove: 'internal or sibling',
+              right: '~/b',
+            },
             messageId: MISSED_COMMENT_ABOVE_ERROR_ID,
           },
         ],
@@ -10191,7 +10785,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: 'a', left: 'b' },
+            data: {
+              right: 'a',
+              left: 'b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -10296,7 +10893,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: '~/b', left: '~/c' },
+            data: {
+              right: '~/b',
+              left: '~/c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -10991,7 +11591,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './b', left: './c' },
+            data: {
+              right: './b',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -11013,11 +11616,17 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './c', left: './d' },
+            data: {
+              right: './c',
+              left: './d',
+            },
             messageId: ORDER_ERROR_ID,
           },
           {
-            data: { right: './b', left: './a' },
+            data: {
+              right: './b',
+              left: './a',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -11045,7 +11654,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './b', left: './c' },
+            data: {
+              right: './b',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -11065,7 +11677,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './b', left: './c' },
+            data: {
+              right: './b',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -11087,7 +11702,10 @@ describe('sort-imports', () => {
       await invalid({
         errors: [
           {
-            data: { right: './b', left: './c' },
+            data: {
+              right: './b',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -11127,7 +11745,10 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './a', left: './b' },
+            data: {
+              right: './a',
+              left: './b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -11149,7 +11770,10 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './b', left: './c' },
+            data: {
+              right: './b',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -11169,7 +11793,10 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './b', left: './c' },
+            data: {
+              right: './b',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -11191,7 +11818,10 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './b', left: './c' },
+            data: {
+              right: './b',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -11211,7 +11841,10 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './b', left: './c' },
+            data: {
+              right: './b',
+              left: './c',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
@@ -11241,7 +11874,10 @@ describe('sort-imports', () => {
         `,
         errors: [
           {
-            data: { right: './a', left: './b' },
+            data: {
+              right: './a',
+              left: './b',
+            },
             messageId: ORDER_ERROR_ID,
           },
         ],
