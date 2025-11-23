@@ -5,6 +5,15 @@ import type { SortingNode } from '../types/sorting-node'
 import { getGroupIndex } from './get-group-index'
 import { sortNodes } from './sort-nodes'
 
+export type OptionsByGroupIndexComputer<
+  Options extends CommonOptions,
+  T extends SortingNode,
+> = (groupIndex: number) => {
+  fallbackSortNodeValueGetter?: NodeValueGetterFunction<T> | null
+  nodeValueGetter?: NodeValueGetterFunction<T> | null
+  options: Options
+}
+
 /**
  * Parameters for sorting nodes by groups.
  *
@@ -15,16 +24,12 @@ interface SortNodesByGroupsParameters<
   Options extends CommonOptions,
   T extends SortingNode,
 > {
-  optionsByGroupIndexComputer(groupIndex: number): {
-    fallbackSortNodeValueGetter?: NodeValueGetterFunction<T> | null
-    nodeValueGetter?: NodeValueGetterFunction<T> | null
-    options: Options
-  }
   isNodeIgnoredForGroup?(props: {
     groupOptions: Options
     groupIndex: number
     node: T
   }): boolean
+  optionsByGroupIndexComputer: OptionsByGroupIndexComputer<Options, T>
   ignoreEslintDisabledNodes: boolean
   isNodeIgnored?(node: T): boolean
   groups: GroupsOptions<string>

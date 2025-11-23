@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
+import type { OptionsByGroupIndexComputer } from '../../utils/sort-nodes-by-groups'
 import type { CommonOptions } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
@@ -15,9 +16,10 @@ describe('sort-nodes-by-groups', () => {
     order: 'asc',
     alphabet: '',
   } as const
-  let optionsByGroupIndexComputer: () => {
-    options: CommonOptions
-  } = () => ({ options })
+  let optionsByGroupIndexComputer: OptionsByGroupIndexComputer<
+    CommonOptions,
+    SortingNode
+  > = () => ({ options })
 
   it('sorts nodes by groups', () => {
     let nodeA = createTestNode({ group: 'group2', name: 'a' })
