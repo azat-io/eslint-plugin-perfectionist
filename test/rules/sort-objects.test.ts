@@ -968,6 +968,16 @@ describe('sort-objects', () => {
         options: [options],
       })
 
+      /**
+       * TODO: add regression test for nested dependency:
+       *
+       * `let { a = nested, b: { nested } = { nested: 'default' } } = obj;`.
+       *
+       * Should be invalid because a depends on nested from b, but currently
+       * passes.
+       *
+       * @see https://github.com/azat-io/eslint-plugin-perfectionist/issues/619
+       */
       await valid({
         code: dedent`
           let {
