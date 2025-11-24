@@ -140,7 +140,37 @@ describe('get-custom-groups-compare-options', () => {
       })
     })
 
-    it('overrides "fallbackSort.order"', () => {
+    it('takes "fallbackSort.order" if the custom group does not override it', () => {
+      expect(
+        getCustomGroupsCompareOptions(
+          {
+            ...baseOptions,
+            customGroups: [
+              {
+                fallbackSort: {
+                  type: 'alphabetical',
+                },
+                groupName: 'group',
+              },
+            ],
+            fallbackSort: {
+              type: 'natural',
+              order: 'desc',
+            },
+            groups: ['group'],
+          },
+          0,
+        ),
+      ).toStrictEqual({
+        ...baseOptions,
+        fallbackSort: {
+          type: 'alphabetical',
+          order: 'desc',
+        },
+      })
+    })
+
+    it('overrides "fallbackSort.order" with custom groups', () => {
       expect(
         getCustomGroupsCompareOptions(
           {

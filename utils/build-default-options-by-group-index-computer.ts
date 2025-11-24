@@ -92,12 +92,10 @@ export function getCustomGroupsCompareOptions(
   }
 
   if (customGroup) {
+    let fallbackOrder = customGroup.fallbackSort?.order ?? fallbackSort.order
     fallbackSort = {
       type: customGroup.fallbackSort?.type ?? fallbackSort.type,
-    }
-    let fallbackOrder = customGroup.fallbackSort?.order ?? fallbackSort.order
-    if (fallbackOrder) {
-      fallbackSort.order = fallbackOrder
+      ...(fallbackOrder ? { order: fallbackOrder } : {}),
     }
     order = customGroup.order ?? order
     type = customGroup.type ?? type
