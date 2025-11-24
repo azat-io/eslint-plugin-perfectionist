@@ -47,11 +47,16 @@ import { matches } from '../utils/matches'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+const ORDER_ERROR_ID = 'unexpectedJSXPropsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedJSXPropsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenJSXPropsMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenJSXPropsMembers'
+
 type MessageId =
-  | 'missedSpacingBetweenJSXPropsMembers'
-  | 'extraSpacingBetweenJSXPropsMembers'
-  | 'unexpectedJSXPropsGroupOrder'
-  | 'unexpectedJSXPropsOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
@@ -189,10 +194,10 @@ export default createEslintRule<Options, MessageId>({
 
         reportAllErrors<MessageId>({
           availableMessageIds: {
-            missedSpacingBetweenMembers: 'missedSpacingBetweenJSXPropsMembers',
-            extraSpacingBetweenMembers: 'extraSpacingBetweenJSXPropsMembers',
-            unexpectedGroupOrder: 'unexpectedJSXPropsGroupOrder',
-            unexpectedOrder: 'unexpectedJSXPropsOrder',
+            missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+            extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+            unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+            unexpectedOrder: ORDER_ERROR_ID,
           },
           sortNodesExcludingEslintDisabled:
             createSortNodesExcludingEslintDisabled(currentNodes),
@@ -228,10 +233,10 @@ export default createEslintRule<Options, MessageId>({
       type: 'array',
     },
     messages: {
-      missedSpacingBetweenJSXPropsMembers: MISSED_SPACING_ERROR,
-      extraSpacingBetweenJSXPropsMembers: EXTRA_SPACING_ERROR,
-      unexpectedJSXPropsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedJSXPropsOrder: ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-jsx-props',

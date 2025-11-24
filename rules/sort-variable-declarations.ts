@@ -40,12 +40,20 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+const ORDER_ERROR_ID = 'unexpectedVariableDeclarationsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedVariableDeclarationsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenVariableDeclarationsMembers'
+const MISSED_SPACING_ERROR_ID =
+  'missedSpacingBetweenVariableDeclarationsMembers'
+const DEPENDENCY_ORDER_ERROR_ID =
+  'unexpectedVariableDeclarationsDependencyOrder'
+
 type MessageId =
-  | 'missedSpacingBetweenVariableDeclarationsMembers'
-  | 'extraSpacingBetweenVariableDeclarationsMembers'
-  | 'unexpectedVariableDeclarationsDependencyOrder'
-  | 'unexpectedVariableDeclarationsGroupOrder'
-  | 'unexpectedVariableDeclarationsOrder'
+  | typeof DEPENDENCY_ORDER_ERROR_ID
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
@@ -176,14 +184,11 @@ export default createEslintRule<Options, MessageId>({
 
       reportAllErrors<MessageId>({
         availableMessageIds: {
-          missedSpacingBetweenMembers:
-            'missedSpacingBetweenVariableDeclarationsMembers',
-          extraSpacingBetweenMembers:
-            'extraSpacingBetweenVariableDeclarationsMembers',
-          unexpectedDependencyOrder:
-            'unexpectedVariableDeclarationsDependencyOrder',
-          unexpectedGroupOrder: 'unexpectedVariableDeclarationsGroupOrder',
-          unexpectedOrder: 'unexpectedVariableDeclarationsOrder',
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
         sourceCode,
@@ -211,11 +216,11 @@ export default createEslintRule<Options, MessageId>({
       },
     ],
     messages: {
-      missedSpacingBetweenVariableDeclarationsMembers: MISSED_SPACING_ERROR,
-      unexpectedVariableDeclarationsDependencyOrder: DEPENDENCY_ORDER_ERROR,
-      extraSpacingBetweenVariableDeclarationsMembers: EXTRA_SPACING_ERROR,
-      unexpectedVariableDeclarationsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedVariableDeclarationsOrder: ORDER_ERROR,
+      [DEPENDENCY_ORDER_ERROR_ID]: DEPENDENCY_ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-variable-declarations',

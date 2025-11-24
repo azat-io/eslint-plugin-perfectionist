@@ -44,11 +44,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -83,11 +80,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[key in Object]',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[key in Object]', left: 'a' },
           },
         ],
         output: dedent`
@@ -171,11 +165,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[key: string]',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[key: string]', left: 'a' },
           },
         ],
         output: dedent`
@@ -213,18 +204,12 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'c' },
           },
           {
-            data: {
-              right: 'd',
-              left: 'e',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'd', left: 'e' },
           },
         ],
         output: dedent`
@@ -266,18 +251,12 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[...other]',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[...other]', left: 'a' },
           },
           {
-            data: {
-              right: '[v in V]',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[v in V]', left: 'b' },
           },
         ],
         output: dedent`
@@ -304,22 +283,6 @@ describe('sort-interfaces', () => {
 
     it('does not break interface docs', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-          {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
         output: dedent`
           interface Interface {
             /**
@@ -352,6 +315,16 @@ describe('sort-interfaces', () => {
             c: string | number
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'c', left: 'd' },
+          },
+        ],
         options: [options],
       })
     })
@@ -360,11 +333,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -387,11 +357,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -731,18 +698,12 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         options: [
@@ -938,25 +899,16 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bb', left: 'a' },
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'ccc', left: 'bb' },
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'dddd', left: 'ccc' },
           },
           {
             data: {
@@ -1037,11 +989,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'fooBar', left: 'fooZar' },
           },
         ],
         output: dedent`
@@ -1079,11 +1028,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1114,11 +1060,8 @@ describe('sort-interfaces', () => {
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
           {
-            data: {
-              right: 'fooA',
-              left: 'fooB',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'fooA', left: 'fooB' },
           },
           {
             data: {
@@ -1251,11 +1194,8 @@ describe('sort-interfaces', () => {
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
           {
-            data: {
-              right: '[key: string]',
-              left: 'e',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[key: string]', left: 'e' },
           },
         ],
         output: dedent`
@@ -1322,11 +1262,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1362,11 +1299,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1411,18 +1345,12 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'e',
-              left: 'f',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'e', left: 'f' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'c', left: 'd' },
           },
         ],
         output: dedent`
@@ -1496,18 +1424,12 @@ describe('sort-interfaces', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bbb', left: 'd' },
           },
           {
-            data: {
-              right: 'fff',
-              left: 'gg',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'fff', left: 'gg' },
           },
         ],
         options: [
@@ -1568,11 +1490,8 @@ describe('sort-interfaces', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [
@@ -1626,11 +1545,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -1724,11 +1640,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -1874,25 +1787,16 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'y', left: 'a' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'z' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -1952,25 +1856,16 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'c', left: 'b' },
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -2031,11 +1926,8 @@ describe('sort-interfaces', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'missedSpacingBetweenInterfaceMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -2083,11 +1975,8 @@ describe('sort-interfaces', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'extraSpacingBetweenInterfaceMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -2224,11 +2113,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -2258,11 +2144,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2281,11 +2164,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2304,11 +2184,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2436,11 +2313,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2479,15 +2353,6 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: '1',
-              left: '2',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
         options: [
           {
             useConfigurationIf: {
@@ -2496,6 +2361,12 @@ describe('sort-interfaces', () => {
             type: 'unsorted',
           },
           options,
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '1', left: '2' },
+          },
         ],
         output: dedent`
           interface Interface {
@@ -2545,11 +2416,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2573,11 +2441,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -2605,18 +2470,12 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'z',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'z' },
           },
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'y', left: 'a' },
           },
         ],
         output: dedent`
@@ -2644,11 +2503,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[key: string]',
-              left: 'z',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[key: string]', left: 'z' },
           },
           {
             data: {
@@ -2749,11 +2605,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -2788,11 +2641,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[key in Object]',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[key in Object]', left: 'a' },
           },
         ],
         output: dedent`
@@ -2876,11 +2726,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[key: string]',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[key: string]', left: 'a' },
           },
         ],
         output: dedent`
@@ -2918,18 +2765,12 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'c' },
           },
           {
-            data: {
-              right: 'd',
-              left: 'e',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'd', left: 'e' },
           },
         ],
         output: dedent`
@@ -2971,18 +2812,12 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[...other]',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[...other]', left: 'a' },
           },
           {
-            data: {
-              right: '[v in V]',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[v in V]', left: 'b' },
           },
         ],
         output: dedent`
@@ -3009,22 +2844,6 @@ describe('sort-interfaces', () => {
 
     it('does not break interface docs', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-          {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
         output: dedent`
           interface Interface {
             /**
@@ -3057,6 +2876,16 @@ describe('sort-interfaces', () => {
             c: string | number
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'c', left: 'd' },
+          },
+        ],
         options: [options],
       })
     })
@@ -3065,11 +2894,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -3092,11 +2918,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -3596,25 +3419,16 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bb', left: 'a' },
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'ccc', left: 'bb' },
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'dddd', left: 'ccc' },
           },
           {
             data: {
@@ -3695,11 +3509,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'fooBar', left: 'fooZar' },
           },
         ],
         output: dedent`
@@ -3737,11 +3548,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -3772,11 +3580,8 @@ describe('sort-interfaces', () => {
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
           {
-            data: {
-              right: 'fooA',
-              left: 'fooB',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'fooA', left: 'fooB' },
           },
           {
             data: {
@@ -3909,11 +3714,8 @@ describe('sort-interfaces', () => {
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
           {
-            data: {
-              right: '[key: string]',
-              left: 'e',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[key: string]', left: 'e' },
           },
         ],
         output: dedent`
@@ -3980,11 +3782,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -4020,11 +3819,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -4069,18 +3865,12 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'e',
-              left: 'f',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'e', left: 'f' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'c', left: 'd' },
           },
         ],
         output: dedent`
@@ -4154,18 +3944,12 @@ describe('sort-interfaces', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bbb', left: 'd' },
           },
           {
-            data: {
-              right: 'fff',
-              left: 'gg',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'fff', left: 'gg' },
           },
         ],
         options: [
@@ -4226,11 +4010,8 @@ describe('sort-interfaces', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [
@@ -4284,11 +4065,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -4382,11 +4160,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -4532,25 +4307,16 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'y', left: 'a' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'z' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -4610,25 +4376,16 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'c', left: 'b' },
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -4689,11 +4446,8 @@ describe('sort-interfaces', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'missedSpacingBetweenInterfaceMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4741,11 +4495,8 @@ describe('sort-interfaces', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'extraSpacingBetweenInterfaceMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4882,11 +4633,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -4916,11 +4664,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4939,11 +4684,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4962,11 +4704,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -5094,11 +4833,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -5120,11 +4856,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -5152,18 +4885,12 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'z',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'z' },
           },
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'y', left: 'a' },
           },
         ],
         output: dedent`
@@ -5191,11 +4918,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[key: string]',
-              left: 'z',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[key: string]', left: 'z' },
           },
           {
             data: {
@@ -5296,11 +5020,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -5335,11 +5056,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[key in Object]',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[key in Object]', left: 'a' },
           },
         ],
         output: dedent`
@@ -5372,15 +5090,6 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'd-d',
-              left: 'a',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
         output: dedent`
           interface Interface {
             'b-b': string
@@ -5397,6 +5106,12 @@ describe('sort-interfaces', () => {
             c: string
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'd-d', left: 'a' },
+          },
+        ],
         options: [options],
       })
     })
@@ -5416,11 +5131,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[key: string]',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[key: string]', left: 'a' },
           },
         ],
         output: dedent`
@@ -5458,18 +5170,12 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: {
-              right: 'd',
-              left: 'e',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'd', left: 'e' },
           },
         ],
         output: dedent`
@@ -5542,22 +5248,6 @@ describe('sort-interfaces', () => {
 
     it('does not break interface docs', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-          {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
         output: dedent`
           interface Interface {
             /* Comment C */
@@ -5590,6 +5280,16 @@ describe('sort-interfaces', () => {
             c: string | number
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'c', left: 'd' },
+          },
+        ],
         options: [options],
       })
     })
@@ -5598,11 +5298,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -5625,11 +5322,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -6129,25 +5823,16 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bb', left: 'a' },
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'ccc', left: 'bb' },
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'dddd', left: 'ccc' },
           },
           {
             data: {
@@ -6228,11 +5913,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'fooBar', left: 'fooZar' },
           },
         ],
         output: dedent`
@@ -6270,11 +5952,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -6305,11 +5984,8 @@ describe('sort-interfaces', () => {
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
           {
-            data: {
-              right: 'fooA',
-              left: 'fooB',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'fooA', left: 'fooB' },
           },
           {
             data: {
@@ -6442,11 +6118,8 @@ describe('sort-interfaces', () => {
             messageId: 'unexpectedInterfacePropertiesGroupOrder',
           },
           {
-            data: {
-              right: '[key: string]',
-              left: 'e',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: '[key: string]', left: 'e' },
           },
         ],
         output: dedent`
@@ -6513,11 +6186,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -6553,11 +6223,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -6602,18 +6269,12 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'e',
-              left: 'f',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'e', left: 'f' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'c', left: 'd' },
           },
         ],
         output: dedent`
@@ -6687,11 +6348,8 @@ describe('sort-interfaces', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bbb',
-              left: 'd',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bbb', left: 'd' },
           },
         ],
         options: [
@@ -6752,11 +6410,8 @@ describe('sort-interfaces', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         options: [
@@ -6810,11 +6465,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         options: [
@@ -6908,11 +6560,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         options: [
@@ -7065,18 +6714,12 @@ describe('sort-interfaces', () => {
             messageId: 'extraSpacingBetweenInterfaceMembers',
           },
           {
-            data: {
-              right: 'bbb',
-              left: 'z',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bbb', left: 'z' },
           },
           {
-            data: {
-              right: 'bbb',
-              left: 'z',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'bbb', left: 'z' },
           },
         ],
         code: dedent`
@@ -7136,25 +6779,16 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'c', left: 'b' },
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
             messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -7215,11 +6849,8 @@ describe('sort-interfaces', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'missedSpacingBetweenInterfaceMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -7267,11 +6898,8 @@ describe('sort-interfaces', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'extraSpacingBetweenInterfaceMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -7408,11 +7036,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         output: dedent`
@@ -7442,11 +7067,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7465,11 +7087,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7488,11 +7107,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7620,11 +7236,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7646,11 +7259,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bb', left: 'a' },
           },
         ],
         output: dedent`
@@ -7678,18 +7288,12 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'z',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'z' },
           },
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'y', left: 'a' },
           },
         ],
         output: dedent`
@@ -7788,11 +7392,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -7902,11 +7503,8 @@ describe('sort-interfaces', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'missedSpacingBetweenInterfaceMembers',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -7956,11 +7554,8 @@ describe('sort-interfaces', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -7991,15 +7586,6 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
         output: dedent`
           interface Interface {
             b: string
@@ -8016,24 +7602,24 @@ describe('sort-interfaces', () => {
             a: string
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
         errors: [
           {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'c', left: 'd' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -8062,15 +7648,6 @@ describe('sort-interfaces', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
         output: dedent`
           interface Interface {
             b: string
@@ -8085,19 +7662,16 @@ describe('sort-interfaces', () => {
             a: string // eslint-disable-line
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
         output: dedent`
           interface Interface {
             b: string
@@ -8114,19 +7688,16 @@ describe('sort-interfaces', () => {
             a: string
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
         output: dedent`
           interface Interface {
             b: string
@@ -8141,6 +7712,12 @@ describe('sort-interfaces', () => {
             a: string /* eslint-disable-line */
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
@@ -8171,11 +7748,8 @@ describe('sort-interfaces', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [{}],
@@ -8200,26 +7774,14 @@ describe('sort-interfaces', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
         output: dedent`
           interface Interface {
             b: string
@@ -8234,6 +7796,12 @@ describe('sort-interfaces', () => {
             a: string // eslint-disable-line rule-to-test/sort-interfaces
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
@@ -8256,26 +7824,14 @@ describe('sort-interfaces', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedInterfacePropertiesOrder',
-          },
-        ],
         output: dedent`
           interface Interface {
             b: string
@@ -8290,6 +7846,12 @@ describe('sort-interfaces', () => {
             a: string /* eslint-disable-line rule-to-test/sort-interfaces */
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
@@ -8320,11 +7882,8 @@ describe('sort-interfaces', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [{}],

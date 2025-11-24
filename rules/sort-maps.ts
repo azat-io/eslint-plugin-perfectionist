@@ -37,11 +37,16 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
+const ORDER_ERROR_ID = 'unexpectedMapElementsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedMapElementsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenMapElementsMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenMapElementsMembers'
+
 type MessageId =
-  | 'missedSpacingBetweenMapElementsMembers'
-  | 'extraSpacingBetweenMapElementsMembers'
-  | 'unexpectedMapElementsGroupOrder'
-  | 'unexpectedMapElementsOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
@@ -183,12 +188,10 @@ export default createEslintRule<Options, MessageId>({
 
           reportAllErrors<MessageId>({
             availableMessageIds: {
-              missedSpacingBetweenMembers:
-                'missedSpacingBetweenMapElementsMembers',
-              extraSpacingBetweenMembers:
-                'extraSpacingBetweenMapElementsMembers',
-              unexpectedGroupOrder: 'unexpectedMapElementsGroupOrder',
-              unexpectedOrder: 'unexpectedMapElementsOrder',
+              missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+              extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+              unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+              unexpectedOrder: ORDER_ERROR_ID,
             },
             sortNodesExcludingEslintDisabled:
               createSortNodesExcludingEslintDisabled(nodes),
@@ -222,10 +225,10 @@ export default createEslintRule<Options, MessageId>({
       type: 'array',
     },
     messages: {
-      missedSpacingBetweenMapElementsMembers: MISSED_SPACING_ERROR,
-      extraSpacingBetweenMapElementsMembers: EXTRA_SPACING_ERROR,
-      unexpectedMapElementsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedMapElementsOrder: ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-maps',

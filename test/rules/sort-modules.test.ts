@@ -152,18 +152,12 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -192,18 +186,12 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -295,22 +283,6 @@ describe('sort-modules', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-          {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
-            messageId: 'missedSpacingBetweenModulesMembers',
-          },
-        ],
         options: [
           {
             groups: [
@@ -322,6 +294,16 @@ describe('sort-modules', () => {
               },
             ],
             type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'A' },
+          },
+          {
+            messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -457,10 +439,7 @@ describe('sort-modules', () => {
               messageId: 'unexpectedModulesGroupOrder',
             },
             {
-              data: {
-                right: 'AnotherClass',
-                left: 'C',
-              },
+              data: { right: 'AnotherClass', left: 'C' },
               messageId: 'unexpectedModulesOrder',
             },
           ],
@@ -577,10 +556,7 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesGroupOrder',
           },
           {
-            data: {
-              right: 'yetAnotherFunction',
-              left: 'anotherFunction',
-            },
+            data: { right: 'yetAnotherFunction', left: 'anotherFunction' },
             messageId: 'unexpectedModulesOrder',
           },
         ],
@@ -667,10 +643,7 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedModulesOrder',
           },
         ],
@@ -741,31 +714,6 @@ describe('sort-modules', () => {
 
     it('sorts elements within custom group blocks', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'class',
-              left: 'func',
-              right: 'C',
-            },
-            messageId: 'unexpectedModulesGroupOrder',
-          },
-          {
-            data: {
-              right: 'aFunction',
-              left: 'C',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-          {
-            data: {
-              right: 'anotherFunction',
-              left: 'D',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
         options: [
           {
             customGroups: [
@@ -784,6 +732,25 @@ describe('sort-modules', () => {
               },
             ],
             groups: [['exportInterfacesAndAsyncFunctions', 'class'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              leftGroup: 'unknown',
+              rightGroup: 'class',
+              left: 'func',
+              right: 'C',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: { right: 'aFunction', left: 'C' },
+            messageId: 'unexpectedModulesOrder',
+          },
+          {
+            data: { right: 'anotherFunction', left: 'D' },
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -887,11 +854,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -923,11 +887,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -1513,10 +1474,7 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'A',
-              right: 'B',
-            },
+            data: { nodeDependentOnRight: 'A', right: 'B' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -1588,10 +1546,7 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'A',
-              right: 'B',
-            },
+            data: { nodeDependentOnRight: 'A', right: 'B' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -1634,11 +1589,8 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         options: [options],
@@ -1664,10 +1616,7 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'B',
-              right: 'A',
-            },
+            data: { nodeDependentOnRight: 'B', right: 'A' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -1694,10 +1643,7 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'B',
-              right: 'A',
-            },
+            data: { nodeDependentOnRight: 'B', right: 'A' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -1819,18 +1765,12 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesGroupOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'z' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'b', left: 'z' },
           },
         ],
         options: [
@@ -1879,11 +1819,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -1899,25 +1836,16 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'z',
-              left: 'A',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'z', left: 'A' },
           },
           {
-            data: {
-              right: 'y',
-              left: 'z',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'y', left: 'z' },
           },
           {
-            data: {
-              right: 'B',
-              left: 'y',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'B', left: 'y' },
           },
         ],
         options: [
@@ -1974,25 +1902,16 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'c', left: 'b' },
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -2049,11 +1968,8 @@ describe('sort-modules', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'missedSpacingBetweenModulesMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -2097,11 +2013,8 @@ describe('sort-modules', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'extraSpacingBetweenModulesMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -2226,11 +2139,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -2256,11 +2166,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2275,11 +2182,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2294,11 +2198,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2315,11 +2216,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2334,11 +2232,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2355,11 +2250,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -2374,11 +2266,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -2393,11 +2282,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -2414,11 +2300,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2433,11 +2316,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -2454,11 +2334,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -2473,11 +2350,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -2492,11 +2366,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -2513,11 +2384,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -2532,11 +2400,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -2551,11 +2416,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -2572,11 +2434,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'C' },
           },
         ],
         output: dedent`
@@ -2747,18 +2606,12 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -2787,18 +2640,12 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -3009,10 +2856,7 @@ describe('sort-modules', () => {
               messageId: 'unexpectedModulesGroupOrder',
             },
             {
-              data: {
-                right: 'AnotherClass',
-                left: 'C',
-              },
+              data: { right: 'AnotherClass', left: 'C' },
               messageId: 'unexpectedModulesOrder',
             },
           ],
@@ -3129,10 +2973,7 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesGroupOrder',
           },
           {
-            data: {
-              right: 'yetAnotherFunction',
-              left: 'anotherFunction',
-            },
+            data: { right: 'yetAnotherFunction', left: 'anotherFunction' },
             messageId: 'unexpectedModulesOrder',
           },
         ],
@@ -3219,10 +3060,7 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedModulesOrder',
           },
         ],
@@ -3293,31 +3131,6 @@ describe('sort-modules', () => {
 
     it('sorts elements within custom group blocks', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'class',
-              left: 'func',
-              right: 'C',
-            },
-            messageId: 'unexpectedModulesGroupOrder',
-          },
-          {
-            data: {
-              right: 'aFunction',
-              left: 'C',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-          {
-            data: {
-              right: 'anotherFunction',
-              left: 'D',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
         options: [
           {
             customGroups: [
@@ -3336,6 +3149,25 @@ describe('sort-modules', () => {
               },
             ],
             groups: [['exportInterfacesAndAsyncFunctions', 'class'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              leftGroup: 'unknown',
+              rightGroup: 'class',
+              left: 'func',
+              right: 'C',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: { right: 'aFunction', left: 'C' },
+            messageId: 'unexpectedModulesOrder',
+          },
+          {
+            data: { right: 'anotherFunction', left: 'D' },
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -3439,11 +3271,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -3475,11 +3304,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -4065,10 +3891,7 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'A',
-              right: 'B',
-            },
+            data: { nodeDependentOnRight: 'A', right: 'B' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -4140,10 +3963,7 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'A',
-              right: 'B',
-            },
+            data: { nodeDependentOnRight: 'A', right: 'B' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -4186,11 +4006,8 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         options: [options],
@@ -4216,10 +4033,7 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'B',
-              right: 'A',
-            },
+            data: { nodeDependentOnRight: 'B', right: 'A' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -4246,10 +4060,7 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'B',
-              right: 'A',
-            },
+            data: { nodeDependentOnRight: 'B', right: 'A' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -4371,18 +4182,12 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesGroupOrder',
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'z' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'b', left: 'z' },
           },
         ],
         options: [
@@ -4431,11 +4236,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -4451,25 +4253,16 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'z',
-              left: 'A',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'z', left: 'A' },
           },
           {
-            data: {
-              right: 'y',
-              left: 'z',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'y', left: 'z' },
           },
           {
-            data: {
-              right: 'B',
-              left: 'y',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'B', left: 'y' },
           },
         ],
         options: [
@@ -4526,25 +4319,16 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'c', left: 'b' },
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -4601,11 +4385,8 @@ describe('sort-modules', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'missedSpacingBetweenModulesMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4649,11 +4430,8 @@ describe('sort-modules', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'extraSpacingBetweenModulesMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4778,11 +4556,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -4808,11 +4583,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4827,11 +4599,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4846,11 +4615,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4867,11 +4633,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4886,11 +4649,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4907,11 +4667,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -4926,11 +4683,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -4945,11 +4699,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -4966,11 +4717,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4985,11 +4733,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -5006,11 +4751,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -5025,11 +4767,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -5044,11 +4783,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -5065,11 +4801,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -5084,11 +4817,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -5103,11 +4833,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'A',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
           },
         ],
         output: dedent`
@@ -5124,11 +4851,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'C' },
           },
         ],
         output: dedent`
@@ -5300,18 +5024,12 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
         ],
         output: dedent`
@@ -5340,18 +5058,12 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
         ],
         output: dedent`
@@ -5562,10 +5274,7 @@ describe('sort-modules', () => {
               messageId: 'unexpectedModulesGroupOrder',
             },
             {
-              data: {
-                right: 'AnotherClass',
-                left: 'C',
-              },
+              data: { right: 'AnotherClass', left: 'C' },
               messageId: 'unexpectedModulesOrder',
             },
           ],
@@ -5682,10 +5391,7 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesGroupOrder',
           },
           {
-            data: {
-              right: 'yetAnotherFunction',
-              left: 'anotherFunction',
-            },
+            data: { right: 'yetAnotherFunction', left: 'anotherFunction' },
             messageId: 'unexpectedModulesOrder',
           },
         ],
@@ -5772,10 +5478,7 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedModulesOrder',
           },
         ],
@@ -5846,31 +5549,6 @@ describe('sort-modules', () => {
 
     it('sorts elements within custom group blocks', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'unknown',
-              rightGroup: 'class',
-              left: 'func',
-              right: 'C',
-            },
-            messageId: 'unexpectedModulesGroupOrder',
-          },
-          {
-            data: {
-              right: 'aFunction',
-              left: 'C',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-          {
-            data: {
-              right: 'anotherFunction',
-              left: 'D',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
         options: [
           {
             customGroups: [
@@ -5889,6 +5567,25 @@ describe('sort-modules', () => {
               },
             ],
             groups: [['exportInterfacesAndAsyncFunctions', 'class'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              leftGroup: 'unknown',
+              rightGroup: 'class',
+              left: 'func',
+              right: 'C',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            data: { right: 'aFunction', left: 'C' },
+            messageId: 'unexpectedModulesOrder',
+          },
+          {
+            data: { right: 'anotherFunction', left: 'D' },
+            messageId: 'unexpectedModulesOrder',
           },
         ],
         output: dedent`
@@ -5992,11 +5689,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -6028,11 +5722,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'A',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'B', left: 'A' },
           },
         ],
         output: dedent`
@@ -6618,10 +6309,7 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'A',
-              right: 'B',
-            },
+            data: { nodeDependentOnRight: 'A', right: 'B' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -6693,10 +6381,7 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'A',
-              right: 'B',
-            },
+            data: { nodeDependentOnRight: 'A', right: 'B' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -6739,11 +6424,8 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'AAA',
-              left: 'BB',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AAA', left: 'BB' },
           },
         ],
         options: [options],
@@ -6769,10 +6451,7 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'B',
-              right: 'A',
-            },
+            data: { nodeDependentOnRight: 'B', right: 'A' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -6799,10 +6478,7 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'B',
-              right: 'A',
-            },
+            data: { nodeDependentOnRight: 'B', right: 'A' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -6883,18 +6559,12 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesGroupOrder',
           },
           {
-            data: {
-              right: 'bbb',
-              left: 'z',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'bbb', left: 'z' },
           },
           {
-            data: {
-              right: 'bbb',
-              left: 'z',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'bbb', left: 'z' },
           },
         ],
         options: [
@@ -6943,11 +6613,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -6970,18 +6637,12 @@ describe('sort-modules', () => {
             messageId: 'extraSpacingBetweenModulesMembers',
           },
           {
-            data: {
-              right: 'yy',
-              left: 'z',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'yy', left: 'z' },
           },
           {
-            data: {
-              right: 'BBB',
-              left: 'yy',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'BBB', left: 'yy' },
           },
         ],
         options: [
@@ -7038,25 +6699,16 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'c', left: 'b' },
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
             messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -7113,11 +6765,8 @@ describe('sort-modules', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'missedSpacingBetweenModulesMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -7161,11 +6810,8 @@ describe('sort-modules', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'extraSpacingBetweenModulesMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -7290,11 +6936,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'bb', left: 'c' },
           },
         ],
         output: dedent`
@@ -7320,11 +6963,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7339,11 +6979,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7358,11 +6995,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7379,11 +7013,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7398,11 +7029,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7419,11 +7047,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
         ],
         output: dedent`
@@ -7438,11 +7063,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
         ],
         output: dedent`
@@ -7457,11 +7079,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
         ],
         output: dedent`
@@ -7478,11 +7097,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7497,11 +7113,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -7518,11 +7131,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
         ],
         output: dedent`
@@ -7537,11 +7147,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
         ],
         output: dedent`
@@ -7556,11 +7163,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
         ],
         output: dedent`
@@ -7577,11 +7181,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
         ],
         output: dedent`
@@ -7596,11 +7197,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
         ],
         output: dedent`
@@ -7615,11 +7213,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'AA',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'AA', left: 'B' },
           },
         ],
         output: dedent`
@@ -7636,11 +7231,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'BB',
-              left: 'C',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'BB', left: 'C' },
           },
         ],
         output: dedent`
@@ -7895,11 +7487,8 @@ describe('sort-modules', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'missedSpacingBetweenModulesMembers',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -7918,10 +7507,7 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'A',
-              right: 'B',
-            },
+            data: { nodeDependentOnRight: 'A', right: 'B' },
             messageId: 'unexpectedModulesDependencyOrder',
           },
         ],
@@ -7949,11 +7535,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'B',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'B' },
           },
         ],
         output: dedent`
@@ -8049,11 +7632,8 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -8114,18 +7694,12 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
           },
           {
-            data: {
-              right: 'a',
-              left: 'd',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'd' },
           },
         ],
         options: [
@@ -8159,11 +7733,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -8243,11 +7814,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -8344,18 +7912,12 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'd',
-              left: 'e',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'd', left: 'e' },
           },
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -8395,15 +7957,6 @@ describe('sort-modules', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
         output: dedent`
           function b() {}
           function c() {}
@@ -8416,6 +7969,12 @@ describe('sort-modules', () => {
           // eslint-disable-next-line
           function a() {}
         `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
     })
@@ -8424,18 +7983,12 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'c', left: 'd' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -8464,11 +8017,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'B',
-              left: 'C',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'C' },
           },
         ],
         output: dedent`
@@ -8491,11 +8041,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -8514,15 +8061,6 @@ describe('sort-modules', () => {
 
     it('handles block eslint-disable-next-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
         output: dedent`
           function b() {}
           function c() {}
@@ -8535,6 +8073,12 @@ describe('sort-modules', () => {
           /* eslint-disable-next-line */
           function a() {}
         `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
     })
@@ -8543,11 +8087,8 @@ describe('sort-modules', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -8588,11 +8129,8 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [{}],
@@ -8601,15 +8139,6 @@ describe('sort-modules', () => {
 
     it('handles rule-specific eslint-disable-next-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
         output: dedent`
           function b() {}
           function c() {}
@@ -8622,21 +8151,18 @@ describe('sort-modules', () => {
           // eslint-disable-next-line rule-to-test/sort-modules
           function a() {}
         `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
     })
 
     it('handles rule-specific inline eslint-disable-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
         output: dedent`
           function b() {}
           function c() {}
@@ -8647,21 +8173,18 @@ describe('sort-modules', () => {
           function b() {}
           function a() {} // eslint-disable-line rule-to-test/sort-modules
         `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
     })
 
     it('handles rule-specific block eslint-disable-next-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
         output: dedent`
           function b() {}
           function c() {}
@@ -8674,21 +8197,18 @@ describe('sort-modules', () => {
           /* eslint-disable-next-line rule-to-test/sort-modules */
           function a() {}
         `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
     })
 
     it('handles rule-specific inline block eslint-disable-line comments', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
         output: dedent`
           function b() {}
           function c() {}
@@ -8699,6 +8219,12 @@ describe('sort-modules', () => {
           function b() {}
           function a() {} /* eslint-disable-line rule-to-test/sort-modules */
         `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
     })
@@ -8727,11 +8253,8 @@ describe('sort-modules', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [{}],

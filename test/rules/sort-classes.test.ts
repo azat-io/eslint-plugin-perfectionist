@@ -98,11 +98,8 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'd',
-              left: 'e',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'd', left: 'e' },
           },
           {
             data: {
@@ -211,11 +208,8 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesGroupOrder',
           },
           {
-            data: {
-              right: 'm',
-              left: 'n',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'm', left: 'n' },
           },
           {
             data: {
@@ -1506,11 +1500,8 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesOrder',
           },
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -1811,18 +1802,12 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'x',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'x' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'z',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'c', left: 'z' },
           },
         ],
         output: dedent`
@@ -2130,29 +2115,6 @@ describe('sort-classes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'onSortChanged',
-              left: 'updateTable',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-          {
-            data: {
-              right: 'onPaginationChanged',
-              left: 'onSortChanged',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-          {
-            data: {
-              right: 'onValueChanged',
-              left: 'setFormValue',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             // Region: Table
@@ -2197,6 +2159,20 @@ describe('sort-classes', () => {
             protected onValueChanged() {}
           }
         `,
+        errors: [
+          {
+            data: { right: 'onSortChanged', left: 'updateTable' },
+            messageId: 'unexpectedClassesOrder',
+          },
+          {
+            data: { right: 'onPaginationChanged', left: 'onSortChanged' },
+            messageId: 'unexpectedClassesOrder',
+          },
+          {
+            data: { right: 'onValueChanged', left: 'setFormValue' },
+            messageId: 'unexpectedClassesOrder',
+          },
+        ],
         options: [
           {
             ...options,
@@ -2271,10 +2247,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'aaa',
-              right: 'b',
-            },
+            data: { nodeDependentOnRight: 'aaa', right: 'b' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -2729,38 +2702,23 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'd',
-              left: 'e',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'd', left: 'e' },
           },
           {
-            data: {
-              right: 'a',
-              left: 'd',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'd' },
           },
           {
-            data: {
-              nodeDependentOnRight: 'd',
-              right: 'b',
-            },
+            data: { nodeDependentOnRight: 'd', right: 'b' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
           {
-            data: {
-              nodeDependentOnRight: 'e',
-              right: 'c',
-            },
+            data: { nodeDependentOnRight: 'e', right: 'c' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
           {
-            data: {
-              nodeDependentOnRight: 'b',
-              right: 'z',
-            },
+            data: { nodeDependentOnRight: 'b', right: 'z' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -2805,10 +2763,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'c',
-            },
+            data: { nodeDependentOnRight: 'a', right: 'c' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -3446,17 +3401,11 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'b',
-              right: 'c',
-            },
+            data: { nodeDependentOnRight: 'b', right: 'c' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
           {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'c',
-            },
+            data: { nodeDependentOnRight: 'a', right: 'c' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -3489,15 +3438,6 @@ describe('sort-classes', () => {
 
     it('detects and ignores circular dependencies', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             a
@@ -3516,6 +3456,12 @@ describe('sort-classes', () => {
             g = this.b
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: [
           {
             ...options,
@@ -3570,10 +3516,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'b',
-              right: 'a',
-            },
+            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -3604,10 +3547,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'b',
-              right: 'a',
-            },
+            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -3650,17 +3590,11 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'aaa',
-              right: 'left',
-            },
+            data: { nodeDependentOnRight: 'aaa', right: 'left' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
           {
-            data: {
-              nodeDependentOnRight: 'aaa',
-              right: 'right',
-            },
+            data: { nodeDependentOnRight: 'aaa', right: 'right' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -3895,25 +3829,16 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'y', left: 'a' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'z' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -3955,18 +3880,12 @@ describe('sort-classes', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'method',
-                left: 'method',
-              },
               messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'method', left: 'method' },
             },
             {
-              data: {
-                right: 'method',
-                left: 'method',
-              },
               messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'method', left: 'method' },
             },
           ],
           output: dedent`
@@ -4022,25 +3941,16 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenClassMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'c', left: 'b' },
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -4101,11 +4011,8 @@ describe('sort-classes', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'missedSpacingBetweenClassMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4153,11 +4060,8 @@ describe('sort-classes', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -4294,11 +4198,8 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -4328,11 +4229,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4351,11 +4249,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4374,11 +4269,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4399,11 +4291,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4422,11 +4311,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4447,11 +4333,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4470,11 +4353,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4495,11 +4375,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4518,11 +4395,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4543,11 +4417,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4566,11 +4437,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -4591,10 +4459,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[key: number]',
-              left: '[key: string]',
-            },
+            data: { right: '[key: number]', left: '[key: string]' },
             messageId: 'unexpectedClassesOrder',
           },
         ],
@@ -4614,10 +4479,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[key: number]',
-              left: '[key: string]',
-            },
+            data: { right: '[key: number]', left: '[key: string]' },
             messageId: 'unexpectedClassesOrder',
           },
         ],
@@ -4748,11 +4610,8 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'd',
-              left: 'e',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'd', left: 'e' },
           },
           {
             data: {
@@ -4861,11 +4720,8 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesGroupOrder',
           },
           {
-            data: {
-              right: 'm',
-              left: 'n',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'm', left: 'n' },
           },
           {
             data: {
@@ -6156,11 +6012,8 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesOrder',
           },
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -6461,18 +6314,12 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'x',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'x' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'z',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'c', left: 'z' },
           },
         ],
         output: dedent`
@@ -6780,29 +6627,6 @@ describe('sort-classes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'onSortChanged',
-              left: 'updateTable',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-          {
-            data: {
-              right: 'onPaginationChanged',
-              left: 'onSortChanged',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-          {
-            data: {
-              right: 'onValueChanged',
-              left: 'setFormValue',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             // Region: Table
@@ -6847,6 +6671,20 @@ describe('sort-classes', () => {
             protected onValueChanged() {}
           }
         `,
+        errors: [
+          {
+            data: { right: 'onSortChanged', left: 'updateTable' },
+            messageId: 'unexpectedClassesOrder',
+          },
+          {
+            data: { right: 'onPaginationChanged', left: 'onSortChanged' },
+            messageId: 'unexpectedClassesOrder',
+          },
+          {
+            data: { right: 'onValueChanged', left: 'setFormValue' },
+            messageId: 'unexpectedClassesOrder',
+          },
+        ],
         options: [
           {
             ...options,
@@ -6921,10 +6759,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'aaa',
-              right: 'b',
-            },
+            data: { nodeDependentOnRight: 'aaa', right: 'b' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -7379,38 +7214,23 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'd',
-              left: 'e',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'd', left: 'e' },
           },
           {
-            data: {
-              right: 'a',
-              left: 'd',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'd' },
           },
           {
-            data: {
-              nodeDependentOnRight: 'd',
-              right: 'b',
-            },
+            data: { nodeDependentOnRight: 'd', right: 'b' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
           {
-            data: {
-              nodeDependentOnRight: 'e',
-              right: 'c',
-            },
+            data: { nodeDependentOnRight: 'e', right: 'c' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
           {
-            data: {
-              nodeDependentOnRight: 'b',
-              right: 'z',
-            },
+            data: { nodeDependentOnRight: 'b', right: 'z' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -7455,10 +7275,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'c',
-            },
+            data: { nodeDependentOnRight: 'a', right: 'c' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -8096,17 +7913,11 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'b',
-              right: 'c',
-            },
+            data: { nodeDependentOnRight: 'b', right: 'c' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
           {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'c',
-            },
+            data: { nodeDependentOnRight: 'a', right: 'c' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -8139,15 +7950,6 @@ describe('sort-classes', () => {
 
     it('detects and ignores circular dependencies', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             a
@@ -8166,6 +7968,12 @@ describe('sort-classes', () => {
             g = this.b
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: [
           {
             ...options,
@@ -8220,10 +8028,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'b',
-              right: 'a',
-            },
+            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -8254,10 +8059,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'b',
-              right: 'a',
-            },
+            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -8300,17 +8102,11 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'aaa',
-              right: 'left',
-            },
+            data: { nodeDependentOnRight: 'aaa', right: 'left' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
           {
-            data: {
-              nodeDependentOnRight: 'aaa',
-              right: 'right',
-            },
+            data: { nodeDependentOnRight: 'aaa', right: 'right' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -8545,25 +8341,16 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'y',
-              left: 'a',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'y', left: 'a' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'z' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'z',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -8605,18 +8392,12 @@ describe('sort-classes', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'method',
-                left: 'method',
-              },
               messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'method', left: 'method' },
             },
             {
-              data: {
-                right: 'method',
-                left: 'method',
-              },
               messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'method', left: 'method' },
             },
           ],
           output: dedent`
@@ -8672,25 +8453,16 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenClassMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'c', left: 'b' },
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -8751,11 +8523,8 @@ describe('sort-classes', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'missedSpacingBetweenClassMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -8803,11 +8572,8 @@ describe('sort-classes', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -8944,11 +8710,8 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -8978,11 +8741,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -9001,11 +8761,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -9024,11 +8781,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -9049,11 +8803,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -9072,11 +8823,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -9097,11 +8845,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -9120,11 +8865,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -9145,11 +8887,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -9168,11 +8907,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -9193,11 +8929,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -9216,11 +8949,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -9241,10 +8971,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[key: number]',
-              left: '[key: string]',
-            },
+            data: { right: '[key: number]', left: '[key: string]' },
             messageId: 'unexpectedClassesOrder',
           },
         ],
@@ -9264,10 +8991,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: '[key: number]',
-              left: '[key: string]',
-            },
+            data: { right: '[key: number]', left: '[key: string]' },
             messageId: 'unexpectedClassesOrder',
           },
         ],
@@ -11088,15 +10812,6 @@ describe('sort-classes', () => {
             ],
           },
         ],
-        errors: [
-          {
-            data: {
-              right: 'bb',
-              left: 'x',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class A {
             bb() {}
@@ -11115,6 +10830,12 @@ describe('sort-classes', () => {
             set c() {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'bb', left: 'x' },
+          },
+        ],
       })
     })
 
@@ -11405,38 +11126,23 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'onSortChanged',
-              left: 'updateTable',
-            },
+            data: { right: 'onSortChanged', left: 'updateTable' },
             messageId: 'unexpectedClassesOrder',
           },
           {
-            data: {
-              right: 'onPaginationChanged',
-              left: 'onSortChanged',
-            },
+            data: { right: 'onPaginationChanged', left: 'onSortChanged' },
             messageId: 'unexpectedClassesOrder',
           },
           {
-            data: {
-              right: 'disableForm',
-              left: 'clearForm',
-            },
+            data: { right: 'disableForm', left: 'clearForm' },
             messageId: 'unexpectedClassesOrder',
           },
           {
-            data: {
-              right: 'setFormValue',
-              left: 'disableForm',
-            },
+            data: { right: 'setFormValue', left: 'disableForm' },
             messageId: 'unexpectedClassesOrder',
           },
           {
-            data: {
-              right: 'onValueChanged',
-              left: 'setFormValue',
-            },
+            data: { right: 'onValueChanged', left: 'setFormValue' },
             messageId: 'unexpectedClassesOrder',
           },
         ],
@@ -11558,10 +11264,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'aaa',
-              right: 'b',
-            },
+            data: { nodeDependentOnRight: 'aaa', right: 'b' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -12016,31 +11719,19 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'd',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'd' },
           },
           {
-            data: {
-              nodeDependentOnRight: 'd',
-              right: 'b',
-            },
+            data: { nodeDependentOnRight: 'd', right: 'b' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
           {
-            data: {
-              nodeDependentOnRight: 'e',
-              right: 'c',
-            },
+            data: { nodeDependentOnRight: 'e', right: 'c' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
           {
-            data: {
-              nodeDependentOnRight: 'b',
-              right: 'z',
-            },
+            data: { nodeDependentOnRight: 'b', right: 'z' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -12085,10 +11776,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'c',
-            },
+            data: { nodeDependentOnRight: 'a', right: 'c' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -12726,24 +12414,15 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'b' },
           },
           {
-            data: {
-              nodeDependentOnRight: 'b',
-              right: 'c',
-            },
+            data: { nodeDependentOnRight: 'b', right: 'c' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
           {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'c',
-            },
+            data: { nodeDependentOnRight: 'a', right: 'c' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -12778,18 +12457,12 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'e',
-              left: 'a',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'e', left: 'a' },
           },
           {
-            data: {
-              right: 'g',
-              left: 'f',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'g', left: 'f' },
           },
         ],
         output: dedent`
@@ -12865,10 +12538,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'b',
-              right: 'a',
-            },
+            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -12899,10 +12569,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'b',
-              right: 'a',
-            },
+            data: { nodeDependentOnRight: 'b', right: 'a' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -12945,17 +12612,11 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'aaa',
-              right: 'left',
-            },
+            data: { nodeDependentOnRight: 'aaa', right: 'left' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
           {
-            data: {
-              nodeDependentOnRight: 'aaa',
-              right: 'right',
-            },
+            data: { nodeDependentOnRight: 'aaa', right: 'right' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -13136,18 +12797,12 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: {
-              right: 'z',
-              left: 'y',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'z', left: 'y' },
           },
         ],
         code: dedent`
@@ -13189,18 +12844,12 @@ describe('sort-classes', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'method',
-                left: 'method',
-              },
               messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'method', left: 'method' },
             },
             {
-              data: {
-                right: 'method',
-                left: 'method',
-              },
               messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'method', left: 'method' },
             },
           ],
           output: dedent`
@@ -13256,25 +12905,16 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'missedSpacingBetweenClassMembers',
+            data: { right: 'b', left: 'a' },
           },
           {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'c', left: 'b' },
           },
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -13335,11 +12975,8 @@ describe('sort-classes', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'missedSpacingBetweenClassMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -13387,11 +13024,8 @@ describe('sort-classes', () => {
           ],
           errors: [
             {
-              data: {
-                right: 'b',
-                left: 'a',
-              },
               messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
@@ -13526,15 +13160,6 @@ describe('sort-classes', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            data: {
-              right: 'bb',
-              left: 'c',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             aaa
@@ -13545,6 +13170,12 @@ describe('sort-classes', () => {
             c
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'bb', left: 'c' },
+          },
+        ],
         code: dedent`
           class Class {
             aaa
@@ -13562,11 +13193,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -13585,11 +13213,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -13608,11 +13233,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -13633,11 +13255,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -13656,11 +13275,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -13681,11 +13297,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -13704,11 +13317,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -13729,11 +13339,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -13752,11 +13359,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -13777,11 +13381,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -13800,11 +13401,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'aa',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
@@ -13937,11 +13535,8 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'missedSpacingBetweenClassMembers',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -13964,10 +13559,7 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-            },
+            data: { nodeDependentOnRight: 'a', right: 'b' },
             messageId: 'unexpectedClassesDependencyOrder',
           },
         ],
@@ -13997,22 +13589,6 @@ describe('sort-classes', () => {
 
     it('allows overriding options in groups', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-          {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'missedSpacingBetweenClassMembers',
-          },
-        ],
         options: [
           {
             groups: [
@@ -14024,6 +13600,16 @@ describe('sort-classes', () => {
               },
             ],
             type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'a' },
+          },
+          {
+            messageId: 'missedSpacingBetweenClassMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -14261,10 +13847,7 @@ describe('sort-classes', () => {
               messageId: 'unexpectedClassesGroupOrder',
             },
             {
-              data: {
-                right: 'anotherProperty',
-                left: 'property',
-              },
+              data: { right: 'anotherProperty', left: 'property' },
               messageId: 'unexpectedClassesOrder',
             },
           ],
@@ -14379,24 +13962,15 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'bb',
-              left: 'a',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'bb', left: 'a' },
           },
           {
-            data: {
-              right: 'ccc',
-              left: 'bb',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'ccc', left: 'bb' },
           },
           {
-            data: {
-              right: 'dddd',
-              left: 'ccc',
-            },
+            data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedClassesOrder',
           },
           {
@@ -14506,10 +14080,7 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'fooBar',
-              left: 'fooZar',
-            },
+            data: { right: 'fooBar', left: 'fooZar' },
             messageId: 'unexpectedClassesOrder',
           },
         ],
@@ -14783,22 +14354,6 @@ describe('sort-classes', () => {
 
     it('allows to use newlinesInside: 1', async () => {
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'missedSpacingBetweenClassMembers',
-          },
-          {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
-            messageId: 'extraSpacingBetweenClassMembers',
-          },
-        ],
         options: [
           {
             customGroups: [
@@ -14809,6 +14364,16 @@ describe('sort-classes', () => {
               },
             ],
             groups: ['unknown', 'methodsWithNewlinesInside'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'missedSpacingBetweenClassMembers',
+            data: { right: 'c', left: 'b' },
+          },
+          {
+            messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -14850,11 +14415,8 @@ describe('sort-classes', () => {
         ],
         errors: [
           {
-            data: {
-              right: 'd',
-              left: 'c',
-            },
             messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
@@ -14886,18 +14448,12 @@ describe('sort-classes', () => {
         await invalid({
           errors: [
             {
-              data: {
-                right: 'method',
-                left: 'method',
-              },
               messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'method', left: 'method' },
             },
             {
-              data: {
-                right: 'method',
-                left: 'method',
-              },
               messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'method', left: 'method' },
             },
           ],
           options: [
@@ -14997,10 +14553,7 @@ describe('sort-classes', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'log10',
-              left: 'log1p',
-            },
+            data: { right: 'log10', left: 'log1p' },
             messageId: 'unexpectedClassesOrder',
           },
         ],
@@ -15074,10 +14627,7 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesGroupOrder',
           },
           {
-            data: {
-              right: 'privateAccessorProperty',
-              left: 'privateProperty',
-            },
+            data: { right: 'privateAccessorProperty', left: 'privateProperty' },
             messageId: 'unexpectedClassesOrder',
           },
           {
@@ -15099,17 +14649,11 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesGroupOrder',
           },
           {
-            data: {
-              right: 'publicAccessorProperty',
-              left: 'publicProperty',
-            },
+            data: { right: 'publicAccessorProperty', left: 'publicProperty' },
             messageId: 'unexpectedClassesOrder',
           },
           {
-            data: {
-              right: 'publicGetMethod',
-              left: 'publicSetMethod',
-            },
+            data: { right: 'publicGetMethod', left: 'publicSetMethod' },
             messageId: 'unexpectedClassesOrder',
           },
           {
@@ -15291,11 +14835,8 @@ describe('sort-classes', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [
@@ -15360,18 +14901,12 @@ describe('sort-classes', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
           },
           {
-            data: {
-              right: 'a',
-              left: 'd',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'd' },
           },
         ],
         options: [
@@ -15407,11 +14942,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -15501,11 +15033,8 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -15614,18 +15143,12 @@ describe('sort-classes', () => {
       await invalid({
         errors: [
           {
-            data: {
-              right: 'd',
-              left: 'e',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'd', left: 'e' },
           },
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
@@ -15671,15 +15194,6 @@ describe('sort-classes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             b
@@ -15696,24 +15210,24 @@ describe('sort-classes', () => {
             a
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
         errors: [
           {
-            data: {
-              right: 'c',
-              left: 'd',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'c', left: 'd' },
           },
           {
-            data: {
-              right: 'b',
-              left: 'a',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
@@ -15742,15 +15256,6 @@ describe('sort-classes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             b = this.a
@@ -15767,17 +15272,20 @@ describe('sort-classes', () => {
             a
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -15798,15 +15306,6 @@ describe('sort-classes', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             b
@@ -15823,17 +15322,20 @@ describe('sort-classes', () => {
             a
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
         errors: [
           {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
@@ -15880,26 +15382,14 @@ describe('sort-classes', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             b
@@ -15916,19 +15406,16 @@ describe('sort-classes', () => {
             a
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             b
@@ -15943,19 +15430,16 @@ describe('sort-classes', () => {
             a // eslint-disable-line rule-to-test/sort-classes
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             b
@@ -15972,19 +15456,16 @@ describe('sort-classes', () => {
             a
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
       await invalid({
-        errors: [
-          {
-            data: {
-              right: 'b',
-              left: 'c',
-            },
-            messageId: 'unexpectedClassesOrder',
-          },
-        ],
         output: dedent`
           class Class {
             b
@@ -15999,6 +15480,12 @@ describe('sort-classes', () => {
             a /* eslint-disable-line rule-to-test/sort-classes */
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: [{}],
       })
 
@@ -16029,11 +15516,8 @@ describe('sort-classes', () => {
         `,
         errors: [
           {
-            data: {
-              right: 'a',
-              left: 'b',
-            },
             messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
           },
         ],
         options: [{}],

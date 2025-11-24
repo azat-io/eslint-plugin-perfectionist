@@ -23,16 +23,18 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
 import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import {
+  singleCustomGroupJsonSchema,
+  allSelectors,
+} from './sort-union-types/types'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
-import { singleCustomGroupJsonSchema } from './sort-union-types/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { allSelectors } from './sort-union-types/types'
 import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -41,11 +43,16 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+const ORDER_ERROR_ID = 'unexpectedUnionTypesOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedUnionTypesGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenUnionTypes'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenUnionTypes'
+
 type MessageId =
-  | 'missedSpacingBetweenUnionTypes'
-  | 'unexpectedUnionTypesGroupOrder'
-  | 'extraSpacingBetweenUnionTypes'
-  | 'unexpectedUnionTypesOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
@@ -84,10 +91,10 @@ export let jsonSchema: JSONSchema4 = {
 export default createEslintRule<Options, MessageId>({
   meta: {
     messages: {
-      missedSpacingBetweenUnionTypes: MISSED_SPACING_ERROR,
-      extraSpacingBetweenUnionTypes: EXTRA_SPACING_ERROR,
-      unexpectedUnionTypesGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedUnionTypesOrder: ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-union-types',
@@ -103,10 +110,10 @@ export default createEslintRule<Options, MessageId>({
     TSUnionType: node => {
       sortUnionOrIntersectionTypes({
         availableMessageIds: {
-          missedSpacingBetweenMembers: 'missedSpacingBetweenUnionTypes',
-          extraSpacingBetweenMembers: 'extraSpacingBetweenUnionTypes',
-          unexpectedGroupOrder: 'unexpectedUnionTypesGroupOrder',
-          unexpectedOrder: 'unexpectedUnionTypesOrder',
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
         },
         tokenValueToIgnoreBefore: '|',
         context,

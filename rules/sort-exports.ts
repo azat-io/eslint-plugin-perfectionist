@@ -40,12 +40,18 @@ import { complete } from '../utils/complete'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+const ORDER_ERROR_ID = 'unexpectedExportsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedExportsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenExports'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenExports'
+const MISSED_COMMENT_ABOVE_ERROR_ID = 'missedCommentAboveExport'
+
 type MessageId =
-  | 'unexpectedExportsGroupOrder'
-  | 'missedSpacingBetweenExports'
-  | 'extraSpacingBetweenExports'
-  | 'missedCommentAboveExport'
-  | 'unexpectedExportsOrder'
+  | typeof MISSED_COMMENT_ABOVE_ERROR_ID
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 type SortExportsSortingNode = SortingNode<
   TSESTree.ExportNamedDeclarationWithSource | TSESTree.ExportAllDeclaration
@@ -165,11 +171,11 @@ export default createEslintRule<Options, MessageId>({
         let nodes = formattedMembers.flat()
         reportAllErrors<MessageId>({
           availableMessageIds: {
-            missedSpacingBetweenMembers: 'missedSpacingBetweenExports',
-            extraSpacingBetweenMembers: 'extraSpacingBetweenExports',
-            unexpectedGroupOrder: 'unexpectedExportsGroupOrder',
-            missedCommentAbove: 'missedCommentAboveExport',
-            unexpectedOrder: 'unexpectedExportsOrder',
+            missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+            extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+            missedCommentAbove: MISSED_COMMENT_ABOVE_ERROR_ID,
+            unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+            unexpectedOrder: ORDER_ERROR_ID,
           },
           sortNodesExcludingEslintDisabled,
           sourceCode,
@@ -206,11 +212,11 @@ export default createEslintRule<Options, MessageId>({
       type: 'array',
     },
     messages: {
-      missedCommentAboveExport: MISSED_COMMENT_ABOVE_ERROR,
-      missedSpacingBetweenExports: MISSED_SPACING_ERROR,
-      extraSpacingBetweenExports: EXTRA_SPACING_ERROR,
-      unexpectedExportsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedExportsOrder: ORDER_ERROR,
+      [MISSED_COMMENT_ABOVE_ERROR_ID]: MISSED_COMMENT_ABOVE_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-exports',
