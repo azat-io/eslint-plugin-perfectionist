@@ -33,14 +33,9 @@ describe('get-node-decorators', () => {
   function createNodeWithDecorators(
     decorators?: TSESTree.Decorator[],
   ): NodeWithDecoratorsParameter {
-    if (decorators) {
-      return {
-        type: 'ClassDeclaration',
-        decorators,
-      } as unknown as NodeWithDecoratorsParameter
-    }
     return {
       type: 'ClassDeclaration',
+      ...(decorators ? { decorators } : {}),
     } as unknown as NodeWithDecoratorsParameter
   }
 })
