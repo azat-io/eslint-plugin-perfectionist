@@ -55,12 +55,18 @@ import { matches } from '../utils/matches'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+const ORDER_ERROR_ID = 'unexpectedClassesOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedClassesGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenClassMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenClassMembers'
+const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedClassesDependencyOrder'
+
 type MessageId =
-  | 'unexpectedClassesDependencyOrder'
-  | 'missedSpacingBetweenClassMembers'
-  | 'extraSpacingBetweenClassMembers'
-  | 'unexpectedClassesGroupOrder'
-  | 'unexpectedClassesOrder'
+  | typeof DEPENDENCY_ORDER_ERROR_ID
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<SortClassesOptions[number]> = {
   groups: [
@@ -626,11 +632,11 @@ export default createEslintRule<SortClassesOptions, MessageId>({
           return computedNewlinesBetween
         },
         availableMessageIds: {
-          missedSpacingBetweenMembers: 'missedSpacingBetweenClassMembers',
-          extraSpacingBetweenMembers: 'extraSpacingBetweenClassMembers',
-          unexpectedDependencyOrder: 'unexpectedClassesDependencyOrder',
-          unexpectedGroupOrder: 'unexpectedClassesGroupOrder',
-          unexpectedOrder: 'unexpectedClassesOrder',
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
         sourceCode,
@@ -659,11 +665,11 @@ export default createEslintRule<SortClassesOptions, MessageId>({
       },
     ],
     messages: {
-      unexpectedClassesDependencyOrder: DEPENDENCY_ORDER_ERROR,
-      missedSpacingBetweenClassMembers: MISSED_SPACING_ERROR,
-      extraSpacingBetweenClassMembers: EXTRA_SPACING_ERROR,
-      unexpectedClassesGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedClassesOrder: ORDER_ERROR,
+      [DEPENDENCY_ORDER_ERROR_ID]: DEPENDENCY_ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-classes',

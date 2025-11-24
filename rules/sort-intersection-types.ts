@@ -9,11 +9,16 @@ import {
 import { sortUnionOrIntersectionTypes, jsonSchema } from './sort-union-types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
+const ORDER_ERROR_ID = 'unexpectedIntersectionTypesOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedIntersectionTypesGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenIntersectionTypes'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenIntersectionTypes'
+
 type MessageId =
-  | 'missedSpacingBetweenIntersectionTypes'
-  | 'unexpectedIntersectionTypesGroupOrder'
-  | 'extraSpacingBetweenIntersectionTypes'
-  | 'unexpectedIntersectionTypesOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 type Options = SortUnionTypesOptions
 
@@ -35,10 +40,10 @@ let defaultOptions: Required<Options[number]> = {
 export default createEslintRule<Options, MessageId>({
   meta: {
     messages: {
-      missedSpacingBetweenIntersectionTypes: MISSED_SPACING_ERROR,
-      extraSpacingBetweenIntersectionTypes: EXTRA_SPACING_ERROR,
-      unexpectedIntersectionTypesGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedIntersectionTypesOrder: ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-intersection-types',
@@ -54,10 +59,10 @@ export default createEslintRule<Options, MessageId>({
     TSIntersectionType: node => {
       sortUnionOrIntersectionTypes({
         availableMessageIds: {
-          missedSpacingBetweenMembers: 'missedSpacingBetweenIntersectionTypes',
-          extraSpacingBetweenMembers: 'extraSpacingBetweenIntersectionTypes',
-          unexpectedGroupOrder: 'unexpectedIntersectionTypesGroupOrder',
-          unexpectedOrder: 'unexpectedIntersectionTypesOrder',
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
         },
         tokenValueToIgnoreBefore: '&',
         context,

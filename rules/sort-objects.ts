@@ -56,12 +56,18 @@ import { matches } from '../utils/matches'
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+const ORDER_ERROR_ID = 'unexpectedObjectsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedObjectsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenObjectMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenObjectMembers'
+const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedObjectsDependencyOrder'
+
 type MessageId =
-  | 'missedSpacingBetweenObjectMembers'
-  | 'unexpectedObjectsDependencyOrder'
-  | 'extraSpacingBetweenObjectMembers'
-  | 'unexpectedObjectsGroupOrder'
-  | 'unexpectedObjectsOrder'
+  | typeof DEPENDENCY_ORDER_ERROR_ID
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
@@ -363,11 +369,11 @@ export default createEslintRule<Options, MessageId>({
 
       reportAllErrors<MessageId>({
         availableMessageIds: {
-          missedSpacingBetweenMembers: 'missedSpacingBetweenObjectMembers',
-          extraSpacingBetweenMembers: 'extraSpacingBetweenObjectMembers',
-          unexpectedDependencyOrder: 'unexpectedObjectsDependencyOrder',
-          unexpectedGroupOrder: 'unexpectedObjectsGroupOrder',
-          unexpectedOrder: 'unexpectedObjectsOrder',
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
         sourceCode,
@@ -425,11 +431,11 @@ export default createEslintRule<Options, MessageId>({
       type: 'array',
     },
     messages: {
-      unexpectedObjectsDependencyOrder: DEPENDENCY_ORDER_ERROR,
-      missedSpacingBetweenObjectMembers: MISSED_SPACING_ERROR,
-      extraSpacingBetweenObjectMembers: EXTRA_SPACING_ERROR,
-      unexpectedObjectsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedObjectsOrder: ORDER_ERROR,
+      [DEPENDENCY_ORDER_ERROR_ID]: DEPENDENCY_ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-objects',

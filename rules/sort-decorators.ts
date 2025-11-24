@@ -40,11 +40,16 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
+const ORDER_ERROR_ID = 'unexpectedDecoratorsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedDecoratorsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenDecorators'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenDecorators'
+
 type MessageId =
-  | 'unexpectedDecoratorsGroupOrder'
-  | 'missedSpacingBetweenDecorators'
-  | 'extraSpacingBetweenDecorators'
-  | 'unexpectedDecoratorsOrder'
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
@@ -112,10 +117,10 @@ export default createEslintRule<Options, MessageId>({
       type: 'array',
     },
     messages: {
-      missedSpacingBetweenDecorators: MISSED_SPACING_ERROR,
-      extraSpacingBetweenDecorators: EXTRA_SPACING_ERROR,
-      unexpectedDecoratorsGroupOrder: GROUP_ORDER_ERROR,
-      unexpectedDecoratorsOrder: ORDER_ERROR,
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-decorators',
@@ -269,10 +274,10 @@ function sortDecorators(
 
   reportAllErrors<MessageId>({
     availableMessageIds: {
-      missedSpacingBetweenMembers: 'missedSpacingBetweenDecorators',
-      extraSpacingBetweenMembers: 'extraSpacingBetweenDecorators',
-      unexpectedGroupOrder: 'unexpectedDecoratorsGroupOrder',
-      unexpectedOrder: 'unexpectedDecoratorsOrder',
+      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+      unexpectedOrder: ORDER_ERROR_ID,
     },
     ignoreFirstNodeHighestBlockComment: true,
     sortNodesExcludingEslintDisabled,
