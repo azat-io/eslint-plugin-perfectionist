@@ -34,9 +34,10 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { computeOverriddenOptionsByGroupIndex } from './sort-object-types/compute-overridden-options-by-group-index'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
+import { buildOptionsByGroupIndexComputer } from './sort-object-types/build-options-by-group-index-computer'
+import { comparatorByOptionsComputer } from './sort-object-types/comparator-by-options-computer'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -312,21 +313,6 @@ export function sortObjectTypeElements<MessageIds extends string>({
   ): SortObjectTypesSortingNode[] {
     return formattedMembers.flatMap(groupedNodes =>
       sortNodesByGroups({
-        optionsByGroupIndexComputer: groupIndex => {
-          let {
-            fallbackSortNodeValueGetter,
-            options: overriddenOptions,
-            nodeValueGetter,
-          } = computeOverriddenOptionsByGroupIndex(options, groupIndex)
-          return {
-            options: {
-              ...options,
-              ...overriddenOptions,
-            },
-            fallbackSortNodeValueGetter,
-            nodeValueGetter,
-          }
-        },
         isNodeIgnoredForGroup: ({ groupOptions, node }) => {
           switch (groupOptions.sortBy) {
             case 'value':
@@ -338,6 +324,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
               throw new UnreachableCaseError(groupOptions.sortBy)
           }
         },
+        optionsByGroupIndexComputer: buildOptionsByGroupIndexComputer(options),
+        comparatorByOptionsComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes: groupedNodes,
