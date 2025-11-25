@@ -20,12 +20,12 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
   singleCustomGroupJsonSchema,
   allSelectors,
 } from './sort-variable-declarations/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -86,7 +86,7 @@ export default createEslintRule<Options, MessageId>({
 
       validateCustomSortConfiguration(options)
       validateNewlinesAndPartitionConfiguration(options)
-      validateGeneratedGroupsConfiguration({
+      validateGroupsConfiguration({
         selectors: allSelectors,
         modifiers: [],
         options,

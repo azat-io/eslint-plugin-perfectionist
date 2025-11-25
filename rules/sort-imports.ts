@@ -28,7 +28,6 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -37,6 +36,7 @@ import {
 } from './sort-imports/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
 import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
@@ -112,7 +112,7 @@ export default createEslintRule<Options, MessageId>({
       complete(userOptions, settings, defaultOptions),
     )
 
-    validateGeneratedGroupsConfiguration({
+    validateGroupsConfiguration({
       selectors: allSelectors,
       modifiers: allModifiers,
       options,

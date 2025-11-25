@@ -25,7 +25,6 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
@@ -33,6 +32,7 @@ import {
 } from './sort-classes/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getOverloadSignatureGroups } from './sort-classes/get-overload-signature-groups'
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -122,7 +122,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
-      validateGeneratedGroupsConfiguration({
+      validateGroupsConfiguration({
         modifiers: allModifiers,
         selectors: allSelectors,
         options,
