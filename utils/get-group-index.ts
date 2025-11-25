@@ -56,10 +56,11 @@ function doesGroupMatch(group: Group, groupName: string): boolean {
   if (isGroupWithOverridesOption(group)) {
     return doesStringGroupMatch(group.group, groupName)
   }
+  /* v8 ignore else -- @preserve Exhaustive guard: other directives are filtered out earlier. */
   if (isNewlinesBetweenOption(group)) {
     return false
-    /* v8 ignore next 3 */
   }
+  /* v8 ignore next -- @preserve Exhaustive guard: other directives are filtered out earlier. */
   throw new UnreachableCaseError(group)
 }
 

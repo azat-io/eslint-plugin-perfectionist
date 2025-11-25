@@ -139,7 +139,7 @@ export default createEslintRule<Options, MessageId>({
         }),
       )
 
-      // Ensure default is at the end.
+      /* Ensure default is at the end. */
       let sortingNodeGroupsForDefaultSort = reduceCaseSortingNodes(
         sortingNodes,
         caseNode => caseNode.node.consequent.length > 0,
@@ -196,7 +196,7 @@ export default createEslintRule<Options, MessageId>({
         })
       }
 
-      // Ensure case blocks are in the correct order.
+      /* Ensure case blocks are in the correct order. */
       let sortingNodeGroupsForBlockSort = reduceCaseSortingNodes(
         sortingNodes,
         caseNode => caseHasBreakOrReturn(caseNode.node),
@@ -217,10 +217,9 @@ export default createEslintRule<Options, MessageId>({
             if (a === lastNodeGroup) {
               return 1
             }
-            /* v8 ignore start - last element might never be b */
+            /* v8 ignore if -- @preserve last element might never be b. */
             if (b === lastNodeGroup) {
               return -1
-              /* v8 ignore end */
             }
           }
 
@@ -252,7 +251,7 @@ export default createEslintRule<Options, MessageId>({
         context.report({
           fix: fixer =>
             hasUnsortedNodes
-              ? [] // Raise errors but only sort on second iteration
+              ? [] /* Raise errors but only sort on second iteration. */
               : makeFixes({
                   sortedNodes: sortedSortingNodeGroupsForBlockSort,
                   nodes: sortingNodeGroupsForBlockSortFlat,

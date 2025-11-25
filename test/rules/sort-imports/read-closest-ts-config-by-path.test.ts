@@ -27,13 +27,20 @@ let mockParseJsonConfigFileContent: Mock<
 
 vi.mock('node:module', _ => ({
   createRequire: () => () => ({
+    createModuleResolutionCache: (
+      _contextCwd: string,
+      getCanonicalFileName: (fileName: string) => string,
+      _options: unknown,
+    ) => {
+      getCanonicalFileName('test.ts')
+      return vi.fn()
+    },
     parseJsonConfigFileContent: (content: object): ts.ParsedCommandLine =>
       mockParseJsonConfigFileContent(content),
     convertCompilerOptionsFromJson: (content: object) =>
       mockConvertCompilerOptionsFromJson(content),
     readConfigFile: (filePath: string): ts.ParsedCommandLine =>
       mockReadConfigFile(filePath),
-    createModuleResolutionCache: () => vi.fn(),
     sys: ts.sys,
   }),
 }))

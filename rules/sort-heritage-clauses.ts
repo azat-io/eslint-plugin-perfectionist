@@ -218,13 +218,13 @@ function getHeritageClauseExpressionName(
   if (expression.type === 'Identifier') {
     return expression.name
   }
+  /* v8 ignore else -- @preserve Exhaustive guard for unsupported expressions. */
   if ('property' in expression) {
     return getHeritageClauseExpressionName(expression.property)
-    /* v8 ignore start - should never throw */
   }
+  /* v8 ignore next -- @preserve Should never throw. */
   throw new Error(
     'Unexpected heritage clause expression. Please report this issue ' +
       'here: https://github.com/azat-io/eslint-plugin-perfectionist/issues',
   )
-  /* v8 ignore end */
 }

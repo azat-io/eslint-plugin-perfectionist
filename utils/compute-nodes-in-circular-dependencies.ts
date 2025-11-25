@@ -54,6 +54,7 @@ export function computeNodesInCircularDependencies<
 
     if (visitingElements.has(element)) {
       let cycleStartIndex = path.indexOf(element)
+      /* v8 ignore else -- @preserve Visiting path already contains the element when this branch executes. */
       if (cycleStartIndex !== -1) {
         for (let cycleElements of path.slice(cycleStartIndex)) {
           elementsInCycles.add(cycleElements)
@@ -71,7 +72,9 @@ export function computeNodesInCircularDependencies<
         .find(currentElement =>
           currentElement.dependencyNames.includes(dependency),
         )
-      if (dependencyElement) {
+      /* v8 ignore next -- @preserve Dependencies are pre-filtered; missing entries are defensive fallback. */ if (
+        dependencyElement
+      ) {
         depthFirstSearch(dependencyElement, [...path])
       }
     }
