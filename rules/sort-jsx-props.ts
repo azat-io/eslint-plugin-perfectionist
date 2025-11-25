@@ -22,17 +22,20 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import {
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-jsx-props/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
-import { singleCustomGroupJsonSchema } from './sort-jsx-props/types'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
-import { allModifiers, allSelectors } from './sort-jsx-props/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -90,7 +93,7 @@ export default createEslintRule<Options, MessageId>({
       })
       let options = complete(matchedContextOptions, settings, defaultOptions)
       validateCustomSortConfiguration(options)
-      validateGeneratedGroupsConfiguration({
+      validateGroupsConfiguration({
         selectors: allSelectors,
         modifiers: allModifiers,
         options,
@@ -183,8 +186,8 @@ export default createEslintRule<Options, MessageId>({
         function createSortNodesExcludingEslintDisabled(nodes: SortingNode[]) {
           return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
             return sortNodesByGroups({
-              getOptionsByGroupIndex:
-                buildGetCustomGroupOverriddenOptionsFunction(options),
+              optionsByGroupIndexComputer:
+                buildDefaultOptionsByGroupIndexComputer(options),
               ignoreEslintDisabledNodes,
               groups: options.groups,
               nodes,

@@ -27,11 +27,16 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
+import {
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-imports/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getCustomGroupOverriddenOptions } from '../utils/get-custom-groups-compare-options'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
 import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
@@ -41,9 +46,7 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
-import { singleCustomGroupJsonSchema } from './sort-imports/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { allModifiers, allSelectors } from './sort-imports/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
@@ -71,10 +74,7 @@ export type MessageId =
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
 
-let defaultOptions: Required<
-  Omit<Options[number], 'maxLineLength' | 'tsconfig'>
-> &
-  Pick<Options[number], 'maxLineLength' | 'tsconfig'> = {
+let defaultOptions: Required<Options[number]> = {
   groups: [
     'type-import',
     ['value-builtin', 'value-external'],
@@ -90,6 +90,8 @@ let defaultOptions: Required<
   partitionByComment: false,
   partitionByNewLine: false,
   specialCharacters: 'keep',
+  tsconfig: { rootDir: '' },
+  maxLineLength: Infinity,
   sortSideEffects: false,
   type: 'alphabetical',
   environment: 'node',
@@ -110,7 +112,7 @@ export default createEslintRule<Options, MessageId>({
       complete(userOptions, settings, defaultOptions),
     )
 
-    validateGeneratedGroupsConfiguration({
+    validateGroupsConfiguration({
       selectors: allSelectors,
       modifiers: allModifiers,
       options,
@@ -119,10 +121,10 @@ export default createEslintRule<Options, MessageId>({
     validateNewlinesAndPartitionConfiguration(options)
     validateSideEffectsConfiguration(options)
 
-    let tsconfigRootDirectory = options.tsconfig?.rootDir
+    let tsconfigRootDirectory = options.tsconfig.rootDir
     let tsConfigOutput = tsconfigRootDirectory
       ? readClosestTsConfigByPath({
-          tsconfigFilename: options.tsconfig?.filename ?? 'tsconfig.json',
+          tsconfigFilename: options.tsconfig.filename ?? 'tsconfig.json',
           tsconfigRootDir: tsconfigRootDirectory,
           filePath: context.physicalFilename,
           contextCwd: context.cwd,
@@ -236,11 +238,7 @@ export default createEslintRule<Options, MessageId>({
         (node as TSESTree.ImportDeclaration).specifiers,
       )
       let size = rangeToDiff(node, sourceCode)
-      if (
-        hasMultipleImportDeclarations &&
-        options.maxLineLength &&
-        size > options.maxLineLength
-      ) {
+      if (hasMultipleImportDeclarations && size > options.maxLineLength) {
         size = name.length + 10
       }
       sortingNodesWithoutPartitionId.push({
@@ -311,38 +309,14 @@ export default createEslintRule<Options, MessageId>({
             ): SortImportsSortingNode[] {
               let nodesSortedByGroups = nodeGroups.flatMap(nodes =>
                 sortNodesByGroups({
-                  getOptionsByGroupIndex: groupIndex => {
-                    let customGroupOverriddenOptions =
-                      getCustomGroupOverriddenOptions({
-                        groupIndex,
-                        options,
-                      })
-
+                  isNodeIgnoredForGroup: ({ groupIndex }) => {
                     if (options.sortSideEffects) {
-                      return {
-                        options: {
-                          ...options,
-                          ...customGroupOverriddenOptions,
-                        },
-                      }
+                      return false
                     }
-                    let overriddenOptions = {
-                      ...options,
-                      ...customGroupOverriddenOptions,
-                    }
-                    return {
-                      options: {
-                        ...overriddenOptions,
-                        type:
-                          overriddenOptions.groups[groupIndex] &&
-                          isSideEffectOnlyGroup(
-                            overriddenOptions.groups[groupIndex],
-                          )
-                            ? 'unsorted'
-                            : overriddenOptions.type,
-                      },
-                    }
+                    return isSideEffectOnlyGroup(options.groups[groupIndex])
                   },
+                  optionsByGroupIndexComputer:
+                    buildDefaultOptionsByGroupIndexComputer(options),
                   isNodeIgnored: node => node.isIgnored,
                   ignoreEslintDisabledNodes,
                   groups: options.groups,
@@ -534,39 +508,6 @@ function computeDependencyNames({
   return returnValue
 }
 
-function computeGroupExceptUnknown({
-  selectors,
-  modifiers,
-  options,
-  name,
-}: {
-  options: Omit<Required<Options[number]>, 'maxLineLength' | 'tsconfig'>
-  selectors: Selector[]
-  modifiers: Modifier[]
-  name: string
-}): string | null {
-  let predefinedGroups = generatePredefinedGroups({
-    cache: cachedGroupsByModifiersAndSelectors,
-    selectors,
-    modifiers,
-  })
-  let computedCustomGroup = computeGroup({
-    customGroupMatcher: customGroup =>
-      doesCustomGroupMatch({
-        elementName: name,
-        customGroup,
-        modifiers,
-        selectors,
-      }),
-    predefinedGroups,
-    options,
-  })
-  if (computedCustomGroup === 'unknown') {
-    return null
-  }
-  return computedCustomGroup
-}
-
 function getNodeName({
   sourceCode,
   node,
@@ -592,6 +533,39 @@ function getNodeName({
   let callExpression = node.declarations[0].init as TSESTree.CallExpression
   let { value } = callExpression.arguments[0] as TSESTree.Literal
   return value!.toString()
+}
+
+function computeGroupExceptUnknown({
+  selectors,
+  modifiers,
+  options,
+  name,
+}: {
+  options: Required<Options[number]>
+  selectors: Selector[]
+  modifiers: Modifier[]
+  name: string
+}): string | null {
+  let predefinedGroups = generatePredefinedGroups({
+    cache: cachedGroupsByModifiersAndSelectors,
+    selectors,
+    modifiers,
+  })
+  let computedCustomGroup = computeGroup({
+    customGroupMatcher: customGroup =>
+      doesCustomGroupMatch({
+        elementName: name,
+        customGroup,
+        modifiers,
+        selectors,
+      }),
+    predefinedGroups,
+    options,
+  })
+  if (computedCustomGroup === 'unknown') {
+    return null
+  }
+  return computedCustomGroup
 }
 
 function computeDependencies(

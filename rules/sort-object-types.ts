@@ -36,15 +36,16 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { getCustomGroupsCompareOptions } from './sort-object-types/get-custom-groups-compare-options'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isMemberOptional } from './sort-object-types/is-member-optional'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { isNodeFunctionType } from '../utils/is-node-function-type'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -196,7 +197,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
   })
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
-  validateGeneratedGroupsConfiguration({
+  validateGroupsConfiguration({
     selectors: allSelectors,
     modifiers: allModifiers,
     options,
@@ -311,7 +312,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
   ): SortObjectTypesSortingNode[] {
     return formattedMembers.flatMap(groupedNodes =>
       sortNodesByGroups({
-        getOptionsByGroupIndex: groupIndex => {
+        optionsByGroupIndexComputer: groupIndex => {
           let {
             fallbackSortNodeValueGetter,
             options: overriddenOptions,
@@ -326,11 +327,16 @@ export function sortObjectTypeElements<MessageIds extends string>({
             nodeValueGetter,
           }
         },
-        isNodeIgnoredForGroup: (node, groupOptions) => {
-          if (groupOptions.sortBy === 'value') {
-            return !node.value
+        isNodeIgnoredForGroup: ({ groupOptions, node }) => {
+          switch (groupOptions.sortBy) {
+            case 'value':
+              return !node.value
+            case 'name':
+              return false
+            /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+            default:
+              throw new UnreachableCaseError(groupOptions.sortBy)
           }
-          return false
         },
         ignoreEslintDisabledNodes,
         groups: options.groups,

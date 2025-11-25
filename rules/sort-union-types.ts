@@ -20,13 +20,13 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import {
   singleCustomGroupJsonSchema,
   allSelectors,
 } from './sort-union-types/types'
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -145,7 +145,7 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
 
   let options = complete(context.options.at(0), settings, defaultOptions)
   validateCustomSortConfiguration(options)
-  validateGeneratedGroupsConfiguration({
+  validateGroupsConfiguration({
     selectors: allSelectors,
     modifiers: [],
     options,
@@ -277,8 +277,8 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
     ) {
       return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
         return sortNodesByGroups({
-          getOptionsByGroupIndex:
-            buildGetCustomGroupOverriddenOptionsFunction(options),
+          optionsByGroupIndexComputer:
+            buildDefaultOptionsByGroupIndexComputer(options),
           ignoreEslintDisabledNodes,
           groups: options.groups,
           nodes: sortingNodes,

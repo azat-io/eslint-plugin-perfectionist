@@ -12,12 +12,12 @@ import { commonJsonSchemas } from '../utils/common-json-schemas'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
+import { compare } from '../utils/compare/compare'
 import { isSortable } from '../utils/is-sortable'
 import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
-import { compare } from '../utils/compare'
 
 interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
