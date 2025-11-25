@@ -1,21 +1,25 @@
-import type { NodeValueGetterFunction } from './compare/compare'
+import type { ComparatorByOptionsComputer } from './compare/default-comparator-by-options-computer'
 import type { CommonOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
-import { compare } from './compare/compare'
+import { defaultComparatorByOptionsComputer } from './compare/default-comparator-by-options-computer'
+import { computeComparators } from './compare/compute-comparators'
 
 /**
  * Parameters for the core sorting operation.
  *
- * @template T - Type of sorting node.
+ * @template Node - Type of sorting node.
+ * @template Options - Sorting options type extending common options.
  */
-interface SortNodesParameters<T extends SortingNode> {
-  fallbackSortNodeValueGetter?: NodeValueGetterFunction<T> | null
-  nodeValueGetter?: NodeValueGetterFunction<T> | null
+interface SortNodesParameters<
+  Node extends SortingNode,
+  Options extends CommonOptions,
+> {
+  comparatorByOptionsComputer?: ComparatorByOptionsComputer<Options, Node>
+  isNodeIgnored?(node: Node): boolean
   ignoreEslintDisabledNodes: boolean
-  isNodeIgnored?(node: T): boolean
-  options: CommonOptions
-  nodes: T[]
+  options: Options
+  nodes: Node[]
 }
 
 /**
@@ -32,19 +36,20 @@ interface SortNodesParameters<T extends SortingNode> {
  * After sorting, ignored nodes are reinserted at their original positions,
  * ensuring that intentionally placed elements remain untouched.
  *
- * @template T - Type of sorting node.
  * @param params - Parameters for sorting operation.
  * @returns Sorted array with ignored nodes preserved at original positions.
  */
-export function sortNodes<T extends SortingNode>({
-  fallbackSortNodeValueGetter,
+export function sortNodes<
+  Node extends SortingNode,
+  Options extends CommonOptions,
+>({
+  comparatorByOptionsComputer,
   ignoreEslintDisabledNodes,
-  nodeValueGetter,
   isNodeIgnored,
   options,
   nodes,
-}: SortNodesParameters<T>): T[] {
-  let nonIgnoredNodes: T[] = []
+}: SortNodesParameters<Node, Options>): Node[] {
+  let nonIgnoredNodes: Node[] = []
   let ignoredNodeIndices: number[] = []
   for (let [index, sortingNode] of nodes.entries()) {
     if (
@@ -57,15 +62,20 @@ export function sortNodes<T extends SortingNode>({
     }
   }
 
-  let sortedNodes = [...nonIgnoredNodes].toSorted((a, b) =>
-    compare({
-      fallbackSortNodeValueGetter,
-      nodeValueGetter,
-      options,
-      a,
-      b,
-    }),
+  let comparators = computeComparators(
+    comparatorByOptionsComputer ?? defaultComparatorByOptionsComputer,
+    options,
   )
+
+  let sortedNodes = [...nonIgnoredNodes].toSorted((a, b) => {
+    for (let comparator of comparators) {
+      let result = comparator(a, b)
+      if (result) {
+        return result
+      }
+    }
+    return 0
+  })
 
   /* Add ignored nodes at the same position as they were before linting. */
   for (let ignoredIndex of ignoredNodeIndices) {
