@@ -278,6 +278,12 @@ export default createEslintRule<Options, MessageId>({
             }
 
             let name = getNodeName({ sourceCode, property })
+            let dependencyNames = [name]
+            if (isDestructuredObject) {
+              dependencyNames = [
+                ...new Set(extractNamesFromPattern(property.value)),
+              ]
+            }
             let predefinedGroups = generatePredefinedGroups({
               cache: cachedGroupsByModifiersAndSelectors,
               selectors,
@@ -299,18 +305,6 @@ export default createEslintRule<Options, MessageId>({
               options,
             })
 
-            let dependencyName: string = name
-            if (isDestructuredObject) {
-              if (property.value.type === 'Identifier') {
-                dependencyName = property.value.name
-              } else if (
-                property.value.type === 'AssignmentPattern' &&
-                property.value.left.type === 'Identifier'
-              ) {
-                dependencyName = property.value.left.name
-              }
-            }
-
             let sortingNode: Omit<SortingNodeWithDependencies, 'partitionId'> =
               {
                 isEslintDisabled: isNodeEslintDisabled(
@@ -318,7 +312,7 @@ export default createEslintRule<Options, MessageId>({
                   eslintDisabledLines,
                 ),
                 size: rangeToDiff(property, sourceCode),
-                dependencyNames: [dependencyName],
+                dependencyNames,
                 node: property,
                 dependencies,
                 group,
@@ -550,6 +544,50 @@ function computeMatchedContextOptions({
 
     return true
   })
+}
+
+function extractNamesFromPattern(pattern: TSESTree.Node): string[] {
+  switch (pattern.type) {
+    case AST_NODE_TYPES.AssignmentPattern:
+      return extractNamesFromPattern(pattern.left)
+    case AST_NODE_TYPES.ObjectPattern:
+      return pattern.properties.flatMap(extractNamesFromObjectPatternProperty)
+    case AST_NODE_TYPES.ArrayPattern:
+      return pattern.elements.flatMap(extractNamesFromArrayPatternElement)
+    case AST_NODE_TYPES.Identifier:
+      return [pattern.name]
+    /* v8 ignore next 2 */
+    default:
+      return []
+  }
+
+  function extractNamesFromArrayPatternElement(
+    element: TSESTree.DestructuringPattern | null,
+  ): string[] {
+    if (!element) {
+      return []
+    }
+
+    if (element.type === AST_NODE_TYPES.RestElement) {
+      return extractNamesFromPattern(element.argument)
+    }
+
+    return extractNamesFromPattern(element)
+  }
+
+  function extractNamesFromObjectPatternProperty(
+    property: TSESTree.RestElement | TSESTree.Property,
+  ): string[] {
+    switch (property.type) {
+      case AST_NODE_TYPES.RestElement:
+        return extractNamesFromPattern(property.argument)
+      case AST_NODE_TYPES.Property:
+        return extractNamesFromPattern(property.value)
+      /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+      default:
+        throw new UnreachableCaseError(property)
+    }
+  }
 }
 
 function getObjectParent({
