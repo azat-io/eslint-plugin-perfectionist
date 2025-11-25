@@ -58,7 +58,7 @@ export function getEslintDisabledLines(props: {
     let includesRule =
       eslintDisabledRules.rules === 'all' ||
       eslintDisabledRules.rules.includes(ruleName)
-    /* v8 ignore next 3 */
+    /* v8 ignore next 3 -- @preserve Hard to test this false branch. */
     if (!includesRule) {
       continue
     }
@@ -73,8 +73,8 @@ export function getEslintDisabledLines(props: {
       case 'eslint-disable':
         lineRulePermanentlyDisabled ??= comment.loc.start.line
         break
-      case 'eslint-enable':
-        /* v8 ignore next 3 - Hard to cover in test without raising another ESLint error */
+      case 'eslint-enable': {
+        /* v8 ignore next -- @preserve Hard to cover in test without raising another ESLint error. */
         if (!lineRulePermanentlyDisabled) {
           continue
         }
@@ -86,7 +86,8 @@ export function getEslintDisabledLines(props: {
         )
         lineRulePermanentlyDisabled = null
         break
-      /* v8 ignore next 4 */
+      }
+      /* v8 ignore next 4 -- @preserve Should never reach unreachable case. */
       default:
         throw new UnreachableCaseError(
           eslintDisabledRules.eslintDisableDirective,

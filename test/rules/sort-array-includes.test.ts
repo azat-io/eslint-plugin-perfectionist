@@ -5474,6 +5474,34 @@ describe('sort-array-includes', () => {
           options: [{}],
         })
       })
+
+      it('ignores arrays with other methods', async () => {
+        await valid({
+          code: dedent`
+            ['c', 'b', 'a'].map(x => x)
+          `,
+        })
+
+        await valid({
+          code: dedent`
+            ['c', 'b', 'a'].filter(x => x)
+          `,
+        })
+
+        await valid({
+          code: dedent`
+            ['c', 'b', 'a'].forEach(x => console.log(x))
+          `,
+        })
+      })
+
+      it('ignores computed property access', async () => {
+        await valid({
+          code: dedent`
+            ['c', 'b', 'a']['includes']('a')
+          `,
+        })
+      })
     })
   })
 })

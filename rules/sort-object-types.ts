@@ -446,7 +446,6 @@ function getNodeName({
     'name' in typeElement.key
   ) {
     ;({ name } = typeElement.key)
-    /* v8 ignore next 8 - Unsure if we can reach it */
   } else {
     name = formatName(
       sourceCode.text.slice(typeElement.range.at(0), typeElement.range.at(1)),

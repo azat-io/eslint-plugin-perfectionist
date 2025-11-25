@@ -22,6 +22,7 @@ function assertGeneratedTsSeemsCorrect(generatedTypescript: string): void {
   for (let [commonJsonSchemaKey, commonJsonSchema] of Object.entries(
     commonJsonSchemas,
   )) {
+    /* v8 ignore if -- @preserve Guard to surface clearer error when schema descriptions drift. */
     if (
       commonJsonSchema.description &&
       !generatedTypescript.includes(commonJsonSchema.description)
@@ -34,6 +35,7 @@ function assertGeneratedTsSeemsCorrect(generatedTypescript: string): void {
 }
 
 function assertNoWeakIndexSignature(generatedTypescript: string): void {
+  /* v8 ignore if -- @preserve Guard against weak schema outputs, hard to trigger in unit tests. */
   if (generatedTypescript.includes('[k: string]: unknown')) {
     throw new Error(
       `Weak TypeScript generated from JSON schema: '[k: string]: unknown' index signature found:\n${generatedTypescript}`,

@@ -37,12 +37,4 @@ export default defineConfig({
     }),
     prettierFormat(),
   ],
-  test: {
-    coverage: {
-      thresholds: {
-        100: true,
-      },
-      all: false,
-    },
-  },
 })

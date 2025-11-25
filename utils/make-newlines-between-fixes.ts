@@ -167,10 +167,9 @@ export function makeNewlinesBetweenFixes<T extends SortingNode>({
         sortingNode.node.loc.end.line === nextSortingNode.node.loc.start.line,
       textBetweenNodes,
       newlinesBetween,
-    })
-    if (rangeReplacement) {
-      fixes.push(fixer.replaceTextRange(rangeToReplace, rangeReplacement))
-    }
+    })!
+
+    fixes.push(fixer.replaceTextRange(rangeToReplace, rangeReplacement))
   }
 
   return fixes

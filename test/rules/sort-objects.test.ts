@@ -967,6 +967,26 @@ describe('sort-objects', () => {
         `,
         options: [options],
       })
+
+      /**
+       * TODO: add regression test for nested dependency:
+       *
+       * `let { a = nested, b: { nested } = { nested: 'default' } } = obj;`.
+       *
+       * Should be invalid because a depends on nested from b, but currently
+       * passes.
+       *
+       * @see https://github.com/azat-io/eslint-plugin-perfectionist/issues/619
+       */
+      await valid({
+        code: dedent`
+          let {
+            a: { nested } = { nested: 'default' },
+            b,
+          } = obj;
+        `,
+        options: [options],
+      })
     })
 
     it('detects and handles circular dependencies', async () => {

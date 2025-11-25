@@ -581,7 +581,7 @@ function computeDependencies(
     return []
   }
   let qualifiedName = getQualifiedNameDependencyName(node.moduleReference)
-  /* v8 ignore next 3 - Unsure how we can reach that case */
+  /* v8 ignore if -- @preserve Unsure how we can reach that case */
   if (!qualifiedName) {
     return []
   }
@@ -627,8 +627,8 @@ function getQualifiedNameDependencyName(
       return getQualifiedNameDependencyName(node.left)
     case 'Identifier':
       return node.name
-    /* v8 ignore next 3 - Unsure how we can reach that case */
   }
+  /* v8 ignore next -- @preserve Unsure how we can reach that case */
   return null
 }
 
