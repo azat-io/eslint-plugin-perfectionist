@@ -25,8 +25,7 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
-import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
@@ -35,6 +34,7 @@ import {
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getFirstNodeParentWithType } from './sort-objects/get-first-node-parent-with-type'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -108,7 +108,7 @@ export default createEslintRule<Options, MessageId>({
       })
       let options = complete(matchedContextOptions, settings, defaultOptions)
       validateCustomSortConfiguration(options)
-      validateGeneratedGroupsConfiguration({
+      validateGroupsConfiguration({
         selectors: allSelectors,
         modifiers: allModifiers,
         options,
@@ -353,8 +353,8 @@ export default createEslintRule<Options, MessageId>({
       ): SortingNodeWithDependencies[] {
         let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
           sortNodesByGroups({
-            getOptionsByGroupIndex:
-              buildGetCustomGroupOverriddenOptionsFunction(options),
+            optionsByGroupIndexComputer:
+              buildDefaultOptionsByGroupIndexComputer(options),
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes,

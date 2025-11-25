@@ -1,6 +1,8 @@
 import type { GroupsOptions } from '../../types/common-options'
 import type { Group } from './types'
 
+import { isStringGroupSideEffectOnlyGroup } from './is-string-group-side-effect-only-group'
+import { computeGroupsNames } from '../../utils/compute-groups-names'
 import { isSideEffectOnlyGroup } from './is-side-effect-only-group'
 
 /**
@@ -31,18 +33,18 @@ export function validateSideEffectsConfiguration({
    * nested group with non-side-effect groups.
    */
   let hasInvalidGroup = groups
-    .filter(group => Array.isArray(group))
+    .map(group => computeGroupsNames([group]))
     .some(
       nestedGroup =>
-        !isSideEffectOnlyGroup(nestedGroup) &&
-        nestedGroup.some(
-          subGroup =>
-            subGroup === 'side-effect' || subGroup === 'side-effect-style',
-        ),
+        hasSideEffectGroup(nestedGroup) && !isSideEffectOnlyGroup(nestedGroup),
     )
   if (hasInvalidGroup) {
     throw new Error(
       "Side effect groups cannot be nested with non side effect groups when 'sortSideEffects' is 'false'.",
     )
   }
+}
+
+function hasSideEffectGroup(stringGroups: string[]): boolean {
+  return stringGroups.some(isStringGroupSideEffectOnlyGroup)
 }

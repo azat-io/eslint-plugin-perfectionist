@@ -72,7 +72,7 @@ interface ValidateGenerateGroupsConfigurationParameters {
  * @param params - Configuration parameters to validate.
  * @throws {Error} If any group is neither predefined nor custom.
  */
-export function validateGeneratedGroupsConfiguration({
+export function validateGroupsConfiguration({
   selectors,
   modifiers,
   options,

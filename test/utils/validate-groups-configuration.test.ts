@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import { validateGeneratedGroupsConfiguration } from '../../utils/validate-generated-groups-configuration'
+import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
 import { getArrayCombinations } from '../../utils/get-array-combinations'
 
-describe('validate-generated-groups-configuration', () => {
+describe('validate-groups-configuration', () => {
   let selectors = [
     'selector1',
     'selector2',
@@ -26,7 +26,7 @@ describe('validate-generated-groups-configuration', () => {
       ...selectors,
     ]
     expect(() =>
-      validateGeneratedGroupsConfiguration({
+      validateGroupsConfiguration({
         options: {
           groups: allPredefinedGroups,
           customGroups: [],
@@ -39,7 +39,7 @@ describe('validate-generated-groups-configuration', () => {
 
   it('allows custom groups', () => {
     expect(() =>
-      validateGeneratedGroupsConfiguration({
+      validateGroupsConfiguration({
         options: {
           customGroups: [
             {
@@ -58,7 +58,7 @@ describe('validate-generated-groups-configuration', () => {
     "throws an error with duplicate modifiers '(%s)'",
     groupModifiers => {
       expect(() =>
-        validateGeneratedGroupsConfiguration({
+        validateGroupsConfiguration({
           options: {
             groups: [`${groupModifiers}-selector1`],
             customGroups: [],
@@ -72,7 +72,7 @@ describe('validate-generated-groups-configuration', () => {
 
   it('throws an error if a duplicate group is provided', () => {
     expect(() =>
-      validateGeneratedGroupsConfiguration({
+      validateGroupsConfiguration({
         options: {
           groups: ['modifier1-selector1', 'modifier1-selector1'],
           customGroups: [],
@@ -85,7 +85,7 @@ describe('validate-generated-groups-configuration', () => {
 
   it('throws an error if invalid groups are provided', () => {
     expect(() =>
-      validateGeneratedGroupsConfiguration({
+      validateGroupsConfiguration({
         options: {
           groups: [
             'modifier1-selector1',
@@ -107,7 +107,7 @@ describe('validate-generated-groups-configuration', () => {
 
   it('throws an error with consecutive newlinesBetween objects', () => {
     expect(() => {
-      validateGeneratedGroupsConfiguration({
+      validateGroupsConfiguration({
         options: {
           groups: ['unknown', { newlinesBetween: 1 }, { newlinesBetween: 1 }],
           customGroups: [],

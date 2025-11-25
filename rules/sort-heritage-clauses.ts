@@ -19,9 +19,9 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { singleCustomGroupJsonSchema } from './sort-heritage-clauses/types'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -102,7 +102,7 @@ export default createEslintRule<Options, MessageId>({
 
     let options = complete(context.options.at(0), settings, defaultOptions)
     validateCustomSortConfiguration(options)
-    validateGeneratedGroupsConfiguration({
+    validateGroupsConfiguration({
       modifiers: [],
       selectors: [],
       options,
@@ -186,8 +186,8 @@ function sortHeritageClauses(
     ) {
       return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
         return sortNodesByGroups({
-          getOptionsByGroupIndex:
-            buildGetCustomGroupOverriddenOptionsFunction(options),
+          optionsByGroupIndexComputer:
+            buildDefaultOptionsByGroupIndexComputer(options),
           ignoreEslintDisabledNodes,
           groups: options.groups,
           nodes: sortingNodes,

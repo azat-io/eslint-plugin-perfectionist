@@ -1,9 +1,8 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { NodeValueGetterFunction } from '../utils/compare'
+import type { NodeValueGetterFunction } from '../utils/compare/compare'
+import type { SortEnumsSortingNode, Options } from './sort-enums/types'
 import type { TypeOption } from '../types/common-options'
-import type { Options } from './sort-enums/types'
 
 import {
   buildCustomGroupsArrayJsonSchema,
@@ -21,9 +20,9 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import { getCustomGroupOverriddenOptions } from '../utils/build-default-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getCustomGroupOverriddenOptions } from '../utils/get-custom-groups-compare-options'
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -53,12 +52,6 @@ type MessageId =
   | typeof EXTRA_SPACING_ERROR_ID
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
-
-interface SortEnumsSortingNode
-  extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
-  numericValue: number | null
-  value: string | null
-}
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
@@ -90,7 +83,7 @@ export default createEslintRule<Options, MessageId>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
-      validateGeneratedGroupsConfiguration({
+      validateGroupsConfiguration({
         selectors: [],
         modifiers: [],
         options,
@@ -227,7 +220,7 @@ export default createEslintRule<Options, MessageId>({
       ): SortEnumsSortingNode[] {
         let nodesSortedByGroups = formattedMembers.flatMap(sortingNodes =>
           sortNodesByGroups({
-            getOptionsByGroupIndex: groupIndex => ({
+            optionsByGroupIndexComputer: groupIndex => ({
               options: getCustomGroupOverriddenOptions({
                 options: overriddenOptions,
                 groupIndex,

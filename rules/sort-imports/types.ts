@@ -25,23 +25,16 @@ export type Options = Partial<
      * TypeScript configuration for resolving module paths. Enables path alias
      * resolution based on tsconfig.json paths configuration.
      */
-    tsconfig:
-      | {
-          /**
-           * Optional filename of the TypeScript config file. `@default`
-           * tsconfig.json'.
-           */
-          filename?: string
-          /** Root directory where to search for the TypeScript config file. */
-          rootDir: string
-        }
-      | undefined
+    tsconfig: {
+      /**
+       * Optional filename of the TypeScript config file. `@default`
+       * tsconfig.json'.
+       */
+      filename?: string
 
-    /**
-     * Maximum line length for imports. When exceeded, import names are used for
-     * sorting instead of the entire line.
-     */
-    maxLineLength: undefined | number
+      /** Root directory where to search for the TypeScript config file. */
+      rootDir: string
+    }
 
     /**
      * Patterns to identify internal imports. Imports matching these patterns
@@ -64,6 +57,12 @@ export type Options = Partial<
      * @default false
      */
     sortSideEffects: boolean
+
+    /**
+     * Maximum line length for imports. When exceeded, import names are used for
+     * sorting instead of the entire line.
+     */
+    maxLineLength: number
   } & CommonGroupsOptions<Group, SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions

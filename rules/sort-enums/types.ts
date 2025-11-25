@@ -1,5 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
+import type { TSESTree } from '@typescript-eslint/types'
 
+import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
@@ -46,6 +48,12 @@ export type Options = Partial<
     CommonPartitionOptions &
     CommonOptions
 >[]
+
+export interface SortEnumsSortingNode
+  extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
+  numericValue: number | null
+  value: string | null
+}
 
 /**
  * Represents a group identifier for enum member categorization. Can be

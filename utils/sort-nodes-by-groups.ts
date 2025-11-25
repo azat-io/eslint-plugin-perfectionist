@@ -1,21 +1,18 @@
 import type { CommonOptions, GroupsOptions } from '../types/common-options'
-import type { NodeValueGetterFunction } from './compare'
+import type { NodeValueGetterFunction } from './compare/compare'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getGroupIndex } from './get-group-index'
 import { sortNodes } from './sort-nodes'
 
-/**
- * Base options for group-based sorting operations. Extends common sorting
- * options with group-specific settings.
- */
-export type BaseSortNodesByGroupsOptions = {
-  /**
-   * Maximum line length for sorting by line-length. Lines exceeding this length
-   * are sorted differently.
-   */
-  maxLineLength?: number
-} & CommonOptions
+export type OptionsByGroupIndexComputer<
+  Options extends CommonOptions,
+  T extends SortingNode,
+> = (groupIndex: number) => {
+  fallbackSortNodeValueGetter?: NodeValueGetterFunction<T> | null
+  nodeValueGetter?: NodeValueGetterFunction<T> | null
+  options: Options
+}
 
 /**
  * Parameters for sorting nodes by groups.
@@ -24,15 +21,15 @@ export type BaseSortNodesByGroupsOptions = {
  * @template T - Type of sorting node.
  */
 interface SortNodesByGroupsParameters<
-  Options extends BaseSortNodesByGroupsOptions,
+  Options extends CommonOptions,
   T extends SortingNode,
 > {
-  getOptionsByGroupIndex(groupIndex: number): {
-    fallbackSortNodeValueGetter?: NodeValueGetterFunction<T> | null
-    nodeValueGetter?: NodeValueGetterFunction<T> | null
-    options: Options
-  }
-  isNodeIgnoredForGroup?(node: T, groupOptions: Options): boolean
+  isNodeIgnoredForGroup?(props: {
+    groupOptions: Options
+    groupIndex: number
+    node: T
+  }): boolean
+  optionsByGroupIndexComputer: OptionsByGroupIndexComputer<Options, T>
   ignoreEslintDisabledNodes: boolean
   isNodeIgnored?(node: T): boolean
   groups: GroupsOptions<string>
@@ -64,7 +61,7 @@ interface SortNodesByGroupsParameters<
  *   sortNodesByGroups({
  *     groups: ['external', 'internal'],
  *     nodes,
- *     getOptionsByGroupIndex: index => ({
+ *     optionsByGroupIndexComputer: index => ({
  *       options: { type: 'alphabetical', order: 'asc' },
  *     }),
  *   })
@@ -105,10 +102,10 @@ interface SortNodesByGroupsParameters<
  */
 export function sortNodesByGroups<
   T extends SortingNode,
-  Options extends BaseSortNodesByGroupsOptions,
+  Options extends CommonOptions,
 >({
+  optionsByGroupIndexComputer,
   ignoreEslintDisabledNodes,
-  getOptionsByGroupIndex,
   isNodeIgnoredForGroup,
   isNodeIgnored,
   groups,
@@ -130,15 +127,22 @@ export function sortNodesByGroups<
   }
 
   let sortedNodes: T[] = []
-  for (let groupIndex of Object.keys(nodesByNonIgnoredGroupIndex).toSorted(
-    (a, b) => Number(a) - Number(b),
-  )) {
+  for (let groupIndexString of Object.keys(
+    nodesByNonIgnoredGroupIndex,
+  ).toSorted((a, b) => Number(a) - Number(b))) {
+    let groupIndex = Number(groupIndexString)
     let { fallbackSortNodeValueGetter, nodeValueGetter, options } =
-      getOptionsByGroupIndex(Number(groupIndex))
-    let nodesToPush = nodesByNonIgnoredGroupIndex[Number(groupIndex)]!
+      optionsByGroupIndexComputer(groupIndex)
+    let nodesToPush = nodesByNonIgnoredGroupIndex[groupIndex]!
 
     let groupIgnoredNodes = new Set(
-      nodesToPush.filter(node => isNodeIgnoredForGroup?.(node, options)),
+      nodesToPush.filter(node =>
+        isNodeIgnoredForGroup?.({
+          groupOptions: options,
+          groupIndex,
+          node,
+        }),
+      ),
     )
 
     sortedNodes.push(

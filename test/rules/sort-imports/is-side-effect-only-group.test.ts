@@ -3,6 +3,10 @@ import { describe, expect, it } from 'vitest'
 import { isSideEffectOnlyGroup } from '../../../rules/sort-imports/is-side-effect-only-group'
 
 describe('is-side-effect-only-group', () => {
+  it('should return false if option is undefined', () => {
+    expect(isSideEffectOnlyGroup(undefined)).toBeFalsy()
+  })
+
   it('should return false if option is a newlinesBetween option', () => {
     expect(
       isSideEffectOnlyGroup({

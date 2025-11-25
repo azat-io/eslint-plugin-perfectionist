@@ -1,4 +1,4 @@
-import type { NodeValueGetterFunction } from '../../utils/compare'
+import type { NodeValueGetterFunction } from '../../utils/compare/compare'
 import type { SortObjectTypesSortingNode } from './types'
 
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'

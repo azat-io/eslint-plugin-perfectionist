@@ -20,14 +20,14 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-named-imports/types'
-import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -85,7 +85,7 @@ export default createEslintRule<Options, MessageId>({
       let settings = getSettings(context.settings)
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
-      validateGeneratedGroupsConfiguration({
+      validateGroupsConfiguration({
         modifiers: allModifiers,
         selectors: allSelectors,
         options,
@@ -172,8 +172,8 @@ export default createEslintRule<Options, MessageId>({
       ): SortNamedImportsSortingNode[] {
         return formattedMembers.flatMap(groupedNodes =>
           sortNodesByGroups({
-            getOptionsByGroupIndex:
-              buildGetCustomGroupOverriddenOptionsFunction(options),
+            optionsByGroupIndexComputer:
+              buildDefaultOptionsByGroupIndexComputer(options),
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes: groupedNodes,

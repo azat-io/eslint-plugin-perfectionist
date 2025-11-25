@@ -3,7 +3,6 @@ import type {
   CommonOptions,
   GroupsOptions,
 } from '../types/common-options'
-import type { BaseSortNodesByGroupsOptions } from './sort-nodes-by-groups'
 
 import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { computeGroupName } from './compute-group-name'
@@ -93,12 +92,10 @@ export function getCustomGroupsCompareOptions(
   }
 
   if (customGroup) {
+    let fallbackOrder = customGroup.fallbackSort?.order ?? fallbackSort.order
     fallbackSort = {
       type: customGroup.fallbackSort?.type ?? fallbackSort.type,
-    }
-    let fallbackOrder = customGroup.fallbackSort?.order ?? fallbackSort.order
-    if (fallbackOrder) {
-      fallbackSort.order = fallbackOrder
+      ...(fallbackOrder ? { order: fallbackOrder } : {}),
     }
     order = customGroup.order ?? order
     type = customGroup.type ?? type
@@ -121,17 +118,17 @@ export function getCustomGroupsCompareOptions(
  *
  * @example
  *   const getOverriddenOptions =
- *     buildGetCustomGroupOverriddenOptionsFunction(options)
+ *     buildDefaultOptionsByGroupIndexComputer(options)
  *   const group1Options = getOverriddenOptions(0)
  *   const group2Options = getOverriddenOptions(1)
  *
  * @param options - Base sorting options with group configuration.
  * @returns Function that takes a group index and returns overridden options.
  */
-export function buildGetCustomGroupOverriddenOptionsFunction(
-  options: BaseSortNodesByGroupsOptions & GroupRelatedOptions,
+export function buildDefaultOptionsByGroupIndexComputer(
+  options: GroupRelatedOptions & CommonOptions,
 ): (groupIndex: number) => {
-  options: BaseSortNodesByGroupsOptions
+  options: CommonOptions
 } {
   return (groupIndex: number) => ({
     options: getCustomGroupOverriddenOptions({
@@ -158,9 +155,9 @@ export function getCustomGroupOverriddenOptions({
   groupIndex,
   options,
 }: {
-  options: BaseSortNodesByGroupsOptions & GroupRelatedOptions
+  options: GroupRelatedOptions & CommonOptions
   groupIndex: number
-}): BaseSortNodesByGroupsOptions {
+}): CommonOptions {
   return {
     ...options,
     ...getCustomGroupsCompareOptions(options, groupIndex),

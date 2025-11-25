@@ -26,14 +26,14 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildGetCustomGroupOverriddenOptionsFunction } from '../utils/get-custom-groups-compare-options'
-import { validateGeneratedGroupsConfiguration } from '../utils/validate-generated-groups-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-modules/types'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -135,7 +135,7 @@ export default createEslintRule<SortModulesOptions, MessageId>({
     let settings = getSettings(context.settings)
     let options = complete(context.options.at(0), settings, defaultOptions)
     validateCustomSortConfiguration(options)
-    validateGeneratedGroupsConfiguration({
+    validateGroupsConfiguration({
       modifiers: allModifiers,
       selectors: allSelectors,
       options,
@@ -347,8 +347,8 @@ function analyzeModule({
       sortNodesByGroups({
         isNodeIgnored: sortingNode =>
           getGroupIndex(options.groups, sortingNode) === options.groups.length,
-        getOptionsByGroupIndex:
-          buildGetCustomGroupOverriddenOptionsFunction(options),
+        optionsByGroupIndexComputer:
+          buildDefaultOptionsByGroupIndexComputer(options),
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes,
