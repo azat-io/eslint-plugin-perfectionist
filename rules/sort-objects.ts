@@ -144,66 +144,6 @@ export default createEslintRule<Options, MessageId>({
         sourceCode,
       })
 
-      type DestructuringPattern =
-        | TSESTree.AssignmentPattern
-        | TSESTree.ObjectPattern
-        | TSESTree.ArrayPattern
-        | TSESTree.RestElement
-        | TSESTree.Identifier
-
-      function extractNamesFromPattern(
-        pattern: DestructuringPattern,
-      ): string[] {
-        switch (pattern.type) {
-          case AST_NODE_TYPES.AssignmentPattern:
-            return extractNamesFromPattern(pattern.left as DestructuringPattern)
-          case AST_NODE_TYPES.ObjectPattern:
-            return pattern.properties.flatMap(
-              extractNamesFromObjectPatternProperty,
-            )
-          case AST_NODE_TYPES.ArrayPattern:
-            return pattern.elements.flatMap(extractNamesFromArrayPatternElement)
-          case AST_NODE_TYPES.Identifier:
-            return [pattern.name]
-          /* v8 ignore next 2 */
-          default:
-            return []
-        }
-
-        function extractNamesFromArrayPatternElement(
-          element: TSESTree.DestructuringPattern | null,
-        ): string[] {
-          if (!element) {
-            return []
-          }
-          if (element.type === AST_NODE_TYPES.RestElement) {
-            return extractNamesFromPattern(
-              element.argument as DestructuringPattern,
-            )
-          }
-
-          return extractNamesFromPattern(element as DestructuringPattern)
-        }
-
-        function extractNamesFromObjectPatternProperty(
-          property: TSESTree.RestElement | TSESTree.Property,
-        ): string[] {
-          switch (property.type) {
-            case AST_NODE_TYPES.RestElement:
-              return extractNamesFromPattern(
-                property.argument as DestructuringPattern,
-              )
-            case AST_NODE_TYPES.Property:
-              return extractNamesFromPattern(
-                property.value as DestructuringPattern,
-              )
-            /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-            default:
-              throw new UnreachableCaseError(property)
-          }
-        }
-      }
-
       function extractDependencies(init: TSESTree.Expression): string[] {
         let dependencies: string[] = []
 
@@ -340,13 +280,9 @@ export default createEslintRule<Options, MessageId>({
             let name = getNodeName({ sourceCode, property })
             let dependencyNames = [name]
             if (isDestructuredObject) {
-              let namesFromPattern = extractNamesFromPattern(
-                property.value as DestructuringPattern,
-              )
-              dependencyNames =
-                namesFromPattern.length > 0
-                  ? [...new Set(namesFromPattern)]
-                  : dependencyNames
+              dependencyNames = [
+                ...new Set(extractNamesFromPattern(property.value)),
+              ]
             }
             let predefinedGroups = generatePredefinedGroups({
               cache: cachedGroupsByModifiersAndSelectors,
@@ -608,6 +544,50 @@ function computeMatchedContextOptions({
 
     return true
   })
+}
+
+function extractNamesFromPattern(pattern: TSESTree.Node): string[] {
+  switch (pattern.type) {
+    case AST_NODE_TYPES.AssignmentPattern:
+      return extractNamesFromPattern(pattern.left)
+    case AST_NODE_TYPES.ObjectPattern:
+      return pattern.properties.flatMap(extractNamesFromObjectPatternProperty)
+    case AST_NODE_TYPES.ArrayPattern:
+      return pattern.elements.flatMap(extractNamesFromArrayPatternElement)
+    case AST_NODE_TYPES.Identifier:
+      return [pattern.name]
+    /* v8 ignore next 2 */
+    default:
+      return []
+  }
+
+  function extractNamesFromArrayPatternElement(
+    element: TSESTree.DestructuringPattern | null,
+  ): string[] {
+    if (!element) {
+      return []
+    }
+
+    if (element.type === AST_NODE_TYPES.RestElement) {
+      return extractNamesFromPattern(element.argument)
+    }
+
+    return extractNamesFromPattern(element)
+  }
+
+  function extractNamesFromObjectPatternProperty(
+    property: TSESTree.RestElement | TSESTree.Property,
+  ): string[] {
+    switch (property.type) {
+      case AST_NODE_TYPES.RestElement:
+        return extractNamesFromPattern(property.argument)
+      case AST_NODE_TYPES.Property:
+        return extractNamesFromPattern(property.value)
+      /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+      default:
+        throw new UnreachableCaseError(property)
+    }
+  }
 }
 
 function getObjectParent({
