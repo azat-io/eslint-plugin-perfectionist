@@ -1,0 +1,48 @@
+import type { CommonOptions } from '../../types/common-options'
+import type { SortingNode } from '../../types/sorting-node'
+
+import { buildLineLengthComparator } from './build-line-length-comparator'
+import { compareAlphabetically } from './compare-alphabetically'
+import { UnreachableCaseError } from '../unreachable-case-error'
+import { compareByCustomSort } from './compare-by-custom-sort'
+import { unsortedComparator } from './unsorted-comparator'
+import { compareNaturally } from './compare-naturally'
+
+export type ComparatorByOptionsComputer<
+  S extends CommonOptions,
+  T extends SortingNode,
+> = (options: S) => Comparator<T>
+
+export type Comparator<T extends SortingNode> = (a: T, b: T) => number
+
+type Options = Pick<
+  CommonOptions,
+  | 'specialCharacters'
+  | 'fallbackSort'
+  | 'ignoreCase'
+  | 'alphabet'
+  | 'locales'
+  | 'order'
+  | 'type'
+>
+
+export let defaultComparatorByOptionsComputer: ComparatorByOptionsComputer<
+  Options,
+  SortingNode
+> = options => {
+  switch (options.type) {
+    case 'alphabetical':
+      return (a, b) => compareAlphabetically(a.name, b.name, options)
+    case 'line-length':
+      return buildLineLengthComparator(options)
+    case 'unsorted':
+      return unsortedComparator
+    case 'natural':
+      return (a, b) => compareNaturally(a.name, b.name, options)
+    case 'custom':
+      return (a, b) => compareByCustomSort(a.name, b.name, options)
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(options.type)
+  }
+}
