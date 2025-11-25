@@ -902,87 +902,181 @@ describe('sort-objects', () => {
           },
         ],
         output: dedent`
-          let [{
-            b: bRenamed,
-            a = bRenamed,
-          }] = [obj];
-        `,
-        code: dedent`
-          let [{
-            a = bRenamed,
-            b: bRenamed,
-          }] = [obj];
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        output: dedent`
           let {
-            [b]: bRenamed,
-            a = bRenamed,
+            b: [, nested] = [],
+            a = nested,
           } = obj;
         `,
         code: dedent`
           let {
-            a = bRenamed,
-            [b]: bRenamed,
+            a = nested,
+            b: [, nested] = [],
           } = obj;
         `,
         options: [options],
       })
 
-      await invalid({
-        errors: [
-          {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          let {
-            [b]: bRenamed = something,
-            a = bRenamed,
-          } = obj;
-        `,
-        code: dedent`
-          let {
-            a = bRenamed,
-            [b]: bRenamed = something,
-          } = obj;
-        `,
-        options: [options],
-      })
-
-      /**
-       * TODO: add regression test for nested dependency:
-       *
-       * `let { a = nested, b: { nested } = { nested: 'default' } } = obj;`.
-       *
-       * Should be invalid because a depends on nested from b, but currently
-       * passes.
-       *
-       * @see https://github.com/azat-io/eslint-plugin-perfectionist/issues/619
-       */
       await valid({
         code: dedent`
           let {
-            a: { nested } = { nested: 'default' },
-            b,
+            a,
+            b: {} = {},
+          } = obj;
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              nodeDependentOnRight: 'a',
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedObjectsDependencyOrder',
+          },
+        ],
+        output: dedent`
+          let [{
+            b: bRenamed,
+            a = bRenamed,
+          }] = [obj];
+        `,
+        code: dedent`
+          let [{
+            a = bRenamed,
+            b: bRenamed,
+          }] = [obj];
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              nodeDependentOnRight: 'a',
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedObjectsDependencyOrder',
+          },
+        ],
+        output: dedent`
+          let {
+            [b]: bRenamed,
+            a = bRenamed,
+          } = obj;
+        `,
+        code: dedent`
+          let {
+            a = bRenamed,
+            [b]: bRenamed,
+          } = obj;
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              nodeDependentOnRight: 'a',
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedObjectsDependencyOrder',
+          },
+        ],
+        output: dedent`
+          let {
+            [b]: bRenamed = something,
+            a = bRenamed,
+          } = obj;
+        `,
+        code: dedent`
+          let {
+            a = bRenamed,
+            [b]: bRenamed = something,
+          } = obj;
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              nodeDependentOnRight: 'a',
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedObjectsDependencyOrder',
+          },
+        ],
+        output: dedent`
+          let {
+            b: { nested } = { nested: 'default' },
+            a = nested,
+          } = obj;
+        `,
+        code: dedent`
+          let {
+            a = nested,
+            b: { nested } = { nested: 'default' },
+          } = obj;
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              nodeDependentOnRight: 'a',
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedObjectsDependencyOrder',
+          },
+        ],
+        output: dedent`
+          let {
+            b: { nested, ...rest } = { extra: 2, nested: 1 },
+            a = rest,
+          } = obj;
+        `,
+        code: dedent`
+          let {
+            a = rest,
+            b: { nested, ...rest } = { extra: 2, nested: 1 },
+          } = obj;
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              nodeDependentOnRight: 'a',
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedObjectsDependencyOrder',
+          },
+        ],
+        output: dedent`
+          let {
+            b: [first, ...restArr] = [],
+            a = restArr,
+          } = obj;
+        `,
+        code: dedent`
+          let {
+            a = restArr,
+            b: [first, ...restArr] = [],
           } = obj;
         `,
         options: [options],

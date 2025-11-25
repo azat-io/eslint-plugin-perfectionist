@@ -144,6 +144,63 @@ export default createEslintRule<Options, MessageId>({
         sourceCode,
       })
 
+      type DestructuringPattern =
+        | TSESTree.AssignmentPattern
+        | TSESTree.ObjectPattern
+        | TSESTree.ArrayPattern
+        | TSESTree.Identifier
+
+      function extractNamesFromPattern(
+        pattern: DestructuringPattern,
+      ): string[] {
+        if (pattern.type === 'AssignmentPattern') {
+          return extractNamesFromPattern(pattern.left as DestructuringPattern)
+        }
+
+        if (pattern.type === 'ObjectPattern') {
+          let names: string[] = []
+          for (let property of pattern.properties) {
+            if (property.type === 'Property') {
+              names.push(
+                ...extractNamesFromPattern(
+                  property.value as DestructuringPattern,
+                ),
+              )
+            } else {
+              names.push(
+                ...extractNamesFromPattern(
+                  property.argument as DestructuringPattern,
+                ),
+              )
+            }
+          }
+          return names
+        }
+
+        if (pattern.type === 'ArrayPattern') {
+          let names: string[] = []
+          for (let element of pattern.elements) {
+            if (!element) {
+              continue
+            }
+            if (element.type === 'RestElement') {
+              names.push(
+                ...extractNamesFromPattern(
+                  element.argument as DestructuringPattern,
+                ),
+              )
+              continue
+            }
+            names.push(
+              ...extractNamesFromPattern(element as DestructuringPattern),
+            )
+          }
+          return names
+        }
+
+        return [pattern.name]
+      }
+
       function extractDependencies(init: TSESTree.Expression): string[] {
         let dependencies: string[] = []
 
@@ -278,6 +335,16 @@ export default createEslintRule<Options, MessageId>({
             }
 
             let name = getNodeName({ sourceCode, property })
+            let dependencyNames = [name]
+            if (isDestructuredObject) {
+              let namesFromPattern = extractNamesFromPattern(
+                property.value as DestructuringPattern,
+              )
+              dependencyNames =
+                namesFromPattern.length > 0
+                  ? [...new Set(namesFromPattern)]
+                  : dependencyNames
+            }
             let predefinedGroups = generatePredefinedGroups({
               cache: cachedGroupsByModifiersAndSelectors,
               selectors,
@@ -299,18 +366,6 @@ export default createEslintRule<Options, MessageId>({
               options,
             })
 
-            let dependencyName: string = name
-            if (isDestructuredObject) {
-              if (property.value.type === 'Identifier') {
-                dependencyName = property.value.name
-              } else if (
-                property.value.type === 'AssignmentPattern' &&
-                property.value.left.type === 'Identifier'
-              ) {
-                dependencyName = property.value.left.name
-              }
-            }
-
             let sortingNode: Omit<SortingNodeWithDependencies, 'partitionId'> =
               {
                 isEslintDisabled: isNodeEslintDisabled(
@@ -318,7 +373,7 @@ export default createEslintRule<Options, MessageId>({
                   eslintDisabledLines,
                 ),
                 size: rangeToDiff(property, sourceCode),
-                dependencyNames: [dependencyName],
+                dependencyNames,
                 node: property,
                 dependencies,
                 group,
