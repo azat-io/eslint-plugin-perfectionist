@@ -14,7 +14,7 @@ export function buildNodeValueGetter(
 ): NodeValueGetterFunction<SortObjectTypesSortingNode> | null {
   switch (sortBy) {
     case 'value':
-      return node => node.value ?? ''
+      return node => node.value
     case 'name':
       return null
     /* v8 ignore next 2 */

@@ -283,9 +283,9 @@ export function sortObjectTypeElements<MessageIds extends string>({
       isEslintDisabled: isNodeEslintDisabled(typeElement, eslintDisabledLines),
       size: rangeToDiff(typeElement, sourceCode),
       addSafetySemicolonWhenInline: true,
+      value: value ?? '',
       node: typeElement,
       group,
-      value,
       name,
     }
 

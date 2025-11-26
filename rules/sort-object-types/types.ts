@@ -361,8 +361,7 @@ export interface SortObjectTypesSortingNode
   extends SortingNode<TSESTree.TypeElement> {
   /**
    * The string representation of the member's type annotation. Used when
-   * sorting by value instead of name. Can be null for members without explicit
-   * type annotations.
+   * sorting by value instead of name.
    */
-  value: string | null
+  value: string
 }
