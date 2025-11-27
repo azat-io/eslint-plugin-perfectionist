@@ -165,7 +165,8 @@ let { isMobileOnly = false } = Astro.props
     block-size: 100dvb;
     padding: var(--space-s);
     padding-block-end: calc(var(--space-xl) + var(--space-m));
-    overflow: scroll;
+    overflow-inline: hidden;
+    overflow-block: auto;
     scrollbar-width: thin;
     background: var(--color-background-secondary);
     border-inline-end: 1px solid var(--color-border-primary);

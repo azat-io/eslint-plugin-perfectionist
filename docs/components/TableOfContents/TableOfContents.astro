@@ -68,7 +68,8 @@ let toc = buildToc(headings)
     inline-size: 320px;
     max-block-size: calc(100dvb - var(--header-block-size));
     padding: var(--space-s);
-    overflow: scroll;
+    overflow-inline: hidden;
+    overflow-block: auto;
     scrollbar-width: none;
 
     @media (width >= 1300px) {
