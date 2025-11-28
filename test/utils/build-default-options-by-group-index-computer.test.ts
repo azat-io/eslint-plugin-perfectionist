@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 
 import type { CommonOptions } from '../../types/common-options'
 
-import { computeOverriddenOptionsByGroupIndex } from '../../utils/compute-overridden-options-by-group-index'
+import { buildDefaultOptionsByGroupIndexComputer } from '../../utils/build-default-options-by-group-index-computer'
 
-describe('compute-overridden-options-by-group-index', () => {
+describe('build-default-options-by-group-index-computer', () => {
   let commonOptions: CommonOptions = {
     fallbackSort: {
       type: 'unsorted',
@@ -23,16 +23,12 @@ describe('compute-overridden-options-by-group-index', () => {
       ],
       groups: ['group'],
     }
-
-    let result = computeOverriddenOptionsByGroupIndex(
-      {
+    expect(
+      buildDefaultOptionsByGroupIndexComputer({
         ...commonOptions,
         ...groupOptions,
-      },
-      0,
-    )
-
-    expect(result).toStrictEqual({
+      })(0),
+    ).toStrictEqual({
       ...commonOptions,
       ...groupOptions,
       type: 'unsorted',
@@ -49,16 +45,12 @@ describe('compute-overridden-options-by-group-index', () => {
       ],
       groups: [['group']],
     }
-
-    let result = computeOverriddenOptionsByGroupIndex(
-      {
+    expect(
+      buildDefaultOptionsByGroupIndexComputer({
         ...commonOptions,
         ...groupOptions,
-      },
-      0,
-    )
-
-    expect(result).toStrictEqual({
+      })(0),
+    ).toStrictEqual({
       ...commonOptions,
       ...groupOptions,
       type: 'alphabetical',
@@ -76,16 +68,12 @@ describe('compute-overridden-options-by-group-index', () => {
         ],
         groups: [{ commentAbove: 'foo', group: 'group' }],
       }
-
-      let result = computeOverriddenOptionsByGroupIndex(
-        {
+      expect(
+        buildDefaultOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
-        },
-        0,
-      )
-
-      expect(result).toStrictEqual({
+        })(0),
+      ).toStrictEqual({
         ...commonOptions,
         ...groupOptions,
         type: 'unsorted',
@@ -102,16 +90,12 @@ describe('compute-overridden-options-by-group-index', () => {
         ],
         groups: [{ commentAbove: 'foo', group: ['group'] }],
       }
-
-      let result = computeOverriddenOptionsByGroupIndex(
-        {
+      expect(
+        buildDefaultOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
-        },
-        0,
-      )
-
-      expect(result).toStrictEqual({
+        })(0),
+      ).toStrictEqual({
         ...commonOptions,
         ...groupOptions,
         type: 'alphabetical',
@@ -124,16 +108,12 @@ describe('compute-overridden-options-by-group-index', () => {
       groups: ['group'],
       customGroups: [],
     }
-
-    let result = computeOverriddenOptionsByGroupIndex(
-      {
+    expect(
+      buildDefaultOptionsByGroupIndexComputer({
         ...commonOptions,
         ...groupOptions,
-      },
-      0,
-    )
-
-    expect(result).toStrictEqual({
+      })(0),
+    ).toStrictEqual({
       ...commonOptions,
       ...groupOptions,
     })
@@ -152,16 +132,12 @@ describe('compute-overridden-options-by-group-index', () => {
         ],
         groups: ['group'],
       }
-
-      let result = computeOverriddenOptionsByGroupIndex(
-        {
+      expect(
+        buildDefaultOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
-        },
-        0,
-      )
-
-      expect(result).toStrictEqual({
+        })(0),
+      ).toStrictEqual({
         ...commonOptions,
         ...groupOptions,
         fallbackSort: {
@@ -170,42 +146,7 @@ describe('compute-overridden-options-by-group-index', () => {
       })
     })
 
-    it('takes "fallbackSort.order" if the custom group does not override it', () => {
-      let groupOptions = {
-        customGroups: [
-          {
-            fallbackSort: {
-              type: 'alphabetical' as const,
-            },
-            groupName: 'group',
-          },
-        ],
-        fallbackSort: {
-          type: 'natural',
-          order: 'desc',
-        } as const,
-        groups: ['group'],
-      }
-
-      let result = computeOverriddenOptionsByGroupIndex(
-        {
-          ...commonOptions,
-          ...groupOptions,
-        },
-        0,
-      )
-
-      expect(result).toStrictEqual({
-        ...commonOptions,
-        ...groupOptions,
-        fallbackSort: {
-          type: 'alphabetical',
-          order: 'desc',
-        },
-      })
-    })
-
-    it('overrides "fallbackSort.order" with custom groups', () => {
+    it('overrides "fallbackSort.order"', () => {
       let groupOptions = {
         customGroups: [
           {
@@ -218,16 +159,12 @@ describe('compute-overridden-options-by-group-index', () => {
         ],
         groups: ['group'],
       }
-
-      let result = computeOverriddenOptionsByGroupIndex(
-        {
+      expect(
+        buildDefaultOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
-        },
-        0,
-      )
-
-      expect(result).toStrictEqual({
+        })(0),
+      ).toStrictEqual({
         ...commonOptions,
         ...groupOptions,
         fallbackSort: {
@@ -249,16 +186,12 @@ describe('compute-overridden-options-by-group-index', () => {
         ],
         groups: [{ type: 'natural' as const, group: 'group' }],
       }
-
-      let result = computeOverriddenOptionsByGroupIndex(
-        {
+      expect(
+        buildDefaultOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
-        },
-        0,
-      )
-
-      expect(result).toStrictEqual({
+        })(0),
+      ).toStrictEqual({
         ...commonOptions,
         ...groupOptions,
         fallbackSort: {
@@ -273,16 +206,12 @@ describe('compute-overridden-options-by-group-index', () => {
         groups: [{ type: 'unsorted' as const, group: 'group' }],
         customGroups: [],
       }
-
-      let result = computeOverriddenOptionsByGroupIndex(
-        {
+      expect(
+        buildDefaultOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
-        },
-        0,
-      )
-
-      expect(result).toStrictEqual({
+        })(0),
+      ).toStrictEqual({
         ...commonOptions,
         ...groupOptions,
         fallbackSort: {
@@ -304,16 +233,12 @@ describe('compute-overridden-options-by-group-index', () => {
         ],
         groups: [{ order: 'asc' as const, group: 'group' }],
       }
-
-      let result = computeOverriddenOptionsByGroupIndex(
-        {
+      expect(
+        buildDefaultOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
-        },
-        0,
-      )
-
-      expect(result).toStrictEqual({
+        })(0),
+      ).toStrictEqual({
         ...commonOptions,
         ...groupOptions,
         fallbackSort: {
@@ -328,16 +253,12 @@ describe('compute-overridden-options-by-group-index', () => {
         groups: [{ order: 'desc' as const, group: 'group' }],
         customGroups: [],
       }
-
-      let result = computeOverriddenOptionsByGroupIndex(
-        {
+      expect(
+        buildDefaultOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
-        },
-        0,
-      )
-
-      expect(result).toStrictEqual({
+        })(0),
+      ).toStrictEqual({
         ...commonOptions,
         ...groupOptions,
         fallbackSort: {

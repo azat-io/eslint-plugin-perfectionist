@@ -1,7 +1,7 @@
 import type { NodeValueGetterFunction } from '../../utils/compare/compare'
 import type { SortObjectTypesSortingNode, Options } from './types'
 
-import { getCustomGroupsCompareOptions as baseGetCustomGroupsCompareOptions } from '../../utils/build-default-options-by-group-index-computer'
+import { computeOverriddenOptionsByGroupIndex as baseComputeOverriddenOptionsByGroupIndex } from '../../utils/compute-overridden-options-by-group-index'
 import { computeGroupName } from '../../utils/compute-group-name'
 import { buildNodeValueGetter } from './build-node-value-getter'
 
@@ -25,7 +25,7 @@ type InputOptions = Pick<
  * @returns Sorting options with appropriate node value getters for the sort
  *   strategy.
  */
-export function getCustomGroupsCompareOptions(
+export function computeOverriddenOptionsByGroupIndex(
   options: InputOptions,
   groupIndex: number,
 ): {
@@ -36,7 +36,7 @@ export function getCustomGroupsCompareOptions(
   fallbackSortNodeValueGetter?: NodeValueGetterFunction<SortObjectTypesSortingNode> | null
   nodeValueGetter?: NodeValueGetterFunction<SortObjectTypesSortingNode> | null
 } {
-  let baseCompareOptions = baseGetCustomGroupsCompareOptions(
+  let baseCompareOptions = baseComputeOverriddenOptionsByGroupIndex(
     options,
     groupIndex,
   )

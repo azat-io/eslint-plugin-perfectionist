@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Options } from '../../../rules/sort-object-types/types'
 
-import { getCustomGroupsCompareOptions } from '../../../rules/sort-object-types/get-custom-groups-compare-options'
+import { computeOverriddenOptionsByGroupIndex } from '../../../rules/sort-object-types/compute-overridden-options-by-group-index'
 
 describe('get-custom-groups-compare-options', () => {
   let commonOptions: Pick<
@@ -20,7 +20,7 @@ describe('get-custom-groups-compare-options', () => {
 
   it('matches string groups', () => {
     expect(
-      getCustomGroupsCompareOptions(
+      computeOverriddenOptionsByGroupIndex(
         {
           ...commonOptions,
           customGroups: [
@@ -45,7 +45,7 @@ describe('get-custom-groups-compare-options', () => {
 
   it('ignores array sub groups', () => {
     expect(
-      getCustomGroupsCompareOptions(
+      computeOverriddenOptionsByGroupIndex(
         {
           ...commonOptions,
           customGroups: [
@@ -71,7 +71,7 @@ describe('get-custom-groups-compare-options', () => {
   describe('commentAbove groups', () => {
     it('matches string groups', () => {
       expect(
-        getCustomGroupsCompareOptions(
+        computeOverriddenOptionsByGroupIndex(
           {
             ...commonOptions,
             customGroups: [
@@ -96,7 +96,7 @@ describe('get-custom-groups-compare-options', () => {
 
     it('ignores array sub groups', () => {
       expect(
-        getCustomGroupsCompareOptions(
+        computeOverriddenOptionsByGroupIndex(
           {
             ...commonOptions,
             customGroups: [
@@ -122,7 +122,7 @@ describe('get-custom-groups-compare-options', () => {
 
   it('return the entered options if the group is not linked to a custom group', () => {
     expect(
-      getCustomGroupsCompareOptions(
+      computeOverriddenOptionsByGroupIndex(
         {
           ...commonOptions,
           groups: ['group'],
@@ -140,7 +140,7 @@ describe('get-custom-groups-compare-options', () => {
   describe('"fallbackSort"', () => {
     it('overrides "fallbackSort.type"', () => {
       expect(
-        getCustomGroupsCompareOptions(
+        computeOverriddenOptionsByGroupIndex(
           {
             ...commonOptions,
             customGroups: [
@@ -170,7 +170,7 @@ describe('get-custom-groups-compare-options', () => {
 
     it('overrides "fallbackSort.order"', () => {
       expect(
-        getCustomGroupsCompareOptions(
+        computeOverriddenOptionsByGroupIndex(
           {
             ...commonOptions,
             customGroups: [
@@ -202,7 +202,7 @@ describe('get-custom-groups-compare-options', () => {
 
     it('overrides "fallbackSort.sortBy"', () => {
       expect(
-        getCustomGroupsCompareOptions(
+        computeOverriddenOptionsByGroupIndex(
           {
             ...commonOptions,
             customGroups: [
@@ -235,7 +235,7 @@ describe('get-custom-groups-compare-options', () => {
   describe('"type"', () => {
     it('overrides "type" with custom groups', () => {
       expect(
-        getCustomGroupsCompareOptions(
+        computeOverriddenOptionsByGroupIndex(
           {
             ...commonOptions,
             customGroups: [
@@ -260,7 +260,7 @@ describe('get-custom-groups-compare-options', () => {
 
     it('overrides "type" with group with overrides', () => {
       expect(
-        getCustomGroupsCompareOptions(
+        computeOverriddenOptionsByGroupIndex(
           {
             ...commonOptions,
             groups: [{ type: 'unsorted', group: 'group' }],
@@ -281,7 +281,7 @@ describe('get-custom-groups-compare-options', () => {
 
   it('overrides "order"', () => {
     expect(
-      getCustomGroupsCompareOptions(
+      computeOverriddenOptionsByGroupIndex(
         {
           ...commonOptions,
           customGroups: [

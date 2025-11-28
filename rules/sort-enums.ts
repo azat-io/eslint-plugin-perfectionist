@@ -20,7 +20,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { getCustomGroupOverriddenOptions } from '../utils/build-default-options-by-group-index-computer'
+import { computeOverriddenOptionsByGroupIndex } from '../utils/compute-overridden-options-by-group-index'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
@@ -214,10 +214,10 @@ export default createEslintRule<Options, MessageId>({
         let nodesSortedByGroups = formattedMembers.flatMap(sortingNodes =>
           sortNodesByGroups({
             optionsByGroupIndexComputer: groupIndex => ({
-              options: getCustomGroupOverriddenOptions({
-                options: overriddenOptions,
+              options: computeOverriddenOptionsByGroupIndex(
+                overriddenOptions,
                 groupIndex,
-              }),
+              ),
               nodeValueGetter,
             }),
             ignoreEslintDisabledNodes,

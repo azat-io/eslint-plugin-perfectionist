@@ -34,9 +34,9 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import { computeOverriddenOptionsByGroupIndex } from './sort-object-types/compute-overridden-options-by-group-index'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
-import { getCustomGroupsCompareOptions } from './sort-object-types/get-custom-groups-compare-options'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -317,7 +317,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
             fallbackSortNodeValueGetter,
             options: overriddenOptions,
             nodeValueGetter,
-          } = getCustomGroupsCompareOptions(options, groupIndex)
+          } = computeOverriddenOptionsByGroupIndex(options, groupIndex)
           return {
             options: {
               ...options,
