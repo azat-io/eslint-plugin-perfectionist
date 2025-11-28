@@ -49,6 +49,8 @@ export default createEslintRule<Options, MessageId>({
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, defaultOptions)
+      let defaultComparator = defaultComparatorByOptionsComputer(options)
+
       validateCustomSortConfiguration(options)
 
       let { sourceCode } = context
@@ -230,7 +232,6 @@ export default createEslintRule<Options, MessageId>({
             return -1
           }
 
-          let defaultComparator = defaultComparatorByOptionsComputer(options)
           return defaultComparator(a.at(0)!, b.at(0)!)
         })
         .flat()
