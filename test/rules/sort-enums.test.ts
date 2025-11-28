@@ -4366,6 +4366,85 @@ describe('sort-enums', () => {
         options: [options],
       })
     })
+
+    it('sorts enum members by their values', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'b', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'c', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'd', left: 'c' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'e', left: 'd' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'f', left: 'e' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'g', left: 'f' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'h', left: 'g' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'i', left: 'h' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'j', left: 'i' },
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            'j' = null,
+            'k' = undefined,
+            'i' = 'a',
+            'h' = 'b',
+            'g' = 'c',
+            'f' = 'd',
+            'e' = 'e',
+            'd' = 'f',
+            'c' = 'g',
+            'b' = 'h',
+            'a' = 'i',
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            'a' = 'i',
+            'b' = 'h',
+            'c' = 'g',
+            'd' = 'f',
+            'e' = 'e',
+            'f' = 'd',
+            'g' = 'c',
+            'h' = 'b',
+            'i' = 'a',
+            'j' = null,
+            'k' = undefined,
+          }
+        `,
+        options: [
+          {
+            ...options,
+            sortByValue: 'always',
+          },
+        ],
+      })
+    })
   })
 
   describe('unsorted', () => {

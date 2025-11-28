@@ -7346,6 +7346,24 @@ describe('sort-object-types', () => {
         options: [options],
       })
     })
+
+    it('sorts type members by their value', async () => {
+      await valid({
+        code: dedent`
+          type Type = {
+            b: 'a'
+            a: 'b'
+            c: 'c'
+          }
+        `,
+        options: [
+          {
+            ...options,
+            sortBy: 'value',
+          },
+        ],
+      })
+    })
   })
 
   describe('unsorted', () => {
@@ -7364,6 +7382,22 @@ describe('sort-object-types', () => {
           }
         `,
         options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          type Type = {
+            c: 'c';
+            b: 'a';
+            a: 'b';
+          }
+        `,
+        options: [
+          {
+            ...options,
+            sortBy: 'value',
+          },
+        ],
       })
     })
 
