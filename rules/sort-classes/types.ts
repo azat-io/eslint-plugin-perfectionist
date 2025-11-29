@@ -17,16 +17,25 @@ import {
  * property, etc.) and various patterns matching their names, values, or
  * decorators.
  */
-export type SingleCustomGroup =
-  | AdvancedSingleCustomGroup<FunctionPropertySelector>
-  | AdvancedSingleCustomGroup<AccessorPropertySelector>
-  | BaseSingleCustomGroup<IndexSignatureSelector>
-  | AdvancedSingleCustomGroup<GetMethodSelector>
-  | AdvancedSingleCustomGroup<SetMethodSelector>
-  | AdvancedSingleCustomGroup<PropertySelector>
-  | BaseSingleCustomGroup<StaticBlockSelector>
-  | BaseSingleCustomGroup<ConstructorSelector>
-  | AdvancedSingleCustomGroup<MethodSelector>
+export interface SingleCustomGroup {
+  /** Pattern to match decorator names (e.g., '@Component'). */
+  decoratorNamePattern?: RegexOption
+
+  /**
+   * Pattern to match the value of the member (for properties with
+   * initializers).
+   */
+  elementValuePattern?: RegexOption
+
+  /** Pattern to match the member name. */
+  elementNamePattern?: RegexOption
+
+  /** List of modifiers that members must have to be included in this group. */
+  modifiers?: Modifier[]
+
+  /** The type of class member this group applies to. */
+  selector?: Selector
+}
 
 /**
  * Configuration options for the sort-classes rule.
@@ -78,105 +87,6 @@ export type Modifier =
   | DeclareModifier
   | StaticModifier
   | AsyncModifier
-
-/**
- * Maps each selector type to its allowed modifiers.
- *
- * Defines which modifiers are valid for each type of class member, ensuring
- * type safety when configuring custom groups.
- *
- * @internal
- */
-interface AllowedModifiersPerSelector {
-  /** Valid modifiers for property members. */
-  property:
-    | PublicOrProtectedOrPrivateModifier
-    | DecoratedModifier
-    | AbstractModifier
-    | OverrideModifier
-    | ReadonlyModifier
-    | OptionalModifier
-    | DeclareModifier
-    | StaticModifier
-
-  /** Valid modifiers for method members. */
-  method:
-    | PublicOrProtectedOrPrivateModifier
-    | DecoratedModifier
-    | AbstractModifier
-    | OverrideModifier
-    | OptionalModifier
-    | StaticModifier
-    | AsyncModifier
-
-  /** Valid modifiers for function properties (arrow functions as properties). */
-  'function-property':
-    | PublicOrProtectedOrPrivateModifier
-    | DecoratedModifier
-    | OverrideModifier
-    | ReadonlyModifier
-    | StaticModifier
-    | AsyncModifier
-
-  /** Valid modifiers for accessor properties (auto-accessors). */
-  'accessor-property':
-    | PublicOrProtectedOrPrivateModifier
-    | DecoratedModifier
-    | AbstractModifier
-    | OverrideModifier
-    | StaticModifier
-
-  /** Valid modifiers for setter methods. */
-  'set-method':
-    | PublicOrProtectedOrPrivateModifier
-    | DecoratedModifier
-    | AbstractModifier
-    | OverrideModifier
-    | StaticModifier
-
-  /** Valid modifiers for getter methods (same as setter methods). */
-  'get-method': AllowedModifiersPerSelector['set-method']
-
-  /** Valid modifiers for index signatures. */
-  'index-signature': ReadonlyModifier | StaticModifier
-
-  /** Valid modifiers for constructors. */
-  constructor: PublicOrProtectedOrPrivateModifier
-
-  /** Static blocks don't support any modifiers. */
-  'static-block': never
-}
-
-/**
- * Extended custom group configuration with pattern matching capabilities.
- *
- * @template T - The selector type this group applies to.
- */
-type AdvancedSingleCustomGroup<T extends Selector> = {
-  /** Pattern to match decorator names (e.g., '@Component'). */
-  decoratorNamePattern?: RegexOption
-
-  /**
-   * Pattern to match the value of the member (for properties with
-   * initializers).
-   */
-  elementValuePattern?: RegexOption
-
-  /** Pattern to match the member name. */
-  elementNamePattern?: RegexOption
-} & BaseSingleCustomGroup<T>
-
-/**
- * Base configuration for a custom group.
- *
- * @template T - The selector type this group applies to.
- */
-interface BaseSingleCustomGroup<T extends Selector> {
-  /** List of modifiers that members must have to be included in this group. */
-  modifiers?: AllowedModifiersPerSelector[T][]
-  /** The type of class member this group applies to. */
-  selector?: T
-}
 
 /** Union type for access level modifiers. */
 type PublicOrProtectedOrPrivateModifier =

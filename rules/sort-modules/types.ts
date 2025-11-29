@@ -16,15 +16,25 @@ import {
  * Custom groups allow fine-grained control over how module members are grouped
  * and sorted based on their types, modifiers, and patterns.
  */
-export type SingleCustomGroup = (
-  | (DecoratorNamePatternFilterCustomGroup &
-      BaseSingleCustomGroup<ClassSelector>)
-  | BaseSingleCustomGroup<InterfaceSelector>
-  | BaseSingleCustomGroup<FunctionSelector>
-  | BaseSingleCustomGroup<EnumSelector>
-  | BaseSingleCustomGroup<TypeSelector>
-) &
-  ElementNamePatternFilterCustomGroup
+export interface SingleCustomGroup {
+  /**
+   * Regular expression pattern to match decorator names. Members with
+   * decorators matching this pattern will be included in this custom group.
+   */
+  decoratorNamePattern?: RegexOption
+
+  /**
+   * Regular expression pattern to match member names. Members with names
+   * matching this pattern will be included in this custom group.
+   */
+  elementNamePattern?: RegexOption
+
+  /** List of modifiers that members must have to be included in this group. */
+  modifiers?: Modifier[]
+
+  /** The type of module member this group applies to. */
+  selector?: Selector
+}
 
 /**
  * Union type of all available module member selectors. Used to categorize
@@ -63,77 +73,6 @@ export type Modifier =
   | DefaultModifier
   | ExportModifier
   | AsyncModifier
-
-/**
- * Maps each selector type to its allowed modifiers.
- *
- * Defines which modifiers are valid for each type of module member, ensuring
- * type safety when configuring custom groups.
- *
- * Note: The 'decorated' modifier is included for class to support decorated
- * classes, aligning with the group types and allModifiers definitions.
- *
- * @internal
- */
-interface AllowedModifiersPerSelector {
-  /** Valid modifiers for class declarations (including decorated classes). */
-  class: DecoratedModifier | DeclareModifier | DefaultModifier | ExportModifier
-
-  /** Valid modifiers for function declarations. */
-  function: DeclareModifier | DefaultModifier | ExportModifier | AsyncModifier
-
-  /** Valid modifiers for interface declarations. */
-  interface: DeclareModifier | DefaultModifier | ExportModifier
-
-  /** Valid modifiers for namespace declarations. */
-  namespace: DeclareModifier | ExportModifier
-
-  /** Valid modifiers for module declarations. */
-  module: DeclareModifier | ExportModifier
-
-  /** Valid modifiers for enum declarations. */
-  enum: DeclareModifier | ExportModifier
-
-  /** Valid modifiers for type alias declarations. */
-  type: DeclareModifier | ExportModifier
-}
-
-/**
- * Base configuration for a custom group.
- *
- * @template T - The selector type this group applies to.
- */
-interface BaseSingleCustomGroup<T extends Selector> {
-  /** List of modifiers that members must have to be included in this group. */
-  modifiers?: AllowedModifiersPerSelector[T][]
-
-  /** The type of module member this group applies to. */
-  selector?: T
-}
-
-/**
- * Custom group filter based on decorator names. Only applicable to class
- * members that support decorators.
- */
-interface DecoratorNamePatternFilterCustomGroup {
-  /**
-   * Regular expression pattern to match decorator names. Members with
-   * decorators matching this pattern will be included in this custom group.
-   */
-  decoratorNamePattern?: RegexOption
-}
-
-/**
- * Custom group filter based on element names. Applicable to all module member
- * types.
- */
-interface ElementNamePatternFilterCustomGroup {
-  /**
-   * Regular expression pattern to match member names. Members with names
-   * matching this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
-}
 
 /** Modifier for decorated members (having decorators). */
 type DecoratedModifier = 'decorated'
