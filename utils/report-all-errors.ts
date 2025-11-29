@@ -79,7 +79,7 @@ interface ReportAllErrorsParameters<
    *   partitionByComment: true
    *   }
    */
-  options: Pick<CommonGroupsOptions<unknown, unknown>, 'groups'> &
+  options: Pick<CommonGroupsOptions<unknown, unknown, string>, 'groups'> &
     MakeFixesParameters<T>['options']
 
   /**

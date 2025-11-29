@@ -1,4 +1,4 @@
-import type { CommonOptions } from '../../types/common-options'
+import type { CommonOptions, TypeOption } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import { buildLineLengthComparator } from './build-line-length-comparator'
@@ -15,7 +15,7 @@ export type ComparatorByOptionsComputer<S, T extends SortingNode> = (
 export type Comparator<T extends SortingNode> = (a: T, b: T) => number
 
 type Options = Pick<
-  CommonOptions,
+  CommonOptions<TypeOption>,
   | 'specialCharacters'
   | 'fallbackSort'
   | 'ignoreCase'

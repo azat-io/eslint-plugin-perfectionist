@@ -20,7 +20,14 @@
  *     },
  *   }
  */
-export interface CommonOptions {
+export interface CommonOptions<CustomTypeOption extends string = string> {
+  /**
+   * Secondary sorting method applied when primary comparison returns equal.
+   * Ensures stable and predictable sorting when elements have identical primary
+   * values.
+   */
+  fallbackSort: FallbackSortOption<CustomTypeOption>
+
   /**
    * Specifies how to handle special characters during sorting.
    *
@@ -38,11 +45,10 @@ export interface CommonOptions {
   locales: NonNullable<Intl.LocalesArgument>
 
   /**
-   * Secondary sorting method applied when primary comparison returns equal.
-   * Ensures stable and predictable sorting when elements have identical primary
-   * values.
+   * Sorting algorithm to use for ordering elements. Each algorithm has
+   * different behavior for handling numbers and special characters.
    */
-  fallbackSort: FallbackSortOption
+  type: CustomTypeOption
 
   /**
    * Determines whether to perform case-insensitive comparison. When true, 'a'
@@ -64,12 +70,6 @@ export interface CommonOptions {
    * sorted after those in the alphabet.
    */
   alphabet: string
-
-  /**
-   * Sorting algorithm to use for ordering elements. Each algorithm has
-   * different behavior for handling numbers and special characters.
-   */
-  type: TypeOption
 }
 
 /**
@@ -166,18 +166,18 @@ export type SpecialCharactersOption =
  *     order: 'asc',
  *   }
  */
-export interface FallbackSortOption {
+export interface FallbackSortOption<CustomTypeOption extends string> {
+  /**
+   * Sorting algorithm to use as the fallback method. Applied only when the
+   * primary sort comparison returns equal.
+   */
+  type: CustomTypeOption
+
   /**
    * Sort direction for the fallback comparison. If not specified, inherits from
    * the primary sort order.
    */
   order?: OrderOption
-
-  /**
-   * Sorting algorithm to use as the fallback method. Applied only when the
-   * primary sort comparison returns equal.
-   */
-  type: TypeOption
 }
 
 /**

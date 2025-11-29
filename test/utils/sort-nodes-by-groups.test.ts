@@ -2,14 +2,15 @@ import { describe, expect, it } from 'vitest'
 
 import type { OptionsByGroupIndexComputer } from '../../utils/sort-nodes-by-groups'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { CommonOptions } from '../../types/common-options'
+import type { CommonOptions, TypeOption } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 
 describe('sort-nodes-by-groups', () => {
-  let options: CommonGroupsOptions<unknown, unknown> & CommonOptions = {
+  let options: CommonGroupsOptions<unknown, unknown, TypeOption> &
+    CommonOptions<TypeOption> = {
     fallbackSort: { type: 'unsorted' },
     specialCharacters: 'keep',
     newlinesBetween: 'ignore',
@@ -23,7 +24,8 @@ describe('sort-nodes-by-groups', () => {
   }
 
   let optionsByGroupIndexComputer: OptionsByGroupIndexComputer<
-    CommonGroupsOptions<unknown, unknown> & CommonOptions
+    CommonGroupsOptions<unknown, unknown, TypeOption> &
+      CommonOptions<TypeOption>
   > = () => options
 
   it('sorts nodes by groups', () => {

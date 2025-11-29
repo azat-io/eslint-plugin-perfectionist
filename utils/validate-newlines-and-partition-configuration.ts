@@ -5,7 +5,7 @@ import { isNewlinesBetweenOption } from './is-newlines-between-option'
 
 /** Options for validating newlines and partition configuration. */
 type Options = Pick<
-  CommonGroupsOptions<unknown, unknown>,
+  CommonGroupsOptions<unknown, unknown, string>,
   'newlinesBetween' | 'groups'
 > &
   Pick<CommonPartitionOptions, 'partitionByNewLine'>

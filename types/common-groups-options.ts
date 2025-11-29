@@ -2,7 +2,6 @@ import type {
   FallbackSortOption,
   OrderOption,
   RegexOption,
-  TypeOption,
 } from './common-options'
 
 /**
@@ -33,12 +32,16 @@ import type {
  * @template AdditionalOptions - Additional type-specific options that extend
  *   the base configuration.
  */
-export type CustomGroupsOption<SingleCustomGroup, AdditionalOptions> = ({
+export type CustomGroupsOption<
+  SingleCustomGroup,
+  AdditionalOptions,
+  CustomTypeOption extends string,
+> = ({
   /**
    * Fallback sorting configuration used when primary sort returns equal. Useful
    * for stable sorting when elements have identical primary sort values.
    */
-  fallbackSort?: FallbackSortOption
+  fallbackSort?: FallbackSortOption<CustomTypeOption>
 
   /**
    * Regular expression pattern to match the element's name. Elements matching
@@ -48,6 +51,12 @@ export type CustomGroupsOption<SingleCustomGroup, AdditionalOptions> = ({
 
   /** Specify the exact number of newlines required. */
   newlinesInside?: number
+
+  /**
+   * Sorting algorithm type for this custom group. Overrides the global type
+   * setting for elements in this group.
+   */
+  type?: CustomTypeOption
 
   /**
    * Sort direction for this custom group. Overrides the global order setting
@@ -60,12 +69,6 @@ export type CustomGroupsOption<SingleCustomGroup, AdditionalOptions> = ({
    * groups configuration array.
    */
   groupName: string
-
-  /**
-   * Sorting algorithm type for this custom group. Overrides the global type
-   * setting for elements in this group.
-   */
-  type?: TypeOption
 } & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) &
   AdditionalOptions)[]
 
@@ -79,12 +82,15 @@ export type CustomGroupsOption<SingleCustomGroup, AdditionalOptions> = ({
  *     'components',
  *   ]
  */
-export interface GroupWithOverridesOption {
+export interface GroupWithOverridesOption<CustomTypeOption extends string> {
   /** Name of the group or array of group names for composite groups. */
   group: string[] | string
 
   /** Specify the exact number of newlines required inside the group. */
   newlinesInside?: number
+
+  /** Same as `type` in CommonOptions - Sorting algorithm to use for this group. */
+  type?: CustomTypeOption
 
   /**
    * Text of the comment to insert above the group. The comment will be
@@ -94,23 +100,28 @@ export interface GroupWithOverridesOption {
 
   /** Same as `order` in CommonOptions - Sort direction for this group. */
   order?: OrderOption
-
-  /** Same as `type` in CommonOptions - Sorting algorithm to use for this group. */
-  type?: TypeOption
 }
 
-export interface CommonGroupsOptions<SingleCustomGroup, AdditionalOptions> {
+export interface CommonGroupsOptions<
+  SingleCustomGroup,
+  AdditionalOptions,
+  CustomTypeOption extends string,
+> {
   /** Custom groups for organizing nodes. */
-  customGroups: CustomGroupsOption<SingleCustomGroup, AdditionalOptions>
-
-  /** Controls the placement of newlines between different groups of nodes. */
-  newlinesBetween: NewlinesBetweenOption
+  customGroups: CustomGroupsOption<
+    SingleCustomGroup,
+    AdditionalOptions,
+    CustomTypeOption
+  >
 
   /**
    * Defines the order and grouping of nodes. Nodes are sorted within their
    * groups and groups are ordered as specified.
    */
-  groups: GroupsOptions
+  groups: GroupsOptions<CustomTypeOption>
+
+  /** Controls the placement of newlines between different groups of nodes. */
+  newlinesBetween: NewlinesBetweenOption
 }
 
 /**
@@ -208,9 +219,9 @@ export interface GroupNewlinesBetweenOption {
  *     'utils',
  *   ]
  */
-export type GroupsOptions = (
+export type GroupsOptions<CustomTypeOption extends string = string> = (
+  | GroupWithOverridesOption<CustomTypeOption>
   | GroupNewlinesBetweenOption
-  | GroupWithOverridesOption
   | string[]
   | string
 )[]

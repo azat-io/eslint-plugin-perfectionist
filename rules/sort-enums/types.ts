@@ -1,9 +1,13 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type {
+  CommonOptions,
+  RegexOption,
+  TypeOption,
+} from '../../types/common-options'
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 import { regexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
@@ -24,9 +28,13 @@ export type Options = Partial<
      * @default ifNumericEnum
      */
     sortByValue: 'ifNumericEnum' | 'always' | 'never'
-  } & CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
-    CommonPartitionOptions &
-    CommonOptions
+  } & CommonGroupsOptions<
+    SingleCustomGroup,
+    Record<string, never>,
+    TypeOption
+  > &
+    CommonOptions<TypeOption> &
+    CommonPartitionOptions
 >[]
 
 export interface SortEnumsSortingNode

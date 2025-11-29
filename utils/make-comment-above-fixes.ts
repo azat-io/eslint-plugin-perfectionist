@@ -13,7 +13,7 @@ import { getGroupIndex } from './get-group-index'
 interface MakeCommentAboveFixesParameters {
   /** Configuration options containing groups and custom groups. */
   options: Pick<
-    CommonGroupsOptions<unknown, unknown>,
+    CommonGroupsOptions<unknown, unknown, string>,
     'customGroups' | 'groups'
   >
 

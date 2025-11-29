@@ -11,6 +11,11 @@ import { computeGroupsNames } from './compute-groups-names'
  * @template SingleCustomGroup - Type of individual custom group configuration.
  */
 interface GetGroupParameters<SingleCustomGroup> {
+  /** Configuration options for grouping. */
+  options: Pick<
+    CommonGroupsOptions<SingleCustomGroup, unknown, string>,
+    'customGroups' | 'groups'
+  >
   /**
    * Optional function to test if an element matches a custom group.
    *
@@ -20,11 +25,6 @@ interface GetGroupParameters<SingleCustomGroup> {
   customGroupMatcher?(
     customGroup: AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup,
   ): boolean
-  /** Configuration options for grouping. */
-  options: Pick<
-    CommonGroupsOptions<SingleCustomGroup, unknown>,
-    'customGroups' | 'groups'
-  >
 
   /**
    * List of predefined groups that the element belongs to. These are checked

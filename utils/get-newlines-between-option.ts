@@ -16,7 +16,7 @@ import { computeGroupName } from './compute-group-name'
  */
 export interface GetNewlinesBetweenOptionParameters {
   /** Configuration options for newlines and groups. */
-  options: CommonGroupsOptions<unknown, unknown>
+  options: CommonGroupsOptions<unknown, unknown, string>
 
   /** Group index of the next/second node. */
   nextNodeGroupIndex: number

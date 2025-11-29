@@ -1,5 +1,9 @@
+import type {
+  CommonOptions,
+  RegexOption,
+  TypeOption,
+} from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 /**
@@ -21,9 +25,13 @@ export type Options = Partial<
        */
       allNamesMatchPattern?: RegexOption
     }
-  } & CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
-    CommonPartitionOptions &
-    CommonOptions
+  } & CommonGroupsOptions<
+    SingleCustomGroup,
+    Record<string, never>,
+    TypeOption
+  > &
+    CommonOptions<TypeOption> &
+    CommonPartitionOptions
 >[]
 
 /** Additional configuration for a single custom group. */

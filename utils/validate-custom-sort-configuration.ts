@@ -8,7 +8,7 @@ import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 
 /** Options for custom sort configuration validation. */
 type Options = {
-  groups?: CommonGroupsOptions<unknown, unknown>['groups']
+  groups?: CommonGroupsOptions<unknown, unknown, string>['groups']
 } & Pick<CommonOptions, 'alphabet' | 'type'>
 
 /**

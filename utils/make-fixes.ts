@@ -21,7 +21,7 @@ export interface MakeFixesParameters<T extends SortingNode> {
     /** Configuration for partition comments that separate code sections. */
     partitionByComment?: PartitionByCommentOption
   } & Pick<
-    CommonGroupsOptions<unknown, unknown>,
+    CommonGroupsOptions<unknown, unknown, string>,
     'newlinesBetween' | 'customGroups' | 'groups'
   >
 
