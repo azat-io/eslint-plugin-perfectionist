@@ -29,19 +29,19 @@ export type Options = Partial<
     CommonOptions
 >[]
 
+export interface SortEnumsSortingNode
+  extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
+  numericValue: number | null
+  value: string | null
+}
+
 /** Additional configuration for a single custom group.. */
-export interface SingleCustomGroup {
+interface SingleCustomGroup {
   /**
    * Regular expression pattern to match enum member values. Members with values
    * matching this pattern will be included in this custom group.
    */
   elementValuePattern?: RegexOption
-}
-
-export interface SortEnumsSortingNode
-  extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
-  numericValue: number | null
-  value: string | null
 }
 
 /**

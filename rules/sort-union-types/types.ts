@@ -26,15 +26,6 @@ export type Selector =
   | TupleSelector
   | UnionSelector
 
-/** Additional configuration for a single custom group. */
-export interface SingleCustomGroup {
-  /**
-   * The selector type this group matches. Determines what kind of type members
-   * belong to this group.
-   */
-  selector?: Selector
-}
-
 /**
  * Configuration options for the sort-union-types rule.
  *
@@ -45,6 +36,15 @@ export type Options = Partial<
     CommonPartitionOptions &
     CommonOptions
 >[]
+
+/** Additional configuration for a single custom group. */
+interface SingleCustomGroup {
+  /**
+   * The selector type this group matches. Determines what kind of type members
+   * belong to this group.
+   */
+  selector?: Selector
+}
 
 /**
  * Selector for intersection types.

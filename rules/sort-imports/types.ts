@@ -103,23 +103,6 @@ export type Selector =
   | TypeSelector
 
 /**
- * Additional configuration for a single custom group.
- *
- * @example
- *   {
- *     "modifiers": ["type"],
- *     "selector": "external"
- *   }
- */
-export interface SingleCustomGroup {
-  /** List of modifiers that imports must have to be included in this group. */
-  modifiers?: Modifier[]
-
-  /** The selector type that imports must match to be included in this group. */
-  selector?: Selector
-}
-
-/**
  * Union type of all available import modifiers. Used to identify specific
  * characteristics of import statements.
  */
@@ -134,6 +117,23 @@ export type Modifier =
   | ValueModifier
   | NamedModifier
   | TypeModifier
+
+/**
+ * Additional configuration for a single custom group.
+ *
+ * @example
+ *   {
+ *     "modifiers": ["type"],
+ *     "selector": "external"
+ *   }
+ */
+interface SingleCustomGroup {
+  /** List of modifiers that imports must have to be included in this group. */
+  modifiers?: Modifier[]
+
+  /** The selector type that imports must match to be included in this group. */
+  selector?: Selector
+}
 
 /** Selector for side-effect imports that are style files (CSS, SCSS, etc.). */
 type SideEffectStyleSelector = 'side-effect-style'
