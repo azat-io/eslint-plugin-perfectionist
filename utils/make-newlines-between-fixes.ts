@@ -1,11 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type {
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  GroupsOptions,
-} from '../types/common-groups-options'
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
+import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getNewlinesBetweenOption } from './get-newlines-between-option'
@@ -19,24 +15,14 @@ import { getNodeRange } from './get-node-range'
  * @template T - Type of sorting node extending the base SortingNode.
  */
 interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
-  /** Configuration options for groups and newlines. */
-  options: {
-    newlinesBetween: NewlinesBetweenOption
-
-    /** Required newlines configuration between groups. */
-
-    /** Optional custom groups configuration. */
-    customGroups: CustomGroupsOption
-
-    /** Groups configuration defining available groups and their order. */
-    groups: GroupsOptions
-  }
-
   /**
    * Optional function to customize newlines between specific nodes. Allows
    * overriding the default newlines behavior for specific cases.
    */
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
+
+  /** Configuration options for groups and newlines. */
+  options: CommonGroupsOptions<unknown>
 
   /** ESLint source code object for accessing text and locations. */
   sourceCode: TSESLint.SourceCode

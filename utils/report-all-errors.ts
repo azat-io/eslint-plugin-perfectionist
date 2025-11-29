@@ -2,7 +2,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
-import type { GroupsOptions } from '../types/common-groups-options'
+import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 import type { MakeFixesParameters } from './make-fixes'
 
@@ -79,10 +79,8 @@ interface ReportAllErrorsParameters<
    *   partitionByComment: true
    *   }
    */
-  options: {
-    /** Group definitions and ordering. */
-    groups: GroupsOptions
-  } & MakeFixesParameters<T>['options']
+  options: Pick<CommonGroupsOptions<unknown>, 'groups'> &
+    MakeFixesParameters<T>['options']
 
   /**
    * Function to get sorted nodes with or without ESLint-disabled nodes.

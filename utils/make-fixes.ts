@@ -1,12 +1,8 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type {
-  NewlinesBetweenOption,
-  CustomGroupsOption,
-  GroupsOptions,
-} from '../types/common-groups-options'
 import type { PartitionByCommentOption } from '../types/common-partition-options'
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
+import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { makeNewlinesBetweenFixes } from './make-newlines-between-fixes'
@@ -24,16 +20,10 @@ export interface MakeFixesParameters<T extends SortingNode> {
   options?: {
     /** Configuration for partition comments that separate code sections. */
     partitionByComment?: PartitionByCommentOption
-
-    /** Configuration for newlines between groups. */
-    newlinesBetween: NewlinesBetweenOption
-
-    /** Custom groups configuration for advanced grouping. */
-    customGroups: CustomGroupsOption
-
-    /** Groups configuration defining available groups and their order. */
-    groups: GroupsOptions
-  }
+  } & Pick<
+    CommonGroupsOptions<unknown>,
+    'newlinesBetween' | 'customGroups' | 'groups'
+  >
 
   /** Optional function to customize newlines between specific nodes. */
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>

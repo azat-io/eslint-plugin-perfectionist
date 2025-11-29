@@ -1,7 +1,4 @@
-import type {
-  CustomGroupsOption,
-  GroupsOptions,
-} from '../types/common-groups-options'
+import type { CommonGroupsOptions } from '../types/common-groups-options'
 
 import { validateObjectsInsideGroups } from './validate-objects-inside-groups'
 import { validateNoDuplicatedGroups } from './validate-no-duplicated-groups'
@@ -9,10 +6,7 @@ import { computeGroupsNames } from './compute-groups-names'
 
 /** Parameters for validating generated groups configuration. */
 interface ValidateGenerateGroupsConfigurationParameters {
-  options: {
-    customGroups: CustomGroupsOption
-    groups: GroupsOptions
-  }
+  options: Pick<CommonGroupsOptions<unknown>, 'customGroups' | 'groups'>
   selectors: string[]
   modifiers: string[]
 }

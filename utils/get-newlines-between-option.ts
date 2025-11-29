@@ -1,6 +1,6 @@
 import type {
   NewlinesBetweenOption,
-  CustomGroupsOption,
+  CommonGroupsOptions,
   GroupsOptions,
 } from '../types/common-groups-options'
 
@@ -16,19 +16,7 @@ import { computeGroupName } from './compute-group-name'
  */
 export interface GetNewlinesBetweenOptionParameters {
   /** Configuration options for newlines and groups. */
-  options: {
-    /** Global newlines configuration: 'ignore', or numeric value. */
-    newlinesBetween: NewlinesBetweenOption
-
-    /**
-     * Optional custom groups configuration with possible newlinesInside
-     * settings.
-     */
-    customGroups: CustomGroupsOption
-
-    /** Groups configuration that may include inline newlines settings. */
-    groups: GroupsOptions
-  }
+  options: CommonGroupsOptions<unknown>
 
   /** Group index of the next/second node. */
   nextNodeGroupIndex: number

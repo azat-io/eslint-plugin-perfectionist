@@ -1,21 +1,14 @@
-import type {
-  NewlinesBetweenOption,
-  GroupsOptions,
-} from '../types/common-groups-options'
+import type { CommonPartitionOptions } from '../types/common-partition-options'
+import type { CommonGroupsOptions } from '../types/common-groups-options'
 
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
 
 /** Options for validating newlines and partition configuration. */
-interface Options {
-  /** Controls automatic newline insertion between groups. */
-  newlinesBetween: NewlinesBetweenOption
-
-  /** Whether to create partitions based on existing newlines. */
-  partitionByNewLine: boolean
-
-  /** Group configuration that may contain newlinesBetween objects. */
-  groups: GroupsOptions
-}
+type Options = Pick<
+  CommonGroupsOptions<unknown>,
+  'newlinesBetween' | 'groups'
+> &
+  Pick<CommonPartitionOptions, 'partitionByNewLine'>
 
 /**
  * Validates that newline-related options don't conflict with each other.
