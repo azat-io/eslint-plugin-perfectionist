@@ -1,25 +1,29 @@
 import { describe, expect, it } from 'vitest'
 
 import type { OptionsByGroupIndexComputer } from '../../utils/sort-nodes-by-groups'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { CommonOptions } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 
 describe('sort-nodes-by-groups', () => {
-  let options: CommonOptions = {
+  let options: CommonGroupsOptions<string, unknown> & CommonOptions = {
     fallbackSort: { type: 'unsorted' },
     specialCharacters: 'keep',
+    newlinesBetween: 'ignore',
     type: 'alphabetical',
     ignoreCase: false,
     locales: 'en-US',
+    customGroups: [],
     order: 'asc',
     alphabet: '',
-  } as const
+    groups: [],
+  }
+
   let optionsByGroupIndexComputer: OptionsByGroupIndexComputer<
-    CommonOptions,
-    SortingNode
-  > = () => ({ options })
+    CommonGroupsOptions<string, unknown> & CommonOptions
+  > = () => options
 
   it('sorts nodes by groups', () => {
     let nodeA = createTestNode({ group: 'group2', name: 'a' })
@@ -105,55 +109,6 @@ describe('sort-nodes-by-groups', () => {
         }),
       ).toStrictEqual([nodeD, nodeF, nodeB, nodeA, nodeC, nodeE])
     })
-  })
-
-  it('should handle "nodeValueGetter"', () => {
-    let nodeA = createTestNode(
-      { group: 'group1', name: 'a' },
-      { actualValue: 'b' },
-    )
-    let nodeB = createTestNode(
-      { group: 'group1', name: 'a' },
-      { actualValue: 'a' },
-    )
-    expect(
-      sortNodesByGroups({
-        optionsByGroupIndexComputer: () => ({
-          nodeValueGetter: node => node.actualValue,
-          options,
-        }),
-        ignoreEslintDisabledNodes: false,
-        nodes: [nodeA, nodeB],
-        groups: ['group1'],
-      }),
-    ).toStrictEqual([nodeB, nodeA])
-  })
-
-  it('should handle "fallbackSortNodeValueGetter"', () => {
-    let nodeA = createTestNode(
-      { group: 'group1', name: 'a' },
-      { actualValue: 'b' },
-    )
-    let nodeB = createTestNode(
-      { group: 'group1', name: 'a' },
-      { actualValue: 'a' },
-    )
-    expect(
-      sortNodesByGroups({
-        optionsByGroupIndexComputer: () => ({
-          options: {
-            ...options,
-            fallbackSort: {
-              type: 'alphabetical',
-            },
-          },
-          fallbackSortNodeValueGetter: node => node.actualValue,
-        }),
-        ignoreEslintDisabledNodes: false,
-        nodes: [nodeA, nodeB],
-        groups: ['group1'],
-      }),
-    ).toStrictEqual([nodeB, nodeA])
   })
 
   function createTestNode<T extends object>(

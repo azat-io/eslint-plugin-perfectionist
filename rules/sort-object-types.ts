@@ -36,7 +36,8 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
-import { getCustomGroupsCompareOptions } from './sort-object-types/get-custom-groups-compare-options'
+import { buildOptionsByGroupIndexComputer } from './sort-object-types/build-options-by-group-index-computer'
+import { comparatorByOptionsComputer } from './sort-object-types/comparator-by-options-computer'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -283,9 +284,9 @@ export function sortObjectTypeElements<MessageIds extends string>({
       isEslintDisabled: isNodeEslintDisabled(typeElement, eslintDisabledLines),
       size: rangeToDiff(typeElement, sourceCode),
       addSafetySemicolonWhenInline: true,
+      value: value ?? '',
       node: typeElement,
       group,
-      value,
       name,
     }
 
@@ -312,21 +313,6 @@ export function sortObjectTypeElements<MessageIds extends string>({
   ): SortObjectTypesSortingNode[] {
     return formattedMembers.flatMap(groupedNodes =>
       sortNodesByGroups({
-        optionsByGroupIndexComputer: groupIndex => {
-          let {
-            fallbackSortNodeValueGetter,
-            options: overriddenOptions,
-            nodeValueGetter,
-          } = getCustomGroupsCompareOptions(options, groupIndex)
-          return {
-            options: {
-              ...options,
-              ...overriddenOptions,
-            },
-            fallbackSortNodeValueGetter,
-            nodeValueGetter,
-          }
-        },
         isNodeIgnoredForGroup: ({ groupOptions, node }) => {
           switch (groupOptions.sortBy) {
             case 'value':
@@ -338,6 +324,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
               throw new UnreachableCaseError(groupOptions.sortBy)
           }
         },
+        optionsByGroupIndexComputer: buildOptionsByGroupIndexComputer(options),
+        comparatorByOptionsComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes: groupedNodes,
