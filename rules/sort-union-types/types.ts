@@ -4,10 +4,7 @@ import type { CommonPartitionOptions } from '../../types/common-partition-option
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { CommonOptions } from '../../types/common-options'
 
-import {
-  buildCustomGroupSelectorJsonSchema,
-  regexJsonSchema,
-} from '../../utils/common-json-schemas'
+import { buildCustomGroupSelectorJsonSchema } from '../../utils/common-json-schemas'
 
 /**
  * Union type of all available selectors for union type members.
@@ -168,5 +165,4 @@ export let allSelectors: Selector[] = [
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementNamePattern: regexJsonSchema,
 }

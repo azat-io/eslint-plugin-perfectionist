@@ -1,10 +1,6 @@
-import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
-
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
-
-import { regexJsonSchema } from '../../utils/common-json-schemas'
 
 /**
  * Configuration options for the sort-maps rule.
@@ -37,11 +33,3 @@ export type Options = Partial<
  * and sorted based on their key names.
  */
 type SingleCustomGroup = Record<string, never>
-
-/**
- * JSON schema definition for validating single custom group configurations.
- * Used by ESLint to validate rule options at configuration time.
- */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
-  elementNamePattern: regexJsonSchema,
-}

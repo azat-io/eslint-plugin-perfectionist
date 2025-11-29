@@ -7,7 +7,6 @@ import type { CommonOptions } from '../../types/common-options'
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-  regexJsonSchema,
 } from '../../utils/common-json-schemas'
 
 /**
@@ -97,5 +96,4 @@ export let allModifiers: Modifier[] = ['value', 'type']
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementNamePattern: regexJsonSchema,
 }

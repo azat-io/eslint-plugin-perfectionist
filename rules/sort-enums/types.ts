@@ -55,5 +55,4 @@ export interface SortEnumsSortingNode
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   elementValuePattern: regexJsonSchema,
-  elementNamePattern: regexJsonSchema,
 }

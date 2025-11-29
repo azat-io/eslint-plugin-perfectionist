@@ -4,10 +4,7 @@ import type { CommonPartitionOptions } from '../../types/common-partition-option
 import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
-import {
-  buildCustomGroupSelectorJsonSchema,
-  regexJsonSchema,
-} from '../../utils/common-json-schemas'
+import { buildCustomGroupSelectorJsonSchema } from '../../utils/common-json-schemas'
 
 /**
  * Configuration options for the sort-array-includes rule.
@@ -84,5 +81,4 @@ export let allSelectors: Selector[] = ['literal', 'spread']
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementNamePattern: regexJsonSchema,
 }

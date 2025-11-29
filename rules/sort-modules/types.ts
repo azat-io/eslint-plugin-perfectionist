@@ -132,5 +132,4 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   decoratorNamePattern: regexJsonSchema,
-  elementNamePattern: regexJsonSchema,
 }
