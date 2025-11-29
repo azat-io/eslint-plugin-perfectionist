@@ -8,10 +8,9 @@ import { compareByCustomSort } from './compare-by-custom-sort'
 import { unsortedComparator } from './unsorted-comparator'
 import { compareNaturally } from './compare-naturally'
 
-export type ComparatorByOptionsComputer<
-  S extends CommonOptions,
-  T extends SortingNode,
-> = (options: S) => Comparator<T>
+export type ComparatorByOptionsComputer<S, T extends SortingNode> = (
+  options: S,
+) => Comparator<T>
 
 export type Comparator<T extends SortingNode> = (a: T, b: T) => number
 

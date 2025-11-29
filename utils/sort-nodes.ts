@@ -12,7 +12,7 @@ import { computeComparators } from './compare/compute-comparators'
  */
 interface SortNodesParameters<
   Node extends SortingNode,
-  Options extends CommonOptions,
+  Options extends Pick<CommonOptions, 'fallbackSort'>,
 > {
   comparatorByOptionsComputer: ComparatorByOptionsComputer<Options, Node>
   isNodeIgnored?(node: Node): boolean
@@ -40,7 +40,7 @@ interface SortNodesParameters<
  */
 export function sortNodes<
   Node extends SortingNode,
-  Options extends CommonOptions,
+  Options extends Pick<CommonOptions, 'fallbackSort'>,
 >({
   comparatorByOptionsComputer,
   ignoreEslintDisabledNodes,

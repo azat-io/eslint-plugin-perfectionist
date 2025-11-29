@@ -1,15 +1,12 @@
 import type { ComparatorByOptionsComputer } from './compare/default-comparator-by-options-computer'
-import type {
-  CommonGroupsOptions,
-  GroupsOptions,
-} from '../types/common-groups-options'
+import type { GroupsOptions } from '../types/common-groups-options'
 import type { CommonOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getGroupIndex } from './get-group-index'
 import { sortNodes } from './sort-nodes'
 
-export type OptionsByGroupIndexComputer<Options extends CommonOptions> = (
+export type OptionsByGroupIndexComputer<Options> = (
   groupIndex: number,
 ) => Options
 
@@ -19,10 +16,7 @@ export type OptionsByGroupIndexComputer<Options extends CommonOptions> = (
  * @template Node - Type of sorting node.
  * @template Options - Sorting options type extending common options.
  */
-interface SortNodesByGroupsParameters<
-  Node extends SortingNode,
-  Options extends CommonGroupsOptions<unknown> & CommonOptions,
-> {
+interface SortNodesByGroupsParameters<Node extends SortingNode, Options> {
   isNodeIgnoredForGroup?(props: {
     groupOptions: Options
     groupIndex: number
@@ -102,7 +96,7 @@ interface SortNodesByGroupsParameters<
  */
 export function sortNodesByGroups<
   T extends SortingNode,
-  Options extends CommonGroupsOptions<unknown> & CommonOptions,
+  Options extends Pick<CommonOptions, 'fallbackSort'>,
 >({
   comparatorByOptionsComputer,
   optionsByGroupIndexComputer,
