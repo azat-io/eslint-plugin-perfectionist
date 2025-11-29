@@ -8,11 +8,6 @@ import type {
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  newlinesBetweenJsonSchema,
-  groupsJsonSchema,
-} from '../utils/json-schemas/common-groups-json-schemas'
-import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -34,6 +29,7 @@ import {
   commonJsonSchemas,
   regexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getOverloadSignatureGroups } from './sort-classes/get-overload-signature-groups'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -655,14 +651,12 @@ export default createEslintRule<SortClassesOptions, MessageId>({
       {
         properties: {
           ...commonJsonSchemas,
-          customGroups: buildCustomGroupsArrayJsonSchema({
+          ...buildCommonGroupsJsonSchemas({
             singleCustomGroupJsonSchema,
           }),
           ignoreCallbackDependenciesPatterns: regexJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

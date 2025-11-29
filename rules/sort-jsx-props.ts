@@ -7,11 +7,6 @@ import type { SortingNode } from '../types/sorting-node'
 import type { Options } from './sort-jsx-props/types'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  newlinesBetweenJsonSchema,
-  groupsJsonSchema,
-} from '../utils/json-schemas/common-groups-json-schemas'
-import {
   buildUseConfigurationIfJsonSchema,
   commonJsonSchemas,
   regexJsonSchema,
@@ -30,6 +25,7 @@ import {
   allSelectors,
 } from './sort-jsx-props/types'
 import { partitionByNewLineJsonSchema } from '../utils/json-schemas/common-partition-json-schemas'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -219,17 +215,15 @@ export default createEslintRule<Options, MessageId>({
       items: {
         properties: {
           ...commonJsonSchemas,
+          ...buildCommonGroupsJsonSchemas({
+            singleCustomGroupJsonSchema,
+          }),
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {
               tagMatchesPattern: regexJsonSchema,
             },
           }),
-          customGroups: buildCustomGroupsArrayJsonSchema({
-            singleCustomGroupJsonSchema,
-          }),
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

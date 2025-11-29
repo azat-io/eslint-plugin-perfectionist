@@ -3,11 +3,6 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortEnumsSortingNode, Options } from './sort-enums/types'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  newlinesBetweenJsonSchema,
-  groupsJsonSchema,
-} from '../utils/json-schemas/common-groups-json-schemas'
-import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -21,6 +16,7 @@ import {
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { buildComparatorByOptionsComputer } from './sort-enums/build-comparator-by-options-computer'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { commonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
@@ -238,18 +234,16 @@ export default createEslintRule<Options, MessageId>({
       {
         properties: {
           ...commonJsonSchemas,
+          ...buildCommonGroupsJsonSchemas({
+            singleCustomGroupJsonSchema,
+          }),
           sortByValue: {
             description: 'Specifies whether to sort enums by value.',
             enum: ['always', 'ifNumericEnum', 'never'],
             type: 'string',
           },
-          customGroups: buildCustomGroupsArrayJsonSchema({
-            singleCustomGroupJsonSchema,
-          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

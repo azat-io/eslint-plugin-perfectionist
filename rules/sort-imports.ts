@@ -17,11 +17,6 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import {
-  buildCustomGroupsArrayJsonSchema,
-  newlinesBetweenJsonSchema,
-  groupsJsonSchema,
-} from '../utils/json-schemas/common-groups-json-schemas'
-import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
@@ -37,6 +32,7 @@ import {
   commonJsonSchemas,
   regexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -372,6 +368,9 @@ export default createEslintRule<Options, MessageId>({
       items: {
         properties: {
           ...commonJsonSchemas,
+          ...buildCommonGroupsJsonSchemas({
+            singleCustomGroupJsonSchema,
+          }),
           tsconfig: {
             properties: {
               rootDir: {
@@ -403,14 +402,9 @@ export default createEslintRule<Options, MessageId>({
             enum: ['node', 'bun'],
             type: 'string',
           },
-          customGroups: buildCustomGroupsArrayJsonSchema({
-            singleCustomGroupJsonSchema,
-          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
           internalPattern: regexJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

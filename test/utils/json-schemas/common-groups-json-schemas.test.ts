@@ -155,6 +155,7 @@ describe('common-groups-json-schemas', () => {
         singleCustomGroupJsonSchema: {
           customGroupProperty: { type: 'string' },
         },
+        additionalFallbackSortProperties: {},
       }),
     )
 

@@ -7,11 +7,6 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import type { Modifier, Selector, Options } from './sort-objects/types'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  newlinesBetweenJsonSchema,
-  groupsJsonSchema,
-} from '../utils/json-schemas/common-groups-json-schemas'
-import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -35,6 +30,7 @@ import {
   allModifiers,
   allSelectors,
 } from './sort-objects/types'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getFirstNodeParentWithType } from './sort-objects/get-first-node-parent-with-type'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
@@ -391,6 +387,9 @@ export default createEslintRule<Options, MessageId>({
       items: {
         properties: {
           ...commonJsonSchemas,
+          ...buildCommonGroupsJsonSchemas({
+            singleCustomGroupJsonSchema,
+          }),
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {
               objectType: {
@@ -413,14 +412,9 @@ export default createEslintRule<Options, MessageId>({
             description: 'Controls whether to sort styled components.',
             type: 'boolean',
           },
-          customGroups: buildCustomGroupsArrayJsonSchema({
-            singleCustomGroupJsonSchema,
-          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
           ignorePattern: regexJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

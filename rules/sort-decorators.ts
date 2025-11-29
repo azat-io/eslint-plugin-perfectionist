@@ -7,11 +7,6 @@ import type {
 } from './sort-decorators/types'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  newlinesBetweenJsonSchema,
-  groupsJsonSchema,
-} from '../utils/json-schemas/common-groups-json-schemas'
-import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
@@ -23,6 +18,7 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { commonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
@@ -78,6 +74,7 @@ export default createEslintRule<Options, MessageId>({
       items: {
         properties: {
           ...commonJsonSchemas,
+          ...buildCommonGroupsJsonSchemas(),
           sortOnParameters: {
             description:
               'Controls whether sorting should be enabled for method parameter decorators.',
@@ -103,11 +100,8 @@ export default createEslintRule<Options, MessageId>({
               'Controls whether sorting should be enabled for class decorators.',
             type: 'boolean',
           },
-          customGroups: buildCustomGroupsArrayJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

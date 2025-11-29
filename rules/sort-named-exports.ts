@@ -6,11 +6,6 @@ import type {
 } from './sort-named-exports/types'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  newlinesBetweenJsonSchema,
-  groupsJsonSchema,
-} from '../utils/json-schemas/common-groups-json-schemas'
-import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
@@ -27,6 +22,7 @@ import {
   allModifiers,
   allSelectors,
 } from './sort-named-exports/types'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -207,17 +203,15 @@ export default createEslintRule<Options, MessageId>({
       items: {
         properties: {
           ...commonJsonSchemas,
+          ...buildCommonGroupsJsonSchemas({
+            singleCustomGroupJsonSchema,
+          }),
           ignoreAlias: {
             description: 'Controls whether to ignore alias names.',
             type: 'boolean',
           },
-          customGroups: buildCustomGroupsArrayJsonSchema({
-            singleCustomGroupJsonSchema,
-          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

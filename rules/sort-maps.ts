@@ -5,11 +5,6 @@ import type { SortingNode } from '../types/sorting-node'
 import type { Options } from './sort-maps/types'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  newlinesBetweenJsonSchema,
-  groupsJsonSchema,
-} from '../utils/json-schemas/common-groups-json-schemas'
-import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
@@ -24,6 +19,7 @@ import {
   commonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -212,12 +208,10 @@ export default createEslintRule<Options, MessageId>({
       items: {
         properties: {
           ...commonJsonSchemas,
+          ...buildCommonGroupsJsonSchemas(),
           useConfigurationIf: buildUseConfigurationIfJsonSchema(),
-          customGroups: buildCustomGroupsArrayJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

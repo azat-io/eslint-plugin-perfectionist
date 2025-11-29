@@ -7,11 +7,6 @@ import type { Selector, Options } from './sort-array-includes/types'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  newlinesBetweenJsonSchema,
-  groupsJsonSchema,
-} from '../utils/json-schemas/common-groups-json-schemas'
-import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
@@ -27,6 +22,7 @@ import {
 } from '../utils/json-schemas/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -86,14 +82,12 @@ export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
       ...commonJsonSchemas,
-      customGroups: buildCustomGroupsArrayJsonSchema({
+      ...buildCommonGroupsJsonSchemas({
         singleCustomGroupJsonSchema,
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema(),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
-      newlinesBetween: newlinesBetweenJsonSchema,
-      groups: groupsJsonSchema,
     },
     additionalProperties: false,
     type: 'object',

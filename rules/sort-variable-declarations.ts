@@ -4,11 +4,6 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import type { Selector, Options } from './sort-variable-declarations/types'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  newlinesBetweenJsonSchema,
-  groupsJsonSchema,
-} from '../utils/json-schemas/common-groups-json-schemas'
-import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -25,6 +20,7 @@ import {
   singleCustomGroupJsonSchema,
   allSelectors,
 } from './sort-variable-declarations/types'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -214,13 +210,11 @@ export default createEslintRule<Options, MessageId>({
       {
         properties: {
           ...commonJsonSchemas,
-          customGroups: buildCustomGroupsArrayJsonSchema({
+          ...buildCommonGroupsJsonSchemas({
             singleCustomGroupJsonSchema,
           }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

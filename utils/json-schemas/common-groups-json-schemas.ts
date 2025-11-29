@@ -118,9 +118,9 @@ export function buildCustomGroupsArrayJsonSchema({
   additionalFallbackSortProperties,
   singleCustomGroupJsonSchema,
 }: {
-  additionalFallbackSortProperties?: Record<string, JSONSchema4>
-  singleCustomGroupJsonSchema?: Record<string, JSONSchema4>
-} = {}): JSONSchema4 {
+  additionalFallbackSortProperties: Record<string, JSONSchema4> | undefined
+  singleCustomGroupJsonSchema: Record<string, JSONSchema4> | undefined
+}): JSONSchema4 {
   let commonCustomGroupJsonSchemas = buildCommonCustomGroupJsonSchemas({
     additionalFallbackSortProperties,
   })
@@ -162,6 +162,23 @@ export function buildCustomGroupsArrayJsonSchema({
     },
     description: 'Defines custom groups to match specific members.',
     type: 'array',
+  }
+}
+
+export function buildCommonGroupsJsonSchemas({
+  additionalFallbackSortProperties,
+  singleCustomGroupJsonSchema,
+}: {
+  additionalFallbackSortProperties?: Record<string, JSONSchema4>
+  singleCustomGroupJsonSchema?: Record<string, JSONSchema4>
+} = {}): Record<string, JSONSchema4> {
+  return {
+    customGroups: buildCustomGroupsArrayJsonSchema({
+      additionalFallbackSortProperties,
+      singleCustomGroupJsonSchema,
+    }),
+    newlinesBetween: newlinesBetweenJsonSchema,
+    groups: groupsJsonSchema,
   }
 }
 
@@ -227,8 +244,8 @@ export function buildCustomGroupSelectorJsonSchema(
 function buildCommonCustomGroupJsonSchemas({
   additionalFallbackSortProperties,
 }: {
-  additionalFallbackSortProperties?: Record<string, JSONSchema4>
-} = {}): Record<string, JSONSchema4> {
+  additionalFallbackSortProperties: Record<string, JSONSchema4> | undefined
+}): Record<string, JSONSchema4> {
   return {
     fallbackSort: buildFallbackSortJsonSchema({
       additionalProperties: additionalFallbackSortProperties,
