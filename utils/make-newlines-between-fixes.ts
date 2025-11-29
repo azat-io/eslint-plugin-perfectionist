@@ -4,7 +4,7 @@ import type {
   NewlinesBetweenOption,
   CustomGroupsOption,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -29,7 +29,7 @@ interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
     customGroups: CustomGroupsOption
 
     /** Groups configuration defining available groups and their order. */
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   }
 
   /**

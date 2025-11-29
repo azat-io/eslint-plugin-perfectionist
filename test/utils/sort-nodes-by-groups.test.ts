@@ -8,7 +8,7 @@ import type { SortingNode } from '../../types/sorting-node'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 
 describe('sort-nodes-by-groups', () => {
-  let options: CommonGroupsOptions<string, unknown> & CommonOptions = {
+  let options: CommonGroupsOptions<unknown> & CommonOptions = {
     fallbackSort: { type: 'unsorted' },
     specialCharacters: 'keep',
     newlinesBetween: 'ignore',
@@ -22,7 +22,7 @@ describe('sort-nodes-by-groups', () => {
   }
 
   let optionsByGroupIndexComputer: OptionsByGroupIndexComputer<
-    CommonGroupsOptions<string, unknown> & CommonOptions
+    CommonGroupsOptions<unknown> & CommonOptions
   > = () => options
 
   it('sorts nodes by groups', () => {

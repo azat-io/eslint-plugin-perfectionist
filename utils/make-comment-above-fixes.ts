@@ -1,7 +1,10 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { CustomGroupsOption, GroupsOptions } from '../types/common-options'
+import type {
+  CustomGroupsOption,
+  GroupsOptions,
+} from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getCommentAboveThatShouldExist } from './get-comment-above-that-should-exist'
@@ -17,7 +20,7 @@ interface MakeCommentAboveFixesParameters {
     customGroups: CustomGroupsOption
 
     /** Groups configuration that may include commentAbove settings. */
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   }
 
   /** ESLint source code object for accessing comments and tokens. */

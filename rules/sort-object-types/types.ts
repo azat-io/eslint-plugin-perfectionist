@@ -2,14 +2,15 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
-  CustomGroupsOption,
   FallbackSortOption,
   CommonOptions,
   RegexOption,
 } from '../../types/common-options'
+import type {
+  CommonGroupsOptions,
+  CustomGroupsOption,
+} from '../../types/common-groups-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { JoinWithDash } from '../../types/join-with-dash'
 import type { SortingNode } from '../../types/sorting-node'
 
 import {
@@ -80,37 +81,10 @@ export type Options = Partial<
      * @default 'name'
      */
     sortBy: 'value' | 'name'
-  } & Omit<CommonGroupsOptions<Group, SingleCustomGroup>, 'customGroups'> &
+  } & Omit<CommonGroupsOptions<SingleCustomGroup>, 'customGroups'> &
     Omit<CommonOptions, 'fallbackSort'> &
     CommonPartitionOptions
 >[]
-
-/**
- * Configuration for a single custom group in object type sorting.
- *
- * Allows defining custom groups based on member selectors, modifiers, and
- * patterns for fine-grained control over sorting.
- */
-export type SingleCustomGroup = (
-  | ({
-      /**
-       * Regular expression pattern to match against the member's type
-       * annotation value. Only applicable to properties.
-       */
-      elementValuePattern?: RegexOption
-      /**
-       * Override sorting method for this specific group.
-       *
-       * - 'name': Sort by member name
-       * - 'value': Sort by type annotation value.
-       */
-      sortBy?: 'value' | 'name'
-    } & BaseSingleCustomGroup<PropertySelector>)
-  | BaseSingleCustomGroup<IndexSignatureSelector>
-  | BaseSingleCustomGroup<MethodSelector>
-  | BaseSingleCustomGroup<MemberSelector>
-) &
-  ElementNamePatternFilterCustomGroup
 
 /**
  * Union type of all available selectors for object type members.
@@ -132,126 +106,34 @@ export type Selector =
  */
 export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
 
-/**
- * Maps each selector type to its allowed modifiers.
- *
- * Defines which modifiers can be applied to each type of object member
- * selector, ensuring type safety in group configurations.
- */
-interface AllowedModifiersPerSelector {
-  /** Property members can be multiline, optional, or required. */
-  property: MultilineModifier | OptionalModifier | RequiredModifier
+/** Additional configuration for a single custom group. */
+interface SingleCustomGroup {
+  /**
+   * Regular expression pattern to match against the member's type annotation
+   * value. Only applicable to properties.
+   */
+  elementValuePattern?: RegexOption
 
-  /** Generic members can be multiline, optional, or required. */
-  member: MultilineModifier | OptionalModifier | RequiredModifier
+  /**
+   * Override sorting method for this specific group.
+   *
+   * - 'name': Sort by member name
+   * - 'value': Sort by type annotation value.
+   */
+  sortBy?: 'value' | 'name'
 
-  /** Method members can be multiline, optional, or required. */
-  method: MultilineModifier | OptionalModifier | RequiredModifier
-
-  /** Multiline members can only be optional or required. */
-  multiline: OptionalModifier | RequiredModifier
-
-  /** Index signatures cannot have modifiers. */
-  'index-signature': never
-}
-
-/**
- * Base configuration for defining custom groups.
- *
- * @template T - The selector type this group configuration applies to.
- */
-interface BaseSingleCustomGroup<T extends Selector> {
   /**
    * Array of modifiers that members must have to match this group. Only
    * modifiers allowed for the specified selector type are valid.
    */
-  modifiers?: AllowedModifiersPerSelector[T][]
+  modifiers?: Modifier[]
 
   /**
    * The selector type this group matches. Determines what kind of object
    * members belong to this group.
    */
-  selector?: T
+  selector?: Selector
 }
-
-/**
- * Additional filter configuration for custom groups based on element name
- * patterns.
- *
- * Allows filtering group members by their property/method names using regex
- * patterns.
- */
-interface ElementNamePatternFilterCustomGroup {
-  /**
-   * Regular expression pattern to match against member names. Only members with
-   * names matching this pattern will be included in the group.
-   */
-  elementNamePattern?: RegexOption
-}
-
-/**
- * Group type for index signature members.
- *
- * Represents all possible combinations of modifiers with the index-signature
- * selector, joined with dashes to form group identifiers like 'index-signature'
- * or 'required-index-signature'.
- */
-type IndexSignatureGroup = JoinWithDash<
-  [
-    OptionalModifier,
-    RequiredModifier,
-    MultilineModifier,
-    IndexSignatureSelector,
-  ]
->
-
-/**
- * Group type for property members.
- *
- * Represents all possible combinations of modifiers with the property selector,
- * joined with dashes to form group identifiers like 'property' or
- * 'optional-property'.
- */
-type PropertyGroup = JoinWithDash<
-  [OptionalModifier, RequiredModifier, MultilineModifier, PropertySelector]
->
-
-/**
- * Union type of all possible group identifiers for object type members.
- *
- * Groups are used to organize and sort related members together. Can be
- * predefined group types, 'unknown' for unmatched members, or custom string
- * identifiers.
- */
-type Group =
-  | IndexSignatureGroup
-  | PropertyGroup
-  | MethodGroup
-  | MemberGroup
-  | 'unknown'
-  | string
-
-/**
- * Group type for generic member elements.
- *
- * Represents all possible combinations of modifiers with the member selector,
- * joined with dashes to form group identifiers like 'member' or
- * 'required-member'.
- */
-type MemberGroup = JoinWithDash<
-  [OptionalModifier, RequiredModifier, MultilineModifier, MemberSelector]
->
-
-/**
- * Group type for method members.
- *
- * Represents all possible combinations of modifiers with the method selector,
- * joined with dashes to form group identifiers like 'method' or
- * 'optional-method'.
- */
-type MethodGroup = JoinWithDash<
-  [OptionalModifier, RequiredModifier, MultilineModifier, MethodSelector]
->
 
 /**
  * Selector for index signature members.
@@ -346,7 +228,6 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   elementValuePattern: regexJsonSchema,
-  elementNamePattern: regexJsonSchema,
   sortBy: sortByJsonSchema,
 }
 

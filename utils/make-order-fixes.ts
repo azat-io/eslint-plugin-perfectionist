@@ -1,6 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { PartitionByCommentOption } from '../types/common-options'
+import type { PartitionByCommentOption } from '../types/common-partition-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getNodeRange } from './get-node-range'

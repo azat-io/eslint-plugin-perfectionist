@@ -1,11 +1,11 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type {
-  PartitionByCommentOption,
   NewlinesBetweenOption,
   CustomGroupsOption,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
+import type { PartitionByCommentOption } from '../types/common-partition-options'
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -32,7 +32,7 @@ export interface MakeFixesParameters<T extends SortingNode> {
     customGroups: CustomGroupsOption
 
     /** Groups configuration defining available groups and their order. */
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   }
 
   /** Optional function to customize newlines between specific nodes. */

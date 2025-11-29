@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { GetNewlinesBetweenOptionParameters } from '../../utils/get-newlines-between-option'
-import type { NewlinesBetweenOption } from '../../types/common-options'
+import type { NewlinesBetweenOption } from '../../types/common-groups-options'
 
 import { getNewlinesBetweenOption } from '../../utils/get-newlines-between-option'
 

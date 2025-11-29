@@ -1,4 +1,4 @@
-import type { GroupsOptions } from '../types/common-options'
+import type { GroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
@@ -9,7 +9,7 @@ import { UnreachableCaseError } from './unreachable-case-error'
  * Type representing a single group or an array of group names. Used in group
  * configuration where elements can belong to multiple subgroups.
  */
-type Group = GroupsOptions<string>[number]
+type Group = GroupsOptions[number]
 
 /**
  * Determines the index of the group that a node belongs to.

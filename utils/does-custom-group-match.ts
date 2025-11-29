@@ -1,4 +1,5 @@
-import type { AnyOfCustomGroup, RegexOption } from '../types/common-options'
+import type { AnyOfCustomGroup } from '../types/common-groups-options'
+import type { RegexOption } from '../types/common-options'
 
 import { matches } from './matches'
 
@@ -60,7 +61,10 @@ interface BaseSingleCustomGroup {
    */
   elementValuePattern?: RegexOption
 
-  /** Pattern to match against the element's name. Supports regular expressions. */
+  /**
+   * Regular expression pattern to match the element's name. Elements matching
+   * this pattern will be included in this custom group.
+   */
   elementNamePattern?: RegexOption
 
   /**

@@ -1,32 +1,10 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { CommonOptions } from '../../types/common-options'
 
-import {
-  buildCustomGroupSelectorJsonSchema,
-  regexJsonSchema,
-} from '../../utils/common-json-schemas'
-
-/**
- * Configuration for a single custom group in union type sorting.
- *
- * Allows defining custom groups based on type member patterns and selectors.
- */
-export type SingleCustomGroup = {
-  /**
-   * Regular expression pattern to match against type member names. Only type
-   * members with names matching this pattern will be included in the group.
-   */
-  elementNamePattern?: RegexOption
-} & {
-  /**
-   * The selector type this group matches. Determines what kind of type members
-   * belong to this group.
-   */
-  selector?: Selector
-}
+import { buildCustomGroupSelectorJsonSchema } from '../../utils/common-json-schemas'
 
 /**
  * Union type of all available selectors for union type members.
@@ -54,10 +32,19 @@ export type Selector =
  * Controls how TypeScript union type members are sorted.
  */
 export type Options = Partial<
-  CommonGroupsOptions<Group, SingleCustomGroup> &
+  CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
+
+/** Additional configuration for a single custom group. */
+interface SingleCustomGroup {
+  /**
+   * The selector type this group matches. Determines what kind of type members
+   * belong to this group.
+   */
+  selector?: Selector
+}
 
 /**
  * Selector for intersection types.
@@ -65,15 +52,6 @@ export type Options = Partial<
  * Matches TypeScript intersection types like `A & B`.
  */
 type IntersectionSelector = 'intersection'
-
-/**
- * Union type of all possible group identifiers for union type members.
- *
- * Groups are used to organize and sort related type members together. Can be
- * selector types, 'unknown' for unmatched members, or custom string
- * identifiers.
- */
-type Group = 'unknown' | Selector | string
 
 /**
  * Selector for conditional types.
@@ -178,10 +156,8 @@ export let allSelectors: Selector[] = [
 /**
  * JSON Schema definitions for single custom group configurations.
  *
- * Provides additional schema properties specific to the sort-union-types rule,
- * extending the base custom group schema with element name patterns.
+ * Provides additional schema properties specific to the sort-union-types rule.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementNamePattern: regexJsonSchema,
 }

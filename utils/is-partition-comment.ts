@@ -1,9 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  PartitionByCommentOption,
-  RegexOption,
-} from '../types/common-options'
+import type { PartitionByCommentOption } from '../types/common-partition-options'
+import type { RegexOption } from '../types/common-options'
 
 import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 import { matches } from './matches'

@@ -4,7 +4,7 @@ import type {
   NewlinesBetweenOption,
   CustomGroupsOption,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getNewlinesBetweenOption } from './get-newlines-between-option'
@@ -49,7 +49,7 @@ interface GetNewlinesBetweenErrorsParameters<
     customGroups: CustomGroupsOption
 
     /** Groups configuration for determining newline requirements. */
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   }
 
   /** Optional function to customize newlines between specific nodes. */

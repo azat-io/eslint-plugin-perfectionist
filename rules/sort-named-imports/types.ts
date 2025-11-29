@@ -2,42 +2,14 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { JoinWithDash } from '../../types/join-with-dash'
+import type { CommonOptions } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-  regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Configuration for a single custom group in named imports sorting.
- *
- * Allows defining custom groups based on import characteristics and name
- * patterns.
- */
-export type SingleCustomGroup = {
-  /**
-   * Array of modifiers that imports must have to match this group. Can include
-   * 'type' for type imports or 'value' for value imports.
-   */
-  modifiers?: Modifier[]
-
-  /**
-   * The selector type this group matches. Currently only 'import' is available
-   * for named imports.
-   */
-  selector?: Selector
-} & {
-  /**
-   * Regular expression pattern to match against import names. Only imports with
-   * names matching this pattern will be included in the group.
-   */
-  elementNamePattern?: RegexOption
-}
 
 /**
  * Configuration options for the sort-named-imports rule.
@@ -53,7 +25,7 @@ export type Options = Partial<
      * @default false
      */
     ignoreAlias: boolean
-  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -75,23 +47,20 @@ export type Modifier = ValueModifier | TypeModifier
  */
 export type Selector = ImportSelector
 
-/**
- * Group type for import specifiers.
- *
- * Represents all possible combinations of modifiers with the import selector,
- * joined with dashes to form group identifiers like 'import', 'type-import', or
- * 'value-import'.
- */
-type ImportGroup = JoinWithDash<[ValueModifier, TypeModifier, ImportSelector]>
+/** Additional configuration for a single custom group. */
+interface SingleCustomGroup {
+  /**
+   * Array of modifiers that imports must have to match this group. Can include
+   * 'type' for type imports or 'value' for value imports.
+   */
+  modifiers?: Modifier[]
 
-/**
- * Union type of all possible group identifiers for named imports.
- *
- * Groups are used to organize and sort related imports together. Can be
- * predefined import groups, 'unknown' for unmatched imports, or custom string
- * identifiers.
- */
-type Group = ImportGroup | 'unknown' | string
+  /**
+   * The selector type this group matches. Currently only 'import' is available
+   * for named imports.
+   */
+  selector?: Selector
+}
 
 /**
  * Selector for import specifiers.
@@ -138,5 +107,4 @@ export let allModifiers: Modifier[] = ['value', 'type']
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementNamePattern: regexJsonSchema,
 }

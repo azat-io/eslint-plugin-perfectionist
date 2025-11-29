@@ -1,4 +1,4 @@
-import type { GroupsOptions } from '../types/common-options'
+import type { GroupsOptions } from '../types/common-groups-options'
 
 /**
  * Parameters for cleaning and normalizing groups configuration.
@@ -10,7 +10,7 @@ interface GetOptionsWithCleanGroupsParameters {
    * Groups configuration that may contain empty arrays or single-element
    * arrays.
    */
-  groups: GroupsOptions<string>
+  groups: GroupsOptions
 }
 
 /**
