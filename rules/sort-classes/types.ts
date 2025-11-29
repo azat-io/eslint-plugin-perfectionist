@@ -25,7 +25,7 @@ export type SortClassesOptions = [
        * callbacks won't influence the ordering.
        */
       ignoreCallbackDependenciesPatterns: RegexOption
-    } & CommonGroupsOptions<SingleCustomGroup> &
+    } & CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
       CommonPartitionOptions &
       CommonOptions
   >,

@@ -6,11 +6,8 @@ import type {
   CommonOptions,
   RegexOption,
 } from '../../types/common-options'
-import type {
-  CommonGroupsOptions,
-  CustomGroupsOption,
-} from '../../types/common-groups-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import {
@@ -57,15 +54,6 @@ export type Options = Partial<
       hasNumericKeysOnly?: boolean
     }
 
-    /** Custom groups for organizing object type members. */
-    customGroups: CustomGroupsOption<
-      SingleCustomGroup,
-      {
-        /** Fallback sorting configuration for elements within custom groups. */
-        fallbackSort?: { sortBy?: 'value' | 'name' } & FallbackSortOption
-      }
-    >
-
     /**
      * Fallback sorting configuration for elements that don't match any group.
      * Includes an additional option to sort by member value or name.
@@ -81,7 +69,13 @@ export type Options = Partial<
      * @default 'name'
      */
     sortBy: 'value' | 'name'
-  } & Omit<CommonGroupsOptions<SingleCustomGroup>, 'customGroups'> &
+  } & CommonGroupsOptions<
+    SingleCustomGroup,
+    {
+      /** Fallback sorting configuration for elements within custom groups. */
+      fallbackSort?: { sortBy?: 'value' | 'name' } & FallbackSortOption
+    }
+  > &
     Omit<CommonOptions, 'fallbackSort'> &
     CommonPartitionOptions
 >[]

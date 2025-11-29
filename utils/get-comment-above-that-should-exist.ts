@@ -13,7 +13,10 @@ import { getCommentsBefore } from './get-comments-before'
  */
 interface GetCommentAboveMissingParameters<T extends SortingNode> {
   /** Configuration options for grouping. */
-  options: Pick<CommonGroupsOptions<unknown>, 'customGroups' | 'groups'>
+  options: Pick<
+    CommonGroupsOptions<unknown, unknown>,
+    'customGroups' | 'groups'
+  >
 
   /** ESLint source code object for accessing comments. */
   sourceCode: TSESLint.SourceCode

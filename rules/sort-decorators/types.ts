@@ -12,7 +12,7 @@ export type Options = Partial<
     sortOnAccessors: boolean
     sortOnMethods: boolean
     sortOnClasses: boolean
-  } & CommonGroupsOptions<SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
     CommonPartitionOptions &
     CommonOptions
 >[]

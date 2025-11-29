@@ -24,7 +24,7 @@ export type Options = Partial<
      * @default ifNumericEnum
      */
     sortByValue: 'ifNumericEnum' | 'always' | 'never'
-  } & CommonGroupsOptions<SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
     CommonPartitionOptions &
     CommonOptions
 >[]

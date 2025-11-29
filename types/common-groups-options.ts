@@ -33,10 +33,7 @@ import type {
  * @template AdditionalOptions - Additional type-specific options that extend
  *   the base configuration.
  */
-export type CustomGroupsOption<
-  SingleCustomGroup = object,
-  AdditionalOptions = Record<never, never>,
-> = ({
+export type CustomGroupsOption<SingleCustomGroup, AdditionalOptions> = ({
   /**
    * Fallback sorting configuration used when primary sort returns equal. Useful
    * for stable sorting when elements have identical primary sort values.
@@ -102,9 +99,9 @@ export interface GroupWithOverridesOption {
   type?: TypeOption
 }
 
-export interface CommonGroupsOptions<SingleCustomGroup> {
+export interface CommonGroupsOptions<SingleCustomGroup, AdditionalOptions> {
   /** Custom groups for organizing nodes. */
-  customGroups: CustomGroupsOption<SingleCustomGroup>
+  customGroups: CustomGroupsOption<SingleCustomGroup, AdditionalOptions>
 
   /** Controls the placement of newlines between different groups of nodes. */
   newlinesBetween: NewlinesBetweenOption

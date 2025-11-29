@@ -3,7 +3,7 @@ import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { CommonOptions } from '../../types/common-options'
 
 export type Options = Partial<
-  CommonGroupsOptions<SingleCustomGroup> &
+  CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
     CommonPartitionOptions &
     CommonOptions
 >[]

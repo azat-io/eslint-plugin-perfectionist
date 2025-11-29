@@ -21,7 +21,7 @@ export type Options = Partial<
        */
       allNamesMatchPattern?: RegexOption
     }
-  } & CommonGroupsOptions<SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
     CommonPartitionOptions &
     CommonOptions
 >[]

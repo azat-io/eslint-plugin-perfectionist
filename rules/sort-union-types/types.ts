@@ -32,7 +32,7 @@ export type Selector =
  * Controls how TypeScript union type members are sorted.
  */
 export type Options = Partial<
-  CommonGroupsOptions<SingleCustomGroup> &
+  CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
     CommonPartitionOptions &
     CommonOptions
 >[]

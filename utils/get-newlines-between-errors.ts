@@ -40,7 +40,7 @@ interface GetNewlinesBetweenErrorsParameters<
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
 
   /** Configuration options for newlines and groups. */
-  options: CommonGroupsOptions<unknown>
+  options: CommonGroupsOptions<unknown, unknown>
 
   /** ESLint source code object for accessing lines. */
   sourceCode: TSESLint.SourceCode

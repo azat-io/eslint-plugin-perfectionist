@@ -61,7 +61,7 @@ export type Options = Partial<
      * sorting instead of the entire line.
      */
     maxLineLength: number
-  } & CommonGroupsOptions<SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
     CommonPartitionOptions &
     CommonOptions
 >[]

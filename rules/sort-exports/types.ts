@@ -16,7 +16,7 @@ import {
  * From '...'`) to improve code organization and maintainability.
  */
 export type Options = Partial<
-  CommonGroupsOptions<SingleCustomGroup> &
+  CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
     CommonPartitionOptions &
     CommonOptions
 >[]

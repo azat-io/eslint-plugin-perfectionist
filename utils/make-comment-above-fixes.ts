@@ -12,7 +12,10 @@ import { getGroupIndex } from './get-group-index'
 /** Parameters for generating comment-above fixes. */
 interface MakeCommentAboveFixesParameters {
   /** Configuration options containing groups and custom groups. */
-  options: Pick<CommonGroupsOptions<unknown>, 'customGroups' | 'groups'>
+  options: Pick<
+    CommonGroupsOptions<unknown, unknown>,
+    'customGroups' | 'groups'
+  >
 
   /** ESLint source code object for accessing comments and tokens. */
   sourceCode: TSESLint.SourceCode

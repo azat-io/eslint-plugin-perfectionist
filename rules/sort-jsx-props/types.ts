@@ -35,8 +35,8 @@ export type Options = Partial<
        */
       tagMatchesPattern?: RegexOption
     }
-  } & Pick<CommonPartitionOptions, 'partitionByNewLine'> &
-    CommonGroupsOptions<SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
+    Pick<CommonPartitionOptions, 'partitionByNewLine'> &
     CommonOptions
 >[]
 

@@ -9,7 +9,7 @@ import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 
 describe('sort-nodes-by-groups', () => {
-  let options: CommonGroupsOptions<unknown> & CommonOptions = {
+  let options: CommonGroupsOptions<unknown, unknown> & CommonOptions = {
     fallbackSort: { type: 'unsorted' },
     specialCharacters: 'keep',
     newlinesBetween: 'ignore',
@@ -23,7 +23,7 @@ describe('sort-nodes-by-groups', () => {
   }
 
   let optionsByGroupIndexComputer: OptionsByGroupIndexComputer<
-    CommonGroupsOptions<unknown> & CommonOptions
+    CommonGroupsOptions<unknown, unknown> & CommonOptions
   > = () => options
 
   it('sorts nodes by groups', () => {

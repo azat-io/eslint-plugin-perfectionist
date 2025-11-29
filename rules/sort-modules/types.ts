@@ -11,6 +11,20 @@ import {
 import { regexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
 /**
+ * Configuration options for the sort-modules rule.
+ *
+ * This rule enforces consistent ordering of module-level declarations (classes,
+ * interfaces, functions, types, enums) to improve code organization.
+ */
+export type SortModulesOptions = [
+  Partial<
+    CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
+      CommonPartitionOptions &
+      CommonOptions
+  >,
+]
+
+/**
  * Union type of all available module member selectors. Used to categorize
  * different types of module-level declarations.
  */
@@ -22,20 +36,6 @@ export type Selector =
   | ClassSelector
   | TypeSelector
   | EnumSelector
-
-/**
- * Configuration options for the sort-modules rule.
- *
- * This rule enforces consistent ordering of module-level declarations (classes,
- * interfaces, functions, types, enums) to improve code organization.
- */
-export type SortModulesOptions = [
-  Partial<
-    CommonGroupsOptions<SingleCustomGroup> &
-      CommonPartitionOptions &
-      CommonOptions
-  >,
-]
 
 /**
  * Union type of all available module member modifiers. Used to identify

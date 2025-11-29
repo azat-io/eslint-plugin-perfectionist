@@ -22,7 +22,7 @@ interface GetGroupParameters<SingleCustomGroup> {
   ): boolean
   /** Configuration options for grouping. */
   options: Pick<
-    CommonGroupsOptions<SingleCustomGroup>,
+    CommonGroupsOptions<SingleCustomGroup, unknown>,
     'customGroups' | 'groups'
   >
 

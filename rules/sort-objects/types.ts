@@ -74,7 +74,7 @@ export type Options = Partial<
      * @default true
      */
     styledComponents: boolean
-  } & CommonGroupsOptions<SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup, Record<string, never>> &
     CommonPartitionOptions &
     CommonOptions
 >[]
