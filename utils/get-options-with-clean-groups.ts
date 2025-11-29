@@ -1,4 +1,4 @@
-import type { GroupsOptions } from '../types/common-options'
+import type { GroupsOptions } from '../types/common-groups-options'
 
 /**
  * Parameters for cleaning and normalizing groups configuration.

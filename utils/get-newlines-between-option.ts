@@ -2,7 +2,7 @@ import type {
   NewlinesBetweenOption,
   CustomGroupsOption,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
 
 import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { isNewlinesBetweenOption } from './is-newlines-between-option'

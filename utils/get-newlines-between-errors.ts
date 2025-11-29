@@ -4,7 +4,7 @@ import type {
   NewlinesBetweenOption,
   CustomGroupsOption,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getNewlinesBetweenOption } from './get-newlines-between-option'

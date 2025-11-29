@@ -1,7 +1,7 @@
 import type {
   GroupWithOverridesOption,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
 
 /**
  * Type guard to check if a group option is a group with overrides

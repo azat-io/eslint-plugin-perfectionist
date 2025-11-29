@@ -1,4 +1,7 @@
-import type { CustomGroupsOption, GroupsOptions } from '../types/common-options'
+import type {
+  CustomGroupsOption,
+  GroupsOptions,
+} from '../types/common-groups-options'
 
 import { validateObjectsInsideGroups } from './validate-objects-inside-groups'
 import { validateNoDuplicatedGroups } from './validate-no-duplicated-groups'

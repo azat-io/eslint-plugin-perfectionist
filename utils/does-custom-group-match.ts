@@ -1,4 +1,5 @@
-import type { AnyOfCustomGroup, RegexOption } from '../types/common-options'
+import type { AnyOfCustomGroup } from '../types/common-groups-options'
+import type { RegexOption } from '../types/common-options'
 
 import { matches } from './matches'
 

@@ -1,4 +1,5 @@
-import type { GroupsOptions, TypeOption } from '../types/common-options'
+import type { GroupsOptions } from '../types/common-groups-options'
+import type { TypeOption } from '../types/common-options'
 
 import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 

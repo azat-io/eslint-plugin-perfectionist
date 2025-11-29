@@ -1,4 +1,4 @@
-import type { GroupsOptions } from '../../types/common-options'
+import type { GroupsOptions } from '../../types/common-groups-options'
 
 import { isStringGroupSideEffectOnlyGroup } from './is-string-group-side-effect-only-group'
 import { computeGroupsNames } from '../../utils/compute-groups-names'

@@ -1,4 +1,4 @@
-import type { GroupsOptions } from '../types/common-options'
+import type { GroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { isGroupWithOverridesOption } from './is-group-with-overrides-option'

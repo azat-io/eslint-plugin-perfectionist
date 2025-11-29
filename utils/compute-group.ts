@@ -2,7 +2,7 @@ import type {
   CustomGroupsOption,
   AnyOfCustomGroup,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
 
 import { computeGroupsNames } from './compute-groups-names'
 

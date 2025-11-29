@@ -1,7 +1,7 @@
 import type {
   NewlinesBetweenOption,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
 
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
 

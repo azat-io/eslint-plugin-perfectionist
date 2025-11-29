@@ -1,6 +1,9 @@
 import type { ComparatorByOptionsComputer } from './compare/default-comparator-by-options-computer'
-import type { CommonOptions, GroupsOptions } from '../types/common-options'
-import type { CommonGroupsOptions } from '../types/common-groups-options'
+import type {
+  CommonGroupsOptions,
+  GroupsOptions,
+} from '../types/common-groups-options'
+import type { CommonOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getGroupIndex } from './get-group-index'
