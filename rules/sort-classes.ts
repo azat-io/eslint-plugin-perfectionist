@@ -21,14 +21,14 @@ import {
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import {
+  buildCommonJsonSchemas,
+  regexJsonSchema,
+} from '../utils/json-schemas/common-json-schemas'
+import {
   singleCustomGroupJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-classes/types'
-import {
-  commonJsonSchemas,
-  regexJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getOverloadSignatureGroups } from './sort-classes/get-overload-signature-groups'
@@ -650,7 +650,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
     schema: [
       {
         properties: {
-          ...commonJsonSchemas,
+          ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
             singleCustomGroupJsonSchema,
           }),

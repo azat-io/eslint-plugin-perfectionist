@@ -129,16 +129,6 @@ export function buildFallbackSortJsonSchema({
   }
 }
 
-/**
- * Pre-built collection of common JSON schemas for sorting rules.
- *
- * Contains schemas for type, order, ignoreCase, specialCharacters, locales,
- * alphabet, and fallbackSort options. Used as the default set of schemas for
- * rule configuration validation.
- */
-export let commonJsonSchemas: Record<string, JSONSchema4> =
-  buildCommonJsonSchemas()
-
 let singleRegexJsonSchema: JSONSchema4 = {
   oneOf: [
     {

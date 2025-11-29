@@ -18,7 +18,7 @@ import {
 } from '../utils/report-errors'
 import {
   buildUseConfigurationIfJsonSchema,
-  commonJsonSchemas,
+  buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
@@ -81,7 +81,7 @@ export let defaultOptions: Required<Options[number]> = {
 export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
-      ...commonJsonSchemas,
+      ...buildCommonJsonSchemas(),
       ...buildCommonGroupsJsonSchemas({
         singleCustomGroupJsonSchema,
       }),

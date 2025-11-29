@@ -24,8 +24,8 @@ import {
   allSelectors,
 } from './sort-union-types/types'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
-import { commonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
@@ -70,7 +70,7 @@ let defaultOptions: Required<Options[number]> = {
 export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
-      ...commonJsonSchemas,
+      ...buildCommonJsonSchemas(),
       ...buildCommonGroupsJsonSchemas({
         singleCustomGroupJsonSchema,
       }),

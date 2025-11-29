@@ -7,8 +7,8 @@ import type { SortingNode } from '../types/sorting-node'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { reportErrors, ORDER_ERROR, RIGHT, LEFT } from '../utils/report-errors'
-import { commonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -269,20 +269,18 @@ export default createEslintRule<Options, MessageId>({
     },
   }),
   meta: {
-    schema: [
-      {
-        properties: {
-          ...commonJsonSchemas,
-        },
-        additionalProperties: false,
-        type: 'object',
-      },
-    ],
     docs: {
       url: 'https://perfectionist.dev/rules/sort-switch-case',
       description: 'Enforce sorted switch cases.',
       recommended: true,
     },
+    schema: [
+      {
+        properties: buildCommonJsonSchemas(),
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
     messages: {
       [ORDER_ERROR_ID]: ORDER_ERROR,
     },

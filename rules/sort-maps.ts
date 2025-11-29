@@ -16,7 +16,7 @@ import {
 } from '../utils/report-errors'
 import {
   buildUseConfigurationIfJsonSchema,
-  commonJsonSchemas,
+  buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
@@ -207,7 +207,7 @@ export default createEslintRule<Options, MessageId>({
     schema: {
       items: {
         properties: {
-          ...commonJsonSchemas,
+          ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas(),
           useConfigurationIf: buildUseConfigurationIfJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,

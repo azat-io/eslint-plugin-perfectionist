@@ -31,8 +31,8 @@ import {
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
-import { commonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -100,7 +100,7 @@ export default createEslintRule<SortModulesOptions, MessageId>({
     schema: [
       {
         properties: {
-          ...commonJsonSchemas,
+          ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
             singleCustomGroupJsonSchema,
           }),

@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest'
 import Ajv from 'ajv-draft-04'
 
 import {
-  commonJsonSchemas,
+  buildCommonJsonSchemas,
   regexJsonSchema,
 } from '../../../utils/json-schemas/common-json-schemas'
 
 describe('common-json-schemas', () => {
   let commonJsonSchemaValidator = new Ajv().compile({
-    properties: commonJsonSchemas,
+    properties: buildCommonJsonSchemas(),
     additionalProperties: false,
     type: 'object',
   })

@@ -15,7 +15,7 @@ import {
 } from '../utils/report-errors'
 import {
   buildUseConfigurationIfJsonSchema,
-  commonJsonSchemas,
+  buildCommonJsonSchemas,
   regexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -386,7 +386,7 @@ export default createEslintRule<Options, MessageId>({
     schema: {
       items: {
         properties: {
-          ...commonJsonSchemas,
+          ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
             singleCustomGroupJsonSchema,
           }),
