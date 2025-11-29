@@ -16,7 +16,7 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
   regexJsonSchema,
-} from '../utils/common-json-schemas'
+} from '../utils/json-schemas/common-json-schemas'
 import {
   MISSED_COMMENT_ABOVE_ERROR,
   DEPENDENCY_ORDER_ERROR,

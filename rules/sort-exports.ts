@@ -10,7 +10,7 @@ import {
   newlinesBetweenJsonSchema,
   commonJsonSchemas,
   groupsJsonSchema,
-} from '../utils/common-json-schemas'
+} from '../utils/json-schemas/common-json-schemas'
 import {
   MISSED_COMMENT_ABOVE_ERROR,
   MISSED_SPACING_ERROR,

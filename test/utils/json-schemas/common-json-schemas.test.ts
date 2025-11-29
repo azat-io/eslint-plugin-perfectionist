@@ -8,7 +8,7 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
   regexJsonSchema,
-} from '../../utils/common-json-schemas'
+} from '../../../utils/json-schemas/common-json-schemas'
 
 describe('common-json-schemas', () => {
   describe('commonJsonSchemas', () => {

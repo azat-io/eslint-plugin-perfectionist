@@ -4,7 +4,7 @@ import type { CommonPartitionOptions } from '../../types/common-partition-option
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { CommonOptions } from '../../types/common-options'
 
-import { buildCustomGroupSelectorJsonSchema } from '../../utils/common-json-schemas'
+import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
 /**
  * Configuration options for the sort-variable-declarations rule.

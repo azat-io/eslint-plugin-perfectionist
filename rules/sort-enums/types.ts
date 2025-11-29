@@ -6,7 +6,7 @@ import type { CommonPartitionOptions } from '../../types/common-partition-option
 import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
-import { regexJsonSchema } from '../../utils/common-json-schemas'
+import { regexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
 /**
  * Configuration options for the sort-enums rule.

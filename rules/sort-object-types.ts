@@ -21,7 +21,7 @@ import {
   buildCommonJsonSchemas,
   groupsJsonSchema,
   regexJsonSchema,
-} from '../utils/common-json-schemas'
+} from '../utils/json-schemas/common-json-schemas'
 import {
   singleCustomGroupJsonSchema,
   sortByJsonSchema,

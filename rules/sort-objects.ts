@@ -15,7 +15,7 @@ import {
   commonJsonSchemas,
   groupsJsonSchema,
   regexJsonSchema,
-} from '../utils/common-json-schemas'
+} from '../utils/json-schemas/common-json-schemas'
 import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,

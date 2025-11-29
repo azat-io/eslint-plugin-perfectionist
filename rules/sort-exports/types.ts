@@ -7,7 +7,7 @@ import type { CommonOptions } from '../../types/common-options'
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-} from '../../utils/common-json-schemas'
+} from '../../utils/json-schemas/common-json-schemas'
 
 /**
  * Configuration options for the sort-exports rule.

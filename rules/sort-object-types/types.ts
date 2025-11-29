@@ -17,7 +17,7 @@ import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
-} from '../../utils/common-json-schemas'
+} from '../../utils/json-schemas/common-json-schemas'
 
 /**
  * Configuration options for the sort-object-types rule.
