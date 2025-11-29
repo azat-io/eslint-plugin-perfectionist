@@ -35,7 +35,7 @@ export interface SortEnumsSortingNode
   value: string | null
 }
 
-/** Additional configuration for a single custom group.. */
+/** Additional configuration for a single custom group. */
 interface SingleCustomGroup {
   /**
    * Regular expression pattern to match enum member values. Members with values
