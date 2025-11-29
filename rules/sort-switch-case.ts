@@ -92,6 +92,7 @@ export default createEslintRule<Options, MessageId>({
       let hasUnsortedNodes = false
       for (let caseNodesSortingNodeGroup of caseNameSortingNodeGroups) {
         let sortedCaseNameSortingNodes = sortNodes({
+          comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
           nodes: caseNodesSortingNodeGroup,
           ignoreEslintDisabledNodes: false,
           options,

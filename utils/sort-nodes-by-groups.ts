@@ -28,7 +28,7 @@ interface SortNodesByGroupsParameters<
     groupIndex: number
     node: Node
   }): boolean
-  comparatorByOptionsComputer?: ComparatorByOptionsComputer<Options, Node>
+  comparatorByOptionsComputer: ComparatorByOptionsComputer<Options, Node>
   optionsByGroupIndexComputer: OptionsByGroupIndexComputer<Options>
   isNodeIgnored?(node: Node): boolean
   ignoreEslintDisabledNodes: boolean

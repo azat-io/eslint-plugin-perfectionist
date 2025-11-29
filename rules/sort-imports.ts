@@ -22,6 +22,7 @@ import {
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import {
   buildCommonJsonSchemas,
   regexJsonSchema,
@@ -316,6 +317,8 @@ export default createEslintRule<Options, MessageId>({
                   },
                   optionsByGroupIndexComputer:
                     buildDefaultOptionsByGroupIndexComputer(options),
+                  comparatorByOptionsComputer:
+                    defaultComparatorByOptionsComputer,
                   isNodeIgnored: node => node.isIgnored,
                   ignoreEslintDisabledNodes,
                   groups: options.groups,
