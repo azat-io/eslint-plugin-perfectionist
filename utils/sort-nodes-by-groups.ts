@@ -1,39 +1,36 @@
+import type { ComparatorByOptionsComputer } from './compare/default-comparator-by-options-computer'
 import type { CommonOptions, GroupsOptions } from '../types/common-options'
-import type { NodeValueGetterFunction } from './compare/compare'
+import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getGroupIndex } from './get-group-index'
 import { sortNodes } from './sort-nodes'
 
-export type OptionsByGroupIndexComputer<
-  Options extends CommonOptions,
-  T extends SortingNode,
-> = (groupIndex: number) => {
-  fallbackSortNodeValueGetter?: NodeValueGetterFunction<T> | null
-  nodeValueGetter?: NodeValueGetterFunction<T> | null
-  options: Options
-}
+export type OptionsByGroupIndexComputer<Options extends CommonOptions> = (
+  groupIndex: number,
+) => Options
 
 /**
  * Parameters for sorting nodes by groups.
  *
- * @template Options - Sorting options type extending base options.
- * @template T - Type of sorting node.
+ * @template Node - Type of sorting node.
+ * @template Options - Sorting options type extending common options.
  */
 interface SortNodesByGroupsParameters<
-  Options extends CommonOptions,
-  T extends SortingNode,
+  Node extends SortingNode,
+  Options extends CommonGroupsOptions<string, unknown> & CommonOptions,
 > {
   isNodeIgnoredForGroup?(props: {
     groupOptions: Options
     groupIndex: number
-    node: T
+    node: Node
   }): boolean
-  optionsByGroupIndexComputer: OptionsByGroupIndexComputer<Options, T>
+  comparatorByOptionsComputer?: ComparatorByOptionsComputer<Options, Node>
+  optionsByGroupIndexComputer: OptionsByGroupIndexComputer<Options>
+  isNodeIgnored?(node: Node): boolean
   ignoreEslintDisabledNodes: boolean
-  isNodeIgnored?(node: T): boolean
   groups: GroupsOptions<string>
-  nodes: T[]
+  nodes: Node[]
 }
 
 /**
@@ -102,15 +99,16 @@ interface SortNodesByGroupsParameters<
  */
 export function sortNodesByGroups<
   T extends SortingNode,
-  Options extends CommonOptions,
+  Options extends CommonGroupsOptions<string, unknown> & CommonOptions,
 >({
+  comparatorByOptionsComputer,
   optionsByGroupIndexComputer,
   ignoreEslintDisabledNodes,
   isNodeIgnoredForGroup,
   isNodeIgnored,
   groups,
   nodes,
-}: SortNodesByGroupsParameters<Options, T>): T[] {
+}: SortNodesByGroupsParameters<T, Options>): T[] {
   let nodesByNonIgnoredGroupIndex: Record<number, T[]> = {}
   let ignoredNodeIndices: number[] = []
   for (let [index, sortingNode] of nodes.entries()) {
@@ -131,8 +129,7 @@ export function sortNodesByGroups<
     nodesByNonIgnoredGroupIndex,
   ).toSorted((a, b) => Number(a) - Number(b))) {
     let groupIndex = Number(groupIndexString)
-    let { fallbackSortNodeValueGetter, nodeValueGetter, options } =
-      optionsByGroupIndexComputer(groupIndex)
+    let options = optionsByGroupIndexComputer(groupIndex)
     let nodesToPush = nodesByNonIgnoredGroupIndex[groupIndex]!
 
     let groupIgnoredNodes = new Set(
@@ -149,9 +146,8 @@ export function sortNodesByGroups<
       ...sortNodes({
         isNodeIgnored: node => groupIgnoredNodes.has(node),
         ignoreEslintDisabledNodes: false,
-        fallbackSortNodeValueGetter,
+        comparatorByOptionsComputer,
         nodes: nodesToPush,
-        nodeValueGetter,
         options,
       }),
     )

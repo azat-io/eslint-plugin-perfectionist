@@ -1,8 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { NodeValueGetterFunction } from '../utils/compare/compare'
 import type { SortEnumsSortingNode, Options } from './sort-enums/types'
-import type { TypeOption } from '../types/common-options'
 
 import {
   buildCustomGroupsArrayJsonSchema,
@@ -20,14 +18,14 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { getCustomGroupOverriddenOptions } from '../utils/build-default-options-by-group-index-computer'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { buildComparatorByOptionsComputer } from './sort-enums/build-comparator-by-options-computer'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
-import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { singleCustomGroupJsonSchema } from './sort-enums/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -197,29 +195,15 @@ export default createEslintRule<Options, MessageId>({
         sortingNode => sortingNode.numericValue !== null,
       )
 
-      let nodeValueGetter = computeNodeValueGetter({
-        isNumericEnum,
-        options,
-      })
-      let overriddenOptions = {
-        ...options,
-        type: computeOptionType({
-          isNumericEnum,
-          options,
-        }),
-      }
       function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
       ): SortEnumsSortingNode[] {
         let nodesSortedByGroups = formattedMembers.flatMap(sortingNodes =>
           sortNodesByGroups({
-            optionsByGroupIndexComputer: groupIndex => ({
-              options: getCustomGroupOverriddenOptions({
-                options: overriddenOptions,
-                groupIndex,
-              }),
-              nodeValueGetter,
-            }),
+            optionsByGroupIndexComputer:
+              buildDefaultOptionsByGroupIndexComputer(options),
+            comparatorByOptionsComputer:
+              buildComparatorByOptionsComputer(isNumericEnum),
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes: sortingNodes,
@@ -328,35 +312,6 @@ function getBinaryExpressionNumberValue(
   }
 }
 
-function computeNodeValueGetter({
-  isNumericEnum,
-  options,
-}: {
-  options: Pick<Required<Options[number]>, 'sortByValue'>
-  isNumericEnum: boolean
-}): NodeValueGetterFunction<SortEnumsSortingNode> | null {
-  switch (options.sortByValue) {
-    case 'ifNumericEnum':
-      if (!isNumericEnum) {
-        return null
-      }
-      break
-    case 'always':
-      break
-    case 'never':
-      return null
-    /* v8 ignore next 2 -- @preserve Unsure if we can reach it. */
-    default:
-      throw new UnreachableCaseError(options.sortByValue)
-  }
-  return sortingNode => {
-    if (isNumericEnum) {
-      return sortingNode.numericValue!.toString()
-    }
-    return sortingNode.value ?? ''
-  }
-}
-
 function getExpressionNumberValue(expression: TSESTree.Node): number | null {
   switch (expression.type) {
     case 'BinaryExpression':
@@ -396,24 +351,4 @@ function getUnaryExpressionNumberValue(
     default:
       return null
   }
-}
-
-function computeOptionType({
-  isNumericEnum,
-  options,
-}: {
-  options: Pick<Required<Options[number]>, 'sortByValue' | 'type'>
-  isNumericEnum: boolean
-}): TypeOption {
-  /**
-   * If the enum is numeric, and we sort by value, always use the `natural` sort
-   * type, which will correctly sort them.
-   */
-  if (!isNumericEnum) {
-    return options.type
-  }
-  if (options.sortByValue === 'never') {
-    return options.type
-  }
-  return 'natural'
 }

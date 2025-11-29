@@ -69,37 +69,6 @@ describe('sort-nodes', () => {
     })
   })
 
-  it('should handle "nodeValueGetter"', () => {
-    let nodeA = createTestNode({ name: 'a' }, { actualValue: 'b' })
-    let nodeB = createTestNode({ name: 'b' }, { actualValue: 'a' })
-    expect(
-      sortNodes({
-        nodeValueGetter: node => node.actualValue,
-        ignoreEslintDisabledNodes: false,
-        nodes: [nodeA, nodeB],
-        options,
-      }),
-    ).toStrictEqual([nodeB, nodeA])
-  })
-
-  it('should handle "fallbackSortNodeValueGetter"', () => {
-    let nodeA = createTestNode({ name: 'a' }, { actualValue: 'b' })
-    let nodeB = createTestNode({ name: 'a' }, { actualValue: 'a' })
-    expect(
-      sortNodes({
-        options: {
-          ...options,
-          fallbackSort: {
-            type: 'alphabetical',
-          },
-        },
-        fallbackSortNodeValueGetter: node => node.actualValue,
-        ignoreEslintDisabledNodes: false,
-        nodes: [nodeA, nodeB],
-      }),
-    ).toStrictEqual([nodeB, nodeA])
-  })
-
   function createTestNode<T extends object>(
     node: {
       isEslintDisabled?: boolean

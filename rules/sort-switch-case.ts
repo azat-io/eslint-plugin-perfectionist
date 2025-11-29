@@ -4,6 +4,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import type { CommonOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
+import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { reportErrors, ORDER_ERROR, RIGHT, LEFT } from '../utils/report-errors'
@@ -12,7 +13,6 @@ import { commonJsonSchemas } from '../utils/common-json-schemas'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { compare } from '../utils/compare/compare'
 import { isSortable } from '../utils/is-sortable'
 import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
@@ -49,6 +49,8 @@ export default createEslintRule<Options, MessageId>({
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, defaultOptions)
+      let defaultComparator = defaultComparatorByOptionsComputer(options)
+
       validateCustomSortConfiguration(options)
 
       let { sourceCode } = context
@@ -229,11 +231,8 @@ export default createEslintRule<Options, MessageId>({
           if (b.some(node => node.isDefaultClause)) {
             return -1
           }
-          return compare({
-            a: a.at(0)!,
-            b: b.at(0)!,
-            options,
-          })
+
+          return defaultComparator(a.at(0)!, b.at(0)!)
         })
         .flat()
       let sortingNodeGroupsForBlockSortFlat =
