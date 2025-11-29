@@ -21,20 +21,13 @@ export interface SingleCustomGroup {
   elementNamePattern?: RegexOption
 }
 
-/**
- * Union type of all possible group identifiers for import attributes.
- *
- * Groups are used to organize and sort related attributes together.
- */
-export type Group = 'unknown' | string
-
 /** JSON Schema for single custom group configurations. */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   elementNamePattern: regexJsonSchema,
 }
 
 export type Options = Partial<
-  CommonGroupsOptions<Group, SingleCustomGroup> &
+  CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]

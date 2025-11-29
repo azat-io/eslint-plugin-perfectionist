@@ -5,7 +5,6 @@ import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-depe
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -63,7 +62,7 @@ export type Options = Partial<
      * sorting instead of the entire line.
      */
     maxLineLength: number
-  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -147,29 +146,11 @@ export type Modifier =
   | NamedModifier
   | TypeModifier
 
-/**
- * Represents a group identifier for import categorization. Can be a predefined
- * group, 'unknown' for uncategorized imports, or a custom group name.
- */
-export type Group = ValueGroup | TypeGroup | 'unknown' | string
-
-/**
- * Represents type import groups. Combines the type modifier with selectors
- * using dash notation.
- */
-type TypeGroup = JoinWithDash<[TypeModifier, Selector]>
-
 /** Selector for side-effect imports that are style files (CSS, SCSS, etc.). */
 type SideEffectStyleSelector = 'side-effect-style'
 
 /** Selector for imports using TypeScript path aliases defined in tsconfig.json. */
 type TsconfigPathSelector = 'tsconfig-path'
-
-/**
- * Represents value import groups. Uses selectors directly without additional
- * modifiers.
- */
-type ValueGroup = JoinWithDash<[Selector]>
 
 /** Selector for side-effect imports (imports without bindings). */
 type SideEffectSelector = 'side-effect'

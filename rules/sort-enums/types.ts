@@ -44,7 +44,7 @@ export type Options = Partial<
      * @default ifNumericEnum
      */
     sortByValue: 'ifNumericEnum' | 'always' | 'never'
-  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -54,12 +54,6 @@ export interface SortEnumsSortingNode
   numericValue: number | null
   value: string | null
 }
-
-/**
- * Represents a group identifier for enum member categorization. Can be
- * 'unknown' for uncategorized members or a custom group name.
- */
-type Group = 'unknown' | string
 
 /**
  * JSON schema definition for validating single custom group configurations.

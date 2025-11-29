@@ -15,7 +15,7 @@ export type Options = Partial<
     sortOnAccessors: boolean
     sortOnMethods: boolean
     sortOnClasses: boolean
-  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -25,8 +25,6 @@ export interface SingleCustomGroup {
 }
 
 export type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
-
-type Group = 'unknown' | string
 
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   elementNamePattern: regexJsonSchema,

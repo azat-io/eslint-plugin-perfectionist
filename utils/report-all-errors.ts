@@ -81,7 +81,7 @@ interface ReportAllErrorsParameters<
    */
   options: {
     /** Group definitions and ordering. */
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   } & MakeFixesParameters<T>['options']
 
   /**

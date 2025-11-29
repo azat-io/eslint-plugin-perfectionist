@@ -29,7 +29,7 @@ export type Options = Partial<
        */
       allNamesMatchPattern?: RegexOption
     }
-  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -71,12 +71,6 @@ export type Selector = LiteralSelector | SpreadSelector
  * numbers, or identifiers in the array.
  */
 type LiteralSelector = 'literal'
-
-/**
- * Represents a group identifier for array element categorization. Can be
- * 'unknown' for uncategorized elements or a custom group name.
- */
-type Group = 'unknown' | string
 
 /**
  * Selector for spread elements in arrays. Matches spread syntax elements like

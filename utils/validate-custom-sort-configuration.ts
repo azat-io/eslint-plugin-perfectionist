@@ -4,7 +4,7 @@ import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 
 /** Options for custom sort configuration validation. */
 interface Options {
-  groups?: GroupsOptions<string>
+  groups?: GroupsOptions
 
   /** The sorting type selected by the user. */
   type: TypeOption
@@ -36,9 +36,7 @@ export function validateCustomSortConfiguration(options: Options): void {
   }
 }
 
-function usesCustomSortInGroups(
-  groups: GroupsOptions<string> | undefined,
-): boolean {
+function usesCustomSortInGroups(groups: GroupsOptions | undefined): boolean {
   if (!groups) {
     return false
   }

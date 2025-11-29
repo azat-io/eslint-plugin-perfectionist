@@ -7,7 +7,7 @@ import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import { regexJsonSchema } from '../../utils/common-json-schemas'
 
 export type Options = Partial<
-  CommonGroupsOptions<Group, SingleCustomGroup> &
+  CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -15,8 +15,6 @@ export type Options = Partial<
 export interface SingleCustomGroup {
   elementNamePattern?: RegexOption
 }
-
-type Group = 'unknown' | string
 
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   elementNamePattern: regexJsonSchema,

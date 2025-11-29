@@ -28,7 +28,7 @@ import type {
  * @returns True if the element is a group with overrides configuration object.
  */
 export function isGroupWithOverridesOption(
-  groupOption: GroupsOptions<string>[number],
+  groupOption: GroupsOptions[number],
 ): groupOption is GroupWithOverridesOption {
   return typeof groupOption === 'object' && 'group' in groupOption
 }

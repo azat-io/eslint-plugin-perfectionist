@@ -35,7 +35,7 @@ export interface SingleCustomGroup {
  * such as `const a = 1, b, c = 3;`.
  */
 export type Options = Partial<
-  CommonGroupsOptions<Group, SingleCustomGroup> &
+  CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -54,15 +54,6 @@ export type Selector = UninitializedSelector | InitializedSelector
  * 1, b, c = 3;`.
  */
 type UninitializedSelector = 'uninitialized'
-
-/**
- * Union type of all possible group identifiers for variable declarations.
- *
- * Groups are used to organize and sort related declarations together. Can be
- * selector types, 'unknown' for unmatched declarations, or custom string
- * identifiers.
- */
-type Group = 'unknown' | Selector | string
 
 /**
  * Selector for initialized variables.

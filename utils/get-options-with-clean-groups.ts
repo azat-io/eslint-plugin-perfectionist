@@ -10,7 +10,7 @@ interface GetOptionsWithCleanGroupsParameters {
    * Groups configuration that may contain empty arrays or single-element
    * arrays.
    */
-  groups: GroupsOptions<string>
+  groups: GroupsOptions
 }
 
 /**

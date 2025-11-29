@@ -8,7 +8,7 @@ import { computeGroupsNames } from './compute-groups-names'
 interface ValidateGenerateGroupsConfigurationParameters {
   options: {
     customGroups: CustomGroupsOption
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   }
   selectors: string[]
   modifiers: string[]

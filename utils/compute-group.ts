@@ -21,7 +21,7 @@ interface GetGroupParameters<SingleCustomGroup> {
      * Available groups and their order. Can be a flat array or nested arrays
      * for advanced configurations.
      */
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   }
 
   /**

@@ -4,7 +4,7 @@ import type {
   GroupsOptions,
 } from './common-options'
 
-export interface CommonGroupsOptions<Group extends string, SingleCustomGroup> {
+export interface CommonGroupsOptions<SingleCustomGroup> {
   /** Custom groups for organizing nodes. */
   customGroups: CustomGroupsOption<SingleCustomGroup>
 
@@ -15,5 +15,5 @@ export interface CommonGroupsOptions<Group extends string, SingleCustomGroup> {
    * Defines the order and grouping of nodes. Nodes are sorted within their
    * groups and groups are ordered as specified.
    */
-  groups: GroupsOptions<Group>
+  groups: GroupsOptions
 }

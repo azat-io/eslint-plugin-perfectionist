@@ -3,7 +3,6 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -52,7 +51,7 @@ export interface SingleCustomGroup {
  * From '...'`) to improve code organization and maintainability.
  */
 export type Options = Partial<
-  CommonGroupsOptions<Group, SingleCustomGroup> &
+  CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -68,18 +67,6 @@ export type Modifier = ValueModifier | TypeModifier
  * statements.
  */
 export type Selector = ExportSelector
-
-/**
- * Represents all possible predefined export group combinations. Combines
- * modifiers with the export selector using dash notation.
- */
-type ExportGroup = JoinWithDash<[ValueModifier, TypeModifier, ExportSelector]>
-
-/**
- * Represents a group identifier for export categorization. Can be a predefined
- * export group, 'unknown' for uncategorized exports, or a custom group name.
- */
-type Group = ExportGroup | 'unknown' | string
 
 /**
  * Selector for export statements. Identifies re-export statements (`export ...

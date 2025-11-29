@@ -17,7 +17,7 @@ interface MakeCommentAboveFixesParameters {
     customGroups: CustomGroupsOption
 
     /** Groups configuration that may include commentAbove settings. */
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   }
 
   /** ESLint source code object for accessing comments and tokens. */

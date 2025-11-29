@@ -54,7 +54,7 @@ export type Selector =
  * Controls how TypeScript union type members are sorted.
  */
 export type Options = Partial<
-  CommonGroupsOptions<Group, SingleCustomGroup> &
+  CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -65,15 +65,6 @@ export type Options = Partial<
  * Matches TypeScript intersection types like `A & B`.
  */
 type IntersectionSelector = 'intersection'
-
-/**
- * Union type of all possible group identifiers for union type members.
- *
- * Groups are used to organize and sort related type members together. Can be
- * selector types, 'unknown' for unmatched members, or custom string
- * identifiers.
- */
-type Group = 'unknown' | Selector | string
 
 /**
  * Selector for conditional types.

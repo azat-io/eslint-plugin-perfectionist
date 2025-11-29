@@ -25,7 +25,7 @@ export type Options = Partial<
        */
       allNamesMatchPattern?: RegexOption
     }
-  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -43,12 +43,6 @@ export interface SingleCustomGroup {
    */
   elementNamePattern?: RegexOption
 }
-
-/**
- * Represents a group identifier for Map element categorization. Can be
- * 'unknown' for uncategorized elements or a custom group name.
- */
-type Group = 'unknown' | string
 
 /**
  * JSON schema definition for validating single custom group configurations.

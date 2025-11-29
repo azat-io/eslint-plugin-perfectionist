@@ -54,7 +54,7 @@ import { computeGroupsNames } from './compute-groups-names'
 export function validateObjectsInsideGroups({
   groups,
 }: {
-  groups: GroupsOptions<string>
+  groups: GroupsOptions
 }): void {
   let isPreviousElementNonGroupBased = false
   for (let group of groups) {

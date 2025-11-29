@@ -18,7 +18,7 @@ interface GetCommentAboveMissingParameters<T extends SortingNode> {
     customGroups: CustomGroupsOption
 
     /** Groups configuration that may include comment requirements. */
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   }
 
   /** ESLint source code object for accessing comments. */

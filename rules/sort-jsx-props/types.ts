@@ -3,7 +3,6 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -77,7 +76,7 @@ export type Options = Partial<
       tagMatchesPattern?: RegexOption
     }
   } & Pick<CommonPartitionOptions, 'partitionByNewLine'> &
-    CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonGroupsOptions<SingleCustomGroup> &
     CommonOptions
 >[]
 
@@ -92,20 +91,6 @@ export type Modifier = MultilineModifier | ShorthandModifier
  * types of JSX props.
  */
 export type Selector = PropertySelector
-
-/**
- * Represents all possible group combinations for regular JSX props. Combines
- * modifiers with the property selector using dash notation.
- */
-type PropertyGroup = JoinWithDash<
-  [ShorthandModifier, MultilineModifier, PropertySelector]
->
-
-/**
- * Represents a group identifier for JSX prop categorization. Can be a
- * predefined group, 'unknown' for uncategorized props, or a custom group name.
- */
-type Group = PropertyGroup | 'unknown' | string
 
 /** Modifier for JSX props that span multiple lines. */
 type MultilineModifier = 'multiline'

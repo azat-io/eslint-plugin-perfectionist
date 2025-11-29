@@ -3,7 +3,6 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -48,7 +47,7 @@ export type Selector =
  */
 export type SortModulesOptions = [
   Partial<
-    CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonGroupsOptions<SingleCustomGroup> &
       CommonPartitionOptions &
       CommonOptions
   >,
@@ -135,61 +134,6 @@ interface ElementNamePatternFilterCustomGroup {
    */
   elementNamePattern?: RegexOption
 }
-
-/**
- * Represents a group identifier for module member categorization. Can be a
- * predefined group combination, 'unknown' for uncategorized members, or a
- * custom group name.
- *
- * @internal
- */
-type Group =
-  | NonDefaultInterfaceGroup
-  | NonDefaultFunctionGroup
-  | DefaultInterfaceGroup
-  | DefaultFunctionGroup
-  | NonDefaultClassGroup
-  | DefaultClassGroup
-  | EnumGroup
-  | TypeGroup
-  | 'unknown'
-  | string
-
-/** Represents group combinations for non-default exported classes. */
-type NonDefaultClassGroup = JoinWithDash<
-  [ExportModifier, DeclareModifier, DecoratedModifier, ClassSelector]
->
-
-/** Represents group combinations for default exported functions. */
-type DefaultFunctionGroup = JoinWithDash<
-  [ExportModifier, DefaultModifier, AsyncModifier, FunctionSelector]
->
-
-/** Represents group combinations for default exported classes. */
-type DefaultClassGroup = JoinWithDash<
-  [ExportModifier, DefaultModifier, DecoratedModifier, ClassSelector]
->
-
-/** Represents group combinations for non-default exported interfaces. */
-type NonDefaultInterfaceGroup = JoinWithDash<
-  [ExportModifier, DeclareModifier, InterfaceSelector]
->
-
-/** Represents group combinations for non-default exported functions. */
-type NonDefaultFunctionGroup = JoinWithDash<
-  [ExportModifier, DeclareModifier, FunctionSelector]
->
-
-/** Represents group combinations for default exported interfaces. */
-type DefaultInterfaceGroup = JoinWithDash<
-  [ExportModifier, DefaultModifier, InterfaceSelector]
->
-
-/** Represents group combinations for type alias declarations. */
-type TypeGroup = JoinWithDash<[ExportModifier, DeclareModifier, TypeSelector]>
-
-/** Represents group combinations for enum declarations. */
-type EnumGroup = JoinWithDash<[ExportModifier, DeclareModifier, EnumSelector]>
 
 /** Modifier for decorated members (having decorators). */
 type DecoratedModifier = 'decorated'

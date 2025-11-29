@@ -9,7 +9,6 @@ import type {
 } from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { JoinWithDash } from '../../types/join-with-dash'
 import type { SortingNode } from '../../types/sorting-node'
 
 import {
@@ -80,7 +79,7 @@ export type Options = Partial<
      * @default 'name'
      */
     sortBy: 'value' | 'name'
-  } & Omit<CommonGroupsOptions<Group, SingleCustomGroup>, 'customGroups'> &
+  } & Omit<CommonGroupsOptions<SingleCustomGroup>, 'customGroups'> &
     Omit<CommonOptions, 'fallbackSort'> &
     CommonPartitionOptions
 >[]
@@ -188,70 +187,6 @@ interface ElementNamePatternFilterCustomGroup {
    */
   elementNamePattern?: RegexOption
 }
-
-/**
- * Group type for index signature members.
- *
- * Represents all possible combinations of modifiers with the index-signature
- * selector, joined with dashes to form group identifiers like 'index-signature'
- * or 'required-index-signature'.
- */
-type IndexSignatureGroup = JoinWithDash<
-  [
-    OptionalModifier,
-    RequiredModifier,
-    MultilineModifier,
-    IndexSignatureSelector,
-  ]
->
-
-/**
- * Group type for property members.
- *
- * Represents all possible combinations of modifiers with the property selector,
- * joined with dashes to form group identifiers like 'property' or
- * 'optional-property'.
- */
-type PropertyGroup = JoinWithDash<
-  [OptionalModifier, RequiredModifier, MultilineModifier, PropertySelector]
->
-
-/**
- * Union type of all possible group identifiers for object type members.
- *
- * Groups are used to organize and sort related members together. Can be
- * predefined group types, 'unknown' for unmatched members, or custom string
- * identifiers.
- */
-type Group =
-  | IndexSignatureGroup
-  | PropertyGroup
-  | MethodGroup
-  | MemberGroup
-  | 'unknown'
-  | string
-
-/**
- * Group type for generic member elements.
- *
- * Represents all possible combinations of modifiers with the member selector,
- * joined with dashes to form group identifiers like 'member' or
- * 'required-member'.
- */
-type MemberGroup = JoinWithDash<
-  [OptionalModifier, RequiredModifier, MultilineModifier, MemberSelector]
->
-
-/**
- * Group type for method members.
- *
- * Represents all possible combinations of modifiers with the method selector,
- * joined with dashes to form group identifiers like 'method' or
- * 'optional-method'.
- */
-type MethodGroup = JoinWithDash<
-  [OptionalModifier, RequiredModifier, MultilineModifier, MethodSelector]
->
 
 /**
  * Selector for index signature members.

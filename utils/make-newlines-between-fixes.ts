@@ -29,7 +29,7 @@ interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
     customGroups: CustomGroupsOption
 
     /** Groups configuration defining available groups and their order. */
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   }
 
   /**

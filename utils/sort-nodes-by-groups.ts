@@ -18,7 +18,7 @@ export type OptionsByGroupIndexComputer<Options extends CommonOptions> = (
  */
 interface SortNodesByGroupsParameters<
   Node extends SortingNode,
-  Options extends CommonGroupsOptions<string, unknown> & CommonOptions,
+  Options extends CommonGroupsOptions<unknown> & CommonOptions,
 > {
   isNodeIgnoredForGroup?(props: {
     groupOptions: Options
@@ -29,7 +29,7 @@ interface SortNodesByGroupsParameters<
   optionsByGroupIndexComputer: OptionsByGroupIndexComputer<Options>
   isNodeIgnored?(node: Node): boolean
   ignoreEslintDisabledNodes: boolean
-  groups: GroupsOptions<string>
+  groups: GroupsOptions
   nodes: Node[]
 }
 
@@ -99,7 +99,7 @@ interface SortNodesByGroupsParameters<
  */
 export function sortNodesByGroups<
   T extends SortingNode,
-  Options extends CommonGroupsOptions<string, unknown> & CommonOptions,
+  Options extends CommonGroupsOptions<unknown> & CommonOptions,
 >({
   comparatorByOptionsComputer,
   optionsByGroupIndexComputer,

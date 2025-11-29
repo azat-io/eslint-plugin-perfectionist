@@ -430,14 +430,12 @@ export interface AnyOfCustomGroup<SingleCustomGroup> {
  *     { newlinesBetween: 2 },
  *     'utils',
  *   ]
- *
- * @template T - Type of group identifiers (typically string literals).
  */
-export type GroupsOptions<T extends string> = (
+export type GroupsOptions = (
   | GroupNewlinesBetweenOption
   | GroupWithOverridesOption
-  | T[]
-  | T
+  | string[]
+  | string
 )[]
 
 /**
