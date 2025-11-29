@@ -19,4 +19,5 @@ export type Options = Partial<
 
 export type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
+/** Additional configuration for a single custom group. */
 type SingleCustomGroup = Record<string, never>

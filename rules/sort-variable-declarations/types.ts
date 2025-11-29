@@ -25,11 +25,7 @@ export type Options = Partial<
  */
 export type Selector = UninitializedSelector | InitializedSelector
 
-/**
- * Configuration for a single custom group in variable declarations sorting.
- *
- * Allows defining custom groups based on variable names and selectors.
- */
+/** Additional configuration for a single custom group. */
 interface SingleCustomGroup {
   /**
    * The selector type this group matches. Can be 'initialized' for variables
@@ -65,8 +61,7 @@ export let allSelectors: Selector[] = ['initialized', 'uninitialized']
  * JSON Schema definitions for single custom group configurations.
  *
  * Provides additional schema properties specific to the
- * sort-variable-declarations rule, extending the base custom group schema with
- * element name patterns.
+ * sort-variable-declarations rule.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),

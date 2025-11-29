@@ -26,10 +26,5 @@ export type Options = Partial<
     CommonOptions
 >[]
 
-/**
- * Defines a custom group for Map element categorization.
- *
- * Custom groups allow fine-grained control over how Map elements are grouped
- * and sorted based on their key names.
- */
+/** Additional configuration for a single custom group. */
 type SingleCustomGroup = Record<string, never>

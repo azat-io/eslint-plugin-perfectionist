@@ -8,4 +8,5 @@ export type Options = Partial<
     CommonOptions
 >[]
 
+/** Additional configuration for a single custom group. */
 type SingleCustomGroup = Record<string, never>

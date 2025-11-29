@@ -29,12 +29,7 @@ export type Options = Partial<
     CommonOptions
 >[]
 
-/**
- * Defines a custom group for enum member categorization.
- *
- * Custom groups allow fine-grained control over how enum members are grouped
- * and sorted based on their names or values.
- */
+/** Additional configuration for a single custom group.. */
 export interface SingleCustomGroup {
   /**
    * Regular expression pattern to match enum member values. Members with values

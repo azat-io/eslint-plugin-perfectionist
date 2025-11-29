@@ -47,12 +47,7 @@ export type Modifier = ValueModifier | TypeModifier
  */
 export type Selector = ExportSelector
 
-/**
- * Configuration for a single custom group in named exports sorting.
- *
- * Allows defining custom groups based on export characteristics and name
- * patterns.
- */
+/** Additional configuration for a single custom group. */
 interface SingleCustomGroup {
   /**
    * Array of modifiers that exports must have to match this group. Can include
@@ -104,8 +99,7 @@ export let allModifiers: Modifier[] = ['value', 'type']
 /**
  * JSON Schema definitions for single custom group configurations.
  *
- * Provides additional schema properties specific to the sort-named-exports
- * rule, extending the base custom group schema with element name patterns.
+ * Provides additional schema properties specific to the sort-named-exports.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),

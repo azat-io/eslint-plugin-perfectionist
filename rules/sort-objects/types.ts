@@ -95,12 +95,7 @@ export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
  */
 export type Selector = PropertySelector | MemberSelector | MethodSelector
 
-/**
- * Configuration for a single custom group in object sorting.
- *
- * Allows defining custom groups based on member selectors, modifiers, and
- * patterns for fine-grained control over object member sorting.
- */
+/** Additional configuration for a single custom group. */
 interface SingleCustomGroup {
   /**
    * Regular expression pattern to match against the member's value. Only
@@ -183,8 +178,7 @@ export let allModifiers: Modifier[] = ['optional', 'required', 'multiline']
 /**
  * JSON Schema definitions for single custom group configurations.
  *
- * Provides additional schema properties specific to the sort-objects rule,
- * extending the base custom group schema with element patterns.
+ * Provides additional schema properties specific to the sort-objects rule.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),

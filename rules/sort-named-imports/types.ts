@@ -47,12 +47,7 @@ export type Modifier = ValueModifier | TypeModifier
  */
 export type Selector = ImportSelector
 
-/**
- * Configuration for a single custom group in named imports sorting.
- *
- * Allows defining custom groups based on import characteristics and name
- * patterns.
- */
+/** Additional configuration for a single custom group. */
 interface SingleCustomGroup {
   /**
    * Array of modifiers that imports must have to match this group. Can include

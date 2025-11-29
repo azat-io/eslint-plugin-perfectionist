@@ -26,11 +26,7 @@ export type Selector =
   | TupleSelector
   | UnionSelector
 
-/**
- * Configuration for a single custom group in union type sorting.
- *
- * Allows defining custom groups based on type member patterns and selectors.
- */
+/** Additional configuration for a single custom group. */
 export interface SingleCustomGroup {
   /**
    * The selector type this group matches. Determines what kind of type members
@@ -160,8 +156,7 @@ export let allSelectors: Selector[] = [
 /**
  * JSON Schema definitions for single custom group configurations.
  *
- * Provides additional schema properties specific to the sort-union-types rule,
- * extending the base custom group schema with element name patterns.
+ * Provides additional schema properties specific to the sort-union-types rule.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),

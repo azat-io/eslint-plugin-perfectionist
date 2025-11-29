@@ -38,14 +38,13 @@ export type Options = Partial<
 export type Selector = LiteralSelector | SpreadSelector
 
 /**
- * Defines a custom group for array element categorization.
+ * Additional configuration for a single custom group.
  *
  * Custom groups allow fine-grained control over how array elements are grouped
  * and sorted based on their names and types.
  *
  * @example
  *   {
- *     "elementNamePattern": "^CONSTANT_",
  *     "selector": "literal"
  *   }
  */

@@ -53,16 +53,12 @@ export type Modifier = MultilineModifier | ShorthandModifier
 export type Selector = PropertySelector
 
 /**
- * Defines a custom group for JSX prop categorization.
- *
- * Custom groups allow fine-grained control over how JSX props are grouped and
- * sorted based on their names, values, and characteristics.
+ * Additional configuration for a single custom group.
  *
  * @example
  *   {
  *     "selector": "prop",
- *     "modifiers": ["shorthand"],
- *     "elementNamePattern": "^data-"
+ *     "modifiers": ["shorthand"]
  *   }
  */
 interface SingleCustomGroup {

@@ -14,9 +14,5 @@ export type Options = Partial<
 export type SortExportAttributesSortingNode =
   SortingNode<TSESTree.ImportAttribute>
 
-/**
- * Configuration for a single custom group in import attributes sorting.
- *
- * Allows defining custom groups based on attribute name patterns.
- */
+/** Additional configuration for a single custom group. */
 type SingleCustomGroup = Record<string, unknown>

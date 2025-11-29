@@ -106,12 +106,7 @@ export type Selector =
  */
 export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
 
-/**
- * Configuration for a single custom group in object type sorting.
- *
- * Allows defining custom groups based on member selectors, modifiers, and
- * patterns for fine-grained control over sorting.
- */
+/** Additional configuration for a single custom group. */
 interface SingleCustomGroup {
   /**
    * Regular expression pattern to match against the member's type annotation

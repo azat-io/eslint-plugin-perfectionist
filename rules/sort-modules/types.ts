@@ -49,7 +49,7 @@ export type Modifier =
   | AsyncModifier
 
 /**
- * Defines a custom group for module member categorization.
+ * Additional configuration for a single custom group.
  *
  * Custom groups allow fine-grained control over how module members are grouped
  * and sorted based on their types, modifiers, and patterns.

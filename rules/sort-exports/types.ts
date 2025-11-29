@@ -34,7 +34,7 @@ export type Modifier = ValueModifier | TypeModifier
 export type Selector = ExportSelector
 
 /**
- * Defines a custom group for export statement categorization.
+ * Additional configuration for a single custom group.
  *
  * Custom groups allow fine-grained control over how export statements are
  * grouped and sorted based on their module names, selectors, and modifiers.
@@ -42,8 +42,7 @@ export type Selector = ExportSelector
  * @example
  *   {
  *     "modifiers": ["type"],
- *     "selector": "export",
- *     "elementNamePattern": "^@company/"
+ *     "selector": "export"
  *   }
  */
 interface SingleCustomGroup {

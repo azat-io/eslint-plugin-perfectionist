@@ -103,16 +103,12 @@ export type Selector =
   | TypeSelector
 
 /**
- * Defines a custom group for import categorization.
- *
- * Custom groups allow fine-grained control over how imports are grouped and
- * sorted based on their module names, selectors, and modifiers.
+ * Additional configuration for a single custom group.
  *
  * @example
  *   {
  *     "modifiers": ["type"],
- *     "selector": "external",
- *     "elementNamePattern": "^@company/"
+ *     "selector": "external"
  *   }
  */
 export interface SingleCustomGroup {
