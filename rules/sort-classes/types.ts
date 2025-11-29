@@ -17,7 +17,7 @@ import {
  * property, etc.) and various patterns matching their names, values, or
  * decorators.
  */
-export interface SingleCustomGroup {
+interface SingleCustomGroup {
   /** Pattern to match decorator names (e.g., '@Component'). */
   decoratorNamePattern?: RegexOption
 
@@ -26,9 +26,6 @@ export interface SingleCustomGroup {
    * initializers).
    */
   elementValuePattern?: RegexOption
-
-  /** Pattern to match the member name. */
-  elementNamePattern?: RegexOption
 
   /** List of modifiers that members must have to be included in this group. */
   modifiers?: Modifier[]

@@ -2,7 +2,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonOptions } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { SortingNode } from '../../types/sorting-node'
 
@@ -13,13 +13,7 @@ import { regexJsonSchema } from '../../utils/common-json-schemas'
  *
  * Allows defining custom groups based on attribute name patterns.
  */
-export interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match against attribute names. Only
-   * attributes with names matching this pattern will be included in the group.
-   */
-  elementNamePattern?: RegexOption
-}
+type SingleCustomGroup = Record<string, never>
 
 /** JSON Schema for single custom group configurations. */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {

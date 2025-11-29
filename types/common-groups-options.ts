@@ -1,6 +1,7 @@
 import type {
   FallbackSortOption,
   OrderOption,
+  RegexOption,
   TypeOption,
 } from './common-options'
 
@@ -62,6 +63,12 @@ export type CustomGroupsOption<
    * setting for elements in this group.
    */
   type?: TypeOption
+
+  /**
+   * Regular expression pattern to match the element's name. Elements matching
+   * this pattern will be included in this custom group.
+   */
+  elementNamePattern?: RegexOption
 } & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) &
   AdditionalOptions)[]
 
@@ -178,6 +185,12 @@ export interface AnyOfCustomGroup<SingleCustomGroup> {
    * the group. Provides OR logic for group membership.
    */
   anyOf: SingleCustomGroup[]
+
+  /**
+   * Regular expression pattern to match the element's name. Elements matching
+   * this pattern will be included in this custom group.
+   */
+  elementNamePattern?: RegexOption
 }
 
 /**

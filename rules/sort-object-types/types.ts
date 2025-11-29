@@ -92,18 +92,12 @@ export type Options = Partial<
  * Allows defining custom groups based on member selectors, modifiers, and
  * patterns for fine-grained control over sorting.
  */
-export interface SingleCustomGroup {
+interface SingleCustomGroup {
   /**
    * Regular expression pattern to match against the member's type annotation
    * value. Only applicable to properties.
    */
   elementValuePattern?: RegexOption
-
-  /**
-   * Regular expression pattern to match against member names. Only members with
-   * names matching this pattern will be included in the group.
-   */
-  elementNamePattern?: RegexOption
 
   /**
    * Override sorting method for this specific group.

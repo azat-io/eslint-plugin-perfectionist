@@ -23,18 +23,12 @@ import {
  *     "elementNamePattern": "^data-"
  *   }
  */
-export interface SingleCustomGroup {
+interface SingleCustomGroup {
   /**
    * Regular expression pattern to match prop values. Props with values matching
    * this pattern will be included in this custom group.
    */
   elementValuePattern?: RegexOption
-
-  /**
-   * Regular expression pattern to match prop names. Props with names matching
-   * this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
 
   /**
    * List of modifiers that props must have to be included in this group. Can

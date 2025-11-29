@@ -36,13 +36,7 @@ export type Options = Partial<
  * Custom groups allow fine-grained control over how Map elements are grouped
  * and sorted based on their key names.
  */
-export interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match Map element keys. Elements with keys
-   * matching this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
-}
+type SingleCustomGroup = Record<string, never>
 
 /**
  * JSON schema definition for validating single custom group configurations.

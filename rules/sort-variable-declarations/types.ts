@@ -1,7 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonOptions } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 import {
@@ -14,13 +14,7 @@ import {
  *
  * Allows defining custom groups based on variable names and selectors.
  */
-export interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match against variable names. Only variables
-   * with names matching this pattern will be included in the group.
-   */
-  elementNamePattern?: RegexOption
-
+interface SingleCustomGroup {
   /**
    * The selector type this group matches. Can be 'initialized' for variables
    * with values or 'uninitialized' for variables without.

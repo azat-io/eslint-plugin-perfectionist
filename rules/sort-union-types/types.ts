@@ -1,7 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonOptions } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 import {
@@ -14,13 +14,7 @@ import {
  *
  * Allows defining custom groups based on type member patterns and selectors.
  */
-export interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match against type member names. Only type
-   * members with names matching this pattern will be included in the group.
-   */
-  elementNamePattern?: RegexOption
-
+interface SingleCustomGroup {
   /**
    * The selector type this group matches. Determines what kind of type members
    * belong to this group.

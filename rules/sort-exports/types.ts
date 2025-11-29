@@ -1,7 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonOptions } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 import {
@@ -23,14 +23,7 @@ import {
  *     "elementNamePattern": "^@company/"
  *   }
  */
-export interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match module names in export statements.
-   * Exports from modules matching this pattern will be included in this custom
-   * group.
-   */
-  elementNamePattern?: RegexOption
-
+interface SingleCustomGroup {
   /**
    * List of modifiers that exports must have to be included in this group. Can
    * include 'value' for value exports or 'type' for type exports.

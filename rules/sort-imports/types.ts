@@ -80,13 +80,7 @@ export type Options = Partial<
  *     "elementNamePattern": "^@company/"
  *   }
  */
-export interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match import module names. Imports from
-   * modules matching this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
-
+interface SingleCustomGroup {
   /** List of modifiers that imports must have to be included in this group. */
   modifiers?: Modifier[]
 

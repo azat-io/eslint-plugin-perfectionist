@@ -46,13 +46,7 @@ export type Options = Partial<
  *     "selector": "literal"
  *   }
  */
-export interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match array element names. Elements matching
-   * this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
-
+interface SingleCustomGroup {
   /**
    * Specifies the type of array elements to include in this group. Can be
    * 'literal' for literal values or 'spread' for spread elements.

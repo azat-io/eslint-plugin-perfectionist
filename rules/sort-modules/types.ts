@@ -16,18 +16,12 @@ import {
  * Custom groups allow fine-grained control over how module members are grouped
  * and sorted based on their types, modifiers, and patterns.
  */
-export interface SingleCustomGroup {
+interface SingleCustomGroup {
   /**
    * Regular expression pattern to match decorator names. Members with
    * decorators matching this pattern will be included in this custom group.
    */
   decoratorNamePattern?: RegexOption
-
-  /**
-   * Regular expression pattern to match member names. Members with names
-   * matching this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
 
   /** List of modifiers that members must have to be included in this group. */
   modifiers?: Modifier[]

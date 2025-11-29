@@ -2,7 +2,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
+import type { CommonOptions } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { SortingNode } from '../../types/sorting-node'
 
@@ -18,13 +18,7 @@ import {
  * Allows defining custom groups based on export characteristics and name
  * patterns.
  */
-export interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match against export names. Only exports with
-   * names matching this pattern will be included in the group.
-   */
-  elementNamePattern?: RegexOption
-
+interface SingleCustomGroup {
   /**
    * Array of modifiers that exports must have to match this group. Can include
    * 'type' for type exports or 'value' for value exports.

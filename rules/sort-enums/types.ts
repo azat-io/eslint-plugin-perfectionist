@@ -14,18 +14,12 @@ import { regexJsonSchema } from '../../utils/common-json-schemas'
  * Custom groups allow fine-grained control over how enum members are grouped
  * and sorted based on their names or values.
  */
-export interface SingleCustomGroup {
+interface SingleCustomGroup {
   /**
    * Regular expression pattern to match enum member values. Members with values
    * matching this pattern will be included in this custom group.
    */
   elementValuePattern?: RegexOption
-
-  /**
-   * Regular expression pattern to match enum member names. Members with names
-   * matching this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
 }
 
 /**
