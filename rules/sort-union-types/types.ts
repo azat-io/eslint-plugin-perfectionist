@@ -1,26 +1,13 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { CommonOptions } from '../../types/common-options'
 
 import {
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Configuration for a single custom group in union type sorting.
- *
- * Allows defining custom groups based on type member patterns and selectors.
- */
-interface SingleCustomGroup {
-  /**
-   * The selector type this group matches. Determines what kind of type members
-   * belong to this group.
-   */
-  selector?: Selector
-}
 
 /**
  * Union type of all available selectors for union type members.
@@ -41,6 +28,19 @@ export type Selector =
   | NamedSelector
   | TupleSelector
   | UnionSelector
+
+/**
+ * Configuration for a single custom group in union type sorting.
+ *
+ * Allows defining custom groups based on type member patterns and selectors.
+ */
+export interface SingleCustomGroup {
+  /**
+   * The selector type this group matches. Determines what kind of type members
+   * belong to this group.
+   */
+  selector?: Selector
+}
 
 /**
  * Configuration options for the sort-union-types rule.

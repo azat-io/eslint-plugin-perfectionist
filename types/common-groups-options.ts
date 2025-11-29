@@ -43,6 +43,12 @@ export type CustomGroupsOption<
    */
   fallbackSort?: FallbackSortOption
 
+  /**
+   * Regular expression pattern to match the element's name. Elements matching
+   * this pattern will be included in this custom group.
+   */
+  elementNamePattern?: RegexOption
+
   /** Specify the exact number of newlines required. */
   newlinesInside?: number
 
@@ -63,12 +69,6 @@ export type CustomGroupsOption<
    * setting for elements in this group.
    */
   type?: TypeOption
-
-  /**
-   * Regular expression pattern to match the element's name. Elements matching
-   * this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
 } & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) &
   AdditionalOptions)[]
 
@@ -114,6 +114,33 @@ export interface CommonGroupsOptions<SingleCustomGroup> {
    * groups and groups are ordered as specified.
    */
   groups: GroupsOptions
+}
+
+/**
+ * Configuration for matching multiple patterns in custom groups.
+ *
+ * Allows a custom group to match elements based on any of several patterns,
+ * providing flexibility in how elements are categorized.
+ *
+ * @example
+ *   const customGroup: AnyOfCustomGroup<string> = {
+ *     anyOf: ['react', 'react-*', '@react/*'],
+ *   }
+ *
+ * @template SingleCustomGroup - Type of individual pattern matchers.
+ */
+export interface AnyOfCustomGroup<SingleCustomGroup> {
+  /**
+   * Regular expression pattern to match the element's name. Elements matching
+   * this pattern will be included in this custom group.
+   */
+  elementNamePattern?: RegexOption
+
+  /**
+   * Array of patterns where matching any single pattern includes the element in
+   * the group. Provides OR logic for group membership.
+   */
+  anyOf: SingleCustomGroup[]
 }
 
 /**
@@ -164,33 +191,6 @@ export interface GroupNewlinesBetweenOption {
   newlinesBetween: NewlinesBetweenOption
 
   group?: never
-}
-
-/**
- * Configuration for matching multiple patterns in custom groups.
- *
- * Allows a custom group to match elements based on any of several patterns,
- * providing flexibility in how elements are categorized.
- *
- * @example
- *   const customGroup: AnyOfCustomGroup<string> = {
- *     anyOf: ['react', 'react-*', '@react/*'],
- *   }
- *
- * @template SingleCustomGroup - Type of individual pattern matchers.
- */
-export interface AnyOfCustomGroup<SingleCustomGroup> {
-  /**
-   * Array of patterns where matching any single pattern includes the element in
-   * the group. Provides OR logic for group membership.
-   */
-  anyOf: SingleCustomGroup[]
-
-  /**
-   * Regular expression pattern to match the element's name. Elements matching
-   * this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
 }
 
 /**

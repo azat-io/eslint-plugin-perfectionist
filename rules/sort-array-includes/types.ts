@@ -35,6 +35,12 @@ export type Options = Partial<
 >[]
 
 /**
+ * Represents the type of array element selector. Used to distinguish between
+ * literal values and spread elements in arrays.
+ */
+export type Selector = LiteralSelector | SpreadSelector
+
+/**
  * Defines a custom group for array element categorization.
  *
  * Custom groups allow fine-grained control over how array elements are grouped
@@ -53,12 +59,6 @@ interface SingleCustomGroup {
    */
   selector?: Selector
 }
-
-/**
- * Represents the type of array element selector. Used to distinguish between
- * literal values and spread elements in arrays.
- */
-export type Selector = LiteralSelector | SpreadSelector
 
 /**
  * Selector for literal array elements. Matches direct values like strings,

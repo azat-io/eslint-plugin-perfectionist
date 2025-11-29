@@ -1,14 +1,38 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { CommonOptions } from '../../types/common-options'
 
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
+
+/**
+ * Configuration options for the sort-exports rule.
+ *
+ * This rule enforces consistent ordering of re-export statements (`export ...
+ * From '...'`) to improve code organization and maintainability.
+ */
+export type Options = Partial<
+  CommonGroupsOptions<SingleCustomGroup> &
+    CommonPartitionOptions &
+    CommonOptions
+>[]
+
+/**
+ * Union type of available export modifiers. Distinguishes between value exports
+ * and type-only exports.
+ */
+export type Modifier = ValueModifier | TypeModifier
+
+/**
+ * Type of selector for export statements. Currently represents re-export
+ * statements.
+ */
+export type Selector = ExportSelector
 
 /**
  * Defines a custom group for export statement categorization.
@@ -36,30 +60,6 @@ interface SingleCustomGroup {
    */
   selector?: Selector
 }
-
-/**
- * Configuration options for the sort-exports rule.
- *
- * This rule enforces consistent ordering of re-export statements (`export ...
- * From '...'`) to improve code organization and maintainability.
- */
-export type Options = Partial<
-  CommonGroupsOptions<SingleCustomGroup> &
-    CommonPartitionOptions &
-    CommonOptions
->[]
-
-/**
- * Union type of available export modifiers. Distinguishes between value exports
- * and type-only exports.
- */
-export type Modifier = ValueModifier | TypeModifier
-
-/**
- * Type of selector for export statements. Currently represents re-export
- * statements.
- */
-export type Selector = ExportSelector
 
 /**
  * Selector for export statements. Identifies re-export statements (`export ...

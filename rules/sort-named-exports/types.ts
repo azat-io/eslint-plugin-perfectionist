@@ -2,8 +2,8 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { CommonOptions } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import {
@@ -11,26 +11,6 @@ import {
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Configuration for a single custom group in named exports sorting.
- *
- * Allows defining custom groups based on export characteristics and name
- * patterns.
- */
-interface SingleCustomGroup {
-  /**
-   * Array of modifiers that exports must have to match this group. Can include
-   * 'type' for type exports or 'value' for value exports.
-   */
-  modifiers?: Modifier[]
-
-  /**
-   * The selector type this group matches. Currently only 'export' is available
-   * for named exports.
-   */
-  selector?: Selector
-}
 
 /**
  * Configuration options for the sort-named-exports rule.
@@ -67,6 +47,26 @@ export type Modifier = ValueModifier | TypeModifier
  * Currently only includes the 'export' selector.
  */
 export type Selector = ExportSelector
+
+/**
+ * Configuration for a single custom group in named exports sorting.
+ *
+ * Allows defining custom groups based on export characteristics and name
+ * patterns.
+ */
+interface SingleCustomGroup {
+  /**
+   * Array of modifiers that exports must have to match this group. Can include
+   * 'type' for type exports or 'value' for value exports.
+   */
+  modifiers?: Modifier[]
+
+  /**
+   * The selector type this group matches. Currently only 'export' is available
+   * for named exports.
+   */
+  selector?: Selector
+}
 
 /**
  * Selector for export specifiers.

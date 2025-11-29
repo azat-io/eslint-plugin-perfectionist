@@ -11,30 +11,6 @@ import {
 } from '../../utils/common-json-schemas'
 
 /**
- * Defines a custom group configuration for class members.
- *
- * Allows categorizing class members based on their selector type (method,
- * property, etc.) and various patterns matching their names, values, or
- * decorators.
- */
-interface SingleCustomGroup {
-  /** Pattern to match decorator names (e.g., '@Component'). */
-  decoratorNamePattern?: RegexOption
-
-  /**
-   * Pattern to match the value of the member (for properties with
-   * initializers).
-   */
-  elementValuePattern?: RegexOption
-
-  /** List of modifiers that members must have to be included in this group. */
-  modifiers?: Modifier[]
-
-  /** The type of class member this group applies to. */
-  selector?: Selector
-}
-
-/**
  * Configuration options for the sort-classes rule.
  *
  * This rule enforces consistent ordering of class members (properties, methods,
@@ -84,6 +60,30 @@ export type Modifier =
   | DeclareModifier
   | StaticModifier
   | AsyncModifier
+
+/**
+ * Defines a custom group configuration for class members.
+ *
+ * Allows categorizing class members based on their selector type (method,
+ * property, etc.) and various patterns matching their names, values, or
+ * decorators.
+ */
+interface SingleCustomGroup {
+  /** Pattern to match decorator names (e.g., '@Component'). */
+  decoratorNamePattern?: RegexOption
+
+  /**
+   * Pattern to match the value of the member (for properties with
+   * initializers).
+   */
+  elementValuePattern?: RegexOption
+
+  /** List of modifiers that members must have to be included in this group. */
+  modifiers?: Modifier[]
+
+  /** The type of class member this group applies to. */
+  selector?: Selector
+}
 
 /** Union type for access level modifiers. */
 type PublicOrProtectedOrPrivateModifier =

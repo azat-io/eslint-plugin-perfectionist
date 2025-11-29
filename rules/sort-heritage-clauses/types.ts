@@ -1,8 +1,8 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { CommonOptions } from '../../types/common-options'
 
 import { regexJsonSchema } from '../../utils/common-json-schemas'
 

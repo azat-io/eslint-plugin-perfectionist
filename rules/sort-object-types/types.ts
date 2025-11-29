@@ -87,6 +87,26 @@ export type Options = Partial<
 >[]
 
 /**
+ * Union type of all available selectors for object type members.
+ *
+ * Selectors identify the type of object member for grouping and sorting
+ * purposes.
+ */
+export type Selector =
+  | IndexSignatureSelector
+  | PropertySelector
+  | MemberSelector
+  | MethodSelector
+
+/**
+ * Union type of all available modifiers for object type members.
+ *
+ * Modifiers provide additional context about member characteristics, such as
+ * whether they are optional, required, or span multiple lines.
+ */
+export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
+
+/**
  * Configuration for a single custom group in object type sorting.
  *
  * Allows defining custom groups based on member selectors, modifiers, and
@@ -119,26 +139,6 @@ interface SingleCustomGroup {
    */
   selector?: Selector
 }
-
-/**
- * Union type of all available selectors for object type members.
- *
- * Selectors identify the type of object member for grouping and sorting
- * purposes.
- */
-export type Selector =
-  | IndexSignatureSelector
-  | PropertySelector
-  | MemberSelector
-  | MethodSelector
-
-/**
- * Union type of all available modifiers for object type members.
- *
- * Modifiers provide additional context about member characteristics, such as
- * whether they are optional, required, or span multiple lines.
- */
-export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
 
 /**
  * Selector for index signature members.

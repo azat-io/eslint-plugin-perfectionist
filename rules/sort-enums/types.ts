@@ -9,20 +9,6 @@ import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import { regexJsonSchema } from '../../utils/common-json-schemas'
 
 /**
- * Defines a custom group for enum member categorization.
- *
- * Custom groups allow fine-grained control over how enum members are grouped
- * and sorted based on their names or values.
- */
-interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match enum member values. Members with values
-   * matching this pattern will be included in this custom group.
-   */
-  elementValuePattern?: RegexOption
-}
-
-/**
  * Configuration options for the sort-enums rule.
  *
  * This rule enforces consistent ordering of TypeScript enum members to improve
@@ -42,6 +28,20 @@ export type Options = Partial<
     CommonPartitionOptions &
     CommonOptions
 >[]
+
+/**
+ * Defines a custom group for enum member categorization.
+ *
+ * Custom groups allow fine-grained control over how enum members are grouped
+ * and sorted based on their names or values.
+ */
+export interface SingleCustomGroup {
+  /**
+   * Regular expression pattern to match enum member values. Members with values
+   * matching this pattern will be included in this custom group.
+   */
+  elementValuePattern?: RegexOption
+}
 
 export interface SortEnumsSortingNode
   extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {

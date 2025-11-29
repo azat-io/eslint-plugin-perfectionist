@@ -11,40 +11,6 @@ import {
 } from '../../utils/common-json-schemas'
 
 /**
- * Defines a custom group for JSX prop categorization.
- *
- * Custom groups allow fine-grained control over how JSX props are grouped and
- * sorted based on their names, values, and characteristics.
- *
- * @example
- *   {
- *     "selector": "prop",
- *     "modifiers": ["shorthand"],
- *     "elementNamePattern": "^data-"
- *   }
- */
-interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match prop values. Props with values matching
-   * this pattern will be included in this custom group.
-   */
-  elementValuePattern?: RegexOption
-
-  /**
-   * List of modifiers that props must have to be included in this group. Can
-   * include 'shorthand' for props without values or 'multiline' for multi-line
-   * props.
-   */
-  modifiers?: Modifier[]
-
-  /**
-   * The selector type for this group. Can be 'prop' for regular props,
-   * 'multiline' for multi-line props, or 'shorthand' for shorthand props.
-   */
-  selector?: Selector
-}
-
-/**
  * Configuration options for the sort-jsx-props rule.
  *
  * This rule enforces consistent ordering of JSX element props/attributes to
@@ -85,6 +51,40 @@ export type Modifier = MultilineModifier | ShorthandModifier
  * types of JSX props.
  */
 export type Selector = PropertySelector
+
+/**
+ * Defines a custom group for JSX prop categorization.
+ *
+ * Custom groups allow fine-grained control over how JSX props are grouped and
+ * sorted based on their names, values, and characteristics.
+ *
+ * @example
+ *   {
+ *     "selector": "prop",
+ *     "modifiers": ["shorthand"],
+ *     "elementNamePattern": "^data-"
+ *   }
+ */
+interface SingleCustomGroup {
+  /**
+   * Regular expression pattern to match prop values. Props with values matching
+   * this pattern will be included in this custom group.
+   */
+  elementValuePattern?: RegexOption
+
+  /**
+   * List of modifiers that props must have to be included in this group. Can
+   * include 'shorthand' for props without values or 'multiline' for multi-line
+   * props.
+   */
+  modifiers?: Modifier[]
+
+  /**
+   * The selector type for this group. Can be 'prop' for regular props,
+   * 'multiline' for multi-line props, or 'shorthand' for shorthand props.
+   */
+  selector?: Selector
+}
 
 /** Modifier for JSX props that span multiple lines. */
 type MultilineModifier = 'multiline'

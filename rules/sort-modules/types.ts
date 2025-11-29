@@ -11,26 +11,6 @@ import {
 } from '../../utils/common-json-schemas'
 
 /**
- * Defines a custom group for module member categorization.
- *
- * Custom groups allow fine-grained control over how module members are grouped
- * and sorted based on their types, modifiers, and patterns.
- */
-interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match decorator names. Members with
-   * decorators matching this pattern will be included in this custom group.
-   */
-  decoratorNamePattern?: RegexOption
-
-  /** List of modifiers that members must have to be included in this group. */
-  modifiers?: Modifier[]
-
-  /** The type of module member this group applies to. */
-  selector?: Selector
-}
-
-/**
  * Union type of all available module member selectors. Used to categorize
  * different types of module-level declarations.
  */
@@ -67,6 +47,26 @@ export type Modifier =
   | DefaultModifier
   | ExportModifier
   | AsyncModifier
+
+/**
+ * Defines a custom group for module member categorization.
+ *
+ * Custom groups allow fine-grained control over how module members are grouped
+ * and sorted based on their types, modifiers, and patterns.
+ */
+interface SingleCustomGroup {
+  /**
+   * Regular expression pattern to match decorator names. Members with
+   * decorators matching this pattern will be included in this custom group.
+   */
+  decoratorNamePattern?: RegexOption
+
+  /** List of modifiers that members must have to be included in this group. */
+  modifiers?: Modifier[]
+
+  /** The type of module member this group applies to. */
+  selector?: Selector
+}
 
 /** Modifier for decorated members (having decorators). */
 type DecoratedModifier = 'decorated'

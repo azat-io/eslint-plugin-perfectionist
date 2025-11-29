@@ -68,27 +68,6 @@ export type Options = Partial<
 >[]
 
 /**
- * Defines a custom group for import categorization.
- *
- * Custom groups allow fine-grained control over how imports are grouped and
- * sorted based on their module names, selectors, and modifiers.
- *
- * @example
- *   {
- *     "modifiers": ["type"],
- *     "selector": "external",
- *     "elementNamePattern": "^@company/"
- *   }
- */
-interface SingleCustomGroup {
-  /** List of modifiers that imports must have to be included in this group. */
-  modifiers?: Modifier[]
-
-  /** The selector type that imports must match to be included in this group. */
-  selector?: Selector
-}
-
-/**
  * Represents a sorting node for an import statement. Extends the base sorting
  * node with dependency information and ignore flag.
  */
@@ -123,6 +102,27 @@ export type Selector =
   | IndexSelector
   | StyleSelector
   | TypeSelector
+
+/**
+ * Defines a custom group for import categorization.
+ *
+ * Custom groups allow fine-grained control over how imports are grouped and
+ * sorted based on their module names, selectors, and modifiers.
+ *
+ * @example
+ *   {
+ *     "modifiers": ["type"],
+ *     "selector": "external",
+ *     "elementNamePattern": "^@company/"
+ *   }
+ */
+export interface SingleCustomGroup {
+  /** List of modifiers that imports must have to be included in this group. */
+  modifiers?: Modifier[]
+
+  /** The selector type that imports must match to be included in this group. */
+  selector?: Selector
+}
 
 /**
  * Union type of all available import modifiers. Used to identify specific

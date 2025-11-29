@@ -62,6 +62,12 @@ interface BaseSingleCustomGroup {
   elementValuePattern?: RegexOption
 
   /**
+   * Regular expression pattern to match the element's name. Elements matching
+   * this pattern will be included in this custom group.
+   */
+  elementNamePattern?: RegexOption
+
+  /**
    * List of required modifiers. Element must have ALL specified modifiers to
    * match.
    */
@@ -69,12 +75,6 @@ interface BaseSingleCustomGroup {
 
   /** Required selector type. Element must have this exact selector to match. */
   selector?: string
-
-  /**
-   * Regular expression pattern to match the element's name. Elements matching
-   * this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
 }
 
 /**

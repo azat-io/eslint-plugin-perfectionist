@@ -80,6 +80,22 @@ export type Options = Partial<
 >[]
 
 /**
+ * Union type of all available modifiers for object members.
+ *
+ * Modifiers provide additional context about member characteristics, such as
+ * whether they are optional, required, or span multiple lines.
+ */
+export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
+
+/**
+ * Union type of all available selectors for object members.
+ *
+ * Selectors identify the type of object member for grouping and sorting
+ * purposes.
+ */
+export type Selector = PropertySelector | MemberSelector | MethodSelector
+
+/**
  * Configuration for a single custom group in object sorting.
  *
  * Allows defining custom groups based on member selectors, modifiers, and
@@ -104,22 +120,6 @@ interface SingleCustomGroup {
    */
   selector?: Selector
 }
-
-/**
- * Union type of all available modifiers for object members.
- *
- * Modifiers provide additional context about member characteristics, such as
- * whether they are optional, required, or span multiple lines.
- */
-export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
-
-/**
- * Union type of all available selectors for object members.
- *
- * Selectors identify the type of object member for grouping and sorting
- * purposes.
- */
-export type Selector = PropertySelector | MemberSelector | MethodSelector
 
 /**
  * Modifier indicating a member spans multiple lines.

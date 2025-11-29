@@ -1,26 +1,13 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { CommonOptions } from '../../types/common-options'
 
 import {
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Configuration for a single custom group in variable declarations sorting.
- *
- * Allows defining custom groups based on variable names and selectors.
- */
-interface SingleCustomGroup {
-  /**
-   * The selector type this group matches. Can be 'initialized' for variables
-   * with values or 'uninitialized' for variables without.
-   */
-  selector?: Selector
-}
 
 /**
  * Configuration options for the sort-variable-declarations rule.
@@ -40,6 +27,19 @@ export type Options = Partial<
  * Distinguishes between variables with and without initial values.
  */
 export type Selector = UninitializedSelector | InitializedSelector
+
+/**
+ * Configuration for a single custom group in variable declarations sorting.
+ *
+ * Allows defining custom groups based on variable names and selectors.
+ */
+interface SingleCustomGroup {
+  /**
+   * The selector type this group matches. Can be 'initialized' for variables
+   * with values or 'uninitialized' for variables without.
+   */
+  selector?: Selector
+}
 
 /**
  * Selector for uninitialized variables.
