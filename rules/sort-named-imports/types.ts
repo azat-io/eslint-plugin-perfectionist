@@ -19,7 +19,13 @@ import {
  * Allows defining custom groups based on import characteristics and name
  * patterns.
  */
-export type SingleCustomGroup = {
+export interface SingleCustomGroup {
+  /**
+   * Regular expression pattern to match against import names. Only imports with
+   * names matching this pattern will be included in the group.
+   */
+  elementNamePattern?: RegexOption
+
   /**
    * Array of modifiers that imports must have to match this group. Can include
    * 'type' for type imports or 'value' for value imports.
@@ -31,12 +37,6 @@ export type SingleCustomGroup = {
    * for named imports.
    */
   selector?: Selector
-} & {
-  /**
-   * Regular expression pattern to match against import names. Only imports with
-   * names matching this pattern will be included in the group.
-   */
-  elementNamePattern?: RegexOption
 }
 
 /**

@@ -24,7 +24,14 @@ import {
  *     "elementNamePattern": "^@company/"
  *   }
  */
-export type SingleCustomGroup = {
+export interface SingleCustomGroup {
+  /**
+   * Regular expression pattern to match module names in export statements.
+   * Exports from modules matching this pattern will be included in this custom
+   * group.
+   */
+  elementNamePattern?: RegexOption
+
   /**
    * List of modifiers that exports must have to be included in this group. Can
    * include 'value' for value exports or 'type' for type exports.
@@ -36,13 +43,6 @@ export type SingleCustomGroup = {
    * re-export statements.
    */
   selector?: Selector
-} & {
-  /**
-   * Regular expression pattern to match module names in export statements.
-   * Exports from modules matching this pattern will be included in this custom
-   * group.
-   */
-  elementNamePattern?: RegexOption
 }
 
 /**

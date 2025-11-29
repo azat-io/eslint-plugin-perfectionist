@@ -14,13 +14,13 @@ import {
  *
  * Allows defining custom groups based on type member patterns and selectors.
  */
-export type SingleCustomGroup = {
+export interface SingleCustomGroup {
   /**
    * Regular expression pattern to match against type member names. Only type
    * members with names matching this pattern will be included in the group.
    */
   elementNamePattern?: RegexOption
-} & {
+
   /**
    * The selector type this group matches. Determines what kind of type members
    * belong to this group.
