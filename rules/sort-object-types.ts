@@ -13,15 +13,19 @@ import type {
 } from './sort-object-types/types'
 
 import {
-  buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
-  partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
-  buildCommonJsonSchemas,
   groupsJsonSchema,
+} from '../utils/json-schemas/common-groups-json-schemas'
+import {
+  buildUseConfigurationIfJsonSchema,
+  buildCommonJsonSchemas,
   regexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+} from '../utils/json-schemas/common-partition-json-schemas'
 import {
   singleCustomGroupJsonSchema,
   sortByJsonSchema,

@@ -16,8 +16,8 @@ import type { SortingNode } from '../../types/sorting-node'
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-  regexJsonSchema,
-} from '../../utils/json-schemas/common-json-schemas'
+} from '../../utils/json-schemas/common-groups-json-schemas'
+import { regexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
 /**
  * Configuration options for the sort-object-types rule.

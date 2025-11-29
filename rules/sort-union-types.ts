@@ -7,12 +7,13 @@ import type { SortingNode } from '../types/sorting-node'
 
 import {
   buildCustomGroupsArrayJsonSchema,
+  newlinesBetweenJsonSchema,
+  groupsJsonSchema,
+} from '../utils/json-schemas/common-groups-json-schemas'
+import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  newlinesBetweenJsonSchema,
-  commonJsonSchemas,
-  groupsJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
+} from '../utils/json-schemas/common-partition-json-schemas'
 import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -28,6 +29,7 @@ import {
 } from './sort-union-types/types'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
+import { commonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'

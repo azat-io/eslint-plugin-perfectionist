@@ -7,15 +7,10 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import type { Modifier, Selector, Options } from './sort-objects/types'
 
 import {
-  buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
-  partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
-  commonJsonSchemas,
   groupsJsonSchema,
-  regexJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
+} from '../utils/json-schemas/common-groups-json-schemas'
 import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
@@ -23,6 +18,15 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  buildUseConfigurationIfJsonSchema,
+  commonJsonSchemas,
+  regexJsonSchema,
+} from '../utils/json-schemas/common-json-schemas'
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+} from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'

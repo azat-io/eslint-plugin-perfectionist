@@ -7,12 +7,13 @@ import type { SortingNode } from '../types/sorting-node'
 import type { Options } from './sort-jsx-props/types'
 
 import {
-  buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
-  partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
-  commonJsonSchemas,
   groupsJsonSchema,
+} from '../utils/json-schemas/common-groups-json-schemas'
+import {
+  buildUseConfigurationIfJsonSchema,
+  commonJsonSchemas,
   regexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -28,6 +29,7 @@ import {
   allModifiers,
   allSelectors,
 } from './sort-jsx-props/types'
+import { partitionByNewLineJsonSchema } from '../utils/json-schemas/common-partition-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'

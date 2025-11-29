@@ -5,12 +5,9 @@ import type { Selector, Options } from './sort-variable-declarations/types'
 
 import {
   buildCustomGroupsArrayJsonSchema,
-  partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
   newlinesBetweenJsonSchema,
-  commonJsonSchemas,
   groupsJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
+} from '../utils/json-schemas/common-groups-json-schemas'
 import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
@@ -18,6 +15,10 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+} from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import {
@@ -27,6 +28,7 @@ import {
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
+import { commonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'

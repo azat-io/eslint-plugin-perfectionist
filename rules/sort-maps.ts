@@ -5,20 +5,24 @@ import type { SortingNode } from '../types/sorting-node'
 import type { Options } from './sort-maps/types'
 
 import {
-  buildUseConfigurationIfJsonSchema,
   buildCustomGroupsArrayJsonSchema,
+  newlinesBetweenJsonSchema,
+  groupsJsonSchema,
+} from '../utils/json-schemas/common-groups-json-schemas'
+import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  newlinesBetweenJsonSchema,
-  commonJsonSchemas,
-  groupsJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
+} from '../utils/json-schemas/common-partition-json-schemas'
 import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  buildUseConfigurationIfJsonSchema,
+  commonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'

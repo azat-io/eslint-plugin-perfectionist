@@ -4,7 +4,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
  * JSON schema for the sorting type option. Defines available sorting algorithms
  * for rules.
  */
-let typeJsonSchema: JSONSchema4 = {
+export let typeJsonSchema: JSONSchema4 = {
   enum: ['alphabetical', 'natural', 'line-length', 'custom', 'unsorted'],
   description: 'Specifies the sorting method.',
   type: 'string',
@@ -14,7 +14,7 @@ let typeJsonSchema: JSONSchema4 = {
  * JSON schema for the sort order option. Validates ascending or descending sort
  * direction.
  */
-let orderJsonSchema: JSONSchema4 = {
+export let orderJsonSchema: JSONSchema4 = {
   description:
     'Specifies whether to sort items in ascending or descending order.',
   enum: ['asc', 'desc'],
@@ -111,7 +111,7 @@ export function buildCommonJsonSchemas({
  *   schema.
  * @returns JSON schema for fallback sort validation.
  */
-function buildFallbackSortJsonSchema({
+export function buildFallbackSortJsonSchema({
   additionalProperties,
 }: {
   additionalProperties?: Record<string, JSONSchema4>
@@ -138,85 +138,6 @@ function buildFallbackSortJsonSchema({
  */
 export let commonJsonSchemas: Record<string, JSONSchema4> =
   buildCommonJsonSchemas()
-
-/**
- * JSON schema for the newlines between option. Validates configuration for
- * adding newlines between different groups.
- */
-export let newlinesBetweenJsonSchema: JSONSchema4 = {
-  oneOf: [
-    {
-      description: 'Specifies how to handle newlines between groups.',
-      enum: ['ignore'],
-      type: 'string',
-    },
-    {
-      type: 'number',
-      minimum: 0,
-    },
-  ],
-}
-
-let newlinesInsideJsonSchema: JSONSchema4 = {
-  type: 'number',
-  minimum: 0,
-}
-
-export let groupsJsonSchema: JSONSchema4 = {
-  items: {
-    oneOf: [
-      {
-        type: 'string',
-      },
-      {
-        items: {
-          type: 'string',
-        },
-        type: 'array',
-        minItems: 1,
-      },
-      {
-        properties: {
-          newlinesBetween: newlinesBetweenJsonSchema,
-        },
-        required: ['newlinesBetween'],
-        additionalProperties: false,
-        type: 'object',
-      },
-      {
-        properties: {
-          group: {
-            oneOf: [
-              {
-                type: 'string',
-              },
-              {
-                items: {
-                  type: 'string',
-                },
-                type: 'array',
-                minItems: 1,
-              },
-            ],
-          },
-          commentAbove: {
-            description: 'Specifies a comment to enforce above the group.',
-            type: 'string',
-          },
-          newlinesInside: newlinesInsideJsonSchema,
-          order: orderJsonSchema,
-          type: typeJsonSchema,
-        },
-        additionalProperties: false,
-        required: ['group'],
-        minProperties: 2,
-        type: 'object',
-      },
-    ],
-  },
-  description: 'Specifies a list of groups for sorting.',
-  type: 'array',
-}
 
 let singleRegexJsonSchema: JSONSchema4 = {
   oneOf: [
@@ -256,129 +177,6 @@ export let regexJsonSchema: JSONSchema4 = {
   description: 'Regular expression.',
 }
 
-let allowedPartitionByCommentJsonSchemas: JSONSchema4[] = [
-  {
-    type: 'boolean',
-  },
-  regexJsonSchema,
-]
-
-/**
- * JSON schema for the partition by comment option. Validates configuration for
- * splitting elements into partitions based on comments.
- */
-export let partitionByCommentJsonSchema: JSONSchema4 = {
-  oneOf: [
-    ...allowedPartitionByCommentJsonSchemas,
-    {
-      properties: {
-        block: {
-          description: 'Enables specific block comments to separate the nodes.',
-          oneOf: allowedPartitionByCommentJsonSchemas,
-        },
-        line: {
-          description: 'Enables specific line comments to separate the nodes.',
-          oneOf: allowedPartitionByCommentJsonSchemas,
-        },
-      },
-      additionalProperties: false,
-      minProperties: 1,
-      type: 'object',
-    },
-  ],
-  description:
-    'Enables the use of comments to separate the nodes into logical groups.',
-}
-
-/**
- * JSON schema for the partition by new line option. Controls whether to create
- * separate partitions when newlines are encountered.
- */
-export let partitionByNewLineJsonSchema: JSONSchema4 = {
-  description:
-    'Enables the use of newlines to separate the nodes into logical groups.',
-  type: 'boolean',
-}
-
-/**
- * Builds JSON schema for custom groups array configuration.
- *
- * Creates a schema that validates an array of custom group definitions.
- * Supports both single custom groups and "anyOf" groups containing multiple
- * subgroups. Each group must have a groupName and can include various matching
- * criteria.
- *
- * @example
- *   // Valid configuration:
- *   ;[
- *     {
- *       groupName: 'react',
- *       anyOf: [{ elementNamePattern: 'use*' }, { selector: 'hook' }],
- *     },
- *     {
- *       groupName: 'utils',
- *       elementNamePattern: '*Utils',
- *     },
- *   ]
- *
- * @param options - Configuration options.
- * @param options.additionalFallbackSortProperties - Extra properties for
- *   fallback sort.
- * @param options.singleCustomGroupJsonSchema - Schema for individual custom
- *   group properties.
- * @returns JSON schema for custom groups array validation.
- */
-export function buildCustomGroupsArrayJsonSchema({
-  additionalFallbackSortProperties,
-  singleCustomGroupJsonSchema,
-}: {
-  additionalFallbackSortProperties?: Record<string, JSONSchema4>
-  singleCustomGroupJsonSchema?: Record<string, JSONSchema4>
-} = {}): JSONSchema4 {
-  let commonCustomGroupJsonSchemas = buildCommonCustomGroupJsonSchemas({
-    additionalFallbackSortProperties,
-  })
-  let populatedSingleCustomGroupJsonSchema =
-    buildPopulatedSingleCustomGroupJsonSchema(singleCustomGroupJsonSchema)
-
-  return {
-    items: {
-      oneOf: [
-        {
-          properties: {
-            ...commonCustomGroupJsonSchemas,
-            anyOf: {
-              items: {
-                properties: populatedSingleCustomGroupJsonSchema,
-                description: 'Custom group.',
-                additionalProperties: false,
-                type: 'object',
-              },
-              type: 'array',
-            },
-          },
-          description: 'Custom group block.',
-          additionalProperties: false,
-          required: ['groupName'],
-          type: 'object',
-        },
-        {
-          properties: {
-            ...commonCustomGroupJsonSchemas,
-            ...populatedSingleCustomGroupJsonSchema,
-          },
-          description: 'Custom group.',
-          additionalProperties: false,
-          required: ['groupName'],
-          type: 'object',
-        },
-      ],
-    },
-    description: 'Defines custom groups to match specific members.',
-    type: 'array',
-  }
-}
-
 /**
  * Builds JSON schema for conditional configuration blocks.
  *
@@ -405,92 +203,5 @@ export function buildUseConfigurationIfJsonSchema({
     },
     additionalProperties: false,
     type: 'object',
-  }
-}
-
-/**
- * Builds JSON schema for custom group modifiers configuration.
- *
- * Creates a schema that validates an array of modifiers that must be present on
- * an element for it to match a custom group.
- *
- * @example
- *   // For TypeScript class members:
- *   buildCustomGroupModifiersJsonSchema([
- *     'static',
- *     'private',
- *     'readonly',
- *     'async',
- *   ])
- *
- * @param modifiers - Array of valid modifier names.
- * @returns JSON schema for modifiers array validation.
- */
-export function buildCustomGroupModifiersJsonSchema(
-  modifiers: string[],
-): JSONSchema4 {
-  return {
-    items: {
-      enum: modifiers,
-      type: 'string',
-    },
-    description: 'Modifier filters.',
-    type: 'array',
-  }
-}
-
-/**
- * Builds JSON schema for custom group selector configuration.
- *
- * Creates a schema that validates a selector string used to match specific
- * types of elements in a custom group.
- *
- * @example
- *   // For class members:
- *   buildCustomGroupSelectorJsonSchema([
- *     'property',
- *     'method',
- *     'constructor',
- *     'accessor',
- *   ])
- *
- * @param selectors - Array of valid selector names.
- * @returns JSON schema for selector validation.
- */
-export function buildCustomGroupSelectorJsonSchema(
-  selectors: string[],
-): JSONSchema4 {
-  return {
-    description: 'Selector filter.',
-    enum: selectors,
-    type: 'string',
-  }
-}
-
-function buildCommonCustomGroupJsonSchemas({
-  additionalFallbackSortProperties,
-}: {
-  additionalFallbackSortProperties?: Record<string, JSONSchema4>
-} = {}): Record<string, JSONSchema4> {
-  return {
-    fallbackSort: buildFallbackSortJsonSchema({
-      additionalProperties: additionalFallbackSortProperties,
-    }),
-    groupName: {
-      description: 'Custom group name.',
-      type: 'string',
-    },
-    newlinesInside: newlinesInsideJsonSchema,
-    order: orderJsonSchema,
-    type: typeJsonSchema,
-  }
-}
-
-function buildPopulatedSingleCustomGroupJsonSchema(
-  singleCustomGroupJsonSchema: Record<string, JSONSchema4> | undefined,
-): Record<string, JSONSchema4> {
-  return {
-    elementNamePattern: regexJsonSchema,
-    ...singleCustomGroupJsonSchema,
   }
 }

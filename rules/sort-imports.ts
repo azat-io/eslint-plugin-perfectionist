@@ -9,15 +9,6 @@ import type {
 } from './sort-imports/types'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
-  newlinesBetweenJsonSchema,
-  commonJsonSchemas,
-  groupsJsonSchema,
-  regexJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
-import {
   MISSED_COMMENT_ABOVE_ERROR,
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
@@ -25,6 +16,15 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  buildCustomGroupsArrayJsonSchema,
+  newlinesBetweenJsonSchema,
+  groupsJsonSchema,
+} from '../utils/json-schemas/common-groups-json-schemas'
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+} from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
@@ -33,6 +33,10 @@ import {
   allModifiers,
   allSelectors,
 } from './sort-imports/types'
+import {
+  commonJsonSchemas,
+  regexJsonSchema,
+} from '../utils/json-schemas/common-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
