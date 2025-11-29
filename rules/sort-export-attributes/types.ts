@@ -19,9 +19,6 @@ export interface SingleCustomGroup {
    * attributes with names matching this pattern will be included in the group.
    */
   elementNamePattern?: RegexOption
-
-  /** The unique name identifier for this custom group. */
-  groupName: string
 }
 
 /**
@@ -34,7 +31,6 @@ export type Group = 'unknown' | string
 /** JSON Schema for single custom group configurations. */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   elementNamePattern: regexJsonSchema,
-  groupName: { type: 'string' },
 }
 
 export type Options = Partial<
