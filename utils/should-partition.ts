@@ -1,7 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { PartitionByCommentOption } from '../types/common-options'
+import type { PartitionByCommentOption } from '../types/common-partition-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { isPartitionComment } from './is-partition-comment'

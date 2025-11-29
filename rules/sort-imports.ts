@@ -6,7 +6,6 @@ import type {
   Selector,
   Modifier,
   Options,
-  Group,
 } from './sort-imports/types'
 
 import {
@@ -165,7 +164,7 @@ export default createEslintRule<Options, MessageId>({
 
       let selectors: Selector[] = []
       let modifiers: Modifier[] = []
-      let group: Group | null = null
+      let group: string | null = null
 
       if (node.type !== 'VariableDeclaration' && node.importKind === 'type') {
         selectors.push('type')

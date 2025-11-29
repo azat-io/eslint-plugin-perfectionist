@@ -1,4 +1,4 @@
-import type { GroupsOptions } from '../types/common-options'
+import type { GroupsOptions } from '../types/common-groups-options'
 
 import { computeGroupsNames } from './compute-groups-names'
 
@@ -12,7 +12,7 @@ import { computeGroupsNames } from './compute-groups-names'
 export function validateNoDuplicatedGroups({
   groups,
 }: {
-  groups: GroupsOptions<string>
+  groups: GroupsOptions
 }): void {
   let groupNames = computeGroupsNames(groups)
   let seenGroups = new Set<string>()

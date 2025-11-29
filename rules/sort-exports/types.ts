@@ -1,49 +1,13 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { JoinWithDash } from '../../types/join-with-dash'
+import type { CommonOptions } from '../../types/common-options'
 
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-  regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Defines a custom group for export statement categorization.
- *
- * Custom groups allow fine-grained control over how export statements are
- * grouped and sorted based on their module names, selectors, and modifiers.
- *
- * @example
- *   {
- *     "modifiers": ["type"],
- *     "selector": "export",
- *     "elementNamePattern": "^@company/"
- *   }
- */
-export type SingleCustomGroup = {
-  /**
-   * List of modifiers that exports must have to be included in this group. Can
-   * include 'value' for value exports or 'type' for type exports.
-   */
-  modifiers?: Modifier[]
-
-  /**
-   * The selector type for this group. Currently only 'export' is supported for
-   * re-export statements.
-   */
-  selector?: Selector
-} & {
-  /**
-   * Regular expression pattern to match module names in export statements.
-   * Exports from modules matching this pattern will be included in this custom
-   * group.
-   */
-  elementNamePattern?: RegexOption
-}
 
 /**
  * Configuration options for the sort-exports rule.
@@ -52,7 +16,7 @@ export type SingleCustomGroup = {
  * From '...'`) to improve code organization and maintainability.
  */
 export type Options = Partial<
-  CommonGroupsOptions<Group, SingleCustomGroup> &
+  CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -70,16 +34,30 @@ export type Modifier = ValueModifier | TypeModifier
 export type Selector = ExportSelector
 
 /**
- * Represents all possible predefined export group combinations. Combines
- * modifiers with the export selector using dash notation.
+ * Additional configuration for a single custom group.
+ *
+ * Custom groups allow fine-grained control over how export statements are
+ * grouped and sorted based on their module names, selectors, and modifiers.
+ *
+ * @example
+ *   {
+ *     "modifiers": ["type"],
+ *     "selector": "export"
+ *   }
  */
-type ExportGroup = JoinWithDash<[ValueModifier, TypeModifier, ExportSelector]>
+interface SingleCustomGroup {
+  /**
+   * List of modifiers that exports must have to be included in this group. Can
+   * include 'value' for value exports or 'type' for type exports.
+   */
+  modifiers?: Modifier[]
 
-/**
- * Represents a group identifier for export categorization. Can be a predefined
- * export group, 'unknown' for uncategorized exports, or a custom group name.
- */
-type Group = ExportGroup | 'unknown' | string
+  /**
+   * The selector type for this group. Currently only 'export' is supported for
+   * re-export statements.
+   */
+  selector?: Selector
+}
 
 /**
  * Selector for export statements. Identifies re-export statements (`export ...
@@ -117,5 +95,4 @@ export let allModifiers: Modifier[] = ['value', 'type']
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementNamePattern: regexJsonSchema,
 }

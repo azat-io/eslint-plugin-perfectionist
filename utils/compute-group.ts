@@ -2,7 +2,7 @@ import type {
   CustomGroupsOption,
   AnyOfCustomGroup,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
 
 import { computeGroupsNames } from './compute-groups-names'
 
@@ -21,7 +21,7 @@ interface GetGroupParameters<SingleCustomGroup> {
      * Available groups and their order. Can be a flat array or nested arrays
      * for advanced configurations.
      */
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   }
 
   /**

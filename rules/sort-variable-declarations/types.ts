@@ -1,32 +1,10 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { CommonOptions } from '../../types/common-options'
 
-import {
-  buildCustomGroupSelectorJsonSchema,
-  regexJsonSchema,
-} from '../../utils/common-json-schemas'
-
-/**
- * Configuration for a single custom group in variable declarations sorting.
- *
- * Allows defining custom groups based on variable names and selectors.
- */
-export interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match against variable names. Only variables
-   * with names matching this pattern will be included in the group.
-   */
-  elementNamePattern?: RegexOption
-
-  /**
-   * The selector type this group matches. Can be 'initialized' for variables
-   * with values or 'uninitialized' for variables without.
-   */
-  selector?: Selector
-}
+import { buildCustomGroupSelectorJsonSchema } from '../../utils/common-json-schemas'
 
 /**
  * Configuration options for the sort-variable-declarations rule.
@@ -35,7 +13,7 @@ export interface SingleCustomGroup {
  * such as `const a = 1, b, c = 3;`.
  */
 export type Options = Partial<
-  CommonGroupsOptions<Group, SingleCustomGroup> &
+  CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -47,6 +25,15 @@ export type Options = Partial<
  */
 export type Selector = UninitializedSelector | InitializedSelector
 
+/** Additional configuration for a single custom group. */
+interface SingleCustomGroup {
+  /**
+   * The selector type this group matches. Can be 'initialized' for variables
+   * with values or 'uninitialized' for variables without.
+   */
+  selector?: Selector
+}
+
 /**
  * Selector for uninitialized variables.
  *
@@ -54,15 +41,6 @@ export type Selector = UninitializedSelector | InitializedSelector
  * 1, b, c = 3;`.
  */
 type UninitializedSelector = 'uninitialized'
-
-/**
- * Union type of all possible group identifiers for variable declarations.
- *
- * Groups are used to organize and sort related declarations together. Can be
- * selector types, 'unknown' for unmatched declarations, or custom string
- * identifiers.
- */
-type Group = 'unknown' | Selector | string
 
 /**
  * Selector for initialized variables.
@@ -83,10 +61,8 @@ export let allSelectors: Selector[] = ['initialized', 'uninitialized']
  * JSON Schema definitions for single custom group configurations.
  *
  * Provides additional schema properties specific to the
- * sort-variable-declarations rule, extending the base custom group schema with
- * element name patterns.
+ * sort-variable-declarations rule.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementNamePattern: regexJsonSchema,
 }

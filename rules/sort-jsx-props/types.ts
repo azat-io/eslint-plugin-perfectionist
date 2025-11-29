@@ -3,53 +3,12 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
   regexJsonSchema,
 } from '../../utils/common-json-schemas'
-
-/**
- * Defines a custom group for JSX prop categorization.
- *
- * Custom groups allow fine-grained control over how JSX props are grouped and
- * sorted based on their names, values, and characteristics.
- *
- * @example
- *   {
- *     "selector": "prop",
- *     "modifiers": ["shorthand"],
- *     "elementNamePattern": "^data-"
- *   }
- */
-export interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match prop values. Props with values matching
-   * this pattern will be included in this custom group.
-   */
-  elementValuePattern?: RegexOption
-
-  /**
-   * Regular expression pattern to match prop names. Props with names matching
-   * this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
-
-  /**
-   * List of modifiers that props must have to be included in this group. Can
-   * include 'shorthand' for props without values or 'multiline' for multi-line
-   * props.
-   */
-  modifiers?: Modifier[]
-
-  /**
-   * The selector type for this group. Can be 'prop' for regular props,
-   * 'multiline' for multi-line props, or 'shorthand' for shorthand props.
-   */
-  selector?: Selector
-}
 
 /**
  * Configuration options for the sort-jsx-props rule.
@@ -77,7 +36,7 @@ export type Options = Partial<
       tagMatchesPattern?: RegexOption
     }
   } & Pick<CommonPartitionOptions, 'partitionByNewLine'> &
-    CommonGroupsOptions<Group, SingleCustomGroup> &
+    CommonGroupsOptions<SingleCustomGroup> &
     CommonOptions
 >[]
 
@@ -94,18 +53,34 @@ export type Modifier = MultilineModifier | ShorthandModifier
 export type Selector = PropertySelector
 
 /**
- * Represents all possible group combinations for regular JSX props. Combines
- * modifiers with the property selector using dash notation.
+ * Additional configuration for a single custom group.
+ *
+ * @example
+ *   {
+ *     "selector": "prop",
+ *     "modifiers": ["shorthand"]
+ *   }
  */
-type PropertyGroup = JoinWithDash<
-  [ShorthandModifier, MultilineModifier, PropertySelector]
->
+interface SingleCustomGroup {
+  /**
+   * Regular expression pattern to match prop values. Props with values matching
+   * this pattern will be included in this custom group.
+   */
+  elementValuePattern?: RegexOption
 
-/**
- * Represents a group identifier for JSX prop categorization. Can be a
- * predefined group, 'unknown' for uncategorized props, or a custom group name.
- */
-type Group = PropertyGroup | 'unknown' | string
+  /**
+   * List of modifiers that props must have to be included in this group. Can
+   * include 'shorthand' for props without values or 'multiline' for multi-line
+   * props.
+   */
+  modifiers?: Modifier[]
+
+  /**
+   * The selector type for this group. Can be 'prop' for regular props,
+   * 'multiline' for multi-line props, or 'shorthand' for shorthand props.
+   */
+  selector?: Selector
+}
 
 /** Modifier for JSX props that span multiple lines. */
 type MultilineModifier = 'multiline'
@@ -136,5 +111,4 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   elementValuePattern: regexJsonSchema,
-  elementNamePattern: regexJsonSchema,
 }

@@ -1,10 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type {
-  PartitionByCommentOption,
-  CommonOptions,
-  RegexOption,
-} from '../types/common-options'
+import type { PartitionByCommentOption } from '../types/common-partition-options'
+import type { CommonOptions, RegexOption } from '../types/common-options'
 
 /**
  * Global settings for the Perfectionist plugin.

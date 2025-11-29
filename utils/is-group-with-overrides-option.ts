@@ -1,7 +1,7 @@
 import type {
   GroupWithOverridesOption,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
 
 /**
  * Type guard to check if a group option is a group with overrides
@@ -28,7 +28,7 @@ import type {
  * @returns True if the element is a group with overrides configuration object.
  */
 export function isGroupWithOverridesOption(
-  groupOption: GroupsOptions<string>[number],
+  groupOption: GroupsOptions[number],
 ): groupOption is GroupWithOverridesOption {
   return typeof groupOption === 'object' && 'group' in groupOption
 }

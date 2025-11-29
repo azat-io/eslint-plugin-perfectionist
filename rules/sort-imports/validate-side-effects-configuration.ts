@@ -1,5 +1,4 @@
-import type { GroupsOptions } from '../../types/common-options'
-import type { Group } from './types'
+import type { GroupsOptions } from '../../types/common-groups-options'
 
 import { isStringGroupSideEffectOnlyGroup } from './is-string-group-side-effect-only-group'
 import { computeGroupsNames } from '../../utils/compute-groups-names'
@@ -22,8 +21,8 @@ export function validateSideEffectsConfiguration({
   sortSideEffects,
   groups,
 }: {
-  groups: GroupsOptions<Group>
   sortSideEffects: boolean
+  groups: GroupsOptions
 }): void {
   if (sortSideEffects) {
     return

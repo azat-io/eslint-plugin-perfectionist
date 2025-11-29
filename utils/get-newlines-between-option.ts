@@ -2,7 +2,7 @@ import type {
   NewlinesBetweenOption,
   CustomGroupsOption,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
 
 import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
@@ -27,7 +27,7 @@ export interface GetNewlinesBetweenOptionParameters {
     customGroups: CustomGroupsOption
 
     /** Groups configuration that may include inline newlines settings. */
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   }
 
   /** Group index of the next/second node. */
@@ -187,10 +187,10 @@ function computeNewlinesInsideOption({
  * @returns Groups array with newlines settings filled in between all groups.
  */
 function buildGroupsWithAllNewlinesBetween(
-  groups: GroupsOptions<string>,
+  groups: GroupsOptions,
   globalNewlinesBetweenOption: NewlinesBetweenOption,
-): GroupsOptions<string> {
-  let returnValue: GroupsOptions<string> = []
+): GroupsOptions {
+  let returnValue: GroupsOptions = []
   for (let i = 0; i < groups.length; i++) {
     let group = groups[i]!
 

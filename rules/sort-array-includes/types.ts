@@ -4,10 +4,7 @@ import type { CommonPartitionOptions } from '../../types/common-partition-option
 import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
-import {
-  buildCustomGroupSelectorJsonSchema,
-  regexJsonSchema,
-} from '../../utils/common-json-schemas'
+import { buildCustomGroupSelectorJsonSchema } from '../../utils/common-json-schemas'
 
 /**
  * Configuration options for the sort-array-includes rule.
@@ -29,36 +26,10 @@ export type Options = Partial<
        */
       allNamesMatchPattern?: RegexOption
     }
-  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
-
-/**
- * Defines a custom group for array element categorization.
- *
- * Custom groups allow fine-grained control over how array elements are grouped
- * and sorted based on their names and types.
- *
- * @example
- *   {
- *     "elementNamePattern": "^CONSTANT_",
- *     "selector": "literal"
- *   }
- */
-export interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match array element names. Elements matching
-   * this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
-
-  /**
-   * Specifies the type of array elements to include in this group. Can be
-   * 'literal' for literal values or 'spread' for spread elements.
-   */
-  selector?: Selector
-}
 
 /**
  * Represents the type of array element selector. Used to distinguish between
@@ -67,16 +38,29 @@ export interface SingleCustomGroup {
 export type Selector = LiteralSelector | SpreadSelector
 
 /**
+ * Additional configuration for a single custom group.
+ *
+ * Custom groups allow fine-grained control over how array elements are grouped
+ * and sorted based on their names and types.
+ *
+ * @example
+ *   {
+ *     "selector": "literal"
+ *   }
+ */
+interface SingleCustomGroup {
+  /**
+   * Specifies the type of array elements to include in this group. Can be
+   * 'literal' for literal values or 'spread' for spread elements.
+   */
+  selector?: Selector
+}
+
+/**
  * Selector for literal array elements. Matches direct values like strings,
  * numbers, or identifiers in the array.
  */
 type LiteralSelector = 'literal'
-
-/**
- * Represents a group identifier for array element categorization. Can be
- * 'unknown' for uncategorized elements or a custom group name.
- */
-type Group = 'unknown' | string
 
 /**
  * Selector for spread elements in arrays. Matches spread syntax elements like
@@ -96,5 +80,4 @@ export let allSelectors: Selector[] = ['literal', 'spread']
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementNamePattern: regexJsonSchema,
 }

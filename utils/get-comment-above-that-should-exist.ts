@@ -1,6 +1,9 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { CustomGroupsOption, GroupsOptions } from '../types/common-options'
+import type {
+  CustomGroupsOption,
+  GroupsOptions,
+} from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
@@ -18,7 +21,7 @@ interface GetCommentAboveMissingParameters<T extends SortingNode> {
     customGroups: CustomGroupsOption
 
     /** Groups configuration that may include comment requirements. */
-    groups: GroupsOptions<string>
+    groups: GroupsOptions
   }
 
   /** ESLint source code object for accessing comments. */

@@ -9,26 +9,6 @@ import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import { regexJsonSchema } from '../../utils/common-json-schemas'
 
 /**
- * Defines a custom group for enum member categorization.
- *
- * Custom groups allow fine-grained control over how enum members are grouped
- * and sorted based on their names or values.
- */
-export interface SingleCustomGroup {
-  /**
-   * Regular expression pattern to match enum member values. Members with values
-   * matching this pattern will be included in this custom group.
-   */
-  elementValuePattern?: RegexOption
-
-  /**
-   * Regular expression pattern to match enum member names. Members with names
-   * matching this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
-}
-
-/**
  * Configuration options for the sort-enums rule.
  *
  * This rule enforces consistent ordering of TypeScript enum members to improve
@@ -44,7 +24,7 @@ export type Options = Partial<
      * @default ifNumericEnum
      */
     sortByValue: 'ifNumericEnum' | 'always' | 'never'
-  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
@@ -55,11 +35,14 @@ export interface SortEnumsSortingNode
   value: string | null
 }
 
-/**
- * Represents a group identifier for enum member categorization. Can be
- * 'unknown' for uncategorized members or a custom group name.
- */
-type Group = 'unknown' | string
+/** Additional configuration for a single custom group. */
+interface SingleCustomGroup {
+  /**
+   * Regular expression pattern to match enum member values. Members with values
+   * matching this pattern will be included in this custom group.
+   */
+  elementValuePattern?: RegexOption
+}
 
 /**
  * JSON schema definition for validating single custom group configurations.
@@ -67,5 +50,4 @@ type Group = 'unknown' | string
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   elementValuePattern: regexJsonSchema,
-  elementNamePattern: regexJsonSchema,
 }

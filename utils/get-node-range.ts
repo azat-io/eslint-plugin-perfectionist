@@ -3,7 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { ASTUtils } from '@typescript-eslint/utils'
 
-import type { PartitionByCommentOption } from '../types/common-options'
+import type { PartitionByCommentOption } from '../types/common-partition-options'
 
 import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 import { isPartitionComment } from './is-partition-comment'

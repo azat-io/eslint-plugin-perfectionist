@@ -1,7 +1,7 @@
 import type {
   GroupNewlinesBetweenOption,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
 
 /**
  * Type guard to check if a group option is a newlines-between configuration.
@@ -34,7 +34,7 @@ import type {
  * @returns True if the element is a newlines-between configuration object.
  */
 export function isNewlinesBetweenOption(
-  groupOption: GroupsOptions<string>[number],
+  groupOption: GroupsOptions[number],
 ): groupOption is GroupNewlinesBetweenOption {
   return typeof groupOption === 'object' && 'newlinesBetween' in groupOption
 }

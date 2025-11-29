@@ -5,12 +5,10 @@ import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-depe
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { JoinWithDash } from '../../types/join-with-dash'
 
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-  regexJsonSchema,
 } from '../../utils/common-json-schemas'
 
 /**
@@ -63,37 +61,10 @@ export type Options = Partial<
      * sorting instead of the entire line.
      */
     maxLineLength: number
-  } & CommonGroupsOptions<Group, SingleCustomGroup> &
+  } & CommonGroupsOptions<SingleCustomGroup> &
     CommonPartitionOptions &
     CommonOptions
 >[]
-
-/**
- * Defines a custom group for import categorization.
- *
- * Custom groups allow fine-grained control over how imports are grouped and
- * sorted based on their module names, selectors, and modifiers.
- *
- * @example
- *   {
- *     "modifiers": ["type"],
- *     "selector": "external",
- *     "elementNamePattern": "^@company/"
- *   }
- */
-export type SingleCustomGroup = {
-  /** List of modifiers that imports must have to be included in this group. */
-  modifiers?: Modifier[]
-
-  /** The selector type that imports must match to be included in this group. */
-  selector?: Selector
-} & {
-  /**
-   * Regular expression pattern to match import module names. Imports from
-   * modules matching this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
-}
 
 /**
  * Represents a sorting node for an import statement. Extends the base sorting
@@ -148,28 +119,27 @@ export type Modifier =
   | TypeModifier
 
 /**
- * Represents a group identifier for import categorization. Can be a predefined
- * group, 'unknown' for uncategorized imports, or a custom group name.
+ * Additional configuration for a single custom group.
+ *
+ * @example
+ *   {
+ *     "modifiers": ["type"],
+ *     "selector": "external"
+ *   }
  */
-export type Group = ValueGroup | TypeGroup | 'unknown' | string
+interface SingleCustomGroup {
+  /** List of modifiers that imports must have to be included in this group. */
+  modifiers?: Modifier[]
 
-/**
- * Represents type import groups. Combines the type modifier with selectors
- * using dash notation.
- */
-type TypeGroup = JoinWithDash<[TypeModifier, Selector]>
+  /** The selector type that imports must match to be included in this group. */
+  selector?: Selector
+}
 
 /** Selector for side-effect imports that are style files (CSS, SCSS, etc.). */
 type SideEffectStyleSelector = 'side-effect-style'
 
 /** Selector for imports using TypeScript path aliases defined in tsconfig.json. */
 type TsconfigPathSelector = 'tsconfig-path'
-
-/**
- * Represents value import groups. Uses selectors directly without additional
- * modifiers.
- */
-type ValueGroup = JoinWithDash<[Selector]>
 
 /** Selector for side-effect imports (imports without bindings). */
 type SideEffectSelector = 'side-effect'
@@ -281,6 +251,4 @@ export let allModifiers: Modifier[] = [
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementValuePattern: regexJsonSchema,
-  elementNamePattern: regexJsonSchema,
 }

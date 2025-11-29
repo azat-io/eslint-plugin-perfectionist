@@ -1,7 +1,7 @@
 import type {
   NewlinesBetweenOption,
   GroupsOptions,
-} from '../types/common-options'
+} from '../types/common-groups-options'
 
 import { isNewlinesBetweenOption } from './is-newlines-between-option'
 
@@ -10,11 +10,11 @@ interface Options {
   /** Controls automatic newline insertion between groups. */
   newlinesBetween: NewlinesBetweenOption
 
-  /** Group configuration that may contain newlinesBetween objects. */
-  groups: GroupsOptions<string>
-
   /** Whether to create partitions based on existing newlines. */
   partitionByNewLine: boolean
+
+  /** Group configuration that may contain newlinesBetween objects. */
+  groups: GroupsOptions
 }
 
 /**
