@@ -265,3 +265,5 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
 }
+
+export const TYPE_IMPORT_FIRST_TYPE_OPTION = 'type-import-first'

@@ -2,9 +2,9 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import {
   buildFallbackSortJsonSchema,
+  buildTypeJsonSchema,
   orderJsonSchema,
   regexJsonSchema,
-  typeJsonSchema,
 } from './common-json-schemas'
 
 /**
@@ -28,62 +28,6 @@ export let newlinesBetweenJsonSchema: JSONSchema4 = {
 let newlinesInsideJsonSchema: JSONSchema4 = {
   type: 'number',
   minimum: 0,
-}
-
-export let groupsJsonSchema: JSONSchema4 = {
-  items: {
-    oneOf: [
-      {
-        type: 'string',
-      },
-      {
-        items: {
-          type: 'string',
-        },
-        type: 'array',
-        minItems: 1,
-      },
-      {
-        properties: {
-          newlinesBetween: newlinesBetweenJsonSchema,
-        },
-        required: ['newlinesBetween'],
-        additionalProperties: false,
-        type: 'object',
-      },
-      {
-        properties: {
-          group: {
-            oneOf: [
-              {
-                type: 'string',
-              },
-              {
-                items: {
-                  type: 'string',
-                },
-                type: 'array',
-                minItems: 1,
-              },
-            ],
-          },
-          commentAbove: {
-            description: 'Specifies a comment to enforce above the group.',
-            type: 'string',
-          },
-          newlinesInside: newlinesInsideJsonSchema,
-          order: orderJsonSchema,
-          type: typeJsonSchema,
-        },
-        additionalProperties: false,
-        required: ['group'],
-        minProperties: 2,
-        type: 'object',
-      },
-    ],
-  },
-  description: 'Specifies a list of groups for sorting.',
-  type: 'array',
 }
 
 /**
@@ -117,12 +61,15 @@ export let groupsJsonSchema: JSONSchema4 = {
 export function buildCustomGroupsArrayJsonSchema({
   additionalFallbackSortProperties,
   singleCustomGroupJsonSchema,
+  allowedAdditionalTypeValues,
 }: {
   additionalFallbackSortProperties: Record<string, JSONSchema4> | undefined
   singleCustomGroupJsonSchema: Record<string, JSONSchema4> | undefined
+  allowedAdditionalTypeValues: undefined | string[]
 }): JSONSchema4 {
   let commonCustomGroupJsonSchemas = buildCommonCustomGroupJsonSchemas({
     additionalFallbackSortProperties,
+    allowedAdditionalTypeValues,
   })
   let populatedSingleCustomGroupJsonSchema =
     buildPopulatedSingleCustomGroupJsonSchema(singleCustomGroupJsonSchema)
@@ -144,8 +91,8 @@ export function buildCustomGroupsArrayJsonSchema({
             },
           },
           description: 'Custom group block.',
+          required: ['groupName', 'anyOf'],
           additionalProperties: false,
-          required: ['groupName'],
           type: 'object',
         },
         {
@@ -156,6 +103,7 @@ export function buildCustomGroupsArrayJsonSchema({
           description: 'Custom group.',
           additionalProperties: false,
           required: ['groupName'],
+          minProperties: 2,
           type: 'object',
         },
       ],
@@ -165,20 +113,89 @@ export function buildCustomGroupsArrayJsonSchema({
   }
 }
 
+export function buildGroupsJsonSchema({
+  allowedAdditionalTypeValues,
+}: {
+  allowedAdditionalTypeValues: undefined | string[]
+}): JSONSchema4 {
+  return {
+    items: {
+      oneOf: [
+        {
+          type: 'string',
+        },
+        {
+          items: {
+            type: 'string',
+          },
+          type: 'array',
+          minItems: 1,
+        },
+        {
+          properties: {
+            newlinesBetween: newlinesBetweenJsonSchema,
+          },
+          required: ['newlinesBetween'],
+          additionalProperties: false,
+          type: 'object',
+        },
+        {
+          properties: {
+            group: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  items: {
+                    type: 'string',
+                  },
+                  type: 'array',
+                  minItems: 1,
+                },
+              ],
+            },
+            commentAbove: {
+              description: 'Specifies a comment to enforce above the group.',
+              type: 'string',
+            },
+            type: buildTypeJsonSchema({
+              allowedAdditionalValues: allowedAdditionalTypeValues,
+            }),
+            newlinesInside: newlinesInsideJsonSchema,
+            order: orderJsonSchema,
+          },
+          additionalProperties: false,
+          required: ['group'],
+          minProperties: 2,
+          type: 'object',
+        },
+      ],
+    },
+    description: 'Specifies a list of groups for sorting.',
+    type: 'array',
+  }
+}
+
 export function buildCommonGroupsJsonSchemas({
   additionalFallbackSortProperties,
   singleCustomGroupJsonSchema,
+  allowedAdditionalTypeValues,
 }: {
   additionalFallbackSortProperties?: Record<string, JSONSchema4>
   singleCustomGroupJsonSchema?: Record<string, JSONSchema4>
+  allowedAdditionalTypeValues?: string[]
 } = {}): Record<string, JSONSchema4> {
   return {
     customGroups: buildCustomGroupsArrayJsonSchema({
       additionalFallbackSortProperties,
+      allowedAdditionalTypeValues,
       singleCustomGroupJsonSchema,
     }),
+    groups: buildGroupsJsonSchema({
+      allowedAdditionalTypeValues,
+    }),
     newlinesBetween: newlinesBetweenJsonSchema,
-    groups: groupsJsonSchema,
   }
 }
 
@@ -243,12 +260,18 @@ export function buildCustomGroupSelectorJsonSchema(
 
 function buildCommonCustomGroupJsonSchemas({
   additionalFallbackSortProperties,
+  allowedAdditionalTypeValues,
 }: {
   additionalFallbackSortProperties: Record<string, JSONSchema4> | undefined
+  allowedAdditionalTypeValues: undefined | string[]
 }): Record<string, JSONSchema4> {
   return {
     fallbackSort: buildFallbackSortJsonSchema({
       additionalProperties: additionalFallbackSortProperties,
+      allowedAdditionalTypeValues,
+    }),
+    type: buildTypeJsonSchema({
+      allowedAdditionalValues: allowedAdditionalTypeValues,
     }),
     groupName: {
       description: 'Custom group name.',
@@ -256,7 +279,6 @@ function buildCommonCustomGroupJsonSchemas({
     },
     newlinesInside: newlinesInsideJsonSchema,
     order: orderJsonSchema,
-    type: typeJsonSchema,
   }
 }
 

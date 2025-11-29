@@ -1,16 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 /**
- * JSON schema for the sorting type option. Defines available sorting algorithms
- * for rules.
- */
-export let typeJsonSchema: JSONSchema4 = {
-  enum: ['alphabetical', 'natural', 'line-length', 'custom', 'unsorted'],
-  description: 'Specifies the sorting method.',
-  type: 'string',
-}
-
-/**
  * JSON schema for the sort order option. Validates ascending or descending sort
  * direction.
  */
@@ -83,19 +73,24 @@ let specialCharactersJsonSchema: JSONSchema4 = {
  */
 export function buildCommonJsonSchemas({
   additionalFallbackSortProperties,
+  allowedAdditionalTypeValues,
 }: {
   additionalFallbackSortProperties?: Record<string, JSONSchema4>
+  allowedAdditionalTypeValues?: string[]
 } = {}): Record<string, JSONSchema4> {
   return {
     fallbackSort: buildFallbackSortJsonSchema({
       additionalProperties: additionalFallbackSortProperties,
+      allowedAdditionalTypeValues,
+    }),
+    type: buildTypeJsonSchema({
+      allowedAdditionalValues: allowedAdditionalTypeValues,
     }),
     specialCharacters: specialCharactersJsonSchema,
     ignoreCase: ignoreCaseJsonSchema,
     alphabet: alphabetJsonSchema,
     locales: localesJsonSchema,
     order: orderJsonSchema,
-    type: typeJsonSchema,
   }
 }
 
@@ -112,14 +107,18 @@ export function buildCommonJsonSchemas({
  * @returns JSON schema for fallback sort validation.
  */
 export function buildFallbackSortJsonSchema({
+  allowedAdditionalTypeValues,
   additionalProperties,
 }: {
-  additionalProperties?: Record<string, JSONSchema4>
-} = {}): JSONSchema4 {
+  additionalProperties: Record<string, JSONSchema4> | undefined
+  allowedAdditionalTypeValues: undefined | string[]
+}): JSONSchema4 {
   return {
     properties: {
+      type: buildTypeJsonSchema({
+        allowedAdditionalValues: allowedAdditionalTypeValues,
+      }),
       order: orderJsonSchema,
-      type: typeJsonSchema,
       ...additionalProperties,
     },
     description: 'Fallback sort order.',
@@ -193,5 +192,24 @@ export function buildUseConfigurationIfJsonSchema({
     },
     additionalProperties: false,
     type: 'object',
+  }
+}
+
+export function buildTypeJsonSchema({
+  allowedAdditionalValues,
+}: {
+  allowedAdditionalValues: undefined | string[]
+}): JSONSchema4 {
+  return {
+    enum: [
+      'alphabetical',
+      'natural',
+      'line-length',
+      'custom',
+      'unsorted',
+      ...(allowedAdditionalValues ?? []),
+    ],
+    description: 'Specifies the sorting method.',
+    type: 'string',
   }
 }

@@ -45,6 +45,7 @@ import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { TYPE_IMPORT_FIRST_TYPE_OPTION } from './sort-imports/types'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -370,8 +371,11 @@ export default createEslintRule<Options, MessageId>({
     schema: {
       items: {
         properties: {
-          ...buildCommonJsonSchemas(),
+          ...buildCommonJsonSchemas({
+            allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
+          }),
           ...buildCommonGroupsJsonSchemas({
+            allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
             singleCustomGroupJsonSchema,
           }),
           tsconfig: {

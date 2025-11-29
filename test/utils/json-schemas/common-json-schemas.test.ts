@@ -7,11 +7,7 @@ import {
 } from '../../../utils/json-schemas/common-json-schemas'
 
 describe('common-json-schemas', () => {
-  let commonJsonSchemaValidator = new Ajv().compile({
-    properties: buildCommonJsonSchemas(),
-    additionalProperties: false,
-    type: 'object',
-  })
+  let commonJsonSchemaValidator = compileObjectSchema(buildCommonJsonSchemas())
 
   describe('type', () => {
     it.each(['alphabetical', 'natural', 'line-length', 'custom', 'unsorted'])(
@@ -24,6 +20,20 @@ describe('common-json-schemas', () => {
         ).toBeTruthy()
       },
     )
+
+    it('should allow additional values', () => {
+      commonJsonSchemaValidator = compileObjectSchema(
+        buildCommonJsonSchemas({
+          allowedAdditionalTypeValues: ['my-type'],
+        }),
+      )
+
+      expect(
+        commonJsonSchemaValidator({
+          type: 'my-type',
+        }),
+      ).toBeTruthy()
+    })
 
     it('should not allow invalid values', () => {
       expect(
@@ -87,6 +97,22 @@ describe('common-json-schemas', () => {
           ).toBeTruthy()
         },
       )
+
+      it('should allow additional values', () => {
+        commonJsonSchemaValidator = compileObjectSchema(
+          buildCommonJsonSchemas({
+            allowedAdditionalTypeValues: ['my-type'],
+          }),
+        )
+
+        expect(
+          commonJsonSchemaValidator({
+            fallbackSort: {
+              type: 'my-type',
+            },
+          }),
+        ).toBeTruthy()
+      })
 
       it('should not allow undefined type', () => {
         expect(
@@ -181,4 +207,12 @@ describe('common-json-schemas', () => {
       expect(regexJsonSchemaValidator({})).toBeFalsy()
     })
   })
+
+  function compileObjectSchema(schema: object): (data: unknown) => boolean {
+    return new Ajv().compile({
+      additionalProperties: false,
+      properties: schema,
+      type: 'object',
+    })
+  }
 })

@@ -4,7 +4,7 @@ import Ajv from 'ajv-draft-04'
 import {
   buildCustomGroupsArrayJsonSchema,
   newlinesBetweenJsonSchema,
-  groupsJsonSchema,
+  buildGroupsJsonSchema,
 } from '../../../utils/json-schemas/common-groups-json-schemas'
 
 describe('common-groups-json-schemas', () => {
@@ -23,7 +23,11 @@ describe('common-groups-json-schemas', () => {
   })
 
   describe('groups', () => {
-    let groupsJsonSchemaValidator = new Ajv().compile(groupsJsonSchema)
+    let groupsJsonSchemaValidator = new Ajv().compile(
+      buildGroupsJsonSchema({
+        allowedAdditionalTypeValues: [],
+      }),
+    )
 
     it('should allow an array of strings', () => {
       expect(groupsJsonSchemaValidator(['group1', 'group2'])).toBeTruthy()
@@ -82,13 +86,31 @@ describe('common-groups-json-schemas', () => {
         expect(
           groupsJsonSchemaValidator([
             {
-              type: 'alphabetical',
               newlinesInside: 1,
               group: 'group',
               order: 'asc',
             },
           ]),
         ).toBeTruthy()
+      })
+
+      describe('type', () => {
+        it('should allow additional values', () => {
+          groupsJsonSchemaValidator = new Ajv().compile(
+            buildGroupsJsonSchema({
+              allowedAdditionalTypeValues: ['my-type'],
+            }),
+          )
+
+          expect(
+            groupsJsonSchemaValidator([
+              {
+                type: 'my-type',
+                group: 'group',
+              },
+            ]),
+          ).toBeTruthy()
+        })
       })
 
       describe('commentAbove', () => {
@@ -153,9 +175,11 @@ describe('common-groups-json-schemas', () => {
     let customGroupsJsonSchema = new Ajv().compile(
       buildCustomGroupsArrayJsonSchema({
         singleCustomGroupJsonSchema: {
+          customGroupProperty2: { type: 'string' },
           customGroupProperty: { type: 'string' },
         },
         additionalFallbackSortProperties: {},
+        allowedAdditionalTypeValues: [],
       }),
     )
 
@@ -185,14 +209,69 @@ describe('common-groups-json-schemas', () => {
       ).toBeTruthy()
     })
 
+    it('should enforce at least 2 properties if no `arrayOf`', () => {
+      expect(
+        customGroupsJsonSchema([
+          {
+            groupName: 'group',
+          },
+        ]),
+      ).toBeFalsy()
+    })
+
     it("should enforce 'groupName'", () => {
       expect(
         customGroupsJsonSchema([
           {
+            customGroupProperty2: 'value',
             customGroupProperty: 'value',
           },
         ]),
       ).toBeFalsy()
+    })
+
+    describe('type', () => {
+      it('should allow additional values', () => {
+        customGroupsJsonSchema = new Ajv().compile(
+          buildCustomGroupsArrayJsonSchema({
+            allowedAdditionalTypeValues: ['my-type'],
+            additionalFallbackSortProperties: {},
+            singleCustomGroupJsonSchema: {},
+          }),
+        )
+
+        expect(
+          customGroupsJsonSchema([
+            {
+              groupName: 'group',
+              type: 'my-type',
+            },
+          ]),
+        ).toBeTruthy()
+      })
+    })
+
+    describe('fallbackSort', () => {
+      it('should allow additional type values', () => {
+        customGroupsJsonSchema = new Ajv().compile(
+          buildCustomGroupsArrayJsonSchema({
+            allowedAdditionalTypeValues: ['my-type'],
+            additionalFallbackSortProperties: {},
+            singleCustomGroupJsonSchema: {},
+          }),
+        )
+
+        expect(
+          customGroupsJsonSchema([
+            {
+              fallbackSort: {
+                type: 'my-type',
+              },
+              groupName: 'group',
+            },
+          ]),
+        ).toBeTruthy()
+      })
     })
   })
 })
