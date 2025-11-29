@@ -68,9 +68,9 @@ export type Options = Partial<
   } & CommonGroupsOptions<
     SingleCustomGroup,
     Record<string, never>,
-    TypeOption
+    CustomTypeOption
   > &
-    CommonOptions<TypeOption> &
+    CommonOptions<CustomTypeOption> &
     CommonPartitionOptions
 >[]
 
@@ -84,6 +84,9 @@ export interface SortImportsSortingNode
     | TSESTree.VariableDeclaration
     | TSESTree.ImportDeclaration
   > {
+  /** Whether this import is a type-only import. */
+  isTypeImport: boolean
+
   /**
    * Whether this import should be ignored during sorting. Typically true for
    * side-effect imports when sortSideEffects is false.
@@ -125,6 +128,8 @@ export type Modifier =
   | ValueModifier
   | NamedModifier
   | TypeModifier
+
+export type CustomTypeOption = 'type-import-first' | TypeOption
 
 /**
  * Additional configuration for a single custom group.

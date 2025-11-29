@@ -1,17 +1,16 @@
 import type { GroupsOptions } from '../types/common-groups-options'
-import type { TypeOption } from '../types/common-options'
 
 /**
  * Parameters for cleaning and normalizing groups configuration.
  *
  * Contains the groups array that needs to be cleaned up.
  */
-interface GetOptionsWithCleanGroupsParameters {
+interface GetOptionsWithCleanGroupsParameters<CustomTypeOption extends string> {
   /**
    * Groups configuration that may contain empty arrays or single-element
    * arrays.
    */
-  groups: GroupsOptions<TypeOption>
+  groups: GroupsOptions<CustomTypeOption>
 }
 
 /**
@@ -45,13 +44,16 @@ interface GetOptionsWithCleanGroupsParameters {
  *   //   ]
  *   // }
  *
- * @template T - Type of options extending GetOptionsWithCleanGroupsParameters.
+ * @template CustomTypeOption - Custom type option string for GroupsOptions.
+ * @template Options - Type of options extending
+ *   GetOptionsWithCleanGroupsParameters.
  * @param options - Options object containing groups to clean.
  * @returns Options with cleaned and normalized groups array.
  */
 export function getOptionsWithCleanGroups<
-  T extends GetOptionsWithCleanGroupsParameters,
->(options: T): T {
+  CustomTypeOption extends string,
+  Options extends GetOptionsWithCleanGroupsParameters<CustomTypeOption>,
+>(options: Options): Options {
   return {
     ...options,
     groups: options.groups

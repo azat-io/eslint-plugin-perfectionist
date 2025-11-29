@@ -16,14 +16,9 @@ export type Comparator<T extends SortingNode> = (a: T, b: T) => number
 
 type Options = Pick<
   CommonOptions<TypeOption>,
-  | 'specialCharacters'
-  | 'fallbackSort'
-  | 'ignoreCase'
-  | 'alphabet'
-  | 'locales'
-  | 'order'
-  | 'type'
->
+  'specialCharacters' | 'ignoreCase' | 'alphabet' | 'locales' | 'order' | 'type'
+> &
+  Pick<CommonOptions, 'fallbackSort'>
 
 export let defaultComparatorByOptionsComputer: ComparatorByOptionsComputer<
   Options,

@@ -22,7 +22,6 @@ import {
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
-import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import {
   buildCommonJsonSchemas,
   regexJsonSchema,
@@ -35,6 +34,7 @@ import {
 } from './sort-imports/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { comparatorByOptionsComputer } from './sort-imports/comparator-by-options-computer'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
@@ -249,6 +249,7 @@ export default createEslintRule<Options, MessageId>({
           (!isStyleSideEffect || !shouldRegroupSideEffectStyleNodes),
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         dependencyNames: computeDependencyNames({ sourceCode, node }),
+        isTypeImport: modifiers.includes('type'),
         dependencies: computeDependencies(node),
         addSafetySemicolonWhenInline: true,
         group,
@@ -317,9 +318,8 @@ export default createEslintRule<Options, MessageId>({
                   },
                   optionsByGroupIndexComputer:
                     buildDefaultOptionsByGroupIndexComputer(options),
-                  comparatorByOptionsComputer:
-                    defaultComparatorByOptionsComputer,
                   isNodeIgnored: node => node.isIgnored,
+                  comparatorByOptionsComputer,
                   ignoreEslintDisabledNodes,
                   groups: options.groups,
                   nodes,

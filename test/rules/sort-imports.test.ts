@@ -10160,6 +10160,163 @@ describe('sort-imports', () => {
     })
   })
 
+  describe('type-import-first', () => {
+    let options = {
+      type: 'alphabetical',
+      groups: ['unknown'],
+    } as const
+
+    it('does not enforce sorting between two type or value imports', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            type: 'type-import-first',
+          },
+        ],
+        code: dedent`
+          import type { Type } from 'b'
+          import type { Type } from 'a'
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            ...options,
+            type: 'type-import-first',
+          },
+        ],
+        code: dedent`
+          import { b } from 'b'
+          import { a } from 'a'
+        `,
+      })
+    })
+
+    it('sorts type and value imports correctly with fallback sort', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            fallbackSort: {
+              type: 'type-import-first',
+              order: 'desc',
+            },
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'a' },
+          },
+        ],
+        output: dedent`
+          import type { Type } from 'a'
+          import { value } from 'a'
+        `,
+        code: dedent`
+          import { value } from 'a'
+          import type { Type } from 'a'
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            fallbackSort: {
+              type: 'type-import-first',
+              order: 'asc',
+            },
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'a' },
+          },
+        ],
+        output: dedent`
+          import { value } from 'a'
+          import type { Type } from 'a'
+        `,
+        code: dedent`
+          import type { Type } from 'a'
+          import { value } from 'a'
+        `,
+      })
+    })
+
+    it('sorts type and value imports correctly with fallback sort in custom groups', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                fallbackSort: {
+                  type: 'type-import-first',
+                  order: 'desc',
+                },
+                groupName: 'group',
+                selector: 'import',
+              },
+            ],
+            groups: ['group'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'a' },
+          },
+        ],
+        output: dedent`
+          import type { Type } from 'a'
+          import { value } from 'a'
+        `,
+        code: dedent`
+          import { value } from 'a'
+          import type { Type } from 'a'
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                fallbackSort: {
+                  type: 'type-import-first',
+                  order: 'asc',
+                },
+                groupName: 'group',
+                selector: 'import',
+              },
+            ],
+            groups: ['group'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'a' },
+          },
+        ],
+        output: dedent`
+          import { value } from 'a'
+          import type { Type } from 'a'
+        `,
+        code: dedent`
+          import type { Type } from 'a'
+          import { value } from 'a'
+        `,
+      })
+    })
+  })
+
   describe('custom', () => {
     let alphabet = Alphabet.generateRecommendedAlphabet()
       .sortByLocaleCompare('en-US')
