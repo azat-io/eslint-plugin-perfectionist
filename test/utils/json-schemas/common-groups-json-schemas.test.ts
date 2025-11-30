@@ -42,7 +42,7 @@ describe('common-groups-json-schemas', () => {
     })
 
     describe('newlinesBetween', () => {
-      it.each(['ignore', 1, 0])("should allow' %s'", newlinesBetween => {
+      it.each(['ignore', 1, 0])("should allow '%s'", newlinesBetween => {
         expect(
           groupsJsonSchemaValidator(['group1', { newlinesBetween }, 'group2']),
         ).toBeTruthy()

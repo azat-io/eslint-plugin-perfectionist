@@ -11,7 +11,7 @@ describe('common-json-schemas', () => {
 
   describe('type', () => {
     it.each(['alphabetical', 'natural', 'line-length', 'custom', 'unsorted'])(
-      "should allow' %s'",
+      "should allow '%s'",
       type => {
         expect(
           commonJsonSchemaValidator({
@@ -45,7 +45,7 @@ describe('common-json-schemas', () => {
   })
 
   describe('order', () => {
-    it.each(['asc', 'desc'])("should allow' %s'", order => {
+    it.each(['asc', 'desc'])("should allow '%s'", order => {
       expect(
         commonJsonSchemaValidator({
           order,
@@ -64,7 +64,7 @@ describe('common-json-schemas', () => {
 
   describe('specialCharacters', () => {
     it.each(['remove', 'trim', 'keep'])(
-      "should allow' %s'",
+      "should allow '%s'",
       specialCharacters => {
         expect(
           commonJsonSchemaValidator({
@@ -86,7 +86,7 @@ describe('common-json-schemas', () => {
   describe('fallbackSort', () => {
     describe('type', () => {
       it.each(['alphabetical', 'natural', 'line-length', 'custom', 'unsorted'])(
-        "should allow' %s'",
+        "should allow '%s'",
         type => {
           expect(
             commonJsonSchemaValidator({
@@ -136,7 +136,7 @@ describe('common-json-schemas', () => {
     })
 
     describe('order', () => {
-      it.each(['asc', 'desc'])("should allow' %s'", order => {
+      it.each(['asc', 'desc'])("should allow '%s'", order => {
         expect(
           commonJsonSchemaValidator({
             fallbackSort: {
