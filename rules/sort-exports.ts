@@ -31,6 +31,7 @@ import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -104,12 +105,7 @@ export default createEslintRule<Options, MessageId>({
       }
 
       let selector: Selector = 'export'
-      let modifiers: Modifier[] = []
-      if (node.exportKind === 'value') {
-        modifiers.push('value')
-      } else {
-        modifiers.push('type')
-      }
+      let modifiers: Modifier[] = [computeExportKindModifier(node)]
 
       let name = node.source.value
 
@@ -243,5 +239,19 @@ function sortExportNodes({
         nodes: groupedNodes,
       }),
     )
+  }
+}
+
+function computeExportKindModifier(
+  node: TSESTree.ExportNamedDeclaration | TSESTree.ExportAllDeclaration,
+): 'value' | 'type' {
+  switch (node.exportKind) {
+    case 'value':
+      return 'value'
+    case 'type':
+      return 'type'
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(node.exportKind)
   }
 }
