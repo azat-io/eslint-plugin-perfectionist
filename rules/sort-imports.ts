@@ -37,6 +37,7 @@ import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-group
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { comparatorByOptionsComputer } from './sort-imports/comparator-by-options-computer'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
+import { computeSpecifierModifiers } from './sort-imports/compute-specifier-modifiers'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
@@ -212,17 +213,7 @@ export default createEslintRule<Options, MessageId>({
         modifiers.push('require')
       }
 
-      if (hasSpecifier(node, 'ImportDefaultSpecifier')) {
-        modifiers.push('default')
-      }
-
-      if (hasSpecifier(node, 'ImportNamespaceSpecifier')) {
-        modifiers.push('wildcard')
-      }
-
-      if (hasSpecifier(node, 'ImportSpecifier')) {
-        modifiers.push('named')
-      }
+      modifiers.push(...computeSpecifierModifiers(node))
 
       if (isNodeOnSingleLine(node)) {
         modifiers.push('singleline')
