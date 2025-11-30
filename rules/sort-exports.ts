@@ -1,4 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { Modifier, Selector, Options } from './sort-exports/types'
 import type { SortingNode } from '../types/sorting-node'
@@ -96,10 +97,12 @@ export default createEslintRule<Options, MessageId>({
     let formattedMembers: SortExportsSortingNode[][] = [[]]
 
     function registerNode(
-      node:
-        | TSESTree.ExportNamedDeclarationWithSource
-        | TSESTree.ExportAllDeclaration,
+      node: TSESTree.ExportNamedDeclaration | TSESTree.ExportAllDeclaration,
     ): void {
+      if (!node.source) {
+        return
+      }
+
       let selector: Selector = 'export'
       let modifiers: Modifier[] = []
       if (node.exportKind === 'value') {
@@ -156,41 +159,13 @@ export default createEslintRule<Options, MessageId>({
 
     return {
       'Program:exit': () => {
-        function sortNodesExcludingEslintDisabled(
-          ignoreEslintDisabledNodes: boolean,
-        ): SortExportsSortingNode[] {
-          return formattedMembers.flatMap(groupedNodes =>
-            sortNodesByGroups({
-              optionsByGroupIndexComputer:
-                buildDefaultOptionsByGroupIndexComputer(options),
-              comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
-              ignoreEslintDisabledNodes,
-              groups: options.groups,
-              nodes: groupedNodes,
-            }),
-          )
-        }
-
-        let nodes = formattedMembers.flat()
-        reportAllErrors<MessageId>({
-          availableMessageIds: {
-            missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-            extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-            missedCommentAbove: MISSED_COMMENT_ABOVE_ERROR_ID,
-            unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-            unexpectedOrder: ORDER_ERROR_ID,
-          },
-          sortNodesExcludingEslintDisabled,
-          options,
+        sortExportNodes({
+          formattedMembers,
           context,
-          nodes,
+          options,
         })
       },
-      ExportNamedDeclaration: node => {
-        if (node.source !== null) {
-          registerNode(node)
-        }
-      },
+      ExportNamedDeclaration: registerNode,
       ExportAllDeclaration: registerNode,
     }
   },
@@ -230,3 +205,43 @@ export default createEslintRule<Options, MessageId>({
   defaultOptions: [defaultOptions],
   name: 'sort-exports',
 })
+
+function sortExportNodes({
+  formattedMembers,
+  context,
+  options,
+}: {
+  context: TSESLint.RuleContext<MessageId, Options>
+  formattedMembers: SortExportsSortingNode[][]
+  options: Required<Options[number]>
+}): void {
+  let nodes = formattedMembers.flat()
+  reportAllErrors<MessageId>({
+    availableMessageIds: {
+      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+      missedCommentAbove: MISSED_COMMENT_ABOVE_ERROR_ID,
+      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+      unexpectedOrder: ORDER_ERROR_ID,
+    },
+    sortNodesExcludingEslintDisabled,
+    options,
+    context,
+    nodes,
+  })
+
+  function sortNodesExcludingEslintDisabled(
+    ignoreEslintDisabledNodes: boolean,
+  ): SortExportsSortingNode[] {
+    return formattedMembers.flatMap(groupedNodes =>
+      sortNodesByGroups({
+        optionsByGroupIndexComputer:
+          buildDefaultOptionsByGroupIndexComputer(options),
+        comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+        ignoreEslintDisabledNodes,
+        groups: options.groups,
+        nodes: groupedNodes,
+      }),
+    )
+  }
+}
