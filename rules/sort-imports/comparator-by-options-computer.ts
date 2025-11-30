@@ -40,5 +40,5 @@ function compareTypeImportFirst(
     return 0
   }
 
-  return computeOrderedValue(a.isTypeImport ? 1 : -1, options.order)
+  return computeOrderedValue(a.isTypeImport ? -1 : 1, options.order)
 }

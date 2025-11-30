@@ -10201,7 +10201,7 @@ describe('sort-imports', () => {
             ...options,
             fallbackSort: {
               type: 'type-import-first',
-              order: 'desc',
+              order: 'asc',
             },
           },
         ],
@@ -10227,7 +10227,7 @@ describe('sort-imports', () => {
             ...options,
             fallbackSort: {
               type: 'type-import-first',
-              order: 'asc',
+              order: 'desc',
             },
           },
         ],
@@ -10257,7 +10257,7 @@ describe('sort-imports', () => {
               {
                 fallbackSort: {
                   type: 'type-import-first',
-                  order: 'desc',
+                  order: 'asc',
                 },
                 groupName: 'group',
                 selector: 'import',
@@ -10290,7 +10290,7 @@ describe('sort-imports', () => {
               {
                 fallbackSort: {
                   type: 'type-import-first',
-                  order: 'asc',
+                  order: 'desc',
                 },
                 groupName: 'group',
                 selector: 'import',
