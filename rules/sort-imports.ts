@@ -28,6 +28,7 @@ import {
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { isNonExternalReferenceTsImportEquals } from './sort-imports/is-non-external-reference-ts-import-equals'
 import {
   buildCommonJsonSchemas,
   regexJsonSchema,
@@ -47,6 +48,7 @@ import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { computeDependencies } from './sort-imports/compute-dependencies'
+import { isSideEffectImport } from './sort-imports/is-side-effect-import'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
@@ -486,53 +488,6 @@ function computeGroupExceptUnknown({
     return null
   }
   return computedCustomGroup
-}
-
-function isSideEffectImport({
-  sourceCode,
-  node,
-}: {
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration
-  sourceCode: TSESLint.SourceCode
-}): boolean {
-  return (
-    node.type === 'ImportDeclaration' &&
-    node.specifiers.length === 0 &&
-    /* Avoid matching on named imports without specifiers */
-    !/\}\s*from\s+/u.test(sourceCode.getText(node))
-  )
-}
-
-function hasSpecifier(
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration,
-  specifier:
-    | 'ImportNamespaceSpecifier'
-    | 'ImportDefaultSpecifier'
-    | 'ImportSpecifier',
-): boolean {
-  return (
-    node.type === 'ImportDeclaration' &&
-    node.specifiers.some(nodeSpecifier => nodeSpecifier.type === specifier)
-  )
-}
-
-function isNonExternalReferenceTsImportEquals(
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration,
-): node is TSESTree.TSImportEqualsDeclaration {
-  if (node.type !== 'TSImportEqualsDeclaration') {
-    return false
-  }
-
-  return node.moduleReference.type !== 'TSExternalModuleReference'
 }
 
 let styleExtensions = [
