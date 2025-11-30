@@ -1,6 +1,8 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type {
   SortImportsSortingNode,
   Selector,
@@ -45,6 +47,7 @@ import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { TYPE_IMPORT_FIRST_TYPE_OPTION } from './sort-imports/types'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -486,29 +489,32 @@ function computeDependencyNames({
     | TSESTree.ImportDeclaration
   sourceCode: TSESLint.SourceCode
 }): string[] {
-  if (node.type === 'VariableDeclaration') {
-    return []
+  switch (node.type) {
+    case AST_NODE_TYPES.TSImportEqualsDeclaration:
+      return [node.id.name]
+    case AST_NODE_TYPES.VariableDeclaration:
+      return []
+    case AST_NODE_TYPES.ImportDeclaration:
+      return node.specifiers.map(computeImportClauseDependencyName)
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(node)
   }
 
-  if (node.type === 'TSImportEqualsDeclaration') {
-    return [node.id.name]
-  }
-
-  let returnValue: string[] = []
-  for (let specifier of node.specifiers) {
+  function computeImportClauseDependencyName(
+    specifier: TSESTree.ImportClause,
+  ): string {
     switch (specifier.type) {
-      case 'ImportNamespaceSpecifier':
-        returnValue.push(sourceCode.getText(specifier.local))
-        break
-      case 'ImportDefaultSpecifier':
-        returnValue.push(sourceCode.getText(specifier.local))
-        break
-      case 'ImportSpecifier':
-        returnValue.push(sourceCode.getText(specifier.imported))
-        break
+      case AST_NODE_TYPES.ImportNamespaceSpecifier:
+      case AST_NODE_TYPES.ImportDefaultSpecifier:
+        return sourceCode.getText(specifier.local)
+      case AST_NODE_TYPES.ImportSpecifier:
+        return sourceCode.getText(specifier.imported)
+      /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+      default:
+        throw new UnreachableCaseError(specifier)
     }
   }
-  return returnValue
 }
 
 function getNodeName({
@@ -521,21 +527,35 @@ function getNodeName({
     | TSESTree.ImportDeclaration
   sourceCode: TSESLint.SourceCode
 }): string {
-  if (node.type === 'ImportDeclaration') {
-    return node.source.value
-  }
-
-  if (node.type === 'TSImportEqualsDeclaration') {
-    if (node.moduleReference.type === 'TSExternalModuleReference') {
-      return node.moduleReference.expression.value
+  switch (node.type) {
+    case AST_NODE_TYPES.TSImportEqualsDeclaration:
+      return computeImportEqualsDeclarationName(node)
+    case AST_NODE_TYPES.VariableDeclaration: {
+      let callExpression = node.declarations[0].init as TSESTree.CallExpression
+      let { value } = callExpression.arguments[0] as TSESTree.Literal
+      return value!.toString()
     }
-
-    return sourceCode.getText(node.moduleReference)
+    case AST_NODE_TYPES.ImportDeclaration:
+      return node.source.value
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(node)
   }
 
-  let callExpression = node.declarations[0].init as TSESTree.CallExpression
-  let { value } = callExpression.arguments[0] as TSESTree.Literal
-  return value!.toString()
+  function computeImportEqualsDeclarationName(
+    declaration: TSESTree.TSImportEqualsDeclaration,
+  ): string {
+    switch (declaration.moduleReference.type) {
+      case AST_NODE_TYPES.TSExternalModuleReference:
+        return declaration.moduleReference.expression.value
+      case AST_NODE_TYPES.TSQualifiedName:
+      case AST_NODE_TYPES.Identifier:
+        return sourceCode.getText(declaration.moduleReference)
+      /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+      default:
+        throw new UnreachableCaseError(declaration.moduleReference)
+    }
+  }
 }
 
 function computeGroupExceptUnknown({
@@ -626,13 +646,17 @@ function getQualifiedNameDependencyName(
   node: TSESTree.EntityName,
 ): string | null {
   switch (node.type) {
-    case 'TSQualifiedName':
+    case AST_NODE_TYPES.TSQualifiedName:
       return getQualifiedNameDependencyName(node.left)
-    case 'Identifier':
+    /* v8 ignore next -- @preserve Unsure how we can reach that case */
+    case AST_NODE_TYPES.ThisExpression:
+      return null
+    case AST_NODE_TYPES.Identifier:
       return node.name
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(node)
   }
-  /* v8 ignore next -- @preserve Unsure how we can reach that case */
-  return null
 }
 
 function isStyle(value: string): boolean {
