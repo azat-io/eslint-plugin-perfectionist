@@ -144,7 +144,7 @@ Specifies whether to sort items in ascending or descending order.
   type:
   ```ts
   {
-    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted'
+    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'type-import-first' | 'unsorted'
     order?: 'asc' | 'desc'
   }
   ```
@@ -159,6 +159,17 @@ Example: enforce alphabetical sort between two elements with the same length.
   type: 'line-length',
   order: 'desc',
   fallbackSort: { type: 'alphabetical', order: 'asc' }
+}
+```
+
+When importing a type and value import from the same module, you can enforce the order between them using the
+`type-import-first` option.
+
+```ts
+{
+  type: 'alphabetical',
+  order: 'desc',
+  fallbackSort: { type: 'type-import-first', order: 'desc' } // The type import will come before its value import
 }
 ```
 
