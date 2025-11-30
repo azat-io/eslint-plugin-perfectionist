@@ -1,5 +1,7 @@
-import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
+import type { TSESTree } from '@typescript-eslint/types'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import type { Modifier, Selector, Options } from './sort-exports/types'
 import type { SortingNode } from '../types/sorting-node'
@@ -105,7 +107,10 @@ export default createEslintRule<Options, MessageId>({
       }
 
       let selector: Selector = 'export'
-      let modifiers: Modifier[] = [computeExportKindModifier(node)]
+      let modifiers: Modifier[] = [
+        computeExportKindModifier(node),
+        computeExportTypeModifier(node),
+      ]
 
       let name = node.source.value
 
@@ -239,6 +244,20 @@ function sortExportNodes({
         nodes: groupedNodes,
       }),
     )
+  }
+}
+
+function computeExportTypeModifier(
+  node: TSESTree.ExportNamedDeclaration | TSESTree.ExportAllDeclaration,
+): 'wildcard' | 'named' {
+  switch (node.type) {
+    case AST_NODE_TYPES.ExportNamedDeclaration:
+      return 'named'
+    case AST_NODE_TYPES.ExportAllDeclaration:
+      return 'wildcard'
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(node)
   }
 }
 
