@@ -368,7 +368,6 @@ function analyzeModule({
       unexpectedOrder: ORDER_ERROR_ID,
     },
     sortNodesExcludingEslintDisabled,
-    sourceCode,
     options,
     context,
     nodes,

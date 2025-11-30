@@ -159,7 +159,6 @@ export default createEslintRule<Options, MessageId>({
           },
           sortNodesExcludingEslintDisabled:
             createSortNodesExcludingEslintDisabled(nodes),
-          sourceCode,
           options,
           context,
           nodes,

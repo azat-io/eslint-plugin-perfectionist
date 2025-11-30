@@ -199,7 +199,6 @@ function sortHeritageClauses(
       },
       sortNodesExcludingEslintDisabled:
         createSortNodesExcludingEslintDisabled(nodes),
-      sourceCode,
       options,
       context,
       nodes,
