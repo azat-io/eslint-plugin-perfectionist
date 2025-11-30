@@ -1,8 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
-
 import type {
   SortImportsSortingNode,
   Selector,
@@ -19,6 +17,12 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import {
+  TYPE_IMPORT_FIRST_TYPE_OPTION,
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-imports/types'
+import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
@@ -29,11 +33,6 @@ import {
   regexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
-import {
-  singleCustomGroupJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-imports/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { comparatorByOptionsComputer } from './sort-imports/comparator-by-options-computer'
@@ -42,14 +41,15 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
 import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
+import { computeDependencyNames } from './sort-imports/compute-dependency-names'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { computeDependencies } from './sort-imports/compute-dependencies'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
-import { UnreachableCaseError } from '../utils/unreachable-case-error'
-import { TYPE_IMPORT_FIRST_TYPE_OPTION } from './sort-imports/types'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
+import { computeNodeName } from './sort-imports/compute-node-name'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -155,7 +155,7 @@ export default createEslintRule<Options, MessageId>({
         | TSESTree.VariableDeclaration
         | TSESTree.ImportDeclaration,
     ): void {
-      let name = getNodeName({
+      let name = computeNodeName({
         sourceCode,
         node,
       })
@@ -470,94 +470,6 @@ function hasContentBetweenNodes(
   )
 }
 
-let styleExtensions = [
-  '.less',
-  '.scss',
-  '.sass',
-  '.styl',
-  '.pcss',
-  '.css',
-  '.sss',
-]
-function computeDependencyNames({
-  sourceCode,
-  node,
-}: {
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration
-  sourceCode: TSESLint.SourceCode
-}): string[] {
-  switch (node.type) {
-    case AST_NODE_TYPES.TSImportEqualsDeclaration:
-      return [node.id.name]
-    case AST_NODE_TYPES.VariableDeclaration:
-      return []
-    case AST_NODE_TYPES.ImportDeclaration:
-      return node.specifiers.map(computeImportClauseDependencyName)
-    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-    default:
-      throw new UnreachableCaseError(node)
-  }
-
-  function computeImportClauseDependencyName(
-    specifier: TSESTree.ImportClause,
-  ): string {
-    switch (specifier.type) {
-      case AST_NODE_TYPES.ImportNamespaceSpecifier:
-      case AST_NODE_TYPES.ImportDefaultSpecifier:
-        return sourceCode.getText(specifier.local)
-      case AST_NODE_TYPES.ImportSpecifier:
-        return sourceCode.getText(specifier.imported)
-      /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-      default:
-        throw new UnreachableCaseError(specifier)
-    }
-  }
-}
-
-function getNodeName({
-  sourceCode,
-  node,
-}: {
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration
-  sourceCode: TSESLint.SourceCode
-}): string {
-  switch (node.type) {
-    case AST_NODE_TYPES.TSImportEqualsDeclaration:
-      return computeImportEqualsDeclarationName(node)
-    case AST_NODE_TYPES.VariableDeclaration: {
-      let callExpression = node.declarations[0].init as TSESTree.CallExpression
-      let { value } = callExpression.arguments[0] as TSESTree.Literal
-      return value!.toString()
-    }
-    case AST_NODE_TYPES.ImportDeclaration:
-      return node.source.value
-    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-    default:
-      throw new UnreachableCaseError(node)
-  }
-
-  function computeImportEqualsDeclarationName(
-    declaration: TSESTree.TSImportEqualsDeclaration,
-  ): string {
-    switch (declaration.moduleReference.type) {
-      case AST_NODE_TYPES.TSExternalModuleReference:
-        return declaration.moduleReference.expression.value
-      case AST_NODE_TYPES.TSQualifiedName:
-      case AST_NODE_TYPES.Identifier:
-        return sourceCode.getText(declaration.moduleReference)
-      /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-      default:
-        throw new UnreachableCaseError(declaration.moduleReference)
-    }
-  }
-}
-
 function computeGroupExceptUnknown({
   selectors,
   modifiers,
@@ -591,26 +503,6 @@ function computeGroupExceptUnknown({
   return computedCustomGroup
 }
 
-function computeDependencies(
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration,
-): string[] {
-  if (node.type !== 'TSImportEqualsDeclaration') {
-    return []
-  }
-  if (node.moduleReference.type !== 'TSQualifiedName') {
-    return []
-  }
-  let qualifiedName = getQualifiedNameDependencyName(node.moduleReference)
-  /* v8 ignore if -- @preserve Unsure how we can reach that case */
-  if (!qualifiedName) {
-    return []
-  }
-  return [qualifiedName]
-}
-
 function isSideEffectImport({
   sourceCode,
   node,
@@ -642,23 +534,15 @@ function isNonExternalReferenceTsImportEquals(
   return node.moduleReference.type !== 'TSExternalModuleReference'
 }
 
-function getQualifiedNameDependencyName(
-  node: TSESTree.EntityName,
-): string | null {
-  switch (node.type) {
-    case AST_NODE_TYPES.TSQualifiedName:
-      return getQualifiedNameDependencyName(node.left)
-    /* v8 ignore next -- @preserve Unsure how we can reach that case */
-    case AST_NODE_TYPES.ThisExpression:
-      return null
-    case AST_NODE_TYPES.Identifier:
-      return node.name
-    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-    default:
-      throw new UnreachableCaseError(node)
-  }
-}
-
+let styleExtensions = [
+  '.less',
+  '.scss',
+  '.sass',
+  '.styl',
+  '.pcss',
+  '.css',
+  '.sss',
+]
 function isStyle(value: string): boolean {
   let [cleanedValue] = value.split('?')
   return styleExtensions.some(extension => cleanedValue?.endsWith(extension))
