@@ -1,18 +1,15 @@
-import type { GroupsOptions } from '../types/common-groups-options'
-import type { TypeOption } from '../types/common-options'
+import type {
+  CommonGroupsOptions,
+  GroupsOptions,
+} from '../types/common-groups-options'
+import type { CommonOptions } from '../types/common-options'
 
 import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 
 /** Options for custom sort configuration validation. */
-interface Options {
-  groups?: GroupsOptions
-
-  /** The sorting type selected by the user. */
-  type: TypeOption
-
-  /** Custom alphabet string for ordering when type is 'custom'. */
-  alphabet: string
-}
+type Options = {
+  groups?: CommonGroupsOptions<unknown, unknown, string>['groups']
+} & Pick<CommonOptions, 'alphabet' | 'type'>
 
 /**
  * Validates configuration when using custom sort type.

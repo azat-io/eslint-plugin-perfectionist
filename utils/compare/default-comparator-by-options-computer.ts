@@ -1,4 +1,4 @@
-import type { CommonOptions } from '../../types/common-options'
+import type { CommonOptions, TypeOption } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import { buildLineLengthComparator } from './build-line-length-comparator'
@@ -8,23 +8,17 @@ import { compareByCustomSort } from './compare-by-custom-sort'
 import { unsortedComparator } from './unsorted-comparator'
 import { compareNaturally } from './compare-naturally'
 
-export type ComparatorByOptionsComputer<
-  S extends CommonOptions,
-  T extends SortingNode,
-> = (options: S) => Comparator<T>
+export type ComparatorByOptionsComputer<S, T extends SortingNode> = (
+  options: S,
+) => Comparator<T>
 
 export type Comparator<T extends SortingNode> = (a: T, b: T) => number
 
 type Options = Pick<
-  CommonOptions,
-  | 'specialCharacters'
-  | 'fallbackSort'
-  | 'ignoreCase'
-  | 'alphabet'
-  | 'locales'
-  | 'order'
-  | 'type'
->
+  CommonOptions<TypeOption>,
+  'specialCharacters' | 'ignoreCase' | 'alphabet' | 'locales' | 'order' | 'type'
+> &
+  Pick<CommonOptions, 'fallbackSort'>
 
 export let defaultComparatorByOptionsComputer: ComparatorByOptionsComputer<
   Options,

@@ -2,7 +2,6 @@ import type { ComparatorByOptionsComputer } from './compare/default-comparator-b
 import type { CommonOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
-import { defaultComparatorByOptionsComputer } from './compare/default-comparator-by-options-computer'
 import { computeComparators } from './compare/compute-comparators'
 
 /**
@@ -13,9 +12,9 @@ import { computeComparators } from './compare/compute-comparators'
  */
 interface SortNodesParameters<
   Node extends SortingNode,
-  Options extends CommonOptions,
+  Options extends Pick<CommonOptions, 'fallbackSort'>,
 > {
-  comparatorByOptionsComputer?: ComparatorByOptionsComputer<Options, Node>
+  comparatorByOptionsComputer: ComparatorByOptionsComputer<Options, Node>
   isNodeIgnored?(node: Node): boolean
   ignoreEslintDisabledNodes: boolean
   options: Options
@@ -41,7 +40,7 @@ interface SortNodesParameters<
  */
 export function sortNodes<
   Node extends SortingNode,
-  Options extends CommonOptions,
+  Options extends Pick<CommonOptions, 'fallbackSort'>,
 >({
   comparatorByOptionsComputer,
   ignoreEslintDisabledNodes,
@@ -62,10 +61,7 @@ export function sortNodes<
     }
   }
 
-  let comparators = computeComparators(
-    comparatorByOptionsComputer ?? defaultComparatorByOptionsComputer,
-    options,
-  )
+  let comparators = computeComparators(comparatorByOptionsComputer, options)
 
   let sortedNodes = [...nonIgnoredNodes].toSorted((a, b) => {
     for (let comparator of comparators) {

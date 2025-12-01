@@ -9,15 +9,6 @@ import type {
 } from './sort-imports/types'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
-  newlinesBetweenJsonSchema,
-  commonJsonSchemas,
-  groupsJsonSchema,
-  regexJsonSchema,
-} from '../utils/common-json-schemas'
-import {
   MISSED_COMMENT_ABOVE_ERROR,
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
@@ -25,15 +16,25 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+} from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import {
+  buildCommonJsonSchemas,
+  regexJsonSchema,
+} from '../utils/json-schemas/common-json-schemas'
 import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-imports/types'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { comparatorByOptionsComputer } from './sort-imports/comparator-by-options-computer'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
@@ -44,6 +45,7 @@ import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { TYPE_IMPORT_FIRST_TYPE_OPTION } from './sort-imports/types'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -248,6 +250,7 @@ export default createEslintRule<Options, MessageId>({
           (!isStyleSideEffect || !shouldRegroupSideEffectStyleNodes),
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         dependencyNames: computeDependencyNames({ sourceCode, node }),
+        isTypeImport: modifiers.includes('type'),
         dependencies: computeDependencies(node),
         addSafetySemicolonWhenInline: true,
         group,
@@ -317,6 +320,7 @@ export default createEslintRule<Options, MessageId>({
                   optionsByGroupIndexComputer:
                     buildDefaultOptionsByGroupIndexComputer(options),
                   isNodeIgnored: node => node.isIgnored,
+                  comparatorByOptionsComputer,
                   ignoreEslintDisabledNodes,
                   groups: options.groups,
                   nodes,
@@ -367,7 +371,13 @@ export default createEslintRule<Options, MessageId>({
     schema: {
       items: {
         properties: {
-          ...commonJsonSchemas,
+          ...buildCommonJsonSchemas({
+            allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
+          }),
+          ...buildCommonGroupsJsonSchemas({
+            allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
+            singleCustomGroupJsonSchema,
+          }),
           tsconfig: {
             properties: {
               rootDir: {
@@ -399,14 +409,9 @@ export default createEslintRule<Options, MessageId>({
             enum: ['node', 'bun'],
             type: 'string',
           },
-          customGroups: buildCustomGroupsArrayJsonSchema({
-            singleCustomGroupJsonSchema,
-          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
           internalPattern: regexJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

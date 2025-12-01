@@ -3,13 +3,13 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { CommonOptions } from '../../types/common-options'
+import type { CommonOptions, TypeOption } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-} from '../../utils/common-json-schemas'
+} from '../../utils/json-schemas/common-groups-json-schemas'
 
 /**
  * Configuration options for the sort-named-imports rule.
@@ -25,9 +25,13 @@ export type Options = Partial<
      * @default false
      */
     ignoreAlias: boolean
-  } & CommonGroupsOptions<SingleCustomGroup> &
-    CommonPartitionOptions &
-    CommonOptions
+  } & CommonGroupsOptions<
+    SingleCustomGroup,
+    Record<string, never>,
+    TypeOption
+  > &
+    CommonOptions<TypeOption> &
+    CommonPartitionOptions
 >[]
 
 /** Extended sorting node for named import specifiers. */

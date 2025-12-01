@@ -5,21 +5,22 @@ import type { SortingNode } from '../types/sorting-node'
 import type { Options } from './sort-maps/types'
 
 import {
-  buildUseConfigurationIfJsonSchema,
-  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  newlinesBetweenJsonSchema,
-  commonJsonSchemas,
-  groupsJsonSchema,
-} from '../utils/common-json-schemas'
+} from '../utils/json-schemas/common-partition-json-schemas'
 import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  buildUseConfigurationIfJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -178,6 +179,7 @@ export default createEslintRule<Options, MessageId>({
               return sortNodesByGroups({
                 optionsByGroupIndexComputer:
                   buildDefaultOptionsByGroupIndexComputer(options),
+                comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
                 ignoreEslintDisabledNodes,
                 groups: options.groups,
                 nodes: sortingNodes,
@@ -207,13 +209,11 @@ export default createEslintRule<Options, MessageId>({
     schema: {
       items: {
         properties: {
-          ...commonJsonSchemas,
+          ...buildCommonJsonSchemas(),
+          ...buildCommonGroupsJsonSchemas(),
           useConfigurationIf: buildUseConfigurationIfJsonSchema(),
-          customGroups: buildCustomGroupsArrayJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

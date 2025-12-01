@@ -44,7 +44,7 @@ describe('compute-comparators', () => {
     expect(comparators).toEqual([])
   })
 
-  function buildCommonOptions(type: TypeOption): CommonOptions {
+  function buildCommonOptions(type: TypeOption): CommonOptions<TypeOption> {
     return {
       fallbackSort: {
         type: 'natural',

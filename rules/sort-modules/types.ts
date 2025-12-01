@@ -1,14 +1,32 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import type {
+  CommonOptions,
+  RegexOption,
+  TypeOption,
+} from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-  regexJsonSchema,
-} from '../../utils/common-json-schemas'
+} from '../../utils/json-schemas/common-groups-json-schemas'
+import { regexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
+
+/**
+ * Configuration options for the sort-modules rule.
+ *
+ * This rule enforces consistent ordering of module-level declarations (classes,
+ * interfaces, functions, types, enums) to improve code organization.
+ */
+export type SortModulesOptions = [
+  Partial<
+    CommonGroupsOptions<SingleCustomGroup, Record<string, never>, TypeOption> &
+      CommonOptions<TypeOption> &
+      CommonPartitionOptions
+  >,
+]
 
 /**
  * Union type of all available module member selectors. Used to categorize
@@ -22,20 +40,6 @@ export type Selector =
   | ClassSelector
   | TypeSelector
   | EnumSelector
-
-/**
- * Configuration options for the sort-modules rule.
- *
- * This rule enforces consistent ordering of module-level declarations (classes,
- * interfaces, functions, types, enums) to improve code organization.
- */
-export type SortModulesOptions = [
-  Partial<
-    CommonGroupsOptions<SingleCustomGroup> &
-      CommonPartitionOptions &
-      CommonOptions
-  >,
-]
 
 /**
  * Union type of all available module member modifiers. Used to identify

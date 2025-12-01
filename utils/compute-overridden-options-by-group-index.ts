@@ -4,7 +4,10 @@ import type { CommonOptions } from '../types/common-options'
 import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { computeGroupName } from './compute-group-name'
 
-type Options = Pick<CommonGroupsOptions<unknown>, 'customGroups' | 'groups'> &
+type Options = Pick<
+  CommonGroupsOptions<unknown, unknown, string>,
+  'customGroups' | 'groups'
+> &
   CommonOptions
 
 /**

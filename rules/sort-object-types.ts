@@ -14,14 +14,13 @@ import type {
 
 import {
   buildUseConfigurationIfJsonSchema,
-  buildCustomGroupsArrayJsonSchema,
+  buildCommonJsonSchemas,
+  regexJsonSchema,
+} from '../utils/json-schemas/common-json-schemas'
+import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  newlinesBetweenJsonSchema,
-  buildCommonJsonSchemas,
-  groupsJsonSchema,
-  regexJsonSchema,
-} from '../utils/common-json-schemas'
+} from '../utils/json-schemas/common-partition-json-schemas'
 import {
   singleCustomGroupJsonSchema,
   sortByJsonSchema,
@@ -38,6 +37,7 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
 import { buildOptionsByGroupIndexComputer } from './sort-object-types/build-options-by-group-index-computer'
 import { comparatorByOptionsComputer } from './sort-object-types/comparator-by-options-computer'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -99,6 +99,10 @@ export let jsonSchema: JSONSchema4 = {
           sortBy: sortByJsonSchema,
         },
       }),
+      ...buildCommonGroupsJsonSchemas({
+        additionalFallbackSortProperties: { sortBy: sortByJsonSchema },
+        singleCustomGroupJsonSchema,
+      }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {
           hasNumericKeysOnly: {
@@ -110,15 +114,9 @@ export let jsonSchema: JSONSchema4 = {
           declarationMatchesPattern: regexJsonSchema,
         },
       }),
-      customGroups: buildCustomGroupsArrayJsonSchema({
-        additionalFallbackSortProperties: { sortBy: sortByJsonSchema },
-        singleCustomGroupJsonSchema,
-      }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
-      newlinesBetween: newlinesBetweenJsonSchema,
       sortBy: sortByJsonSchema,
-      groups: groupsJsonSchema,
     },
     additionalProperties: false,
     type: 'object',

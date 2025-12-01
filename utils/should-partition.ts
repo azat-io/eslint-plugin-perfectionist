@@ -12,7 +12,7 @@ import { getLinesBetween } from './get-lines-between'
 interface ShouldPartitionParameters {
   options: {
     partitionByComment?: PartitionByCommentOption
-    partitionByNewLine?: boolean
+    partitionByNewLine: boolean
   }
   lastSortingNode: Pick<SortingNode, 'node'> | undefined
   sortingNode: Pick<SortingNode, 'node'>

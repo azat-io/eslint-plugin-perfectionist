@@ -5,13 +5,9 @@ import type { Options } from './sort-heritage-clauses/types'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  partitionByNewLineJsonSchema,
   partitionByCommentJsonSchema,
-  newlinesBetweenJsonSchema,
-  commonJsonSchemas,
-  groupsJsonSchema,
-} from '../utils/common-json-schemas'
+  partitionByNewLineJsonSchema,
+} from '../utils/json-schemas/common-partition-json-schemas'
 import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -20,8 +16,11 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
@@ -66,12 +65,10 @@ export default createEslintRule<Options, MessageId>({
     schema: {
       items: {
         properties: {
-          ...commonJsonSchemas,
-          customGroups: buildCustomGroupsArrayJsonSchema(),
+          ...buildCommonJsonSchemas(),
+          ...buildCommonGroupsJsonSchemas(),
           partitionByNewLine: partitionByNewLineJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
@@ -185,6 +182,7 @@ function sortHeritageClauses(
         return sortNodesByGroups({
           optionsByGroupIndexComputer:
             buildDefaultOptionsByGroupIndexComputer(options),
+          comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
           ignoreEslintDisabledNodes,
           groups: options.groups,
           nodes: sortingNodes,
