@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { SortingNode } from '../../types/sorting-node'
 
+import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { sortNodes } from '../../utils/sort-nodes'
 
 describe('sort-nodes', () => {
@@ -20,6 +21,7 @@ describe('sort-nodes', () => {
     let b = createTestNode({ name: 'b' })
     expect(
       sortNodes({
+        comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
         ignoreEslintDisabledNodes: false,
         nodes: [b, a],
         options,
@@ -35,6 +37,7 @@ describe('sort-nodes', () => {
     it('should ignore eslint disabled nodes if "ignoreEslintDisabledNodes" is true', () => {
       expect(
         sortNodes({
+          comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
           ignoreEslintDisabledNodes: true,
           nodes: [nodeB, nodeC, nodeA],
           options,
@@ -45,6 +48,7 @@ describe('sort-nodes', () => {
     it('should not ignore eslint disabled nodes if "ignoreEslintDisabledNodes" is false', () => {
       expect(
         sortNodes({
+          comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
           ignoreEslintDisabledNodes: false,
           nodes: [nodeB, nodeC, nodeA],
           options,
@@ -60,6 +64,7 @@ describe('sort-nodes', () => {
       let nodeC = createTestNode({ name: 'c' })
       expect(
         sortNodes({
+          comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
           isNodeIgnored: node => node === nodeC,
           ignoreEslintDisabledNodes: false,
           nodes: [nodeB, nodeC, nodeA],

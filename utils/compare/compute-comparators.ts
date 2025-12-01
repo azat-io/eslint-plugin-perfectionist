@@ -8,7 +8,7 @@ import type { SortingNode } from '../../types/sorting-node'
 import { unsortedComparator } from './unsorted-comparator'
 
 export function computeComparators<
-  Options extends CommonOptions,
+  Options extends Pick<CommonOptions, 'fallbackSort'>,
   T extends SortingNode,
 >(
   comparatorByOptionsComputer: ComparatorByOptionsComputer<Options, T>,

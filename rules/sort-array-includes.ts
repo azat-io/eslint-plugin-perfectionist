@@ -7,22 +7,23 @@ import type { Selector, Options } from './sort-array-includes/types'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
-  buildUseConfigurationIfJsonSchema,
-  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  newlinesBetweenJsonSchema,
-  commonJsonSchemas,
-  groupsJsonSchema,
-} from '../utils/common-json-schemas'
+} from '../utils/json-schemas/common-partition-json-schemas'
 import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  buildUseConfigurationIfJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import {
   singleCustomGroupJsonSchema,
@@ -81,15 +82,13 @@ export let defaultOptions: Required<Options[number]> = {
 export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
-      ...commonJsonSchemas,
-      customGroups: buildCustomGroupsArrayJsonSchema({
+      ...buildCommonJsonSchemas(),
+      ...buildCommonGroupsJsonSchemas({
         singleCustomGroupJsonSchema,
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema(),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
-      newlinesBetween: newlinesBetweenJsonSchema,
-      groups: groupsJsonSchema,
     },
     additionalProperties: false,
     type: 'object',
@@ -253,6 +252,7 @@ export function sortArray<MessageIds extends string>({
       sortNodesByGroups({
         optionsByGroupIndexComputer:
           buildDefaultOptionsByGroupIndexComputer(options),
+        comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes,

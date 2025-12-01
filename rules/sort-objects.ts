@@ -7,30 +7,31 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import type { Modifier, Selector, Options } from './sort-objects/types'
 
 import {
-  buildUseConfigurationIfJsonSchema,
-  buildCustomGroupsArrayJsonSchema,
-  partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
-  newlinesBetweenJsonSchema,
-  commonJsonSchemas,
-  groupsJsonSchema,
-  regexJsonSchema,
-} from '../utils/common-json-schemas'
-import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  buildUseConfigurationIfJsonSchema,
+  buildCommonJsonSchemas,
+  regexJsonSchema,
+} from '../utils/json-schemas/common-json-schemas'
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+} from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-objects/types'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { getFirstNodeParentWithType } from './sort-objects/get-first-node-parent-with-type'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
@@ -349,6 +350,7 @@ export default createEslintRule<Options, MessageId>({
           sortNodesByGroups({
             optionsByGroupIndexComputer:
               buildDefaultOptionsByGroupIndexComputer(options),
+            comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes,
@@ -386,7 +388,10 @@ export default createEslintRule<Options, MessageId>({
     schema: {
       items: {
         properties: {
-          ...commonJsonSchemas,
+          ...buildCommonJsonSchemas(),
+          ...buildCommonGroupsJsonSchemas({
+            singleCustomGroupJsonSchema,
+          }),
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {
               objectType: {
@@ -409,14 +414,9 @@ export default createEslintRule<Options, MessageId>({
             description: 'Controls whether to sort styled components.',
             type: 'boolean',
           },
-          customGroups: buildCustomGroupsArrayJsonSchema({
-            singleCustomGroupJsonSchema,
-          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
           ignorePattern: regexJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

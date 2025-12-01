@@ -6,13 +6,9 @@ import type { Selector, Options } from './sort-union-types/types'
 import type { SortingNode } from '../types/sorting-node'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  newlinesBetweenJsonSchema,
-  commonJsonSchemas,
-  groupsJsonSchema,
-} from '../utils/common-json-schemas'
+} from '../utils/json-schemas/common-partition-json-schemas'
 import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -21,12 +17,15 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import {
   singleCustomGroupJsonSchema,
   allSelectors,
 } from './sort-union-types/types'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -72,14 +71,12 @@ let defaultOptions: Required<Options[number]> = {
 export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
-      ...commonJsonSchemas,
-      customGroups: buildCustomGroupsArrayJsonSchema({
+      ...buildCommonJsonSchemas(),
+      ...buildCommonGroupsJsonSchemas({
         singleCustomGroupJsonSchema,
       }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
-      newlinesBetween: newlinesBetweenJsonSchema,
-      groups: groupsJsonSchema,
     },
     additionalProperties: false,
     type: 'object',
@@ -279,6 +276,7 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
         return sortNodesByGroups({
           optionsByGroupIndexComputer:
             buildDefaultOptionsByGroupIndexComputer(options),
+          comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
           ignoreEslintDisabledNodes,
           groups: options.groups,
           nodes: sortingNodes,

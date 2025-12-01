@@ -1,15 +1,15 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { CommonOptions } from '../types/common-options'
+import type { CommonOptions, TypeOption } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { reportErrors, ORDER_ERROR, RIGHT, LEFT } from '../utils/report-errors'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
-import { commonJsonSchemas } from '../utils/common-json-schemas'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -25,7 +25,7 @@ interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
 
 const ORDER_ERROR_ID = 'unexpectedSwitchCaseOrder'
 
-type Options = [Partial<CommonOptions>]
+type Options = [Partial<CommonOptions<TypeOption>>]
 
 type MessageId = typeof ORDER_ERROR_ID
 
@@ -92,6 +92,7 @@ export default createEslintRule<Options, MessageId>({
       let hasUnsortedNodes = false
       for (let caseNodesSortingNodeGroup of caseNameSortingNodeGroups) {
         let sortedCaseNameSortingNodes = sortNodes({
+          comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
           nodes: caseNodesSortingNodeGroup,
           ignoreEslintDisabledNodes: false,
           options,
@@ -269,20 +270,18 @@ export default createEslintRule<Options, MessageId>({
     },
   }),
   meta: {
-    schema: [
-      {
-        properties: {
-          ...commonJsonSchemas,
-        },
-        additionalProperties: false,
-        type: 'object',
-      },
-    ],
     docs: {
       url: 'https://perfectionist.dev/rules/sort-switch-case',
       description: 'Enforce sorted switch cases.',
       recommended: true,
     },
+    schema: [
+      {
+        properties: buildCommonJsonSchemas(),
+        additionalProperties: false,
+        type: 'object',
+      },
+    ],
     messages: {
       [ORDER_ERROR_ID]: ORDER_ERROR,
     },

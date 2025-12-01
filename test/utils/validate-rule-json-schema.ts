@@ -3,7 +3,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import { compile as compileSchemaForTs } from 'json-schema-to-typescript-lite'
 import Ajv from 'ajv-draft-04'
 
-import { commonJsonSchemas } from '../../utils/common-json-schemas'
+import { buildCommonJsonSchemas } from '../../utils/json-schemas/common-json-schemas'
 
 export async function validateRuleJsonSchema(
   schemaOrSchemas: readonly JSONSchema4[] | JSONSchema4,
@@ -20,7 +20,7 @@ export async function validateRuleJsonSchema(
 
 function assertGeneratedTsSeemsCorrect(generatedTypescript: string): void {
   for (let [commonJsonSchemaKey, commonJsonSchema] of Object.entries(
-    commonJsonSchemas,
+    buildCommonJsonSchemas(),
   )) {
     /* v8 ignore if -- @preserve Guard to surface clearer error when schema descriptions drift. */
     if (

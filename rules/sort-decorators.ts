@@ -7,13 +7,9 @@ import type {
 } from './sort-decorators/types'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
-  newlinesBetweenJsonSchema,
-  commonJsonSchemas,
-  groupsJsonSchema,
-} from '../utils/common-json-schemas'
+} from '../utils/json-schemas/common-partition-json-schemas'
 import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -22,8 +18,11 @@ import {
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
@@ -75,7 +74,8 @@ export default createEslintRule<Options, MessageId>({
     schema: {
       items: {
         properties: {
-          ...commonJsonSchemas,
+          ...buildCommonJsonSchemas(),
+          ...buildCommonGroupsJsonSchemas(),
           sortOnParameters: {
             description:
               'Controls whether sorting should be enabled for method parameter decorators.',
@@ -101,11 +101,8 @@ export default createEslintRule<Options, MessageId>({
               'Controls whether sorting should be enabled for class decorators.',
             type: 'boolean',
           },
-          customGroups: buildCustomGroupsArrayJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
@@ -261,6 +258,7 @@ function sortDecorators(
       sortNodesByGroups({
         optionsByGroupIndexComputer:
           buildDefaultOptionsByGroupIndexComputer(options),
+        comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes,

@@ -4,28 +4,27 @@ import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-depende
 import type { Selector, Options } from './sort-variable-declarations/types'
 
 import {
-  buildCustomGroupsArrayJsonSchema,
-  partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
-  newlinesBetweenJsonSchema,
-  commonJsonSchemas,
-  groupsJsonSchema,
-} from '../utils/common-json-schemas'
-import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+} from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import {
   singleCustomGroupJsonSchema,
   allSelectors,
 } from './sort-variable-declarations/types'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -178,6 +177,7 @@ export default createEslintRule<Options, MessageId>({
           sortNodesByGroups({
             optionsByGroupIndexComputer:
               buildDefaultOptionsByGroupIndexComputer(options),
+            comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes,
@@ -211,14 +211,12 @@ export default createEslintRule<Options, MessageId>({
     schema: [
       {
         properties: {
-          ...commonJsonSchemas,
-          customGroups: buildCustomGroupsArrayJsonSchema({
+          ...buildCommonJsonSchemas(),
+          ...buildCommonGroupsJsonSchemas({
             singleCustomGroupJsonSchema,
           }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          newlinesBetween: newlinesBetweenJsonSchema,
-          groups: groupsJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

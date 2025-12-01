@@ -1,14 +1,18 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import type {
+  CommonOptions,
+  RegexOption,
+  TypeOption,
+} from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-  regexJsonSchema,
-} from '../../utils/common-json-schemas'
+} from '../../utils/json-schemas/common-groups-json-schemas'
+import { regexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
 /**
  * Configuration options for the sort-classes rule.
@@ -25,9 +29,13 @@ export type SortClassesOptions = [
        * callbacks won't influence the ordering.
        */
       ignoreCallbackDependenciesPatterns: RegexOption
-    } & CommonGroupsOptions<SingleCustomGroup> &
-      CommonPartitionOptions &
-      CommonOptions
+    } & CommonGroupsOptions<
+      SingleCustomGroup,
+      Record<string, never>,
+      TypeOption
+    > &
+      CommonOptions<TypeOption> &
+      CommonPartitionOptions
   >,
 ]
 

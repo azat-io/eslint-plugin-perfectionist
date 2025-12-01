@@ -1,15 +1,19 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type {
+  CommonOptions,
+  RegexOption,
+  TypeOption,
+} from '../../types/common-options'
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../../types/common-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
 import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
-} from '../../utils/common-json-schemas'
+} from '../../utils/json-schemas/common-groups-json-schemas'
 
 /**
  * Configuration options for the sort-imports rule.
@@ -61,9 +65,13 @@ export type Options = Partial<
      * sorting instead of the entire line.
      */
     maxLineLength: number
-  } & CommonGroupsOptions<SingleCustomGroup> &
-    CommonPartitionOptions &
-    CommonOptions
+  } & CommonGroupsOptions<
+    SingleCustomGroup,
+    Record<string, never>,
+    CustomTypeOption
+  > &
+    CommonOptions<CustomTypeOption> &
+    CommonPartitionOptions
 >[]
 
 /**
@@ -76,6 +84,9 @@ export interface SortImportsSortingNode
     | TSESTree.VariableDeclaration
     | TSESTree.ImportDeclaration
   > {
+  /** Whether this import is a type-only import. */
+  isTypeImport: boolean
+
   /**
    * Whether this import should be ignored during sorting. Typically true for
    * side-effect imports when sortSideEffects is false.
@@ -117,6 +128,8 @@ export type Modifier =
   | ValueModifier
   | NamedModifier
   | TypeModifier
+
+export type CustomTypeOption = 'type-import-first' | TypeOption
 
 /**
  * Additional configuration for a single custom group.
@@ -252,3 +265,5 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
 }
+
+export const TYPE_IMPORT_FIRST_TYPE_OPTION = 'type-import-first'

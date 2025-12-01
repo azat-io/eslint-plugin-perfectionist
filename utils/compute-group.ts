@@ -1,7 +1,6 @@
 import type {
-  CustomGroupsOption,
+  CommonGroupsOptions,
   AnyOfCustomGroup,
-  GroupsOptions,
 } from '../types/common-groups-options'
 
 import { computeGroupsNames } from './compute-groups-names'
@@ -13,17 +12,10 @@ import { computeGroupsNames } from './compute-groups-names'
  */
 interface GetGroupParameters<SingleCustomGroup> {
   /** Configuration options for grouping. */
-  options: {
-    /** Custom group definitions. */
-    customGroups: CustomGroupsOption<SingleCustomGroup>
-
-    /**
-     * Available groups and their order. Can be a flat array or nested arrays
-     * for advanced configurations.
-     */
-    groups: GroupsOptions
-  }
-
+  options: Pick<
+    CommonGroupsOptions<SingleCustomGroup, unknown, string>,
+    'customGroups' | 'groups'
+  >
   /**
    * Optional function to test if an element matches a custom group.
    *
