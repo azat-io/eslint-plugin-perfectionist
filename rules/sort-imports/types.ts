@@ -94,6 +94,8 @@ export interface SortImportsSortingNode
   isIgnored: boolean
 }
 
+export type CustomTypeOption = 'type-import-first' | TypeOption
+
 /**
  * Union type of all available import selectors. Used to categorize different
  * types of import statements.
@@ -105,8 +107,6 @@ export type Selector = (typeof allSelectors)[number]
  * characteristics of import statements.
  */
 export type Modifier = (typeof allModifiers)[number]
-
-export type CustomTypeOption = 'type-import-first' | TypeOption
 
 /**
  * Additional configuration for a single custom group.

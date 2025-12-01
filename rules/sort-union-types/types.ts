@@ -7,14 +7,6 @@ import type { CommonOptions, TypeOption } from '../../types/common-options'
 import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/common-groups-json-schemas'
 
 /**
- * Union type of all available selectors for union type members.
- *
- * Selectors categorize different kinds of TypeScript types that can appear in a
- * union, enabling fine-grained control over sorting.
- */
-export type Selector = (typeof allSelectors)[number]
-
-/**
  * Configuration options for the sort-union-types rule.
  *
  * Controls how TypeScript union type members are sorted.
@@ -24,6 +16,14 @@ export type Options = Partial<
     CommonOptions<TypeOption> &
     CommonPartitionOptions
 >[]
+
+/**
+ * Union type of all available selectors for union type members.
+ *
+ * Selectors categorize different kinds of TypeScript types that can appear in a
+ * union, enabling fine-grained control over sorting.
+ */
+export type Selector = (typeof allSelectors)[number]
 
 /** Additional configuration for a single custom group. */
 interface SingleCustomGroup {
