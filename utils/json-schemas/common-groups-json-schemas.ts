@@ -218,11 +218,11 @@ export function buildCommonGroupsJsonSchemas({
  * @returns JSON schema for modifiers array validation.
  */
 export function buildCustomGroupModifiersJsonSchema(
-  modifiers: string[],
+  modifiers: readonly string[],
 ): JSONSchema4 {
   return {
     items: {
-      enum: modifiers,
+      enum: [...modifiers],
       type: 'string',
     },
     description: 'Modifier filters.',
@@ -249,11 +249,11 @@ export function buildCustomGroupModifiersJsonSchema(
  * @returns JSON schema for selector validation.
  */
 export function buildCustomGroupSelectorJsonSchema(
-  selectors: string[],
+  selectors: readonly string[],
 ): JSONSchema4 {
   return {
     description: 'Selector filter.',
-    enum: selectors,
+    enum: [...selectors],
     type: 'string',
   }
 }
