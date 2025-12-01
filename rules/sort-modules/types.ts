@@ -32,25 +32,13 @@ export type SortModulesOptions = [
  * Union type of all available module member selectors. Used to categorize
  * different types of module-level declarations.
  */
-export type Selector =
-  // | NamespaceSelector
-  | InterfaceSelector
-  | FunctionSelector
-  // | ModuleSelector
-  | ClassSelector
-  | TypeSelector
-  | EnumSelector
+export type Selector = (typeof allSelectors)[number]
 
 /**
  * Union type of all available module member modifiers. Used to identify
  * specific characteristics of module declarations.
  */
-export type Modifier =
-  | DecoratedModifier
-  | DeclareModifier
-  | DefaultModifier
-  | ExportModifier
-  | AsyncModifier
+export type Modifier = (typeof allModifiers)[number]
 
 /**
  * Additional configuration for a single custom group.
@@ -72,41 +60,11 @@ interface SingleCustomGroup {
   selector?: Selector
 }
 
-/** Modifier for decorated members (having decorators). */
-type DecoratedModifier = 'decorated'
-
-/** Selector for interface declarations. */
-type InterfaceSelector = 'interface'
-
-/** Selector for function declarations. */
-type FunctionSelector = 'function'
-
-/** Modifier for ambient declarations. */
-type DeclareModifier = 'declare'
-
-/** Modifier for default exports. */
-type DefaultModifier = 'default'
-
-/** Modifier for exported members. */
-type ExportModifier = 'export'
-
-/** Modifier for async functions. */
-type AsyncModifier = 'async'
-
-/** Selector for class declarations. */
-type ClassSelector = 'class'
-
-/** Selector for type alias declarations. */
-type TypeSelector = 'type'
-
-/** Selector for enum declarations. */
-type EnumSelector = 'enum'
-
 /**
  * Complete list of available module member selectors. Used for validation and
  * JSON schema generation.
  */
-export let allSelectors: Selector[] = [
+export let allSelectors = [
   'enum',
   'function',
   'interface',
@@ -114,19 +72,19 @@ export let allSelectors: Selector[] = [
   // 'namespace',
   'type',
   'class',
-]
+] as const
 
 /**
  * Complete list of available module member modifiers. Used for validation and
  * JSON schema generation.
  */
-export let allModifiers: Modifier[] = [
+export let allModifiers = [
   'async',
   'declare',
   'decorated',
   'default',
   'export',
-]
+] as const
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and

@@ -43,31 +43,13 @@ export type SortClassesOptions = [
  * Union type of all available class member selectors. Used to identify and
  * categorize different types of class members.
  */
-export type Selector =
-  | AccessorPropertySelector
-  | FunctionPropertySelector
-  | IndexSignatureSelector
-  | ConstructorSelector
-  | StaticBlockSelector
-  | GetMethodSelector
-  | SetMethodSelector
-  | PropertySelector
-  | MethodSelector
+export type Selector = (typeof allSelectors)[number]
 
 /**
  * Union type of all available class member modifiers. Includes access
  * modifiers, async, static, abstract, and other TypeScript modifiers.
  */
-export type Modifier =
-  | PublicOrProtectedOrPrivateModifier
-  | DecoratedModifier
-  | AbstractModifier
-  | OverrideModifier
-  | OptionalModifier
-  | ReadonlyModifier
-  | DeclareModifier
-  | StaticModifier
-  | AsyncModifier
+export type Modifier = (typeof allModifiers)[number]
 
 /**
  * Defines a custom group configuration for class members.
@@ -93,77 +75,11 @@ interface SingleCustomGroup {
   selector?: Selector
 }
 
-/** Union type for access level modifiers. */
-type PublicOrProtectedOrPrivateModifier =
-  | ProtectedModifier
-  | PrivateModifier
-  | PublicModifier
-
-/** Selector for function properties (arrow functions assigned to properties). */
-type FunctionPropertySelector = 'function-property'
-
-/** Selector for accessor properties (auto-accessors with 'accessor' keyword). */
-type AccessorPropertySelector = 'accessor-property'
-
-/** Selector for index signatures. */
-type IndexSignatureSelector = 'index-signature'
-
-/** Selector for static initialization blocks. */
-type StaticBlockSelector = 'static-block'
-
-/** Selector for class constructors. */
-type ConstructorSelector = 'constructor'
-
-/** Selector for getter methods. */
-type GetMethodSelector = 'get-method'
-
-/** Selector for setter methods. */
-type SetMethodSelector = 'set-method'
-
-/** Modifier for protected members. */
-type ProtectedModifier = 'protected'
-
-/** Modifier for decorated members (having decorators). */
-type DecoratedModifier = 'decorated'
-
-/** Modifier for abstract members. */
-type AbstractModifier = 'abstract'
-
-/** Modifier for overridden members. */
-type OverrideModifier = 'override'
-
-/** Modifier for readonly members. */
-type ReadonlyModifier = 'readonly'
-
-/** Modifier for optional members. */
-type OptionalModifier = 'optional'
-
-/** Selector for regular properties. */
-type PropertySelector = 'property'
-
-/** Modifier for private members. */
-type PrivateModifier = 'private'
-
-/** Modifier for ambient declarations. */
-type DeclareModifier = 'declare'
-
-/** Modifier for public members. */
-type PublicModifier = 'public'
-
-/** Modifier for static members. */
-type StaticModifier = 'static'
-
-/** Selector for regular methods. */
-type MethodSelector = 'method'
-
-/** Modifier for async methods and function properties. */
-type AsyncModifier = 'async'
-
 /**
  * Complete list of available class member selectors. Used for validation and
  * JSON schema generation.
  */
-export let allSelectors: Selector[] = [
+export let allSelectors = [
   'accessor-property',
   'index-signature',
   'constructor',
@@ -173,13 +89,13 @@ export let allSelectors: Selector[] = [
   'function-property',
   'property',
   'method',
-]
+] as const
 
 /**
  * Complete list of available class member modifiers. Used for validation and
  * JSON schema generation.
  */
-export let allModifiers: Modifier[] = [
+export let allModifiers = [
   'async',
   'protected',
   'private',
@@ -191,7 +107,7 @@ export let allModifiers: Modifier[] = [
   'decorated',
   'declare',
   'optional',
-]
+] as const
 
 /**
  * JSON schema definition for validating single custom group configurations.
