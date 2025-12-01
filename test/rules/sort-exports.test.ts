@@ -517,6 +517,38 @@ describe('sort-exports', () => {
           export * from 'b';
         `,
       })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'singleline-export',
+              leftGroup: 'multiline-export',
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedExportsGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['singleline-export', 'multiline-export'],
+          },
+        ],
+        output: dedent`
+          export * from 'b';
+          export {
+            a
+          } from 'a';
+        `,
+        code: dedent`
+          export {
+            a
+          } from 'a';
+          export * from 'b';
+        `,
+      })
     })
 
     it('prioritizes export kind over export type', async () => {
@@ -545,6 +577,40 @@ describe('sort-exports', () => {
         code: dedent`
           export type { a } from 'a';
           export * as b from 'b';
+        `,
+      })
+    })
+
+    it('prioritizes export type over line count', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'named-export',
+              leftGroup: 'unknown',
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedExportsGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['named-export', 'unknown', 'multiline-export'],
+          },
+        ],
+        output: dedent`
+          export {
+            b
+          } from 'b';
+          export * from 'a';
+        `,
+        code: dedent`
+          export * from 'a';
+          export {
+            b
+          } from 'b';
         `,
       })
     })
