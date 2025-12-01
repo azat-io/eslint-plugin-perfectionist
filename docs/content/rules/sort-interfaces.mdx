@@ -477,21 +477,21 @@ interface User {
 
 #### Index-signatures
 
-- Selectors: `index-signature`, `member`.
-- Modifiers: `required`, `optional`, `multiline`.
-- Example: `optional-index-signature`, `index-signature`, `member`.
+- Selectors: `'index-signature'`, `'member'`.
+- Modifiers: `'required'`, `'optional'`, `'multiline'`.
+- Example: `'optional-index-signature'`, `'index-signature'`, `'member'`.
 
 #### Methods
 
-- Selectors: `method`, `member`.
-- Modifiers: `required`, `optional`, `multiline`.
-- Example: `optional-multiline-method`, `method`, `member`.
+- Selectors: `'method'`, `'member'`.
+- Modifiers: `'required'`, `'optional'`, `'multiline'`.
+- Example: `'optional-multiline-method'`, `'method'`, `'member'`.
 
 #### Properties
 
-- Selectors: `property`, `member`.
-- Modifiers: `required`, `optional`, `multiline`.
-- Example: `optional-property`, `property`, `member`.
+- Selectors: `'property'`, `'member'`.
+- Modifiers: `'required'`, `'optional'`, `'multiline'`.
+- Example: `'optional-property'`, `'property'`, `'member'`.
 
 ##### Scope of the `required` modifier
 
@@ -523,15 +523,15 @@ interface Test {
 ```
 
 `optionalMethod` can be matched by the following groups, from most to least important:
-- `multiline-optional-method` or `optional-multiline-method`.
-- `multiline-method`.
-- `optional-method`.
-- `method`.
-- `multiline-optional-member` or `optional-multiline-member`.
-- `multiline-member`.
-- `optional-member`.
-- `member`.
-- `unknown`.
+- `'multiline-optional-method'` or `optional-multiline-method'`.
+- `'multiline-method'`.
+- `'optional-method'`.
+- `'method'`.
+- `'multiline-optional-member'` or `optional-multiline-member'`.
+- `'multiline-member'`.
+- `'optional-member'`.
+- `'member'`.
+- `'unknown'`.
 
 Example 2 (The most important group is written in the comments):
 
