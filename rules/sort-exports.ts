@@ -218,6 +218,9 @@ function sortExportNodes({
   formattedMembers: SortExportsSortingNode[][]
   options: Required<Options[number]>
 }): void {
+  let optionsByGroupIndexComputer =
+    buildDefaultOptionsByGroupIndexComputer(options)
+
   let nodes = formattedMembers.flat()
   reportAllErrors<MessageId>({
     availableMessageIds: {
@@ -238,9 +241,8 @@ function sortExportNodes({
   ): SortExportsSortingNode[] {
     return formattedMembers.flatMap(groupedNodes =>
       sortNodesByGroups({
-        optionsByGroupIndexComputer:
-          buildDefaultOptionsByGroupIndexComputer(options),
         comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+        optionsByGroupIndexComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes: groupedNodes,
