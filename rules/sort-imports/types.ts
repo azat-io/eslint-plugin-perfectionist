@@ -94,42 +94,19 @@ export interface SortImportsSortingNode
   isIgnored: boolean
 }
 
+export type CustomTypeOption = 'type-import-first' | TypeOption
+
 /**
  * Union type of all available import selectors. Used to categorize different
  * types of import statements.
  */
-export type Selector =
-  | SideEffectStyleSelector
-  | TsconfigPathSelector
-  | SideEffectSelector
-  | ExternalSelector
-  | InternalSelector
-  | BuiltinSelector
-  | SiblingSelector
-  | SubpathSelector
-  | ImportSelector
-  | ParentSelector
-  | IndexSelector
-  | StyleSelector
-  | TypeSelector
+export type Selector = (typeof allSelectors)[number]
 
 /**
  * Union type of all available import modifiers. Used to identify specific
  * characteristics of import statements.
  */
-export type Modifier =
-  | SideEffectModifier
-  | SinglelineModifier
-  | MultilineModifier
-  | WildcardModifier
-  | TsEqualsModifier
-  | RequireModifier
-  | DefaultModifier
-  | ValueModifier
-  | NamedModifier
-  | TypeModifier
-
-export type CustomTypeOption = 'type-import-first' | TypeOption
+export type Modifier = (typeof allModifiers)[number]
 
 /**
  * Additional configuration for a single custom group.
@@ -148,83 +125,11 @@ interface SingleCustomGroup {
   selector?: Selector
 }
 
-/** Selector for side-effect imports that are style files (CSS, SCSS, etc.). */
-type SideEffectStyleSelector = 'side-effect-style'
-
-/** Selector for imports using TypeScript path aliases defined in tsconfig.json. */
-type TsconfigPathSelector = 'tsconfig-path'
-
-/** Selector for side-effect imports (imports without bindings). */
-type SideEffectSelector = 'side-effect'
-
-/** Modifier for side-effect imports. */
-type SideEffectModifier = 'side-effect'
-
-/** Modifier for single-line imports. */
-type SinglelineModifier = 'singleline'
-
-/** Modifier for multiline imports. */
-type MultilineModifier = 'multiline'
-
-/** Modifier for TypeScript import-equals declarations. */
-type TsEqualsModifier = 'ts-equals'
-
-/** Modifier for namespace/wildcard imports (`import * as ...`). */
-type WildcardModifier = 'wildcard'
-
-/** Selector for external module imports (from node_modules). */
-type ExternalSelector = 'external'
-
-/** Selector for internal module imports (matching internalPattern). */
-type InternalSelector = 'internal'
-
-/**
- * Selector for subpath imports (modules with internal paths like
- * 'lodash/merge').
- */
-type SubpathSelector = 'subpath'
-
-/** Selector for built-in module imports (Node.js/Bun core modules). */
-type BuiltinSelector = 'builtin'
-
-/** Selector for sibling module imports (same directory). */
-type SiblingSelector = 'sibling'
-
-/** Modifier for default imports. */
-type DefaultModifier = 'default'
-
-/** Modifier for CommonJS require() imports. */
-type RequireModifier = 'require'
-
-/** Selector for parent module imports (from parent directories). */
-type ParentSelector = 'parent'
-
-/** Base selector for all import statements. */
-type ImportSelector = 'import'
-
-/** Selector for index file imports. */
-type IndexSelector = 'index'
-
-/** Selector for style file imports (CSS, SCSS, etc.). */
-type StyleSelector = 'style'
-
-/** Modifier for value imports (non-type imports). */
-type ValueModifier = 'value'
-
-/** Modifier for named imports. */
-type NamedModifier = 'named'
-
-/** Modifier for type-only imports. */
-type TypeModifier = 'type'
-
-/** Selector for type-only import statements. */
-type TypeSelector = 'type'
-
 /**
  * Complete list of available active import selectors. Used for validation and
  * JSON schema generation.
  */
-export let allSelectors: Selector[] = [
+export let allSelectors = [
   'side-effect-style',
   'tsconfig-path',
   'side-effect',
@@ -238,13 +143,13 @@ export let allSelectors: Selector[] = [
   'index',
   'style',
   'type',
-]
+] as const
 
 /**
  * Complete list of available import modifiers. Used for validation and JSON
  * schema generation.
  */
-export let allModifiers: Modifier[] = [
+export let allModifiers = [
   'default',
   'multiline',
   'named',
@@ -255,7 +160,7 @@ export let allModifiers: Modifier[] = [
   'type',
   'value',
   'wildcard',
-]
+] as const
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and

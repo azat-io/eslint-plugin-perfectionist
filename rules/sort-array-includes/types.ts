@@ -43,7 +43,7 @@ export type Options = Partial<
  * Represents the type of array element selector. Used to distinguish between
  * literal values and spread elements in arrays.
  */
-export type Selector = LiteralSelector | SpreadSelector
+export type Selector = (typeof allSelectors)[number]
 
 /**
  * Additional configuration for a single custom group.
@@ -65,22 +65,10 @@ interface SingleCustomGroup {
 }
 
 /**
- * Selector for literal array elements. Matches direct values like strings,
- * numbers, or identifiers in the array.
- */
-type LiteralSelector = 'literal'
-
-/**
- * Selector for spread elements in arrays. Matches spread syntax elements like
- * `...otherArray` in the array.
- */
-type SpreadSelector = 'spread'
-
-/**
  * Complete list of available selectors for array elements. Used for validation
  * and JSON schema generation.
  */
-export let allSelectors: Selector[] = ['literal', 'spread']
+export let allSelectors = ['literal', 'spread'] as const
 
 /**
  * JSON schema definition for validating single custom group configurations.

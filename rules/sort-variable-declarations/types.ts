@@ -23,7 +23,7 @@ export type Options = Partial<
  *
  * Distinguishes between variables with and without initial values.
  */
-export type Selector = UninitializedSelector | InitializedSelector
+export type Selector = (typeof allSelectors)[number]
 
 /** Additional configuration for a single custom group. */
 interface SingleCustomGroup {
@@ -35,27 +35,11 @@ interface SingleCustomGroup {
 }
 
 /**
- * Selector for uninitialized variables.
- *
- * Matches variable declarations without initial values, like `b` in `const a =
- * 1, b, c = 3;`.
- */
-type UninitializedSelector = 'uninitialized'
-
-/**
- * Selector for initialized variables.
- *
- * Matches variable declarations with initial values, like `a = 1` and `c = 3`
- * in `const a = 1, b, c = 3;`.
- */
-type InitializedSelector = 'initialized'
-
-/**
  * Array of all available selectors for variable declarations.
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allSelectors: Selector[] = ['initialized', 'uninitialized']
+export let allSelectors = ['initialized', 'uninitialized'] as const
 
 /**
  * JSON Schema definitions for single custom group configurations.

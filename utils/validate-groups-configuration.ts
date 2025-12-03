@@ -10,8 +10,8 @@ interface ValidateGenerateGroupsConfigurationParameters {
     CommonGroupsOptions<unknown, unknown, string>,
     'customGroups' | 'groups'
   >
-  selectors: string[]
-  modifiers: string[]
+  selectors: readonly string[]
+  modifiers: readonly string[]
 }
 
 /**
@@ -128,8 +128,8 @@ export function validateGroupsConfiguration({
  * @returns True if the group is a valid predefined combination.
  */
 function isPredefinedGroup(
-  allSelectors: string[],
-  allModifiers: string[],
+  allSelectors: readonly string[],
+  allModifiers: readonly string[],
   input: string,
 ): boolean {
   if (input === 'unknown') {
@@ -203,7 +203,7 @@ function computeLongestAllowedWord({
   allowedValues,
 }: {
   elementsSeparatedWithDash: string[]
-  allowedValues: string[]
+  allowedValues: readonly string[]
 }): { wordCount: number; word: string } | null {
   let match = [
     { word: elementsSeparatedWithDash.slice(-3).join('-'), wordCount: 3 },
