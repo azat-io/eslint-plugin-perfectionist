@@ -1,4 +1,7 @@
+import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import type { Modifier, Selector, Options } from './sort-exports/types'
 import type { SortingNode } from '../types/sorting-node'
@@ -30,6 +33,8 @@ import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { UnreachableCaseError } from '../utils/unreachable-case-error'
+import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -96,17 +101,18 @@ export default createEslintRule<Options, MessageId>({
     let formattedMembers: SortExportsSortingNode[][] = [[]]
 
     function registerNode(
-      node:
-        | TSESTree.ExportNamedDeclarationWithSource
-        | TSESTree.ExportAllDeclaration,
+      node: TSESTree.ExportNamedDeclaration | TSESTree.ExportAllDeclaration,
     ): void {
-      let selector: Selector = 'export'
-      let modifiers: Modifier[] = []
-      if (node.exportKind === 'value') {
-        modifiers.push('value')
-      } else {
-        modifiers.push('type')
+      if (!node.source) {
+        return
       }
+
+      let selector: Selector = 'export'
+      let modifiers: Modifier[] = [
+        computeExportKindModifier(node),
+        computeExportTypeModifier(node),
+        computeLineCountModifier(node),
+      ]
 
       let name = node.source.value
 
@@ -156,42 +162,13 @@ export default createEslintRule<Options, MessageId>({
 
     return {
       'Program:exit': () => {
-        function sortNodesExcludingEslintDisabled(
-          ignoreEslintDisabledNodes: boolean,
-        ): SortExportsSortingNode[] {
-          return formattedMembers.flatMap(groupedNodes =>
-            sortNodesByGroups({
-              optionsByGroupIndexComputer:
-                buildDefaultOptionsByGroupIndexComputer(options),
-              comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
-              ignoreEslintDisabledNodes,
-              groups: options.groups,
-              nodes: groupedNodes,
-            }),
-          )
-        }
-
-        let nodes = formattedMembers.flat()
-        reportAllErrors<MessageId>({
-          availableMessageIds: {
-            missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-            extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-            missedCommentAbove: MISSED_COMMENT_ABOVE_ERROR_ID,
-            unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-            unexpectedOrder: ORDER_ERROR_ID,
-          },
-          sortNodesExcludingEslintDisabled,
-          sourceCode,
-          options,
+        sortExportNodes({
+          formattedMembers,
           context,
-          nodes,
+          options,
         })
       },
-      ExportNamedDeclaration: node => {
-        if (node.source !== null) {
-          registerNode(node)
-        }
-      },
+      ExportNamedDeclaration: registerNode,
       ExportAllDeclaration: registerNode,
     }
   },
@@ -231,3 +208,82 @@ export default createEslintRule<Options, MessageId>({
   defaultOptions: [defaultOptions],
   name: 'sort-exports',
 })
+
+function sortExportNodes({
+  formattedMembers,
+  context,
+  options,
+}: {
+  context: TSESLint.RuleContext<MessageId, Options>
+  formattedMembers: SortExportsSortingNode[][]
+  options: Required<Options[number]>
+}): void {
+  let optionsByGroupIndexComputer =
+    buildDefaultOptionsByGroupIndexComputer(options)
+
+  let nodes = formattedMembers.flat()
+  reportAllErrors<MessageId>({
+    availableMessageIds: {
+      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+      missedCommentAbove: MISSED_COMMENT_ABOVE_ERROR_ID,
+      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+      unexpectedOrder: ORDER_ERROR_ID,
+    },
+    sortNodesExcludingEslintDisabled,
+    options,
+    context,
+    nodes,
+  })
+
+  function sortNodesExcludingEslintDisabled(
+    ignoreEslintDisabledNodes: boolean,
+  ): SortExportsSortingNode[] {
+    return formattedMembers.flatMap(groupedNodes =>
+      sortNodesByGroups({
+        comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+        optionsByGroupIndexComputer,
+        ignoreEslintDisabledNodes,
+        groups: options.groups,
+        nodes: groupedNodes,
+      }),
+    )
+  }
+}
+
+function computeExportTypeModifier(
+  node: TSESTree.ExportNamedDeclaration | TSESTree.ExportAllDeclaration,
+): 'wildcard' | 'named' {
+  switch (node.type) {
+    case AST_NODE_TYPES.ExportNamedDeclaration:
+      return 'named'
+    case AST_NODE_TYPES.ExportAllDeclaration:
+      return 'wildcard'
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(node)
+  }
+}
+
+function computeExportKindModifier(
+  node: TSESTree.ExportNamedDeclaration | TSESTree.ExportAllDeclaration,
+): 'value' | 'type' {
+  switch (node.exportKind) {
+    case 'value':
+      return 'value'
+    case 'type':
+      return 'type'
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(node.exportKind)
+  }
+}
+
+function computeLineCountModifier(
+  node: TSESTree.ExportNamedDeclaration | TSESTree.ExportAllDeclaration,
+): 'singleline' | 'multiline' {
+  if (isNodeOnSingleLine(node)) {
+    return 'singleline'
+  }
+  return 'multiline'
+}

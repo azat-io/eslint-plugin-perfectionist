@@ -25,7 +25,13 @@ export type Options = Partial<
  * Union type of available export modifiers. Distinguishes between value exports
  * and type-only exports.
  */
-export type Modifier = ValueModifier | TypeModifier
+export type Modifier =
+  | SinglelineModifier
+  | MultilineModifier
+  | WildcardModifier
+  | ValueModifier
+  | NamedModifier
+  | TypeModifier
 
 /**
  * Type of selector for export statements. Currently represents re-export
@@ -59,6 +65,15 @@ interface SingleCustomGroup {
   selector?: Selector
 }
 
+/** Modifier for single-line imports. */
+type SinglelineModifier = 'singleline'
+
+/** Modifier for multiline imports. */
+type MultilineModifier = 'multiline'
+
+/** Modifier for wildcard exports (`export * as ...`). */
+type WildcardModifier = 'wildcard'
+
 /**
  * Selector for export statements. Identifies re-export statements (`export ...
  * From '...'`).
@@ -70,6 +85,9 @@ type ExportSelector = 'export'
  * runtime values.
  */
 type ValueModifier = 'value'
+
+/** Modifier for named exports. */
+type NamedModifier = 'named'
 
 /**
  * Modifier for type-only exports. Identifies export statements with the `type`
@@ -86,7 +104,14 @@ export let allSelectors: Selector[] = ['export']
  * Complete list of available export modifiers. Used for validation and JSON
  * schema generation.
  */
-export let allModifiers: Modifier[] = ['value', 'type']
+export let allModifiers: Modifier[] = [
+  'value',
+  'type',
+  'named',
+  'wildcard',
+  'multiline',
+  'singleline',
+]
 
 /**
  * JSON schema definition for validating single custom group configurations.

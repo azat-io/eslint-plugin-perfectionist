@@ -276,7 +276,6 @@ function sortDecorators(
     },
     ignoreFirstNodeHighestBlockComment: true,
     sortNodesExcludingEslintDisabled,
-    sourceCode,
     options,
     context,
     nodes,
