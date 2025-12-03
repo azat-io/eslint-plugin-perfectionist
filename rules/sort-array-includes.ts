@@ -264,7 +264,6 @@ export function sortArray<MessageIds extends string>({
   reportAllErrors<MessageIds>({
     sortNodesExcludingEslintDisabled,
     availableMessageIds,
-    sourceCode,
     options,
     context,
     nodes,

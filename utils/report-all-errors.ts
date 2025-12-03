@@ -144,15 +144,6 @@ interface ReportAllErrorsParameters<
   ignoreFirstNodeHighestBlockComment?: boolean
 
   /**
-   * ESLint source code object for text manipulation.
-   *
-   * Provides methods to get text content, find tokens, and analyze the
-   * structure of the source code. Essential for generating fixes and
-   * determining node positions.
-   */
-  sourceCode: TSESLint.SourceCode
-
-  /**
    * Array of all nodes to check for ordering violations.
    *
    * These are the nodes in their current order in the source code. The function
@@ -206,11 +197,12 @@ export function reportAllErrors<
   sortNodesExcludingEslintDisabled,
   newlinesBetweenValueGetter,
   availableMessageIds,
-  sourceCode,
   context,
   options,
   nodes,
 }: ReportAllErrorsParameters<MessageIds, T>): void {
+  let { sourceCode } = context
+
   let sortedNodes = sortNodesExcludingEslintDisabled(false)
   let sortedNodesExcludingEslintDisabled =
     sortNodesExcludingEslintDisabled(true)

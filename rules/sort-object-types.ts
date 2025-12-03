@@ -335,7 +335,6 @@ export function sortObjectTypeElements<MessageIds extends string>({
   reportAllErrors<MessageIds>({
     sortNodesExcludingEslintDisabled,
     availableMessageIds,
-    sourceCode,
     options,
     context,
     nodes,

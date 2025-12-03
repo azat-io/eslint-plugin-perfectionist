@@ -641,7 +641,6 @@ export default createEslintRule<SortClassesOptions, MessageId>({
           unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
-        sourceCode,
         options,
         context,
         nodes,

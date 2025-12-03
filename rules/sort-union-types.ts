@@ -288,7 +288,6 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
       sortNodesExcludingEslintDisabled:
         createSortNodesExcludingEslintDisabled(nodes),
       availableMessageIds,
-      sourceCode,
       options,
       context,
       nodes,
