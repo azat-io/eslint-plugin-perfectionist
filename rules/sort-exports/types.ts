@@ -25,19 +25,13 @@ export type Options = Partial<
  * Union type of available export modifiers. Distinguishes between value exports
  * and type-only exports.
  */
-export type Modifier =
-  | SinglelineModifier
-  | MultilineModifier
-  | WildcardModifier
-  | ValueModifier
-  | NamedModifier
-  | TypeModifier
+export type Modifier = (typeof allModifiers)[number]
 
 /**
  * Type of selector for export statements. Currently represents re-export
  * statements.
  */
-export type Selector = ExportSelector
+export type Selector = (typeof allSelectors)[number]
 
 /**
  * Additional configuration for a single custom group.
@@ -65,53 +59,24 @@ interface SingleCustomGroup {
   selector?: Selector
 }
 
-/** Modifier for single-line imports. */
-type SinglelineModifier = 'singleline'
-
-/** Modifier for multiline imports. */
-type MultilineModifier = 'multiline'
-
-/** Modifier for wildcard exports (`export * as ...`). */
-type WildcardModifier = 'wildcard'
-
-/**
- * Selector for export statements. Identifies re-export statements (`export ...
- * From '...'`).
- */
-type ExportSelector = 'export'
-
-/**
- * Modifier for value exports. Identifies regular export statements that export
- * runtime values.
- */
-type ValueModifier = 'value'
-
-/** Modifier for named exports. */
-type NamedModifier = 'named'
-
-/**
- * Modifier for type-only exports. Identifies export statements with the `type`
- * keyword (`export type ... From '...'`).
- */
-type TypeModifier = 'type'
-
 /**
  * Complete list of available export selectors. Used for validation and JSON
  * schema generation.
  */
-export let allSelectors: Selector[] = ['export']
+export let allSelectors = ['export'] as const
+
 /**
  * Complete list of available export modifiers. Used for validation and JSON
  * schema generation.
  */
-export let allModifiers: Modifier[] = [
+export let allModifiers = [
   'value',
   'type',
   'named',
   'wildcard',
   'multiline',
   'singleline',
-]
+] as const
 
 /**
  * JSON schema definition for validating single custom group configurations.

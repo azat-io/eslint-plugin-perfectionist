@@ -52,13 +52,13 @@ export type Options = Partial<
  * Union type of all available JSX prop modifiers. Used to identify specific
  * characteristics of JSX props.
  */
-export type Modifier = MultilineModifier | ShorthandModifier
+export type Modifier = (typeof allModifiers)[number]
 
 /**
  * Union type of all available JSX prop selectors. Used to categorize different
  * types of JSX props.
  */
-export type Selector = PropertySelector
+export type Selector = (typeof allSelectors)[number]
 
 /**
  * Additional configuration for a single custom group.
@@ -90,26 +90,17 @@ interface SingleCustomGroup {
   selector?: Selector
 }
 
-/** Modifier for JSX props that span multiple lines. */
-type MultilineModifier = 'multiline'
-
-/** Modifier for JSX props without explicit values (shorthand boolean props). */
-type ShorthandModifier = 'shorthand'
-
-/** Selector for regular JSX props/attributes. */
-type PropertySelector = 'prop'
-
 /**
  * Complete list of available JSX prop selectors. Used for validation and JSON
  * schema generation.
  */
-export let allSelectors: Selector[] = ['prop']
+export let allSelectors = ['prop'] as const
 
 /**
  * Complete list of available JSX prop modifiers. Used for validation and JSON
  * schema generation.
  */
-export let allModifiers: Modifier[] = ['shorthand', 'multiline']
+export let allModifiers = ['shorthand', 'multiline'] as const
 
 /**
  * JSON schema definition for validating single custom group configurations.

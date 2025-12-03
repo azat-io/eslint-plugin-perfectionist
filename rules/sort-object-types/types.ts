@@ -90,11 +90,7 @@ export type Options = Partial<
  * Selectors identify the type of object member for grouping and sorting
  * purposes.
  */
-export type Selector =
-  | IndexSignatureSelector
-  | PropertySelector
-  | MemberSelector
-  | MethodSelector
+export type Selector = (typeof allSelectors)[number]
 
 /**
  * Union type of all available modifiers for object type members.
@@ -102,7 +98,7 @@ export type Selector =
  * Modifiers provide additional context about member characteristics, such as
  * whether they are optional, required, or span multiple lines.
  */
-export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
+export type Modifier = (typeof allModifiers)[number]
 
 /** Additional configuration for a single custom group. */
 interface SingleCustomGroup {
@@ -134,73 +130,23 @@ interface SingleCustomGroup {
 }
 
 /**
- * Selector for index signature members.
- *
- * Matches TypeScript index signatures like `[key: string]: any`.
- */
-type IndexSignatureSelector = 'index-signature'
-
-/**
- * Modifier indicating a member spans multiple lines.
- *
- * Applied to members whose definition extends across multiple lines in the
- * source code.
- */
-type MultilineModifier = 'multiline'
-
-/**
- * Modifier indicating a required member.
- *
- * Applied to object members that are not optional (no `?` modifier).
- */
-type RequiredModifier = 'required'
-
-/**
- * Modifier indicating an optional member.
- *
- * Applied to object members marked with the `?` modifier.
- */
-type OptionalModifier = 'optional'
-
-/**
- * Selector for property members.
- *
- * Matches regular property declarations in object types, like `name: string`.
- */
-type PropertySelector = 'property'
-
-/**
- * Selector for generic members.
- *
- * A catch-all selector that matches any object member type.
- */
-type MemberSelector = 'member'
-
-/**
- * Selector for method members.
- *
- * Matches method signatures in object types, like `getName(): string`.
- */
-type MethodSelector = 'method'
-
-/**
  * Array of all available selectors for object type members.
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allSelectors: Selector[] = [
+export let allSelectors = [
   'index-signature',
   'member',
   'method',
   'property',
-]
+] as const
 
 /**
  * Array of all available modifiers for object type members.
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allModifiers: Modifier[] = ['optional', 'required', 'multiline']
+export let allModifiers = ['optional', 'required', 'multiline'] as const
 
 /**
  * JSON Schema definition for the sortBy configuration option.

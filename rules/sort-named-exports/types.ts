@@ -42,14 +42,14 @@ export type SortNamedExportsSortingNode = SortingNode<TSESTree.ExportSpecifier>
  *
  * Modifiers distinguish between type exports and value exports.
  */
-export type Modifier = ValueModifier | TypeModifier
+export type Modifier = (typeof allModifiers)[number]
 
 /**
  * Union type of all available selectors for named exports.
  *
  * Currently only includes the 'export' selector.
  */
-export type Selector = ExportSelector
+export type Selector = (typeof allSelectors)[number]
 
 /** Additional configuration for a single custom group. */
 interface SingleCustomGroup {
@@ -67,38 +67,18 @@ interface SingleCustomGroup {
 }
 
 /**
- * Selector for export specifiers.
- *
- * Matches named export declarations like `export { name }`.
- */
-type ExportSelector = 'export'
-
-/**
- * Modifier indicating a value export.
- *
- * Applied to regular JavaScript/TypeScript value exports (not type-only).
- */
-type ValueModifier = 'value'
-
-/**
- * Modifier indicating a type export.
- *
- * Applied to TypeScript type-only exports like `export type { MyType }`.
- */
-type TypeModifier = 'type'
-
-/**
  * Array of all available selectors for named exports.
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allSelectors: Selector[] = ['export']
+export let allSelectors = ['export'] as const
+
 /**
  * Array of all available modifiers for named exports.
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allModifiers: Modifier[] = ['value', 'type']
+export let allModifiers = ['value', 'type'] as const
 
 /**
  * JSON Schema definitions for single custom group configurations.

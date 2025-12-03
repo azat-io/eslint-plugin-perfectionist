@@ -93,7 +93,7 @@ export type Options = Partial<
  * Modifiers provide additional context about member characteristics, such as
  * whether they are optional, required, or span multiple lines.
  */
-export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
+export type Modifier = (typeof allModifiers)[number]
 
 /**
  * Union type of all available selectors for object members.
@@ -101,7 +101,7 @@ export type Modifier = MultilineModifier | RequiredModifier | OptionalModifier
  * Selectors identify the type of object member for grouping and sorting
  * purposes.
  */
-export type Selector = PropertySelector | MemberSelector | MethodSelector
+export type Selector = (typeof allSelectors)[number]
 
 /** Additional configuration for a single custom group. */
 interface SingleCustomGroup {
@@ -125,63 +125,18 @@ interface SingleCustomGroup {
 }
 
 /**
- * Modifier indicating a member spans multiple lines.
- *
- * Applied to members whose definition extends across multiple lines in the
- * source code.
- */
-type MultilineModifier = 'multiline'
-
-/**
- * Modifier indicating a required member.
- *
- * Applied to object members that are always present (in TypeScript context).
- */
-type RequiredModifier = 'required'
-
-/**
- * Modifier indicating an optional member.
- *
- * Applied to object members that may not be present (in TypeScript context).
- */
-type OptionalModifier = 'optional'
-
-/**
- * Selector for property members.
- *
- * Matches regular property declarations in objects, including shorthand
- * properties and computed properties.
- */
-type PropertySelector = 'property'
-
-/**
- * Selector for generic members.
- *
- * A catch-all selector that matches any object member type.
- */
-type MemberSelector = 'member'
-
-/**
- * Selector for method members.
- *
- * Matches method definitions in objects, including both regular methods and
- * async methods.
- */
-type MethodSelector = 'method'
-
-/**
  * Array of all available selectors for object members.
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allSelectors: Selector[] = ['member', 'method', 'property']
+export let allSelectors = ['member', 'method', 'property'] as const
 
 /**
  * Array of all available modifiers for object members.
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allModifiers: Modifier[] = ['optional', 'required', 'multiline']
+export let allModifiers = ['optional', 'required', 'multiline'] as const
 
 /**
  * JSON Schema definitions for single custom group configurations.

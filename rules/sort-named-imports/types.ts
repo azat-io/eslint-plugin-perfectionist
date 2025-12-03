@@ -42,14 +42,14 @@ export type SortNamedImportsSortingNode = SortingNode<TSESTree.ImportClause>
  *
  * Modifiers distinguish between type imports and value imports.
  */
-export type Modifier = ValueModifier | TypeModifier
+export type Modifier = (typeof allModifiers)[number]
 
 /**
  * Union type of all available selectors for named imports.
  *
  * Currently only includes the 'import' selector.
  */
-export type Selector = ImportSelector
+export type Selector = (typeof allSelectors)[number]
 
 /** Additional configuration for a single custom group. */
 interface SingleCustomGroup {
@@ -67,40 +67,18 @@ interface SingleCustomGroup {
 }
 
 /**
- * Selector for import specifiers.
- *
- * Matches named import declarations like `import { name } from 'module'`.
- */
-type ImportSelector = 'import'
-
-/**
- * Modifier indicating a value import.
- *
- * Applied to regular JavaScript/TypeScript value imports (not type-only).
- */
-type ValueModifier = 'value'
-
-/**
- * Modifier indicating a type import.
- *
- * Applied to TypeScript type-only imports like `import type { MyType } from
- * 'module'`.
- */
-type TypeModifier = 'type'
-
-/**
  * Array of all available selectors for named imports.
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allSelectors: Selector[] = ['import']
+export let allSelectors = ['import'] as const
 
 /**
  * Array of all available modifiers for named imports.
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allModifiers: Modifier[] = ['value', 'type']
+export let allModifiers = ['value', 'type'] as const
 
 /**
  * JSON Schema definitions for single custom group configurations.
