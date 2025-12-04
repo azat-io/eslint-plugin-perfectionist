@@ -37,8 +37,7 @@ export type Options = Partial<
     CommonPartitionOptions
 >[]
 
-export interface SortEnumsSortingNode
-  extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
+export interface SortEnumsSortingNode extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
   numericValue: number | null
   value: string | null
 }

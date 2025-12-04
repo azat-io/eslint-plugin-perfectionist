@@ -5251,7 +5251,7 @@ describe('sort-decorators', () => {
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
-      ).resolves.not.toThrow()
+      ).resolves.not.toThrowError()
     })
 
     it('defaults to alphabetical ascending order', async () => {

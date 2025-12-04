@@ -108,8 +108,7 @@ let defaultOptions: Required<SortClassesOptions[number]> = {
   order: 'asc',
 }
 
-interface SortClassSortingNodes
-  extends SortingNodeWithDependencies<TSESTree.ClassElement> {
+interface SortClassSortingNodes extends SortingNodeWithDependencies<TSESTree.ClassElement> {
   overloadSignaturesGroupId: number | null
 }
 

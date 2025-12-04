@@ -11,7 +11,7 @@ describe('validate-custom-sort-configuration', () => {
           alphabet: '',
           type,
         }),
-      ).not.toThrow()
+      ).not.toThrowError()
     },
   )
 
@@ -21,7 +21,7 @@ describe('validate-custom-sort-configuration', () => {
         type: 'custom',
         alphabet: '',
       }),
-    ).toThrow('alphabet` option must not be empty')
+    ).toThrowError('alphabet` option must not be empty')
   })
 
   it('throws when an empty alphabet is entered while type is `custom` in groups', () => {
@@ -31,6 +31,6 @@ describe('validate-custom-sort-configuration', () => {
         type: 'alphabetical',
         alphabet: '',
       }),
-    ).toThrow('alphabet` option must not be empty')
+    ).toThrowError('alphabet` option must not be empty')
   })
 })

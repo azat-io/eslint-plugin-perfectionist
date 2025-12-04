@@ -10379,7 +10379,7 @@ describe('sort-imports', () => {
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
-      ).resolves.not.toThrow()
+      ).resolves.not.toThrowError()
     })
 
     it('supports combination of predefined and custom groups', async () => {
@@ -10887,13 +10887,13 @@ describe('sort-imports', () => {
       it('throws error when side-effect group is nested with non-side-effect groups', () => {
         expect(() =>
           createRule(['external', ['side-effect', 'internal']]),
-        ).toThrow(expectedThrownError)
+        ).toThrowError(expectedThrownError)
       })
 
       it('throws error when side-effect-style group is nested with non-side-effect groups', () => {
         expect(() =>
           createRule(['external', ['side-effect-style', 'internal']]),
-        ).toThrow(expectedThrownError)
+        ).toThrowError(expectedThrownError)
       })
 
       it('throws error when mixed side-effect groups are nested with non-side-effect groups', () => {
@@ -10902,13 +10902,13 @@ describe('sort-imports', () => {
             'external',
             ['side-effect-style', 'internal', 'side-effect'],
           ]),
-        ).toThrow(expectedThrownError)
+        ).toThrowError(expectedThrownError)
       })
 
       it('allows side-effect groups to be nested together', () => {
         expect(() =>
           createRule(['external', ['side-effect-style', 'side-effect']]),
-        ).not.toThrow(expectedThrownError)
+        ).not.toThrowError(expectedThrownError)
       })
 
       it('allows any group nesting when sortSideEffects is enabled', () => {
@@ -10917,7 +10917,7 @@ describe('sort-imports', () => {
             ['external', ['side-effect-style', 'internal', 'side-effect']],
             true,
           ),
-        ).not.toThrow(expectedThrownError)
+        ).not.toThrowError(expectedThrownError)
       })
     })
 

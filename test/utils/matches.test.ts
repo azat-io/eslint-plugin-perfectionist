@@ -33,7 +33,7 @@ describe('matches', () => {
   })
 
   it('should throw an error if the regex option is not a string', () => {
-    expect(() => matches('foo', /foo/u as unknown as string)).toThrow(
+    expect(() => matches('foo', /foo/u as unknown as string)).toThrowError(
       'Invalid configuration: please enter your RegExp expressions as strings.\n' +
         'For example, write ".*foo" instead of /.*foo/',
     )

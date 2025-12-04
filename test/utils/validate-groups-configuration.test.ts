@@ -34,7 +34,7 @@ describe('validate-groups-configuration', () => {
         selectors,
         modifiers,
       }),
-    ).not.toThrow()
+    ).not.toThrowError()
   })
 
   it('allows custom groups', () => {
@@ -51,7 +51,7 @@ describe('validate-groups-configuration', () => {
         selectors,
         modifiers,
       }),
-    ).not.toThrow()
+    ).not.toThrowError()
   })
 
   it.each(['modifier1-modifier1', 'double-modifier-modifier1-double-modifier'])(
@@ -66,7 +66,7 @@ describe('validate-groups-configuration', () => {
           selectors,
           modifiers,
         }),
-      ).toThrow(`Invalid group(s): ${groupModifiers}-selector1`)
+      ).toThrowError(`Invalid group(s): ${groupModifiers}-selector1`)
     },
   )
 
@@ -80,7 +80,7 @@ describe('validate-groups-configuration', () => {
         selectors,
         modifiers,
       }),
-    ).toThrow('Duplicated group(s): modifier1-selector1')
+    ).toThrowError('Duplicated group(s): modifier1-selector1')
   })
 
   it('throws an error if invalid groups are provided', () => {
@@ -102,7 +102,9 @@ describe('validate-groups-configuration', () => {
         selectors,
         modifiers,
       }),
-    ).toThrow('Invalid group(s): nonAllowedModifier-selector1, myCustomGroup')
+    ).toThrowError(
+      'Invalid group(s): nonAllowedModifier-selector1, myCustomGroup',
+    )
   })
 
   it('throws an error with consecutive newlinesBetween objects', () => {
@@ -115,7 +117,7 @@ describe('validate-groups-configuration', () => {
         selectors: [],
         modifiers: [],
       })
-    }).toThrow('Consecutive `newlinesBetween` objects are not allowed')
+    }).toThrowError('Consecutive `newlinesBetween` objects are not allowed')
   })
 })
 

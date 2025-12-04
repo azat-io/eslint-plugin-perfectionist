@@ -5,19 +5,19 @@ import * as ts from 'typescript'
 
 import type { getTypescriptImport as testedFunction } from '../../../rules/sort-imports/get-typescript-import'
 
-let mockCreateRequire: Mock<() => typeof ts> = vi.fn()
+let mockCreateRequire: Mock<(moduleId: string) => typeof ts> = vi.fn()
+let mockRequire = mockCreateRequire as unknown as NodeJS.Require
 
-vi.mock('node:module', _ => ({
-  createRequire: () => () => mockCreateRequire(),
+vi.mock(import('node:module'), _ => ({
+  createRequire: (_path: string | URL) => mockRequire,
 }))
 
 describe('getTypescriptImport', () => {
   let getTypescriptImport: typeof testedFunction
 
   beforeEach(async () => {
-    ;({ getTypescriptImport } = await import(
-      '../../../rules/sort-imports/get-typescript-import'
-    ))
+    ;({ getTypescriptImport } =
+      await import('../../../rules/sort-imports/get-typescript-import'))
     vi.clearAllMocks()
     vi.resetModules()
   })

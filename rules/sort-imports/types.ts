@@ -78,12 +78,11 @@ export type Options = Partial<
  * Represents a sorting node for an import statement. Extends the base sorting
  * node with dependency information and ignore flag.
  */
-export interface SortImportsSortingNode
-  extends SortingNodeWithDependencies<
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration
-  > {
+export interface SortImportsSortingNode extends SortingNodeWithDependencies<
+  | TSESTree.TSImportEqualsDeclaration
+  | TSESTree.VariableDeclaration
+  | TSESTree.ImportDeclaration
+> {
   /** Whether this import is a type-only import. */
   isTypeImport: boolean
 
