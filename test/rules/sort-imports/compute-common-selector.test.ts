@@ -10,7 +10,7 @@ import { computeCommonSelectors } from '../../../rules/sort-imports/compute-comm
 
 let mockGetTypescriptImport: Mock<() => typeof ts> = vi.fn()
 
-vi.mock('../../../rules/sort-imports/get-typescript-import', () => ({
+vi.mock(import('../../../rules/sort-imports/get-typescript-import'), () => ({
   getTypescriptImport: () => mockGetTypescriptImport(),
 }))
 

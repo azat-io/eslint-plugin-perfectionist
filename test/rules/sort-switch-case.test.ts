@@ -3107,7 +3107,7 @@ describe('sort-switch-case', () => {
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
-      ).resolves.not.toThrow()
+      ).resolves.not.toThrowError()
     })
 
     it('not works if discriminant is true', async () => {

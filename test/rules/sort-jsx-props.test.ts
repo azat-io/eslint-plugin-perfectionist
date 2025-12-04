@@ -3999,7 +3999,7 @@ describe('sort-jsx-props', () => {
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
-      ).resolves.not.toThrow()
+      ).resolves.not.toThrowError()
     })
 
     it('uses alphabetical ascending order by default', async () => {

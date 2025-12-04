@@ -4798,7 +4798,7 @@ describe('sort-intersection-types', () => {
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
-      ).resolves.not.toThrow()
+      ).resolves.not.toThrowError()
     })
 
     it('allows predefined groups', async () => {

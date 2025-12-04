@@ -182,8 +182,7 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
  * including whether the member is optional/required and its type annotation
  * value.
  */
-export interface SortObjectTypesSortingNode
-  extends SortingNode<TSESTree.TypeElement> {
+export interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeElement> {
   /**
    * The string representation of the member's type annotation. Used when
    * sorting by value instead of name.

@@ -12,7 +12,7 @@ describe('validate-side-effects-configuration', () => {
         sortSideEffects: true,
         groups,
       })
-    }).not.toThrow()
+    }).not.toThrowError()
   })
 
   it.each([
@@ -32,7 +32,7 @@ describe('validate-side-effects-configuration', () => {
           sortSideEffects: false,
           groups,
         })
-      }).toThrow(
+      }).toThrowError(
         "Side effect groups cannot be nested with non side effect groups when 'sortSideEffects' is 'false'",
       )
     },

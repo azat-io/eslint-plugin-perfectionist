@@ -6,27 +6,27 @@ describe('alphabet', () => {
   describe('generators', () => {
     describe('generateFrom', () => {
       it('allows to generate an alphabet from string', () => {
-        expect(() => Alphabet.generateFrom('abc')).not.toThrow()
+        expect(() => Alphabet.generateFrom('abc')).not.toThrowError()
       })
 
       it('allows to generate an alphabet from array', () => {
-        expect(() => Alphabet.generateFrom(['a', 'b', 'c'])).not.toThrow()
+        expect(() => Alphabet.generateFrom(['a', 'b', 'c'])).not.toThrowError()
       })
 
       it('throws when a duplicate character is found in a string input', () => {
-        expect(() => Alphabet.generateFrom('aa')).toThrow(
+        expect(() => Alphabet.generateFrom('aa')).toThrowError(
           'The alphabet must not contain repeated characters',
         )
       })
 
       it('throws when a duplicate character is found in an array input', () => {
-        expect(() => Alphabet.generateFrom(['a', 'a'])).toThrow(
+        expect(() => Alphabet.generateFrom(['a', 'a'])).toThrowError(
           'The alphabet must not contain repeated characters',
         )
       })
 
       it('throws when a non-single character is found in a array input', () => {
-        expect(() => Alphabet.generateFrom(['ab'])).toThrow(
+        expect(() => Alphabet.generateFrom(['ab'])).toThrowError(
           'The alphabet must contain single characters',
         )
       })
@@ -83,15 +83,15 @@ describe('alphabet', () => {
       })
 
       it('throws when a non-single character is found in a array input', () => {
-        expect(() => Alphabet.generateFrom('').pushCharacters(['ab'])).toThrow(
-          'Only single characters may be pushed',
-        )
+        expect(() =>
+          Alphabet.generateFrom('').pushCharacters(['ab']),
+        ).toThrowError('Only single characters may be pushed')
       })
 
       it('throws when pushing a character that already exists in the alphabet', () => {
-        expect(() => Alphabet.generateFrom('ab').pushCharacters('ab')).toThrow(
-          'The alphabet already contains the characters a, b',
-        )
+        expect(() =>
+          Alphabet.generateFrom('ab').pushCharacters('ab'),
+        ).toThrowError('The alphabet already contains the characters a, b')
       })
 
       it('allows removing characters', () => {
@@ -207,7 +207,7 @@ describe('alphabet', () => {
               characterBefore: 'b',
               characterAfter: 'a',
             }),
-          ).toThrow('Character b not found in alphabet')
+          ).toThrowError('Character b not found in alphabet')
         })
 
         it('throws when the characterAfter is not in the alphabet', () => {
@@ -216,7 +216,7 @@ describe('alphabet', () => {
               characterBefore: 'a',
               characterAfter: 'b',
             }),
-          ).toThrow('Character b not found in alphabet')
+          ).toThrowError('Character b not found in alphabet')
         })
       })
 
@@ -249,7 +249,7 @@ describe('alphabet', () => {
               characterBefore: 'b',
               characterAfter: 'a',
             }),
-          ).toThrow('Character b not found in alphabet')
+          ).toThrowError('Character b not found in alphabet')
         })
 
         it('throws when the characterAfter is not in the alphabet', () => {
@@ -258,7 +258,7 @@ describe('alphabet', () => {
               characterBefore: 'a',
               characterAfter: 'b',
             }),
-          ).toThrow('Character b not found in alphabet')
+          ).toThrowError('Character b not found in alphabet')
         })
       })
 

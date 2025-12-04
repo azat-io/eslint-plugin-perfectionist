@@ -4005,7 +4005,7 @@ describe('sort-named-exports', () => {
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
-      ).resolves.not.toThrow()
+      ).resolves.not.toThrowError()
     })
 
     it('sets alphabetical asc sorting as default', async () => {

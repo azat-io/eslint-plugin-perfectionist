@@ -18,6 +18,6 @@ describe('validate-no-duplicated-groups', () => {
           { commentAbove: 'comment', group: ['group4'] },
         ],
       }),
-    ).toThrow('Duplicated group(s): group1, group2, group3, group4')
+    ).toThrowError('Duplicated group(s): group1, group2, group3, group4')
   })
 })

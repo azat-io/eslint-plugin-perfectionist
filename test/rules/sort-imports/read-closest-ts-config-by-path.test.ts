@@ -1,6 +1,7 @@
 /* eslint-disable typescript/no-unsafe-member-access */
 
 import type { Diagnostic } from 'typescript'
+import type { PathLike } from 'node:fs'
 import type { Mock } from 'vitest'
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -11,8 +12,9 @@ import type { readClosestTsConfigByPath as testedFunction } from '../../../rules
 
 let mockExistsSync: Mock<(filePath: string) => boolean> = vi.fn()
 
-vi.mock('node:fs', () => ({
-  existsSync: (filePath: string): boolean => mockExistsSync(filePath),
+vi.mock(import('node:fs'), () => ({
+  existsSync: (filePath: PathLike): boolean =>
+    mockExistsSync(filePath as string),
 }))
 
 let mockConvertCompilerOptionsFromJson: Mock<(content: object) => unknown> =
@@ -25,29 +27,35 @@ let mockParseJsonConfigFileContent: Mock<
   (content: object) => ts.ParsedCommandLine
 > = vi.fn()
 
-vi.mock('node:module', _ => ({
-  createRequire: () => () => ({
-    createModuleResolutionCache: (
-      _contextCwd: string,
-      getCanonicalFileName: (fileName: string) => string,
-      _options: unknown,
-    ) => {
-      getCanonicalFileName('test.ts')
-      return vi.fn()
-    },
-    parseJsonConfigFileContent: (content: object): ts.ParsedCommandLine =>
-      mockParseJsonConfigFileContent(content),
-    convertCompilerOptionsFromJson: (content: object) =>
-      mockConvertCompilerOptionsFromJson(content),
-    readConfigFile: (filePath: string): ts.ParsedCommandLine =>
-      mockReadConfigFile(filePath),
-    sys: ts.sys,
-  }),
+let mockRequire: Mock<(moduleId: string) => typeof ts> = vi.fn(
+  () =>
+    ({
+      createModuleResolutionCache: (
+        _contextCwd: string,
+        getCanonicalFileName: (fileName: string) => string,
+        _options: unknown,
+      ) => {
+        getCanonicalFileName('test.ts')
+        return vi.fn()
+      },
+      parseJsonConfigFileContent: (content: object): ts.ParsedCommandLine =>
+        mockParseJsonConfigFileContent(content),
+      convertCompilerOptionsFromJson: (content: object) =>
+        mockConvertCompilerOptionsFromJson(content),
+      readConfigFile: (filePath: string): ts.ParsedCommandLine =>
+        mockReadConfigFile(filePath),
+      sys: ts.sys,
+    }) as unknown as typeof ts,
+)
+
+vi.mock(import('node:module'), _ => ({
+  createRequire: (_path: string | URL) =>
+    mockRequire as unknown as NodeJS.Require,
 }))
 
 let mockGetTypescriptImport: Mock<() => typeof ts | null> = vi.fn()
 
-vi.mock('../../../rules/sort-imports/get-typescript-import', () => ({
+vi.mock(import('../../../rules/sort-imports/get-typescript-import'), () => ({
   getTypescriptImport: () => mockGetTypescriptImport(),
 }))
 
@@ -72,9 +80,8 @@ describe('readClosestTsConfigByPath', () => {
   let readClosestTsConfigByPath: typeof testedFunction
 
   beforeEach(async () => {
-    ;({ readClosestTsConfigByPath } = await import(
-      '../../../rules/sort-imports/read-closest-ts-config-by-path'
-    ))
+    ;({ readClosestTsConfigByPath } =
+      await import('../../../rules/sort-imports/read-closest-ts-config-by-path'))
     vi.clearAllMocks()
     vi.resetModules()
   })
