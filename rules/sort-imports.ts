@@ -17,36 +17,42 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import {
+  TYPE_IMPORT_FIRST_TYPE_OPTION,
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-imports/types'
+import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { isNonExternalReferenceTsImportEquals } from './sort-imports/is-non-external-reference-ts-import-equals'
 import {
   buildCommonJsonSchemas,
   regexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
-import {
-  singleCustomGroupJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-imports/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { comparatorByOptionsComputer } from './sort-imports/comparator-by-options-computer'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
+import { computeSpecifierModifiers } from './sort-imports/compute-specifier-modifiers'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
 import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
+import { computeDependencyNames } from './sort-imports/compute-dependency-names'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { computeDependencies } from './sort-imports/compute-dependencies'
+import { isSideEffectImport } from './sort-imports/is-side-effect-import'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
-import { TYPE_IMPORT_FIRST_TYPE_OPTION } from './sort-imports/types'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
+import { computeNodeName } from './sort-imports/compute-node-name'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -152,7 +158,7 @@ export default createEslintRule<Options, MessageId>({
         | TSESTree.VariableDeclaration
         | TSESTree.ImportDeclaration,
     ): void {
-      let name = getNodeName({
+      let name = computeNodeName({
         sourceCode,
         node,
       })
@@ -209,17 +215,7 @@ export default createEslintRule<Options, MessageId>({
         modifiers.push('require')
       }
 
-      if (hasSpecifier(node, 'ImportDefaultSpecifier')) {
-        modifiers.push('default')
-      }
-
-      if (hasSpecifier(node, 'ImportNamespaceSpecifier')) {
-        modifiers.push('wildcard')
-      }
-
-      if (hasSpecifier(node, 'ImportSpecifier')) {
-        modifiers.push('named')
-      }
+      modifiers.push(...computeSpecifierModifiers(node))
 
       if (isNodeOnSingleLine(node)) {
         modifiers.push('singleline')
@@ -261,97 +257,6 @@ export default createEslintRule<Options, MessageId>({
     }
 
     return {
-      'Program:exit': () => {
-        let contentSeparatedSortingNodeGroups: SortImportsSortingNode[][][] = [
-          [[]],
-        ]
-        for (let sortingNodeWithoutPartitionId of sortingNodesWithoutPartitionId) {
-          let lastGroupWithNoContentBetween =
-            contentSeparatedSortingNodeGroups.at(-1)!
-          let lastGroup = lastGroupWithNoContentBetween.at(-1)!
-          let lastSortingNode = lastGroup.at(-1)
-
-          if (
-            lastSortingNode &&
-            hasContentBetweenNodes(
-              sourceCode,
-              lastSortingNode,
-              sortingNodeWithoutPartitionId,
-            )
-          ) {
-            lastGroup = []
-            lastGroupWithNoContentBetween = [lastGroup]
-            contentSeparatedSortingNodeGroups.push(
-              lastGroupWithNoContentBetween,
-            )
-          } else if (
-            shouldPartition({
-              sortingNode: sortingNodeWithoutPartitionId,
-              lastSortingNode,
-              sourceCode,
-              options,
-            })
-          ) {
-            lastGroup = []
-            lastGroupWithNoContentBetween.push(lastGroup)
-          }
-
-          lastGroup.push({
-            ...sortingNodeWithoutPartitionId,
-            partitionId: lastGroupWithNoContentBetween.length,
-          })
-        }
-
-        for (let sortingNodeGroups of contentSeparatedSortingNodeGroups) {
-          function createSortNodesExcludingEslintDisabled(
-            nodeGroups: SortImportsSortingNode[][],
-          ) {
-            return function (
-              ignoreEslintDisabledNodes: boolean,
-            ): SortImportsSortingNode[] {
-              let nodesSortedByGroups = nodeGroups.flatMap(nodes =>
-                sortNodesByGroups({
-                  isNodeIgnoredForGroup: ({ groupIndex }) => {
-                    if (options.sortSideEffects) {
-                      return false
-                    }
-                    return isSideEffectOnlyGroup(options.groups[groupIndex])
-                  },
-                  optionsByGroupIndexComputer:
-                    buildDefaultOptionsByGroupIndexComputer(options),
-                  isNodeIgnored: node => node.isIgnored,
-                  comparatorByOptionsComputer,
-                  ignoreEslintDisabledNodes,
-                  groups: options.groups,
-                  nodes,
-                }),
-              )
-
-              return sortNodesByDependencies(nodesSortedByGroups, {
-                ignoreEslintDisabledNodes,
-              })
-            }
-          }
-
-          let nodes = sortingNodeGroups.flat()
-
-          reportAllErrors<MessageId>({
-            availableMessageIds: {
-              unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
-              missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-              extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-              missedCommentAbove: MISSED_COMMENT_ABOVE_ERROR_ID,
-              unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-              unexpectedOrder: ORDER_ERROR_ID,
-            },
-            sortNodesExcludingEslintDisabled:
-              createSortNodesExcludingEslintDisabled(sortingNodeGroups),
-            options,
-            context,
-            nodes,
-          })
-        }
-      },
       VariableDeclaration: node => {
         if (
           node.declarations[0].init?.type === 'CallExpression' &&
@@ -361,6 +266,13 @@ export default createEslintRule<Options, MessageId>({
         ) {
           registerNode(node)
         }
+      },
+      'Program:exit': () => {
+        sortImportNodes({
+          sortingNodesWithoutPartitionId,
+          context,
+          options,
+        })
       },
       TSImportEqualsDeclaration: registerNode,
       ImportDeclaration: registerNode,
@@ -439,103 +351,110 @@ export default createEslintRule<Options, MessageId>({
   name: 'sort-imports',
 })
 
-function hasSpecifier(
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration,
-  specifier:
-    | 'ImportNamespaceSpecifier'
-    | 'ImportDefaultSpecifier'
-    | 'ImportSpecifier',
-): boolean {
-  return (
-    node.type === 'ImportDeclaration' &&
-    node.specifiers.some(nodeSpecifier => nodeSpecifier.type === specifier)
-  )
-}
-
-function hasContentBetweenNodes(
-  sourceCode: TSESLint.SourceCode,
-  left: Pick<SortImportsSortingNode, 'node'>,
-  right: Pick<SortImportsSortingNode, 'node'>,
-): boolean {
-  return (
-    sourceCode.getTokensBetween(left.node, right.node, {
-      includeComments: false,
-    }).length > 0
-  )
-}
-
-let styleExtensions = [
-  '.less',
-  '.scss',
-  '.sass',
-  '.styl',
-  '.pcss',
-  '.css',
-  '.sss',
-]
-function computeDependencyNames({
-  sourceCode,
-  node,
+function sortImportNodes({
+  sortingNodesWithoutPartitionId,
+  options,
+  context,
 }: {
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration
-  sourceCode: TSESLint.SourceCode
-}): string[] {
-  if (node.type === 'VariableDeclaration') {
-    return []
-  }
+  sortingNodesWithoutPartitionId: Omit<SortImportsSortingNode, 'partitionId'>[]
+  context: Readonly<TSESLint.RuleContext<MessageId, Options>>
+  options: Required<Options[number]>
+}): void {
+  let { sourceCode } = context
+  let optionsByGroupIndexComputer =
+    buildDefaultOptionsByGroupIndexComputer(options)
 
-  if (node.type === 'TSImportEqualsDeclaration') {
-    return [node.id.name]
-  }
+  let contentSeparatedSortingNodeGroups: SortImportsSortingNode[][][] = [[[]]]
+  for (let sortingNodeWithoutPartitionId of sortingNodesWithoutPartitionId) {
+    let lastGroupWithNoContentBetween =
+      contentSeparatedSortingNodeGroups.at(-1)!
+    let lastGroup = lastGroupWithNoContentBetween.at(-1)!
+    let lastSortingNode = lastGroup.at(-1)
 
-  let returnValue: string[] = []
-  for (let specifier of node.specifiers) {
-    switch (specifier.type) {
-      case 'ImportNamespaceSpecifier':
-        returnValue.push(sourceCode.getText(specifier.local))
-        break
-      case 'ImportDefaultSpecifier':
-        returnValue.push(sourceCode.getText(specifier.local))
-        break
-      case 'ImportSpecifier':
-        returnValue.push(sourceCode.getText(specifier.imported))
-        break
-    }
-  }
-  return returnValue
-}
-
-function getNodeName({
-  sourceCode,
-  node,
-}: {
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration
-  sourceCode: TSESLint.SourceCode
-}): string {
-  if (node.type === 'ImportDeclaration') {
-    return node.source.value
-  }
-
-  if (node.type === 'TSImportEqualsDeclaration') {
-    if (node.moduleReference.type === 'TSExternalModuleReference') {
-      return node.moduleReference.expression.value
+    if (
+      lastSortingNode &&
+      hasContentBetweenNodes(lastSortingNode, sortingNodeWithoutPartitionId)
+    ) {
+      lastGroup = []
+      lastGroupWithNoContentBetween = [lastGroup]
+      contentSeparatedSortingNodeGroups.push(lastGroupWithNoContentBetween)
+    } else if (
+      shouldPartition({
+        sortingNode: sortingNodeWithoutPartitionId,
+        lastSortingNode,
+        sourceCode,
+        options,
+      })
+    ) {
+      lastGroup = []
+      lastGroupWithNoContentBetween.push(lastGroup)
     }
 
-    return sourceCode.getText(node.moduleReference)
+    lastGroup.push({
+      ...sortingNodeWithoutPartitionId,
+      partitionId: lastGroupWithNoContentBetween.length,
+    })
   }
 
-  let callExpression = node.declarations[0].init as TSESTree.CallExpression
-  let { value } = callExpression.arguments[0] as TSESTree.Literal
-  return value!.toString()
+  for (let sortingNodeGroups of contentSeparatedSortingNodeGroups) {
+    let nodes = sortingNodeGroups.flat()
+
+    reportAllErrors<MessageId>({
+      availableMessageIds: {
+        unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
+        missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+        extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+        missedCommentAbove: MISSED_COMMENT_ABOVE_ERROR_ID,
+        unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+        unexpectedOrder: ORDER_ERROR_ID,
+      },
+      sortNodesExcludingEslintDisabled:
+        createSortNodesExcludingEslintDisabled(sortingNodeGroups),
+      options,
+      context,
+      nodes,
+    })
+  }
+
+  function createSortNodesExcludingEslintDisabled(
+    nodeGroups: SortImportsSortingNode[][],
+  ) {
+    return function (
+      ignoreEslintDisabledNodes: boolean,
+    ): SortImportsSortingNode[] {
+      let nodesSortedByGroups = nodeGroups.flatMap(nodes =>
+        sortNodesByGroups({
+          isNodeIgnoredForGroup: ({ groupIndex }) => {
+            if (options.sortSideEffects) {
+              return false
+            }
+            return isSideEffectOnlyGroup(options.groups[groupIndex])
+          },
+          isNodeIgnored: node => node.isIgnored,
+          optionsByGroupIndexComputer,
+          comparatorByOptionsComputer,
+          ignoreEslintDisabledNodes,
+          groups: options.groups,
+          nodes,
+        }),
+      )
+
+      return sortNodesByDependencies(nodesSortedByGroups, {
+        ignoreEslintDisabledNodes,
+      })
+    }
+  }
+
+  function hasContentBetweenNodes(
+    left: Pick<SortImportsSortingNode, 'node'>,
+    right: Pick<SortImportsSortingNode, 'node'>,
+  ): boolean {
+    return (
+      sourceCode.getTokensBetween(left.node, right.node, {
+        includeComments: false,
+      }).length > 0
+    )
+  }
 }
 
 function computeGroupExceptUnknown({
@@ -571,70 +490,15 @@ function computeGroupExceptUnknown({
   return computedCustomGroup
 }
 
-function computeDependencies(
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration,
-): string[] {
-  if (node.type !== 'TSImportEqualsDeclaration') {
-    return []
-  }
-  if (node.moduleReference.type !== 'TSQualifiedName') {
-    return []
-  }
-  let qualifiedName = getQualifiedNameDependencyName(node.moduleReference)
-  /* v8 ignore if -- @preserve Unsure how we can reach that case */
-  if (!qualifiedName) {
-    return []
-  }
-  return [qualifiedName]
-}
-
-function isSideEffectImport({
-  sourceCode,
-  node,
-}: {
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration
-  sourceCode: TSESLint.SourceCode
-}): boolean {
-  return (
-    node.type === 'ImportDeclaration' &&
-    node.specifiers.length === 0 &&
-    /* Avoid matching on named imports without specifiers */
-    !/\}\s*from\s+/u.test(sourceCode.getText(node))
-  )
-}
-
-function isNonExternalReferenceTsImportEquals(
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration,
-): node is TSESTree.TSImportEqualsDeclaration {
-  if (node.type !== 'TSImportEqualsDeclaration') {
-    return false
-  }
-
-  return node.moduleReference.type !== 'TSExternalModuleReference'
-}
-
-function getQualifiedNameDependencyName(
-  node: TSESTree.EntityName,
-): string | null {
-  switch (node.type) {
-    case 'TSQualifiedName':
-      return getQualifiedNameDependencyName(node.left)
-    case 'Identifier':
-      return node.name
-  }
-  /* v8 ignore next -- @preserve Unsure how we can reach that case */
-  return null
-}
-
+let styleExtensions = [
+  '.less',
+  '.scss',
+  '.sass',
+  '.styl',
+  '.pcss',
+  '.css',
+  '.sss',
+]
 function isStyle(value: string): boolean {
   let [cleanedValue] = value.split('?')
   return styleExtensions.some(extension => cleanedValue?.endsWith(extension))
