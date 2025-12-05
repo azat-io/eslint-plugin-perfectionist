@@ -5,6 +5,14 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 
+/**
+ * Computes the name of an import-like AST node.
+ *
+ * @param props - The parameters object.
+ * @param props.sourceCode - ESLint source code object for text extraction.
+ * @param props.node - The AST node representing an import-like declaration.
+ * @returns The name of the import.
+ */
 export function computeNodeName({
   sourceCode,
   node,

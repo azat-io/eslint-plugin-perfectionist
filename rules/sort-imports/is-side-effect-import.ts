@@ -5,6 +5,14 @@ import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 
+/**
+ * Determines whether the given AST node is a side-effect import.
+ *
+ * @param props - The parameters object.
+ * @param props.sourceCode - ESLint source code object for text extraction.
+ * @param props.node - The AST node representing an import-like declaration.
+ * @returns True if the node is a side-effect import; otherwise, false.
+ */
 export function isSideEffectImport({
   sourceCode,
   node,

@@ -4,6 +4,12 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 
+/**
+ * Computes the dependencies of an import-like AST node.
+ *
+ * @param node - The AST node representing an import-like declaration.
+ * @returns The names of the dependencies.
+ */
 export function computeDependencies(
   node:
     | TSESTree.TSImportEqualsDeclaration
