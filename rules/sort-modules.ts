@@ -4,11 +4,11 @@ import type { TSESTree } from '@typescript-eslint/types'
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
+  SortModulesSortingNode,
   SortModulesOptions,
   Modifier,
   Selector,
 } from './sort-modules/types'
-import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
   DEPENDENCY_ORDER_ERROR,
@@ -178,7 +178,7 @@ function analyzeModule({
   sourceCode: TSESLint.SourceCode
   eslintDisabledLines: number[]
 }): void {
-  let formattedNodes: SortingNodeWithDependencies[][] = [[]]
+  let formattedNodes: SortModulesSortingNode[][] = [[]]
   for (let node of module.body) {
     let selector: undefined | Selector
     let name: undefined | string
@@ -301,7 +301,7 @@ function analyzeModule({
       options,
     })
 
-    let sortingNode: Omit<SortingNodeWithDependencies, 'partitionId'> = {
+    let sortingNode: Omit<SortModulesSortingNode, 'partitionId'> = {
       isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
       size: rangeToDiff(node, sourceCode),
       addSafetySemicolonWhenInline,
@@ -332,7 +332,7 @@ function analyzeModule({
 
   function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
-  ): SortingNodeWithDependencies[] {
+  ): SortModulesSortingNode[] {
     let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
       sortNodesByGroups({
         isNodeIgnored: sortingNode =>
