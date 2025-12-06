@@ -150,9 +150,9 @@ export default createEslintRule<SortModulesOptions, MessageId>({
         if (isSortable(program.body)) {
           return analyzeModule({
             eslintDisabledLines,
+            module: program,
             sourceCode,
             options,
-            program,
             context,
           })
         }
@@ -167,17 +167,17 @@ function analyzeModule({
   eslintDisabledLines,
   sourceCode,
   options,
-  program,
   context,
+  module,
 }: {
   context: TSESLint.RuleContext<MessageId, SortModulesOptions>
-  program: TSESTree.TSModuleBlock | TSESTree.Program
+  module: TSESTree.TSModuleBlock | TSESTree.Program
   options: Required<SortModulesOptions[number]>
   sourceCode: TSESLint.SourceCode
   eslintDisabledLines: number[]
 }): void {
   let formattedNodes: SortingNodeWithDependencies[][] = [[]]
-  for (let node of program.body) {
+  for (let node of module.body) {
     let selector: undefined | Selector
     let name: undefined | string
     let modifiers: Modifier[] = []
@@ -229,7 +229,7 @@ function analyzeModule({
           formattedNodes.push([])
           if (nodeToParse.body) {
             analyzeModule({
-              program: nodeToParse.body,
+              module: nodeToParse.body,
               eslintDisabledLines,
               sourceCode,
               options,
