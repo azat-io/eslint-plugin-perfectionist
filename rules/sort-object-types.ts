@@ -46,6 +46,7 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isMemberOptional } from './sort-object-types/is-member-optional'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { computeNodeName } from './sort-object-types/compute-node-name'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { isNodeFunctionType } from '../utils/is-node-function-type'
@@ -253,7 +254,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
       modifiers.push('required')
     }
 
-    let name = getNodeName({ typeElement, sourceCode })
+    let name = computeNodeName({ node: typeElement, sourceCode })
     let value: string | null = null
     if (
       typeElement.type === AST_NODE_TYPES.TSPropertySignature &&
@@ -358,9 +359,7 @@ function computeMatchedContextOptions({
   sourceCode: TSESLint.SourceCode
 }): Options[number] | undefined {
   let filteredContextOptions = filterOptionsByAllNamesMatch({
-    nodeNames: elements.map(node =>
-      getNodeName({ typeElement: node, sourceCode }),
-    ),
+    nodeNames: elements.map(node => computeNodeName({ sourceCode, node })),
     contextOptions: context.options,
   })
   filteredContextOptions = filterOptionsByDeclarationCommentMatches({
@@ -397,48 +396,6 @@ function computeMatchedContextOptions({
 
     return true
   })
-}
-
-function getNodeName({
-  typeElement,
-  sourceCode,
-}: {
-  typeElement: TSESTree.TypeElement
-  sourceCode: TSESLint.SourceCode
-}): string {
-  let name: string
-
-  function formatName(value: string): string {
-    return value.replace(/[,;]$/u, '')
-  }
-
-  if (typeElement.type === AST_NODE_TYPES.TSPropertySignature) {
-    if (typeElement.key.type === AST_NODE_TYPES.Identifier) {
-      ;({ name } = typeElement.key)
-    } else if (typeElement.key.type === AST_NODE_TYPES.Literal) {
-      name = `${typeElement.key.value}`
-    } else {
-      let end: number =
-        typeElement.typeAnnotation?.range.at(0) ??
-        typeElement.range.at(1)! - (typeElement.optional ? '?'.length : 0)
-      name = sourceCode.text.slice(typeElement.range.at(0), end)
-    }
-  } else if (typeElement.type === AST_NODE_TYPES.TSIndexSignature) {
-    let endIndex: number =
-      typeElement.typeAnnotation?.range.at(0) ?? typeElement.range.at(1)!
-
-    name = formatName(sourceCode.text.slice(typeElement.range.at(0), endIndex))
-  } else if (
-    typeElement.type === AST_NODE_TYPES.TSMethodSignature &&
-    'name' in typeElement.key
-  ) {
-    ;({ name } = typeElement.key)
-  } else {
-    name = formatName(
-      sourceCode.text.slice(typeElement.range.at(0), typeElement.range.at(1)),
-    )
-  }
-  return name
 }
 
 function hasNumericKeysOnly(typeElements: TSESTree.TypeElement[]): boolean {
