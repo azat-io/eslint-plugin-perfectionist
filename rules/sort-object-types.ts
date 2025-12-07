@@ -136,7 +136,9 @@ export default createEslintRule<Options, MessageId>({
           unexpectedOrder: ORDER_ERROR_ID,
         },
         parentNode:
-          node.parent.type === 'TSTypeAliasDeclaration' ? node.parent : null,
+          node.parent.type === AST_NODE_TYPES.TSTypeAliasDeclaration
+            ? node.parent
+            : null,
         elements: node.members,
         context,
       }),
@@ -211,8 +213,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
   let formattedMembers: SortObjectTypesSortingNode[][] = [[]]
   for (let typeElement of elements) {
     if (
-      typeElement.type === 'TSCallSignatureDeclaration' ||
-      typeElement.type === 'TSConstructSignatureDeclaration'
+      typeElement.type === AST_NODE_TYPES.TSCallSignatureDeclaration ||
+      typeElement.type === AST_NODE_TYPES.TSConstructSignatureDeclaration
     ) {
       continue
     }
@@ -223,7 +225,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
     let selectors: Selector[] = []
     let modifiers: Modifier[] = []
 
-    if (typeElement.type === 'TSIndexSignature') {
+    if (typeElement.type === AST_NODE_TYPES.TSIndexSignature) {
       selectors.push('index-signature')
     }
 
@@ -254,7 +256,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
     let name = getNodeName({ typeElement, sourceCode })
     let value: string | null = null
     if (
-      typeElement.type === 'TSPropertySignature' &&
+      typeElement.type === AST_NODE_TYPES.TSPropertySignature &&
       typeElement.typeAnnotation
     ) {
       value = sourceCode.getText(typeElement.typeAnnotation.typeAnnotation)
@@ -410,10 +412,10 @@ function getNodeName({
     return value.replace(/[,;]$/u, '')
   }
 
-  if (typeElement.type === 'TSPropertySignature') {
-    if (typeElement.key.type === 'Identifier') {
+  if (typeElement.type === AST_NODE_TYPES.TSPropertySignature) {
+    if (typeElement.key.type === AST_NODE_TYPES.Identifier) {
       ;({ name } = typeElement.key)
-    } else if (typeElement.key.type === 'Literal') {
+    } else if (typeElement.key.type === AST_NODE_TYPES.Literal) {
       name = `${typeElement.key.value}`
     } else {
       let end: number =
@@ -421,13 +423,13 @@ function getNodeName({
         typeElement.range.at(1)! - (typeElement.optional ? '?'.length : 0)
       name = sourceCode.text.slice(typeElement.range.at(0), end)
     }
-  } else if (typeElement.type === 'TSIndexSignature') {
+  } else if (typeElement.type === AST_NODE_TYPES.TSIndexSignature) {
     let endIndex: number =
       typeElement.typeAnnotation?.range.at(0) ?? typeElement.range.at(1)!
 
     name = formatName(sourceCode.text.slice(typeElement.range.at(0), endIndex))
   } else if (
-    typeElement.type === 'TSMethodSignature' &&
+    typeElement.type === AST_NODE_TYPES.TSMethodSignature &&
     'name' in typeElement.key
   ) {
     ;({ name } = typeElement.key)
@@ -443,7 +445,7 @@ function hasNumericKeysOnly(typeElements: TSESTree.TypeElement[]): boolean {
   return typeElements.every(
     typeElement =>
       typeElement.type === AST_NODE_TYPES.TSPropertySignature &&
-      typeElement.key.type === 'Literal' &&
+      typeElement.key.type === AST_NODE_TYPES.Literal &&
       typeof typeElement.key.value === 'number',
   )
 }
