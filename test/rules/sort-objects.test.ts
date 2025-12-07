@@ -2429,6 +2429,27 @@ describe('sort-objects', () => {
       })
 
       await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^constant$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const notAConstant = {
+            [constant]: {
+              b,
+              a,
+              c,
+            }
+          }
+        `,
+      })
+
+      await valid({
         code: dedent`
           export default {
             data() {
