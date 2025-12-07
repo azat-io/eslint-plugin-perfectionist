@@ -27,9 +27,12 @@ export function computePropertyName(
 function computeIdentifierName(
   node: TSESTree.VariableDeclarator['id'] | TSESTree.Property['key'],
 ): string | null {
-  if (node.type !== AST_NODE_TYPES.Identifier) {
-    return null
+  switch (node.type) {
+    case AST_NODE_TYPES.Identifier:
+      return node.name
+    case AST_NODE_TYPES.Literal:
+      return String(node.value)
+    default:
+      return null
   }
-
-  return node.name
 }
