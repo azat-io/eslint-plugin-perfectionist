@@ -2317,13 +2317,13 @@ describe('sort-objects', () => {
             r
           }
 
-          someFunction(true, {
+          someFunction(true, <any>{
             r: string,
             g: string,
             b: string
           })
 
-          let a = someFunction(true, {
+          let a = someFunction(true, <any>{
             r: string,
             g: string,
             b: string
@@ -2336,13 +2336,13 @@ describe('sort-objects', () => {
             r
           }
 
-          someFunction(true, {
+          someFunction(true, <any>{
             b: string,
             g: string,
             r: string
           })
 
-          let a = someFunction(true, {
+          let a = someFunction(true, <any>{
             b: string,
             g: string,
             r: string
@@ -2378,7 +2378,7 @@ describe('sort-objects', () => {
           options,
         ],
         code: dedent`
-          const constant = {
+          const constant = <any>{
             b,
             a,
             c,

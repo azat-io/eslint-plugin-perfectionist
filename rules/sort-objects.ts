@@ -33,12 +33,14 @@ import {
 } from './sort-objects/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { computeParentNodesWithTypes } from './sort-objects/compute-parent-nodes-with-types'
 import { getFirstNodeParentWithType } from './sort-objects/get-first-node-parent-with-type'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { computePropertyName } from './sort-objects/compute-property-name'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
@@ -454,11 +456,6 @@ function computeMatchedContextOptions({
   sourceCode: TSESLint.SourceCode
   isDestructuredObject: boolean
 }): Options[number] | undefined {
-  let objectParent = getObjectParent({
-    onlyFirstParent: true,
-    node: nodeObject,
-    sourceCode,
-  })
   let filteredContextOptions = filterOptionsByAllNamesMatch({
     nodeNames: nodeObject.properties
       .filter(
@@ -469,12 +466,21 @@ function computeMatchedContextOptions({
     contextOptions: context.options,
   })
 
+  let objectParents = computeParentNodesWithTypes({
+    allowedTypes: [
+      TSESTree.AST_NODE_TYPES.VariableDeclarator,
+      TSESTree.AST_NODE_TYPES.Property,
+      TSESTree.AST_NODE_TYPES.CallExpression,
+    ],
+    node: nodeObject,
+  })
   let parentNodeForDeclarationComment = null
-  if (objectParent) {
+  let [firstObjectParent] = objectParents
+  if (firstObjectParent) {
     parentNodeForDeclarationComment =
-      objectParent.type === 'VariableDeclarator'
-        ? objectParent.node.parent
-        : objectParent.node
+      firstObjectParent.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
+        ? firstObjectParent.parent
+        : firstObjectParent
   }
   filteredContextOptions = filterOptionsByDeclarationCommentMatches({
     parentNode: parentNodeForDeclarationComment,
@@ -503,14 +509,14 @@ function computeMatchedContextOptions({
     }
 
     if (options.useConfigurationIf.callingFunctionNamePattern) {
-      if (!objectParent) {
-        return false
-      }
-      if (objectParent.type !== 'CallExpression' || !objectParent.name) {
+      let firstCallExpressionParent = objectParents.find(
+        parent => parent.type === TSESTree.AST_NODE_TYPES.CallExpression,
+      )
+      if (!firstCallExpressionParent) {
         return false
       }
       let patternMatches = matches(
-        objectParent.name,
+        sourceCode.getText(firstCallExpressionParent.callee),
         options.useConfigurationIf.callingFunctionNamePattern,
       )
       if (!patternMatches) {
@@ -519,14 +525,20 @@ function computeMatchedContextOptions({
     }
 
     if (options.useConfigurationIf.declarationMatchesPattern) {
-      if (!objectParent) {
+      let firstVariableDeclaratorParent = objectParents.find(
+        parent =>
+          parent.type === TSESTree.AST_NODE_TYPES.VariableDeclarator ||
+          parent.type === TSESTree.AST_NODE_TYPES.Property,
+      )
+      if (!firstVariableDeclaratorParent) {
         return false
       }
-      if (objectParent.type !== 'VariableDeclarator' || !objectParent.name) {
+      let nodeName = computePropertyName(firstVariableDeclaratorParent)
+      if (!nodeName) {
         return false
       }
       let patternMatches = matches(
-        objectParent.name,
+        nodeName,
         options.useConfigurationIf.declarationMatchesPattern,
       )
       if (!patternMatches) {
