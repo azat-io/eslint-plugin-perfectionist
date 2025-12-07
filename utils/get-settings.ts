@@ -1,7 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { PartitionByCommentOption } from '../types/common-partition-options'
-import type { CommonOptions, RegexOption } from '../types/common-options'
+import type { CommonOptions } from '../types/common-options'
 
 /**
  * Global settings for the Perfectionist plugin.
@@ -20,9 +20,6 @@ export type Settings = Partial<{
 
   /** Whether to create partitions at newlines. */
   partitionByNewLine: boolean
-
-  /** Pattern to match elements that should be ignored during sorting. */
-  ignorePattern: RegexOption
 }> &
   Partial<CommonOptions>
 
@@ -74,7 +71,6 @@ export function getSettings(
       'partitionByComment',
       'partitionByNewLine',
       'specialCharacters',
-      'ignorePattern',
       'fallbackSort',
       'ignoreCase',
       'alphabet',
