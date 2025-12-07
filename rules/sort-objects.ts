@@ -1,7 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
-import { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { Modifier, Selector, Options } from './sort-objects/types'
@@ -453,9 +453,9 @@ function computeMatchedContextOptions({
 
   let objectParents = computeParentNodesWithTypes({
     allowedTypes: [
-      TSESTree.AST_NODE_TYPES.VariableDeclarator,
-      TSESTree.AST_NODE_TYPES.Property,
-      TSESTree.AST_NODE_TYPES.CallExpression,
+      AST_NODE_TYPES.VariableDeclarator,
+      AST_NODE_TYPES.Property,
+      AST_NODE_TYPES.CallExpression,
     ],
     node: nodeObject,
   })
@@ -463,7 +463,7 @@ function computeMatchedContextOptions({
   let [firstObjectParent] = objectParents
   if (firstObjectParent) {
     parentNodeForDeclarationComment =
-      firstObjectParent.type === TSESTree.AST_NODE_TYPES.VariableDeclarator
+      firstObjectParent.type === AST_NODE_TYPES.VariableDeclarator
         ? firstObjectParent.parent
         : firstObjectParent
   }
@@ -495,7 +495,7 @@ function computeMatchedContextOptions({
 
     if (options.useConfigurationIf.callingFunctionNamePattern) {
       let firstCallExpressionParent = objectParents.find(
-        parent => parent.type === TSESTree.AST_NODE_TYPES.CallExpression,
+        parent => parent.type === AST_NODE_TYPES.CallExpression,
       )
       if (!firstCallExpressionParent) {
         return false
@@ -512,8 +512,8 @@ function computeMatchedContextOptions({
     if (options.useConfigurationIf.declarationMatchesPattern) {
       let firstVariableDeclaratorParent = objectParents.find(
         parent =>
-          parent.type === TSESTree.AST_NODE_TYPES.VariableDeclarator ||
-          parent.type === TSESTree.AST_NODE_TYPES.Property,
+          parent.type === AST_NODE_TYPES.VariableDeclarator ||
+          parent.type === AST_NODE_TYPES.Property,
       )
       if (!firstVariableDeclaratorParent) {
         return false
