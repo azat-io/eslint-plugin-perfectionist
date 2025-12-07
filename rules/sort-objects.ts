@@ -1,25 +1,21 @@
-import { AST_NODE_TYPES, type TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { Modifier, Options, Selector } from './sort-objects/types'
-import {
-  allModifiers,
-  allSelectors,
-  singleCustomGroupJsonSchema,
-} from './sort-objects/types'
+import type { Modifier, Selector, Options } from './sort-objects/types'
 
 import {
   DEPENDENCY_ORDER_ERROR,
+  MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
-  MISSED_SPACING_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
 import {
-  buildCommonJsonSchemas,
   buildUseConfigurationIfJsonSchema,
+  buildCommonJsonSchemas,
   regexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -30,12 +26,18 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
+import {
+  singleCustomGroupJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-objects/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { computeParentNodesWithTypes } from './sort-objects/compute-parent-nodes-with-types'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { computePropertyName } from './sort-objects/compute-property-name'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -588,25 +590,23 @@ function extractNamesFromPattern(pattern: TSESTree.Node): string[] {
 }
 
 function isStyledComponents(styledNode: TSESTree.Node): boolean {
-  if (
-    styledNode.type === AST_NODE_TYPES.JSXExpressionContainer &&
-    styledNode.parent.type === AST_NODE_TYPES.JSXAttribute &&
-    styledNode.parent.name.name === 'style'
-  ) {
-    return true
+  switch (styledNode.type) {
+    case AST_NODE_TYPES.JSXExpressionContainer:
+      return (
+        styledNode.parent.type === AST_NODE_TYPES.JSXAttribute &&
+        styledNode.parent.name.name === 'style'
+      )
+    case AST_NODE_TYPES.CallExpression:
+      return (
+        isCssCallExpression(styledNode.callee) ||
+        (styledNode.callee.type === AST_NODE_TYPES.MemberExpression &&
+          isStyledCallExpression(styledNode.callee.object)) ||
+        (styledNode.callee.type === AST_NODE_TYPES.CallExpression &&
+          isStyledCallExpression(styledNode.callee.callee))
+      )
+    default:
+      return false
   }
-
-  if (styledNode.type !== AST_NODE_TYPES.CallExpression) {
-    return false
-  }
-
-  return (
-    isCssCallExpression(styledNode.callee) ||
-    (styledNode.callee.type === AST_NODE_TYPES.MemberExpression &&
-      isStyledCallExpression(styledNode.callee.object)) ||
-    (styledNode.callee.type === AST_NODE_TYPES.CallExpression &&
-      isStyledCallExpression(styledNode.callee.callee))
-  )
 }
 
 function hasNumericKeysOnly(
@@ -635,12 +635,14 @@ function getNodeName({
   sourceCode: TSESLint.SourceCode
   property: TSESTree.Property
 }): string {
-  if (property.key.type === AST_NODE_TYPES.Identifier) {
-    return property.key.name
-  } else if (property.key.type === AST_NODE_TYPES.Literal) {
-    return `${property.key.value}`
+  switch (property.key.type) {
+    case AST_NODE_TYPES.Identifier:
+      return property.key.name
+    case AST_NODE_TYPES.Literal:
+      return `${property.key.value}`
+    default:
+      return sourceCode.getText(property.key)
   }
-  return sourceCode.getText(property.key)
 }
 
 function getNodeValue({
@@ -650,13 +652,13 @@ function getNodeValue({
   sourceCode: TSESLint.SourceCode
   property: TSESTree.Property
 }): string | null {
-  if (
-    property.value.type === AST_NODE_TYPES.ArrowFunctionExpression ||
-    property.value.type === AST_NODE_TYPES.FunctionExpression
-  ) {
-    return null
+  switch (property.value.type) {
+    case AST_NODE_TYPES.ArrowFunctionExpression:
+    case AST_NODE_TYPES.FunctionExpression:
+      return null
+    default:
+      return sourceCode.getText(property.value)
   }
-  return sourceCode.getText(property.value)
 }
 
 function getRootObject(
