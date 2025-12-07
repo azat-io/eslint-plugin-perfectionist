@@ -48,6 +48,7 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { isStyleNode } from './sort-objects/is-style-node'
 import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -123,9 +124,9 @@ export default createEslintRule<Options, MessageId>({
       if (
         objectRoot &&
         !options.styledComponents &&
-        (isStyledComponents(objectRoot.parent) ||
+        (isStyleNode(objectRoot.parent) ||
           (objectRoot.parent.type === AST_NODE_TYPES.ArrowFunctionExpression &&
-            isStyledComponents(objectRoot.parent.parent)))
+            isStyleNode(objectRoot.parent.parent)))
       ) {
         return
       }
@@ -589,26 +590,6 @@ function extractNamesFromPattern(pattern: TSESTree.Node): string[] {
   }
 }
 
-function isStyledComponents(styledNode: TSESTree.Node): boolean {
-  switch (styledNode.type) {
-    case AST_NODE_TYPES.JSXExpressionContainer:
-      return (
-        styledNode.parent.type === AST_NODE_TYPES.JSXAttribute &&
-        styledNode.parent.name.name === 'style'
-      )
-    case AST_NODE_TYPES.CallExpression:
-      return (
-        isCssCallExpression(styledNode.callee) ||
-        (styledNode.callee.type === AST_NODE_TYPES.MemberExpression &&
-          isStyledCallExpression(styledNode.callee.object)) ||
-        (styledNode.callee.type === AST_NODE_TYPES.CallExpression &&
-          isStyledCallExpression(styledNode.callee.callee))
-      )
-    default:
-      return false
-  }
-}
-
 function hasNumericKeysOnly(
   object: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
 ): boolean {
@@ -672,17 +653,4 @@ function getRootObject(
     objectRoot = objectRoot.parent.parent
   }
   return objectRoot
-}
-
-function isStyledCallExpression(identifier: TSESTree.Expression): boolean {
-  return (
-    identifier.type === AST_NODE_TYPES.Identifier &&
-    identifier.name === 'styled'
-  )
-}
-
-function isCssCallExpression(identifier: TSESTree.Expression): boolean {
-  return (
-    identifier.type === AST_NODE_TYPES.Identifier && identifier.name === 'css'
-  )
 }
