@@ -2919,7 +2919,7 @@ describe('sort-objects', () => {
                 rightGroup: 'propertiesStartingWithHello',
                 right: 'helloProperty',
                 leftGroup: 'unknown',
-                left: 'method',
+                left: 'method2',
               },
               messageId: 'unexpectedObjectsGroupOrder',
             },
@@ -2929,14 +2929,16 @@ describe('sort-objects', () => {
               helloProperty,
               a,
               b,
-              method() {},
+              method1() {},
+              method2: () => {},
             }
           `,
           code: dedent`
             let obj = {
               a,
               b,
-              method() {},
+              method1() {},
+              method2: () => {},
               helloProperty,
             }
           `,
