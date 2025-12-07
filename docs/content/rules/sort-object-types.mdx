@@ -209,16 +209,6 @@ type User = {
 
 ```
 
-### [DEPRECATED] ignorePattern
-
-<sub>default: `[]`</sub>
-
-Use the [useConfigurationIf.declarationMatchesPattern](#useconfigurationif) option alongside [type: unsorted](#type) instead.
-
-Specifies names or patterns for object types to be ignored by this rule. This can be useful if you have specific object types that you do not want to sort.
-
-You can specify their names or a regexp pattern to ignore, for example: `'^Component.+'` to ignore all object types whose names begin with the word “Component”.
-
 ### partitionByComment
 
 <sub>default: `false`</sub>
@@ -721,7 +711,6 @@ type User = {
                   ignoreCase: true,
                   specialCharacters: 'keep',
                   sortBy: 'name',
-                  ignorePattern: [],
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
@@ -754,7 +743,6 @@ type User = {
                 ignoreCase: true,
                 specialCharacters: 'keep',
                 sortBy: 'name',
-                ignorePattern: [],
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
