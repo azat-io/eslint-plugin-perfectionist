@@ -34,7 +34,6 @@ import {
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { computeParentNodesWithTypes } from './sort-objects/compute-parent-nodes-with-types'
-import { getFirstNodeParentWithType } from './sort-objects/get-first-node-parent-with-type'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -81,7 +80,6 @@ let defaultOptions: Required<Options[number]> = {
   styledComponents: true,
   useConfigurationIf: {},
   type: 'alphabetical',
-  ignorePattern: [],
   ignoreCase: true,
   customGroups: [],
   locales: 'en-US',
@@ -117,18 +115,6 @@ export default createEslintRule<Options, MessageId>({
         options,
       })
       validateNewlinesAndPartitionConfiguration(options)
-
-      let objectParentForIgnorePattern = getObjectParent({
-        onlyFirstParent: false,
-        node: nodeObject,
-        sourceCode,
-      })
-      if (
-        objectParentForIgnorePattern?.name &&
-        matches(objectParentForIgnorePattern.name, options.ignorePattern)
-      ) {
-        return
-      }
 
       let objectRoot =
         nodeObject.type === 'ObjectPattern' ? null : getRootObject(nodeObject)
@@ -417,7 +403,6 @@ export default createEslintRule<Options, MessageId>({
           },
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          ignorePattern: regexJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
@@ -598,89 +583,6 @@ function extractNamesFromPattern(pattern: TSESTree.Node): string[] {
       default:
         throw new UnreachableCaseError(property)
     }
-  }
-}
-
-function getObjectParent({
-  onlyFirstParent,
-  sourceCode,
-  node,
-}: {
-  node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
-  sourceCode: TSESLint.SourceCode
-  onlyFirstParent: boolean
-}):
-  | {
-      node: TSESTree.VariableDeclarator | TSESTree.Property
-      type: 'VariableDeclarator'
-      name: string | null
-    }
-  | {
-      node: TSESTree.CallExpression
-      type: 'CallExpression'
-      name: string | null
-    }
-  | null {
-  let variableParent = getVariableParent({ onlyFirstParent, node })
-  if (variableParent) {
-    return {
-      type: 'VariableDeclarator',
-      name: variableParent.name,
-      node: variableParent.node,
-    }
-  }
-  let callParent = getFirstNodeParentWithType({
-    allowedTypes: [TSESTree.AST_NODE_TYPES.CallExpression],
-    onlyFirstParent,
-    node,
-  })
-  if (callParent) {
-    return {
-      name: sourceCode.getText(callParent.callee),
-      type: 'CallExpression',
-      node: callParent,
-    }
-  }
-  return null
-}
-
-function getVariableParent({
-  onlyFirstParent,
-  node,
-}: {
-  node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
-  onlyFirstParent: boolean
-}): {
-  node: TSESTree.VariableDeclarator | TSESTree.Property
-  name: string | null
-} | null {
-  let variableParent = getFirstNodeParentWithType({
-    allowedTypes: [
-      TSESTree.AST_NODE_TYPES.VariableDeclarator,
-      TSESTree.AST_NODE_TYPES.Property,
-    ],
-    onlyFirstParent,
-    node,
-  })
-  if (!variableParent) {
-    return null
-  }
-  let parentId
-  switch (variableParent.type) {
-    case TSESTree.AST_NODE_TYPES.VariableDeclarator:
-      parentId = variableParent.id
-      break
-    case TSESTree.AST_NODE_TYPES.Property:
-      parentId = variableParent.key
-      break
-    /* v8 ignore next 2 */
-    default:
-      throw new UnreachableCaseError(variableParent)
-  }
-
-  return {
-    name: parentId.type === 'Identifier' ? parentId.name : null,
-    node: variableParent,
   }
 }
 

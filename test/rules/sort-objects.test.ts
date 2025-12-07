@@ -2407,6 +2407,31 @@ describe('sort-objects', () => {
         `,
       })
 
+      await valid({
+        code: dedent`
+          export default {
+            data() {
+              return {
+                background: "red",
+                display: 'flex',
+                flexDirection: 'column',
+                width: "50px",
+                height: "50px",
+              }
+            }
+          }
+        `,
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              declarationMatchesPattern: '^data$',
+            },
+            type: 'unsorted',
+          },
+        ],
+      })
+
       await invalid({
         options: [
           {
@@ -8894,100 +8919,6 @@ describe('sort-objects', () => {
           }))
         `,
         options: styledComponentsOptions,
-      })
-    })
-
-    it('ignores objects matching ignorePattern', async () => {
-      await valid({
-        code: dedent`
-          ignore({
-            c: 'c',
-            b: 'bb',
-            a: 'aaa',
-          })
-        `,
-        options: [
-          {
-            ignorePattern: ['ignore'],
-          },
-        ],
-      })
-
-      await invalid({
-        output: dedent`
-          export default {
-            data() {
-              return {
-                background: "red",
-                display: 'flex',
-                flexDirection: 'column',
-                width: "50px",
-                height: "50px",
-              }
-            },
-            methods: {
-              foo() {},
-              bar() {},
-              baz() {},
-            },
-          }
-        `,
-        code: dedent`
-          export default {
-            methods: {
-              foo() {},
-              bar() {},
-              baz() {},
-            },
-            data() {
-              return {
-                background: "red",
-                display: 'flex',
-                flexDirection: 'column',
-                width: "50px",
-                height: "50px",
-              }
-            },
-          }
-        `,
-        errors: [
-          {
-            data: {
-              left: 'methods',
-              right: 'data',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-        ],
-        options: [
-          {
-            ignorePattern: ['data', 'methods'],
-          },
-        ],
-      })
-    })
-
-    it.each([
-      'Styles$',
-      ['noMatch', 'Styles$'],
-      { pattern: 'STYLES$', flags: 'i' },
-      ['noMatch', { pattern: 'STYLES$', flags: 'i' }],
-    ])('ignores patterns matching %s', async ignorePattern => {
-      await valid({
-        code: dedent`
-          const buttonStyles = {
-            background: "red",
-            display: 'flex',
-            flexDirection: 'column',
-            width: "50px",
-            height: "50px",
-          }
-        `,
-        options: [
-          {
-            ignorePattern,
-          },
-        ],
       })
     })
 
