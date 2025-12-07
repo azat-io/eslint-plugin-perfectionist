@@ -40,6 +40,7 @@ import { comparatorByOptionsComputer } from './sort-object-types/comparator-by-o
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
+import { computeParentNodesWithTypes } from '../utils/compute-parent-nodes-with-types'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -136,10 +137,7 @@ export default createEslintRule<Options, MessageId>({
           unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
           unexpectedOrder: ORDER_ERROR_ID,
         },
-        parentNode:
-          node.parent.type === AST_NODE_TYPES.TSTypeAliasDeclaration
-            ? node.parent
-            : null,
+        parentNode: computeObjectTypeParentNode(node),
         elements: node.members,
         context,
       }),
@@ -180,6 +178,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
   parentNode:
     | TSESTree.TSTypeAliasDeclaration
     | TSESTree.TSInterfaceDeclaration
+    | TSESTree.TSPropertySignature
     | null
   context: RuleContext<MessageIds, Options>
   elements: TSESTree.TypeElement[]
@@ -353,6 +352,7 @@ function computeMatchedContextOptions({
   parentNode:
     | TSESTree.TSTypeAliasDeclaration
     | TSESTree.TSInterfaceDeclaration
+    | TSESTree.TSPropertySignature
     | null
   context: TSESLint.RuleContext<string, Options>
   elements: TSESTree.TypeElement[]
@@ -379,7 +379,7 @@ function computeMatchedContextOptions({
       }
 
       let matchesPattern = matches(
-        parentNode.id.name,
+        computeNodeParentName(parentNode, sourceCode),
         options.useConfigurationIf.declarationMatchesPattern,
       )
       if (!matchesPattern) {
@@ -396,6 +396,51 @@ function computeMatchedContextOptions({
 
     return true
   })
+}
+
+function computeNodeParentName(
+  node:
+    | TSESTree.TSTypeAliasDeclaration
+    | TSESTree.TSInterfaceDeclaration
+    | TSESTree.TSPropertySignature,
+  sourceCode: TSESLint.SourceCode,
+): string {
+  switch (node.type) {
+    case AST_NODE_TYPES.TSTypeAliasDeclaration:
+    case AST_NODE_TYPES.TSInterfaceDeclaration:
+      return node.id.name
+    case AST_NODE_TYPES.TSPropertySignature:
+      return computePropertySignatureName(node)
+    default:
+      throw new UnreachableCaseError(node)
+  }
+
+  function computePropertySignatureName(
+    propertySignature: TSESTree.TSPropertySignature,
+  ): string {
+    switch (propertySignature.key.type) {
+      case AST_NODE_TYPES.Identifier:
+        return propertySignature.key.name
+      case AST_NODE_TYPES.Literal:
+        return String(propertySignature.key.value)
+      default:
+        return sourceCode.getText(propertySignature.key)
+    }
+  }
+}
+
+function computeObjectTypeParentNode(
+  node: TSESTree.TSTypeLiteral,
+): TSESTree.TSTypeAliasDeclaration | TSESTree.TSPropertySignature | null {
+  let parentNodes = computeParentNodesWithTypes({
+    allowedTypes: [
+      AST_NODE_TYPES.TSTypeAliasDeclaration,
+      AST_NODE_TYPES.TSPropertySignature,
+    ],
+    node,
+  })
+
+  return parentNodes[0] ?? null
 }
 
 function hasNumericKeysOnly(typeElements: TSESTree.TypeElement[]): boolean {
