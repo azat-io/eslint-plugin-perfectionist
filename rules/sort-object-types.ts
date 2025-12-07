@@ -125,20 +125,6 @@ export let jsonSchema: JSONSchema4 = {
 }
 
 export default createEslintRule<Options, MessageId>({
-  create: context => ({
-    TSTypeLiteral: node =>
-      sortObjectTypeElements<MessageId>({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-          unexpectedOrder: ORDER_ERROR_ID,
-        },
-        parentNode: computeObjectTypeParentNode(node),
-        elements: node.members,
-        context,
-      }),
-  }),
   meta: {
     messages: {
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
@@ -156,6 +142,20 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
+  create: context => ({
+    TSTypeLiteral: node =>
+      sortObjectTypeElements<MessageId>({
+        availableMessageIds: {
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
+        },
+        parentNode: computeObjectTypeParentNode(node),
+        elements: node.members,
+        context,
+      }),
+  }),
   defaultOptions: [defaultOptions],
   name: 'sort-object-types',
 })
