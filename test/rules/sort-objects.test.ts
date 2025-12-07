@@ -2509,6 +2509,39 @@ describe('sort-objects', () => {
           ({ b: 1, a: 1 })
         `,
       })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              declarationMatchesPattern: '^obj$',
+            },
+            type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          let {
+            a,
+            b,
+          } = obj;
+        `,
+        code: dedent`
+          let {
+            b,
+            a,
+          } = obj;
+        `,
+      })
     })
 
     it('applies configuration when declaration comment matches', async () => {
