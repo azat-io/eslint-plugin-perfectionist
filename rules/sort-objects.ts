@@ -1,21 +1,25 @@
-import type { TSESLint } from '@typescript-eslint/utils'
+import { AST_NODE_TYPES, type TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
-
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { Modifier, Selector, Options } from './sort-objects/types'
+import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
+import type { Modifier, Options, Selector } from './sort-objects/types'
+import {
+  allModifiers,
+  allSelectors,
+  singleCustomGroupJsonSchema,
+} from './sort-objects/types'
 
 import {
   DEPENDENCY_ORDER_ERROR,
-  MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
+  MISSED_SPACING_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
 import {
-  buildUseConfigurationIfJsonSchema,
   buildCommonJsonSchemas,
+  buildUseConfigurationIfJsonSchema,
   regexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -26,18 +30,12 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
-import {
-  singleCustomGroupJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-objects/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { computeParentNodesWithTypes } from './sort-objects/compute-parent-nodes-with-types'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
-import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { computePropertyName } from './sort-objects/compute-property-name'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -117,12 +115,14 @@ export default createEslintRule<Options, MessageId>({
       validateNewlinesAndPartitionConfiguration(options)
 
       let objectRoot =
-        nodeObject.type === 'ObjectPattern' ? null : getRootObject(nodeObject)
+        nodeObject.type === AST_NODE_TYPES.ObjectPattern
+          ? null
+          : getRootObject(nodeObject)
       if (
         objectRoot &&
         !options.styledComponents &&
         (isStyledComponents(objectRoot.parent) ||
-          (objectRoot.parent.type === 'ArrowFunctionExpression' &&
+          (objectRoot.parent.type === AST_NODE_TYPES.ArrowFunctionExpression &&
             isStyledComponents(objectRoot.parent.parent)))
       ) {
         return
@@ -139,22 +139,22 @@ export default createEslintRule<Options, MessageId>({
         function checkNode(nodeValue: TSESTree.Node): void {
           /** No need to check the body of functions and arrow functions. */
           if (
-            nodeValue.type === 'ArrowFunctionExpression' ||
-            nodeValue.type === 'FunctionExpression'
+            nodeValue.type === AST_NODE_TYPES.ArrowFunctionExpression ||
+            nodeValue.type === AST_NODE_TYPES.FunctionExpression
           ) {
             return
           }
 
-          if (nodeValue.type === 'Identifier') {
+          if (nodeValue.type === AST_NODE_TYPES.Identifier) {
             dependencies.push(nodeValue.name)
           }
 
-          if (nodeValue.type === 'Property') {
+          if (nodeValue.type === AST_NODE_TYPES.Property) {
             traverseNode(nodeValue.key)
             traverseNode(nodeValue.value)
           }
 
-          if (nodeValue.type === 'ConditionalExpression') {
+          if (nodeValue.type === AST_NODE_TYPES.ConditionalExpression) {
             traverseNode(nodeValue.test)
             traverseNode(nodeValue.consequent)
             traverseNode(nodeValue.alternate)
@@ -233,8 +233,8 @@ export default createEslintRule<Options, MessageId>({
         return props.reduce(
           (accumulator: SortingNodeWithDependencies[][], property) => {
             if (
-              property.type === 'SpreadElement' ||
-              property.type === 'RestElement'
+              property.type === AST_NODE_TYPES.SpreadElement ||
+              property.type === AST_NODE_TYPES.RestElement
             ) {
               accumulator.push([])
               return accumulator
@@ -247,13 +247,13 @@ export default createEslintRule<Options, MessageId>({
             let selectors: Selector[] = []
             let modifiers: Modifier[] = []
 
-            if (property.value.type === 'AssignmentPattern') {
+            if (property.value.type === AST_NODE_TYPES.AssignmentPattern) {
               dependencies = extractDependencies(property.value.right)
             }
 
             if (
-              property.value.type === 'ArrowFunctionExpression' ||
-              property.value.type === 'FunctionExpression'
+              property.value.type === AST_NODE_TYPES.ArrowFunctionExpression ||
+              property.value.type === AST_NODE_TYPES.FunctionExpression
             ) {
               selectors.push('method')
             } else {
@@ -445,7 +445,8 @@ function computeMatchedContextOptions({
     nodeNames: nodeObject.properties
       .filter(
         property =>
-          property.type !== 'SpreadElement' && property.type !== 'RestElement',
+          property.type !== AST_NODE_TYPES.SpreadElement &&
+          property.type !== AST_NODE_TYPES.RestElement,
       )
       .map(property => getNodeName({ sourceCode, property })),
     contextOptions: context.options,
@@ -588,22 +589,22 @@ function extractNamesFromPattern(pattern: TSESTree.Node): string[] {
 
 function isStyledComponents(styledNode: TSESTree.Node): boolean {
   if (
-    styledNode.type === 'JSXExpressionContainer' &&
-    styledNode.parent.type === 'JSXAttribute' &&
+    styledNode.type === AST_NODE_TYPES.JSXExpressionContainer &&
+    styledNode.parent.type === AST_NODE_TYPES.JSXAttribute &&
     styledNode.parent.name.name === 'style'
   ) {
     return true
   }
 
-  if (styledNode.type !== 'CallExpression') {
+  if (styledNode.type !== AST_NODE_TYPES.CallExpression) {
     return false
   }
 
   return (
     isCssCallExpression(styledNode.callee) ||
-    (styledNode.callee.type === 'MemberExpression' &&
+    (styledNode.callee.type === AST_NODE_TYPES.MemberExpression &&
       isStyledCallExpression(styledNode.callee.object)) ||
-    (styledNode.callee.type === 'CallExpression' &&
+    (styledNode.callee.type === AST_NODE_TYPES.CallExpression &&
       isStyledCallExpression(styledNode.callee.callee))
   )
 }
@@ -616,7 +617,7 @@ function hasNumericKeysOnly(
       return object.properties.every(
         property =>
           property.type === AST_NODE_TYPES.Property &&
-          property.key.type === 'Literal' &&
+          property.key.type === AST_NODE_TYPES.Literal &&
           typeof property.key.value === 'number',
       )
     case AST_NODE_TYPES.ObjectPattern:
@@ -634,9 +635,9 @@ function getNodeName({
   sourceCode: TSESLint.SourceCode
   property: TSESTree.Property
 }): string {
-  if (property.key.type === 'Identifier') {
+  if (property.key.type === AST_NODE_TYPES.Identifier) {
     return property.key.name
-  } else if (property.key.type === 'Literal') {
+  } else if (property.key.type === AST_NODE_TYPES.Literal) {
     return `${property.key.value}`
   }
   return sourceCode.getText(property.key)
@@ -650,8 +651,8 @@ function getNodeValue({
   property: TSESTree.Property
 }): string | null {
   if (
-    property.value.type === 'ArrowFunctionExpression' ||
-    property.value.type === 'FunctionExpression'
+    property.value.type === AST_NODE_TYPES.ArrowFunctionExpression ||
+    property.value.type === AST_NODE_TYPES.FunctionExpression
   ) {
     return null
   }
@@ -663,8 +664,8 @@ function getRootObject(
 ): TSESTree.ObjectExpression {
   let objectRoot = node
   while (
-    objectRoot.parent.type === 'Property' &&
-    objectRoot.parent.parent.type === 'ObjectExpression'
+    objectRoot.parent.type === AST_NODE_TYPES.Property &&
+    objectRoot.parent.parent.type === AST_NODE_TYPES.ObjectExpression
   ) {
     objectRoot = objectRoot.parent.parent
   }
@@ -672,9 +673,14 @@ function getRootObject(
 }
 
 function isStyledCallExpression(identifier: TSESTree.Expression): boolean {
-  return identifier.type === 'Identifier' && identifier.name === 'styled'
+  return (
+    identifier.type === AST_NODE_TYPES.Identifier &&
+    identifier.name === 'styled'
+  )
 }
 
 function isCssCallExpression(identifier: TSESTree.Expression): boolean {
-  return identifier.type === 'Identifier' && identifier.name === 'css'
+  return (
+    identifier.type === AST_NODE_TYPES.Identifier && identifier.name === 'css'
+  )
 }
