@@ -3,9 +3,24 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type {
+  MessageId,
+  Modifier,
+  Selector,
+  Options,
+} from './sort-objects/types'
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { Modifier, Selector, Options } from './sort-objects/types'
 
+import {
+  singleCustomGroupJsonSchema,
+  DEPENDENCY_ORDER_ERROR_ID,
+  MISSED_SPACING_ERROR_ID,
+  EXTRA_SPACING_ERROR_ID,
+  GROUP_ORDER_ERROR_ID,
+  ORDER_ERROR_ID,
+  allModifiers,
+  allSelectors,
+} from './sort-objects/types'
 import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
@@ -23,27 +38,20 @@ import {
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
-import {
-  singleCustomGroupJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-objects/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
-import { computeParentNodesWithTypes } from '../utils/compute-parent-nodes-with-types'
+import { computeMatchedContextOptions } from './sort-objects/compute-matched-context-options'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { computePropertyName } from './sort-objects/compute-property-name'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
+import { computeNodeName } from './sort-objects/compute-node-name'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -54,23 +62,9 @@ import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
-import { matches } from '../utils/matches'
 
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
-
-const ORDER_ERROR_ID = 'unexpectedObjectsOrder'
-const GROUP_ORDER_ERROR_ID = 'unexpectedObjectsGroupOrder'
-const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenObjectMembers'
-const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenObjectMembers'
-const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedObjectsDependencyOrder'
-
-type MessageId =
-  | typeof DEPENDENCY_ORDER_ERROR_ID
-  | typeof MISSED_SPACING_ERROR_ID
-  | typeof EXTRA_SPACING_ERROR_ID
-  | typeof GROUP_ORDER_ERROR_ID
-  | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
@@ -269,7 +263,7 @@ export default createEslintRule<Options, MessageId>({
               modifiers.push('multiline')
             }
 
-            let name = getNodeName({ sourceCode, property })
+            let name = computeNodeName({ sourceCode, property })
             let dependencyNames = [name]
             if (isDestructuredObject) {
               dependencyNames = [
@@ -433,119 +427,6 @@ export default createEslintRule<Options, MessageId>({
   name: 'sort-objects',
 })
 
-function computeMatchedContextOptions({
-  isDestructuredObject,
-  sourceCode,
-  nodeObject,
-  context,
-}: {
-  nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
-  context: TSESLint.RuleContext<MessageId, Options>
-  sourceCode: TSESLint.SourceCode
-  isDestructuredObject: boolean
-}): Options[number] | undefined {
-  let filteredContextOptions = filterOptionsByAllNamesMatch({
-    nodeNames: nodeObject.properties
-      .filter(
-        property =>
-          property.type !== AST_NODE_TYPES.SpreadElement &&
-          property.type !== AST_NODE_TYPES.RestElement,
-      )
-      .map(property => getNodeName({ sourceCode, property })),
-    contextOptions: context.options,
-  })
-
-  let objectParents = computeParentNodesWithTypes({
-    allowedTypes: [
-      AST_NODE_TYPES.VariableDeclarator,
-      AST_NODE_TYPES.Property,
-      AST_NODE_TYPES.CallExpression,
-    ],
-    node: nodeObject,
-  })
-  let parentNodeForDeclarationComment = null
-  let [firstObjectParent] = objectParents
-  if (firstObjectParent) {
-    parentNodeForDeclarationComment =
-      firstObjectParent.type === AST_NODE_TYPES.VariableDeclarator
-        ? firstObjectParent.parent
-        : firstObjectParent
-  }
-  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
-    parentNode: parentNodeForDeclarationComment,
-    contextOptions: filteredContextOptions,
-    sourceCode,
-  })
-
-  return filteredContextOptions.find(options => {
-    if (!options.useConfigurationIf) {
-      return true
-    }
-
-    if (options.useConfigurationIf.objectType) {
-      if (
-        isDestructuredObject &&
-        options.useConfigurationIf.objectType === 'non-destructured'
-      ) {
-        return false
-      }
-      if (
-        !isDestructuredObject &&
-        options.useConfigurationIf.objectType === 'destructured'
-      ) {
-        return false
-      }
-    }
-
-    if (options.useConfigurationIf.callingFunctionNamePattern) {
-      let firstCallExpressionParent = objectParents.find(
-        parent => parent.type === AST_NODE_TYPES.CallExpression,
-      )
-      if (!firstCallExpressionParent) {
-        return false
-      }
-      let patternMatches = matches(
-        sourceCode.getText(firstCallExpressionParent.callee),
-        options.useConfigurationIf.callingFunctionNamePattern,
-      )
-      if (!patternMatches) {
-        return false
-      }
-    }
-
-    if (options.useConfigurationIf.declarationMatchesPattern) {
-      let firstVariableDeclaratorParent = objectParents.find(
-        parent =>
-          parent.type === AST_NODE_TYPES.VariableDeclarator ||
-          parent.type === AST_NODE_TYPES.Property,
-      )
-      if (!firstVariableDeclaratorParent) {
-        return false
-      }
-      let nodeName = computePropertyName(firstVariableDeclaratorParent)
-      if (!nodeName) {
-        return false
-      }
-      let patternMatches = matches(
-        nodeName,
-        options.useConfigurationIf.declarationMatchesPattern,
-      )
-      if (!patternMatches) {
-        return false
-      }
-    }
-
-    if (
-      options.useConfigurationIf.hasNumericKeysOnly &&
-      !hasNumericKeysOnly(nodeObject)
-    ) {
-      return false
-    }
-
-    return true
-  })
-}
-
 function extractNamesFromPattern(pattern: TSESTree.Node): string[] {
   switch (pattern.type) {
     case AST_NODE_TYPES.AssignmentPattern:
@@ -587,42 +468,6 @@ function extractNamesFromPattern(pattern: TSESTree.Node): string[] {
       default:
         throw new UnreachableCaseError(property)
     }
-  }
-}
-
-function hasNumericKeysOnly(
-  object: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
-): boolean {
-  switch (object.type) {
-    case AST_NODE_TYPES.ObjectExpression:
-      return object.properties.every(
-        property =>
-          property.type === AST_NODE_TYPES.Property &&
-          property.key.type === AST_NODE_TYPES.Literal &&
-          typeof property.key.value === 'number',
-      )
-    case AST_NODE_TYPES.ObjectPattern:
-      return false
-    /* v8 ignore next 2 */
-    default:
-      throw new UnreachableCaseError(object)
-  }
-}
-
-function getNodeName({
-  sourceCode,
-  property,
-}: {
-  sourceCode: TSESLint.SourceCode
-  property: TSESTree.Property
-}): string {
-  switch (property.key.type) {
-    case AST_NODE_TYPES.Identifier:
-      return property.key.name
-    case AST_NODE_TYPES.Literal:
-      return `${property.key.value}`
-    default:
-      return sourceCode.getText(property.key)
   }
 }
 
