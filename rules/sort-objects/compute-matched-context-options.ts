@@ -7,11 +7,10 @@ import type { RegexOption } from '../../types/common-options'
 import type { MessageId, Options } from './types'
 
 import { filterOptionsByDeclarationCommentMatches } from '../../utils/filter-options-by-declaration-comment-matches'
+import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
 import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
 import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
-import { computePropertyName } from './compute-property-name'
-import { computeNodeName } from './compute-node-name'
 import { matches } from '../../utils/matches'
 
 /**
@@ -42,7 +41,9 @@ export function computeMatchedContextOptions({
           property.type !== AST_NODE_TYPES.SpreadElement &&
           property.type !== AST_NODE_TYPES.RestElement,
       )
-      .map(property => computeNodeName({ sourceCode, property })),
+      .map(property =>
+        computePropertyOrVariableDeclaratorName({ node: property, sourceCode }),
+      ),
     contextOptions: context.options,
   })
 
@@ -115,6 +116,7 @@ function isContextOptionMatching({
       declarationMatchesPattern:
         options.useConfigurationIf.declarationMatchesPattern,
       objectParents,
+      sourceCode,
     }) &&
     passesHasNumericKeysOnlyFilter({
       hasNumericKeysOnlyFilter: options.useConfigurationIf.hasNumericKeysOnly,
@@ -164,6 +166,7 @@ function passesHasNumericKeysOnlyFilter({
 function passesDeclarationMatchesPatternFilter({
   declarationMatchesPattern,
   objectParents,
+  sourceCode,
 }: {
   objectParents: (
     | TSESTree.VariableDeclarator
@@ -171,6 +174,7 @@ function passesDeclarationMatchesPatternFilter({
     | TSESTree.Property
   )[]
   declarationMatchesPattern: RegexOption | undefined
+  sourceCode: TSESLint.SourceCode
 }): boolean {
   if (!declarationMatchesPattern) {
     return true
@@ -185,10 +189,10 @@ function passesDeclarationMatchesPatternFilter({
     return false
   }
 
-  let nodeName = computePropertyName(firstVariableDeclaratorParent)
-  if (!nodeName) {
-    return false
-  }
+  let nodeName = computePropertyOrVariableDeclaratorName({
+    node: firstVariableDeclaratorParent,
+    sourceCode,
+  })
 
   return matches(nodeName, declarationMatchesPattern)
 }

@@ -37,6 +37,7 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
+import { computePropertyOrVariableDeclaratorName } from './sort-objects/compute-property-or-variable-declarator-name'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
@@ -51,7 +52,6 @@ import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
-import { computeNodeName } from './sort-objects/compute-node-name'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -263,7 +263,10 @@ export default createEslintRule<Options, MessageId>({
               modifiers.push('multiline')
             }
 
-            let name = computeNodeName({ sourceCode, property })
+            let name = computePropertyOrVariableDeclaratorName({
+              node: property,
+              sourceCode,
+            })
             let dependencyNames = [name]
             if (isDestructuredObject) {
               dependencyNames = [
