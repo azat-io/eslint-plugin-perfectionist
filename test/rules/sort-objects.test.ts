@@ -2743,6 +2743,161 @@ describe('sort-objects', () => {
           `,
         })
       })
+
+      it('matches deep declarations', async () => {
+        await valid({
+          code: dedent`
+            let deep = <any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                a: "a",
+                b: "b",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            };
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+        })
+      })
+
+      it('matches shallow and deep declarations at the same time', async () => {
+        await invalid({
+          output: dedent`
+            let shallow = <any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                a: "a",
+                b: "b",
+              }
+            };
+
+            let implicitShallow = <any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                a: "a",
+                b: "b",
+              }
+            };
+
+            let deep = <any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            };
+          `,
+          code: dedent`
+            let shallow = <any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                b: "b",
+                a: "a",
+              }
+            };
+
+            let implicitShallow = <any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                b: "b",
+                a: "a",
+              }
+            };
+
+            let deep = <any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            };
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: [
+                  {
+                    pattern: '^implicitShallow$',
+                  },
+                  {
+                    pattern: '^shallow$',
+                    scope: 'shallow',
+                  },
+                  {
+                    pattern: '^deep$',
+                    scope: 'deep',
+                  },
+                ],
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+        })
+      })
     })
 
     it('applies configuration when declaration comment matches', async () => {

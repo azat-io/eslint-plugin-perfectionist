@@ -3,16 +3,15 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { RegexOption } from '../../types/common-options'
 import type { MessageId, Options } from './types'
 
 import { filterOptionsByDeclarationCommentMatches } from '../../utils/filter-options-by-declaration-comment-matches'
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
 import { passesCallingFunctionNamePatternFilter } from './passes-calling-function-name-pattern-filter'
+import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
 import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
 import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
-import { matches } from '../../utils/matches'
 
 /**
  * Computes the matched context options for a given object node.
@@ -162,40 +161,6 @@ function passesHasNumericKeysOnlyFilter({
         throw new UnreachableCaseError(object)
     }
   }
-}
-
-function passesDeclarationMatchesPatternFilter({
-  declarationMatchesPattern,
-  objectParents,
-  sourceCode,
-}: {
-  objectParents: (
-    | TSESTree.VariableDeclarator
-    | TSESTree.CallExpression
-    | TSESTree.Property
-  )[]
-  declarationMatchesPattern: RegexOption | undefined
-  sourceCode: TSESLint.SourceCode
-}): boolean {
-  if (!declarationMatchesPattern) {
-    return true
-  }
-
-  let firstVariableDeclaratorParent = objectParents.find(
-    parent =>
-      parent.type === AST_NODE_TYPES.VariableDeclarator ||
-      parent.type === AST_NODE_TYPES.Property,
-  )
-  if (!firstVariableDeclaratorParent) {
-    return false
-  }
-
-  let nodeName = computePropertyOrVariableDeclaratorName({
-    node: firstVariableDeclaratorParent,
-    sourceCode,
-  })
-
-  return matches(nodeName, declarationMatchesPattern)
 }
 
 function passesObjectTypeFilter({
