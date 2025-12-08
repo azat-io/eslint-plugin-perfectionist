@@ -57,7 +57,7 @@ export type Options = Partial<
        * that contains this object. Useful for applying different sorting rules
        * to objects passed to specific functions.
        */
-      callingFunctionNamePattern?: RegexOption
+      callingFunctionNamePattern?: ScopedRegexOption
 
       /**
        * Regular expression pattern to match against the object's declaration
@@ -155,3 +155,17 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   elementValuePattern: buildRegexJsonSchema(),
 }
+
+export type ScopedRegexOption = RegexOption<{
+  scope?: Scope
+}>
+export type Scope = (typeof regexScopes)[number]
+export let regexScopes = ['shallow', 'deep'] as const
+export let scopedRegexJsonSchema: JSONSchema4 = buildRegexJsonSchema({
+  additionalProperties: {
+    scope: {
+      enum: [...regexScopes],
+      type: 'string',
+    },
+  },
+})
