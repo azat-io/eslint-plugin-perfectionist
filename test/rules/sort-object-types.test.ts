@@ -2204,6 +2204,69 @@ describe('sort-object-types', () => {
         `,
       })
 
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^field$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          type Type = {
+            field: A & {
+              b: string
+              c: string
+              a: string
+            }
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^field$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          type Type = {
+            'field': A & {
+              b: string
+              c: string
+              a: string
+            }
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^field$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          type Type = {
+            [field]: A & {
+              b: string
+              c: string
+              a: string
+            }
+          }
+        `,
+      })
+
       await invalid({
         options: [
           {
