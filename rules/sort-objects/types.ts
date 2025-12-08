@@ -66,12 +66,6 @@ export type Options = Partial<
     }
 
     /**
-     * Regular expression pattern to ignore certain objects from sorting.
-     * Objects with names matching this pattern will not be sorted.
-     */
-    ignorePattern: RegexOption
-
-    /**
      * Whether to sort styled-components CSS properties. When true, sorts CSS
      * properties within styled-components template literals.
      *

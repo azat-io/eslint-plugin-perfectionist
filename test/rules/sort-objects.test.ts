@@ -2317,13 +2317,13 @@ describe('sort-objects', () => {
             r
           }
 
-          someFunction(true, {
+          someFunction(true, <any>{
             r: string,
             g: string,
             b: string
           })
 
-          let a = someFunction(true, {
+          let a = someFunction(true, <any>{
             r: string,
             g: string,
             b: string
@@ -2336,13 +2336,13 @@ describe('sort-objects', () => {
             r
           }
 
-          someFunction(true, {
+          someFunction(true, <any>{
             b: string,
             g: string,
             r: string
           })
 
-          let a = someFunction(true, {
+          let a = someFunction(true, <any>{
             b: string,
             g: string,
             r: string
@@ -2378,7 +2378,7 @@ describe('sort-objects', () => {
           options,
         ],
         code: dedent`
-          const constant = {
+          const constant = <any>{
             b,
             a,
             c,
@@ -2405,6 +2405,73 @@ describe('sort-objects', () => {
             }
           }
         `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^constant$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const notAConstant = {
+            'constant': {
+              b,
+              a,
+              c,
+            }
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^constant$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const notAConstant = {
+            [constant]: {
+              b,
+              a,
+              c,
+            }
+          }
+        `,
+      })
+
+      await valid({
+        code: dedent`
+          export default {
+            data() {
+              return {
+                background: "red",
+                display: 'flex',
+                flexDirection: 'column',
+                width: "50px",
+                height: "50px",
+              }
+            }
+          }
+        `,
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              declarationMatchesPattern: '^data$',
+            },
+            type: 'unsorted',
+          },
+        ],
       })
 
       await invalid({
@@ -2482,6 +2549,39 @@ describe('sort-objects', () => {
         `,
         code: dedent`
           ({ b: 1, a: 1 })
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              declarationMatchesPattern: '^obj$',
+            },
+            type: 'unsorted',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          let {
+            a,
+            b,
+          } = obj;
+        `,
+        code: dedent`
+          let {
+            b,
+            a,
+          } = obj;
         `,
       })
     })
@@ -2861,7 +2961,7 @@ describe('sort-objects', () => {
                 rightGroup: 'propertiesStartingWithHello',
                 right: 'helloProperty',
                 leftGroup: 'unknown',
-                left: 'method',
+                left: 'method2',
               },
               messageId: 'unexpectedObjectsGroupOrder',
             },
@@ -2871,14 +2971,16 @@ describe('sort-objects', () => {
               helloProperty,
               a,
               b,
-              method() {},
+              method1() {},
+              method2: () => {},
             }
           `,
           code: dedent`
             let obj = {
               a,
               b,
-              method() {},
+              method1() {},
+              method2: () => {},
               helloProperty,
             }
           `,
@@ -8894,100 +8996,6 @@ describe('sort-objects', () => {
           }))
         `,
         options: styledComponentsOptions,
-      })
-    })
-
-    it('ignores objects matching ignorePattern', async () => {
-      await valid({
-        code: dedent`
-          ignore({
-            c: 'c',
-            b: 'bb',
-            a: 'aaa',
-          })
-        `,
-        options: [
-          {
-            ignorePattern: ['ignore'],
-          },
-        ],
-      })
-
-      await invalid({
-        output: dedent`
-          export default {
-            data() {
-              return {
-                background: "red",
-                display: 'flex',
-                flexDirection: 'column',
-                width: "50px",
-                height: "50px",
-              }
-            },
-            methods: {
-              foo() {},
-              bar() {},
-              baz() {},
-            },
-          }
-        `,
-        code: dedent`
-          export default {
-            methods: {
-              foo() {},
-              bar() {},
-              baz() {},
-            },
-            data() {
-              return {
-                background: "red",
-                display: 'flex',
-                flexDirection: 'column',
-                width: "50px",
-                height: "50px",
-              }
-            },
-          }
-        `,
-        errors: [
-          {
-            data: {
-              left: 'methods',
-              right: 'data',
-            },
-            messageId: 'unexpectedObjectsOrder',
-          },
-        ],
-        options: [
-          {
-            ignorePattern: ['data', 'methods'],
-          },
-        ],
-      })
-    })
-
-    it.each([
-      'Styles$',
-      ['noMatch', 'Styles$'],
-      { pattern: 'STYLES$', flags: 'i' },
-      ['noMatch', { pattern: 'STYLES$', flags: 'i' }],
-    ])('ignores patterns matching %s', async ignorePattern => {
-      await valid({
-        code: dedent`
-          const buttonStyles = {
-            background: "red",
-            display: 'flex',
-            flexDirection: 'column',
-            width: "50px",
-            height: "50px",
-          }
-        `,
-        options: [
-          {
-            ignorePattern,
-          },
-        ],
       })
     })
 
