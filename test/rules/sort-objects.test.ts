@@ -2366,6 +2366,161 @@ describe('sort-objects', () => {
           `,
         })
       })
+
+      it('matches deep calls', async () => {
+        await valid({
+          code: dedent`
+            deep(<any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            });
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+        })
+      })
+
+      it('matches shallow and deep calls at the same time', async () => {
+        await invalid({
+          output: dedent`
+            shallow(<any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                a: "a",
+                b: "b",
+              }
+            });
+
+            implicitShallow(<any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                a: "a",
+                b: "b",
+              }
+            });
+
+            deep(<any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            });
+          `,
+          code: dedent`
+            shallow(<any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                b: "b",
+                a: "a",
+              }
+            });
+
+            implicitShallow(<any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                b: "b",
+                a: "a",
+              }
+            });
+
+            deep(<any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            });
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: [
+                  {
+                    pattern: '^implicitShallow$',
+                  },
+                  {
+                    pattern: '^shallow$',
+                    scope: 'shallow',
+                  },
+                  {
+                    pattern: '^deep$',
+                    scope: 'deep',
+                  },
+                ],
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+        })
+      })
     })
 
     describe('useConfigurationIf.declarationMatchesPattern', () => {

@@ -8,6 +8,7 @@ import type { MessageId, Options } from './types'
 
 import { filterOptionsByDeclarationCommentMatches } from '../../utils/filter-options-by-declaration-comment-matches'
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
+import { passesCallingFunctionNamePatternFilter } from './passes-calling-function-name-pattern-filter'
 import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
 import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
@@ -195,36 +196,6 @@ function passesDeclarationMatchesPatternFilter({
   })
 
   return matches(nodeName, declarationMatchesPattern)
-}
-
-function passesCallingFunctionNamePatternFilter({
-  callingFunctionNamePattern,
-  objectParents,
-  sourceCode,
-}: {
-  objectParents: (
-    | TSESTree.VariableDeclarator
-    | TSESTree.CallExpression
-    | TSESTree.Property
-  )[]
-  callingFunctionNamePattern: RegexOption | undefined
-  sourceCode: TSESLint.SourceCode
-}): boolean {
-  if (!callingFunctionNamePattern) {
-    return true
-  }
-
-  let firstCallExpressionParent = objectParents.find(
-    parent => parent.type === AST_NODE_TYPES.CallExpression,
-  )
-  if (!firstCallExpressionParent) {
-    return false
-  }
-
-  return matches(
-    sourceCode.getText(firstCallExpressionParent.callee),
-    callingFunctionNamePattern,
-  )
 }
 
 function passesObjectTypeFilter({
