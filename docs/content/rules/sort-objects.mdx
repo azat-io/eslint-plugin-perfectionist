@@ -312,8 +312,8 @@ Specifies whether this rule should be applied to styled-components like librarie
     callingFunctionNamePattern?:
       | string
       | string[]
-      | { pattern: string; flags: string }
-      | { pattern: string; flags: string }[]
+      | { pattern: string; flags?: string; scope?: 'shallow' | 'deep' }
+      | { pattern: string; flags?: string; scope?: 'shallow' | 'deep' }[]
     declarationMatchesPattern?:
       | string
       | string[]
@@ -370,6 +370,7 @@ Example configuration:
 ```
 
 - `callingFunctionNamePattern` — A regexp pattern for matching objects that are passed as arguments to a function with a specific name.
+With `scope: 'deep'`, this setting will also match any object found at any depth within the arguments of the function call.
 
 Example configuration:
 ```ts
