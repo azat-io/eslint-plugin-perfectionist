@@ -52,6 +52,7 @@ export function computeMatchedContextOptions({
     }
 
     if (options.useConfigurationIf.declarationMatchesPattern) {
+      /* v8 ignore if -- @preserve Unsure how we can reach that case */
       if (!parentNode) {
         return false
       }
@@ -89,6 +90,7 @@ function computeNodeParentName(
       return node.id.name
     case AST_NODE_TYPES.TSPropertySignature:
       return computePropertySignatureName(node)
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
       throw new UnreachableCaseError(node)
   }
@@ -101,6 +103,7 @@ function computeNodeParentName(
         return propertySignature.key.name
       case AST_NODE_TYPES.Literal:
         return String(propertySignature.key.value)
+      /* v8 ignore next 2 -- @preserve Unsure how we can reach that case */
       default:
         return sourceCode.getText(propertySignature.key)
     }
