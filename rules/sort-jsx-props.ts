@@ -1,6 +1,7 @@
+import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import { TSESTree } from '@typescript-eslint/types'
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { Modifier, Selector } from './sort-jsx-props/types'
 import type { SortingNode } from '../types/sorting-node'
@@ -110,7 +111,7 @@ export default createEslintRule<Options, MessageId>({
             accumulator: SortingNode[][],
             attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
           ) => {
-            if (attribute.type === TSESTree.AST_NODE_TYPES.JSXSpreadAttribute) {
+            if (attribute.type === AST_NODE_TYPES.JSXSpreadAttribute) {
               accumulator.push([])
               return accumulator
             }
@@ -262,10 +263,7 @@ function computeMatchedContextOptions({
 }): Options[number] | undefined {
   return filterOptionsByAllNamesMatch({
     nodeNames: node.openingElement.attributes
-      .filter(
-        attribute =>
-          attribute.type !== TSESTree.AST_NODE_TYPES.JSXSpreadAttribute,
-      )
+      .filter(attribute => attribute.type !== AST_NODE_TYPES.JSXSpreadAttribute)
       .map(attribute => getNodeName({ attribute })),
     contextOptions: context.options,
   }).find(options => {
@@ -284,7 +282,7 @@ function getNodeName({
 }: {
   attribute: TSESTree.JSXAttribute
 }): string {
-  return attribute.name.type === TSESTree.AST_NODE_TYPES.JSXNamespacedName
+  return attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
     ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
     : attribute.name.name
 }

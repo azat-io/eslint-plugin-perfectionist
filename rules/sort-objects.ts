@@ -1,7 +1,7 @@
+import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
-import { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { Modifier, Selector, Options } from './sort-objects/types'
@@ -33,12 +33,13 @@ import {
 } from './sort-objects/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { getFirstNodeParentWithType } from './sort-objects/get-first-node-parent-with-type'
+import { computeParentNodesWithTypes } from './sort-objects/compute-parent-nodes-with-types'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { computePropertyName } from './sort-objects/compute-property-name'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
@@ -47,6 +48,7 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
+import { isStyleNode } from './sort-objects/is-style-node'
 import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -79,7 +81,6 @@ let defaultOptions: Required<Options[number]> = {
   styledComponents: true,
   useConfigurationIf: {},
   type: 'alphabetical',
-  ignorePattern: [],
   ignoreCase: true,
   customGroups: [],
   locales: 'en-US',
@@ -116,26 +117,16 @@ export default createEslintRule<Options, MessageId>({
       })
       validateNewlinesAndPartitionConfiguration(options)
 
-      let objectParentForIgnorePattern = getObjectParent({
-        onlyFirstParent: false,
-        node: nodeObject,
-        sourceCode,
-      })
-      if (
-        objectParentForIgnorePattern?.name &&
-        matches(objectParentForIgnorePattern.name, options.ignorePattern)
-      ) {
-        return
-      }
-
       let objectRoot =
-        nodeObject.type === 'ObjectPattern' ? null : getRootObject(nodeObject)
+        nodeObject.type === AST_NODE_TYPES.ObjectPattern
+          ? null
+          : getRootObject(nodeObject)
       if (
         objectRoot &&
         !options.styledComponents &&
-        (isStyledComponents(objectRoot.parent) ||
-          (objectRoot.parent.type === 'ArrowFunctionExpression' &&
-            isStyledComponents(objectRoot.parent.parent)))
+        (isStyleNode(objectRoot.parent) ||
+          (objectRoot.parent.type === AST_NODE_TYPES.ArrowFunctionExpression &&
+            isStyleNode(objectRoot.parent.parent)))
       ) {
         return
       }
@@ -151,22 +142,22 @@ export default createEslintRule<Options, MessageId>({
         function checkNode(nodeValue: TSESTree.Node): void {
           /** No need to check the body of functions and arrow functions. */
           if (
-            nodeValue.type === 'ArrowFunctionExpression' ||
-            nodeValue.type === 'FunctionExpression'
+            nodeValue.type === AST_NODE_TYPES.ArrowFunctionExpression ||
+            nodeValue.type === AST_NODE_TYPES.FunctionExpression
           ) {
             return
           }
 
-          if (nodeValue.type === 'Identifier') {
+          if (nodeValue.type === AST_NODE_TYPES.Identifier) {
             dependencies.push(nodeValue.name)
           }
 
-          if (nodeValue.type === 'Property') {
+          if (nodeValue.type === AST_NODE_TYPES.Property) {
             traverseNode(nodeValue.key)
             traverseNode(nodeValue.value)
           }
 
-          if (nodeValue.type === 'ConditionalExpression') {
+          if (nodeValue.type === AST_NODE_TYPES.ConditionalExpression) {
             traverseNode(nodeValue.test)
             traverseNode(nodeValue.consequent)
             traverseNode(nodeValue.alternate)
@@ -245,8 +236,8 @@ export default createEslintRule<Options, MessageId>({
         return props.reduce(
           (accumulator: SortingNodeWithDependencies[][], property) => {
             if (
-              property.type === 'SpreadElement' ||
-              property.type === 'RestElement'
+              property.type === AST_NODE_TYPES.SpreadElement ||
+              property.type === AST_NODE_TYPES.RestElement
             ) {
               accumulator.push([])
               return accumulator
@@ -259,13 +250,13 @@ export default createEslintRule<Options, MessageId>({
             let selectors: Selector[] = []
             let modifiers: Modifier[] = []
 
-            if (property.value.type === 'AssignmentPattern') {
+            if (property.value.type === AST_NODE_TYPES.AssignmentPattern) {
               dependencies = extractDependencies(property.value.right)
             }
 
             if (
-              property.value.type === 'ArrowFunctionExpression' ||
-              property.value.type === 'FunctionExpression'
+              property.value.type === AST_NODE_TYPES.ArrowFunctionExpression ||
+              property.value.type === AST_NODE_TYPES.FunctionExpression
             ) {
               selectors.push('method')
             } else {
@@ -415,7 +406,6 @@ export default createEslintRule<Options, MessageId>({
           },
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          ignorePattern: regexJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
@@ -454,27 +444,32 @@ function computeMatchedContextOptions({
   sourceCode: TSESLint.SourceCode
   isDestructuredObject: boolean
 }): Options[number] | undefined {
-  let objectParent = getObjectParent({
-    onlyFirstParent: true,
-    node: nodeObject,
-    sourceCode,
-  })
   let filteredContextOptions = filterOptionsByAllNamesMatch({
     nodeNames: nodeObject.properties
       .filter(
         property =>
-          property.type !== 'SpreadElement' && property.type !== 'RestElement',
+          property.type !== AST_NODE_TYPES.SpreadElement &&
+          property.type !== AST_NODE_TYPES.RestElement,
       )
       .map(property => getNodeName({ sourceCode, property })),
     contextOptions: context.options,
   })
 
+  let objectParents = computeParentNodesWithTypes({
+    allowedTypes: [
+      AST_NODE_TYPES.VariableDeclarator,
+      AST_NODE_TYPES.Property,
+      AST_NODE_TYPES.CallExpression,
+    ],
+    node: nodeObject,
+  })
   let parentNodeForDeclarationComment = null
-  if (objectParent) {
+  let [firstObjectParent] = objectParents
+  if (firstObjectParent) {
     parentNodeForDeclarationComment =
-      objectParent.type === 'VariableDeclarator'
-        ? objectParent.node.parent
-        : objectParent.node
+      firstObjectParent.type === AST_NODE_TYPES.VariableDeclarator
+        ? firstObjectParent.parent
+        : firstObjectParent
   }
   filteredContextOptions = filterOptionsByDeclarationCommentMatches({
     parentNode: parentNodeForDeclarationComment,
@@ -503,14 +498,14 @@ function computeMatchedContextOptions({
     }
 
     if (options.useConfigurationIf.callingFunctionNamePattern) {
-      if (!objectParent) {
-        return false
-      }
-      if (objectParent.type !== 'CallExpression' || !objectParent.name) {
+      let firstCallExpressionParent = objectParents.find(
+        parent => parent.type === AST_NODE_TYPES.CallExpression,
+      )
+      if (!firstCallExpressionParent) {
         return false
       }
       let patternMatches = matches(
-        objectParent.name,
+        sourceCode.getText(firstCallExpressionParent.callee),
         options.useConfigurationIf.callingFunctionNamePattern,
       )
       if (!patternMatches) {
@@ -519,14 +514,20 @@ function computeMatchedContextOptions({
     }
 
     if (options.useConfigurationIf.declarationMatchesPattern) {
-      if (!objectParent) {
+      let firstVariableDeclaratorParent = objectParents.find(
+        parent =>
+          parent.type === AST_NODE_TYPES.VariableDeclarator ||
+          parent.type === AST_NODE_TYPES.Property,
+      )
+      if (!firstVariableDeclaratorParent) {
         return false
       }
-      if (objectParent.type !== 'VariableDeclarator' || !objectParent.name) {
+      let nodeName = computePropertyName(firstVariableDeclaratorParent)
+      if (!nodeName) {
         return false
       }
       let patternMatches = matches(
-        objectParent.name,
+        nodeName,
         options.useConfigurationIf.declarationMatchesPattern,
       )
       if (!patternMatches) {
@@ -589,111 +590,6 @@ function extractNamesFromPattern(pattern: TSESTree.Node): string[] {
   }
 }
 
-function getObjectParent({
-  onlyFirstParent,
-  sourceCode,
-  node,
-}: {
-  node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
-  sourceCode: TSESLint.SourceCode
-  onlyFirstParent: boolean
-}):
-  | {
-      node: TSESTree.VariableDeclarator | TSESTree.Property
-      type: 'VariableDeclarator'
-      name: string | null
-    }
-  | {
-      node: TSESTree.CallExpression
-      type: 'CallExpression'
-      name: string | null
-    }
-  | null {
-  let variableParent = getVariableParent({ onlyFirstParent, node })
-  if (variableParent) {
-    return {
-      type: 'VariableDeclarator',
-      name: variableParent.name,
-      node: variableParent.node,
-    }
-  }
-  let callParent = getFirstNodeParentWithType({
-    allowedTypes: [TSESTree.AST_NODE_TYPES.CallExpression],
-    onlyFirstParent,
-    node,
-  })
-  if (callParent) {
-    return {
-      name: sourceCode.getText(callParent.callee),
-      type: 'CallExpression',
-      node: callParent,
-    }
-  }
-  return null
-}
-
-function getVariableParent({
-  onlyFirstParent,
-  node,
-}: {
-  node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
-  onlyFirstParent: boolean
-}): {
-  node: TSESTree.VariableDeclarator | TSESTree.Property
-  name: string | null
-} | null {
-  let variableParent = getFirstNodeParentWithType({
-    allowedTypes: [
-      TSESTree.AST_NODE_TYPES.VariableDeclarator,
-      TSESTree.AST_NODE_TYPES.Property,
-    ],
-    onlyFirstParent,
-    node,
-  })
-  if (!variableParent) {
-    return null
-  }
-  let parentId
-  switch (variableParent.type) {
-    case TSESTree.AST_NODE_TYPES.VariableDeclarator:
-      parentId = variableParent.id
-      break
-    case TSESTree.AST_NODE_TYPES.Property:
-      parentId = variableParent.key
-      break
-    /* v8 ignore next 2 */
-    default:
-      throw new UnreachableCaseError(variableParent)
-  }
-
-  return {
-    name: parentId.type === 'Identifier' ? parentId.name : null,
-    node: variableParent,
-  }
-}
-
-function isStyledComponents(styledNode: TSESTree.Node): boolean {
-  if (
-    styledNode.type === 'JSXExpressionContainer' &&
-    styledNode.parent.type === 'JSXAttribute' &&
-    styledNode.parent.name.name === 'style'
-  ) {
-    return true
-  }
-
-  if (styledNode.type !== 'CallExpression') {
-    return false
-  }
-
-  return (
-    isCssCallExpression(styledNode.callee) ||
-    (styledNode.callee.type === 'MemberExpression' &&
-      isStyledCallExpression(styledNode.callee.object)) ||
-    (styledNode.callee.type === 'CallExpression' &&
-      isStyledCallExpression(styledNode.callee.callee))
-  )
-}
-
 function hasNumericKeysOnly(
   object: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
 ): boolean {
@@ -702,7 +598,7 @@ function hasNumericKeysOnly(
       return object.properties.every(
         property =>
           property.type === AST_NODE_TYPES.Property &&
-          property.key.type === 'Literal' &&
+          property.key.type === AST_NODE_TYPES.Literal &&
           typeof property.key.value === 'number',
       )
     case AST_NODE_TYPES.ObjectPattern:
@@ -720,12 +616,14 @@ function getNodeName({
   sourceCode: TSESLint.SourceCode
   property: TSESTree.Property
 }): string {
-  if (property.key.type === 'Identifier') {
-    return property.key.name
-  } else if (property.key.type === 'Literal') {
-    return `${property.key.value}`
+  switch (property.key.type) {
+    case AST_NODE_TYPES.Identifier:
+      return property.key.name
+    case AST_NODE_TYPES.Literal:
+      return `${property.key.value}`
+    default:
+      return sourceCode.getText(property.key)
   }
-  return sourceCode.getText(property.key)
 }
 
 function getNodeValue({
@@ -735,13 +633,13 @@ function getNodeValue({
   sourceCode: TSESLint.SourceCode
   property: TSESTree.Property
 }): string | null {
-  if (
-    property.value.type === 'ArrowFunctionExpression' ||
-    property.value.type === 'FunctionExpression'
-  ) {
-    return null
+  switch (property.value.type) {
+    case AST_NODE_TYPES.ArrowFunctionExpression:
+    case AST_NODE_TYPES.FunctionExpression:
+      return null
+    default:
+      return sourceCode.getText(property.value)
   }
-  return sourceCode.getText(property.value)
 }
 
 function getRootObject(
@@ -749,18 +647,10 @@ function getRootObject(
 ): TSESTree.ObjectExpression {
   let objectRoot = node
   while (
-    objectRoot.parent.type === 'Property' &&
-    objectRoot.parent.parent.type === 'ObjectExpression'
+    objectRoot.parent.type === AST_NODE_TYPES.Property &&
+    objectRoot.parent.parent.type === AST_NODE_TYPES.ObjectExpression
   ) {
     objectRoot = objectRoot.parent.parent
   }
   return objectRoot
-}
-
-function isStyledCallExpression(identifier: TSESTree.Expression): boolean {
-  return identifier.type === 'Identifier' && identifier.name === 'styled'
-}
-
-function isCssCallExpression(identifier: TSESTree.Expression): boolean {
-  return identifier.type === 'Identifier' && identifier.name === 'css'
 }
