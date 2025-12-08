@@ -3,6 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { RegexOption } from '../../types/common-options'
 import type { MessageId, Options } from './types'
 
 import { filterOptionsByDeclarationCommentMatches } from '../../utils/filter-options-by-declaration-comment-matches'
@@ -13,6 +14,16 @@ import { computePropertyName } from './compute-property-name'
 import { computeNodeName } from './compute-node-name'
 import { matches } from '../../utils/matches'
 
+/**
+ * Computes the matched context options for a given object node.
+ *
+ * @param params - Parameters.
+ * @param params.isDestructuredObject - Whether the object is destructured.
+ * @param params.sourceCode - The source code object.
+ * @param params.nodeObject - The object node to evaluate.
+ * @param params.context - The rule context.
+ * @returns The matched context options or undefined if none match.
+ */
 export function computeMatchedContextOptions({
   isDestructuredObject,
   sourceCode,
@@ -57,90 +68,177 @@ export function computeMatchedContextOptions({
     sourceCode,
   })
 
-  return filteredContextOptions.find(options => {
-    if (!options.useConfigurationIf) {
-      return true
-    }
-
-    if (options.useConfigurationIf.objectType) {
-      if (
-        isDestructuredObject &&
-        options.useConfigurationIf.objectType === 'non-destructured'
-      ) {
-        return false
-      }
-      if (
-        !isDestructuredObject &&
-        options.useConfigurationIf.objectType === 'destructured'
-      ) {
-        return false
-      }
-    }
-
-    if (options.useConfigurationIf.callingFunctionNamePattern) {
-      let firstCallExpressionParent = objectParents.find(
-        parent => parent.type === AST_NODE_TYPES.CallExpression,
-      )
-      if (!firstCallExpressionParent) {
-        return false
-      }
-      let patternMatches = matches(
-        sourceCode.getText(firstCallExpressionParent.callee),
-        options.useConfigurationIf.callingFunctionNamePattern,
-      )
-      if (!patternMatches) {
-        return false
-      }
-    }
-
-    if (options.useConfigurationIf.declarationMatchesPattern) {
-      let firstVariableDeclaratorParent = objectParents.find(
-        parent =>
-          parent.type === AST_NODE_TYPES.VariableDeclarator ||
-          parent.type === AST_NODE_TYPES.Property,
-      )
-      if (!firstVariableDeclaratorParent) {
-        return false
-      }
-      let nodeName = computePropertyName(firstVariableDeclaratorParent)
-      if (!nodeName) {
-        return false
-      }
-      let patternMatches = matches(
-        nodeName,
-        options.useConfigurationIf.declarationMatchesPattern,
-      )
-      if (!patternMatches) {
-        return false
-      }
-    }
-
-    if (
-      options.useConfigurationIf.hasNumericKeysOnly &&
-      !hasNumericKeysOnly(nodeObject)
-    ) {
-      return false
-    }
-
-    return true
-  })
+  return filteredContextOptions.find(options =>
+    isContextOptionMatching({
+      isDestructuredObject,
+      objectParents,
+      sourceCode,
+      nodeObject,
+      options,
+    }),
+  )
 }
 
-function hasNumericKeysOnly(
-  object: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
-): boolean {
-  switch (object.type) {
-    case AST_NODE_TYPES.ObjectExpression:
-      return object.properties.every(
-        property =>
-          property.type === AST_NODE_TYPES.Property &&
-          property.key.type === AST_NODE_TYPES.Literal &&
-          typeof property.key.value === 'number',
-      )
-    case AST_NODE_TYPES.ObjectPattern:
-      return false
-    /* v8 ignore next 2 */
+function isContextOptionMatching({
+  isDestructuredObject,
+  objectParents,
+  sourceCode,
+  nodeObject,
+  options,
+}: {
+  objectParents: (
+    | TSESTree.VariableDeclarator
+    | TSESTree.CallExpression
+    | TSESTree.Property
+  )[]
+  nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  sourceCode: TSESLint.SourceCode
+  isDestructuredObject: boolean
+  options: Options[number]
+}): boolean {
+  if (!options.useConfigurationIf) {
+    return true
+  }
+
+  return (
+    passesObjectTypeFilter({
+      objectType: options.useConfigurationIf.objectType,
+      isDestructuredObject,
+    }) &&
+    passesCallingFunctionNamePatternFilter({
+      callingFunctionNamePattern:
+        options.useConfigurationIf.callingFunctionNamePattern,
+      objectParents,
+      sourceCode,
+    }) &&
+    passesDeclarationMatchesPatternFilter({
+      declarationMatchesPattern:
+        options.useConfigurationIf.declarationMatchesPattern,
+      objectParents,
+    }) &&
+    passesHasNumericKeysOnlyFilter({
+      hasNumericKeysOnlyFilter: options.useConfigurationIf.hasNumericKeysOnly,
+      object: nodeObject,
+    })
+  )
+}
+
+function passesHasNumericKeysOnlyFilter({
+  hasNumericKeysOnlyFilter,
+  object,
+}: {
+  object: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  hasNumericKeysOnlyFilter: undefined | boolean
+}): boolean {
+  let hasOnlyNumericKeys = hasNumericKeysOnly()
+  switch (hasNumericKeysOnlyFilter) {
+    case undefined:
+      return true
+    case false:
+      return !hasOnlyNumericKeys
+    case true:
+      return hasOnlyNumericKeys
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
-      throw new UnreachableCaseError(object)
+      throw new UnreachableCaseError(hasNumericKeysOnlyFilter)
+  }
+
+  function hasNumericKeysOnly(): boolean {
+    switch (object.type) {
+      case AST_NODE_TYPES.ObjectExpression:
+        return object.properties.every(
+          property =>
+            property.type === AST_NODE_TYPES.Property &&
+            property.key.type === AST_NODE_TYPES.Literal &&
+            typeof property.key.value === 'number',
+        )
+      case AST_NODE_TYPES.ObjectPattern:
+        return false
+      /* v8 ignore next 2 */
+      default:
+        throw new UnreachableCaseError(object)
+    }
+  }
+}
+
+function passesDeclarationMatchesPatternFilter({
+  declarationMatchesPattern,
+  objectParents,
+}: {
+  objectParents: (
+    | TSESTree.VariableDeclarator
+    | TSESTree.CallExpression
+    | TSESTree.Property
+  )[]
+  declarationMatchesPattern: RegexOption | undefined
+}): boolean {
+  if (!declarationMatchesPattern) {
+    return true
+  }
+
+  let firstVariableDeclaratorParent = objectParents.find(
+    parent =>
+      parent.type === AST_NODE_TYPES.VariableDeclarator ||
+      parent.type === AST_NODE_TYPES.Property,
+  )
+  if (!firstVariableDeclaratorParent) {
+    return false
+  }
+
+  let nodeName = computePropertyName(firstVariableDeclaratorParent)
+  if (!nodeName) {
+    return false
+  }
+
+  return matches(nodeName, declarationMatchesPattern)
+}
+
+function passesCallingFunctionNamePatternFilter({
+  callingFunctionNamePattern,
+  objectParents,
+  sourceCode,
+}: {
+  objectParents: (
+    | TSESTree.VariableDeclarator
+    | TSESTree.CallExpression
+    | TSESTree.Property
+  )[]
+  callingFunctionNamePattern: RegexOption | undefined
+  sourceCode: TSESLint.SourceCode
+}): boolean {
+  if (!callingFunctionNamePattern) {
+    return true
+  }
+
+  let firstCallExpressionParent = objectParents.find(
+    parent => parent.type === AST_NODE_TYPES.CallExpression,
+  )
+  if (!firstCallExpressionParent) {
+    return false
+  }
+
+  return matches(
+    sourceCode.getText(firstCallExpressionParent.callee),
+    callingFunctionNamePattern,
+  )
+}
+
+function passesObjectTypeFilter({
+  isDestructuredObject,
+  objectType,
+}: {
+  objectType: 'non-destructured' | 'destructured' | undefined
+  isDestructuredObject: boolean
+}): boolean {
+  switch (objectType) {
+    case 'non-destructured':
+      return !isDestructuredObject
+    case 'destructured':
+      return isDestructuredObject
+    case undefined:
+      return true
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(objectType)
   }
 }
