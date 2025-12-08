@@ -10,7 +10,7 @@ import type { Options } from './sort-jsx-props/types'
 import {
   buildUseConfigurationIfJsonSchema,
   buildCommonJsonSchemas,
-  regexJsonSchema,
+  buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import {
   MISSED_SPACING_ERROR,
@@ -222,7 +222,7 @@ export default createEslintRule<Options, MessageId>({
           }),
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {
-              tagMatchesPattern: regexJsonSchema,
+              tagMatchesPattern: buildRegexJsonSchema(),
             },
           }),
           partitionByNewLine: partitionByNewLineJsonSchema,

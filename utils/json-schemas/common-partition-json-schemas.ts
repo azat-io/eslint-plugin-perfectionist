@@ -1,12 +1,12 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import { regexJsonSchema } from './common-json-schemas'
+import { buildRegexJsonSchema } from './common-json-schemas'
 
 let allowedPartitionByCommentJsonSchemas: JSONSchema4[] = [
   {
     type: 'boolean',
   },
-  regexJsonSchema,
+  buildRegexJsonSchema(),
 ]
 
 /**

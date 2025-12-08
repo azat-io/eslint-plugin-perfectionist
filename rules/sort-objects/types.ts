@@ -12,7 +12,7 @@ import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
 } from '../../utils/json-schemas/common-groups-json-schemas'
-import { regexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
+import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
 export type MessageId =
   | typeof DEPENDENCY_ORDER_ERROR_ID
@@ -153,5 +153,5 @@ export let allModifiers = ['optional', 'required', 'multiline'] as const
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementValuePattern: regexJsonSchema,
+  elementValuePattern: buildRegexJsonSchema(),
 }

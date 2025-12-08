@@ -31,7 +31,7 @@ import {
 import {
   buildUseConfigurationIfJsonSchema,
   buildCommonJsonSchemas,
-  regexJsonSchema,
+  buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import {
   partitionByCommentJsonSchema,
@@ -392,9 +392,9 @@ export default createEslintRule<Options, MessageId>({
                   'Specifies whether to only match objects that have exclusively numeric keys.',
                 type: 'boolean',
               },
-              declarationCommentMatchesPattern: regexJsonSchema,
-              callingFunctionNamePattern: regexJsonSchema,
-              declarationMatchesPattern: regexJsonSchema,
+              declarationCommentMatchesPattern: buildRegexJsonSchema(),
+              callingFunctionNamePattern: buildRegexJsonSchema(),
+              declarationMatchesPattern: buildRegexJsonSchema(),
             },
           }),
           styledComponents: {

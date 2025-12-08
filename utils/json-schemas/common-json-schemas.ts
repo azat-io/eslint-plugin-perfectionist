@@ -128,41 +128,6 @@ export function buildFallbackSortJsonSchema({
   }
 }
 
-let singleRegexJsonSchema: JSONSchema4 = {
-  oneOf: [
-    {
-      properties: {
-        pattern: {
-          description: 'Regular expression pattern.',
-          type: 'string',
-        },
-        flags: {
-          description: 'Regular expression flags.',
-          type: 'string',
-        },
-      },
-      additionalProperties: false,
-      required: ['pattern'],
-      type: 'object',
-    },
-    {
-      type: 'string',
-    },
-  ],
-  description: 'Regular expression.',
-}
-
-export let regexJsonSchema: JSONSchema4 = {
-  oneOf: [
-    {
-      items: singleRegexJsonSchema,
-      type: 'array',
-    },
-    singleRegexJsonSchema,
-  ],
-  description: 'Regular expression.',
-}
-
 /**
  * Builds JSON schema for conditional configuration blocks.
  *
@@ -184,7 +149,7 @@ export function buildUseConfigurationIfJsonSchema({
     description:
       'Specifies filters to match a particular options configuration for a given element to sort.',
     properties: {
-      allNamesMatchPattern: regexJsonSchema,
+      allNamesMatchPattern: buildRegexJsonSchema(),
       ...additionalProperties,
     },
     additionalProperties: false,
@@ -208,5 +173,44 @@ export function buildTypeJsonSchema({
     ],
     description: 'Specifies the sorting method.',
     type: 'string',
+  }
+}
+
+export function buildRegexJsonSchema(): JSONSchema4 {
+  return {
+    oneOf: [
+      {
+        items: buildSingleRegexJsonSchema(),
+        type: 'array',
+      },
+      buildSingleRegexJsonSchema(),
+    ],
+    description: 'Regular expression.',
+  }
+}
+
+function buildSingleRegexJsonSchema(): JSONSchema4 {
+  return {
+    oneOf: [
+      {
+        properties: {
+          pattern: {
+            description: 'Regular expression pattern.',
+            type: 'string',
+          },
+          flags: {
+            description: 'Regular expression flags.',
+            type: 'string',
+          },
+        },
+        additionalProperties: false,
+        required: ['pattern'],
+        type: 'object',
+      },
+      {
+        type: 'string',
+      },
+    ],
+    description: 'Regular expression.',
   }
 }

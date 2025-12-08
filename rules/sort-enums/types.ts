@@ -10,7 +10,7 @@ import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-depe
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
-import { regexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
+import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
 /**
  * Configuration options for the sort-enums rule.
@@ -56,5 +56,5 @@ interface SingleCustomGroup {
  * Used by ESLint to validate rule options at configuration time.
  */
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
-  elementValuePattern: regexJsonSchema,
+  elementValuePattern: buildRegexJsonSchema(),
 }
