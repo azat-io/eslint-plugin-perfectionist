@@ -2994,6 +2994,25 @@ describe('sort-objects', () => {
         `,
       })
 
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              hasNumericKeysOnly: false,
+            },
+            type: 'unsorted',
+          },
+        ],
+        code: dedent`
+          const obj = {
+            5: 'five',
+            two: {},
+            3: 'three',
+            8: 'eight',
+          }
+        `,
+      })
+
       await invalid({
         options: [
           {
