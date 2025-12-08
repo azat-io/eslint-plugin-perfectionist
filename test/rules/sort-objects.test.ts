@@ -2217,372 +2217,376 @@ describe('sort-objects', () => {
       },
     )
 
-    it('applies configuration when callingFunctionNamePattern matches', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              callingFunctionNamePattern: '^.*$',
-            },
-            type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedObjectsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          ({ a: 1, b: 1 })
-        `,
-        code: dedent`
-          ({ b: 1, a: 1 })
-        `,
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'g',
-              leftGroup: 'b',
-              right: 'g',
-              left: 'b',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-          {
-            data: {
-              rightGroup: 'r',
-              leftGroup: 'g',
-              right: 'r',
-              left: 'g',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-          {
-            data: {
-              rightGroup: 'g',
-              leftGroup: 'b',
-              right: 'g',
-              left: 'b',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-          {
-            data: {
-              rightGroup: 'r',
-              leftGroup: 'g',
-              right: 'r',
-              left: 'g',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              callingFunctionNamePattern: 'foo',
-            },
-          },
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'r',
-                groupName: 'r',
+    describe('useConfigurationIf.callingFunctionNamePattern', () => {
+      it('applies configuration when callingFunctionNamePattern matches', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: '^.*$',
               },
-              {
-                elementNamePattern: 'g',
-                groupName: 'g',
-              },
-              {
-                elementNamePattern: 'b',
-                groupName: 'b',
-              },
-            ],
-            useConfigurationIf: {
-              callingFunctionNamePattern: '^someFunction$',
+              type: 'unsorted',
             },
-            groups: ['r', 'g', 'b'],
-          },
-        ],
-        output: dedent`
-          let obj = {
-            b,
-            g,
-            r
-          }
-
-          someFunction(true, <any>{
-            r: string,
-            g: string,
-            b: string
-          })
-
-          let a = someFunction(true, <any>{
-            r: string,
-            g: string,
-            b: string
-          })
-        `,
-        code: dedent`
-          let obj = {
-            b,
-            g,
-            r
-          }
-
-          someFunction(true, <any>{
-            b: string,
-            g: string,
-            r: string
-          })
-
-          let a = someFunction(true, <any>{
-            b: string,
-            g: string,
-            r: string
-          })
-        `,
-      })
-
-      await valid({
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              callingFunctionNamePattern: '^Schema.index$',
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
             },
-            type: 'unsorted',
-          },
-        ],
-        code: dedent`
-          Schema.index({ b: 1, a: 1 });
-        `,
+          ],
+          output: dedent`
+            ({ a: 1, b: 1 })
+          `,
+          code: dedent`
+            ({ b: 1, a: 1 })
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'g',
+                leftGroup: 'b',
+                right: 'g',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'r',
+                leftGroup: 'g',
+                right: 'r',
+                left: 'g',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'g',
+                leftGroup: 'b',
+                right: 'g',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'r',
+                leftGroup: 'g',
+                right: 'r',
+                left: 'g',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                callingFunctionNamePattern: '^someFunction$',
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
+          output: dedent`
+            let obj = {
+              b,
+              g,
+              r
+            }
+
+            someFunction(true, <any>{
+              r: string,
+              g: string,
+              b: string
+            })
+
+            let a = someFunction(true, <any>{
+              r: string,
+              g: string,
+              b: string
+            })
+          `,
+          code: dedent`
+            let obj = {
+              b,
+              g,
+              r
+            }
+
+            someFunction(true, <any>{
+              b: string,
+              g: string,
+              r: string
+            })
+
+            let a = someFunction(true, <any>{
+              b: string,
+              g: string,
+              r: string
+            })
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: '^Schema.index$',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            Schema.index({ b: 1, a: 1 });
+          `,
+        })
       })
     })
 
-    it('applies configuration when declarationMatchesPattern matches', async () => {
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^constant$',
+    describe('useConfigurationIf.declarationMatchesPattern', () => {
+      it('applies configuration when declarationMatchesPattern matches', async () => {
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^constant$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          const constant = <any>{
-            b,
-            a,
-            c,
-          }
-        `,
-      })
-
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^constant$',
-            },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          const notAConstant = {
-            constant: {
+            options,
+          ],
+          code: dedent`
+            const constant = <any>{
               b,
               a,
               c,
             }
-          }
-        `,
-      })
+          `,
+        })
 
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^constant$',
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^constant$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          const notAConstant = {
-            'constant': {
-              b,
-              a,
-              c,
-            }
-          }
-        `,
-      })
-
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^constant$',
-            },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          const notAConstant = {
-            [constant]: {
-              b,
-              a,
-              c,
-            }
-          }
-        `,
-      })
-
-      await valid({
-        code: dedent`
-          export default {
-            data() {
-              return {
-                background: "red",
-                display: 'flex',
-                flexDirection: 'column',
-                width: "50px",
-                height: "50px",
+            options,
+          ],
+          code: dedent`
+            const notAConstant = {
+              constant: {
+                b,
+                a,
+                c,
               }
             }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              declarationMatchesPattern: '^data$',
-            },
-            type: 'unsorted',
-          },
-        ],
-      })
+          `,
+        })
 
-      await invalid({
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              declarationMatchesPattern: '^.*$',
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^constant$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedObjectsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          func({ a: 1, b: 1 })
-        `,
-        code: dedent`
-          func({ b: 1, a: 1 })
-        `,
-      })
+            options,
+          ],
+          code: dedent`
+            const notAConstant = {
+              'constant': {
+                b,
+                a,
+                c,
+              }
+            }
+          `,
+        })
 
-      await invalid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^constant$',
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^constant$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedObjectsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          let notAConstant = {
-            a,
-            b,
-          }
-        `,
-        code: dedent`
-          let notAConstant = {
-            b,
-            a,
-          }
-        `,
-      })
+            options,
+          ],
+          code: dedent`
+            const notAConstant = {
+              [constant]: {
+                b,
+                a,
+                c,
+              }
+            }
+          `,
+        })
 
-      await invalid({
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              declarationMatchesPattern: '^.*$',
+        await valid({
+          code: dedent`
+            export default {
+              data() {
+                return {
+                  background: "red",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: "50px",
+                  height: "50px",
+                }
+              }
+            }
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: '^data$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedObjectsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          ({ a: 1, b: 1 })
-        `,
-        code: dedent`
-          ({ b: 1, a: 1 })
-        `,
-      })
+          ],
+        })
 
-      await invalid({
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              declarationMatchesPattern: '^obj$',
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: '^.*$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            data: {
-              right: 'a',
-              left: 'b',
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
             },
-            messageId: 'unexpectedObjectsOrder',
-          },
-        ],
-        output: dedent`
-          let {
-            a,
-            b,
-          } = obj;
-        `,
-        code: dedent`
-          let {
-            b,
-            a,
-          } = obj;
-        `,
+          ],
+          output: dedent`
+            func({ a: 1, b: 1 })
+          `,
+          code: dedent`
+            func({ b: 1, a: 1 })
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^constant$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            let notAConstant = {
+              a,
+              b,
+            }
+          `,
+          code: dedent`
+            let notAConstant = {
+              b,
+              a,
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: '^.*$',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            ({ a: 1, b: 1 })
+          `,
+          code: dedent`
+            ({ b: 1, a: 1 })
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: '^obj$',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let {
+              a,
+              b,
+            } = obj;
+          `,
+          code: dedent`
+            let {
+              b,
+              a,
+            } = obj;
+          `,
+        })
       })
     })
 
