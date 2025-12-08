@@ -395,7 +395,7 @@ export default createEslintRule<Options, MessageId>({
               },
               declarationCommentMatchesPattern: buildRegexJsonSchema(),
               callingFunctionNamePattern: scopedRegexJsonSchema,
-              declarationMatchesPattern: buildRegexJsonSchema(),
+              declarationMatchesPattern: scopedRegexJsonSchema,
             },
           }),
           styledComponents: {

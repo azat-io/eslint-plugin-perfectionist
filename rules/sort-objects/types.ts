@@ -63,7 +63,7 @@ export type Options = Partial<
        * Regular expression pattern to match against the object's declaration
        * name. The rule is only applied to declarations with matching names.
        */
-      declarationMatchesPattern?: RegexOption
+      declarationMatchesPattern?: ScopedRegexOption
 
       /**
        * Regular expression pattern to match against all property names. The
