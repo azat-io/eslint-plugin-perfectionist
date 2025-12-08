@@ -1,7 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
-import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
@@ -34,12 +33,11 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { filterOptionsByDeclarationCommentMatches } from '../utils/filter-options-by-declaration-comment-matches'
 import { buildOptionsByGroupIndexComputer } from './sort-object-types/build-options-by-group-index-computer'
+import { computeMatchedContextOptions } from './sort-object-types/compute-matched-context-options'
 import { comparatorByOptionsComputer } from './sort-object-types/comparator-by-options-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { computeParentNodesWithTypes } from '../utils/compute-parent-nodes-with-types'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -60,7 +58,6 @@ import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
-import { matches } from '../utils/matches'
 
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
@@ -308,6 +305,15 @@ export function sortObjectTypeElements<MessageIds extends string>({
     })
   }
 
+  let nodes = formattedMembers.flat()
+  reportAllErrors<MessageIds>({
+    sortNodesExcludingEslintDisabled,
+    availableMessageIds,
+    options,
+    context,
+    nodes,
+  })
+
   function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
   ): SortObjectTypesSortingNode[] {
@@ -332,101 +338,6 @@ export function sortObjectTypeElements<MessageIds extends string>({
       }),
     )
   }
-
-  let nodes = formattedMembers.flat()
-  reportAllErrors<MessageIds>({
-    sortNodesExcludingEslintDisabled,
-    availableMessageIds,
-    options,
-    context,
-    nodes,
-  })
-}
-
-function computeMatchedContextOptions({
-  sourceCode,
-  parentNode,
-  elements,
-  context,
-}: {
-  parentNode:
-    | TSESTree.TSTypeAliasDeclaration
-    | TSESTree.TSInterfaceDeclaration
-    | TSESTree.TSPropertySignature
-    | null
-  context: TSESLint.RuleContext<string, Options>
-  elements: TSESTree.TypeElement[]
-  sourceCode: TSESLint.SourceCode
-}): Options[number] | undefined {
-  let filteredContextOptions = filterOptionsByAllNamesMatch({
-    nodeNames: elements.map(node => computeNodeName({ sourceCode, node })),
-    contextOptions: context.options,
-  })
-  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
-    contextOptions: filteredContextOptions,
-    parentNode,
-    sourceCode,
-  })
-
-  return filteredContextOptions.find(options => {
-    if (!options.useConfigurationIf) {
-      return true
-    }
-
-    if (options.useConfigurationIf.declarationMatchesPattern) {
-      if (!parentNode) {
-        return false
-      }
-
-      let matchesPattern = matches(
-        computeNodeParentName(parentNode, sourceCode),
-        options.useConfigurationIf.declarationMatchesPattern,
-      )
-      if (!matchesPattern) {
-        return false
-      }
-    }
-
-    if (
-      options.useConfigurationIf.hasNumericKeysOnly &&
-      !hasNumericKeysOnly(elements)
-    ) {
-      return false
-    }
-
-    return true
-  })
-}
-
-function computeNodeParentName(
-  node:
-    | TSESTree.TSTypeAliasDeclaration
-    | TSESTree.TSInterfaceDeclaration
-    | TSESTree.TSPropertySignature,
-  sourceCode: TSESLint.SourceCode,
-): string {
-  switch (node.type) {
-    case AST_NODE_TYPES.TSTypeAliasDeclaration:
-    case AST_NODE_TYPES.TSInterfaceDeclaration:
-      return node.id.name
-    case AST_NODE_TYPES.TSPropertySignature:
-      return computePropertySignatureName(node)
-    default:
-      throw new UnreachableCaseError(node)
-  }
-
-  function computePropertySignatureName(
-    propertySignature: TSESTree.TSPropertySignature,
-  ): string {
-    switch (propertySignature.key.type) {
-      case AST_NODE_TYPES.Identifier:
-        return propertySignature.key.name
-      case AST_NODE_TYPES.Literal:
-        return String(propertySignature.key.value)
-      default:
-        return sourceCode.getText(propertySignature.key)
-    }
-  }
 }
 
 function computeObjectTypeParentNode(
@@ -441,13 +352,4 @@ function computeObjectTypeParentNode(
   })
 
   return parentNodes[0] ?? null
-}
-
-function hasNumericKeysOnly(typeElements: TSESTree.TypeElement[]): boolean {
-  return typeElements.every(
-    typeElement =>
-      typeElement.type === AST_NODE_TYPES.TSPropertySignature &&
-      typeElement.key.type === AST_NODE_TYPES.Literal &&
-      typeof typeElement.key.value === 'number',
-  )
 }
