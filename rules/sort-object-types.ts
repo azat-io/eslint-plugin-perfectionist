@@ -73,7 +73,7 @@ type MessageId =
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
 
-let defaultOptions: Required<Options[number]> = {
+export let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted', sortBy: 'name' },
   partitionByComment: false,
   partitionByNewLine: false,

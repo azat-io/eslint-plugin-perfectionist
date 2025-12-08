@@ -6,10 +6,14 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { sortObjectTypeElements, jsonSchema } from './sort-object-types'
+import {
+  sortObjectTypeElements,
+  defaultOptions,
+  jsonSchema,
+} from './sort-object-types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
-export type Options = SortObjectTypesOptions
+type Options = SortObjectTypesOptions
 
 const ORDER_ERROR_ID = 'unexpectedInterfacePropertiesOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedInterfacePropertiesGroupOrder'
@@ -21,23 +25,6 @@ type MessageId =
   | typeof EXTRA_SPACING_ERROR_ID
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
-
-let defaultOptions: Required<Options[number]> = {
-  fallbackSort: { type: 'unsorted' },
-  partitionByComment: false,
-  partitionByNewLine: false,
-  newlinesBetween: 'ignore',
-  specialCharacters: 'keep',
-  useConfigurationIf: {},
-  type: 'alphabetical',
-  ignoreCase: true,
-  customGroups: [],
-  locales: 'en-US',
-  sortBy: 'name',
-  alphabet: '',
-  order: 'asc',
-  groups: [],
-}
 
 export default createEslintRule<Options, MessageId>({
   meta: {
