@@ -157,6 +157,23 @@ export function buildUseConfigurationIfJsonSchema({
   }
 }
 
+export function buildRegexJsonSchema({
+  additionalProperties,
+}: {
+  additionalProperties?: Record<string, JSONSchema4>
+} = {}): JSONSchema4 {
+  return {
+    oneOf: [
+      {
+        items: buildSingleRegexJsonSchema({ additionalProperties }),
+        type: 'array',
+      },
+      buildSingleRegexJsonSchema({ additionalProperties }),
+    ],
+    description: 'Regular expression.',
+  }
+}
+
 export function buildTypeJsonSchema({
   allowedAdditionalValues,
 }: {
@@ -176,24 +193,16 @@ export function buildTypeJsonSchema({
   }
 }
 
-export function buildRegexJsonSchema(): JSONSchema4 {
-  return {
-    oneOf: [
-      {
-        items: buildSingleRegexJsonSchema(),
-        type: 'array',
-      },
-      buildSingleRegexJsonSchema(),
-    ],
-    description: 'Regular expression.',
-  }
-}
-
-function buildSingleRegexJsonSchema(): JSONSchema4 {
+function buildSingleRegexJsonSchema({
+  additionalProperties,
+}: {
+  additionalProperties?: Record<string, JSONSchema4>
+}): JSONSchema4 {
   return {
     oneOf: [
       {
         properties: {
+          ...additionalProperties,
           pattern: {
             description: 'Regular expression pattern.',
             type: 'string',
