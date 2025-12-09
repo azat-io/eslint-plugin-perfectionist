@@ -130,7 +130,7 @@ function createLegacyConfig(options: BaseOptions): Linter.LegacyConfig {
   }
 }
 
-export let configs = {
+export let configs: PluginConfig['configs'] = {
   'recommended-alphabetical-legacy': createLegacyConfig({
     type: 'alphabetical',
     order: 'asc',
