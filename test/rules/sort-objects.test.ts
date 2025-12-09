@@ -2217,372 +2217,686 @@ describe('sort-objects', () => {
       },
     )
 
-    it('applies configuration when callingFunctionNamePattern matches', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              callingFunctionNamePattern: '^.*$',
+    describe('useConfigurationIf.callingFunctionNamePattern', () => {
+      it('applies configuration when callingFunctionNamePattern matches', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: '^.*$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedObjectsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          ({ a: 1, b: 1 })
-        `,
-        code: dedent`
-          ({ b: 1, a: 1 })
-        `,
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            ({ a: 1, b: 1 })
+          `,
+          code: dedent`
+            ({ b: 1, a: 1 })
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'g',
+                leftGroup: 'b',
+                right: 'g',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'r',
+                leftGroup: 'g',
+                right: 'r',
+                left: 'g',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'g',
+                leftGroup: 'b',
+                right: 'g',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'r',
+                leftGroup: 'g',
+                right: 'r',
+                left: 'g',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                callingFunctionNamePattern: '^someFunction$',
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
+          output: dedent`
+            let obj = {
+              b,
+              g,
+              r
+            }
+
+            someFunction(true, <any>{
+              r: string,
+              g: string,
+              b: string
+            })
+
+            let a = someFunction(true, <any>{
+              r: string,
+              g: string,
+              b: string
+            })
+          `,
+          code: dedent`
+            let obj = {
+              b,
+              g,
+              r
+            }
+
+            someFunction(true, <any>{
+              b: string,
+              g: string,
+              r: string
+            })
+
+            let a = someFunction(true, <any>{
+              b: string,
+              g: string,
+              r: string
+            })
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: '^Schema.index$',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            Schema.index({ b: 1, a: 1 });
+          `,
+        })
       })
 
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'g',
-              leftGroup: 'b',
-              right: 'g',
-              left: 'b',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-          {
-            data: {
-              rightGroup: 'r',
-              leftGroup: 'g',
-              right: 'r',
-              left: 'g',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-          {
-            data: {
-              rightGroup: 'g',
-              leftGroup: 'b',
-              right: 'g',
-              left: 'b',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-          {
-            data: {
-              rightGroup: 'r',
-              leftGroup: 'g',
-              right: 'r',
-              left: 'g',
-            },
-            messageId: 'unexpectedObjectsGroupOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              callingFunctionNamePattern: 'foo',
-            },
-          },
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'r',
-                groupName: 'r',
+      it('matches deep calls', async () => {
+        await valid({
+          code: dedent`
+            deep(<any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            });
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
               },
-              {
-                elementNamePattern: 'g',
-                groupName: 'g',
-              },
-              {
-                elementNamePattern: 'b',
-                groupName: 'b',
-              },
-            ],
-            useConfigurationIf: {
-              callingFunctionNamePattern: '^someFunction$',
+              type: 'unsorted',
             },
-            groups: ['r', 'g', 'b'],
-          },
-        ],
-        output: dedent`
-          let obj = {
-            b,
-            g,
-            r
-          }
-
-          someFunction(true, <any>{
-            r: string,
-            g: string,
-            b: string
-          })
-
-          let a = someFunction(true, <any>{
-            r: string,
-            g: string,
-            b: string
-          })
-        `,
-        code: dedent`
-          let obj = {
-            b,
-            g,
-            r
-          }
-
-          someFunction(true, <any>{
-            b: string,
-            g: string,
-            r: string
-          })
-
-          let a = someFunction(true, <any>{
-            b: string,
-            g: string,
-            r: string
-          })
-        `,
+            {
+              type: 'alphabetical',
+            },
+          ],
+        })
       })
 
-      await valid({
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              callingFunctionNamePattern: '^Schema.index$',
+      it('matches shallow and deep calls at the same time', async () => {
+        await invalid({
+          output: dedent`
+            shallow(<any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                a: "a",
+                b: "b",
+              }
+            });
+
+            implicitShallow(<any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                a: "a",
+                b: "b",
+              }
+            });
+
+            deep(<any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            });
+          `,
+          code: dedent`
+            shallow(<any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                b: "b",
+                a: "a",
+              }
+            });
+
+            implicitShallow(<any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                b: "b",
+                a: "a",
+              }
+            });
+
+            deep(<any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            });
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: [
+                  {
+                    pattern: '^implicitShallow$',
+                  },
+                  {
+                    pattern: '^shallow$',
+                    scope: 'shallow',
+                  },
+                  {
+                    pattern: '^deep$',
+                    scope: 'deep',
+                  },
+                ],
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-        ],
-        code: dedent`
-          Schema.index({ b: 1, a: 1 });
-        `,
+            {
+              type: 'alphabetical',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+        })
       })
     })
 
-    it('applies configuration when declarationMatchesPattern matches', async () => {
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^constant$',
+    describe('useConfigurationIf.declarationMatchesPattern', () => {
+      it('applies configuration when declarationMatchesPattern matches', async () => {
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^constant$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          const constant = <any>{
-            b,
-            a,
-            c,
-          }
-        `,
-      })
-
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^constant$',
-            },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          const notAConstant = {
-            constant: {
+            options,
+          ],
+          code: dedent`
+            const constant = <any>{
               b,
               a,
               c,
             }
-          }
-        `,
-      })
+          `,
+        })
 
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^constant$',
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^constant$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          const notAConstant = {
-            'constant': {
-              b,
-              a,
-              c,
-            }
-          }
-        `,
-      })
-
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^constant$',
-            },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          const notAConstant = {
-            [constant]: {
-              b,
-              a,
-              c,
-            }
-          }
-        `,
-      })
-
-      await valid({
-        code: dedent`
-          export default {
-            data() {
-              return {
-                background: "red",
-                display: 'flex',
-                flexDirection: 'column',
-                width: "50px",
-                height: "50px",
+            options,
+          ],
+          code: dedent`
+            const notAConstant = {
+              constant: {
+                b,
+                a,
+                c,
               }
             }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              declarationMatchesPattern: '^data$',
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^constant$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-        ],
+            options,
+          ],
+          code: dedent`
+            const notAConstant = {
+              'constant': {
+                b,
+                a,
+                c,
+              }
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^constant$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          code: dedent`
+            const notAConstant = {
+              [constant]: {
+                b,
+                a,
+                c,
+              }
+            }
+          `,
+        })
+
+        await valid({
+          code: dedent`
+            export default {
+              data() {
+                return {
+                  background: "red",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: "50px",
+                  height: "50px",
+                }
+              }
+            }
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: '^data$',
+              },
+              type: 'unsorted',
+            },
+          ],
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: '^.*$',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            func({ a: 1, b: 1 })
+          `,
+          code: dedent`
+            func({ b: 1, a: 1 })
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^constant$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            let notAConstant = {
+              a,
+              b,
+            }
+          `,
+          code: dedent`
+            let notAConstant = {
+              b,
+              a,
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: '^.*$',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            ({ a: 1, b: 1 })
+          `,
+          code: dedent`
+            ({ b: 1, a: 1 })
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: '^obj$',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let {
+              a,
+              b,
+            } = obj;
+          `,
+          code: dedent`
+            let {
+              b,
+              a,
+            } = obj;
+          `,
+        })
       })
 
-      await invalid({
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              declarationMatchesPattern: '^.*$',
+      it('matches deep declarations', async () => {
+        await valid({
+          code: dedent`
+            let deep = <any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                a: "a",
+                b: "b",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            };
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedObjectsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          func({ a: 1, b: 1 })
-        `,
-        code: dedent`
-          func({ b: 1, a: 1 })
-        `,
+            {
+              type: 'alphabetical',
+            },
+          ],
+        })
       })
 
-      await invalid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^constant$',
-            },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedObjectsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          let notAConstant = {
-            a,
-            b,
-          }
-        `,
-        code: dedent`
-          let notAConstant = {
-            b,
-            a,
-          }
-        `,
-      })
+      it('matches shallow and deep declarations at the same time', async () => {
+        await invalid({
+          output: dedent`
+            let shallow = <any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                a: "a",
+                b: "b",
+              }
+            };
 
-      await invalid({
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              declarationMatchesPattern: '^.*$',
-            },
-            type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedObjectsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          ({ a: 1, b: 1 })
-        `,
-        code: dedent`
-          ({ b: 1, a: 1 })
-        `,
-      })
+            let implicitShallow = <any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                a: "a",
+                b: "b",
+              }
+            };
 
-      await invalid({
-        options: [
-          {
-            ...options,
-            useConfigurationIf: {
-              declarationMatchesPattern: '^obj$',
+            let deep = <any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            };
+          `,
+          code: dedent`
+            let shallow = <any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                b: "b",
+                a: "a",
+              }
+            };
+
+            let implicitShallow = <any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                b: "b",
+                a: "a",
+              }
+            };
+
+            let deep = <any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            };
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: [
+                  {
+                    pattern: '^implicitShallow$',
+                  },
+                  {
+                    pattern: '^shallow$',
+                    scope: 'shallow',
+                  },
+                  {
+                    pattern: '^deep$',
+                    scope: 'deep',
+                  },
+                ],
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-        ],
-        errors: [
-          {
-            data: {
-              right: 'a',
-              left: 'b',
+            {
+              type: 'alphabetical',
             },
-            messageId: 'unexpectedObjectsOrder',
-          },
-        ],
-        output: dedent`
-          let {
-            a,
-            b,
-          } = obj;
-        `,
-        code: dedent`
-          let {
-            b,
-            a,
-          } = obj;
-        `,
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+        })
       })
     })
 
@@ -2674,6 +2988,25 @@ describe('sort-objects', () => {
           const obj = {
             5: 'five',
             2: {},
+            3: 'three',
+            8: 'eight',
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              hasNumericKeysOnly: false,
+            },
+            type: 'unsorted',
+          },
+        ],
+        code: dedent`
+          const obj = {
+            5: 'five',
+            two: {},
             3: 'three',
             8: 'eight',
           }

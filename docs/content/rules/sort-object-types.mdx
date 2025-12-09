@@ -269,11 +269,23 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
 
 <sub>
   type:
-  ```
-  {
-    allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
-    declarationMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
-    declarationCommentMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+  ```ts
+{
+    allNamesMatchPattern?:
+      | string
+      | string[]
+      | { pattern: string; flags: string }
+      | { pattern: string; flags: string }[]
+    declarationMatchesPattern?:
+      | string
+      | string[]
+      | { pattern: string; flags: string }
+      | { pattern: string; flags: string }[]
+    declarationCommentMatchesPattern?:
+      | string
+      | string[]
+      | { pattern: string; flags: string }
+      | { pattern: string; flags: string }[]
     hasNumericKeysOnly?: boolean
   }
   ```

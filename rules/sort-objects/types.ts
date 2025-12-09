@@ -12,7 +12,20 @@ import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
 } from '../../utils/json-schemas/common-groups-json-schemas'
-import { regexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
+import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
+
+export type MessageId =
+  | typeof DEPENDENCY_ORDER_ERROR_ID
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
+
+export const ORDER_ERROR_ID = 'unexpectedObjectsOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedObjectsGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenObjectMembers'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenObjectMembers'
+export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedObjectsDependencyOrder'
 
 /**
  * Configuration options for the sort-objects rule.
@@ -44,13 +57,13 @@ export type Options = Partial<
        * that contains this object. Useful for applying different sorting rules
        * to objects passed to specific functions.
        */
-      callingFunctionNamePattern?: RegexOption
+      callingFunctionNamePattern?: ScopedRegexOption
 
       /**
        * Regular expression pattern to match against the object's declaration
        * name. The rule is only applied to declarations with matching names.
        */
-      declarationMatchesPattern?: RegexOption
+      declarationMatchesPattern?: ScopedRegexOption
 
       /**
        * Regular expression pattern to match against all property names. The
@@ -140,5 +153,19 @@ export let allModifiers = ['optional', 'required', 'multiline'] as const
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  elementValuePattern: regexJsonSchema,
+  elementValuePattern: buildRegexJsonSchema(),
 }
+
+export type ScopedRegexOption = RegexOption<{
+  scope?: Scope
+}>
+export type Scope = (typeof regexScopes)[number]
+export let regexScopes = ['shallow', 'deep'] as const
+export let scopedRegexJsonSchema: JSONSchema4 = buildRegexJsonSchema({
+  additionalProperties: {
+    scope: {
+      enum: [...regexScopes],
+      type: 'string',
+    },
+  },
+})

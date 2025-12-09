@@ -3,7 +3,7 @@ import Ajv from 'ajv-draft-04'
 
 import {
   buildCommonJsonSchemas,
-  regexJsonSchema,
+  buildRegexJsonSchema,
 } from '../../../utils/json-schemas/common-json-schemas'
 
 describe('common-json-schemas', () => {
@@ -172,7 +172,7 @@ describe('common-json-schemas', () => {
   })
 
   describe('regex', () => {
-    let regexJsonSchemaValidator = new Ajv().compile(regexJsonSchema)
+    let regexJsonSchemaValidator = new Ajv().compile(buildRegexJsonSchema())
 
     it('should allow string values', () => {
       expect(regexJsonSchemaValidator('some string')).toBeTruthy()

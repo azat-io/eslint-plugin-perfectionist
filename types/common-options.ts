@@ -232,7 +232,9 @@ export type OrderOption =
  *     { pattern: '^FIXME:', flags: 'i' },
  *   ]
  */
-export type RegexOption = SingleRegexOption[] | SingleRegexOption
+export type RegexOption<AdditionalProperties extends object = object> =
+  | SingleRegexOption<AdditionalProperties>[]
+  | SingleRegexOption<AdditionalProperties>
 
 /**
  * Single regular expression pattern configuration.
@@ -242,8 +244,8 @@ export type RegexOption = SingleRegexOption[] | SingleRegexOption
  *
  * @internal
  */
-type SingleRegexOption =
-  | {
+type SingleRegexOption<AdditionalProperties> =
+  | ({
       /**
        * The regular expression pattern string. Will be compiled into a RegExp
        * for matching.
@@ -255,5 +257,5 @@ type SingleRegexOption =
        * flags: 'i' (case-insensitive), 'g' (global), 'm' (multiline).
        */
       flags?: string
-    }
+    } & AdditionalProperties)
   | string

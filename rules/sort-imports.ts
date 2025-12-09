@@ -31,7 +31,7 @@ import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-
 import { isNonExternalReferenceTsImportEquals } from './sort-imports/is-non-external-reference-ts-import-equals'
 import {
   buildCommonJsonSchemas,
-  regexJsonSchema,
+  buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
@@ -322,7 +322,7 @@ export default createEslintRule<Options, MessageId>({
           },
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
-          internalPattern: regexJsonSchema,
+          internalPattern: buildRegexJsonSchema(),
         },
         additionalProperties: false,
         type: 'object',

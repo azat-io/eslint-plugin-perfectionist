@@ -12,7 +12,7 @@ import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
 } from '../../utils/json-schemas/common-groups-json-schemas'
-import { regexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
+import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
 /**
  * Configuration options for the sort-classes rule.
@@ -119,6 +119,6 @@ export let allModifiers = [
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
-  decoratorNamePattern: regexJsonSchema,
-  elementValuePattern: regexJsonSchema,
+  decoratorNamePattern: buildRegexJsonSchema(),
+  elementValuePattern: buildRegexJsonSchema(),
 }

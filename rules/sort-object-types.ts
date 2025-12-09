@@ -14,7 +14,7 @@ import type {
 import {
   buildUseConfigurationIfJsonSchema,
   buildCommonJsonSchemas,
-  regexJsonSchema,
+  buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import {
   partitionByCommentJsonSchema,
@@ -109,8 +109,8 @@ export let jsonSchema: JSONSchema4 = {
               'Specifies whether to only match types that have exclusively numeric keys.',
             type: 'boolean',
           },
-          declarationCommentMatchesPattern: regexJsonSchema,
-          declarationMatchesPattern: regexJsonSchema,
+          declarationCommentMatchesPattern: buildRegexJsonSchema(),
+          declarationMatchesPattern: buildRegexJsonSchema(),
         },
       }),
       partitionByComment: partitionByCommentJsonSchema,
