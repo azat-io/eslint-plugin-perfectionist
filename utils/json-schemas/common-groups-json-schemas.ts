@@ -2,9 +2,9 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import {
   buildFallbackSortJsonSchema,
+  buildRegexJsonSchema,
   buildTypeJsonSchema,
   orderJsonSchema,
-  regexJsonSchema,
 } from './common-json-schemas'
 
 /**
@@ -286,7 +286,7 @@ function buildPopulatedSingleCustomGroupJsonSchema(
   singleCustomGroupJsonSchema: Record<string, JSONSchema4> | undefined,
 ): Record<string, JSONSchema4> {
   return {
-    elementNamePattern: regexJsonSchema,
+    elementNamePattern: buildRegexJsonSchema(),
     ...singleCustomGroupJsonSchema,
   }
 }

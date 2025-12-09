@@ -263,7 +263,16 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
 ### useConfigurationIf
 
 <sub>
-  type: `{ allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[] }`
+  type:
+  ```ts
+  {
+    allNamesMatchPattern?:
+      | string
+      | string[]
+      | { pattern: string; flags: string }
+      | { pattern: string; flags: string }[]
+  }
+  ```
 </sub>
 <sub>default: `{}`</sub>
 

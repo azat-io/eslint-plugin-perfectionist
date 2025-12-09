@@ -128,44 +128,6 @@ export function buildFallbackSortJsonSchema({
   }
 }
 
-let singleRegexJsonSchema: JSONSchema4 = {
-  oneOf: [
-    {
-      properties: {
-        pattern: {
-          description: 'Regular expression pattern.',
-          type: 'string',
-        },
-        flags: {
-          description: 'Regular expression flags.',
-          type: 'string',
-        },
-      },
-      additionalProperties: false,
-      required: ['pattern'],
-      // https://github.com/azat-io/eslint-plugin-perfectionist/pull/490#issuecomment-2720969705
-      // Uncomment the code below in the next major version (v5)
-      // To uncomment: required: ['pattern'],
-      type: 'object',
-    },
-    {
-      type: 'string',
-    },
-  ],
-  description: 'Regular expression.',
-}
-
-export let regexJsonSchema: JSONSchema4 = {
-  oneOf: [
-    {
-      items: singleRegexJsonSchema,
-      type: 'array',
-    },
-    singleRegexJsonSchema,
-  ],
-  description: 'Regular expression.',
-}
-
 /**
  * Builds JSON schema for conditional configuration blocks.
  *
@@ -187,11 +149,28 @@ export function buildUseConfigurationIfJsonSchema({
     description:
       'Specifies filters to match a particular options configuration for a given element to sort.',
     properties: {
-      allNamesMatchPattern: regexJsonSchema,
+      allNamesMatchPattern: buildRegexJsonSchema(),
       ...additionalProperties,
     },
     additionalProperties: false,
     type: 'object',
+  }
+}
+
+export function buildRegexJsonSchema({
+  additionalProperties,
+}: {
+  additionalProperties?: Record<string, JSONSchema4>
+} = {}): JSONSchema4 {
+  return {
+    oneOf: [
+      {
+        items: buildSingleRegexJsonSchema({ additionalProperties }),
+        type: 'array',
+      },
+      buildSingleRegexJsonSchema({ additionalProperties }),
+    ],
+    description: 'Regular expression.',
   }
 }
 
@@ -211,5 +190,36 @@ export function buildTypeJsonSchema({
     ],
     description: 'Specifies the sorting method.',
     type: 'string',
+  }
+}
+
+function buildSingleRegexJsonSchema({
+  additionalProperties,
+}: {
+  additionalProperties?: Record<string, JSONSchema4>
+}): JSONSchema4 {
+  return {
+    oneOf: [
+      {
+        properties: {
+          ...additionalProperties,
+          pattern: {
+            description: 'Regular expression pattern.',
+            type: 'string',
+          },
+          flags: {
+            description: 'Regular expression flags.',
+            type: 'string',
+          },
+        },
+        additionalProperties: false,
+        required: ['pattern'],
+        type: 'object',
+      },
+      {
+        type: 'string',
+      },
+    ],
+    description: 'Regular expression.',
   }
 }

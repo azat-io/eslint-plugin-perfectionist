@@ -244,10 +244,18 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
 
 <sub>
   type:
-  ```
+  ```ts
   {
-    allNamesMatchPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
-    tagMatchesPattern?: string | string[] | { pattern: string; flags: string } | { pattern: string; flags: string }[]
+    allNamesMatchPattern?:
+      | string
+      | string[]
+      | { pattern: string; flags: string }
+      | { pattern: string; flags: string }[]
+    tagMatchesPattern?:
+      | string
+      | string[]
+      | { pattern: string; flags: string }
+      | { pattern: string; flags: string }[]
   }
   ```
 </sub>
