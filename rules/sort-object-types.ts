@@ -151,7 +151,7 @@ export default createEslintRule<Options, MessageId>({
           unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
           unexpectedOrder: ORDER_ERROR_ID,
         },
-        parentNode: computeObjectTypeParentNode(node),
+        parentNodes: computeObjectTypeParentNodes(node),
         elements: node.members,
         context,
       }),
@@ -162,21 +162,28 @@ export default createEslintRule<Options, MessageId>({
 
 export function sortObjectTypeElements<MessageIds extends string>({
   availableMessageIds,
-  parentNode,
+  parentNodes,
   elements,
   context,
 }: {
+  parentNodes: {
+    declarationCommentParent:
+      | TSESTree.TSTypeAliasDeclaration
+      | TSESTree.TSInterfaceDeclaration
+      | TSESTree.TSPropertySignature
+      | null
+    declarationMatchParent:
+      | TSESTree.TSTypeAliasDeclaration
+      | TSESTree.TSInterfaceDeclaration
+      | TSESTree.TSPropertySignature
+      | null
+  }
   availableMessageIds: {
     missedSpacingBetweenMembers: MessageIds
     extraSpacingBetweenMembers: MessageIds
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
-  parentNode:
-    | TSESTree.TSTypeAliasDeclaration
-    | TSESTree.TSInterfaceDeclaration
-    | TSESTree.TSPropertySignature
-    | null
   context: RuleContext<MessageIds, Options>
   elements: TSESTree.TypeElement[]
 }): void {
@@ -188,7 +195,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
   let { sourceCode, id } = context
 
   let matchedContextOptions = computeMatchedContextOptions({
-    parentNode,
+    parentNodeForDeclarationComments: parentNodes.declarationCommentParent,
+    parentNodeForDeclarationMatches: parentNodes.declarationMatchParent,
     sourceCode,
     elements,
     context,
@@ -340,16 +348,35 @@ export function sortObjectTypeElements<MessageIds extends string>({
   }
 }
 
-function computeObjectTypeParentNode(
-  node: TSESTree.TSTypeLiteral,
-): TSESTree.TSTypeAliasDeclaration | TSESTree.TSPropertySignature | null {
+function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
+  declarationCommentParent:
+    | TSESTree.TSTypeAliasDeclaration
+    | TSESTree.TSInterfaceDeclaration
+    | TSESTree.TSPropertySignature
+    | null
+  declarationMatchParent:
+    | TSESTree.TSTypeAliasDeclaration
+    | TSESTree.TSInterfaceDeclaration
+    | TSESTree.TSPropertySignature
+    | null
+} {
   let parentNodes = computeParentNodesWithTypes({
     allowedTypes: [
       AST_NODE_TYPES.TSTypeAliasDeclaration,
+      AST_NODE_TYPES.TSInterfaceDeclaration,
       AST_NODE_TYPES.TSPropertySignature,
     ],
     node,
   })
 
-  return parentNodes[0] ?? null
+  let declarationParentForComments = parentNodes.find(
+    parent =>
+      parent.type === AST_NODE_TYPES.TSTypeAliasDeclaration ||
+      parent.type === AST_NODE_TYPES.TSInterfaceDeclaration,
+  )
+
+  return {
+    declarationCommentParent: declarationParentForComments ?? null,
+    declarationMatchParent: parentNodes[0] ?? null,
+  }
 }

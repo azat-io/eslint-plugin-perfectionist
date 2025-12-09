@@ -2399,9 +2399,31 @@ describe('sort-object-types', () => {
         code: dedent`
           // Ignore me
           type Type = {
-            b: string
-            c: string
-            a: string
+            nested: {
+              b: string
+              a: string
+            }
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          // Ignore me
+          type Type = A & {
+            nested: {
+              b: string
+              a: string
+            }
           }
         `,
       })

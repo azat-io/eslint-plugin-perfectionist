@@ -27,6 +27,23 @@ type MessageId =
   | typeof ORDER_ERROR_ID
 
 export default createEslintRule<Options, MessageId>({
+  create: context => ({
+    TSInterfaceDeclaration: node =>
+      sortObjectTypeElements<MessageId>({
+        availableMessageIds: {
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
+        },
+        parentNodes: {
+          declarationCommentParent: node,
+          declarationMatchParent: node,
+        },
+        elements: node.body.body,
+        context,
+      }),
+  }),
   meta: {
     messages: {
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
@@ -44,20 +61,6 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => ({
-    TSInterfaceDeclaration: node =>
-      sortObjectTypeElements<MessageId>({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-          unexpectedOrder: ORDER_ERROR_ID,
-        },
-        elements: node.body.body,
-        parentNode: node,
-        context,
-      }),
-  }),
   defaultOptions: [defaultOptions],
   name: 'sort-interfaces',
 })

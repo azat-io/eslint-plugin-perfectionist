@@ -22,12 +22,18 @@ import { matches } from '../../utils/matches'
  * @returns The matched context options, or undefined if none match.
  */
 export function computeMatchedContextOptions({
+  parentNodeForDeclarationComments,
+  parentNodeForDeclarationMatches,
   sourceCode,
-  parentNode,
   elements,
   context,
 }: {
-  parentNode:
+  parentNodeForDeclarationComments:
+    | TSESTree.TSTypeAliasDeclaration
+    | TSESTree.TSInterfaceDeclaration
+    | TSESTree.TSPropertySignature
+    | null
+  parentNodeForDeclarationMatches:
     | TSESTree.TSTypeAliasDeclaration
     | TSESTree.TSInterfaceDeclaration
     | TSESTree.TSPropertySignature
@@ -41,8 +47,8 @@ export function computeMatchedContextOptions({
     contextOptions: context.options,
   })
   filteredContextOptions = filterOptionsByDeclarationCommentMatches({
+    parentNode: parentNodeForDeclarationComments,
     contextOptions: filteredContextOptions,
-    parentNode,
     sourceCode,
   })
 
@@ -53,12 +59,12 @@ export function computeMatchedContextOptions({
 
     if (options.useConfigurationIf.declarationMatchesPattern) {
       /* v8 ignore if -- @preserve Unsure how we can reach that case */
-      if (!parentNode) {
+      if (!parentNodeForDeclarationMatches) {
         return false
       }
 
       let matchesPattern = matches(
-        computeNodeParentName(parentNode, sourceCode),
+        computeNodeParentName(parentNodeForDeclarationMatches, sourceCode),
         options.useConfigurationIf.declarationMatchesPattern,
       )
       if (!matchesPattern) {
