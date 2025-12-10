@@ -352,6 +352,8 @@ Example configuration:
 
 - `declarationCommentMatchesPattern` — A regexp pattern to specify which comments above the type declaration should match.
 
+This setting also matches any object type found at any depth inside a type alias or interface that has a matching comment.
+
 Example configuration:
 ```ts
 {

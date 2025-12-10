@@ -2404,6 +2404,28 @@ describe('sort-interfaces', () => {
         `,
       })
 
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationCommentMatchesPattern: '^Ignore me$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          // Ignore me
+          interface Interface {
+            nested: {
+              b: string
+              a: string
+            }
+            a: string
+          }
+        `,
+      })
+
       await invalid({
         options: [
           {
