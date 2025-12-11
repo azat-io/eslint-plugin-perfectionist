@@ -37,8 +37,8 @@ export default createEslintRule<Options, MessageId>({
           unexpectedOrder: ORDER_ERROR_ID,
         },
         parentNodes: {
+          declarationMatchParents: [node],
           declarationCommentParent: node,
-          declarationMatchParent: node,
         },
         elements: node.body.body,
         context,

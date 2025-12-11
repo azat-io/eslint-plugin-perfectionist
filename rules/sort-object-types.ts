@@ -177,7 +177,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
   }
   parentNodes: {
     declarationCommentParent: ObjectTypeParentForDeclarationComment | null
-    declarationMatchParent: ObjectTypeParentForDeclarationMatch | null
+    declarationMatchParents: ObjectTypeParentForDeclarationMatch[]
   }
   context: RuleContext<MessageIds, Options>
   elements: TSESTree.TypeElement[]
@@ -191,7 +191,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
 
   let matchedContextOptions = computeMatchedContextOptions({
     parentNodeForDeclarationComments: parentNodes.declarationCommentParent,
-    parentNodeForDeclarationMatches: parentNodes.declarationMatchParent,
+    parentNodesForDeclarationMatches: parentNodes.declarationMatchParents,
     sourceCode,
     elements,
     context,
@@ -345,7 +345,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
 
 function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
   declarationCommentParent: ObjectTypeParentForDeclarationComment | null
-  declarationMatchParent: ObjectTypeParentForDeclarationMatch | null
+  declarationMatchParents: ObjectTypeParentForDeclarationMatch[]
 } {
   let parentNodes = computeParentNodesWithTypes({
     allowedTypes: [
@@ -365,6 +365,6 @@ function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
 
   return {
     declarationCommentParent: declarationParentForComments ?? null,
-    declarationMatchParent: parentNodes[0] ?? null,
+    declarationMatchParents: parentNodes,
   }
 }

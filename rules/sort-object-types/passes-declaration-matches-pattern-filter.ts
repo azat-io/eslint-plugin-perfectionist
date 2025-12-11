@@ -20,16 +20,18 @@ import { matches } from '../../utils/matches'
  */
 export function passesDeclarationMatchesPatternFilter({
   declarationMatchesPattern,
-  parentNode,
+  parentNodes,
   sourceCode,
 }: {
   declarationMatchesPattern: ScopedRegexOption | undefined
-  parentNode: ObjectTypeParentForDeclarationMatch | null
+  parentNodes: ObjectTypeParentForDeclarationMatch[]
   sourceCode: TSESLint.SourceCode
 }): boolean {
   if (!declarationMatchesPattern) {
     return true
   }
+  let [parentNode] = parentNodes
+
   /* v8 ignore if -- @preserve Unsure how we can reach that case */
   if (!parentNode) {
     return false
