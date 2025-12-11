@@ -2438,6 +2438,290 @@ describe('sort-object-types', () => {
           `,
         })
       })
+
+      it('matches shallow declarations', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^shallow$',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let shallow: {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^shallow$',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let shallow = {} as {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^Shallow$',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            interface Shallow {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+      })
+
+      it('matches deep declarations', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let deep: {
+              b: "b",
+              a: "a",
+              [nested1]: {
+                b: "b",
+                a: "a",
+              }
+            };
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let variable: {
+              deep: {
+                b: "b",
+                a: "a",
+                [nested1]: {
+                  b: "b",
+                  a: "a",
+                }
+              };
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let deep = {} as {
+              b: "b",
+              a: "a",
+              [nested1]: {
+                b: "b",
+                a: "a",
+              }
+            };
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^Deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            interface Deep {
+              nested: {
+                b: "b",
+                a: "a",
+                [nested1]: {
+                  b: "b",
+                  a: "a",
+                }
+              };
+            }
+          `,
+        })
+      })
+
+      it('matches shallow and deep declarations at the same time', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: [
+                  {
+                    pattern: '^implicitShallow$',
+                  },
+                  {
+                    pattern: '^shallow$',
+                    scope: 'shallow',
+                  },
+                  {
+                    pattern: '^deep$',
+                    scope: 'deep',
+                  },
+                ],
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          output: dedent`
+            let shallow: {
+              b: "b",
+              a: "a",
+              [nested]: {
+                a: "a",
+                b: "b",
+              }
+            };
+
+            let implicitShallow: {
+              b: "b",
+              a: "a",
+              [nested]: {
+                a: "a",
+                b: "b",
+              }
+            };
+
+            let deep: {
+              b: "b",
+              a: "a",
+              [nested1]: {
+                b: "b",
+                a: "a",
+              }
+            };
+          `,
+          code: dedent`
+            let shallow: {
+              b: "b",
+              a: "a",
+              [nested]: {
+                b: "b",
+                a: "a",
+              }
+            };
+
+            let implicitShallow: {
+              b: "b",
+              a: "a",
+              [nested]: {
+                b: "b",
+                a: "a",
+              }
+            };
+
+            let deep: {
+              b: "b",
+              a: "a",
+              [nested1]: {
+                b: "b",
+                a: "a",
+              }
+            };
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: { right: 'a', left: 'b' },
+            },
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+        })
+      })
     })
 
     it('does not match configuration if no declaration name', async () => {
