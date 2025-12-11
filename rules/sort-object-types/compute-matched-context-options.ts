@@ -3,7 +3,11 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { Options } from './types'
+import type {
+  ObjectTypeParentForDeclarationComment,
+  ObjectTypeParentForDeclarationMatch,
+  Options,
+} from './types'
 
 import { filterOptionsByDeclarationCommentMatches } from '../../utils/filter-options-by-declaration-comment-matches'
 import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
@@ -28,16 +32,8 @@ export function computeMatchedContextOptions({
   elements,
   context,
 }: {
-  parentNodeForDeclarationComments:
-    | TSESTree.TSTypeAliasDeclaration
-    | TSESTree.TSInterfaceDeclaration
-    | TSESTree.TSPropertySignature
-    | null
-  parentNodeForDeclarationMatches:
-    | TSESTree.TSTypeAliasDeclaration
-    | TSESTree.TSInterfaceDeclaration
-    | TSESTree.TSPropertySignature
-    | null
+  parentNodeForDeclarationComments: ObjectTypeParentForDeclarationComment | null
+  parentNodeForDeclarationMatches: ObjectTypeParentForDeclarationMatch | null
   context: TSESLint.RuleContext<string, Options>
   elements: TSESTree.TypeElement[]
   sourceCode: TSESLint.SourceCode

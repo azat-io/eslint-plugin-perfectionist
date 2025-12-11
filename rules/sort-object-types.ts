@@ -5,6 +5,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
+  ObjectTypeParentForDeclarationComment,
+  ObjectTypeParentForDeclarationMatch,
   SortObjectTypesSortingNode,
   Modifier,
   Selector,
@@ -166,23 +168,15 @@ export function sortObjectTypeElements<MessageIds extends string>({
   elements,
   context,
 }: {
-  parentNodes: {
-    declarationCommentParent:
-      | TSESTree.TSTypeAliasDeclaration
-      | TSESTree.TSInterfaceDeclaration
-      | TSESTree.TSPropertySignature
-      | null
-    declarationMatchParent:
-      | TSESTree.TSTypeAliasDeclaration
-      | TSESTree.TSInterfaceDeclaration
-      | TSESTree.TSPropertySignature
-      | null
-  }
   availableMessageIds: {
     missedSpacingBetweenMembers: MessageIds
     extraSpacingBetweenMembers: MessageIds
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
+  }
+  parentNodes: {
+    declarationCommentParent: ObjectTypeParentForDeclarationComment | null
+    declarationMatchParent: ObjectTypeParentForDeclarationMatch | null
   }
   context: RuleContext<MessageIds, Options>
   elements: TSESTree.TypeElement[]
@@ -349,16 +343,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
 }
 
 function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
-  declarationCommentParent:
-    | TSESTree.TSTypeAliasDeclaration
-    | TSESTree.TSInterfaceDeclaration
-    | TSESTree.TSPropertySignature
-    | null
-  declarationMatchParent:
-    | TSESTree.TSTypeAliasDeclaration
-    | TSESTree.TSInterfaceDeclaration
-    | TSESTree.TSPropertySignature
-    | null
+  declarationCommentParent: ObjectTypeParentForDeclarationComment | null
+  declarationMatchParent: ObjectTypeParentForDeclarationMatch | null
 } {
   let parentNodes = computeParentNodesWithTypes({
     allowedTypes: [

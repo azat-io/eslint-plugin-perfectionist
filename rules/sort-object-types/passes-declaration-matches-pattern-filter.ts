@@ -3,6 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { ObjectTypeParentForDeclarationMatch } from './types'
 import type { RegexOption } from '../../types/common-options'
 
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
@@ -23,11 +24,7 @@ export function passesDeclarationMatchesPatternFilter({
   parentNode,
   sourceCode,
 }: {
-  parentNode:
-    | TSESTree.TSTypeAliasDeclaration
-    | TSESTree.TSInterfaceDeclaration
-    | TSESTree.TSPropertySignature
-    | null
+  parentNode: ObjectTypeParentForDeclarationMatch | null
   declarationMatchesPattern: RegexOption | undefined
   sourceCode: TSESLint.SourceCode
 }): boolean {
@@ -46,10 +43,7 @@ export function passesDeclarationMatchesPatternFilter({
 }
 
 function computeNodeParentName(
-  node:
-    | TSESTree.TSTypeAliasDeclaration
-    | TSESTree.TSInterfaceDeclaration
-    | TSESTree.TSPropertySignature,
+  node: ObjectTypeParentForDeclarationMatch,
   sourceCode: TSESLint.SourceCode,
 ): string {
   switch (node.type) {
