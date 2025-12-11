@@ -14,6 +14,13 @@ import type {
 } from './sort-object-types/types'
 
 import {
+  singleCustomGroupJsonSchema,
+  scopedRegexJsonSchema,
+  sortByJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-object-types/types'
+import {
   buildUseConfigurationIfJsonSchema,
   buildCommonJsonSchemas,
   buildRegexJsonSchema,
@@ -22,12 +29,6 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
-import {
-  singleCustomGroupJsonSchema,
-  sortByJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-object-types/types'
 import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -112,7 +113,7 @@ export let jsonSchema: JSONSchema4 = {
             type: 'boolean',
           },
           declarationCommentMatchesPattern: buildRegexJsonSchema(),
-          declarationMatchesPattern: buildRegexJsonSchema(),
+          declarationMatchesPattern: scopedRegexJsonSchema,
         },
       }),
       partitionByComment: partitionByCommentJsonSchema,

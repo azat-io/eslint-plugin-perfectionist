@@ -1,7 +1,9 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { ObjectTypeParentForDeclarationMatch } from './types'
-import type { RegexOption } from '../../types/common-options'
+import type {
+  ObjectTypeParentForDeclarationMatch,
+  ScopedRegexOption,
+} from './types'
 
 import { computeNodeParentName } from './compute-node-parent-name'
 import { matches } from '../../utils/matches'
@@ -21,8 +23,8 @@ export function passesDeclarationMatchesPatternFilter({
   parentNode,
   sourceCode,
 }: {
+  declarationMatchesPattern: ScopedRegexOption | undefined
   parentNode: ObjectTypeParentForDeclarationMatch | null
-  declarationMatchesPattern: RegexOption | undefined
   sourceCode: TSESLint.SourceCode
 }): boolean {
   if (!declarationMatchesPattern) {
