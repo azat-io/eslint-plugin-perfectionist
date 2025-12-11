@@ -1,12 +1,9 @@
-import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
-
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { ObjectTypeParentForDeclarationMatch } from './types'
 import type { RegexOption } from '../../types/common-options'
 
-import { UnreachableCaseError } from '../../utils/unreachable-case-error'
+import { computeNodeParentName } from './compute-node-parent-name'
 import { matches } from '../../utils/matches'
 
 /**
@@ -40,34 +37,4 @@ export function passesDeclarationMatchesPatternFilter({
     computeNodeParentName(parentNode, sourceCode),
     declarationMatchesPattern,
   )
-}
-
-function computeNodeParentName(
-  node: ObjectTypeParentForDeclarationMatch,
-  sourceCode: TSESLint.SourceCode,
-): string {
-  switch (node.type) {
-    case AST_NODE_TYPES.TSTypeAliasDeclaration:
-    case AST_NODE_TYPES.TSInterfaceDeclaration:
-      return node.id.name
-    case AST_NODE_TYPES.TSPropertySignature:
-      return computePropertySignatureName(node)
-    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-    default:
-      throw new UnreachableCaseError(node)
-  }
-
-  function computePropertySignatureName(
-    propertySignature: TSESTree.TSPropertySignature,
-  ): string {
-    switch (propertySignature.key.type) {
-      case AST_NODE_TYPES.Identifier:
-        return propertySignature.key.name
-      case AST_NODE_TYPES.Literal:
-        return String(propertySignature.key.value)
-      /* v8 ignore next 2 -- @preserve Unsure how we can reach that case */
-      default:
-        return sourceCode.getText(propertySignature.key)
-    }
-  }
 }

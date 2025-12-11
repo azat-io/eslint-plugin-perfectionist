@@ -1,0 +1,46 @@
+import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
+import type { ObjectTypeParentForDeclarationMatch } from './types'
+
+import { UnreachableCaseError } from '../../utils/unreachable-case-error'
+
+/**
+ * Computes the name of an object-type-like parent node.
+ *
+ * @param node - The AST node representing an object-type-like node.
+ * @param sourceCode - ESLint source code object for text extraction.
+ * @returns The name of the object-type like node.
+ */
+export function computeNodeParentName(
+  node: ObjectTypeParentForDeclarationMatch,
+  sourceCode: TSESLint.SourceCode,
+): string {
+  switch (node.type) {
+    case AST_NODE_TYPES.TSTypeAliasDeclaration:
+    case AST_NODE_TYPES.TSInterfaceDeclaration:
+      return node.id.name
+    case AST_NODE_TYPES.TSPropertySignature:
+      return computePropertySignatureName(node, sourceCode)
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(node)
+  }
+}
+
+function computePropertySignatureName(
+  propertySignature: TSESTree.TSPropertySignature,
+  sourceCode: TSESLint.SourceCode,
+): string {
+  switch (propertySignature.key.type) {
+    case AST_NODE_TYPES.Identifier:
+      return propertySignature.key.name
+    case AST_NODE_TYPES.Literal:
+      return String(propertySignature.key.value)
+    /* v8 ignore next 2 -- @preserve Unsure how we can reach that case */
+    default:
+      return sourceCode.getText(propertySignature.key)
+  }
+}
