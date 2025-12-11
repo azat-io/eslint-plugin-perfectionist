@@ -6,10 +6,10 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { Options } from './types'
 
 import { filterOptionsByDeclarationCommentMatches } from '../../utils/filter-options-by-declaration-comment-matches'
+import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
 import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { computeNodeName } from './compute-node-name'
-import { matches } from '../../utils/matches'
 
 /**
  * Computes the matched context options for the given nodes.
@@ -57,73 +57,50 @@ export function computeMatchedContextOptions({
       return true
     }
 
-    if (options.useConfigurationIf.declarationMatchesPattern) {
-      /* v8 ignore if -- @preserve Unsure how we can reach that case */
-      if (!parentNodeForDeclarationMatches) {
-        return false
-      }
-
-      let matchesPattern = matches(
-        computeNodeParentName(parentNodeForDeclarationMatches, sourceCode),
-        options.useConfigurationIf.declarationMatchesPattern,
-      )
-      if (!matchesPattern) {
-        return false
-      }
-    }
-
-    if (
-      options.useConfigurationIf.hasNumericKeysOnly &&
-      !hasNumericKeysOnly(elements)
-    ) {
-      return false
-    }
-
-    return true
+    return (
+      passesDeclarationMatchesPatternFilter({
+        declarationMatchesPattern:
+          options.useConfigurationIf.declarationMatchesPattern,
+        parentNode: parentNodeForDeclarationMatches,
+        sourceCode,
+      }) &&
+      passesHasNumericKeysOnlyFilter({
+        hasNumericKeysOnlyFilter: options.useConfigurationIf.hasNumericKeysOnly,
+        typeElements: elements,
+      })
+    )
   })
 }
 
-function computeNodeParentName(
-  node:
-    | TSESTree.TSTypeAliasDeclaration
-    | TSESTree.TSInterfaceDeclaration
-    | TSESTree.TSPropertySignature,
-  sourceCode: TSESLint.SourceCode,
-): string {
-  switch (node.type) {
-    case AST_NODE_TYPES.TSTypeAliasDeclaration:
-    case AST_NODE_TYPES.TSInterfaceDeclaration:
-      return node.id.name
-    case AST_NODE_TYPES.TSPropertySignature:
-      return computePropertySignatureName(node)
+function passesHasNumericKeysOnlyFilter({
+  hasNumericKeysOnlyFilter,
+  typeElements,
+}: {
+  hasNumericKeysOnlyFilter: undefined | boolean
+  typeElements: TSESTree.TypeElement[]
+}): boolean {
+  let hasOnlyNumericKeys = hasNumericKeysOnly()
+  switch (hasNumericKeysOnlyFilter) {
+    case undefined:
+      return true
+    case false:
+      return !hasOnlyNumericKeys
+    case true:
+      return hasOnlyNumericKeys
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
-      throw new UnreachableCaseError(node)
+      throw new UnreachableCaseError(hasNumericKeysOnlyFilter)
   }
 
-  function computePropertySignatureName(
-    propertySignature: TSESTree.TSPropertySignature,
-  ): string {
-    switch (propertySignature.key.type) {
-      case AST_NODE_TYPES.Identifier:
-        return propertySignature.key.name
-      case AST_NODE_TYPES.Literal:
-        return String(propertySignature.key.value)
-      /* v8 ignore next 2 -- @preserve Unsure how we can reach that case */
-      default:
-        return sourceCode.getText(propertySignature.key)
+  function hasNumericKeysOnly(): boolean {
+    return typeElements.every(isNumericKey)
+
+    function isNumericKey(typeElement: TSESTree.TypeElement): boolean {
+      return (
+        typeElement.type === AST_NODE_TYPES.TSPropertySignature &&
+        typeElement.key.type === AST_NODE_TYPES.Literal &&
+        typeof typeElement.key.value === 'number'
+      )
     }
-  }
-}
-
-function hasNumericKeysOnly(typeElements: TSESTree.TypeElement[]): boolean {
-  return typeElements.every(isNumericKey)
-
-  function isNumericKey(typeElement: TSESTree.TypeElement): boolean {
-    return (
-      typeElement.type === AST_NODE_TYPES.TSPropertySignature &&
-      typeElement.key.type === AST_NODE_TYPES.Literal &&
-      typeof typeElement.key.value === 'number'
-    )
   }
 }
