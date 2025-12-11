@@ -160,7 +160,7 @@ export type ScopedRegexOption = RegexOption<{
   scope?: Scope
 }>
 export type Scope = (typeof regexScopes)[number]
-export let regexScopes = ['shallow', 'deep'] as const
+let regexScopes = ['shallow', 'deep'] as const
 export let scopedRegexJsonSchema: JSONSchema4 = buildRegexJsonSchema({
   additionalProperties: {
     scope: {
