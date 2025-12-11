@@ -30,14 +30,13 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import {
-  buildUseConfigurationIfJsonSchema,
-  buildCommonJsonSchemas,
-  buildRegexJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
-import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
+import {
+  buildUseConfigurationIfJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import { computePropertyOrVariableDeclaratorName } from './sort-objects/compute-property-or-variable-declarator-name'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
@@ -393,7 +392,7 @@ export default createEslintRule<Options, MessageId>({
                   'Specifies whether to only match objects that have exclusively numeric keys.',
                 type: 'boolean',
               },
-              declarationCommentMatchesPattern: buildRegexJsonSchema(),
+              declarationCommentMatchesPattern: scopedRegexJsonSchema,
               callingFunctionNamePattern: scopedRegexJsonSchema,
               declarationMatchesPattern: scopedRegexJsonSchema,
             },
