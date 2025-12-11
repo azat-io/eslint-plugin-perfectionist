@@ -1,4 +1,5 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
   CommonOptions,
@@ -93,6 +94,11 @@ export type Options = Partial<
     CommonOptions<TypeOption> &
     CommonPartitionOptions
 >[]
+
+export type ObjectParent =
+  | TSESTree.VariableDeclarator
+  | TSESTree.CallExpression
+  | TSESTree.Property
 
 /**
  * Union type of all available modifiers for object members.

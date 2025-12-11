@@ -4,16 +4,11 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { SingleRegexOption } from './partition-patterns-by-scope'
-import type { ScopedRegexOption } from './types'
+import type { ScopedRegexOption, ObjectParent } from './types'
 
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
 import { partitionPatternsByScope } from './partition-patterns-by-scope'
 import { matches } from '../../utils/matches'
-
-type ObjectParent =
-  | TSESTree.VariableDeclarator
-  | TSESTree.CallExpression
-  | TSESTree.Property
 
 /**
  * Checks whether the node parent names match the given pattern.
