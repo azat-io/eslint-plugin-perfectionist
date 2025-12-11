@@ -2354,6 +2354,25 @@ describe('sort-object-types', () => {
         `,
       })
 
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              hasNumericKeysOnly: false,
+            },
+            type: 'unsorted',
+          },
+        ],
+        code: dedent`
+          type Type = {
+            5: number
+            two: SomeObject
+            3: number
+            8: number
+          }
+        `,
+      })
+
       await invalid({
         options: [
           {
