@@ -2267,6 +2267,44 @@ describe('sort-object-types', () => {
         `,
       })
 
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: String.raw`^\[first, ignoreMe, ...remaining\]$`,
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          let [first, ignoreMe, ...remaining]: {
+            b: string
+            c: string
+            a: string
+          }[]
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: String.raw`^ignoreMe$`,
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const ignoreMe: {
+            b: string
+            c: string
+            a: string
+          }[]
+        `,
+      })
+
       await invalid({
         options: [
           {

@@ -22,8 +22,8 @@ export function computeNodeParentName(
     case AST_NODE_TYPES.TSTypeAliasDeclaration:
     case AST_NODE_TYPES.TSInterfaceDeclaration:
       return node.id.name
-    case AST_NODE_TYPES.TSPropertySignature:
-      return computePropertySignatureName(node, sourceCode)
+    case AST_NODE_TYPES.TSTypeAnnotation:
+      return computeTypeAnnotationName(node, sourceCode)
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
       throw new UnreachableCaseError(node)
@@ -43,4 +43,18 @@ function computePropertySignatureName(
     default:
       return sourceCode.getText(propertySignature.key)
   }
+}
+
+function computeTypeAnnotationName(
+  typeAnnotation: TSESTree.TSTypeAnnotation,
+  sourceCode: TSESLint.SourceCode,
+): string {
+  if (typeAnnotation.parent.type === AST_NODE_TYPES.TSPropertySignature) {
+    return computePropertySignatureName(typeAnnotation.parent, sourceCode)
+  }
+
+  return sourceCode.text.slice(
+    typeAnnotation.parent.range[0],
+    typeAnnotation.range[0],
+  )
 }
