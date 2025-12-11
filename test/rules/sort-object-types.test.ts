@@ -2229,7 +2229,7 @@ describe('sort-object-types', () => {
         options: [
           {
             useConfigurationIf: {
-              declarationMatchesPattern: '^field$',
+              declarationMatchesPattern: "^'field'$",
             },
             type: 'unsorted',
           },
@@ -2250,7 +2250,7 @@ describe('sort-object-types', () => {
         options: [
           {
             useConfigurationIf: {
-              declarationMatchesPattern: '^field$',
+              declarationMatchesPattern: String.raw`^\[field\]$`,
             },
             type: 'unsorted',
           },
