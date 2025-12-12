@@ -1,3 +1,4 @@
+import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
@@ -22,9 +23,38 @@ export function computeNodeParentName(
     case AST_NODE_TYPES.TSInterfaceDeclaration:
       return node.id.name
     case AST_NODE_TYPES.TSTypeAnnotation:
-      return sourceCode.text.slice(node.parent.range[0], node.range[0])
+      return computeTypeAnnotationName(node, sourceCode)
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
       throw new UnreachableCaseError(node)
   }
+}
+
+function computePropertySignatureName(
+  propertySignature: TSESTree.TSPropertySignature,
+  sourceCode: TSESLint.SourceCode,
+): string {
+  switch (propertySignature.key.type) {
+    case AST_NODE_TYPES.Identifier:
+      return propertySignature.key.name
+    case AST_NODE_TYPES.Literal:
+      return String(propertySignature.key.value)
+    /* v8 ignore next 2 -- @preserve Unsure how we can reach that case */
+    default:
+      return sourceCode.getText(propertySignature.key)
+  }
+}
+
+function computeTypeAnnotationName(
+  typeAnnotation: TSESTree.TSTypeAnnotation,
+  sourceCode: TSESLint.SourceCode,
+): string {
+  if (typeAnnotation.parent.type === AST_NODE_TYPES.TSPropertySignature) {
+    return computePropertySignatureName(typeAnnotation.parent, sourceCode)
+  }
+
+  return sourceCode.text.slice(
+    typeAnnotation.parent.range[0],
+    typeAnnotation.range[0],
+  )
 }
