@@ -351,6 +351,7 @@ function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
       AST_NODE_TYPES.TSTypeAliasDeclaration,
       AST_NODE_TYPES.TSInterfaceDeclaration,
       AST_NODE_TYPES.TSTypeAnnotation,
+      AST_NODE_TYPES.VariableDeclarator,
     ],
     node,
   })

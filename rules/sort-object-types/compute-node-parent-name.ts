@@ -22,6 +22,8 @@ export function computeNodeParentName(
     case AST_NODE_TYPES.TSTypeAliasDeclaration:
     case AST_NODE_TYPES.TSInterfaceDeclaration:
       return node.id.name
+    case AST_NODE_TYPES.VariableDeclarator:
+      return sourceCode.getText(node.id)
     case AST_NODE_TYPES.TSTypeAnnotation:
       return computeTypeAnnotationName(node, sourceCode)
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
@@ -30,8 +32,8 @@ export function computeNodeParentName(
   }
 }
 
-function computePropertySignatureName(
-  propertySignature: TSESTree.TSPropertySignature,
+function computePropertyName(
+  propertySignature: TSESTree.TSPropertySignature | TSESTree.PropertyDefinition,
   sourceCode: TSESLint.SourceCode,
 ): string {
   switch (propertySignature.key.type) {
@@ -49,12 +51,14 @@ function computeTypeAnnotationName(
   typeAnnotation: TSESTree.TSTypeAnnotation,
   sourceCode: TSESLint.SourceCode,
 ): string {
-  if (typeAnnotation.parent.type === AST_NODE_TYPES.TSPropertySignature) {
-    return computePropertySignatureName(typeAnnotation.parent, sourceCode)
+  switch (typeAnnotation.parent.type) {
+    case AST_NODE_TYPES.TSPropertySignature:
+    case AST_NODE_TYPES.PropertyDefinition:
+      return computePropertyName(typeAnnotation.parent, sourceCode)
+    default:
+      return sourceCode.text.slice(
+        typeAnnotation.parent.range[0],
+        typeAnnotation.range[0],
+      )
   }
-
-  return sourceCode.text.slice(
-    typeAnnotation.parent.range[0],
-    typeAnnotation.range[0],
-  )
 }

@@ -2290,6 +2290,87 @@ describe('sort-object-types', () => {
         options: [
           {
             useConfigurationIf: {
+              declarationMatchesPattern: '^ignoreByAssertion$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const ignoreByAssertion = {} as {
+            b: string
+            c: string
+            a: string
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: String.raw`^\[first, second\]$`,
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const [first, second] = {} as [{
+            b: string
+            c: string
+            a: string
+          }, number]
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^field$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          class Class {
+            @dec()
+            field: {
+              b: string
+              c: string
+              a: string
+            }
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: String.raw`^foo\(\)$`,
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          type Type = {
+            [foo()]: {
+              b: string
+              c: string
+              a: string
+            }
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
               declarationMatchesPattern: String.raw`^ignoreMe$`,
             },
             type: 'unsorted',
@@ -2302,6 +2383,27 @@ describe('sort-object-types', () => {
             c: string
             a: string
           }[]
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^#config$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          class Service {
+            #config!: {
+              b: string
+              c: string
+              a: string
+            }
+          }
         `,
       })
 
