@@ -15,6 +15,16 @@ type ObjectParent =
   | TSESTree.CallExpression
   | TSESTree.Property
 
+/**
+ * Checks whether the node parent names match the given pattern.
+ *
+ * @param params - The parameters object.
+ * @param params.declarationMatchesPattern - The regex pattern to match against.
+ * @param params.objectParents - The parent nodes to check.
+ * @param params.sourceCode - The source code object.
+ * @returns True if the parent node parent names passes the pattern filter,
+ *   false otherwise.
+ */
 export function passesDeclarationMatchesPatternFilter({
   declarationMatchesPattern,
   objectParents,

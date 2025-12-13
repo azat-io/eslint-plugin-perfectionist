@@ -85,6 +85,31 @@ export type Options = Partial<
 >[]
 
 /**
+ * Extended sorting node for object type members.
+ *
+ * Represents an object type member with additional metadata needed for sorting,
+ * including whether the member is optional/required and its type annotation
+ * value.
+ */
+export interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeElement> {
+  /**
+   * The string representation of the member's type annotation. Used when
+   * sorting by value instead of name.
+   */
+  value: string
+}
+
+export type ObjectTypeParentForDeclarationMatch =
+  | TSESTree.TSTypeAliasDeclaration
+  | TSESTree.TSInterfaceDeclaration
+  | TSESTree.VariableDeclarator
+  | TSESTree.TSTypeAnnotation
+
+export type ObjectTypeParentForDeclarationComment =
+  | TSESTree.TSTypeAliasDeclaration
+  | TSESTree.TSInterfaceDeclaration
+
+/**
  * Union type of all available selectors for object type members.
  *
  * Selectors identify the type of object member for grouping and sorting
@@ -173,19 +198,4 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   elementValuePattern: buildRegexJsonSchema(),
   sortBy: sortByJsonSchema,
-}
-
-/**
- * Extended sorting node for object type members.
- *
- * Represents an object type member with additional metadata needed for sorting,
- * including whether the member is optional/required and its type annotation
- * value.
- */
-export interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeElement> {
-  /**
-   * The string representation of the member's type annotation. Used when
-   * sorting by value instead of name.
-   */
-  value: string
 }

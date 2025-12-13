@@ -2267,6 +2267,146 @@ describe('sort-object-types', () => {
         `,
       })
 
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: String.raw`^\[first, ignoreMe, ...remaining\]$`,
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          let [first, ignoreMe, ...remaining]: {
+            b: string
+            c: string
+            a: string
+          }[]
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^ignoreByAssertion$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const ignoreByAssertion = {} as {
+            b: string
+            c: string
+            a: string
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: String.raw`^\[first, second\]$`,
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const [first, second] = {} as [{
+            b: string
+            c: string
+            a: string
+          }, number]
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^field$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          class Class {
+            @dec()
+            field: {
+              b: string
+              c: string
+              a: string
+            }
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: String.raw`^foo\(\)$`,
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          type Type = {
+            [foo()]: {
+              b: string
+              c: string
+              a: string
+            }
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: String.raw`^ignoreMe$`,
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          const ignoreMe: {
+            b: string
+            c: string
+            a: string
+          }[]
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              declarationMatchesPattern: '^#config$',
+            },
+            type: 'unsorted',
+          },
+          options,
+        ],
+        code: dedent`
+          class Service {
+            #config!: {
+              b: string
+              c: string
+              a: string
+            }
+          }
+        `,
+      })
+
       await invalid({
         options: [
           {
@@ -2348,6 +2488,25 @@ describe('sort-object-types', () => {
           type Type = {
             5: number
             2: SomeObject
+            3: number
+            8: number
+          }
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            useConfigurationIf: {
+              hasNumericKeysOnly: false,
+            },
+            type: 'unsorted',
+          },
+        ],
+        code: dedent`
+          type Type = {
+            5: number
+            two: SomeObject
             3: number
             8: number
           }
