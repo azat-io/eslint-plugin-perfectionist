@@ -2845,10 +2845,8 @@ describe('sort-object-types', () => {
           code: dedent`
             // Ignore me
             type Type = {
-              nested: {
-                b: string
-                a: string
-              }
+              b: string
+              a: string
             }
           `,
         })
@@ -2866,10 +2864,8 @@ describe('sort-object-types', () => {
           code: dedent`
             // Ignore me
             interface Interface {
-              nested: {
-                b: string
-                a: string
-              }
+              b: string
+              a: string
             }
           `,
         })
@@ -2887,10 +2883,8 @@ describe('sort-object-types', () => {
           code: dedent`
             // Ignore me
             type Type = A & {
-              nested: {
-                b: string
-                a: string
-              }
+              b: string
+              a: string
             }
           `,
         })
