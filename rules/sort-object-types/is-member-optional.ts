@@ -2,6 +2,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
+import { UnreachableCaseError } from '../../utils/unreachable-case-error'
+
 /**
  * Checks if a TypeScript type member is marked as optional.
  *
@@ -12,12 +14,20 @@ import { AST_NODE_TYPES } from '@typescript-eslint/types'
  * @param node - AST node to check.
  * @returns True if the member is optional, false otherwise.
  */
-export function isMemberOptional(node: TSESTree.Node): boolean {
+export function isMemberOptional(
+  node:
+    | TSESTree.TSPropertySignature
+    | TSESTree.TSMethodSignature
+    | TSESTree.TSIndexSignature,
+): boolean {
   switch (node.type) {
     case AST_NODE_TYPES.TSPropertySignature:
     case AST_NODE_TYPES.TSMethodSignature:
       return node.optional
+    case AST_NODE_TYPES.TSIndexSignature:
+      return false
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(node)
   }
-
-  return false
 }

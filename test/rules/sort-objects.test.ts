@@ -2900,77 +2900,351 @@ describe('sort-objects', () => {
       })
     })
 
-    it('applies configuration when declaration comment matches', async () => {
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationCommentMatchesPattern: '^Ignore me$',
+    describe('declarationCommentMatchesPattern', () => {
+      it('matches deep declarations', async () => {
+        await valid({
+          code: dedent`
+            // deep
+            let v1 = <any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                a: "a",
+                b: "b",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            };
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          // Ignore me
-          const obj = {
-            b,
-            c,
-            a,
-          }
-        `,
+            {
+              type: 'alphabetical',
+            },
+          ],
+        })
+
+        await valid({
+          code: dedent`
+            let v = <any>{
+              // deep
+              [nested1]: <any>{
+                a: "a",
+                b: "b",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            };
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+        })
+
+        await valid({
+          code: dedent`
+            // deep
+            f1(<any>{
+              b: "b",
+              a: "a",
+              // something
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            });
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let v = <any>{
+              // deep
+              [nested2]: <any>f({
+                b: "b",
+                a: "a",
+                [nested3]: () => {
+                  return {
+                    b: "b",
+                    a: "a",
+                  }
+                }
+              })
+            };
+          `,
+        })
       })
 
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationCommentMatchesPattern: '^Ignore me$',
+      it('matches shallow and deep declarations at the same time', async () => {
+        await invalid({
+          output: dedent`
+            // shallow
+            let v1 = <any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                a: "a",
+                b: "b",
+              }
+            };
+
+            // implicitShallow
+            let v2 = <any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                a: "a",
+                b: "b",
+              }
+            };
+
+            // deep
+            let v3 = <any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            };
+          `,
+          code: dedent`
+            // shallow
+            let v1 = <any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                b: "b",
+                a: "a",
+              }
+            };
+
+            // implicitShallow
+            let v2 = <any>{
+              b: "b",
+              a: "a",
+              [nested]: <any>{
+                b: "b",
+                a: "a",
+              }
+            };
+
+            // deep
+            let v3 = <any>{
+              b: "b",
+              a: "a",
+              [nested1]: <any>{
+                b: "b",
+                a: "a",
+                [nested2]: <any>f({
+                  b: "b",
+                  a: "a",
+                  [nested3]: () => {
+                    return {
+                      b: "b",
+                      a: "a",
+                    }
+                  }
+                })
+              }
+            };
+          `,
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: [
+                  {
+                    pattern: '^implicitShallow$',
+                  },
+                  {
+                    pattern: '^shallow$',
+                    scope: 'shallow',
+                  },
+                  {
+                    pattern: '^deep$',
+                    scope: 'deep',
+                  },
+                ],
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          // Ignore me
-          func({
-            b,
-            c,
-            a,
-          })
-        `,
+            {
+              type: 'alphabetical',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+        })
       })
 
-      await invalid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationCommentMatchesPattern: '^Ignore me$',
+      it('applies configuration when declaration comment matches', async () => {
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: '^Ignore me$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedObjectsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          // Do NOT ignore me
-          const obj = {
-            a,
-            b,
-          }
-        `,
-        code: dedent`
-          // Do NOT ignore me
-          const obj = {
-            b,
-            a,
-          }
-        `,
+            options,
+          ],
+          code: dedent`
+            // Ignore me
+            const obj = {
+              b,
+              c,
+              a,
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: '^Ignore me$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          code: dedent`
+            // Ignore me
+            func({
+              b,
+              c,
+              a,
+            })
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: '^Ignore me$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            // Do NOT ignore me
+            const obj = {
+              a,
+              b,
+            }
+          `,
+          code: dedent`
+            // Do NOT ignore me
+            const obj = {
+              b,
+              a,
+            }
+          `,
+        })
       })
     })
 

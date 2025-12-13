@@ -1,10 +1,10 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type {
-  ObjectTypeParentForDeclarationMatch,
   ScopedRegexOption,
-} from './types'
-import type { SingleRegexOption } from '../sort-objects/partition-patterns-by-scope'
+  SingleRegexOption,
+} from '../../types/scoped-regex-option'
+import type { ObjectTypeParentForDeclarationMatch } from './types'
 
 import { partitionPatternsByScope } from './partition-patterns-by-scope'
 import { computeNodeParentName } from './compute-node-parent-name'

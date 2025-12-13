@@ -9,6 +9,7 @@ import type {
 } from '../../types/common-options'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { ScopedRegexOption } from '../../types/scoped-regex-option'
 import type { SortingNode } from '../../types/sorting-node'
 
 import {
@@ -199,17 +200,3 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   elementValuePattern: buildRegexJsonSchema(),
   sortBy: sortByJsonSchema,
 }
-
-export type ScopedRegexOption = RegexOption<{
-  scope?: Scope
-}>
-export type Scope = (typeof regexScopes)[number]
-let regexScopes = ['shallow', 'deep'] as const
-export let scopedRegexJsonSchema: JSONSchema4 = buildRegexJsonSchema({
-  additionalProperties: {
-    scope: {
-      enum: [...regexScopes],
-      type: 'string',
-    },
-  },
-})
