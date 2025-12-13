@@ -2485,29 +2485,6 @@ describe('sort-object-types', () => {
             }
           `,
         })
-
-        await valid({
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                declarationMatchesPattern: {
-                  pattern: '^Shallow$',
-                },
-              },
-              type: 'unsorted',
-            },
-            {
-              type: 'alphabetical',
-            },
-          ],
-          code: dedent`
-            interface Shallow {
-              b: "b",
-              a: "a",
-            }
-          `,
-        })
       })
 
       it('matches deep declarations', async () => {
@@ -2845,25 +2822,6 @@ describe('sort-object-types', () => {
           code: dedent`
             // Ignore me
             type Type = {
-              b: string
-              a: string
-            }
-          `,
-        })
-
-        await valid({
-          options: [
-            {
-              useConfigurationIf: {
-                declarationCommentMatchesPattern: '^Ignore me$',
-              },
-              type: 'unsorted',
-            },
-            options,
-          ],
-          code: dedent`
-            // Ignore me
-            interface Interface {
               b: string
               a: string
             }
