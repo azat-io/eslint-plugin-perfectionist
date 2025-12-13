@@ -2830,100 +2830,102 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('detects declaration comment by pattern', async () => {
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationCommentMatchesPattern: '^Ignore me$',
+    describe('useConfigurationIf.declarationCommentMatchesPattern', () => {
+      it('detects declaration comment by pattern', async () => {
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: '^Ignore me$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          // Ignore me
-          type Type = {
-            nested: {
+            options,
+          ],
+          code: dedent`
+            // Ignore me
+            type Type = {
+              nested: {
+                b: string
+                a: string
+              }
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: '^Ignore me$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          code: dedent`
+            // Ignore me
+            interface Interface {
+              nested: {
+                b: string
+                a: string
+              }
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: '^Ignore me$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          code: dedent`
+            // Ignore me
+            type Type = A & {
+              nested: {
+                b: string
+                a: string
+              }
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: '^Ignore me$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            // Do NOT ignore me
+            type Type = {
+              a: string
+              b: string
+            }
+          `,
+          code: dedent`
+            // Do NOT ignore me
+            type Type = {
               b: string
               a: string
             }
-          }
-        `,
-      })
-
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationCommentMatchesPattern: '^Ignore me$',
-            },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          // Ignore me
-          interface Interface {
-            nested: {
-              b: string
-              a: string
-            }
-          }
-        `,
-      })
-
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationCommentMatchesPattern: '^Ignore me$',
-            },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          // Ignore me
-          type Type = A & {
-            nested: {
-              b: string
-              a: string
-            }
-          }
-        `,
-      })
-
-      await invalid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationCommentMatchesPattern: '^Ignore me$',
-            },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedObjectTypesOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          // Do NOT ignore me
-          type Type = {
-            a: string
-            b: string
-          }
-        `,
-        code: dedent`
-          // Do NOT ignore me
-          type Type = {
-            b: string
-            a: string
-          }
-        `,
+          `,
+        })
       })
     })
 
