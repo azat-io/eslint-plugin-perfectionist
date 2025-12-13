@@ -284,8 +284,8 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
     declarationCommentMatchesPattern?:
       | string
       | string[]
-      | { pattern: string; flags: string }
-      | { pattern: string; flags: string }[]
+      | { pattern: string; flags?: string; scope?: 'shallow' | 'deep' }
+      | { pattern: string; flags?: string; scope?: 'shallow' | 'deep' }[]
     hasNumericKeysOnly?: boolean
   }
   ```
@@ -352,8 +352,7 @@ Example configuration:
 ```
 
 - `declarationCommentMatchesPattern` — A regexp pattern to specify which comments above the type declaration should match.
-
-This setting also matches any object type found at any depth inside a type alias or interface that has a matching comment.
+With `scope: 'deep'`, this setting will also match to any object type found at any depth within the declaration.
 
 Example configuration:
 ```ts
