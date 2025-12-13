@@ -17,18 +17,18 @@ import { matches } from '../../utils/matches'
  *
  * @param params - Parameters.
  * @param params.callingFunctionNamePattern - The pattern to evaluate.
- * @param params.objectParents - The parent nodes of the object.
+ * @param params.parentNodes - The parent nodes of the object.
  * @param params.sourceCode - The source code object.
  * @returns True if the object passes the filter, false otherwise.
  */
 export function passesCallingFunctionNamePatternFilter({
   callingFunctionNamePattern,
-  objectParents,
+  parentNodes,
   sourceCode,
 }: {
   callingFunctionNamePattern: ScopedRegexOption | undefined
   sourceCode: TSESLint.SourceCode
-  objectParents: ObjectParent[]
+  parentNodes: ObjectParent[]
 }): boolean {
   if (!callingFunctionNamePattern) {
     return true
@@ -41,27 +41,27 @@ export function passesCallingFunctionNamePatternFilter({
   return (
     matchesShallowScopedExpressions({
       patterns: shallowScopePatterns,
-      objectParents,
+      parentNodes,
       sourceCode,
     }) ||
     matchesDeepScopedExpressions({
       patterns: deepScopePatterns,
-      objectParents,
+      parentNodes,
       sourceCode,
     })
   )
 }
 
 function matchesDeepScopedExpressions({
-  objectParents,
+  parentNodes,
   sourceCode,
   patterns,
 }: {
   sourceCode: TSESLint.SourceCode
   patterns: SingleRegexOption[]
-  objectParents: ObjectParent[]
+  parentNodes: ObjectParent[]
 }): boolean {
-  let callExpressions = objectParents.filter(
+  let callExpressions = parentNodes.filter(
     parent => parent.type === AST_NODE_TYPES.CallExpression,
   )
   return callExpressions.some(callExpression =>
@@ -74,15 +74,15 @@ function matchesDeepScopedExpressions({
 }
 
 function matchesShallowScopedExpressions({
-  objectParents,
+  parentNodes,
   sourceCode,
   patterns,
 }: {
   sourceCode: TSESLint.SourceCode
   patterns: SingleRegexOption[]
-  objectParents: ObjectParent[]
+  parentNodes: ObjectParent[]
 }): boolean {
-  let [firstParent] = objectParents
+  let [firstParent] = parentNodes
   if (firstParent?.type !== AST_NODE_TYPES.CallExpression) {
     return false
   }

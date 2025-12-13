@@ -18,19 +18,19 @@ import { matches } from '../../utils/matches'
  *
  * @param params - The parameters object.
  * @param params.declarationMatchesPattern - The regex pattern to match against.
- * @param params.objectParents - The parent nodes to check.
+ * @param params.parentNodes - The parent nodes to check.
  * @param params.sourceCode - The source code object.
  * @returns True if the parent node parent names passes the pattern filter,
  *   false otherwise.
  */
 export function passesDeclarationMatchesPatternFilter({
   declarationMatchesPattern,
-  objectParents,
+  parentNodes,
   sourceCode,
 }: {
   declarationMatchesPattern: ScopedRegexOption | undefined
   sourceCode: TSESLint.SourceCode
-  objectParents: ObjectParent[]
+  parentNodes: ObjectParent[]
 }): boolean {
   if (!declarationMatchesPattern) {
     return true
@@ -43,27 +43,27 @@ export function passesDeclarationMatchesPatternFilter({
   return (
     matchesShallowScopedExpressions({
       patterns: shallowScopePatterns,
-      objectParents,
+      parentNodes,
       sourceCode,
     }) ||
     matchesDeepScopedExpressions({
       patterns: deepScopePatterns,
-      objectParents,
+      parentNodes,
       sourceCode,
     })
   )
 }
 
 function matchesDeepScopedExpressions({
-  objectParents,
+  parentNodes,
   sourceCode,
   patterns,
 }: {
   sourceCode: TSESLint.SourceCode
   patterns: SingleRegexOption[]
-  objectParents: ObjectParent[]
+  parentNodes: ObjectParent[]
 }): boolean {
-  let propertyExpressions = objectParents.filter(
+  let propertyExpressions = parentNodes.filter(
     parent =>
       parent.type === AST_NODE_TYPES.VariableDeclarator ||
       parent.type === AST_NODE_TYPES.Property,
@@ -79,15 +79,15 @@ function matchesDeepScopedExpressions({
 }
 
 function matchesShallowScopedExpressions({
-  objectParents,
+  parentNodes,
   sourceCode,
   patterns,
 }: {
   sourceCode: TSESLint.SourceCode
   patterns: SingleRegexOption[]
-  objectParents: ObjectParent[]
+  parentNodes: ObjectParent[]
 }): boolean {
-  let [firstParent] = objectParents
+  let [firstParent] = parentNodes
   if (
     firstParent?.type !== AST_NODE_TYPES.VariableDeclarator &&
     firstParent?.type !== AST_NODE_TYPES.Property

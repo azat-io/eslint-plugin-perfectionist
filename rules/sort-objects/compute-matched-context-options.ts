@@ -3,7 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { MessageId, Options } from './types'
+import type { ObjectParent, MessageId, Options } from './types'
 
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
 import { passesCallingFunctionNamePatternFilter } from './passes-calling-function-name-pattern-filter'
@@ -47,7 +47,7 @@ export function computeMatchedContextOptions({
     contextOptions: context.options,
   })
 
-  let objectParents = computeParentNodesWithTypes({
+  let parentNodes = computeParentNodesWithTypes({
     allowedTypes: [
       AST_NODE_TYPES.VariableDeclarator,
       AST_NODE_TYPES.Property,
@@ -59,7 +59,7 @@ export function computeMatchedContextOptions({
   return filteredContextOptions.find(options =>
     isContextOptionMatching({
       isDestructuredObject,
-      objectParents,
+      parentNodes,
       sourceCode,
       nodeObject,
       options,
@@ -69,19 +69,15 @@ export function computeMatchedContextOptions({
 
 function isContextOptionMatching({
   isDestructuredObject,
-  objectParents,
+  parentNodes,
   sourceCode,
   nodeObject,
   options,
 }: {
-  objectParents: (
-    | TSESTree.VariableDeclarator
-    | TSESTree.CallExpression
-    | TSESTree.Property
-  )[]
   nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
   sourceCode: TSESLint.SourceCode
   isDestructuredObject: boolean
+  parentNodes: ObjectParent[]
   options: Options[number]
 }): boolean {
   if (!options.useConfigurationIf) {
@@ -96,13 +92,13 @@ function isContextOptionMatching({
     passesCallingFunctionNamePatternFilter({
       callingFunctionNamePattern:
         options.useConfigurationIf.callingFunctionNamePattern,
-      objectParents,
+      parentNodes,
       sourceCode,
     }) &&
     passesDeclarationMatchesPatternFilter({
       declarationMatchesPattern:
         options.useConfigurationIf.declarationMatchesPattern,
-      objectParents,
+      parentNodes,
       sourceCode,
     }) &&
     passesHasNumericKeysOnlyFilter({
@@ -112,7 +108,7 @@ function isContextOptionMatching({
     passesDeclarationCommentMatchesFilter({
       declarationCommentMatchesPattern:
         options.useConfigurationIf.declarationCommentMatchesPattern,
-      objectParents,
+      parentNodes,
       sourceCode,
     })
   )

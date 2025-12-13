@@ -23,12 +23,12 @@ import { matches } from '../../utils/matches'
  */
 export function passesDeclarationCommentMatchesFilter({
   declarationCommentMatchesPattern,
-  objectParents,
+  parentNodes,
   sourceCode,
 }: {
   declarationCommentMatchesPattern: ScopedRegexOption | undefined
   sourceCode: TSESLint.SourceCode
-  objectParents: ObjectParent[]
+  parentNodes: ObjectParent[]
 }): boolean {
   if (!declarationCommentMatchesPattern) {
     return true
@@ -41,12 +41,12 @@ export function passesDeclarationCommentMatchesFilter({
   return (
     matchesShallowScopedExpressions({
       patterns: shallowScopePatterns,
-      objectParents,
+      parentNodes,
       sourceCode,
     }) ||
     matchesDeepScopedExpressions({
       patterns: deepScopePatterns,
-      objectParents,
+      parentNodes,
       sourceCode,
     })
   )
@@ -69,15 +69,15 @@ function computeRelevantNodeForComment(
 }
 
 function matchesShallowScopedExpressions({
-  objectParents,
+  parentNodes,
   sourceCode,
   patterns,
 }: {
   sourceCode: TSESLint.SourceCode
-  objectParents: ObjectParent[]
   patterns: SingleRegexOption[]
+  parentNodes: ObjectParent[]
 }): boolean {
-  let [objectParent] = objectParents
+  let [objectParent] = parentNodes
 
   /* v8 ignore if -- @preserve Unsure how we can reach that case */
   if (!objectParent) {
@@ -126,15 +126,15 @@ function matchesParentComments({
 }
 
 function matchesDeepScopedExpressions({
-  objectParents,
+  parentNodes,
   sourceCode,
   patterns,
 }: {
   sourceCode: TSESLint.SourceCode
-  objectParents: ObjectParent[]
   patterns: SingleRegexOption[]
+  parentNodes: ObjectParent[]
 }): boolean {
-  return objectParents.some(objectParent =>
+  return parentNodes.some(objectParent =>
     matchesParent({
       objectParent,
       sourceCode,
