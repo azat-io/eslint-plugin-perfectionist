@@ -14,13 +14,6 @@ import type {
 } from './sort-object-types/types'
 
 import {
-  singleCustomGroupJsonSchema,
-  scopedRegexJsonSchema,
-  sortByJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-object-types/types'
-import {
   buildUseConfigurationIfJsonSchema,
   buildCommonJsonSchemas,
   buildRegexJsonSchema,
@@ -29,6 +22,12 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
+import {
+  singleCustomGroupJsonSchema,
+  sortByJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-object-types/types'
 import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -42,6 +41,7 @@ import { comparatorByOptionsComputer } from './sort-object-types/comparator-by-o
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { computeParentNodesWithTypes } from '../utils/compute-parent-nodes-with-types'
+import { scopedRegexJsonSchema } from '../utils/json-schemas/scoped-regex-json-schema'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'

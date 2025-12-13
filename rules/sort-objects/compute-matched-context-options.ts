@@ -3,12 +3,12 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { MessageId, Options } from './types'
+import type { ObjectParent, MessageId, Options } from './types'
 
-import { filterOptionsByDeclarationCommentMatches } from '../../utils/filter-options-by-declaration-comment-matches'
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
 import { passesCallingFunctionNamePatternFilter } from './passes-calling-function-name-pattern-filter'
 import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
+import { passesDeclarationCommentMatchesFilter } from './passes-declaration-comment-matches-filter'
 import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
 import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
@@ -47,7 +47,7 @@ export function computeMatchedContextOptions({
     contextOptions: context.options,
   })
 
-  let objectParents = computeParentNodesWithTypes({
+  let parentNodes = computeParentNodesWithTypes({
     allowedTypes: [
       AST_NODE_TYPES.VariableDeclarator,
       AST_NODE_TYPES.Property,
@@ -55,24 +55,11 @@ export function computeMatchedContextOptions({
     ],
     node: nodeObject,
   })
-  let parentNodeForDeclarationComment = null
-  let [firstObjectParent] = objectParents
-  if (firstObjectParent) {
-    parentNodeForDeclarationComment =
-      firstObjectParent.type === AST_NODE_TYPES.VariableDeclarator
-        ? firstObjectParent.parent
-        : firstObjectParent
-  }
-  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
-    parentNode: parentNodeForDeclarationComment,
-    contextOptions: filteredContextOptions,
-    sourceCode,
-  })
 
   return filteredContextOptions.find(options =>
     isContextOptionMatching({
       isDestructuredObject,
-      objectParents,
+      parentNodes,
       sourceCode,
       nodeObject,
       options,
@@ -82,19 +69,15 @@ export function computeMatchedContextOptions({
 
 function isContextOptionMatching({
   isDestructuredObject,
-  objectParents,
+  parentNodes,
   sourceCode,
   nodeObject,
   options,
 }: {
-  objectParents: (
-    | TSESTree.VariableDeclarator
-    | TSESTree.CallExpression
-    | TSESTree.Property
-  )[]
   nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
   sourceCode: TSESLint.SourceCode
   isDestructuredObject: boolean
+  parentNodes: ObjectParent[]
   options: Options[number]
 }): boolean {
   if (!options.useConfigurationIf) {
@@ -109,18 +92,24 @@ function isContextOptionMatching({
     passesCallingFunctionNamePatternFilter({
       callingFunctionNamePattern:
         options.useConfigurationIf.callingFunctionNamePattern,
-      objectParents,
+      parentNodes,
       sourceCode,
     }) &&
     passesDeclarationMatchesPatternFilter({
       declarationMatchesPattern:
         options.useConfigurationIf.declarationMatchesPattern,
-      objectParents,
+      parentNodes,
       sourceCode,
     }) &&
     passesHasNumericKeysOnlyFilter({
       hasNumericKeysOnlyFilter: options.useConfigurationIf.hasNumericKeysOnly,
       object: nodeObject,
+    }) &&
+    passesDeclarationCommentMatchesFilter({
+      declarationCommentMatchesPattern:
+        options.useConfigurationIf.declarationCommentMatchesPattern,
+      parentNodes,
+      sourceCode,
     })
   )
 }

@@ -16,7 +16,6 @@ import {
   DEPENDENCY_ORDER_ERROR_ID,
   MISSED_SPACING_ERROR_ID,
   EXTRA_SPACING_ERROR_ID,
-  scopedRegexJsonSchema,
   GROUP_ORDER_ERROR_ID,
   ORDER_ERROR_ID,
   allModifiers,
@@ -30,14 +29,13 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import {
-  buildUseConfigurationIfJsonSchema,
-  buildCommonJsonSchemas,
-  buildRegexJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
-import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
+import {
+  buildUseConfigurationIfJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import { computePropertyOrVariableDeclaratorName } from './sort-objects/compute-property-or-variable-declarator-name'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
@@ -45,6 +43,7 @@ import { defaultComparatorByOptionsComputer } from '../utils/compare/default-com
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { computeMatchedContextOptions } from './sort-objects/compute-matched-context-options'
+import { scopedRegexJsonSchema } from '../utils/json-schemas/scoped-regex-json-schema'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
@@ -393,7 +392,7 @@ export default createEslintRule<Options, MessageId>({
                   'Specifies whether to only match objects that have exclusively numeric keys.',
                 type: 'boolean',
               },
-              declarationCommentMatchesPattern: buildRegexJsonSchema(),
+              declarationCommentMatchesPattern: scopedRegexJsonSchema,
               callingFunctionNamePattern: scopedRegexJsonSchema,
               declarationMatchesPattern: scopedRegexJsonSchema,
             },

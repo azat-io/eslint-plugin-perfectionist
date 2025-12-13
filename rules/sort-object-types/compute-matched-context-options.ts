@@ -48,24 +48,14 @@ export function computeMatchedContextOptions({
     sourceCode,
   })
 
-  return filteredContextOptions.find(options => {
-    if (!options.useConfigurationIf) {
-      return true
-    }
-
-    return (
-      passesDeclarationMatchesPatternFilter({
-        declarationMatchesPattern:
-          options.useConfigurationIf.declarationMatchesPattern,
-        parentNodes: parentNodesForDeclarationMatches,
-        sourceCode,
-      }) &&
-      passesHasNumericKeysOnlyFilter({
-        hasNumericKeysOnlyFilter: options.useConfigurationIf.hasNumericKeysOnly,
-        typeElements: elements,
-      })
-    )
-  })
+  return filteredContextOptions.find(options =>
+    isContextOptionMatching({
+      parentNodesForDeclarationMatches,
+      sourceCode,
+      elements,
+      options,
+    }),
+  )
 }
 
 function passesHasNumericKeysOnlyFilter({
@@ -99,4 +89,33 @@ function passesHasNumericKeysOnlyFilter({
       )
     }
   }
+}
+
+function isContextOptionMatching({
+  parentNodesForDeclarationMatches,
+  sourceCode,
+  elements,
+  options,
+}: {
+  parentNodesForDeclarationMatches: ObjectTypeParentForDeclarationMatch[]
+  elements: TSESTree.TypeElement[]
+  sourceCode: TSESLint.SourceCode
+  options: Options[number]
+}): boolean {
+  if (!options.useConfigurationIf) {
+    return true
+  }
+
+  return (
+    passesDeclarationMatchesPatternFilter({
+      declarationMatchesPattern:
+        options.useConfigurationIf.declarationMatchesPattern,
+      parentNodes: parentNodesForDeclarationMatches,
+      sourceCode,
+    }) &&
+    passesHasNumericKeysOnlyFilter({
+      hasNumericKeysOnlyFilter: options.useConfigurationIf.hasNumericKeysOnly,
+      typeElements: elements,
+    })
+  )
 }

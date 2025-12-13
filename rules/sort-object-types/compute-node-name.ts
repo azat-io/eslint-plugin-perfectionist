@@ -3,6 +3,8 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import { UnreachableCaseError } from '../../utils/unreachable-case-error'
+
 /**
  * Computes the name of an object-type-like node.
  *
@@ -19,14 +21,18 @@ export function computeNodeName({
   node: TSESTree.TypeElement
 }): string {
   switch (node.type) {
+    case AST_NODE_TYPES.TSConstructSignatureDeclaration:
+    case AST_NODE_TYPES.TSCallSignatureDeclaration:
+      return formatName(sourceCode.getText(node))
     case AST_NODE_TYPES.TSPropertySignature:
       return computePropertySignatureName(node, sourceCode)
     case AST_NODE_TYPES.TSMethodSignature:
       return computeMethodSignatureName(node, sourceCode)
     case AST_NODE_TYPES.TSIndexSignature:
       return computeIndexSignatureName(node, sourceCode)
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
-      return formatName(sourceCode.getText(node))
+      throw new UnreachableCaseError(node)
   }
 }
 
