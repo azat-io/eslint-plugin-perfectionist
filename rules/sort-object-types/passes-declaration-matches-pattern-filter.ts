@@ -15,7 +15,7 @@ import { matches } from '../../utils/matches'
  *
  * @param params - The parameters object.
  * @param params.declarationMatchesPattern - The regex pattern to match against.
- * @param params.parentNode - The parent node to check.
+ * @param params.parentNodes - The parent nodes to check.
  * @param params.sourceCode - The source code object.
  * @returns True if the parent node's name passes the pattern filter, false
  *   otherwise.
