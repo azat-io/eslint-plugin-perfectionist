@@ -1,6 +1,8 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type {
   FallbackSortOption,
   CommonOptions,
@@ -11,6 +13,7 @@ import type { CommonPartitionOptions } from '../../types/common-partition-option
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { ScopedRegexOption } from '../../types/scoped-regex-option'
 import type { SortingNode } from '../../types/sorting-node'
+import type { NodeOfType } from '../../types/node-of-type'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -100,12 +103,15 @@ export interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeEle
   value: string
 }
 
-export type ObjectTypeParent =
-  | TSESTree.TSTypeAliasDeclaration
-  | TSESTree.TSInterfaceDeclaration
-  | TSESTree.TSPropertySignature
-  | TSESTree.VariableDeclarator
-  | TSESTree.PropertyDefinition
+export let objectTypeParentTypes = [
+  AST_NODE_TYPES.TSTypeAliasDeclaration,
+  AST_NODE_TYPES.TSInterfaceDeclaration,
+  AST_NODE_TYPES.TSPropertySignature,
+  AST_NODE_TYPES.VariableDeclarator,
+  AST_NODE_TYPES.PropertyDefinition,
+] as const
+export type ObjectTypeParentType = (typeof objectTypeParentTypes)[number]
+export type ObjectTypeParent = NodeOfType<ObjectTypeParentType>
 
 /**
  * Union type of all available selectors for object type members.

@@ -12,6 +12,7 @@ import { passesDeclarationCommentMatchesFilter } from './passes-declaration-comm
 import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
 import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
+import { objectParentTypes } from './types'
 
 /**
  * Computes the matched context options for a given object node.
@@ -48,11 +49,7 @@ export function computeMatchedContextOptions({
   })
 
   let parentNodes = computeParentNodesWithTypes({
-    allowedTypes: [
-      AST_NODE_TYPES.VariableDeclarator,
-      AST_NODE_TYPES.Property,
-      AST_NODE_TYPES.CallExpression,
-    ],
+    allowedTypes: [...objectParentTypes],
     node: nodeObject,
   })
 

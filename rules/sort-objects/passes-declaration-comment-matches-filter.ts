@@ -3,15 +3,13 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type {
-  ScopedRegexOption,
-  SingleRegexOption,
-} from '../../types/scoped-regex-option'
-import type { ObjectParent } from './types'
+import type { NodeValuesComputer } from '../../utils/scoped-regex/matches-scoped-expressions'
+import type { ScopedRegexOption } from '../../types/scoped-regex-option'
+import type { ObjectParentType, ObjectParent } from './types'
 
-import { partitionPatternsByScope } from '../../utils/scoped-regex/partition-patterns-by-scope'
+import { matchesScopedExpressions } from '../../utils/scoped-regex/matches-scoped-expressions'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
-import { matches } from '../../utils/matches'
+import { objectParentTypes } from './types'
 
 /**
  * Checks if the object passes the declaration comment matches filter.
@@ -31,26 +29,12 @@ export function passesDeclarationCommentMatchesFilter({
   sourceCode: TSESLint.SourceCode
   parentNodes: ObjectParent[]
 }): boolean {
-  if (!declarationCommentMatchesPattern) {
-    return true
-  }
-
-  let { shallowScopePatterns, deepScopePatterns } = partitionPatternsByScope(
-    declarationCommentMatchesPattern,
-  )
-
-  return (
-    matchesShallowScopedExpressions({
-      patterns: shallowScopePatterns,
-      parentNodes,
-      sourceCode,
-    }) ||
-    matchesDeepScopedExpressions({
-      patterns: deepScopePatterns,
-      parentNodes,
-      sourceCode,
-    })
-  )
+  return matchesScopedExpressions({
+    nodeValuesComputer: buildNodeValuesComputer(sourceCode),
+    scopedRegexOption: declarationCommentMatchesPattern,
+    allowedNodeTypes: new Set(objectParentTypes),
+    parentNodes,
+  })
 }
 
 function computeRelevantNodeForComment(
@@ -69,77 +53,14 @@ function computeRelevantNodeForComment(
   }
 }
 
-function matchesShallowScopedExpressions({
-  parentNodes,
-  sourceCode,
-  patterns,
-}: {
-  sourceCode: TSESLint.SourceCode
-  patterns: SingleRegexOption[]
-  parentNodes: ObjectParent[]
-}): boolean {
-  let [objectParent] = parentNodes
+function buildNodeValuesComputer(
+  sourceCode: TSESLint.SourceCode,
+): NodeValuesComputer<ObjectParentType> {
+  return node => {
+    let nodeForComment = computeRelevantNodeForComment(node)
 
-  /* v8 ignore if -- @preserve Unsure how we can reach that case */
-  if (!objectParent) {
-    return false
+    return sourceCode
+      .getCommentsBefore(nodeForComment)
+      .map(comment => comment.value.trim())
   }
-
-  return matchesParent({
-    objectParent,
-    sourceCode,
-    patterns,
-  })
-}
-
-function matchesParent({
-  objectParent,
-  sourceCode,
-  patterns,
-}: {
-  sourceCode: TSESLint.SourceCode
-  patterns: SingleRegexOption[]
-  objectParent: ObjectParent
-}): boolean {
-  let nodeForComment = computeRelevantNodeForComment(objectParent)
-  let parentComments = sourceCode.getCommentsBefore(nodeForComment)
-
-  return matchesParentComments({
-    parentComments,
-    patterns,
-  })
-}
-
-function matchesParentComments({
-  parentComments,
-  patterns,
-}: {
-  parentComments: TSESTree.Comment[]
-  patterns: SingleRegexOption[]
-}): boolean {
-  return patterns.some(patternMatchesParentComment)
-
-  function patternMatchesParentComment(pattern: SingleRegexOption): boolean {
-    return parentComments.some(comment =>
-      matches(comment.value.trim(), pattern),
-    )
-  }
-}
-
-function matchesDeepScopedExpressions({
-  parentNodes,
-  sourceCode,
-  patterns,
-}: {
-  sourceCode: TSESLint.SourceCode
-  patterns: SingleRegexOption[]
-  parentNodes: ObjectParent[]
-}): boolean {
-  return parentNodes.some(objectParent =>
-    matchesParent({
-      objectParent,
-      sourceCode,
-      patterns,
-    }),
-  )
 }

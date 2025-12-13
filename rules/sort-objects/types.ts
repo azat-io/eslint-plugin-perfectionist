@@ -1,5 +1,6 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
-import type { TSESTree } from '@typescript-eslint/types'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
   CommonOptions,
@@ -9,6 +10,7 @@ import type {
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { ScopedRegexOption } from '../../types/scoped-regex-option'
+import type { NodeOfType } from '../../types/node-of-type'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -96,10 +98,13 @@ export type Options = Partial<
     CommonPartitionOptions
 >[]
 
-export type ObjectParent =
-  | TSESTree.VariableDeclarator
-  | TSESTree.CallExpression
-  | TSESTree.Property
+export let objectParentTypes = [
+  AST_NODE_TYPES.VariableDeclarator,
+  AST_NODE_TYPES.CallExpression,
+  AST_NODE_TYPES.Property,
+] as const
+export type ObjectParentType = (typeof objectParentTypes)[number]
+export type ObjectParent = NodeOfType<ObjectParentType>
 
 /**
  * Union type of all available modifiers for object members.

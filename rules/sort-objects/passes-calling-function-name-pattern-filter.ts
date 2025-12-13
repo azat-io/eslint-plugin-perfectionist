@@ -1,16 +1,12 @@
-import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type {
-  ScopedRegexOption,
-  SingleRegexOption,
-} from '../../types/scoped-regex-option'
+import type { NodeValuesComputer } from '../../utils/scoped-regex/matches-scoped-expressions'
+import type { ScopedRegexOption } from '../../types/scoped-regex-option'
 import type { ObjectParent } from './types'
 
-import { partitionPatternsByScope } from '../../utils/scoped-regex/partition-patterns-by-scope'
-import { matches } from '../../utils/matches'
+import { matchesScopedExpressions } from '../../utils/scoped-regex/matches-scoped-expressions'
 
 /**
  * Checks if the object passes the calling function name pattern filter.
@@ -30,80 +26,16 @@ export function passesCallingFunctionNamePatternFilter({
   sourceCode: TSESLint.SourceCode
   parentNodes: ObjectParent[]
 }): boolean {
-  if (!callingFunctionNamePattern) {
-    return true
-  }
-
-  let { shallowScopePatterns, deepScopePatterns } = partitionPatternsByScope(
-    callingFunctionNamePattern,
-  )
-
-  return (
-    matchesShallowScopedExpressions({
-      patterns: shallowScopePatterns,
-      parentNodes,
-      sourceCode,
-    }) ||
-    matchesDeepScopedExpressions({
-      patterns: deepScopePatterns,
-      parentNodes,
-      sourceCode,
-    })
-  )
-}
-
-function matchesDeepScopedExpressions({
-  parentNodes,
-  sourceCode,
-  patterns,
-}: {
-  sourceCode: TSESLint.SourceCode
-  patterns: SingleRegexOption[]
-  parentNodes: ObjectParent[]
-}): boolean {
-  let callExpressions = parentNodes.filter(
-    parent => parent.type === AST_NODE_TYPES.CallExpression,
-  )
-  return callExpressions.some(callExpression =>
-    matchesCallExpression({
-      callExpression,
-      sourceCode,
-      patterns,
-    }),
-  )
-}
-
-function matchesShallowScopedExpressions({
-  parentNodes,
-  sourceCode,
-  patterns,
-}: {
-  sourceCode: TSESLint.SourceCode
-  patterns: SingleRegexOption[]
-  parentNodes: ObjectParent[]
-}): boolean {
-  let [firstParent] = parentNodes
-  if (firstParent?.type !== AST_NODE_TYPES.CallExpression) {
-    return false
-  }
-
-  return matchesCallExpression({
-    callExpression: firstParent,
-    sourceCode,
-    patterns,
+  return matchesScopedExpressions({
+    allowedNodeTypes: new Set([AST_NODE_TYPES.CallExpression]),
+    nodeValuesComputer: buildNodeValuesComputer(sourceCode),
+    scopedRegexOption: callingFunctionNamePattern,
+    parentNodes,
   })
 }
 
-function matchesCallExpression({
-  callExpression,
-  sourceCode,
-  patterns,
-}: {
-  callExpression: TSESTree.CallExpression
-  sourceCode: TSESLint.SourceCode
-  patterns: SingleRegexOption[]
-}): boolean {
-  let callExpressionName = sourceCode.getText(callExpression.callee)
-
-  return patterns.some(pattern => matches(callExpressionName, pattern))
+function buildNodeValuesComputer(
+  sourceCode: TSESLint.SourceCode,
+): NodeValuesComputer<AST_NODE_TYPES.CallExpression> {
+  return node => [sourceCode.getText(node.callee)]
 }

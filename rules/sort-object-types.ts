@@ -50,6 +50,7 @@ import { computeNodeName } from './sort-object-types/compute-node-name'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { isNodeFunctionType } from '../utils/is-node-function-type'
+import { objectTypeParentTypes } from './sort-object-types/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -341,13 +342,7 @@ function computeObjectTypeParentNodes(
   node: TSESTree.TSTypeLiteral,
 ): ObjectTypeParent[] {
   return computeParentNodesWithTypes({
-    allowedTypes: [
-      AST_NODE_TYPES.TSTypeAliasDeclaration,
-      AST_NODE_TYPES.TSInterfaceDeclaration,
-      AST_NODE_TYPES.VariableDeclarator,
-      AST_NODE_TYPES.TSPropertySignature,
-      AST_NODE_TYPES.PropertyDefinition,
-    ],
+    allowedTypes: [...objectTypeParentTypes],
     node,
   })
 }
