@@ -27,13 +27,13 @@ import { computeNodeName } from './compute-node-name'
  */
 export function computeMatchedContextOptions({
   parentNodeForDeclarationComments,
-  parentNodeForDeclarationMatches,
+  parentNodesForDeclarationMatches,
   sourceCode,
   elements,
   context,
 }: {
   parentNodeForDeclarationComments: ObjectTypeParentForDeclarationComment | null
-  parentNodeForDeclarationMatches: ObjectTypeParentForDeclarationMatch | null
+  parentNodesForDeclarationMatches: ObjectTypeParentForDeclarationMatch[]
   context: TSESLint.RuleContext<string, Options>
   elements: TSESTree.TypeElement[]
   sourceCode: TSESLint.SourceCode
@@ -57,7 +57,7 @@ export function computeMatchedContextOptions({
       passesDeclarationMatchesPatternFilter({
         declarationMatchesPattern:
           options.useConfigurationIf.declarationMatchesPattern,
-        parentNode: parentNodeForDeclarationMatches,
+        parentNodes: parentNodesForDeclarationMatches,
         sourceCode,
       }) &&
       passesHasNumericKeysOnlyFilter({

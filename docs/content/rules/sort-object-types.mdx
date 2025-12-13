@@ -279,8 +279,8 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
     declarationMatchesPattern?:
       | string
       | string[]
-      | { pattern: string; flags: string }
-      | { pattern: string; flags: string }[]
+      | { pattern: string; flags?: string; scope?: 'shallow' | 'deep' }
+      | { pattern: string; flags?: string; scope?: 'shallow' | 'deep' }[]
     declarationCommentMatchesPattern?:
       | string
       | string[]
@@ -331,6 +331,7 @@ Example configuration:
 ```
 
 - `declarationMatchesPattern` — A regexp pattern that the object type declaration must match.
+With `scope: 'deep'`, this setting will also match to any object type found at any depth within the declaration.
 
 Example configuration:
 ```ts
