@@ -67,7 +67,7 @@ function matchesShallowScopedExpressions({
   }
 
   return matchesParentExpression({
-    propertyExpression: firstParent,
+    parentNode: firstParent,
     sourceCode,
     patterns,
   })
@@ -84,7 +84,7 @@ function matchesDeepScopedExpressions({
 }): boolean {
   return parentNodes.some(parentNode =>
     matchesParentExpression({
-      propertyExpression: parentNode,
+      parentNode,
       sourceCode,
       patterns,
     }),
@@ -92,14 +92,14 @@ function matchesDeepScopedExpressions({
 }
 
 function matchesParentExpression({
-  propertyExpression,
+  parentNode,
   sourceCode,
   patterns,
 }: {
-  propertyExpression: ObjectTypeParentForDeclarationMatch
+  parentNode: ObjectTypeParentForDeclarationMatch
   sourceCode: TSESLint.SourceCode
   patterns: SingleRegexOption[]
 }): boolean {
-  let parentName = computeNodeParentName(propertyExpression, sourceCode)
+  let parentName = computeNodeParentName(parentNode, sourceCode)
   return patterns.some(pattern => matches(parentName, pattern))
 }
