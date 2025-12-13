@@ -2927,6 +2927,279 @@ describe('sort-object-types', () => {
           `,
         })
       })
+
+      it('matches shallow declarations', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: {
+                  pattern: '^shallow$',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            // shallow
+            let v: {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: {
+                  pattern: '^shallow$',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            // shallow
+            let v = {} as {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+      })
+
+      it('matches deep declarations', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            // deep
+            let v: {
+              b: "b",
+              a: "a",
+              [nested1]: {
+                b: "b",
+                a: "a",
+              }
+            };
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let variable: {
+              // deep
+              field: {
+                b: "b",
+                a: "a",
+                [nested1]: {
+                  b: "b",
+                  a: "a",
+                }
+              };
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            // deep
+            let v = {} as {
+              b: "b",
+              a: "a",
+              [nested1]: {
+                b: "b",
+                a: "a",
+              }
+            };
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            // deep
+            interface Interface {
+              nested: {
+                b: "b",
+                a: "a",
+                [nested1]: {
+                  b: "b",
+                  a: "a",
+                }
+              };
+            }
+          `,
+        })
+      })
+
+      it('matches shallow and deep declarations at the same time', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: [
+                  {
+                    pattern: '^implicitShallow$',
+                  },
+                  {
+                    pattern: '^shallow$',
+                    scope: 'shallow',
+                  },
+                  {
+                    pattern: '^deep$',
+                    scope: 'deep',
+                  },
+                ],
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          output: dedent`
+            // shallow
+            let v1: {
+              b: "b",
+              a: "a",
+              [nested]: {
+                a: "a",
+                b: "b",
+              }
+            };
+
+            // implicitShallow
+            let v2: {
+              b: "b",
+              a: "a",
+              [nested]: {
+                a: "a",
+                b: "b",
+              }
+            };
+
+            // deep
+            let v3: {
+              b: "b",
+              a: "a",
+              [nested1]: {
+                b: "b",
+                a: "a",
+              }
+            };
+          `,
+          code: dedent`
+            // shallow
+            let v1: {
+              b: "b",
+              a: "a",
+              [nested]: {
+                b: "b",
+                a: "a",
+              }
+            };
+
+            // implicitShallow
+            let v2: {
+              b: "b",
+              a: "a",
+              [nested]: {
+                b: "b",
+                a: "a",
+              }
+            };
+
+            // deep
+            let v3: {
+              b: "b",
+              a: "a",
+              [nested1]: {
+                b: "b",
+                a: "a",
+              }
+            };
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: { right: 'a', left: 'b' },
+            },
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+        })
+      })
     })
 
     it('allows sorting by value', async () => {

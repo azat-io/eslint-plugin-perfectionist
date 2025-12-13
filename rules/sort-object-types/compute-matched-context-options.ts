@@ -9,8 +9,8 @@ import type {
   Options,
 } from './types'
 
-import { filterOptionsByDeclarationCommentMatches } from '../../utils/filter-options-by-declaration-comment-matches'
 import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
+import { passesDeclarationCommentMatchesFilter } from './passes-declaration-comment-matches-filter'
 import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { computeNodeName } from './compute-node-name'
@@ -42,19 +42,52 @@ export function computeMatchedContextOptions({
     nodeNames: elements.map(node => computeNodeName({ sourceCode, node })),
     contextOptions: context.options,
   })
-  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
-    parentNode: parentNodeForDeclarationComments[0] ?? null,
-    contextOptions: filteredContextOptions,
-    sourceCode,
-  })
 
   return filteredContextOptions.find(options =>
     isContextOptionMatching({
       parentNodesForDeclarationMatches,
+      parentNodeForDeclarationComments,
       sourceCode,
       elements,
       options,
     }),
+  )
+}
+
+function isContextOptionMatching({
+  parentNodesForDeclarationMatches,
+  parentNodeForDeclarationComments,
+  sourceCode,
+  elements,
+  options,
+}: {
+  parentNodeForDeclarationComments: ObjectTypeParentForDeclarationComment[]
+  parentNodesForDeclarationMatches: ObjectTypeParentForDeclarationMatch[]
+  elements: TSESTree.TypeElement[]
+  sourceCode: TSESLint.SourceCode
+  options: Options[number]
+}): boolean {
+  if (!options.useConfigurationIf) {
+    return true
+  }
+
+  return (
+    passesDeclarationMatchesPatternFilter({
+      declarationMatchesPattern:
+        options.useConfigurationIf.declarationMatchesPattern,
+      parentNodes: parentNodesForDeclarationMatches,
+      sourceCode,
+    }) &&
+    passesHasNumericKeysOnlyFilter({
+      hasNumericKeysOnlyFilter: options.useConfigurationIf.hasNumericKeysOnly,
+      typeElements: elements,
+    }) &&
+    passesDeclarationCommentMatchesFilter({
+      declarationCommentMatchesPattern:
+        options.useConfigurationIf.declarationCommentMatchesPattern,
+      parentNodes: parentNodeForDeclarationComments,
+      sourceCode,
+    })
   )
 }
 
@@ -89,33 +122,4 @@ function passesHasNumericKeysOnlyFilter({
       )
     }
   }
-}
-
-function isContextOptionMatching({
-  parentNodesForDeclarationMatches,
-  sourceCode,
-  elements,
-  options,
-}: {
-  parentNodesForDeclarationMatches: ObjectTypeParentForDeclarationMatch[]
-  elements: TSESTree.TypeElement[]
-  sourceCode: TSESLint.SourceCode
-  options: Options[number]
-}): boolean {
-  if (!options.useConfigurationIf) {
-    return true
-  }
-
-  return (
-    passesDeclarationMatchesPatternFilter({
-      declarationMatchesPattern:
-        options.useConfigurationIf.declarationMatchesPattern,
-      parentNodes: parentNodesForDeclarationMatches,
-      sourceCode,
-    }) &&
-    passesHasNumericKeysOnlyFilter({
-      hasNumericKeysOnlyFilter: options.useConfigurationIf.hasNumericKeysOnly,
-      typeElements: elements,
-    })
-  )
 }

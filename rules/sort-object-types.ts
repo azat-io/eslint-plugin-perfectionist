@@ -360,7 +360,10 @@ function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
   let declarationParentForComments = parentNodes.filter(
     parent =>
       parent.type === AST_NODE_TYPES.TSTypeAliasDeclaration ||
-      parent.type === AST_NODE_TYPES.TSInterfaceDeclaration,
+      parent.type === AST_NODE_TYPES.TSInterfaceDeclaration ||
+      parent.type === AST_NODE_TYPES.VariableDeclarator ||
+      parent.type === AST_NODE_TYPES.TSPropertySignature ||
+      parent.type === AST_NODE_TYPES.PropertyDefinition,
   )
 
   return {
