@@ -14,11 +14,6 @@ import type {
 } from './sort-object-types/types'
 
 import {
-  buildUseConfigurationIfJsonSchema,
-  buildCommonJsonSchemas,
-  buildRegexJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
-import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
@@ -34,6 +29,10 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  buildUseConfigurationIfJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildOptionsByGroupIndexComputer } from './sort-object-types/build-options-by-group-index-computer'
 import { computeMatchedContextOptions } from './sort-object-types/compute-matched-context-options'
@@ -112,7 +111,7 @@ export let jsonSchema: JSONSchema4 = {
               'Specifies whether to only match types that have exclusively numeric keys.',
             type: 'boolean',
           },
-          declarationCommentMatchesPattern: buildRegexJsonSchema(),
+          declarationCommentMatchesPattern: scopedRegexJsonSchema,
           declarationMatchesPattern: scopedRegexJsonSchema,
         },
       }),

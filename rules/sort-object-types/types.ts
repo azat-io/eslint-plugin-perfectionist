@@ -35,7 +35,7 @@ export type Options = Partial<
        * Regular expression pattern to match against the comment declaration.
        * The rule is only applied to declaration comments with matching names.
        */
-      declarationCommentMatchesPattern?: RegexOption
+      declarationCommentMatchesPattern?: ScopedRegexOption
 
       /**
        * Regular expression pattern to match against the type declaration name.
