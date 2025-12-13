@@ -175,7 +175,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
     unexpectedOrder: MessageIds
   }
   parentNodes: {
-    declarationCommentParent: ObjectTypeParentForDeclarationComment | null
+    declarationCommentParents: ObjectTypeParentForDeclarationComment[]
     declarationMatchParents: ObjectTypeParentForDeclarationMatch[]
   }
   context: RuleContext<MessageIds, Options>
@@ -189,7 +189,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
   let { sourceCode, id } = context
 
   let matchedContextOptions = computeMatchedContextOptions({
-    parentNodeForDeclarationComments: parentNodes.declarationCommentParent,
+    parentNodeForDeclarationComments: parentNodes.declarationCommentParents,
     parentNodesForDeclarationMatches: parentNodes.declarationMatchParents,
     sourceCode,
     elements,
@@ -343,7 +343,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
 }
 
 function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
-  declarationCommentParent: ObjectTypeParentForDeclarationComment | null
+  declarationCommentParents: ObjectTypeParentForDeclarationComment[]
   declarationMatchParents: ObjectTypeParentForDeclarationMatch[]
 } {
   let parentNodes = computeParentNodesWithTypes({
@@ -357,14 +357,14 @@ function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
     node,
   })
 
-  let declarationParentForComments = parentNodes.find(
+  let declarationParentForComments = parentNodes.filter(
     parent =>
       parent.type === AST_NODE_TYPES.TSTypeAliasDeclaration ||
       parent.type === AST_NODE_TYPES.TSInterfaceDeclaration,
   )
 
   return {
-    declarationCommentParent: declarationParentForComments ?? null,
+    declarationCommentParents: declarationParentForComments,
     declarationMatchParents: parentNodes,
   }
 }

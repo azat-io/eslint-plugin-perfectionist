@@ -32,7 +32,7 @@ export function computeMatchedContextOptions({
   elements,
   context,
 }: {
-  parentNodeForDeclarationComments: ObjectTypeParentForDeclarationComment | null
+  parentNodeForDeclarationComments: ObjectTypeParentForDeclarationComment[]
   parentNodesForDeclarationMatches: ObjectTypeParentForDeclarationMatch[]
   context: TSESLint.RuleContext<string, Options>
   elements: TSESTree.TypeElement[]
@@ -43,7 +43,7 @@ export function computeMatchedContextOptions({
     contextOptions: context.options,
   })
   filteredContextOptions = filterOptionsByDeclarationCommentMatches({
-    parentNode: parentNodeForDeclarationComments,
+    parentNode: parentNodeForDeclarationComments[0] ?? null,
     contextOptions: filteredContextOptions,
     sourceCode,
   })

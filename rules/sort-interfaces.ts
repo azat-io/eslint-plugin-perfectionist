@@ -38,7 +38,7 @@ export default createEslintRule<Options, MessageId>({
         },
         parentNodes: {
           declarationMatchParents: [node],
-          declarationCommentParent: node,
+          declarationCommentParents: [node],
         },
         elements: node.body.body,
         context,
