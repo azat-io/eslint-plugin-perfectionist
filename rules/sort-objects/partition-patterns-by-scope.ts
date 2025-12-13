@@ -1,12 +1,7 @@
-import type { ScopedRegexOption, Scope } from './types'
-
-export type SingleRegexOption =
-  | {
-      pattern: string
-      flags?: string
-      scope?: Scope
-    }
-  | string
+import type {
+  ScopedRegexOption,
+  SingleRegexOption,
+} from '../../types/scoped-regex-option'
 
 /**
  * Partitions patterns by their scope (shallow or deep).
