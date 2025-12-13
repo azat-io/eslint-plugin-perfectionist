@@ -2184,257 +2184,543 @@ describe('sort-object-types', () => {
       },
     )
 
-    it('detects declaration name by pattern', async () => {
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^Type$',
+    describe('useConfigurationIf.declarationMatchesPattern', () => {
+      it('detects declaration name by pattern', async () => {
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^Type$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          type Type = {
-            b: string
-            c: string
-            a: string
-          }
-        `,
-      })
-
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^field$',
-            },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          type Type = {
-            field: A & {
+            options,
+          ],
+          code: dedent`
+            type Type = {
               b: string
               c: string
               a: string
             }
-          }
-        `,
-      })
+          `,
+        })
 
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^field$',
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^field$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          type Type = {
-            'field': A & {
+            options,
+          ],
+          code: dedent`
+            type Type = {
+              field: A & {
+                b: string
+                c: string
+                a: string
+              }
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^field$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          code: dedent`
+            type Type = {
+              'field': A & {
+                b: string
+                c: string
+                a: string
+              }
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^field$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          code: dedent`
+            type Type = {
+              [field]: A & {
+                b: string
+                c: string
+                a: string
+              }
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: String.raw`^\[first, ignoreMe, ...remaining\]$`,
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          code: dedent`
+            let [first, ignoreMe, ...remaining]: {
+              b: string
+              c: string
+              a: string
+            }[]
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^ignoreByAssertion$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          code: dedent`
+            const ignoreByAssertion = {} as {
               b: string
               c: string
               a: string
             }
-          }
-        `,
-      })
+          `,
+        })
 
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^field$',
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: String.raw`^\[first, second\]$`,
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          type Type = {
-            [field]: A & {
+            options,
+          ],
+          code: dedent`
+            const [first, second] = {} as [{
               b: string
               c: string
               a: string
+            }, number]
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^field$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          code: dedent`
+            class Class {
+              @dec()
+              field: {
+                b: string
+                c: string
+                a: string
+              }
             }
-          }
-        `,
-      })
+          `,
+        })
 
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: String.raw`^\[first, ignoreMe, ...remaining\]$`,
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: String.raw`^foo\(\)$`,
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          let [first, ignoreMe, ...remaining]: {
-            b: string
-            c: string
-            a: string
-          }[]
-        `,
-      })
+            options,
+          ],
+          code: dedent`
+            type Type = {
+              [foo()]: {
+                b: string
+                c: string
+                a: string
+              }
+            }
+          `,
+        })
 
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^ignoreByAssertion$',
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: String.raw`^ignoreMe$`,
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          const ignoreByAssertion = {} as {
-            b: string
-            c: string
-            a: string
-          }
-        `,
-      })
-
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: String.raw`^\[first, second\]$`,
-            },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          const [first, second] = {} as [{
-            b: string
-            c: string
-            a: string
-          }, number]
-        `,
-      })
-
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^field$',
-            },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          class Class {
-            @dec()
-            field: {
+            options,
+          ],
+          code: dedent`
+            const ignoreMe: {
               b: string
               c: string
               a: string
-            }
-          }
-        `,
-      })
+            }[]
+          `,
+        })
 
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: String.raw`^foo\(\)$`,
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^#config$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          type Type = {
-            [foo()]: {
+            options,
+          ],
+          code: dedent`
+            class Service {
+              #config!: {
+                b: string
+                c: string
+                a: string
+              }
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationMatchesPattern: '^Type$',
+              },
+              type: 'unsorted',
+            },
+            options,
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            type OtherType = {
+              a: string
               b: string
-              c: string
+            }
+          `,
+          code: dedent`
+            type OtherType = {
+              b: string
               a: string
             }
-          }
-        `,
+          `,
+        })
       })
 
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: String.raw`^ignoreMe$`,
+      it('matches shallow declarations', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^shallow$',
+                },
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          const ignoreMe: {
-            b: string
-            c: string
-            a: string
-          }[]
-        `,
-      })
-
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^#config$',
+            {
+              type: 'alphabetical',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          class Service {
-            #config!: {
-              b: string
-              c: string
-              a: string
+          ],
+          code: dedent`
+            let shallow: {
+              b: "b",
+              a: "a",
             }
-          }
-        `,
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^shallow$',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let shallow = {} as {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^Shallow$',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            interface Shallow {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
       })
 
-      await invalid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationMatchesPattern: '^Type$',
+      it('matches deep declarations', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedObjectTypesOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          type OtherType = {
-            a: string
-            b: string
-          }
-        `,
-        code: dedent`
-          type OtherType = {
-            b: string
-            a: string
-          }
-        `,
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let deep: {
+              b: "b",
+              a: "a",
+              [nested1]: {
+                b: "b",
+                a: "a",
+              }
+            };
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let variable: {
+              deep: {
+                b: "b",
+                a: "a",
+                [nested1]: {
+                  b: "b",
+                  a: "a",
+                }
+              };
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let deep = {} as {
+              b: "b",
+              a: "a",
+              [nested1]: {
+                b: "b",
+                a: "a",
+              }
+            };
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: {
+                  pattern: '^Deep$',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            interface Deep {
+              nested: {
+                b: "b",
+                a: "a",
+                [nested1]: {
+                  b: "b",
+                  a: "a",
+                }
+              };
+            }
+          `,
+        })
+      })
+
+      it('matches shallow and deep declarations at the same time', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationMatchesPattern: [
+                  {
+                    pattern: '^implicitShallow$',
+                  },
+                  {
+                    pattern: '^shallow$',
+                    scope: 'shallow',
+                  },
+                  {
+                    pattern: '^deep$',
+                    scope: 'deep',
+                  },
+                ],
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          output: dedent`
+            let shallow: {
+              b: "b",
+              a: "a",
+              [nested]: {
+                a: "a",
+                b: "b",
+              }
+            };
+
+            let implicitShallow: {
+              b: "b",
+              a: "a",
+              [nested]: {
+                a: "a",
+                b: "b",
+              }
+            };
+
+            let deep: {
+              b: "b",
+              a: "a",
+              [nested1]: {
+                b: "b",
+                a: "a",
+              }
+            };
+          `,
+          code: dedent`
+            let shallow: {
+              b: "b",
+              a: "a",
+              [nested]: {
+                b: "b",
+                a: "a",
+              }
+            };
+
+            let implicitShallow: {
+              b: "b",
+              a: "a",
+              [nested]: {
+                b: "b",
+                a: "a",
+              }
+            };
+
+            let deep: {
+              b: "b",
+              a: "a",
+              [nested1]: {
+                b: "b",
+                a: "a",
+              }
+            };
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: { right: 'a', left: 'b' },
+            },
+            {
+              messageId: 'unexpectedObjectTypesOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+        })
       })
     })
 

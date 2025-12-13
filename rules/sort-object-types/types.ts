@@ -40,7 +40,7 @@ export type Options = Partial<
        * Regular expression pattern to match against the type declaration name.
        * The rule is only applied to declarations with matching names.
        */
-      declarationMatchesPattern?: RegexOption
+      declarationMatchesPattern?: ScopedRegexOption
 
       /**
        * Regular expression pattern to match against all member names. The rule
@@ -199,3 +199,17 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   elementValuePattern: buildRegexJsonSchema(),
   sortBy: sortByJsonSchema,
 }
+
+export type ScopedRegexOption = RegexOption<{
+  scope?: Scope
+}>
+export type Scope = (typeof regexScopes)[number]
+let regexScopes = ['shallow', 'deep'] as const
+export let scopedRegexJsonSchema: JSONSchema4 = buildRegexJsonSchema({
+  additionalProperties: {
+    scope: {
+      enum: [...regexScopes],
+      type: 'string',
+    },
+  },
+})

@@ -14,6 +14,13 @@ import type {
 } from './sort-object-types/types'
 
 import {
+  singleCustomGroupJsonSchema,
+  scopedRegexJsonSchema,
+  sortByJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-object-types/types'
+import {
   buildUseConfigurationIfJsonSchema,
   buildCommonJsonSchemas,
   buildRegexJsonSchema,
@@ -22,12 +29,6 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
-import {
-  singleCustomGroupJsonSchema,
-  sortByJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-object-types/types'
 import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -112,7 +113,7 @@ export let jsonSchema: JSONSchema4 = {
             type: 'boolean',
           },
           declarationCommentMatchesPattern: buildRegexJsonSchema(),
-          declarationMatchesPattern: buildRegexJsonSchema(),
+          declarationMatchesPattern: scopedRegexJsonSchema,
         },
       }),
       partitionByComment: partitionByCommentJsonSchema,
@@ -176,7 +177,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
   }
   parentNodes: {
     declarationCommentParent: ObjectTypeParentForDeclarationComment | null
-    declarationMatchParent: ObjectTypeParentForDeclarationMatch | null
+    declarationMatchParents: ObjectTypeParentForDeclarationMatch[]
   }
   context: RuleContext<MessageIds, Options>
   elements: TSESTree.TypeElement[]
@@ -190,7 +191,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
 
   let matchedContextOptions = computeMatchedContextOptions({
     parentNodeForDeclarationComments: parentNodes.declarationCommentParent,
-    parentNodeForDeclarationMatches: parentNodes.declarationMatchParent,
+    parentNodesForDeclarationMatches: parentNodes.declarationMatchParents,
     sourceCode,
     elements,
     context,
@@ -344,7 +345,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
 
 function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
   declarationCommentParent: ObjectTypeParentForDeclarationComment | null
-  declarationMatchParent: ObjectTypeParentForDeclarationMatch | null
+  declarationMatchParents: ObjectTypeParentForDeclarationMatch[]
 } {
   let parentNodes = computeParentNodesWithTypes({
     allowedTypes: [
@@ -364,6 +365,6 @@ function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
 
   return {
     declarationCommentParent: declarationParentForComments ?? null,
-    declarationMatchParent: parentNodes[0] ?? null,
+    declarationMatchParents: parentNodes,
   }
 }
