@@ -22,10 +22,11 @@ export function computeNodeParentName(
     case AST_NODE_TYPES.TSTypeAliasDeclaration:
     case AST_NODE_TYPES.TSInterfaceDeclaration:
       return node.id.name
+    case AST_NODE_TYPES.TSPropertySignature:
+    case AST_NODE_TYPES.PropertyDefinition:
+      return computePropertyName(node, sourceCode)
     case AST_NODE_TYPES.VariableDeclarator:
-      return sourceCode.getText(node.id)
-    case AST_NODE_TYPES.TSTypeAnnotation:
-      return computeTypeAnnotationName(node, sourceCode)
+      return computeVariableDeclaratorName(node, sourceCode)
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
       throw new UnreachableCaseError(node)
@@ -47,18 +48,15 @@ function computePropertyName(
   }
 }
 
-function computeTypeAnnotationName(
-  typeAnnotation: TSESTree.TSTypeAnnotation,
+function computeVariableDeclaratorName(
+  variableDeclarator: TSESTree.VariableDeclarator,
   sourceCode: TSESLint.SourceCode,
 ): string {
-  switch (typeAnnotation.parent.type) {
-    case AST_NODE_TYPES.TSPropertySignature:
-    case AST_NODE_TYPES.PropertyDefinition:
-      return computePropertyName(typeAnnotation.parent, sourceCode)
-    default:
-      return sourceCode.text.slice(
-        typeAnnotation.parent.range[0],
-        typeAnnotation.range[0],
-      )
+  if (!variableDeclarator.id.typeAnnotation) {
+    return sourceCode.getText(variableDeclarator.id)
   }
+  return sourceCode.text.slice(
+    variableDeclarator.id.range[0],
+    variableDeclarator.id.typeAnnotation.range[0],
+  )
 }
