@@ -5,10 +5,10 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { MessageId, Options } from './types'
 
-import { filterOptionsByDeclarationCommentMatches } from '../../utils/filter-options-by-declaration-comment-matches'
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
 import { passesCallingFunctionNamePatternFilter } from './passes-calling-function-name-pattern-filter'
 import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
+import { passesDeclarationCommentMatchesFilter } from './passes-declaration-comment-matches-filter'
 import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
 import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
@@ -54,19 +54,6 @@ export function computeMatchedContextOptions({
       AST_NODE_TYPES.CallExpression,
     ],
     node: nodeObject,
-  })
-  let parentNodeForDeclarationComment = null
-  let [firstObjectParent] = objectParents
-  if (firstObjectParent) {
-    parentNodeForDeclarationComment =
-      firstObjectParent.type === AST_NODE_TYPES.VariableDeclarator
-        ? firstObjectParent.parent
-        : firstObjectParent
-  }
-  filteredContextOptions = filterOptionsByDeclarationCommentMatches({
-    parentNode: parentNodeForDeclarationComment,
-    contextOptions: filteredContextOptions,
-    sourceCode,
   })
 
   return filteredContextOptions.find(options =>
@@ -121,6 +108,12 @@ function isContextOptionMatching({
     passesHasNumericKeysOnlyFilter({
       hasNumericKeysOnlyFilter: options.useConfigurationIf.hasNumericKeysOnly,
       object: nodeObject,
+    }) &&
+    passesDeclarationCommentMatchesFilter({
+      declarationCommentMatchesPattern:
+        options.useConfigurationIf.declarationCommentMatchesPattern,
+      objectParents,
+      sourceCode,
     })
   )
 }
