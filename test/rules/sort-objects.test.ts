@@ -2900,77 +2900,79 @@ describe('sort-objects', () => {
       })
     })
 
-    it('applies configuration when declaration comment matches', async () => {
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationCommentMatchesPattern: '^Ignore me$',
+    describe('useConfigurationIf.declarationCommentMatchesPattern', () => {
+      it('applies configuration when declaration comment matches', async () => {
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: '^Ignore me$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          // Ignore me
-          const obj = {
-            b,
-            c,
-            a,
-          }
-        `,
-      })
+            options,
+          ],
+          code: dedent`
+            // Ignore me
+            const obj = {
+              b,
+              c,
+              a,
+            }
+          `,
+        })
 
-      await valid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationCommentMatchesPattern: '^Ignore me$',
+        await valid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: '^Ignore me$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        code: dedent`
-          // Ignore me
-          func({
-            b,
-            c,
-            a,
-          })
-        `,
-      })
+            options,
+          ],
+          code: dedent`
+            // Ignore me
+            func({
+              b,
+              c,
+              a,
+            })
+          `,
+        })
 
-      await invalid({
-        options: [
-          {
-            useConfigurationIf: {
-              declarationCommentMatchesPattern: '^Ignore me$',
+        await invalid({
+          options: [
+            {
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: '^Ignore me$',
+              },
+              type: 'unsorted',
             },
-            type: 'unsorted',
-          },
-          options,
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedObjectsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          // Do NOT ignore me
-          const obj = {
-            a,
-            b,
-          }
-        `,
-        code: dedent`
-          // Do NOT ignore me
-          const obj = {
-            b,
-            a,
-          }
-        `,
+            options,
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            // Do NOT ignore me
+            const obj = {
+              a,
+              b,
+            }
+          `,
+          code: dedent`
+            // Do NOT ignore me
+            const obj = {
+              b,
+              a,
+            }
+          `,
+        })
       })
     })
 
