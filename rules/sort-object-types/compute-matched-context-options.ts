@@ -3,11 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type {
-  ObjectTypeParentForDeclarationComment,
-  ObjectTypeParentForDeclarationMatch,
-  Options,
-} from './types'
+import type { ObjectTypeParent, Options } from './types'
 
 import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
 import { passesDeclarationCommentMatchesFilter } from './passes-declaration-comment-matches-filter'
@@ -20,22 +16,20 @@ import { computeNodeName } from './compute-node-name'
  *
  * @param params - The parameters.
  * @param params.sourceCode - The source code object.
- * @param params.parentNode - The parent node of the type elements.
+ * @param params.parentNodes - The parent nodes of the type elements.
  * @param params.elements - The type elements.
  * @param params.context - The rule context.
  * @returns The matched context options, or undefined if none match.
  */
 export function computeMatchedContextOptions({
-  parentNodeForDeclarationComments,
-  parentNodesForDeclarationMatches,
+  parentNodes,
   sourceCode,
   elements,
   context,
 }: {
-  parentNodeForDeclarationComments: ObjectTypeParentForDeclarationComment[]
-  parentNodesForDeclarationMatches: ObjectTypeParentForDeclarationMatch[]
   context: TSESLint.RuleContext<string, Options>
   elements: TSESTree.TypeElement[]
+  parentNodes: ObjectTypeParent[]
   sourceCode: TSESLint.SourceCode
 }): Options[number] | undefined {
   let filteredContextOptions = filterOptionsByAllNamesMatch({
@@ -45,49 +39,11 @@ export function computeMatchedContextOptions({
 
   return filteredContextOptions.find(options =>
     isContextOptionMatching({
-      parentNodesForDeclarationMatches,
-      parentNodeForDeclarationComments,
+      parentNodes,
       sourceCode,
       elements,
       options,
     }),
-  )
-}
-
-function isContextOptionMatching({
-  parentNodesForDeclarationMatches,
-  parentNodeForDeclarationComments,
-  sourceCode,
-  elements,
-  options,
-}: {
-  parentNodeForDeclarationComments: ObjectTypeParentForDeclarationComment[]
-  parentNodesForDeclarationMatches: ObjectTypeParentForDeclarationMatch[]
-  elements: TSESTree.TypeElement[]
-  sourceCode: TSESLint.SourceCode
-  options: Options[number]
-}): boolean {
-  if (!options.useConfigurationIf) {
-    return true
-  }
-
-  return (
-    passesDeclarationMatchesPatternFilter({
-      declarationMatchesPattern:
-        options.useConfigurationIf.declarationMatchesPattern,
-      parentNodes: parentNodesForDeclarationMatches,
-      sourceCode,
-    }) &&
-    passesHasNumericKeysOnlyFilter({
-      hasNumericKeysOnlyFilter: options.useConfigurationIf.hasNumericKeysOnly,
-      typeElements: elements,
-    }) &&
-    passesDeclarationCommentMatchesFilter({
-      declarationCommentMatchesPattern:
-        options.useConfigurationIf.declarationCommentMatchesPattern,
-      parentNodes: parentNodeForDeclarationComments,
-      sourceCode,
-    })
   )
 }
 
@@ -122,4 +78,39 @@ function passesHasNumericKeysOnlyFilter({
       )
     }
   }
+}
+
+function isContextOptionMatching({
+  parentNodes,
+  sourceCode,
+  elements,
+  options,
+}: {
+  elements: TSESTree.TypeElement[]
+  parentNodes: ObjectTypeParent[]
+  sourceCode: TSESLint.SourceCode
+  options: Options[number]
+}): boolean {
+  if (!options.useConfigurationIf) {
+    return true
+  }
+
+  return (
+    passesDeclarationMatchesPatternFilter({
+      declarationMatchesPattern:
+        options.useConfigurationIf.declarationMatchesPattern,
+      parentNodes,
+      sourceCode,
+    }) &&
+    passesHasNumericKeysOnlyFilter({
+      hasNumericKeysOnlyFilter: options.useConfigurationIf.hasNumericKeysOnly,
+      typeElements: elements,
+    }) &&
+    passesDeclarationCommentMatchesFilter({
+      declarationCommentMatchesPattern:
+        options.useConfigurationIf.declarationCommentMatchesPattern,
+      parentNodes,
+      sourceCode,
+    })
+  )
 }

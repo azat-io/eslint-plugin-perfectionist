@@ -3,7 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { ObjectTypeParentForDeclarationMatch } from './types'
+import type { ObjectTypeParent } from './types'
 
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 
@@ -15,7 +15,7 @@ import { UnreachableCaseError } from '../../utils/unreachable-case-error'
  * @returns The name of the object-type like node.
  */
 export function computeNodeParentName(
-  node: ObjectTypeParentForDeclarationMatch,
+  node: ObjectTypeParent,
   sourceCode: TSESLint.SourceCode,
 ): string {
   switch (node.type) {

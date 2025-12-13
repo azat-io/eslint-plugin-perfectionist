@@ -7,7 +7,7 @@ import type {
   ScopedRegexOption,
   SingleRegexOption,
 } from '../../types/scoped-regex-option'
-import type { ObjectTypeParentForDeclarationComment } from './types'
+import type { ObjectTypeParent } from './types'
 
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { partitionPatternsByScope } from './partition-patterns-by-scope'
@@ -28,7 +28,7 @@ export function passesDeclarationCommentMatchesFilter({
   sourceCode,
 }: {
   declarationCommentMatchesPattern: ScopedRegexOption | undefined
-  parentNodes: ObjectTypeParentForDeclarationComment[]
+  parentNodes: ObjectTypeParent[]
   sourceCode: TSESLint.SourceCode
 }): boolean {
   if (!declarationCommentMatchesPattern) {
@@ -54,7 +54,7 @@ export function passesDeclarationCommentMatchesFilter({
 }
 
 function computeRelevantNodeForComment(
-  objectParent: ObjectTypeParentForDeclarationComment,
+  objectParent: ObjectTypeParent,
 ): TSESTree.Node {
   let objectParentType = objectParent.type
   switch (objectParentType) {
@@ -76,7 +76,7 @@ function matchesShallowScopedExpressions({
   sourceCode,
   patterns,
 }: {
-  parentNodes: ObjectTypeParentForDeclarationComment[]
+  parentNodes: ObjectTypeParent[]
   sourceCode: TSESLint.SourceCode
   patterns: SingleRegexOption[]
 }): boolean {
@@ -99,8 +99,8 @@ function matchesParent({
   sourceCode,
   patterns,
 }: {
-  objectParent: ObjectTypeParentForDeclarationComment
   sourceCode: TSESLint.SourceCode
+  objectParent: ObjectTypeParent
   patterns: SingleRegexOption[]
 }): boolean {
   let nodeForComment = computeRelevantNodeForComment(objectParent)
@@ -133,7 +133,7 @@ function matchesDeepScopedExpressions({
   sourceCode,
   patterns,
 }: {
-  parentNodes: ObjectTypeParentForDeclarationComment[]
+  parentNodes: ObjectTypeParent[]
   sourceCode: TSESLint.SourceCode
   patterns: SingleRegexOption[]
 }): boolean {

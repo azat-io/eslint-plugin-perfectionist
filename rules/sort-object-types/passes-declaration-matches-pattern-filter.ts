@@ -4,7 +4,7 @@ import type {
   ScopedRegexOption,
   SingleRegexOption,
 } from '../../types/scoped-regex-option'
-import type { ObjectTypeParentForDeclarationMatch } from './types'
+import type { ObjectTypeParent } from './types'
 
 import { partitionPatternsByScope } from './partition-patterns-by-scope'
 import { computeNodeParentName } from './compute-node-parent-name'
@@ -26,7 +26,7 @@ export function passesDeclarationMatchesPatternFilter({
   sourceCode,
 }: {
   declarationMatchesPattern: ScopedRegexOption | undefined
-  parentNodes: ObjectTypeParentForDeclarationMatch[]
+  parentNodes: ObjectTypeParent[]
   sourceCode: TSESLint.SourceCode
 }): boolean {
   if (!declarationMatchesPattern) {
@@ -56,7 +56,7 @@ function matchesShallowScopedExpressions({
   sourceCode,
   patterns,
 }: {
-  parentNodes: ObjectTypeParentForDeclarationMatch[]
+  parentNodes: ObjectTypeParent[]
   sourceCode: TSESLint.SourceCode
   patterns: SingleRegexOption[]
 }): boolean {
@@ -78,7 +78,7 @@ function matchesDeepScopedExpressions({
   sourceCode,
   patterns,
 }: {
-  parentNodes: ObjectTypeParentForDeclarationMatch[]
+  parentNodes: ObjectTypeParent[]
   sourceCode: TSESLint.SourceCode
   patterns: SingleRegexOption[]
 }): boolean {
@@ -96,9 +96,9 @@ function matchesParentExpression({
   sourceCode,
   patterns,
 }: {
-  parentNode: ObjectTypeParentForDeclarationMatch
   sourceCode: TSESLint.SourceCode
   patterns: SingleRegexOption[]
+  parentNode: ObjectTypeParent
 }): boolean {
   let parentName = computeNodeParentName(parentNode, sourceCode)
   return patterns.some(pattern => matches(parentName, pattern))

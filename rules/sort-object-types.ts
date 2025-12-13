@@ -5,9 +5,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
-  ObjectTypeParentForDeclarationComment,
-  ObjectTypeParentForDeclarationMatch,
   SortObjectTypesSortingNode,
+  ObjectTypeParent,
   Modifier,
   Selector,
   Options,
@@ -174,12 +173,9 @@ export function sortObjectTypeElements<MessageIds extends string>({
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
-  parentNodes: {
-    declarationCommentParents: ObjectTypeParentForDeclarationComment[]
-    declarationMatchParents: ObjectTypeParentForDeclarationMatch[]
-  }
   context: RuleContext<MessageIds, Options>
   elements: TSESTree.TypeElement[]
+  parentNodes: ObjectTypeParent[]
 }): void {
   if (!isSortable(elements)) {
     return
@@ -189,8 +185,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
   let { sourceCode, id } = context
 
   let matchedContextOptions = computeMatchedContextOptions({
-    parentNodeForDeclarationComments: parentNodes.declarationCommentParents,
-    parentNodesForDeclarationMatches: parentNodes.declarationMatchParents,
+    parentNodes,
     sourceCode,
     elements,
     context,
@@ -342,11 +337,10 @@ export function sortObjectTypeElements<MessageIds extends string>({
   }
 }
 
-function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
-  declarationCommentParents: ObjectTypeParentForDeclarationComment[]
-  declarationMatchParents: ObjectTypeParentForDeclarationMatch[]
-} {
-  let parentNodes = computeParentNodesWithTypes({
+function computeObjectTypeParentNodes(
+  node: TSESTree.TSTypeLiteral,
+): ObjectTypeParent[] {
+  return computeParentNodesWithTypes({
     allowedTypes: [
       AST_NODE_TYPES.TSTypeAliasDeclaration,
       AST_NODE_TYPES.TSInterfaceDeclaration,
@@ -356,18 +350,4 @@ function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
     ],
     node,
   })
-
-  let declarationParentForComments = parentNodes.filter(
-    parent =>
-      parent.type === AST_NODE_TYPES.TSTypeAliasDeclaration ||
-      parent.type === AST_NODE_TYPES.TSInterfaceDeclaration ||
-      parent.type === AST_NODE_TYPES.VariableDeclarator ||
-      parent.type === AST_NODE_TYPES.TSPropertySignature ||
-      parent.type === AST_NODE_TYPES.PropertyDefinition,
-  )
-
-  return {
-    declarationCommentParents: declarationParentForComments,
-    declarationMatchParents: parentNodes,
-  }
 }

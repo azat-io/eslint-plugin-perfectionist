@@ -100,14 +100,7 @@ export interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeEle
   value: string
 }
 
-export type ObjectTypeParentForDeclarationComment =
-  | TSESTree.TSTypeAliasDeclaration
-  | TSESTree.TSInterfaceDeclaration
-  | TSESTree.TSPropertySignature
-  | TSESTree.VariableDeclarator
-  | TSESTree.PropertyDefinition
-
-export type ObjectTypeParentForDeclarationMatch =
+export type ObjectTypeParent =
   | TSESTree.TSTypeAliasDeclaration
   | TSESTree.TSInterfaceDeclaration
   | TSESTree.TSPropertySignature
