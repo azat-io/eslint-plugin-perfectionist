@@ -10,7 +10,7 @@ import type {
 import type { ObjectParent } from './types'
 
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
-import { partitionPatternsByScope } from './partition-patterns-by-scope'
+import { partitionPatternsByScope } from '../../utils/scoped-regex/partition-patterns-by-scope'
 import { matches } from '../../utils/matches'
 
 /**

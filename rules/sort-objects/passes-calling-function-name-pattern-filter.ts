@@ -9,7 +9,7 @@ import type {
 } from '../../types/scoped-regex-option'
 import type { ObjectParent } from './types'
 
-import { partitionPatternsByScope } from './partition-patterns-by-scope'
+import { partitionPatternsByScope } from '../../utils/scoped-regex/partition-patterns-by-scope'
 import { matches } from '../../utils/matches'
 
 /**

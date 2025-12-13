@@ -6,7 +6,7 @@ import type {
 } from '../../types/scoped-regex-option'
 import type { ObjectTypeParent } from './types'
 
-import { partitionPatternsByScope } from './partition-patterns-by-scope'
+import { partitionPatternsByScope } from '../../utils/scoped-regex/partition-patterns-by-scope'
 import { computeNodeParentName } from './compute-node-parent-name'
 import { matches } from '../../utils/matches'
 
