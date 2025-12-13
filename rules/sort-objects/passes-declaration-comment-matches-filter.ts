@@ -1,6 +1,7 @@
+import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import { TSESTree } from '@typescript-eslint/types'
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
   ScopedRegexOption,
@@ -57,10 +58,10 @@ function computeRelevantNodeForComment(
 ): TSESTree.Node {
   let objectParentType = objectParent.type
   switch (objectParentType) {
-    case TSESTree.AST_NODE_TYPES.VariableDeclarator:
+    case AST_NODE_TYPES.VariableDeclarator:
       return objectParent.parent
-    case TSESTree.AST_NODE_TYPES.CallExpression:
-    case TSESTree.AST_NODE_TYPES.Property:
+    case AST_NODE_TYPES.CallExpression:
+    case AST_NODE_TYPES.Property:
       return objectParent
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
