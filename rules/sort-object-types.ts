@@ -5,19 +5,13 @@ import type { TSESTree } from '@typescript-eslint/types'
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
-  ObjectTypeParentForDeclarationComment,
-  ObjectTypeParentForDeclarationMatch,
   SortObjectTypesSortingNode,
+  ObjectTypeParent,
   Modifier,
   Selector,
   Options,
 } from './sort-object-types/types'
 
-import {
-  buildUseConfigurationIfJsonSchema,
-  buildCommonJsonSchemas,
-  buildRegexJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
@@ -34,6 +28,10 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  buildUseConfigurationIfJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildOptionsByGroupIndexComputer } from './sort-object-types/build-options-by-group-index-computer'
 import { computeMatchedContextOptions } from './sort-object-types/compute-matched-context-options'
@@ -52,6 +50,7 @@ import { computeNodeName } from './sort-object-types/compute-node-name'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { isNodeFunctionType } from '../utils/is-node-function-type'
+import { objectTypeParentTypes } from './sort-object-types/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -112,7 +111,7 @@ export let jsonSchema: JSONSchema4 = {
               'Specifies whether to only match types that have exclusively numeric keys.',
             type: 'boolean',
           },
-          declarationCommentMatchesPattern: buildRegexJsonSchema(),
+          declarationCommentMatchesPattern: scopedRegexJsonSchema,
           declarationMatchesPattern: scopedRegexJsonSchema,
         },
       }),
@@ -175,12 +174,9 @@ export function sortObjectTypeElements<MessageIds extends string>({
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
-  parentNodes: {
-    declarationCommentParent: ObjectTypeParentForDeclarationComment | null
-    declarationMatchParents: ObjectTypeParentForDeclarationMatch[]
-  }
   context: RuleContext<MessageIds, Options>
   elements: TSESTree.TypeElement[]
+  parentNodes: ObjectTypeParent[]
 }): void {
   if (!isSortable(elements)) {
     return
@@ -190,8 +186,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
   let { sourceCode, id } = context
 
   let matchedContextOptions = computeMatchedContextOptions({
-    parentNodeForDeclarationComments: parentNodes.declarationCommentParent,
-    parentNodesForDeclarationMatches: parentNodes.declarationMatchParents,
+    parentNodes,
     sourceCode,
     elements,
     context,
@@ -343,28 +338,11 @@ export function sortObjectTypeElements<MessageIds extends string>({
   }
 }
 
-function computeObjectTypeParentNodes(node: TSESTree.TSTypeLiteral): {
-  declarationCommentParent: ObjectTypeParentForDeclarationComment | null
-  declarationMatchParents: ObjectTypeParentForDeclarationMatch[]
-} {
-  let parentNodes = computeParentNodesWithTypes({
-    allowedTypes: [
-      AST_NODE_TYPES.TSTypeAliasDeclaration,
-      AST_NODE_TYPES.TSInterfaceDeclaration,
-      AST_NODE_TYPES.TSTypeAnnotation,
-      AST_NODE_TYPES.VariableDeclarator,
-    ],
+function computeObjectTypeParentNodes(
+  node: TSESTree.TSTypeLiteral,
+): ObjectTypeParent[] {
+  return computeParentNodesWithTypes({
+    allowedTypes: [...objectTypeParentTypes],
     node,
   })
-
-  let declarationParentForComments = parentNodes.find(
-    parent =>
-      parent.type === AST_NODE_TYPES.TSTypeAliasDeclaration ||
-      parent.type === AST_NODE_TYPES.TSInterfaceDeclaration,
-  )
-
-  return {
-    declarationCommentParent: declarationParentForComments ?? null,
-    declarationMatchParents: parentNodes,
-  }
 }

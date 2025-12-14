@@ -1,17 +1,19 @@
-import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type {
-  ScopedRegexOption,
-  SingleRegexOption,
-} from '../../types/scoped-regex-option'
+import type { NodeValuesComputer } from '../../utils/scoped-regex/matches-scoped-expressions'
+import type { ScopedRegexOption } from '../../types/scoped-regex-option'
 import type { ObjectParent } from './types'
 
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
-import { partitionPatternsByScope } from './partition-patterns-by-scope'
-import { matches } from '../../utils/matches'
+import { matchesScopedExpressions } from '../../utils/scoped-regex/matches-scoped-expressions'
+
+let allowedTypes = [
+  AST_NODE_TYPES.VariableDeclarator,
+  AST_NODE_TYPES.Property,
+] as const
+type AllowedType = (typeof allowedTypes)[number]
 
 /**
  * Checks whether the node parent names match the given pattern.
@@ -32,88 +34,21 @@ export function passesDeclarationMatchesPatternFilter({
   sourceCode: TSESLint.SourceCode
   parentNodes: ObjectParent[]
 }): boolean {
-  if (!declarationMatchesPattern) {
-    return true
-  }
-
-  let { shallowScopePatterns, deepScopePatterns } = partitionPatternsByScope(
-    declarationMatchesPattern,
-  )
-
-  return (
-    matchesShallowScopedExpressions({
-      patterns: shallowScopePatterns,
-      parentNodes,
-      sourceCode,
-    }) ||
-    matchesDeepScopedExpressions({
-      patterns: deepScopePatterns,
-      parentNodes,
-      sourceCode,
-    })
-  )
+  return matchesScopedExpressions({
+    nodeValuesComputer: buildNodeValuesComputer(sourceCode),
+    scopedRegexOption: declarationMatchesPattern,
+    allowedNodeTypes: new Set(allowedTypes),
+    parentNodes,
+  })
 }
 
-function matchesDeepScopedExpressions({
-  parentNodes,
-  sourceCode,
-  patterns,
-}: {
-  sourceCode: TSESLint.SourceCode
-  patterns: SingleRegexOption[]
-  parentNodes: ObjectParent[]
-}): boolean {
-  let propertyExpressions = parentNodes.filter(
-    parent =>
-      parent.type === AST_NODE_TYPES.VariableDeclarator ||
-      parent.type === AST_NODE_TYPES.Property,
-  )
-
-  return propertyExpressions.some(propertyExpression =>
-    matchesPropertyExpression({
-      propertyExpression,
+function buildNodeValuesComputer(
+  sourceCode: TSESLint.SourceCode,
+): NodeValuesComputer<AllowedType> {
+  return node => [
+    computePropertyOrVariableDeclaratorName({
       sourceCode,
-      patterns,
+      node,
     }),
-  )
-}
-
-function matchesShallowScopedExpressions({
-  parentNodes,
-  sourceCode,
-  patterns,
-}: {
-  sourceCode: TSESLint.SourceCode
-  patterns: SingleRegexOption[]
-  parentNodes: ObjectParent[]
-}): boolean {
-  let [firstParent] = parentNodes
-  if (
-    firstParent?.type !== AST_NODE_TYPES.VariableDeclarator &&
-    firstParent?.type !== AST_NODE_TYPES.Property
-  ) {
-    return false
-  }
-
-  return matchesPropertyExpression({
-    propertyExpression: firstParent,
-    sourceCode,
-    patterns,
-  })
-}
-
-function matchesPropertyExpression({
-  propertyExpression,
-  sourceCode,
-  patterns,
-}: {
-  propertyExpression: TSESTree.VariableDeclarator | TSESTree.Property
-  sourceCode: TSESLint.SourceCode
-  patterns: SingleRegexOption[]
-}): boolean {
-  let propertyExpressionName = computePropertyOrVariableDeclaratorName({
-    node: propertyExpression,
-    sourceCode,
-  })
-  return patterns.some(pattern => matches(propertyExpressionName, pattern))
+  ]
 }
