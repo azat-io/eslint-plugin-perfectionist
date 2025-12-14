@@ -1,8 +1,7 @@
 import type { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
 
-/** Helper type for a node with a specific AST node type. */
-type NodeOfType<Type> = { type: Type } & TSESTree.Node
+import type { NodeOfType } from '../types/node-of-type'
 
 /**
  * Finds all parent nodes matching one of the specified AST node types.

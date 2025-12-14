@@ -1,14 +1,12 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type {
-  ScopedRegexOption,
-  SingleRegexOption,
-} from '../../types/scoped-regex-option'
-import type { ObjectTypeParentForDeclarationMatch } from './types'
+import type { NodeValuesComputer } from '../../utils/scoped-regex/matches-scoped-expressions'
+import type { ScopedRegexOption } from '../../types/scoped-regex-option'
+import type { ObjectTypeParentType, ObjectTypeParent } from './types'
 
-import { partitionPatternsByScope } from './partition-patterns-by-scope'
+import { matchesScopedExpressions } from '../../utils/scoped-regex/matches-scoped-expressions'
 import { computeNodeParentName } from './compute-node-parent-name'
-import { matches } from '../../utils/matches'
+import { objectTypeParentTypes } from './types'
 
 /**
  * Checks whether the parent node's name matches the given pattern.
@@ -26,80 +24,19 @@ export function passesDeclarationMatchesPatternFilter({
   sourceCode,
 }: {
   declarationMatchesPattern: ScopedRegexOption | undefined
-  parentNodes: ObjectTypeParentForDeclarationMatch[]
+  parentNodes: ObjectTypeParent[]
   sourceCode: TSESLint.SourceCode
 }): boolean {
-  if (!declarationMatchesPattern) {
-    return true
-  }
-
-  let { shallowScopePatterns, deepScopePatterns } = partitionPatternsByScope(
-    declarationMatchesPattern,
-  )
-
-  return (
-    matchesShallowScopedExpressions({
-      patterns: shallowScopePatterns,
-      parentNodes,
-      sourceCode,
-    }) ||
-    matchesDeepScopedExpressions({
-      patterns: deepScopePatterns,
-      parentNodes,
-      sourceCode,
-    })
-  )
-}
-
-function matchesShallowScopedExpressions({
-  parentNodes,
-  sourceCode,
-  patterns,
-}: {
-  parentNodes: ObjectTypeParentForDeclarationMatch[]
-  sourceCode: TSESLint.SourceCode
-  patterns: SingleRegexOption[]
-}): boolean {
-  let [firstParent] = parentNodes
-  // v8 ignore if -- @preserve Unsure how we can reach that case
-  if (!firstParent) {
-    return false
-  }
-
-  return matchesParentExpression({
-    parentNode: firstParent,
-    sourceCode,
-    patterns,
+  return matchesScopedExpressions({
+    nodeValuesComputer: buildNodeValuesComputer(sourceCode),
+    allowedNodeTypes: new Set(objectTypeParentTypes),
+    scopedRegexOption: declarationMatchesPattern,
+    parentNodes,
   })
 }
 
-function matchesDeepScopedExpressions({
-  parentNodes,
-  sourceCode,
-  patterns,
-}: {
-  parentNodes: ObjectTypeParentForDeclarationMatch[]
-  sourceCode: TSESLint.SourceCode
-  patterns: SingleRegexOption[]
-}): boolean {
-  return parentNodes.some(parentNode =>
-    matchesParentExpression({
-      parentNode,
-      sourceCode,
-      patterns,
-    }),
-  )
-}
-
-function matchesParentExpression({
-  parentNode,
-  sourceCode,
-  patterns,
-}: {
-  parentNode: ObjectTypeParentForDeclarationMatch
-  sourceCode: TSESLint.SourceCode
-  patterns: SingleRegexOption[]
-}): boolean {
-  let parentName = computeNodeParentName(parentNode, sourceCode)
-  return patterns.some(pattern => matches(parentName, pattern))
+function buildNodeValuesComputer(
+  sourceCode: TSESLint.SourceCode,
+): NodeValuesComputer<ObjectTypeParentType> {
+  return node => [computeNodeParentName(node, sourceCode)]
 }
