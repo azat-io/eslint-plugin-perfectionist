@@ -200,6 +200,16 @@ export default createEslintRule<Options, MessageId>({
   name: 'sort-export-attributes',
 })
 
+/**
+ * Extracts the name of an export attribute for sorting purposes.
+ *
+ * For identifier keys, returns the identifier name. For literal keys, returns
+ * the string value. Falls back to source code text if needed.
+ *
+ * @param attribute - The import/export attribute AST node.
+ * @param sourceCode - The ESLint source code object.
+ * @returns The attribute name to use for sorting.
+ */
 function getAttributeName(
   attribute: TSESTree.ImportAttribute,
   sourceCode: TSESLint.SourceCode,

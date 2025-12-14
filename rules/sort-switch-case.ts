@@ -293,6 +293,17 @@ export default createEslintRule<Options, MessageId>({
   name: 'sort-switch-case',
 })
 
+/**
+ * Groups consecutive switch case nodes into blocks for sorting.
+ *
+ * Creates partitions of case nodes where each partition ends when the
+ * `endsBlock` predicate returns true (typically when a case has a break or
+ * return statement).
+ *
+ * @param caseNodes - Array of switch case sorting nodes to partition.
+ * @param endsBlock - Predicate function that determines if a case ends a block.
+ * @returns A 2D array where each inner array is a sortable block of cases.
+ */
 function reduceCaseSortingNodes(
   caseNodes: SortSwitchCaseSortingNode[],
   endsBlock: (caseNode: SortSwitchCaseSortingNode) => boolean,
@@ -313,6 +324,17 @@ function reduceCaseSortingNodes(
   )
 }
 
+/**
+ * Extracts the name of a switch case for sorting purposes.
+ *
+ * For literal test values, returns the string representation of the value. For
+ * the default case (null test), returns 'default'. For other expressions,
+ * returns the source code text.
+ *
+ * @param sourceCode - The ESLint source code object.
+ * @param caseNode - The switch case AST node.
+ * @returns The name to use for sorting this case.
+ */
 function getCaseName(
   sourceCode: TSESLint.SourceCode,
   caseNode: TSESTree.SwitchCase,
@@ -325,6 +347,15 @@ function getCaseName(
   return sourceCode.getText(caseNode.test)
 }
 
+/**
+ * Checks if a switch case contains a break or return statement.
+ *
+ * Examines the case's consequent statements, handling both direct statements
+ * and statements wrapped in a block.
+ *
+ * @param caseNode - The switch case AST node to check.
+ * @returns True if the case contains a break or return statement.
+ */
 function caseHasBreakOrReturn(caseNode: TSESTree.SwitchCase): boolean {
   let statements =
     caseNode.consequent[0]?.type === 'BlockStatement'
@@ -334,6 +365,12 @@ function caseHasBreakOrReturn(caseNode: TSESTree.SwitchCase): boolean {
   return statements.some(statementIsBreakOrReturn)
 }
 
+/**
+ * Type guard that checks if a statement is a break or return statement.
+ *
+ * @param statement - The statement AST node to check.
+ * @returns True if the statement is a BreakStatement or ReturnStatement.
+ */
 function statementIsBreakOrReturn(
   statement: TSESTree.Statement,
 ): statement is TSESTree.ReturnStatement | TSESTree.BreakStatement {

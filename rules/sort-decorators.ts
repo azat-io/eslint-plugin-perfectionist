@@ -188,6 +188,16 @@ export default createEslintRule<Options, MessageId>({
   name: 'sort-decorators',
 })
 
+/**
+ * Sorts decorators attached to a class, method, or property.
+ *
+ * Processes the decorators, groups them according to options, and reports any
+ * ordering errors found. Handles partitioning by comments and newlines.
+ *
+ * @param context - The ESLint rule context.
+ * @param options - The sorting options for decorators.
+ * @param decorators - Array of decorator nodes to sort.
+ */
 function sortDecorators(
   context: Readonly<RuleContext<MessageId, Options>>,
   options: Required<Options[number]>,

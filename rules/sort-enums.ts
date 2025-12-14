@@ -268,6 +268,17 @@ export default createEslintRule<Options, MessageId>({
   name: 'sort-enums',
 })
 
+/**
+ * Evaluates a binary expression to compute its numeric value.
+ *
+ * Supports arithmetic operators (+, -, *, /, %, **), bitwise operators (|, &,
+ * ^, <<, >>), and returns null for unsupported expressions.
+ *
+ * @param leftExpression - The left operand of the binary expression.
+ * @param rightExpression - The right operand of the binary expression.
+ * @param operator - The operator string (e.g., '+', '-', '*', '|').
+ * @returns The computed numeric value, or null if it cannot be evaluated.
+ */
 function getBinaryExpressionNumberValue(
   leftExpression: TSESTree.PrivateIdentifier | TSESTree.Expression,
   rightExpression: TSESTree.Expression,
@@ -307,6 +318,15 @@ function getBinaryExpressionNumberValue(
   }
 }
 
+/**
+ * Extracts a numeric value from an AST expression node.
+ *
+ * Handles literal numbers, binary expressions, and unary expressions
+ * recursively to compute the final numeric value.
+ *
+ * @param expression - The AST node to evaluate.
+ * @returns The numeric value of the expression, or null if not evaluable.
+ */
 function getExpressionNumberValue(expression: TSESTree.Node): number | null {
   switch (expression.type) {
     case 'BinaryExpression':
@@ -327,6 +347,15 @@ function getExpressionNumberValue(expression: TSESTree.Node): number | null {
   }
 }
 
+/**
+ * Evaluates a unary expression to compute its numeric value.
+ *
+ * Supports unary plus (+), minus (-), and bitwise NOT (~) operators.
+ *
+ * @param argumentExpression - The operand of the unary expression.
+ * @param operator - The operator string (e.g., '+', '-', '~').
+ * @returns The computed numeric value, or null if it cannot be evaluated.
+ */
 function getUnaryExpressionNumberValue(
   argumentExpression: TSESTree.Expression,
   operator: string,
