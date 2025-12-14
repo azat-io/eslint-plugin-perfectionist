@@ -28,6 +28,17 @@ export let comparatorByOptionsComputer: ComparatorByOptionsComputer<
   }
 }
 
+/**
+ * Compares two import nodes to sort type imports before regular imports.
+ *
+ * When both nodes are type imports or both are regular imports, returns 0
+ * (equal). Otherwise, sorts type imports first based on the order option.
+ *
+ * @param a - The first import sorting node.
+ * @param b - The second import sorting node.
+ * @param options - Options containing the sort order.
+ * @returns A negative number if a should come first, positive if b should.
+ */
 function compareTypeImportFirst(
   a: SortImportsSortingNode,
   b: SortImportsSortingNode,

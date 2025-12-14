@@ -114,6 +114,16 @@ export default createEslintRule<Options, MessageId>({
   name: 'sort-heritage-clauses',
 })
 
+/**
+ * Sorts heritage clauses (extends/implements) for a class or interface.
+ *
+ * Processes the heritage clauses, groups them according to options, and reports
+ * any ordering errors found. Handles partitioning by comments and newlines.
+ *
+ * @param context - The ESLint rule context.
+ * @param options - The sorting options for heritage clauses.
+ * @param heritageClauses - Array of heritage clause nodes to sort.
+ */
 function sortHeritageClauses(
   context: Readonly<RuleContext<MessageId, Options>>,
   options: Required<Options[number]>,
@@ -206,6 +216,15 @@ function sortHeritageClauses(
   }
 }
 
+/**
+ * Recursively extracts the name from a heritage clause expression.
+ *
+ * For simple identifiers, returns the name directly. For member expressions
+ * (like `Namespace.Class`), recursively extracts the property name.
+ *
+ * @param expression - The heritage clause expression AST node.
+ * @returns The extracted name string from the expression.
+ */
 function getHeritageClauseExpressionName(
   expression: TSESTree.PrivateIdentifier | TSESTree.Expression,
 ): string {
