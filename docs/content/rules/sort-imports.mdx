@@ -181,7 +181,25 @@ Used only when the [`type`](#type) option is set to `'custom'`. Specifies the cu
 
 Use the `Alphabet` utility class from `eslint-plugin-perfectionist/alphabet` to quickly generate a custom alphabet.
 
-Example: `0123456789abcdef...`
+#### Example: Sort subpaths before hyphenated packages
+
+Use the following alphabet to sort subpaths before hyphenated packages.
+
+```ts
+const alphabet = Alphabet.generateRecommendedAlphabet()
+  .sortByNaturalSort()
+  .placeCharacterBefore({ characterBefore: "/", characterAfter: "-" })
+  .placeCharacterBefore({ characterBefore: ".", characterAfter: "/" })
+  .getCharacters();
+```
+
+Result:
+
+```ts
+import { Linter } from "eslint";
+import { globalIgnores } from "eslint/config";
+import { FlatConfigComposer } from "eslint-flat-config-utils";
+```
 
 ### ignoreCase
 
