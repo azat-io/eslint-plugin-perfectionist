@@ -1,5 +1,5 @@
 /*
-  content-security-policy: default-src 'self'; script-src 'self' analytics.azat.io 'unsafe-inline' 'unsafe-eval'; style-src 'self' analytics.azat.io 'unsafe-inline'; connect-src 'self' analytics.azat.io; img-src 'self' data: img.shields.io;
+  content-security-policy: default-src 'self'; script-src 'self' analytics.azat.io 'unsafe-inline' 'unsafe-eval' data:; style-src 'self' analytics.azat.io 'unsafe-inline'; connect-src 'self' analytics.azat.io; img-src 'self' data: img.shields.io;
   strict-transport-security: max-age=63072000; includeSubDomains; preload;
 
 /_astro/*
