@@ -8,7 +8,6 @@
 
   import IconChevronRight from '../icons/chevron-right.svg?component'
   import HighlightText from './HighlightText.svelte'
-  import Portal from './Portal.svelte'
 
   let { onclose } = $props<{ onclose(): void }>()
 
@@ -344,100 +343,98 @@
   }
 </script>
 
-<Portal>
-  <dialog
-    class="modal"
-    bind:this={dialog}
-    aria-modal="true"
-    data-keyux-ignore-hotkeys
-    onclick={handleBackdropClick}
-  >
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="modal-inner" onclick={event => event.stopPropagation()}>
-      <!-- svelte-ignore a11y_autofocus -->
-      <input
-        type="search"
-        class="input"
-        role="combobox"
-        aria-autocomplete="list"
-        aria-expanded={parsedResults.length > 0}
-        aria-controls={parsedResults.length > 0 ? LISTBOX_ID : undefined}
-        aria-activedescendant={activeIndex >= 0
-          ? parsedResults[activeIndex]?.id
-          : undefined}
-        placeholder="Type to search..."
-        aria-label="Search"
-        bind:value={query}
-        onfocus={init}
-        onkeydown={handleKeydown}
-        autofocus
-      />
+<dialog
+  class="modal"
+  bind:this={dialog}
+  aria-modal="true"
+  data-keyux-ignore-hotkeys
+  onclick={handleBackdropClick}
+>
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div class="modal-inner" onclick={event => event.stopPropagation()}>
+    <!-- svelte-ignore a11y_autofocus -->
+    <input
+      type="search"
+      class="input"
+      role="combobox"
+      aria-autocomplete="list"
+      aria-expanded={parsedResults.length > 0}
+      aria-controls={parsedResults.length > 0 ? LISTBOX_ID : undefined}
+      aria-activedescendant={activeIndex >= 0
+        ? parsedResults[activeIndex]?.id
+        : undefined}
+      placeholder="Type to search..."
+      aria-label="Search"
+      bind:value={query}
+      onfocus={init}
+      onkeydown={handleKeydown}
+      autofocus
+    />
 
-      <div class="results" aria-live="polite" aria-busy={isLoading}>
-        {#if errorMessage}
-          <p class="message error">{errorMessage}</p>
-        {:else if isLoading}
-          <p class="message">Loading index…</p>
-        {:else if trimmedQuery.length < MIN_QUERY_LENGTH}
-          <p class="message">Start typing to search the documentation.</p>
-        {:else if parsedResults.length === 0}
-          <p class="message">No results found. Try a different query.</p>
-        {:else}
-          <ul class="list" role="listbox" id={LISTBOX_ID}>
-            {#each parsedResults as result, index (result.data.slug)}
-              <li
-                class:item-active={activeIndex === index}
-                class="list-item"
-                id={result.id}
-                role="option"
-                aria-selected={activeIndex === index}
-                onmouseenter={() => (activeIndex = index)}
+    <div class="results" aria-live="polite" aria-busy={isLoading}>
+      {#if errorMessage}
+        <p class="message error">{errorMessage}</p>
+      {:else if isLoading}
+        <p class="message">Loading index…</p>
+      {:else if trimmedQuery.length < MIN_QUERY_LENGTH}
+        <p class="message">Start typing to search the documentation.</p>
+      {:else if parsedResults.length === 0}
+        <p class="message">No results found. Try a different query.</p>
+      {:else}
+        <ul class="list" role="listbox" id={LISTBOX_ID}>
+          {#each parsedResults as result, index (result.data.slug)}
+            <li
+              class:item-active={activeIndex === index}
+              class="list-item"
+              id={result.id}
+              role="option"
+              aria-selected={activeIndex === index}
+              onmouseenter={() => (activeIndex = index)}
+            >
+              <a
+                class:link-active={activeIndex === index}
+                class="list-link"
+                href={result.data.slug}
+                tabindex="-1"
+                onclick={event => handleResultClick(event, result)}
               >
-                <a
-                  class:link-active={activeIndex === index}
-                  class="list-link"
-                  href={result.data.slug}
-                  tabindex="-1"
-                  onclick={event => handleResultClick(event, result)}
-                >
-                  <span class="link-title">
-                    <HighlightText
-                      text={result.data.title}
-                      terms={result.highlightTerms}
-                    />
+                <span class="link-title">
+                  <HighlightText
+                    text={result.data.title}
+                    terms={result.highlightTerms}
+                  />
+                </span>
+                <span class="link-meta">
+                  <span class="link-collection">
+                    {COLLECTION_LABELS[result.data.collection]}
                   </span>
-                  <span class="link-meta">
-                    <span class="link-collection">
-                      {COLLECTION_LABELS[result.data.collection]}
-                    </span>
-                    {#if result.heading}
-                      <IconChevronRight aria-hidden="true" class="chevron" />
-                      <span class="link-heading">
-                        <HighlightText
-                          text={result.heading}
-                          terms={result.highlightTerms}
-                        />
-                      </span>
-                    {/if}
-                  </span>
-                  {#if result.snippet}
-                    <span class="link-snippet">
+                  {#if result.heading}
+                    <IconChevronRight aria-hidden="true" class="chevron" />
+                    <span class="link-heading">
                       <HighlightText
-                        text={result.snippet}
+                        text={result.heading}
                         terms={result.highlightTerms}
                       />
                     </span>
                   {/if}
-                </a>
-              </li>
-            {/each}
-          </ul>
-        {/if}
-      </div>
+                </span>
+                {#if result.snippet}
+                  <span class="link-snippet">
+                    <HighlightText
+                      text={result.snippet}
+                      terms={result.highlightTerms}
+                    />
+                  </span>
+                {/if}
+              </a>
+            </li>
+          {/each}
+        </ul>
+      {/if}
     </div>
-  </dialog>
-</Portal>
+  </div>
+</dialog>
 
 <style>
   .modal {
