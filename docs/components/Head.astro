@@ -123,30 +123,27 @@ let isProduction = import.meta.env.PROD
   <meta property="twitter:image" content={image} />
 
   <script is:inline>
-    let initialize = () => {
-      let theme
-      if (localStorage.getItem('theme') === 'light') {
-        theme = 'light'
-      } else if (localStorage.getItem('theme') === 'dark') {
-        theme = 'dark'
-      } else {
-        let systemTheme = globalThis.matchMedia('(prefers-color-scheme: dark)')
-          .matches
-          ? 'dark'
-          : 'light'
-        theme = systemTheme
+    let getTheme = () => {
+      let stored = localStorage.getItem('theme')
+      if (stored === 'light' || stored === 'dark') {
+        return stored
       }
-      document.documentElement.setAttribute('data-theme', theme)
-      localStorage.setItem('theme', theme)
+      return globalThis.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light'
     }
-    initialize()
-    let handlerKey = '__perfectionistThemeAfterSwap__'
+
+    let theme = getTheme()
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+
+    let handlerKey = '__perfectionistThemeBeforeSwap__'
     if (!globalThis[handlerKey]) {
-      let handleAfterSwap = () => {
-        initialize()
-      }
-      document.addEventListener('astro:after-swap', handleAfterSwap)
-      globalThis[handlerKey] = handleAfterSwap
+      document.addEventListener('astro:before-swap', event => {
+        let theme = getTheme()
+        event.newDocument.documentElement.setAttribute('data-theme', theme)
+      })
+      globalThis[handlerKey] = true
     }
   </script>
 
