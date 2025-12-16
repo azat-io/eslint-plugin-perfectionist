@@ -44,6 +44,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^20.2.0
         version: 20.2.0
+      '@commitlint/types':
+        specifier: ^20.2.0
+        version: 20.2.0
       '@humanwhocodes/crosspost':
         specifier: ^1.0.2
         version: 1.0.2(hono@4.11.1)
