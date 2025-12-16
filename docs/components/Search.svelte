@@ -5,6 +5,9 @@
   import SearchButton from './SearchButton.svelte'
   import SearchModal from './SearchModal.svelte'
 
+  // eslint-disable-next-line no-empty-pattern
+  let {} = $props()
+
   let isOpen = $state(false)
 
   onMount(() => {
