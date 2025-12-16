@@ -9,7 +9,22 @@
   import IconChevronRight from '../icons/chevron-right.svg?component'
   import HighlightText from './HighlightText.svelte'
 
-  let { onclose } = $props<{ onclose(): void }>()
+  let { onclose, isOpen } = $props<{ isOpen: boolean; onclose(): void }>()
+
+  let dialog: HTMLDialogElement
+  let previouslyFocused: HTMLElement | null = null
+
+  $effect(() => {
+    if (isOpen) {
+      previouslyFocused =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null
+      dialog.showModal()
+    } else if (dialog.open) {
+      dialog.close()
+    }
+  })
 
   interface SearchDocument {
     collection: 'configs' | 'guide' | 'rules'
@@ -41,8 +56,6 @@
 
   const LISTBOX_ID = `search-results-${Math.random().toString(36).slice(2, 9)}`
 
-  let dialog: HTMLDialogElement
-  let previouslyFocused: HTMLElement | null = null
   let miniSearch = $state<MiniSearch<SearchDocument> | null>(null)
   let query = $state('')
   let trimmedQuery = $derived(query.trim())
@@ -57,13 +70,6 @@
   let errorMessage = $state<string | null>(null)
 
   onMount(() => {
-    previouslyFocused =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null
-
-    dialog.showModal()
-
     let stopClose = on(dialog, 'close', () => {
       previouslyFocused?.focus()
       onclose()

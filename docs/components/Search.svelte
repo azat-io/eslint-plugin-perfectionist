@@ -19,6 +19,4 @@
 </script>
 
 <SearchButton onclick={() => (isOpen = !isOpen)} />
-{#if isOpen}
-  <SearchModal onclose={() => (isOpen = false)} />
-{/if}
+<SearchModal {isOpen} onclose={() => (isOpen = false)} />
