@@ -70,6 +70,7 @@
     "@azat-io/typescript-config": "^1.1.1",
     "@commitlint/cli": "^20.2.0",
     "@commitlint/config-conventional": "^20.2.0",
+    "@commitlint/types": "^20.2.0",
     "@humanwhocodes/crosspost": "^1.0.2",
     "@humanwhocodes/social-changelog": "^0.4.0",
     "@nanostores/persistent": "^1.2.0",
