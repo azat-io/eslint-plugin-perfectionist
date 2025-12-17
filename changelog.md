@@ -1,5 +1,78 @@
 # Changelog
 
+## v5.0.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.15.1...v5.0.0)
+
+### 🚀 Features
+
+- ⚠️ Drop nodejs v18 support ([6c4a74a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/6c4a74a))
+- ⚠️ Move to esm only ([442f409](https://github.com/azat-io/eslint-plugin-perfectionist/commit/442f409))
+- **sort-decorators:** Add array-based custom groups api ([358b1f4](https://github.com/azat-io/eslint-plugin-perfectionist/commit/358b1f4))
+- ⚠️ Drop group kind support ([44af851](https://github.com/azat-io/eslint-plugin-perfectionist/commit/44af851))
+- **sort-heritage-clauses:** Add array-based custom groups api ([e6ef242](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e6ef242))
+- **sort-imports:** ⚠️ Drop deprecated ts config root dir support ([5452245](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5452245))
+- ⚠️ Drop deprecated selectors support for multiple rules ([4c0161a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4c0161a))
+- ⚠️ Drop deprecated object-based custom groups support ([5a6d5fa](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5a6d5fa))
+- Support annotation-based config ([96cda80](https://github.com/azat-io/eslint-plugin-perfectionist/commit/96cda80))
+- **sort-object-types:** ⚠️ Drop deprecated ignore pattern option ([d28a154](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d28a154))
+- **sort-jsx-props:** ⚠️ Drop deprecated ignore pattern option ([f1a2498](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f1a2498))
+- Add sort-import-attributes rule ([d147c56](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d147c56))
+- Add sort-export-attributes rule ([ac7e597](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ac7e597))
+- **sort-object:** ⚠️ Drop deprecated destructure only option ([2f9d620](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2f9d620))
+- **sort-objects:** Add pattern matching for variable declarations ([ea22aa1](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ea22aa1))
+- ⚠️ Drop deprecated newlines between always and never ([4a9a693](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4a9a693))
+- **sort-objects:** ⚠️ Migrate object type options to conditional configuration pattern ([724d044](https://github.com/azat-io/eslint-plugin-perfectionist/commit/724d044))
+- **sort-enums:** ⚠️ Replace force numeric sort and update default sort by value option ([b707549](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b707549))
+- **sort-objects:** Add numeric keys detection option ([2a6653d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2a6653d))
+- **sort-object-types:** Add numeric keys detection option ([88f1c19](https://github.com/azat-io/eslint-plugin-perfectionist/commit/88f1c19))
+- **sort-imports:** Add multiline and singleline modifiers ([2c954d4](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2c954d4))
+- ⚠️ Improve comment above integration in groups ([2011d6c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2011d6c))
+- Allow type overrides in groups option ([7985717](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7985717))
+- **sort-imports:** ⚠️ Drop deprecated selectors ([f089488](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f089488))
+- Allow order overrides in groups option ([2c64f20](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2c64f20))
+- Allow new lines inside overrides in groups option ([f9300b6](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f9300b6))
+- **sort-imports:** Allow type-import-first fallback sort ([a73c690](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a73c690))
+- **sort-exports:** Add wildcard, named and line-related modifiers ([2211eb6](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2211eb6))
+- **sort-objects:** ⚠️ Drop deprecated ignore pattern ([02a09d3](https://github.com/azat-io/eslint-plugin-perfectionist/commit/02a09d3))
+- **sort-objects:** Add scope option for pattern matching ([a2e013d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a2e013d))
+- **sort-object-types:** Add scoped matching for declaration patterns ([7fde0b5](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7fde0b5))
+- **sort-objects:** Add scoped matching for declaration patterns ([e80691a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e80691a))
+- **sort-object-types:** Add scoped matching for declaration comments ([1addc94](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1addc94))
+
+### 🐞 Bug Fixes
+
+- Fix plugin usage with legacy configurations ([a5e5b66](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a5e5b66))
+- Keep settings priority when meta default options provided ([5d5793d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5d5793d))
+- Require sorting type in fallback sort schema ([404a9b0](https://github.com/azat-io/eslint-plugin-perfectionist/commit/404a9b0))
+- **sort-objects:** Handle destructured dependencies ([572d54a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/572d54a))
+- **sort-object-types:** Improve detection of complex object type declarations ([7d9f3bd](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7d9f3bd))
+- Honor declaration comments for nested types ([c54c522](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c54c522))
+- **sort-object-types:** Match declaration names from variable declarations ([99d50bc](https://github.com/azat-io/eslint-plugin-perfectionist/commit/99d50bc))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️ Drop nodejs v18 support ([6c4a74a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/6c4a74a))
+- ⚠️ Move to esm only ([442f409](https://github.com/azat-io/eslint-plugin-perfectionist/commit/442f409))
+- ⚠️ Drop group kind support ([44af851](https://github.com/azat-io/eslint-plugin-perfectionist/commit/44af851))
+- **sort-imports:** ⚠️ Drop deprecated ts config root dir support ([5452245](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5452245))
+- ⚠️ Drop deprecated selectors support for multiple rules ([4c0161a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4c0161a))
+- ⚠️ Drop deprecated object-based custom groups support ([5a6d5fa](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5a6d5fa))
+- **sort-object-types:** ⚠️ Drop deprecated ignore pattern option ([d28a154](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d28a154))
+- **sort-jsx-props:** ⚠️ Drop deprecated ignore pattern option ([f1a2498](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f1a2498))
+- **sort-object:** ⚠️ Drop deprecated destructure only option ([2f9d620](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2f9d620))
+- ⚠️ Drop deprecated newlines between always and never ([4a9a693](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4a9a693))
+- **sort-objects:** ⚠️ Migrate object type options to conditional configuration pattern ([724d044](https://github.com/azat-io/eslint-plugin-perfectionist/commit/724d044))
+- **sort-enums:** ⚠️ Replace force numeric sort and update default sort by value option ([b707549](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b707549))
+- ⚠️ Improve comment above integration in groups ([2011d6c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2011d6c))
+- **sort-imports:** ⚠️ Drop deprecated selectors ([f089488](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f089488))
+- **sort-objects:** ⚠️ Drop deprecated ignore pattern ([02a09d3](https://github.com/azat-io/eslint-plugin-perfectionist/commit/02a09d3))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+- Azat S. ([@azat-io](https://github.com/azat-io))
+
 ## v4.15.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.15.0...v4.15.1)
