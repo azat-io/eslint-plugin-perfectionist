@@ -77,7 +77,7 @@ export default createEslintRule<Options, MessageId>({
   create: context => ({
     ImportDeclaration: node => {
       let specifiers = node.specifiers.filter(
-        ({ type }) => type === AST_NODE_TYPES.ImportSpecifier,
+        importClause => importClause.type === AST_NODE_TYPES.ImportSpecifier,
       )
       if (!isSortable(specifiers)) {
         return
