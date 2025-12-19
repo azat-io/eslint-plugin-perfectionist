@@ -254,7 +254,7 @@ function sortExportNodes({
 function computeExportKindModifier(
   node: TSESTree.ExportNamedDeclaration | TSESTree.ExportAllDeclaration,
 ): 'value' | 'type' {
-  let { exportKind } = node as { exportKind?: 'value' | 'type' }
+  let exportKind = 'exportKind' in node ? node.exportKind : undefined
 
   switch (exportKind) {
     case undefined:

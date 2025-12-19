@@ -4358,5 +4358,31 @@ describe('sort-named-exports', () => {
         ],
       })
     })
+
+    it('defaults missing exportKind to value', async () => {
+      let { valid: validEspree } = createRuleTester({
+        parserOptions: {
+          ecmaVersion: 'latest',
+          sourceType: 'module',
+        },
+        name: 'sort-named-exports (espree)',
+        rule,
+      })
+
+      await validEspree({
+        code: dedent`
+          const bar = 'bar'
+          const foo = 'foo'
+
+          export { bar, foo }
+        `,
+        options: [
+          {
+            type: 'alphabetical',
+            order: 'asc',
+          },
+        ],
+      })
+    })
   })
 })

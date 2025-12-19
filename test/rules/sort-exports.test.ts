@@ -4933,7 +4933,7 @@ describe('sort-exports', () => {
     })
 
     it('defaults missing exportKind to value', async () => {
-      let espreeTester = createRuleTester({
+      let { valid: validEspree } = createRuleTester({
         parserOptions: {
           ecmaVersion: 'latest',
           sourceType: 'module',
@@ -4942,7 +4942,7 @@ describe('sort-exports', () => {
         rule,
       })
 
-      await espreeTester.valid({
+      await validEspree({
         options: [
           {
             type: 'alphabetical',
