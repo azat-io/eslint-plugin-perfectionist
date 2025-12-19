@@ -31,6 +31,7 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { computeNodeName } from './sort-named-exports/compute-node-name'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
@@ -99,24 +100,7 @@ export default createEslintRule<Options, MessageId>({
 
       let formattedMembers: SortNamedExportsSortingNode[][] = [[]]
       for (let specifier of node.specifiers) {
-        let name: string
-
-        if (options.ignoreAlias) {
-          if (specifier.local.type === 'Identifier') {
-            ;({ name } = specifier.local)
-          } else {
-            // Should not be allowed in typescript, but is possible according to
-            // The AST
-            // Ex: `export { 'literal' as local } from './import'`
-            name = specifier.local.value
-          }
-        } else {
-          if (specifier.exported.type === 'Identifier') {
-            ;({ name } = specifier.exported)
-          } else {
-            name = specifier.exported.value
-          }
-        }
+        let name: string = computeNodeName(specifier, options.ignoreAlias)
 
         let selector: Selector = 'export'
         let modifiers: Modifier[] = [computeExportKindModifier(specifier)]
