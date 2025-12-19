@@ -251,6 +251,23 @@ function sortExportNodes({
   }
 }
 
+function computeExportKindModifier(
+  node: TSESTree.ExportNamedDeclaration | TSESTree.ExportAllDeclaration,
+): 'value' | 'type' {
+  let { exportKind } = node as { exportKind?: 'value' | 'type' }
+
+  switch (exportKind) {
+    case undefined:
+    case 'value':
+      return 'value'
+    case 'type':
+      return 'type'
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(exportKind)
+  }
+}
+
 function computeExportTypeModifier(
   node: TSESTree.ExportNamedDeclaration | TSESTree.ExportAllDeclaration,
 ): 'wildcard' | 'named' {
@@ -262,20 +279,6 @@ function computeExportTypeModifier(
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
       throw new UnreachableCaseError(node)
-  }
-}
-
-function computeExportKindModifier(
-  node: TSESTree.ExportNamedDeclaration | TSESTree.ExportAllDeclaration,
-): 'value' | 'type' {
-  switch (node.exportKind) {
-    case 'value':
-      return 'value'
-    case 'type':
-      return 'type'
-    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-    default:
-      throw new UnreachableCaseError(node.exportKind)
   }
 }
 
