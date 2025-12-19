@@ -1,3 +1,5 @@
+import { AST_NODE_TYPES } from '@typescript-eslint/types'
+
 import type {
   SortNamedImportsSortingNode,
   Modifier,
@@ -75,7 +77,7 @@ export default createEslintRule<Options, MessageId>({
   create: context => ({
     ImportDeclaration: node => {
       let specifiers = node.specifiers.filter(
-        ({ type }) => type === 'ImportSpecifier',
+        ({ type }) => type === AST_NODE_TYPES.ImportSpecifier,
       )
       if (!isSortable(specifiers)) {
         return
