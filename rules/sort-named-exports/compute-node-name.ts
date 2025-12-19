@@ -1,5 +1,9 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/types'
+
+import { UnreachableCaseError } from '../../utils/unreachable-case-error'
+
 /**
  * Computes the name of an export specifier node.
  *
@@ -11,18 +15,15 @@ export function computeNodeName(
   node: TSESTree.ExportSpecifier,
   ignoreAlias: boolean,
 ): string {
-  if (ignoreAlias) {
-    if (node.local.type === 'Identifier') {
-      return node.local.name
-    }
-    // Should not be allowed in typescript, but is possible according to
-    // The AST
-    // Ex: `export { 'literal' as local } from './import'`
-    return node.local.value
-  }
+  let identifierToCheck = ignoreAlias ? node.local : node.exported
 
-  if (node.exported.type === 'Identifier') {
-    return node.exported.name
+  switch (identifierToCheck.type) {
+    case AST_NODE_TYPES.Identifier:
+      return identifierToCheck.name
+    case AST_NODE_TYPES.Literal:
+      return identifierToCheck.value
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(identifierToCheck)
   }
-  return node.exported.value
 }
