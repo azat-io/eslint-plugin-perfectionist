@@ -117,10 +117,10 @@ export default createEslintRule<Options, MessageId>({
 
         let selector: Selector = 'export'
         let modifiers: Modifier[] = []
-        if (specifier.exportKind === 'value') {
-          modifiers.push('value')
-        } else {
+        if (specifier.exportKind === 'type') {
           modifiers.push('type')
+        } else {
+          modifiers.push('value')
         }
 
         let predefinedGroups = generatePredefinedGroups({
