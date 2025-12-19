@@ -33,6 +33,7 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { computeNodeName } from './sort-named-imports/compute-node-name'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
@@ -104,15 +105,7 @@ export default createEslintRule<Options, MessageId>({
 
       let formattedMembers: SortNamedImportsSortingNode[][] = [[]]
       for (let specifier of specifiers) {
-        let { name } = specifier.local
-
-        if (specifier.type === 'ImportSpecifier' && options.ignoreAlias) {
-          if (specifier.imported.type === 'Identifier') {
-            ;({ name } = specifier.imported)
-          } else {
-            name = specifier.imported.value
-          }
-        }
+        let name = computeNodeName(specifier, options.ignoreAlias)
 
         let selector: Selector = 'import'
         let modifiers: Modifier[] = [computeImportKindModifier(specifier)]
