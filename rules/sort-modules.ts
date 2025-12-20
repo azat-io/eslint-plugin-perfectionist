@@ -402,18 +402,50 @@ function extractDependencies(
       return
     }
 
-    if ('decorators' in nodeValue) {
-      traverseNode(nodeValue.decorators)
-    }
-
     if (nodeValue.type === AST_NODE_TYPES.Identifier) {
       dependencies.push(nodeValue.name)
     }
 
-    if (nodeValue.type === AST_NODE_TYPES.ConditionalExpression) {
-      checkNode(nodeValue.test)
-      checkNode(nodeValue.consequent)
+    if ('alternate' in nodeValue && nodeValue.alternate) {
       checkNode(nodeValue.alternate)
+    }
+
+    if ('argument' in nodeValue && nodeValue.argument) {
+      checkNode(nodeValue.argument)
+    }
+
+    if ('arguments' in nodeValue) {
+      traverseNode(nodeValue.arguments)
+    }
+
+    if ('body' in nodeValue && nodeValue.body) {
+      traverseNode(nodeValue.body)
+    }
+
+    if ('callee' in nodeValue) {
+      checkNode(nodeValue.callee)
+    }
+
+    if ('consequent' in nodeValue) {
+      traverseNode(nodeValue.consequent)
+    }
+
+    if ('declarations' in nodeValue) {
+      for (let declaration of nodeValue.declarations) {
+        checkNode(declaration)
+      }
+    }
+
+    if ('decorators' in nodeValue) {
+      traverseNode(nodeValue.decorators)
+    }
+
+    if ('elements' in nodeValue) {
+      let elements = nodeValue.elements.filter(
+        currentNode => currentNode !== null,
+      )
+
+      traverseNode(elements)
     }
 
     if (
@@ -423,64 +455,38 @@ function extractDependencies(
       checkNode(nodeValue.expression)
     }
 
-    if ('object' in nodeValue) {
-      checkNode(nodeValue.object)
-    }
-
-    if ('callee' in nodeValue) {
-      checkNode(nodeValue.callee)
+    if ('expressions' in nodeValue) {
+      for (let nodeExpression of nodeValue.expressions) {
+        checkNode(nodeExpression)
+      }
     }
 
     if ('init' in nodeValue && nodeValue.init) {
       checkNode(nodeValue.init)
     }
 
-    if ('body' in nodeValue && nodeValue.body) {
-      traverseNode(nodeValue.body)
+    if ('initializer' in nodeValue && nodeValue.initializer) {
+      checkNode(nodeValue.initializer)
     }
 
     if ('left' in nodeValue) {
       checkNode(nodeValue.left)
     }
 
+    if ('object' in nodeValue) {
+      checkNode(nodeValue.object)
+    }
+
+    if ('properties' in nodeValue) {
+      traverseNode(nodeValue.properties)
+    }
+
     if ('right' in nodeValue) {
       checkNode(nodeValue.right)
     }
 
-    if ('initializer' in nodeValue && nodeValue.initializer) {
-      checkNode(nodeValue.initializer)
-    }
-
-    if ('elements' in nodeValue) {
-      let elements = nodeValue.elements.filter(
-        currentNode => currentNode !== null,
-      )
-
-      for (let element of elements) {
-        traverseNode(element)
-      }
-    }
-
-    if ('argument' in nodeValue && nodeValue.argument) {
-      checkNode(nodeValue.argument)
-    }
-
-    if ('arguments' in nodeValue) {
-      for (let argument of nodeValue.arguments) {
-        checkNode(argument)
-      }
-    }
-
-    if ('declarations' in nodeValue) {
-      for (let declaration of nodeValue.declarations) {
-        checkNode(declaration)
-      }
-    }
-
-    if ('properties' in nodeValue) {
-      for (let property of nodeValue.properties) {
-        checkNode(property)
-      }
+    if ('test' in nodeValue && nodeValue.test) {
+      checkNode(nodeValue.test)
     }
 
     if (
@@ -490,12 +496,6 @@ function extractDependencies(
       'type' in nodeValue.value
     ) {
       checkNode(nodeValue.value)
-    }
-
-    if ('expressions' in nodeValue) {
-      for (let nodeExpression of nodeValue.expressions) {
-        checkNode(nodeExpression)
-      }
     }
   }
 
