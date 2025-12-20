@@ -31,11 +31,14 @@ import {
 } from './sort-modules/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { isPropertyOrAccessorNode } from './sort-modules/is-property-or-accessor-node'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isArrowFunctionNode } from './sort-modules/is-arrow-function-node'
+import { computeDependencies } from './sort-modules/compute-dependencies'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -377,8 +380,6 @@ function analyzeModule({
 function extractDependencies(
   expression: TSESTree.TSEnumMember | TSESTree.ClassBody,
 ): string[] {
-  let dependencies: string[] = []
-
   /**
    * Search static methods only if there is a static block or a static property
    * that is not an arrow function.
@@ -389,145 +390,12 @@ function extractDependencies(
       classElement =>
         classElement.type === AST_NODE_TYPES.StaticBlock ||
         (classElement.static &&
-          isPropertyOrAccessor(classElement) &&
-          !isArrowFunction(classElement)),
+          isPropertyOrAccessorNode(classElement) &&
+          !isArrowFunctionNode(classElement)),
     )
 
-  function checkNode(nodeValue: TSESTree.Node): void {
-    if (
-      (nodeValue.type === AST_NODE_TYPES.MethodDefinition ||
-        isArrowFunction(nodeValue)) &&
-      (!nodeValue.static || !searchStaticMethodsAndFunctionProperties)
-    ) {
-      return
-    }
-
-    if (nodeValue.type === AST_NODE_TYPES.Identifier) {
-      dependencies.push(nodeValue.name)
-    }
-
-    if ('alternate' in nodeValue && nodeValue.alternate) {
-      checkNode(nodeValue.alternate)
-    }
-
-    if ('argument' in nodeValue && nodeValue.argument) {
-      checkNode(nodeValue.argument)
-    }
-
-    if ('arguments' in nodeValue) {
-      traverseNode(nodeValue.arguments)
-    }
-
-    if ('body' in nodeValue && nodeValue.body) {
-      traverseNode(nodeValue.body)
-    }
-
-    if ('callee' in nodeValue) {
-      checkNode(nodeValue.callee)
-    }
-
-    if ('consequent' in nodeValue) {
-      traverseNode(nodeValue.consequent)
-    }
-
-    if ('declarations' in nodeValue) {
-      for (let declaration of nodeValue.declarations) {
-        checkNode(declaration)
-      }
-    }
-
-    if ('decorators' in nodeValue) {
-      traverseNode(nodeValue.decorators)
-    }
-
-    if ('elements' in nodeValue) {
-      let elements = nodeValue.elements.filter(
-        currentNode => currentNode !== null,
-      )
-
-      traverseNode(elements)
-    }
-
-    if (
-      'expression' in nodeValue &&
-      typeof nodeValue.expression !== 'boolean'
-    ) {
-      checkNode(nodeValue.expression)
-    }
-
-    if ('expressions' in nodeValue) {
-      for (let nodeExpression of nodeValue.expressions) {
-        checkNode(nodeExpression)
-      }
-    }
-
-    if ('init' in nodeValue && nodeValue.init) {
-      checkNode(nodeValue.init)
-    }
-
-    if ('initializer' in nodeValue && nodeValue.initializer) {
-      checkNode(nodeValue.initializer)
-    }
-
-    if ('left' in nodeValue) {
-      checkNode(nodeValue.left)
-    }
-
-    if ('object' in nodeValue) {
-      checkNode(nodeValue.object)
-    }
-
-    if ('properties' in nodeValue) {
-      traverseNode(nodeValue.properties)
-    }
-
-    if ('right' in nodeValue) {
-      checkNode(nodeValue.right)
-    }
-
-    if ('test' in nodeValue && nodeValue.test) {
-      checkNode(nodeValue.test)
-    }
-
-    if (
-      'value' in nodeValue &&
-      nodeValue.value &&
-      typeof nodeValue.value === 'object' &&
-      'type' in nodeValue.value
-    ) {
-      checkNode(nodeValue.value)
-    }
-  }
-
-  function traverseNode(nodeValue: TSESTree.Node[] | TSESTree.Node): void {
-    if (Array.isArray(nodeValue)) {
-      for (let nodeItem of nodeValue) {
-        traverseNode(nodeItem)
-      }
-    } else {
-      checkNode(nodeValue)
-    }
-  }
-
-  checkNode(expression)
-  return dependencies
-}
-
-function isArrowFunction(
-  node: TSESTree.Node,
-): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty {
-  return (
-    isPropertyOrAccessor(node) &&
-    node.value !== null &&
-    node.value.type === AST_NODE_TYPES.ArrowFunctionExpression
-  )
-}
-
-function isPropertyOrAccessor(
-  node: TSESTree.Node,
-): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty {
-  return (
-    node.type === AST_NODE_TYPES.PropertyDefinition ||
-    node.type === AST_NODE_TYPES.AccessorProperty
-  )
+  return computeDependencies(expression, {
+    searchStaticMethodsAndFunctionProperties,
+    type: 'hard',
+  })
 }
