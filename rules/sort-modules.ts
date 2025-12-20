@@ -406,13 +406,6 @@ function extractDependencies(
       traverseNode(nodeValue.decorators)
     }
 
-    if (
-      nodeValue.type === AST_NODE_TYPES.NewExpression &&
-      nodeValue.callee.type === AST_NODE_TYPES.Identifier
-    ) {
-      dependencies.push(nodeValue.callee.name)
-    }
-
     if (nodeValue.type === AST_NODE_TYPES.Identifier) {
       dependencies.push(nodeValue.name)
     }
