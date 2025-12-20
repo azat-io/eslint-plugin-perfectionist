@@ -4723,5 +4723,27 @@ describe('sort-named-imports', () => {
         options: [{}],
       })
     })
+    it('defaults missing importKind to value', async () => {
+      let { valid: validEspree } = createRuleTester({
+        parserOptions: {
+          ecmaVersion: 'latest',
+          sourceType: 'module',
+        },
+        name: 'sort-named-imports (espree)',
+        rule,
+      })
+
+      await validEspree({
+        options: [
+          {
+            type: 'alphabetical',
+            order: 'asc',
+          },
+        ],
+        code: dedent`
+          import { bar, foo } from 'module'
+        `,
+      })
+    })
   })
 })

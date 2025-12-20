@@ -1,3 +1,7 @@
+import type { TSESTree } from '@typescript-eslint/types'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/types'
+
 import type {
   SortNamedImportsSortingNode,
   Modifier,
@@ -29,8 +33,10 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { computeNodeName } from './sort-named-imports/compute-node-name'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -75,7 +81,7 @@ export default createEslintRule<Options, MessageId>({
   create: context => ({
     ImportDeclaration: node => {
       let specifiers = node.specifiers.filter(
-        ({ type }) => type === 'ImportSpecifier',
+        importClause => importClause.type === AST_NODE_TYPES.ImportSpecifier,
       )
       if (!isSortable(specifiers)) {
         return
@@ -99,26 +105,10 @@ export default createEslintRule<Options, MessageId>({
 
       let formattedMembers: SortNamedImportsSortingNode[][] = [[]]
       for (let specifier of specifiers) {
-        let { name } = specifier.local
-
-        if (specifier.type === 'ImportSpecifier' && options.ignoreAlias) {
-          if (specifier.imported.type === 'Identifier') {
-            ;({ name } = specifier.imported)
-          } else {
-            name = specifier.imported.value
-          }
-        }
+        let name = computeNodeName(specifier, options.ignoreAlias)
 
         let selector: Selector = 'import'
-        let modifiers: Modifier[] = []
-        if (
-          specifier.type === 'ImportSpecifier' &&
-          specifier.importKind === 'type'
-        ) {
-          modifiers.push('type')
-        } else {
-          modifiers.push('value')
-        }
+        let modifiers: Modifier[] = [computeImportKindModifier(specifier)]
 
         let predefinedGroups = generatePredefinedGroups({
           cache: cachedGroupsByModifiersAndSelectors,
@@ -235,3 +225,19 @@ export default createEslintRule<Options, MessageId>({
   defaultOptions: [defaultOptions],
   name: 'sort-named-imports',
 })
+
+function computeImportKindModifier(
+  node: TSESTree.ImportSpecifier,
+): 'value' | 'type' {
+  let importKind = 'importKind' in node ? node.importKind : undefined
+  switch (importKind) {
+    case undefined:
+    case 'value':
+      return 'value'
+    case 'type':
+      return 'type'
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(importKind)
+  }
+}
