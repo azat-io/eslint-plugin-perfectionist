@@ -1,5 +1,5 @@
-import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
@@ -384,10 +384,10 @@ function extractDependencies(
    * that is not an arrow function.
    */
   let searchStaticMethodsAndFunctionProperties =
-    expression.type === 'ClassBody' &&
+    expression.type === AST_NODE_TYPES.ClassBody &&
     expression.body.some(
       classElement =>
-        classElement.type === 'StaticBlock' ||
+        classElement.type === AST_NODE_TYPES.StaticBlock ||
         (classElement.static &&
           isPropertyOrAccessor(classElement) &&
           !isArrowFunction(classElement)),
@@ -395,7 +395,8 @@ function extractDependencies(
 
   function checkNode(nodeValue: TSESTree.Node): void {
     if (
-      (nodeValue.type === 'MethodDefinition' || isArrowFunction(nodeValue)) &&
+      (nodeValue.type === AST_NODE_TYPES.MethodDefinition ||
+        isArrowFunction(nodeValue)) &&
       (!nodeValue.static || !searchStaticMethodsAndFunctionProperties)
     ) {
       return
@@ -406,17 +407,17 @@ function extractDependencies(
     }
 
     if (
-      nodeValue.type === 'NewExpression' &&
-      nodeValue.callee.type === 'Identifier'
+      nodeValue.type === AST_NODE_TYPES.NewExpression &&
+      nodeValue.callee.type === AST_NODE_TYPES.Identifier
     ) {
       dependencies.push(nodeValue.callee.name)
     }
 
-    if (nodeValue.type === 'Identifier') {
+    if (nodeValue.type === AST_NODE_TYPES.Identifier) {
       dependencies.push(nodeValue.name)
     }
 
-    if (nodeValue.type === 'ConditionalExpression') {
+    if (nodeValue.type === AST_NODE_TYPES.ConditionalExpression) {
       checkNode(nodeValue.test)
       checkNode(nodeValue.consequent)
       checkNode(nodeValue.alternate)
@@ -525,12 +526,15 @@ function isArrowFunction(
   return (
     isPropertyOrAccessor(node) &&
     node.value !== null &&
-    node.value.type === 'ArrowFunctionExpression'
+    node.value.type === AST_NODE_TYPES.ArrowFunctionExpression
   )
 }
 
 function isPropertyOrAccessor(
   node: TSESTree.Node,
 ): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty {
-  return node.type === 'PropertyDefinition' || node.type === 'AccessorProperty'
+  return (
+    node.type === AST_NODE_TYPES.PropertyDefinition ||
+    node.type === AST_NODE_TYPES.AccessorProperty
+  )
 }
