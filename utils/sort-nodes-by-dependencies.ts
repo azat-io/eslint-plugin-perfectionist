@@ -100,10 +100,12 @@ interface ExtraOptions {
  * @param extraOptions - Additional sorting options.
  * @returns Topologically sorted array of nodes.
  */
-export function sortNodesByDependencies<T extends SortingNodeWithDependencies>(
-  nodes: T[],
-  extraOptions: ExtraOptions,
-): T[] {
+export function sortNodesByDependencies<
+  T extends Pick<
+    SortingNodeWithDependencies,
+    'isEslintDisabled' | 'dependencyNames' | 'dependencies'
+  >,
+>(nodes: T[], extraOptions: ExtraOptions): T[] {
   let nodesInCircularDependencies = computeNodesInCircularDependencies(nodes)
 
   let result: T[] = []

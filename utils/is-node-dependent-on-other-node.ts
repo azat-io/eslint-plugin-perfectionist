@@ -38,8 +38,14 @@ import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
  * @returns True if sortingNode1 depends on sortingNode2, false otherwise.
  */
 export function isNodeDependentOnOtherNode(
-  sortingNode1: SortingNodeWithDependencies,
-  sortingNode2: SortingNodeWithDependencies,
+  sortingNode1: Pick<
+    SortingNodeWithDependencies,
+    'dependencyNames' | 'dependencies'
+  >,
+  sortingNode2: Pick<
+    SortingNodeWithDependencies,
+    'dependencyNames' | 'dependencies'
+  >,
 ): boolean {
   if (sortingNode1 === sortingNode2) {
     return false
