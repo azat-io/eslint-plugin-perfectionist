@@ -117,12 +117,9 @@ function computeNewlinesInsideOption({
   options: GetNewlinesBetweenOptionParameters['options']
   groupIndex: number
 }): NewlinesBetweenOption {
-  let globalNewlinesBetweenOption =
-    options.newlinesBetween === 'ignore' ? options.newlinesBetween : 0
-
   let group = options.groups[groupIndex]
   if (!group) {
-    return globalNewlinesBetweenOption
+    return options.newlinesInside
   }
 
   let groupName = computeGroupName(group)
@@ -136,7 +133,7 @@ function computeNewlinesInsideOption({
   return (
     nodeCustomGroup?.newlinesInside ??
     groupOverrideNewlinesInside ??
-    globalNewlinesBetweenOption
+    options.newlinesInside
   )
 }
 
