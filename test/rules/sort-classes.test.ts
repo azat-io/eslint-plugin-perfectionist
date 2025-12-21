@@ -3836,14 +3836,10 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenClassMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
           class Class {
-            a = () => null
+            a() {}
 
 
            y = "y"
@@ -3854,9 +3850,10 @@ describe('sort-classes', () => {
         `,
         output: dedent`
           class Class {
-            a = () => null
+            a() {}
            b = "b"
           y = "y"
+
               z = "z"
           }
         `,
@@ -4175,6 +4172,7 @@ describe('sort-classes', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })
@@ -8348,14 +8346,10 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenClassMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
           class Class {
-            a = () => null
+            a() {}
 
 
            y = "y"
@@ -8366,9 +8360,10 @@ describe('sort-classes', () => {
         `,
         output: dedent`
           class Class {
-            a = () => null
+            a() {}
            b = "b"
           y = "y"
+
               z = "z"
           }
         `,
@@ -8687,6 +8682,7 @@ describe('sort-classes', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })
@@ -12800,14 +12796,10 @@ describe('sort-classes', () => {
             messageId: 'extraSpacingBetweenClassMembers',
             data: { right: 'b', left: 'a' },
           },
-          {
-            messageId: 'extraSpacingBetweenClassMembers',
-            data: { right: 'z', left: 'y' },
-          },
         ],
         code: dedent`
           class Class {
-            a = () => null
+            a() {}
 
 
            b = "b"
@@ -12818,9 +12810,10 @@ describe('sort-classes', () => {
         `,
         output: dedent`
           class Class {
-            a = () => null
+            a() {}
            b = "b"
           y = "y"
+
               z = "z"
           }
         `,
@@ -13139,6 +13132,7 @@ describe('sort-classes', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })

@@ -1114,10 +1114,6 @@ describe('sort-sets', () => {
             messageId: 'unexpectedSetsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenSetsMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
           new Set([
@@ -1135,6 +1131,7 @@ describe('sort-sets', () => {
             'a',
            'b',
           'y',
+
               'z'
           ])
         `,
@@ -1397,6 +1394,7 @@ describe('sort-sets', () => {
           ],
           groups: ['unknown', 'b|c'],
           newlinesBetween: 1,
+          newlinesInside: 0,
         },
       ]
 
@@ -2538,10 +2536,6 @@ describe('sort-sets', () => {
             messageId: 'unexpectedSetsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenSetsMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
           new Set([
@@ -2559,6 +2553,7 @@ describe('sort-sets', () => {
             'a',
            'b',
           'y',
+
               'z'
           ])
         `,
@@ -2821,6 +2816,7 @@ describe('sort-sets', () => {
           ],
           groups: ['unknown', 'b|c'],
           newlinesBetween: 1,
+          newlinesInside: 0,
         },
       ]
 
@@ -3965,10 +3961,6 @@ describe('sort-sets', () => {
             data: { right: 'bbb', left: 'z' },
             messageId: 'unexpectedSetsOrder',
           },
-          {
-            messageId: 'extraSpacingBetweenSetsMembers',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         code: dedent`
           new Set([
@@ -3986,6 +3978,7 @@ describe('sort-sets', () => {
             'aaaa',
            'bbb',
           'yy',
+
               'z'
           ])
         `,
@@ -4248,6 +4241,7 @@ describe('sort-sets', () => {
           ],
           groups: ['unknown', 'b|c'],
           newlinesBetween: 1,
+          newlinesInside: 0,
         },
       ]
 

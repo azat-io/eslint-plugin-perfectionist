@@ -955,10 +955,6 @@ describe('sort-maps', () => {
             messageId: 'unexpectedMapElementsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenMapElementsMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -989,6 +985,7 @@ describe('sort-maps', () => {
             [a, null],
            [b, null],
           [y, null],
+
               [z, null]
           ])
         `,
@@ -1241,6 +1238,7 @@ describe('sort-maps', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -2298,10 +2296,6 @@ describe('sort-maps', () => {
             messageId: 'unexpectedMapElementsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenMapElementsMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -2332,6 +2326,7 @@ describe('sort-maps', () => {
             [a, null],
            [b, null],
           [y, null],
+
               [z, null]
           ])
         `,
@@ -2584,6 +2579,7 @@ describe('sort-maps', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -3644,10 +3640,6 @@ describe('sort-maps', () => {
             messageId: 'unexpectedMapElementsOrder',
             data: { right: 'bbb', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenMapElementsMembers',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         options: [
           {
@@ -3678,6 +3670,7 @@ describe('sort-maps', () => {
             [aaaa, null],
            [bbb, null],
           [yy, null],
+
               [z, null]
           ])
         `,
@@ -3930,6 +3923,7 @@ describe('sort-maps', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [

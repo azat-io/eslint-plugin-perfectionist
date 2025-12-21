@@ -1389,10 +1389,6 @@ describe('sort-variable-declarations', () => {
             messageId: 'unexpectedVariableDeclarationsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -1422,6 +1418,7 @@ describe('sort-variable-declarations', () => {
             a,
            b,
           y,
+
               z,
         `,
       })
@@ -1714,6 +1711,7 @@ describe('sort-variable-declarations', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -3120,10 +3118,6 @@ describe('sort-variable-declarations', () => {
             messageId: 'unexpectedVariableDeclarationsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -3153,6 +3147,7 @@ describe('sort-variable-declarations', () => {
             a,
            b,
           y,
+
               z,
         `,
       })
@@ -3445,6 +3440,7 @@ describe('sort-variable-declarations', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -4851,10 +4847,6 @@ describe('sort-variable-declarations', () => {
             messageId: 'unexpectedVariableDeclarationsOrder',
             data: { right: 'bbb', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         options: [
           {
@@ -4884,6 +4876,7 @@ describe('sort-variable-declarations', () => {
             aaaa,
            bbb,
           yy,
+
               z,
         `,
       })
@@ -5179,6 +5172,7 @@ describe('sort-variable-declarations', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [

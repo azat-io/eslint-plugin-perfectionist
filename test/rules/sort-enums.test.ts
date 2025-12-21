@@ -1102,10 +1102,6 @@ describe('sort-enums', () => {
             messageId: 'unexpectedEnumsOrder',
             data: { right: 'B', left: 'Z' },
           },
-          {
-            messageId: 'extraSpacingBetweenEnumsMembers',
-            data: { right: 'B', left: 'Z' },
-          },
         ],
         options: [
           {
@@ -1136,6 +1132,7 @@ describe('sort-enums', () => {
             A = null,
            B = null,
           Y = null,
+
               Z = null,
           }
         `,
@@ -2525,10 +2522,6 @@ describe('sort-enums', () => {
             messageId: 'unexpectedEnumsOrder',
             data: { right: 'B', left: 'Z' },
           },
-          {
-            messageId: 'extraSpacingBetweenEnumsMembers',
-            data: { right: 'B', left: 'Z' },
-          },
         ],
         options: [
           {
@@ -2559,6 +2552,7 @@ describe('sort-enums', () => {
             A = null,
            B = null,
           Y = null,
+
               Z = null,
           }
         `,
@@ -3919,10 +3913,6 @@ describe('sort-enums', () => {
             data: { right: 'BBB', left: 'Z' },
             messageId: 'unexpectedEnumsOrder',
           },
-          {
-            messageId: 'extraSpacingBetweenEnumsMembers',
-            data: { right: 'BBB', left: 'Z' },
-          },
         ],
         options: [
           {
@@ -3953,6 +3943,7 @@ describe('sort-enums', () => {
             AAAA = null,
            BBB = null,
           YY = null,
+
               Z = null,
           }
         `,

@@ -1105,10 +1105,6 @@ describe('sort-named-imports', () => {
             messageId: 'unexpectedNamedImportsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenNamedImports',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -1139,6 +1135,7 @@ describe('sort-named-imports', () => {
               a,
              b,
             y,
+
                 z,
           } from 'module'
         `,
@@ -1386,6 +1383,7 @@ describe('sort-named-imports', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -2514,10 +2512,6 @@ describe('sort-named-imports', () => {
             messageId: 'unexpectedNamedImportsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenNamedImports',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -2548,6 +2542,7 @@ describe('sort-named-imports', () => {
               a,
              b,
             y,
+
                 z,
           } from 'module'
         `,
@@ -2795,6 +2790,7 @@ describe('sort-named-imports', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -3919,10 +3915,6 @@ describe('sort-named-imports', () => {
             messageId: 'unexpectedNamedImportsOrder',
             data: { right: 'bbb', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenNamedImports',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         options: [
           {
@@ -3953,6 +3945,7 @@ describe('sort-named-imports', () => {
               aaaa,
              bbb,
             yy,
+
                 z,
           } from 'module'
         `,
@@ -4200,6 +4193,7 @@ describe('sort-named-imports', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [

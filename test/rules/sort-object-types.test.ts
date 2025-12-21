@@ -1653,10 +1653,6 @@ describe('sort-object-types', () => {
             messageId: 'unexpectedObjectTypesOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenObjectTypeMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
           type Type = {
@@ -1674,6 +1670,7 @@ describe('sort-object-types', () => {
             a: () => null,
            b: "b",
           y: "y",
+
               z: "z",
           }
         `,
@@ -1954,6 +1951,7 @@ describe('sort-object-types', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })
@@ -4898,10 +4896,6 @@ describe('sort-object-types', () => {
             messageId: 'unexpectedObjectTypesOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenObjectTypeMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
           type Type = {
@@ -4919,6 +4913,7 @@ describe('sort-object-types', () => {
             a: () => null,
            b: "b",
           y: "y",
+
               z: "z",
           }
         `,
@@ -5199,6 +5194,7 @@ describe('sort-object-types', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })
@@ -7260,10 +7256,6 @@ describe('sort-object-types', () => {
             messageId: 'unexpectedObjectTypesOrder',
             data: { right: 'bbb', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenObjectTypeMembers',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         code: dedent`
           type Type = {
@@ -7281,6 +7273,7 @@ describe('sort-object-types', () => {
             aaaa: () => null,
            bbb: "b",
           yy: "y",
+
               z: "z",
           }
         `,
@@ -7561,6 +7554,7 @@ describe('sort-object-types', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })

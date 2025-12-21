@@ -922,10 +922,6 @@ describe('sort-decorators', () => {
             messageId: 'unexpectedDecoratorsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenDecorators',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -954,6 +950,7 @@ describe('sort-decorators', () => {
             @a
            @b
           @y
+
               @z
           class Class {}
         `,
@@ -1247,6 +1244,7 @@ describe('sort-decorators', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [

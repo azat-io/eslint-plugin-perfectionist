@@ -856,10 +856,6 @@ describe('sort-jsx-props', () => {
             messageId: 'unexpectedJSXPropsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -890,6 +886,7 @@ describe('sort-jsx-props', () => {
             a
            b
           y
+
               z
           />
         `,
@@ -1156,6 +1153,7 @@ describe('sort-jsx-props', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -2108,10 +2106,6 @@ describe('sort-jsx-props', () => {
             messageId: 'unexpectedJSXPropsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -2142,6 +2136,7 @@ describe('sort-jsx-props', () => {
             a
            b
           y
+
               z
           />
         `,
@@ -2408,6 +2403,7 @@ describe('sort-jsx-props', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -3360,10 +3356,6 @@ describe('sort-jsx-props', () => {
             messageId: 'unexpectedJSXPropsOrder',
             data: { right: 'bbb', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenJSXPropsMembers',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         options: [
           {
@@ -3394,6 +3386,7 @@ describe('sort-jsx-props', () => {
             aaaa
            bbb
           yy
+
               z
           />
         `,
@@ -3663,6 +3656,7 @@ describe('sort-jsx-props', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [

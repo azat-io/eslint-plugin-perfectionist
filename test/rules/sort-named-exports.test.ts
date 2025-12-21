@@ -969,10 +969,6 @@ describe('sort-named-exports', () => {
             messageId: 'unexpectedNamedExportsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenNamedExports',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -1003,6 +999,7 @@ describe('sort-named-exports', () => {
               a,
              b,
             y,
+
                 z,
           }
         `,
@@ -1255,6 +1252,7 @@ describe('sort-named-exports', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -2247,10 +2245,6 @@ describe('sort-named-exports', () => {
             messageId: 'unexpectedNamedExportsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenNamedExports',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -2281,6 +2275,7 @@ describe('sort-named-exports', () => {
               a,
              b,
             y,
+
                 z,
           }
         `,
@@ -2533,6 +2528,7 @@ describe('sort-named-exports', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -3528,10 +3524,6 @@ describe('sort-named-exports', () => {
             messageId: 'unexpectedNamedExportsOrder',
             data: { right: 'bbb', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenNamedExports',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         options: [
           {
@@ -3562,6 +3554,7 @@ describe('sort-named-exports', () => {
               aaaa,
              bbb,
             yy,
+
                 z,
           }
         `,
@@ -3814,6 +3807,7 @@ describe('sort-named-exports', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [

@@ -833,10 +833,6 @@ describe('sort-union-types', () => {
             messageId: 'unexpectedUnionTypesOrder',
             data: { right: 'B', left: 'Z' },
           },
-          {
-            messageId: 'extraSpacingBetweenUnionTypes',
-            data: { right: 'B', left: 'Z' },
-          },
         ],
         options: [
           {
@@ -860,6 +856,7 @@ describe('sort-union-types', () => {
             (() => null)
            | B
           | Y
+
               | Z
         `,
       })
@@ -1076,6 +1073,7 @@ describe('sort-union-types', () => {
           {
             groups: ['literal', 'named'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         output: dedent`
@@ -2421,10 +2419,6 @@ describe('sort-union-types', () => {
             messageId: 'unexpectedUnionTypesOrder',
             data: { right: 'B', left: 'Z' },
           },
-          {
-            messageId: 'extraSpacingBetweenUnionTypes',
-            data: { right: 'B', left: 'Z' },
-          },
         ],
         options: [
           {
@@ -2448,6 +2442,7 @@ describe('sort-union-types', () => {
             (() => null)
            | B
           | Y
+
               | Z
         `,
       })
@@ -2664,6 +2659,7 @@ describe('sort-union-types', () => {
           {
             groups: ['literal', 'named'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         output: dedent`
@@ -3950,10 +3946,6 @@ describe('sort-union-types', () => {
             messageId: 'unexpectedUnionTypesOrder',
             data: { right: 'BBB', left: 'Z' },
           },
-          {
-            messageId: 'extraSpacingBetweenUnionTypes',
-            data: { right: 'BBB', left: 'Z' },
-          },
         ],
         options: [
           {
@@ -3977,6 +3969,7 @@ describe('sort-union-types', () => {
             (() => null)
            | BBB
           | YY
+
               | Z
         `,
       })
@@ -4193,6 +4186,7 @@ describe('sort-union-types', () => {
           {
             groups: ['literal', 'named'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         output: dedent`

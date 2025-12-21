@@ -963,10 +963,6 @@ describe('sort-exports', () => {
             messageId: 'unexpectedExportsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenExports',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -994,6 +990,7 @@ describe('sort-exports', () => {
             export { a } from 'a'
            export { b } from 'b'
           export { y } from 'y'
+
               export { z } from 'z'
         `,
       })
@@ -2304,10 +2301,6 @@ describe('sort-exports', () => {
             messageId: 'unexpectedExportsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenExports',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -2335,6 +2328,7 @@ describe('sort-exports', () => {
             export { a } from 'a'
            export { b } from 'b'
           export { y } from 'y'
+
               export { z } from 'z'
         `,
       })
@@ -3690,10 +3684,6 @@ describe('sort-exports', () => {
             messageId: 'extraSpacingBetweenExports',
             data: { right: 'y', left: 'a' },
           },
-          {
-            messageId: 'extraSpacingBetweenExports',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
             export { a } from 'a'
@@ -3708,6 +3698,7 @@ describe('sort-exports', () => {
             export { a } from 'a'
            export { y } from 'y'
           export { z } from 'z'
+
               export { b } from 'b'
         `,
       })

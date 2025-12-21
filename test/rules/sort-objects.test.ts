@@ -1754,10 +1754,6 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenObjectMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
           let Obj = {
@@ -1775,6 +1771,7 @@ describe('sort-objects', () => {
             a: () => null,
            b: "b",
           y: "y",
+
               z: "z",
           }
         `,
@@ -2049,6 +2046,7 @@ describe('sort-objects', () => {
           {
             groups: ['unknown', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })
@@ -5558,10 +5556,6 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenObjectMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
           let Obj = {
@@ -5579,6 +5573,7 @@ describe('sort-objects', () => {
             a: () => null,
            b: "b",
           y: "y",
+
               z: "z",
           }
         `,
@@ -5853,6 +5848,7 @@ describe('sort-objects', () => {
           {
             groups: ['unknown', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })
@@ -8206,10 +8202,6 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsOrder',
             data: { right: 'bbb', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenObjectMembers',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         code: dedent`
           let Obj = {
@@ -8227,6 +8219,7 @@ describe('sort-objects', () => {
             aaaa: () => null,
            bbb: "b",
           yy: "y",
+
               z: "z",
           }
         `,
@@ -8501,6 +8494,7 @@ describe('sort-objects', () => {
           {
             groups: ['unknown', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })

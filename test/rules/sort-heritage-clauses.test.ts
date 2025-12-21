@@ -533,10 +533,6 @@ describe('sort-heritage-clauses', () => {
             messageId: 'unexpectedHeritageClausesOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenHeritageClauses',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -567,6 +563,7 @@ describe('sort-heritage-clauses', () => {
               a,
              b,
             y,
+
                 z
           {}
         `,
@@ -871,6 +868,7 @@ describe('sort-heritage-clauses', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [

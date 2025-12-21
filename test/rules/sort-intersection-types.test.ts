@@ -832,10 +832,6 @@ describe('sort-intersection-types', () => {
             messageId: 'unexpectedIntersectionTypesOrder',
             data: { right: 'B', left: 'Z' },
           },
-          {
-            messageId: 'extraSpacingBetweenIntersectionTypes',
-            data: { right: 'B', left: 'Z' },
-          },
         ],
         options: [
           {
@@ -859,6 +855,7 @@ describe('sort-intersection-types', () => {
             (() => null)
            & B
           & Y
+
               & Z
         `,
       })
@@ -1075,6 +1072,7 @@ describe('sort-intersection-types', () => {
           {
             groups: ['literal', 'named'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         output: dedent`
@@ -2412,10 +2410,6 @@ describe('sort-intersection-types', () => {
             messageId: 'unexpectedIntersectionTypesOrder',
             data: { right: 'B', left: 'Z' },
           },
-          {
-            messageId: 'extraSpacingBetweenIntersectionTypes',
-            data: { right: 'B', left: 'Z' },
-          },
         ],
         options: [
           {
@@ -2439,6 +2433,7 @@ describe('sort-intersection-types', () => {
             (() => null)
            & B
           & Y
+
               & Z
         `,
       })
@@ -2655,6 +2650,7 @@ describe('sort-intersection-types', () => {
           {
             groups: ['literal', 'named'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         output: dedent`
@@ -3946,10 +3942,6 @@ describe('sort-intersection-types', () => {
             messageId: 'unexpectedIntersectionTypesOrder',
             data: { right: 'BBB', left: 'Z' },
           },
-          {
-            messageId: 'extraSpacingBetweenIntersectionTypes',
-            data: { right: 'BBB', left: 'Z' },
-          },
         ],
         options: [
           {
@@ -3973,6 +3965,7 @@ describe('sort-intersection-types', () => {
             (() => null)
            & BBB
           & YY
+
               & Z
         `,
       })
@@ -4189,6 +4182,7 @@ describe('sort-intersection-types', () => {
           {
             groups: ['literal', 'named'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         output: dedent`

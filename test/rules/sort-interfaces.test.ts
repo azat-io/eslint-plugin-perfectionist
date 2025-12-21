@@ -1794,10 +1794,6 @@ describe('sort-interfaces', () => {
             messageId: 'unexpectedInterfacePropertiesOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenInterfaceMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
           interface Interface {
@@ -1815,6 +1811,7 @@ describe('sort-interfaces', () => {
             a: () => null,
            b: "b",
           y: "y",
+
               z: "z",
           }
         `,
@@ -2090,6 +2087,7 @@ describe('sort-interfaces', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })
@@ -4336,10 +4334,6 @@ describe('sort-interfaces', () => {
             messageId: 'unexpectedInterfacePropertiesOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenInterfaceMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
           interface Interface {
@@ -4357,6 +4351,7 @@ describe('sort-interfaces', () => {
             a: () => null,
            b: "b",
           y: "y",
+
               z: "z",
           }
         `,
@@ -4632,6 +4627,7 @@ describe('sort-interfaces', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })
@@ -6739,10 +6735,6 @@ describe('sort-interfaces', () => {
             messageId: 'unexpectedInterfacePropertiesOrder',
             data: { right: 'bbb', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenInterfaceMembers',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         code: dedent`
           interface Interface {
@@ -6760,6 +6752,7 @@ describe('sort-interfaces', () => {
             aaaa: () => null,
            bbb: "b",
           yy: "y",
+
               z: "z",
           }
         `,
@@ -7035,6 +7028,7 @@ describe('sort-interfaces', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })

@@ -1807,10 +1807,6 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenModulesMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -1829,7 +1825,9 @@ describe('sort-modules', () => {
               function b() {}
         `,
         output: dedent`
-            function b() {}
+          function b() {}
+
+
            function y() {}
           function z() {}
               interface A {}
@@ -2149,6 +2147,7 @@ describe('sort-modules', () => {
           {
             groups: ['function', 'type'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         code: dedent`
@@ -4224,10 +4223,6 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenModulesMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
@@ -4247,6 +4242,8 @@ describe('sort-modules', () => {
         `,
         output: dedent`
             function b() {}
+
+
            function y() {}
           function z() {}
               interface A {}
@@ -4566,6 +4563,7 @@ describe('sort-modules', () => {
           {
             groups: ['function', 'type'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         code: dedent`
@@ -6601,10 +6599,6 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesOrder',
             data: { right: 'bbb', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenModulesMembers',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         options: [
           {
@@ -6624,6 +6618,8 @@ describe('sort-modules', () => {
         `,
         output: dedent`
             function bbb() {}
+
+
            function yy() {}
           function z() {}
               interface AAAA {}
@@ -6946,6 +6942,7 @@ describe('sort-modules', () => {
           {
             groups: ['function', 'type'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         code: dedent`

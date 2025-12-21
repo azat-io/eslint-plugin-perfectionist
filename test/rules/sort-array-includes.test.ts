@@ -1313,10 +1313,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
           [
@@ -1334,6 +1330,7 @@ describe('sort-array-includes', () => {
             'a',
            'b',
           'y',
+
               'z'
           ].includes(value)
         `,
@@ -1654,6 +1651,7 @@ describe('sort-array-includes', () => {
           ],
           groups: ['unknown', 'b|c'],
           newlinesBetween: 1,
+          newlinesInside: 0,
         },
       ]
 
@@ -2996,10 +2994,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         code: dedent`
           [
@@ -3017,6 +3011,7 @@ describe('sort-array-includes', () => {
             'a',
            'b',
           'y',
+
               'z'
           ].includes(value)
         `,
@@ -3337,6 +3332,7 @@ describe('sort-array-includes', () => {
           ],
           groups: ['unknown', 'b|c'],
           newlinesBetween: 1,
+          newlinesInside: 0,
         },
       ]
 
@@ -4666,10 +4662,6 @@ describe('sort-array-includes', () => {
             messageId: 'unexpectedArrayIncludesOrder',
             data: { right: 'bbb', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         code: dedent`
           [
@@ -4687,6 +4679,7 @@ describe('sort-array-includes', () => {
             'aaaa',
            'bbb',
           'yy',
+
               'z'
           ].includes(value)
         `,
@@ -5010,6 +5003,7 @@ describe('sort-array-includes', () => {
           ],
           groups: ['unknown', 'b|c'],
           newlinesBetween: 1,
+          newlinesInside: 0,
         },
       ]
 
