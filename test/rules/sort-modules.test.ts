@@ -2137,12 +2137,6 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesGroupOrder',
           },
         ],
-        output: dedent`
-          function a() {} // Comment after
-
-          type B = string
-          type C = string
-        `,
         options: [
           {
             groups: ['function', 'type'],
@@ -2150,6 +2144,12 @@ describe('sort-modules', () => {
             newlinesInside: 0,
           },
         ],
+        output: dedent`
+          function a() {} // Comment after
+
+          type B = string
+          type C = string
+        `,
         code: dedent`
           type B = string
           function a() {} // Comment after
@@ -4231,6 +4231,14 @@ describe('sort-modules', () => {
             newlinesBetween: 0,
           },
         ],
+        output: dedent`
+            function b() {}
+
+
+           function y() {}
+          function z() {}
+              interface A {}
+        `,
         code: dedent`
             interface A {}
 
@@ -4239,14 +4247,6 @@ describe('sort-modules', () => {
           function z() {}
 
               function b() {}
-        `,
-        output: dedent`
-            function b() {}
-
-
-           function y() {}
-          function z() {}
-              interface A {}
         `,
       })
     })
@@ -4553,12 +4553,6 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesGroupOrder',
           },
         ],
-        output: dedent`
-          function a() {} // Comment after
-
-          type B = string
-          type C = string
-        `,
         options: [
           {
             groups: ['function', 'type'],
@@ -4566,6 +4560,12 @@ describe('sort-modules', () => {
             newlinesInside: 0,
           },
         ],
+        output: dedent`
+          function a() {} // Comment after
+
+          type B = string
+          type C = string
+        `,
         code: dedent`
           type B = string
           function a() {} // Comment after
@@ -6607,6 +6607,14 @@ describe('sort-modules', () => {
             newlinesBetween: 0,
           },
         ],
+        output: dedent`
+            function bbb() {}
+
+
+           function yy() {}
+          function z() {}
+              interface AAAA {}
+        `,
         code: dedent`
             interface AAAA {}
 
@@ -6615,14 +6623,6 @@ describe('sort-modules', () => {
           function z() {}
 
               function bbb() {}
-        `,
-        output: dedent`
-            function bbb() {}
-
-
-           function yy() {}
-          function z() {}
-              interface AAAA {}
         `,
       })
     })
@@ -6932,12 +6932,6 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesGroupOrder',
           },
         ],
-        output: dedent`
-          function a() {} // Comment after
-
-          type B = string
-          type C = string
-        `,
         options: [
           {
             groups: ['function', 'type'],
@@ -6945,6 +6939,12 @@ describe('sort-modules', () => {
             newlinesInside: 0,
           },
         ],
+        output: dedent`
+          function a() {} // Comment after
+
+          type B = string
+          type C = string
+        `,
         code: dedent`
           type B = string
           function a() {} // Comment after

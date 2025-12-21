@@ -63,24 +63,6 @@ interface ReportAllErrorsParameters<
   }
 
   /**
-   * Configuration options for sorting and grouping.
-   *
-   * Extends MakeFixesParameters options with groups configuration. Includes all
-   * sorting preferences, partition settings, newlines configuration, and custom
-   * group definitions.
-   *
-   * @example
-   *   options: {
-   *   type: 'alphabetical',
-   *   order: 'asc',
-   *   groups: ['static-property', 'property', 'constructor', 'method'],
-   *   newlinesBetween: 1,
-   *   partitionByComment: true
-   *   }
-   */
-  options: CommonGroupsOptions<unknown, unknown, string>
-
-  /**
    * Function to get sorted nodes with or without ESLint-disabled nodes.
    *
    * This function is called twice by reportAllErrors:
@@ -122,6 +104,24 @@ interface ReportAllErrorsParameters<
    * @returns Number of required newlines or 'ignore'.
    */
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
+
+  /**
+   * Configuration options for sorting and grouping.
+   *
+   * Extends MakeFixesParameters options with groups configuration. Includes all
+   * sorting preferences, partition settings, newlines configuration, and custom
+   * group definitions.
+   *
+   * @example
+   *   options: {
+   *   type: 'alphabetical',
+   *   order: 'asc',
+   *   groups: ['static-property', 'property', 'constructor', 'method'],
+   *   newlinesBetween: 1,
+   *   partitionByComment: true
+   *   }
+   */
+  options: CommonGroupsOptions<unknown, unknown, string>
 
   /**
    * ESLint rule context for reporting errors.

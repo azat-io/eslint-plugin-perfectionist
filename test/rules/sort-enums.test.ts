@@ -1093,16 +1093,6 @@ describe('sort-enums', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenEnumsMembers',
-            data: { right: 'Y', left: 'A' },
-          },
-          {
-            messageId: 'unexpectedEnumsOrder',
-            data: { right: 'B', left: 'Z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -1114,6 +1104,16 @@ describe('sort-enums', () => {
             ],
             groups: ['a', 'unknown'],
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenEnumsMembers',
+            data: { right: 'Y', left: 'A' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'B', left: 'Z' },
           },
         ],
         code: dedent`
@@ -2513,16 +2513,6 @@ describe('sort-enums', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenEnumsMembers',
-            data: { right: 'Y', left: 'A' },
-          },
-          {
-            messageId: 'unexpectedEnumsOrder',
-            data: { right: 'B', left: 'Z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -2534,6 +2524,16 @@ describe('sort-enums', () => {
             ],
             groups: ['a', 'unknown'],
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenEnumsMembers',
+            data: { right: 'Y', left: 'A' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'B', left: 'Z' },
           },
         ],
         code: dedent`

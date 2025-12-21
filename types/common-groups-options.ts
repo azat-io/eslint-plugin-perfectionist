@@ -43,14 +43,14 @@ export type CustomGroupsOption<
    */
   fallbackSort?: FallbackSortOption<CustomTypeOption>
 
+  /** Specify the exact number of newlines required. */
+  newlinesInside?: NewlinesInsideOption
+
   /**
    * Regular expression pattern to match the element's name. Elements matching
    * this pattern will be included in this custom group.
    */
   elementNamePattern?: RegexOption
-
-  /** Specify the exact number of newlines required. */
-  newlinesInside?: NewlinesInsideOption
 
   /**
    * Sorting algorithm type for this custom group. Overrides the global type
@@ -71,36 +71,6 @@ export type CustomGroupsOption<
   groupName: string
 } & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) &
   AdditionalOptions)[]
-
-/**
- * Configuration for groups with overriding settings.
- *
- * @example
- *   const groups = [
- *     'imports',
- *     { group: 'group', commentAbove: '// Component Definitions' },
- *     'components',
- *   ]
- */
-export interface GroupWithOverridesOption<CustomTypeOption extends string> {
-  /** Name of the group or array of group names for composite groups. */
-  group: string[] | string
-
-  /** Specify the exact number of newlines required inside the group. */
-  newlinesInside?: NewlinesInsideOption
-
-  /** Same as `type` in CommonOptions - Sorting algorithm to use for this group. */
-  type?: CustomTypeOption
-
-  /**
-   * Text of the comment to insert above the group. The comment will be
-   * formatted as a line comment (// ...).
-   */
-  commentAbove?: string
-
-  /** Same as `order` in CommonOptions - Sort direction for this group. */
-  order?: OrderOption
-}
 
 export interface CommonGroupsOptions<
   SingleCustomGroup,
@@ -125,6 +95,36 @@ export interface CommonGroupsOptions<
 
   /** Specify the exact number of newlines required between elements of groups. */
   newlinesInside: NewlinesInsideOption
+}
+
+/**
+ * Configuration for groups with overriding settings.
+ *
+ * @example
+ *   const groups = [
+ *     'imports',
+ *     { group: 'group', commentAbove: '// Component Definitions' },
+ *     'components',
+ *   ]
+ */
+export interface GroupWithOverridesOption<CustomTypeOption extends string> {
+  /** Specify the exact number of newlines required inside the group. */
+  newlinesInside?: NewlinesInsideOption
+
+  /** Name of the group or array of group names for composite groups. */
+  group: string[] | string
+
+  /** Same as `type` in CommonOptions - Sorting algorithm to use for this group. */
+  type?: CustomTypeOption
+
+  /**
+   * Text of the comment to insert above the group. The comment will be
+   * formatted as a line comment (// ...).
+   */
+  commentAbove?: string
+
+  /** Same as `order` in CommonOptions - Sort direction for this group. */
+  order?: OrderOption
 }
 
 /**

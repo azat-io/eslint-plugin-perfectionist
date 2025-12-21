@@ -960,16 +960,6 @@ describe('sort-named-exports', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenNamedExports',
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: 'unexpectedNamedExportsOrder',
-            data: { right: 'b', left: 'z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -981,6 +971,16 @@ describe('sort-named-exports', () => {
             ],
             groups: ['a', 'unknown'],
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenNamedExports',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedNamedExportsOrder',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -2236,16 +2236,6 @@ describe('sort-named-exports', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenNamedExports',
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: 'unexpectedNamedExportsOrder',
-            data: { right: 'b', left: 'z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -2257,6 +2247,16 @@ describe('sort-named-exports', () => {
             ],
             groups: ['a', 'unknown'],
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenNamedExports',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedNamedExportsOrder',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`

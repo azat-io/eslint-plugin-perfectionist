@@ -3837,6 +3837,13 @@ describe('sort-classes', () => {
             data: { right: 'b', left: 'z' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           class Class {
             a() {}
@@ -3857,13 +3864,6 @@ describe('sort-classes', () => {
               z = "z"
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -4152,6 +4152,13 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['property', 'method'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           class Class {
             a // Comment after
@@ -4168,13 +4175,6 @@ describe('sort-classes', () => {
             c() {}
           }
         `,
-        options: [
-          {
-            groups: ['property', 'method'],
-            newlinesBetween: 1,
-            newlinesInside: 0,
-          },
-        ],
       })
     })
 
@@ -8347,6 +8347,13 @@ describe('sort-classes', () => {
             data: { right: 'b', left: 'z' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           class Class {
             a() {}
@@ -8367,13 +8374,6 @@ describe('sort-classes', () => {
               z = "z"
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -8662,6 +8662,13 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['property', 'method'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           class Class {
             a // Comment after
@@ -8678,13 +8685,6 @@ describe('sort-classes', () => {
             c() {}
           }
         `,
-        options: [
-          {
-            groups: ['property', 'method'],
-            newlinesBetween: 1,
-            newlinesInside: 0,
-          },
-        ],
       })
     })
 
@@ -12797,6 +12797,13 @@ describe('sort-classes', () => {
             data: { right: 'b', left: 'a' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           class Class {
             a() {}
@@ -12817,13 +12824,6 @@ describe('sort-classes', () => {
               z = "z"
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -13112,6 +13112,13 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['property', 'method'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           class Class {
             a // Comment after
@@ -13128,13 +13135,6 @@ describe('sort-classes', () => {
             c() {}
           }
         `,
-        options: [
-          {
-            groups: ['property', 'method'],
-            newlinesBetween: 1,
-            newlinesInside: 0,
-          },
-        ],
       })
     })
 

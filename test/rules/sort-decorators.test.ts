@@ -913,16 +913,6 @@ describe('sort-decorators', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenDecorators',
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: 'unexpectedDecoratorsOrder',
-            data: { right: 'b', left: 'z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -934,6 +924,16 @@ describe('sort-decorators', () => {
             ],
             groups: ['a', 'unknown'],
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenDecorators',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedDecoratorsOrder',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`

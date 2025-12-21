@@ -954,16 +954,6 @@ describe('sort-exports', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenExports',
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: 'unexpectedExportsOrder',
-            data: { right: 'b', left: 'z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -975,6 +965,16 @@ describe('sort-exports', () => {
             ],
             groups: ['a', 'unknown'],
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenExports',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -2292,16 +2292,6 @@ describe('sort-exports', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenExports',
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: 'unexpectedExportsOrder',
-            data: { right: 'b', left: 'z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -2313,6 +2303,16 @@ describe('sort-exports', () => {
             ],
             groups: ['a', 'unknown'],
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenExports',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -3679,12 +3679,6 @@ describe('sort-exports', () => {
             newlinesBetween: 0,
           },
         ],
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenExports',
-            data: { right: 'y', left: 'a' },
-          },
-        ],
         code: dedent`
             export { a } from 'a'
 
@@ -3701,6 +3695,12 @@ describe('sort-exports', () => {
 
               export { b } from 'b'
         `,
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenExports',
+            data: { right: 'y', left: 'a' },
+          },
+        ],
       })
     })
 

@@ -2026,6 +2026,13 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['unknown', 'method'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           let obj = {
             a, // Comment after
@@ -2042,13 +2049,6 @@ describe('sort-objects', () => {
             c() {},
           };
         `,
-        options: [
-          {
-            groups: ['unknown', 'method'],
-            newlinesBetween: 1,
-            newlinesInside: 0,
-          },
-        ],
       })
     })
 
@@ -5828,6 +5828,13 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['unknown', 'method'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           let obj = {
             a, // Comment after
@@ -5844,13 +5851,6 @@ describe('sort-objects', () => {
             c() {},
           };
         `,
-        options: [
-          {
-            groups: ['unknown', 'method'],
-            newlinesBetween: 1,
-            newlinesInside: 0,
-          },
-        ],
       })
     })
 
@@ -8474,6 +8474,13 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['unknown', 'method'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           let obj = {
             a, // Comment after
@@ -8490,13 +8497,6 @@ describe('sort-objects', () => {
             c() {},
           };
         `,
-        options: [
-          {
-            groups: ['unknown', 'method'],
-            newlinesBetween: 1,
-            newlinesInside: 0,
-          },
-        ],
       })
     })
 

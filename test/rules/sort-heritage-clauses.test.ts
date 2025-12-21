@@ -524,16 +524,6 @@ describe('sort-heritage-clauses', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenHeritageClauses',
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: 'unexpectedHeritageClausesOrder',
-            data: { right: 'b', left: 'z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -545,6 +535,16 @@ describe('sort-heritage-clauses', () => {
             ],
             groups: ['a', 'unknown'],
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenHeritageClauses',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedHeritageClausesOrder',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
