@@ -72,6 +72,7 @@ let defaultOptions: Required<Options[number]> = {
   partitionByComment: false,
   newlinesBetween: 'ignore',
   specialCharacters: 'keep',
+  newlinesInside: 'ignore',
   styledComponents: true,
   useConfigurationIf: {},
   type: 'alphabetical',

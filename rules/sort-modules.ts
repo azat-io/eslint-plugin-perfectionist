@@ -88,6 +88,7 @@ let defaultOptions: Required<SortModulesOptions[number]> = {
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
   specialCharacters: 'keep',
+  newlinesInside: 'ignore',
   type: 'alphabetical',
   ignoreCase: true,
   customGroups: [],
