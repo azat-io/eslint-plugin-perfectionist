@@ -3825,7 +3825,7 @@ describe('sort-classes', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         errors: [
           {
@@ -8335,7 +8335,7 @@ describe('sort-classes', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         errors: [
           {
@@ -12789,7 +12789,7 @@ describe('sort-classes', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         errors: [
           {
