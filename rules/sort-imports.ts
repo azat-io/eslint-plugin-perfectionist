@@ -103,6 +103,7 @@ let defaultOptions: Required<Options[number]> = {
   type: 'alphabetical',
   environment: 'node',
   newlinesBetween: 1,
+  newlinesInside: 0,
   customGroups: [],
   ignoreCase: true,
   locales: 'en-US',
