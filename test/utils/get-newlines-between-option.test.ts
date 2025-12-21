@@ -8,7 +8,7 @@ import { getNewlinesBetweenOption } from '../../utils/get-newlines-between-optio
 const MULTIPLE_LINES_OPTIONS = [1, 2] as const
 
 describe('get-newlines-between-option', () => {
-  describe('global "newlinesBetween" option', () => {
+  describe('global "newlinesBetween"/"newlinesInside" option', () => {
     it.each([...MULTIPLE_LINES_OPTIONS, 'ignore', 0] as const)(
       'should return the global option (`%s`) if "customGroups" is not defined',
       newlinesBetween => {
@@ -52,21 +52,6 @@ describe('get-newlines-between-option', () => {
         ).toBe(newlinesBetween)
       },
     )
-
-    it('should return 1 if "newlinesBetween" is 1 and nodeGroupIndex !== nextNodeGroupIndex', () => {
-      let groups = ['group1', 'group2']
-      expect(
-        getNewlinesBetweenOption({
-          options: {
-            newlinesBetween: 1,
-            customGroups: [],
-            groups,
-          },
-          nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group2'),
-          nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
-        }),
-      ).toBe(1)
-    })
 
     it('should return 0 if "newlinesBetween" is 1 and nodeGroupNumber === nextNodeGroupNumber', () => {
       let groups = ['group1']
@@ -122,7 +107,7 @@ describe('get-newlines-between-option', () => {
     )
   })
 
-  describe('custom groups "newlinesBetween" option', () => {
+  describe('custom groups "newlinesBetween"/"newlinesInside" option', () => {
     describe('when the node and next node belong to the same custom group', () => {
       let parameters = {
         customGroups: [
