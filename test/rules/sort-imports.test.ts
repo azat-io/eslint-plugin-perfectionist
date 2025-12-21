@@ -1734,6 +1734,7 @@ describe('sort-imports', () => {
           {
             ...options,
             newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
             partitionByNewLine: true,
           },
         ],
@@ -3120,17 +3121,18 @@ describe('sort-imports', () => {
 
     it('prioritizes dependencies over newline-based partitions', async () => {
       await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
-            messageId: 'unexpectedImportsDependencyOrder',
-          },
-        ],
         options: [
           {
             ...options,
             newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
             partitionByNewLine: true,
+          },
+        ],
+        errors: [
+          {
+            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         output: dedent`
@@ -3192,6 +3194,7 @@ describe('sort-imports', () => {
           {
             ...options,
             newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
             partitionByNewLine: true,
           },
         ],
@@ -5179,6 +5182,7 @@ describe('sort-imports', () => {
           {
             ...options,
             newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
             partitionByNewLine: true,
           },
         ],
@@ -6392,17 +6396,18 @@ describe('sort-imports', () => {
 
     it('prioritizes dependencies over newline-based partitions', async () => {
       await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
-            messageId: 'unexpectedImportsDependencyOrder',
-          },
-        ],
         options: [
           {
             ...options,
             newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
             partitionByNewLine: true,
+          },
+        ],
+        errors: [
+          {
+            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         output: dedent`
@@ -6464,6 +6469,7 @@ describe('sort-imports', () => {
           {
             ...options,
             newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
             partitionByNewLine: true,
           },
         ],
@@ -8493,17 +8499,18 @@ describe('sort-imports', () => {
           import { AnotherNamed } from './second-folder';
           import { Named } from './folder';
         `,
-        errors: [
-          {
-            data: { right: './shared', left: './atoms' },
-            messageId: 'unexpectedImportsOrder',
-          },
-        ],
         options: [
           {
             ...options,
             newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
             partitionByNewLine: true,
+          },
+        ],
+        errors: [
+          {
+            data: { right: './shared', left: './atoms' },
+            messageId: 'unexpectedImportsOrder',
           },
         ],
       })
@@ -9731,17 +9738,18 @@ describe('sort-imports', () => {
 
     it('prioritizes dependencies over newline-based partitions', async () => {
       await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
-            messageId: 'unexpectedImportsDependencyOrder',
-          },
-        ],
         options: [
           {
             ...options,
             newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
             partitionByNewLine: true,
+          },
+        ],
+        errors: [
+          {
+            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+            messageId: 'unexpectedImportsDependencyOrder',
           },
         ],
         output: dedent`
@@ -9803,6 +9811,7 @@ describe('sort-imports', () => {
           {
             ...options,
             newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
             partitionByNewLine: true,
           },
         ],
