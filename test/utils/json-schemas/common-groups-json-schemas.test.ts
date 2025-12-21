@@ -4,6 +4,7 @@ import Ajv from 'ajv-draft-04'
 import {
   buildCustomGroupsArrayJsonSchema,
   newlinesBetweenJsonSchema,
+  newlinesInsideJsonSchema,
   buildGroupsJsonSchema,
 } from '../../../utils/json-schemas/common-groups-json-schemas'
 
@@ -19,6 +20,20 @@ describe('common-groups-json-schemas', () => {
 
     it('should not allow invalid values', () => {
       expect(newlinesBetweenJsonSchemaValidator('invalid')).toBeFalsy()
+    })
+  })
+
+  describe('newlinesInside', () => {
+    let newlinesInsideJsonSchemaValidator = new Ajv().compile(
+      newlinesInsideJsonSchema,
+    )
+
+    it.each(['ignore', 1, 0])("should allow '%s'", newlinesInside => {
+      expect(newlinesInsideJsonSchemaValidator(newlinesInside)).toBeTruthy()
+    })
+
+    it('should not allow invalid values', () => {
+      expect(newlinesInsideJsonSchemaValidator('invalid')).toBeFalsy()
     })
   })
 
