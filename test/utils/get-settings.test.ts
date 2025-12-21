@@ -26,6 +26,7 @@ describe('get-settings', () => {
       partitionByNewLine: true,
       type: 'alphabetical',
       newlinesBetween: 1,
+      newlinesInside: 1,
       ignoreCase: true,
       locales: 'en-US',
       alphabet: '',
