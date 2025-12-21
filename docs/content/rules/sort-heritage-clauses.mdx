@@ -171,10 +171,26 @@ Specifies how to handle newlines between groups.
 
 - `'ignore'` — Do not report errors related to newlines.
 - `0` — No newlines are allowed.
-- Any other number — Enforce this number of newlines between each group, and forbid newlines inside groups.
+- Any other number — Enforce this number of newlines between each group.
 
 You can also enforce the newline behavior between two specific groups through the [`groups`](#newlines-between-groups)
 option.
+
+This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
+
+### newlinesInside
+
+<sub>type: `number | 'ignore'`</sub>
+<sub>default: `'ignore'`</sub>
+
+Specifies how to handle newlines inside groups.
+
+- `'ignore'` — Do not report errors related to newlines.
+- `0` — No newlines are allowed.
+- Any other number — Enforce this number of newlines between each element of the same group.
+
+You can also enforce the newline behavior inside a given group through the [`groups`](#group-with-overridden-settings)
+or [`customGroups`](#customgroups) options.
 
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
@@ -186,12 +202,12 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
     Array<
       | string
       | string[]
-      | { newlinesBetween: number }
+      | { newlinesBetween: number | 'ignore' }
       | {
           group: string | string[];
           type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
           order?: 'asc' | 'desc';
-          newlinesInside?: number;
+          newlinesInside?: number | 'ignore';
         }
     >
   ```
@@ -295,7 +311,7 @@ interface CustomGroupDefinition {
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
-  newlinesInside?: number
+  newlinesInside?: number | 'ignore'
   elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
 }
 
@@ -310,7 +326,7 @@ interface CustomGroupAnyOfDefinition {
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
-  newlinesInside?: number
+  newlinesInside?: number | 'ignore'
   anyOf: Array<{
       selector?: string
       elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
@@ -389,6 +405,7 @@ interface Interface extends WithId, Logged, StartupService {
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
+                  newlinesInside: 'ignore',
                   groups: [],
                   customGroups: [],
                 },
@@ -419,6 +436,7 @@ interface Interface extends WithId, Logged, StartupService {
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
+                newlinesInside: 'ignore',
                 groups: [],
                 customGroups: [],
               },
