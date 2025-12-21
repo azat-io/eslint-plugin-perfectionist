@@ -1,6 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { PartitionByCommentOption } from '../types/common-partition-options'
+import type { CommonPartitionOptions } from '../types/common-partition-options'
+import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { CommonOptions } from '../types/common-options'
 
 /**
@@ -10,18 +11,11 @@ import type { CommonOptions } from '../types/common-options'
  * 'perfectionist' key and apply to all Perfectionist rules unless overridden by
  * rule-specific options.
  */
-export type Settings = Partial<{
-  /**
-   * Configuration for partition comments that separate code sections. Can be
-   * boolean, string, array of strings, or object with block/line specific
-   * settings.
-   */
-  partitionByComment: PartitionByCommentOption
-
-  /** Whether to create partitions at newlines. */
-  partitionByNewLine: boolean
-}> &
-  Partial<CommonOptions>
+export type Settings = Partial<
+  Pick<CommonGroupsOptions<unknown, unknown, string>, 'newlinesBetween'> &
+    CommonPartitionOptions &
+    CommonOptions
+>
 
 /**
  * Extracts and validates Perfectionist settings from ESLint configuration.
@@ -71,6 +65,7 @@ export function getSettings(
       'partitionByComment',
       'partitionByNewLine',
       'specialCharacters',
+      'newlinesBetween',
       'fallbackSort',
       'ignoreCase',
       'alphabet',
