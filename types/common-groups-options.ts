@@ -43,7 +43,7 @@ export type CustomGroupsOption<
    */
   fallbackSort?: FallbackSortOption<CustomTypeOption>
 
-  /** Specify the exact number of newlines required. */
+  /** Specify the exact number of newlines required between elements of groups. */
   newlinesInside?: NewlinesInsideOption
 
   /**
