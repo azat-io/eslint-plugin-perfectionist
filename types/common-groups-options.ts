@@ -50,7 +50,7 @@ export type CustomGroupsOption<
   elementNamePattern?: RegexOption
 
   /** Specify the exact number of newlines required. */
-  newlinesInside?: number
+  newlinesInside?: NewlinesInsideOption
 
   /**
    * Sorting algorithm type for this custom group. Overrides the global type
@@ -87,7 +87,7 @@ export interface GroupWithOverridesOption<CustomTypeOption extends string> {
   group: string[] | string
 
   /** Specify the exact number of newlines required inside the group. */
-  newlinesInside?: number
+  newlinesInside?: NewlinesInsideOption
 
   /** Same as `type` in CommonOptions - Sorting algorithm to use for this group. */
   type?: CustomTypeOption
@@ -120,8 +120,11 @@ export interface CommonGroupsOptions<
    */
   groups: GroupsOptions<CustomTypeOption>
 
-  /** Controls the placement of newlines between different groups of nodes. */
+  /** Specify the exact number of newlines required between groups. */
   newlinesBetween: NewlinesBetweenOption
+
+  /** Specify the exact number of newlines required between elements of groups. */
+  newlinesInside: NewlinesInsideOption
 }
 
 /**
@@ -200,6 +203,13 @@ export interface GroupNewlinesBetweenOption {
 
   group?: never
 }
+
+export type NewlinesInsideOption =
+  /** Preserve existing newlines without modification. */
+  | 'ignore'
+
+  /** Require exactly this number of blank lines between elements of a group. */
+  | number
 
 /**
  * Configuration for organizing elements into groups with optional formatting.

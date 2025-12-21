@@ -14,6 +14,7 @@ describe('sort-nodes-by-groups', () => {
     fallbackSort: { type: 'unsorted' },
     specialCharacters: 'keep',
     newlinesBetween: 'ignore',
+    newlinesInside: 'ignore',
     type: 'alphabetical',
     ignoreCase: false,
     locales: 'en-US',
