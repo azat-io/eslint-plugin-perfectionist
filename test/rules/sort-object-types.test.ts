@@ -1642,6 +1642,49 @@ describe('sort-object-types', () => {
       })
     })
 
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        output: dedent`
+          type Type = {
+            a: () => null,
+
+
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        code: dedent`
+          type Type = {
+            a: () => null,
+
+
+           y: "y",
+          z: "z",
+
+              b: "b",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+      })
+    })
+
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         errors: [

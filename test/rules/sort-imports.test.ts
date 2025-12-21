@@ -1280,6 +1280,52 @@ describe('sort-imports', () => {
       })
     })
 
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            newlinesBetween: 'ignore',
+            groups: ['a', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenImports',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        code: dedent`
+            import { a } from 'a'
+
+
+           import { y } from 'y'
+          import { z } from 'z'
+
+              import { b } from 'b'
+        `,
+        output: dedent`
+          import { a } from 'a'
+
+
+           import { b } from 'b'
+          import { y } from 'y'
+              import { z } from 'z'
+        `,
+      })
+    })
+
     it.each([['removes newlines with 0 option', 0]])(
       '%s',
       async (_description, newlinesBetween) => {

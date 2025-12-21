@@ -1089,6 +1089,57 @@ describe('sort-sets', () => {
       },
     )
 
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
+            {
+              elementNamePattern: 'a',
+              groupName: 'a',
+            },
+          ],
+          groups: ['a', 'unknown'],
+          newlinesInside: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedSetsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenSetsMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        output: dedent`
+          new Set([
+            'a',
+
+
+           'b',
+          'y',
+              'z'
+          ])
+        `,
+        code: dedent`
+          new Set([
+            'a',
+
+
+           'y',
+          'z',
+
+              'b'
+          ])
+        `,
+        options: newlinesOptions,
+      })
+    })
+
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       let newlinesOptions = [
         {

@@ -818,6 +818,47 @@ describe('sort-intersection-types', () => {
       })
     })
 
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedIntersectionTypesOrder',
+            data: { right: 'B', left: 'Z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenIntersectionTypes',
+            data: { right: 'B', left: 'Z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['function', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+        output: dedent`
+          type T =
+            (() => null)
+
+
+           & B
+          & Y
+              & Z
+        `,
+        code: dedent`
+          type T =
+            (() => null)
+
+
+           & Y
+          & Z
+
+              & B
+        `,
+      })
+    })
+
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         errors: [

@@ -1743,6 +1743,49 @@ describe('sort-objects', () => {
       })
     })
 
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenObjectMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        output: dedent`
+          let Obj = {
+            a: () => null,
+
+
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        code: dedent`
+          let Obj = {
+            a: () => null,
+
+
+           y: "y",
+          z: "z",
+
+              b: "b",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+      })
+    })
+
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         errors: [

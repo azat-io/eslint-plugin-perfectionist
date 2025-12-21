@@ -958,6 +958,55 @@ describe('sort-named-exports', () => {
       })
     })
 
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedNamedExportsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenNamedExports',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        output: dedent`
+          export {
+              a,
+
+
+             b,
+            y,
+                z,
+          }
+        `,
+        code: dedent`
+          export {
+              a,
+
+
+             y,
+            z,
+
+                b,
+          }
+        `,
+      })
+    })
+
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         options: [
