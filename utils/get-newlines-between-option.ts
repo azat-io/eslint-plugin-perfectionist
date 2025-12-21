@@ -44,16 +44,9 @@ export function getNewlinesBetweenOption({
   nodeGroupIndex,
   options,
 }: GetNewlinesBetweenOptionParameters): NewlinesBetweenOption {
-  let globalNewlinesBetweenOption = computeGlobalNewlinesBetweenOption({
-    newlinesBetween: options.newlinesBetween,
-    nextNodeGroupIndex,
-    nodeGroupIndex,
-  })
-
   /* NewlinesInside check. */
   if (nodeGroupIndex === nextNodeGroupIndex) {
     return computeNewlinesInsideOption({
-      globalNewlinesBetweenOption,
       groupIndex: nodeGroupIndex,
       options,
     })
@@ -62,24 +55,21 @@ export function getNewlinesBetweenOption({
   /* Check if a specific newlinesBetween is defined between the two groups. */
   if (nextNodeGroupIndex >= nodeGroupIndex + 2) {
     return computeNewlinesBetweenOptionForDifferentGroups({
-      globalNewlinesBetweenOption,
       nextNodeGroupIndex,
       nodeGroupIndex,
       options,
     })
   }
 
-  return globalNewlinesBetweenOption
+  return options.newlinesBetween
 }
 
 function computeNewlinesBetweenOptionForDifferentGroups({
-  globalNewlinesBetweenOption,
   nextNodeGroupIndex,
   nodeGroupIndex,
   options,
 }: {
   options: GetNewlinesBetweenOptionParameters['options']
-  globalNewlinesBetweenOption: NewlinesBetweenOption
   nextNodeGroupIndex: number
   nodeGroupIndex: number
 }): NewlinesBetweenOption {
@@ -88,7 +78,7 @@ function computeNewlinesBetweenOptionForDifferentGroups({
     if (isNewlinesBetweenOption(groupBetween)) {
       return groupBetween.newlinesBetween
     }
-    return globalNewlinesBetweenOption
+    return options.newlinesBetween
   }
 
   let relevantGroups = options.groups.slice(
@@ -97,7 +87,7 @@ function computeNewlinesBetweenOptionForDifferentGroups({
   )
   let groupsWithAllNewlinesBetween = buildGroupsWithAllNewlinesBetween(
     relevantGroups,
-    globalNewlinesBetweenOption,
+    options.newlinesBetween,
   )
   let newlinesBetweenOptions = new Set(
     groupsWithAllNewlinesBetween
@@ -121,14 +111,15 @@ function computeNewlinesBetweenOptionForDifferentGroups({
 }
 
 function computeNewlinesInsideOption({
-  globalNewlinesBetweenOption,
   groupIndex,
   options,
 }: {
   options: GetNewlinesBetweenOptionParameters['options']
-  globalNewlinesBetweenOption: NewlinesBetweenOption
   groupIndex: number
 }): NewlinesBetweenOption {
+  let globalNewlinesBetweenOption =
+    options.newlinesBetween === 'ignore' ? options.newlinesBetween : 0
+
   let group = options.groups[groupIndex]
   if (!group) {
     return globalNewlinesBetweenOption
@@ -194,36 +185,4 @@ function buildGroupsWithAllNewlinesBetween(
     returnValue.push(group)
   }
   return returnValue
-}
-
-/**
- * Calculates the global newlines requirement based on group indices.
- *
- * Applies the global newlines setting with special handling for nodes in the
- * same group (always returns 0 regardless of global setting). This ensures
- * elements within the same group are not separated by newlines unless
- * explicitly configured otherwise.
- *
- * @param params - Parameters for calculation.
- * @param params.newlinesBetween - Global newlines configuration.
- * @param params.nextNodeGroupIndex - Index of the next/second group.
- * @param params.nodeGroupIndex - Index of the current/first group.
- * @returns Number of required newlines or 'ignore'.
- */
-function computeGlobalNewlinesBetweenOption({
-  nextNodeGroupIndex,
-  newlinesBetween,
-  nodeGroupIndex,
-}: {
-  newlinesBetween: NewlinesBetweenOption
-  nextNodeGroupIndex: number
-  nodeGroupIndex: number
-}): NewlinesBetweenOption {
-  if (newlinesBetween === 'ignore') {
-    return 'ignore'
-  }
-  if (nodeGroupIndex === nextNodeGroupIndex) {
-    return 0
-  }
-  return newlinesBetween
 }
