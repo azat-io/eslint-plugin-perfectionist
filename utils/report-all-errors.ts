@@ -4,7 +4,6 @@ import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
-import type { MakeFixesParameters } from './make-fixes'
 
 import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
 import { getCommentAboveThatShouldExist } from './get-comment-above-that-should-exist'
@@ -79,8 +78,7 @@ interface ReportAllErrorsParameters<
    *   partitionByComment: true
    *   }
    */
-  options: Pick<CommonGroupsOptions<unknown, unknown, string>, 'groups'> &
-    MakeFixesParameters<T>['options']
+  options: CommonGroupsOptions<unknown, unknown, string>
 
   /**
    * Function to get sorted nodes with or without ESLint-disabled nodes.

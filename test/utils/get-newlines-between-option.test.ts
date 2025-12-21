@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
+import type {
+  NewlinesBetweenOption,
+  CustomGroupsOption,
+  GroupsOptions,
+} from '../../types/common-groups-options'
 import type { GetNewlinesBetweenOptionParameters } from '../../utils/get-newlines-between-option'
-import type { NewlinesBetweenOption } from '../../types/common-groups-options'
 
 import { getNewlinesBetweenOption } from '../../utils/get-newlines-between-option'
 
@@ -340,11 +344,11 @@ describe('get-newlines-between-option', () => {
     customGroups,
     groups,
   }: {
-    newlinesBetween: GetNewlinesBetweenOptionParameters['options']['newlinesBetween']
-    customGroups?: GetNewlinesBetweenOptionParameters['options']['customGroups']
-    groups?: GetNewlinesBetweenOptionParameters['options']['groups']
+    customGroups?: CustomGroupsOption<unknown, unknown, string>
+    newlinesBetween: NewlinesBetweenOption
     nextNodeGroupIndexGroup?: string
     sortingNodeGroup?: string
+    groups?: GroupsOptions
   }): GetNewlinesBetweenOptionParameters {
     let finalGroups = groups ?? ['group1', 'group2']
     return {

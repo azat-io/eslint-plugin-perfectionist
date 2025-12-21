@@ -15,15 +15,12 @@ import { makeOrderFixes } from './make-order-fixes'
  *
  * @template T - Type of sorting node extending the base SortingNode.
  */
-export interface MakeFixesParameters<T extends SortingNode> {
+interface MakeFixesParameters<T extends SortingNode> {
   /** Optional configuration for various sorting behaviors. */
   options?: {
     /** Configuration for partition comments that separate code sections. */
     partitionByComment?: PartitionByCommentOption
-  } & Pick<
-    CommonGroupsOptions<unknown, unknown, string>,
-    'newlinesBetween' | 'customGroups' | 'groups'
-  >
+  } & CommonGroupsOptions<unknown, unknown, string>
 
   /** Optional function to customize newlines between specific nodes. */
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
