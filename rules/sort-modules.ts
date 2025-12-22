@@ -47,7 +47,6 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getDecoratorName } from '../utils/get-decorator-name'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { getEnumMembers } from '../utils/get-enum-members'
 import { getGroupIndex } from '../utils/get-group-index'
 import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -247,10 +246,7 @@ function analyzeModule({
         case AST_NODE_TYPES.TSEnumDeclaration:
           selector = 'enum'
           ;({ name } = nodeToParse.id)
-          dependencies = [
-            ...dependencies,
-            ...getEnumMembers(nodeToParse).flatMap(extractDependencies),
-          ]
+          dependencies = [...dependencies, ...extractDependencies(nodeToParse)]
           break
         case AST_NODE_TYPES.ClassDeclaration:
           selector = 'class'
@@ -378,7 +374,7 @@ function analyzeModule({
 }
 
 function extractDependencies(
-  expression: TSESTree.TSEnumMember | TSESTree.ClassBody,
+  expression: TSESTree.TSEnumDeclaration | TSESTree.ClassBody,
 ): string[] {
   /**
    * Search static methods only if there is a static block or a static property

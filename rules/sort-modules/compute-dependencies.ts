@@ -106,6 +106,9 @@ export function computeDependencies(
       if ('left' in nodeToCheck) {
         checkNode(nodeToCheck.left)
       }
+      if ('members' in nodeToCheck) {
+        traverseNode(nodeToCheck.members)
+      }
       if ('object' in nodeToCheck) {
         checkNode(nodeToCheck.object)
       }
