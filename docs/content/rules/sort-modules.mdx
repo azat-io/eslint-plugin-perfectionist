@@ -187,6 +187,7 @@ Specifies the sorting method.
 - `'natural'` — Sort items in a [natural](https://github.com/yobacca/natural-orderby) order (e.g., “item2” < “item10”).
 - `'line-length'` — Sort items by code line length (shorter lines first).
 - `'custom'` — Sort items using the alphabet specified in the [`alphabet`](#alphabet) option.
+- `'usage'` — Sort items by the order they are first used or referenced within their [`group`](#groups). Items with no usage within their group may appear in any position.
 - `'unsorted'` — Do not sort items. [`grouping`](#groups) and [`newlines behavior`](#newlinesbetween) are still enforced.
 
 ### order
@@ -204,7 +205,7 @@ Specifies whether to sort items in ascending or descending order.
   type:
   ```ts
   {
-    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted'
+    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'usage' | 'unsorted'
     order?: 'asc' | 'desc'
   }
   ```
@@ -354,7 +355,7 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
       | { newlinesBetween: number | 'ignore' }
       | {
           group: string | string[];
-          type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+          type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'usage' | 'unsorted';
           order?: 'asc' | 'desc';
           newlinesInside?: number | 'ignore';
         }
@@ -465,7 +466,7 @@ A custom group definition may follow one of the two following interfaces:
 ```ts
 interface CustomGroupDefinition {
   groupName: string
-  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'usage' | 'unsorted'
   order?: 'asc' | 'desc'
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
   newlinesInside?: number | 'ignore'
@@ -482,7 +483,7 @@ or:
 ```ts
 interface CustomGroupAnyOfDefinition {
   groupName: string
-  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'usage' | 'unsorted'
   order?: 'asc' | 'desc'
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
   newlinesInside?: number | 'ignore'
