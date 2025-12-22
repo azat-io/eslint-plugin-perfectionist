@@ -261,7 +261,6 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted TypeScript enums.',
       recommended: true,
     },
-    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },

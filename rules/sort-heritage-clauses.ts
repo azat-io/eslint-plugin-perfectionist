@@ -88,7 +88,6 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted heritage clauses.',
       recommended: true,
     },
-    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },

@@ -423,7 +423,6 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted objects.',
       recommended: true,
     },
-    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },

@@ -136,7 +136,6 @@ export default createEslintRule<Options, MessageId>({
       url: 'https://perfectionist.dev/rules/sort-array-includes',
       recommended: true,
     },
-    defaultOptions: [defaultOptions],
     schema: jsonSchema,
     type: 'suggestion',
     fixable: 'code',
