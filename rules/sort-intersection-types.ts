@@ -24,11 +24,11 @@ type Options = SortUnionTypesOptions
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
+  newlinesInside: 'newlinesBetween',
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
   partitionByComment: false,
   partitionByNewLine: false,
-  newlinesInside: 'newlinesBetween',
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',

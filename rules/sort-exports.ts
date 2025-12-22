@@ -66,11 +66,11 @@ type SortExportsSortingNode = SortingNode<
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
+  newlinesInside: 'newlinesBetween',
   specialCharacters: 'keep',
   partitionByComment: false,
   newlinesBetween: 'ignore',
   partitionByNewLine: false,
-  newlinesInside: 'newlinesBetween',
   type: 'alphabetical',
   customGroups: [],
   ignoreCase: true,

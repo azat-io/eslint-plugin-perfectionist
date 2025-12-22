@@ -202,16 +202,16 @@ export function buildCommonGroupsJsonSchemas({
       allowedAdditionalTypeValues,
       singleCustomGroupJsonSchema,
     }),
-    groups: buildGroupsJsonSchema({
-      allowedAdditionalTypeValues,
-    }),
-    newlinesBetween: newlinesBetweenJsonSchema,
     newlinesInside: {
       oneOf: [
         newlinesInsideJsonSchema,
         { enum: ['newlinesBetween'], type: 'string' },
       ],
     },
+    groups: buildGroupsJsonSchema({
+      allowedAdditionalTypeValues,
+    }),
+    newlinesBetween: newlinesBetweenJsonSchema,
   }
 }
 

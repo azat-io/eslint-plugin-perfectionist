@@ -77,6 +77,15 @@ export interface CommonGroupsOptions<
   AdditionalOptions,
   CustomTypeOption extends string,
 > {
+  /** Specify the exact number of newlines required between elements of groups. */
+  newlinesInside:
+    | NewlinesInsideOption
+    /**
+     * @deprecated The `newlinesBetween` value is deprecated and will be removed
+     *   in V6.
+     */
+    | 'newlinesBetween'
+
   /** Custom groups for organizing nodes. */
   customGroups: CustomGroupsOption<
     SingleCustomGroup,
@@ -92,15 +101,6 @@ export interface CommonGroupsOptions<
 
   /** Specify the exact number of newlines required between groups. */
   newlinesBetween: NewlinesBetweenOption
-
-  /** Specify the exact number of newlines required between elements of groups. */
-  newlinesInside:
-    | NewlinesInsideOption
-    /**
-     * @deprecated The `newlinesBetween` value is deprecated and will be removed
-     *   in V6.
-     */
-    | 'newlinesBetween'
 }
 
 /**

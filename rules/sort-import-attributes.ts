@@ -49,11 +49,11 @@ type MessageId =
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
+  newlinesInside: 'newlinesBetween',
   specialCharacters: 'keep',
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
-  newlinesInside: 'newlinesBetween',
   type: 'alphabetical',
   ignoreCase: true,
   customGroups: [],

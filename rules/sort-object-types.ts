@@ -77,11 +77,11 @@ type MessageId =
 
 export let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted', sortBy: 'name' },
+  newlinesInside: 'newlinesBetween',
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
   specialCharacters: 'keep',
-  newlinesInside: 'newlinesBetween',
   useConfigurationIf: {},
   type: 'alphabetical',
   ignoreCase: true,
