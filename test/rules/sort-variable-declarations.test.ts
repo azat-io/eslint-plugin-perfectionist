@@ -1378,7 +1378,7 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it('removes newlinesInside between groups when newlinesInside is 0', async () => {
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
       await invalid({
         errors: [
           {
