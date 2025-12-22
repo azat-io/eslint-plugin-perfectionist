@@ -57,7 +57,7 @@
     "test:unit": "vitest --run --coverage"
   },
   "dependencies": {
-    "@typescript-eslint/utils": "^8.50.0",
+    "@typescript-eslint/utils": "^8.50.1",
     "natural-orderby": "^5.0.0"
   },
   "devDependencies": {
@@ -81,8 +81,8 @@
     "@types/mdast": "^4.0.4",
     "@types/node": "^25.0.3",
     "@types/unist": "^3.0.3",
-    "@typescript-eslint/parser": "^8.50.0",
-    "@typescript-eslint/types": "^8.50.0",
+    "@typescript-eslint/parser": "^8.50.1",
+    "@typescript-eslint/types": "^8.50.1",
     "@vercel/og": "^0.8.6",
     "@vitest/coverage-v8": "^4.0.16",
     "ajv-draft-04": "^1.0.0",
@@ -93,7 +93,7 @@
     "clean-publish": "^6.0.1",
     "cross-env": "^10.1.0",
     "cspell": "^9.4.0",
-    "dedent": "^1.7.0",
+    "dedent": "^1.7.1",
     "eslint": "^9.38.0",
     "eslint-plugin-eslint-plugin": "^7.2.0",
     "eslint-vitest-rule-tester": "^3.0.1",
@@ -121,7 +121,7 @@
     "simple-git-hooks": "^2.13.1",
     "stylelint": "^16.26.1",
     "svelte": "5.46.0",
-    "svelte-check": "^4.3.4",
+    "svelte-check": "^4.3.5",
     "tinyexec": "^1.0.2",
     "typescript": "^5.9.3",
     "unified": "^11.0.5",
