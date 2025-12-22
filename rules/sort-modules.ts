@@ -21,14 +21,15 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
-import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import {
   singleCustomGroupJsonSchema,
+  USAGE_TYPE_OPTION,
   allModifiers,
   allSelectors,
 } from './sort-modules/types'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { buildComparatorByOptionsComputer } from './sort-modules/build-comparator-by-options-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { isPropertyOrAccessorNode } from './sort-modules/is-property-or-accessor-node'
@@ -104,8 +105,11 @@ export default createEslintRule<SortModulesOptions, MessageId>({
     schema: [
       {
         properties: {
-          ...buildCommonJsonSchemas(),
+          ...buildCommonJsonSchemas({
+            allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
+          }),
           ...buildCommonGroupsJsonSchemas({
+            allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
             singleCustomGroupJsonSchema,
           }),
           partitionByComment: partitionByCommentJsonSchema,
@@ -178,6 +182,9 @@ function analyzeModule({
   sourceCode: TSESLint.SourceCode
   eslintDisabledLines: number[]
 }): void {
+  let optionsByGroupIndexComputer =
+    buildDefaultOptionsByGroupIndexComputer(options)
+
   let formattedNodes: SortModulesSortingNode[][] = [[]]
   for (let node of module.body) {
     let selector: undefined | Selector
@@ -335,11 +342,13 @@ function analyzeModule({
   ): SortModulesSortingNode[] {
     let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
       sortNodesByGroups({
+        comparatorByOptionsComputer: buildComparatorByOptionsComputer({
+          ignoreEslintDisabledNodes,
+          sortingNodes: nodes,
+        }),
         isNodeIgnored: sortingNode =>
           getGroupIndex(options.groups, sortingNode) === options.groups.length,
-        optionsByGroupIndexComputer:
-          buildDefaultOptionsByGroupIndexComputer(options),
-        comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+        optionsByGroupIndexComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes,

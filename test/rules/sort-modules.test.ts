@@ -7656,6 +7656,415 @@ describe('sort-modules', () => {
     })
   })
 
+  describe('usage', () => {
+    let options = {
+      type: 'usage',
+      order: 'asc',
+    }
+
+    it('detects usages in interface values', async () => {
+      await invalid({
+        output: dedent`
+          type B = Something;
+
+          export default interface A {
+            field?: Record<string, [B | null] & C>;
+          }
+        `,
+        code: dedent`
+          export default interface A {
+            field?: Record<string, [B | null] & C>;
+          }
+
+          type B = Something;
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+    })
+
+    it('detects usages in type keys', async () => {
+      await invalid({
+        output: dedent`
+          type B = 'b';
+
+          type A = {
+            [B]: string;
+          }
+        `,
+        code: dedent`
+          type A = {
+            [B]: string;
+          }
+
+          type B = 'b';
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+    })
+
+    it('detects usages in type values', async () => {
+      await invalid({
+        output: dedent`
+          type B = Something;
+
+          type A = {
+            field: typeof B
+          }
+        `,
+        code: dedent`
+          type A = {
+            field: typeof B
+          }
+
+          type B = Something;
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        output: dedent`
+          type B = 'b';
+
+          type A = {
+            (...args: B): void;
+          }
+        `,
+        code: dedent`
+          type A = {
+            (...args: B): void;
+          }
+
+          type B = 'b';
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+    })
+
+    it('detects usages in type generics', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        output: dedent`
+          type B = 'b';
+
+          type A<T extends B> = {}
+        `,
+        code: dedent`
+          type A<T extends B> = {}
+
+          type B = 'b';
+        `,
+      })
+    })
+
+    it('detects usages in type indexes', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        output: dedent`
+          type B = 'b';
+
+          type A = Foo[B]
+        `,
+        code: dedent`
+          type A = Foo[B]
+
+          type B = 'b';
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        output: dedent`
+          type B = 'b';
+
+          type A = B['foo']
+        `,
+        code: dedent`
+          type A = B['foo']
+
+          type B = 'b';
+        `,
+      })
+    })
+
+    it('detects usages in conditional types', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          type B = 'b';
+
+          type A = Foo extends B ? true : false;
+        `,
+        code: dedent`
+          type A = Foo extends B ? true : false;
+
+          type B = 'b';
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          type B = 'b';
+
+          type A = B extends Foo ? true : false;
+        `,
+        code: dedent`
+          type A = B extends Foo ? true : false;
+
+          type B = 'b';
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          type B = 'b';
+
+          type A = Foo extends Bar ? B : false;
+        `,
+        code: dedent`
+          type A = Foo extends Bar ? B : false;
+
+          type B = 'b';
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          type B = 'b';
+
+          type A = Foo extends Bar ? true : B;
+        `,
+        code: dedent`
+          type A = Foo extends Bar ? true : B;
+
+          type B = 'b';
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        output: dedent`
+          type B = 'b';
+
+          type A<T> = T extends {
+            (...args: any[]): infer B;
+          } ? Foo : Bar
+        `,
+        code: dedent`
+          type A<T> = T extends {
+            (...args: any[]): infer B;
+          } ? Foo : Bar
+
+          type B = 'b';
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+    })
+
+    it('detects usages in interface extends', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        output: dedent`
+          interface B {}
+
+          interface A extends B {}
+        `,
+        code: dedent`
+          interface A extends B {}
+
+          interface B {}
+        `,
+      })
+    })
+
+    it('detects usages in classes implements', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        output: dedent`
+          interface B {}
+
+          class A implements B {}
+        `,
+        code: dedent`
+          class A implements B {}
+
+          interface B {}
+        `,
+      })
+    })
+
+    it('detects usages in functions', async () => {
+      await invalid({
+        output: dedent`
+          type B = 'b';
+
+          function a() {
+            let foo: B;
+          }
+        `,
+        code: dedent`
+          function a() {
+            let foo: B;
+          }
+
+          type B = 'b';
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+    })
+  })
+
   describe('misc', () => {
     it('validates the JSON schema', async () => {
       await expect(

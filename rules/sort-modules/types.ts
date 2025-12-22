@@ -24,8 +24,12 @@ import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schem
  */
 export type SortModulesOptions = [
   Partial<
-    CommonGroupsOptions<SingleCustomGroup, Record<string, never>, TypeOption> &
-      CommonOptions<TypeOption> &
+    CommonGroupsOptions<
+      SingleCustomGroup,
+      Record<string, never>,
+      CustomTypeOption
+    > &
+      CommonOptions<CustomTypeOption> &
       CommonPartitionOptions
   >,
 ]
@@ -66,6 +70,8 @@ interface SingleCustomGroup {
   selector?: Selector
 }
 
+type CustomTypeOption = typeof USAGE_TYPE_OPTION | TypeOption
+
 /**
  * Complete list of available module member selectors. Used for validation and
  * JSON schema generation.
@@ -101,3 +107,5 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   decoratorNamePattern: buildRegexJsonSchema(),
 }
+
+export const USAGE_TYPE_OPTION = 'usage'

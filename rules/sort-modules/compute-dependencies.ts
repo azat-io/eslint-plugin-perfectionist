@@ -25,7 +25,10 @@ type DependencyDetection = HardDependencyDetection | SoftDependencyDetection
  * @returns The names of the dependencies.
  */
 export function computeDependencies(
-  node: TSESTree.ClassDeclaration | TSESTree.TSEnumMember,
+  node:
+    | TSESTree.ClassDeclaration
+    | TSESTree.ProgramStatement
+    | TSESTree.TSEnumMember,
   dependencyDetection: DependencyDetection,
 ): string[] {
   let dependencies: string[] = []
@@ -135,7 +138,78 @@ export function computeDependencies(
     }
 
     function checkNodesForSoftDependencies(): void {
-      // TODO
+      if ('checkType' in nodeToCheck) {
+        checkNode(nodeToCheck.checkType)
+      }
+      if ('constraint' in nodeToCheck && nodeToCheck.constraint) {
+        checkNode(nodeToCheck.constraint)
+      }
+      if ('declaration' in nodeToCheck && nodeToCheck.declaration) {
+        checkNode(nodeToCheck.declaration)
+      }
+      if ('elementTypes' in nodeToCheck) {
+        traverseNode(nodeToCheck.elementTypes)
+      }
+      if ('elementType' in nodeToCheck) {
+        checkNode(nodeToCheck.elementType)
+      }
+      if ('extends' in nodeToCheck) {
+        traverseNode(nodeToCheck.extends)
+      }
+      if ('extendsType' in nodeToCheck) {
+        checkNode(nodeToCheck.extendsType)
+      }
+      if ('exprName' in nodeToCheck) {
+        checkNode(nodeToCheck.exprName)
+      }
+      if ('falseType' in nodeToCheck) {
+        checkNode(nodeToCheck.falseType)
+      }
+      if ('key' in nodeToCheck) {
+        checkNode(nodeToCheck.key)
+      }
+      if ('id' in nodeToCheck && nodeToCheck.id) {
+        checkNode(nodeToCheck.id)
+      }
+      if ('implements' in nodeToCheck) {
+        traverseNode(nodeToCheck.implements)
+      }
+      if ('indexType' in nodeToCheck) {
+        checkNode(nodeToCheck.indexType)
+      }
+      if ('name' in nodeToCheck && typeof nodeToCheck.name !== 'string') {
+        checkNode(nodeToCheck.name)
+      }
+      if ('objectType' in nodeToCheck) {
+        checkNode(nodeToCheck.objectType)
+      }
+      if ('params' in nodeToCheck) {
+        traverseNode(nodeToCheck.params)
+      }
+      if ('returnType' in nodeToCheck && nodeToCheck.returnType) {
+        checkNode(nodeToCheck.returnType)
+      }
+      if ('trueType' in nodeToCheck) {
+        checkNode(nodeToCheck.trueType)
+      }
+      if ('typeAnnotation' in nodeToCheck && nodeToCheck.typeAnnotation) {
+        checkNode(nodeToCheck.typeAnnotation)
+      }
+      if ('typeArguments' in nodeToCheck && nodeToCheck.typeArguments) {
+        checkNode(nodeToCheck.typeArguments)
+      }
+      if ('typeName' in nodeToCheck) {
+        checkNode(nodeToCheck.typeName)
+      }
+      if ('typeParameters' in nodeToCheck && nodeToCheck.typeParameters) {
+        traverseNode(nodeToCheck.typeParameters)
+      }
+      if ('typeParameter' in nodeToCheck) {
+        checkNode(nodeToCheck.typeParameter)
+      }
+      if ('types' in nodeToCheck) {
+        traverseNode(nodeToCheck.types)
+      }
     }
   }
 
