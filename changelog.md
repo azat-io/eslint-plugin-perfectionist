@@ -1,5 +1,26 @@
 # Changelog
 
+## v5.1.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.0.0...v5.1.0)
+
+### 🚀 Features
+
+- Add new lines between to settings ([ae36860](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ae36860))
+- Add new lines inside at rule options and settings level ([1430b19](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1430b19))
+
+### 🐞 Bug Fixes
+
+- Add js extensions to relative imports in decl files ([2cfeed9](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2cfeed9))
+- Handle missing export kind in sort exports ([179d432](https://github.com/azat-io/eslint-plugin-perfectionist/commit/179d432))
+- Allow overriding settings with default values ([08d69ca](https://github.com/azat-io/eslint-plugin-perfectionist/commit/08d69ca))
+- Improve plugin type compatibility ([af1ce61](https://github.com/azat-io/eslint-plugin-perfectionist/commit/af1ce61))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](https://github.com/azat-io))
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v5.0.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v4.15.1...v5.0.0)
