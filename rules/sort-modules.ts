@@ -125,7 +125,6 @@ export default createEslintRule<SortModulesOptions, MessageId>({
       description: 'Enforce sorted modules.',
       recommended: true,
     },
-    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },

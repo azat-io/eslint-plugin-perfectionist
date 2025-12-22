@@ -214,7 +214,6 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted named exports.',
       recommended: true,
     },
-    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },

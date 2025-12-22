@@ -61,7 +61,6 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted sets.',
       recommended: true,
     },
-    defaultOptions: [defaultOptions],
     schema: jsonSchema,
     type: 'suggestion',
     fixable: 'code',

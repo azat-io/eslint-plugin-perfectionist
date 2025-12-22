@@ -39,7 +39,6 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted interface properties.',
       recommended: true,
     },
-    defaultOptions: [defaultOptions],
     schema: jsonSchema,
     type: 'suggestion',
     fixable: 'code',

@@ -285,7 +285,6 @@ export default createEslintRule<Options, MessageId>({
     messages: {
       [ORDER_ERROR_ID]: ORDER_ERROR,
     },
-    defaultOptions: [defaultOptions],
     type: 'suggestion',
     fixable: 'code',
   },

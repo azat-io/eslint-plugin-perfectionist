@@ -128,23 +128,6 @@ export let jsonSchema: JSONSchema4 = {
 }
 
 export default createEslintRule<Options, MessageId>({
-  meta: {
-    messages: {
-      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
-      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
-      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
-      [ORDER_ERROR_ID]: ORDER_ERROR,
-    },
-    docs: {
-      url: 'https://perfectionist.dev/rules/sort-object-types',
-      description: 'Enforce sorted object types.',
-      recommended: true,
-    },
-    defaultOptions: [defaultOptions],
-    schema: jsonSchema,
-    type: 'suggestion',
-    fixable: 'code',
-  },
   create: context => ({
     TSTypeLiteral: node =>
       sortObjectTypeElements<MessageId>({
@@ -159,6 +142,22 @@ export default createEslintRule<Options, MessageId>({
         context,
       }),
   }),
+  meta: {
+    messages: {
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-object-types',
+      description: 'Enforce sorted object types.',
+      recommended: true,
+    },
+    schema: jsonSchema,
+    type: 'suggestion',
+    fixable: 'code',
+  },
   defaultOptions: [defaultOptions],
   name: 'sort-object-types',
 })
