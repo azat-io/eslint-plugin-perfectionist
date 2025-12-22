@@ -1,4 +1,4 @@
-import type { ESLint, Linter, Rule } from 'eslint'
+import type { ESLint, Linter } from 'eslint'
 
 import { version as packageVersion, name as packageName } from './package.json'
 import sortVariableDeclarations from './rules/sort-variable-declarations'
@@ -23,47 +23,6 @@ import sortModules from './rules/sort-modules'
 import sortEnums from './rules/sort-enums'
 import sortMaps from './rules/sort-maps'
 import sortSets from './rules/sort-sets'
-
-interface PluginConfig {
-  rules: {
-    'sort-variable-declarations': Rule.RuleModule
-    'sort-intersection-types': Rule.RuleModule
-    'sort-import-attributes': Rule.RuleModule
-    'sort-export-attributes': Rule.RuleModule
-    'sort-heritage-clauses': Rule.RuleModule
-    'sort-array-includes': Rule.RuleModule
-    'sort-named-imports': Rule.RuleModule
-    'sort-named-exports': Rule.RuleModule
-    'sort-object-types': Rule.RuleModule
-    'sort-union-types': Rule.RuleModule
-    'sort-switch-case': Rule.RuleModule
-    'sort-interfaces': Rule.RuleModule
-    'sort-decorators': Rule.RuleModule
-    'sort-jsx-props': Rule.RuleModule
-    'sort-modules': Rule.RuleModule
-    'sort-classes': Rule.RuleModule
-    'sort-imports': Rule.RuleModule
-    'sort-exports': Rule.RuleModule
-    'sort-objects': Rule.RuleModule
-    'sort-enums': Rule.RuleModule
-    'sort-sets': Rule.RuleModule
-    'sort-maps': Rule.RuleModule
-  }
-  configs: {
-    'recommended-alphabetical-legacy': Linter.LegacyConfig
-    'recommended-line-length-legacy': Linter.LegacyConfig
-    'recommended-natural-legacy': Linter.LegacyConfig
-    'recommended-custom-legacy': Linter.LegacyConfig
-    'recommended-alphabetical': Linter.Config
-    'recommended-line-length': Linter.Config
-    'recommended-natural': Linter.Config
-    'recommended-custom': Linter.Config
-  }
-  meta: {
-    version: string
-    name: string
-  }
-}
 
 interface BaseOptions {
   type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
@@ -95,7 +54,7 @@ export let rules = {
   'sort-enums': sortEnums,
   'sort-sets': sortSets,
   'sort-maps': sortMaps,
-}
+} as unknown as ESLint.Plugin['rules']
 
 let plugin = {
   meta: {
@@ -130,7 +89,7 @@ function createLegacyConfig(options: BaseOptions): Linter.LegacyConfig {
   }
 }
 
-export let configs: PluginConfig['configs'] = {
+export let configs = {
   'recommended-alphabetical-legacy': createLegacyConfig({
     type: 'alphabetical',
     order: 'asc',
@@ -163,9 +122,9 @@ export let configs: PluginConfig['configs'] = {
     type: 'custom',
     order: 'asc',
   }),
-}
+} as unknown as ESLint.Plugin['configs']
 
 export default {
   ...plugin,
   configs,
-} as PluginConfig
+} as ESLint.Plugin
