@@ -944,7 +944,7 @@ describe('sort-maps', () => {
       })
     })
 
-    it('removes extra newlines between groups when newlinesBetween is 0', async () => {
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
         errors: [
           {
@@ -989,6 +989,104 @@ describe('sort-maps', () => {
             [a, null],
            [b, null],
           [y, null],
+              [z, null]
+          ])
+        `,
+      })
+    })
+
+    it('removes extra newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedMapElementsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        output: dedent`
+          new Map([
+            [a, null],
+
+
+           [b, null],
+          [y, null],
+              [z, null]
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [a, null],
+
+
+           [y, null],
+          [z, null],
+
+              [b, null]
+          ])
+        `,
+      })
+    })
+
+    it('removes extra newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedMapElementsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        code: dedent`
+          new Map([
+            [a, null],
+
+
+           [y, null],
+          [z, null],
+
+              [b, null]
+          ])
+        `,
+        output: dedent`
+          new Map([
+            [a, null],
+           [b, null],
+          [y, null],
+
               [z, null]
           ])
         `,
@@ -1241,6 +1339,7 @@ describe('sort-maps', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -2289,20 +2388,6 @@ describe('sort-maps', () => {
 
     it('removes extra newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenMapElementsMembers',
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: 'unexpectedMapElementsOrder',
-            data: { right: 'b', left: 'z' },
-          },
-          {
-            messageId: 'extraSpacingBetweenMapElementsMembers',
-            data: { right: 'b', left: 'z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -2313,7 +2398,18 @@ describe('sort-maps', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenMapElementsMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedMapElementsOrder',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -2332,6 +2428,7 @@ describe('sort-maps', () => {
             [a, null],
            [b, null],
           [y, null],
+
               [z, null]
           ])
         `,
@@ -2584,6 +2681,7 @@ describe('sort-maps', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -3632,6 +3730,20 @@ describe('sort-maps', () => {
 
     it('removes extra newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         errors: [
           {
             data: {
@@ -3643,23 +3755,6 @@ describe('sort-maps', () => {
           {
             messageId: 'unexpectedMapElementsOrder',
             data: { right: 'bbb', left: 'z' },
-          },
-          {
-            messageId: 'extraSpacingBetweenMapElementsMembers',
-            data: { right: 'bbb', left: 'z' },
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'aaaa',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            newlinesBetween: 0,
           },
         ],
         code: dedent`
@@ -3678,6 +3773,7 @@ describe('sort-maps', () => {
             [aaaa, null],
            [bbb, null],
           [yy, null],
+
               [z, null]
           ])
         `,
@@ -3930,6 +4026,7 @@ describe('sort-maps', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [

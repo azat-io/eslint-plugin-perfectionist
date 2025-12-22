@@ -273,18 +273,37 @@ import { c } from 'c'
 
 ### newlinesBetween
 
-<sub>type: `number | 'ignore'`</sub>
+<sub>
+  type: `number | 'ignore'`
+</sub>
 <sub>default: `1`</sub>
 
 Specifies how to handle newlines between groups.
 
 - `'ignore'` — Do not report errors related to newlines.
 - `0` — No newlines are allowed.
-- Any other number — Enforce this number of newlines between each group, and forbid newlines inside groups.
+- Any other number — Enforce this number of newlines between each group.
 
-You can also enforce the newline behavior between two specific groups through the `groups` options.
+You can also enforce the newline behavior between two specific groups through the [`groups`](#newlines-between-groups)
+option.
 
-See the [`groups`](#newlines-between-groups) option.
+This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
+
+### newlinesInside
+
+<sub>
+  type: `number | 'ignore'`
+</sub>
+<sub>default: `0`</sub>
+
+Specifies how to handle newlines inside groups.
+
+- `'ignore'` — Do not report errors related to newlines.
+- `0` — No newlines are allowed.
+- Any other number — Enforce this number of newlines between each element of the same group.
+
+You can also enforce the newline behavior inside a given group through the [`groups`](#group-with-overridden-settings)
+or [`customGroups`](#customgroups) options.
 
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
@@ -318,12 +337,12 @@ If `rootDir` is empty, the rule will not search for a `tsconfig.json` file.
     Array<
       | string
       | string[]
-      | { newlinesBetween: number }
+      | { newlinesBetween: number | 'ignore' }
       | {
           group: string | string[];
           type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
           order?: 'asc' | 'desc';
-          newlinesInside?: number;
+          newlinesInside?: number | 'ignore';
           commentAbove?: string;
         }
     >
@@ -583,7 +602,7 @@ interface CustomGroupDefinition {
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
-  newlinesInside?: number
+  newlinesInside?: number | 'ignore'
   selector?: string
   modifiers?: string[]
   elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
@@ -599,7 +618,7 @@ interface CustomGroupAnyOfDefinition {
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
-  newlinesInside?: number
+  newlinesInside?: number | 'ignore'
   anyOf: Array<{
       selector?: string
       modifiers?: string[]
@@ -690,6 +709,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 1,
+                  newlinesInside: 0,
                   maxLineLength: undefined,
                   groups: [
                     'type-import',
@@ -732,6 +752,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 1,
+                newlinesInside: 0,
                 maxLineLength: undefined,
                 groups: [
                   'type-import',

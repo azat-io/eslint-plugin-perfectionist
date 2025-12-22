@@ -1743,7 +1743,7 @@ describe('sort-objects', () => {
       })
     })
 
-    it('removes newlines between groups when newlinesBetween is 0', async () => {
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
         errors: [
           {
@@ -1785,6 +1785,92 @@ describe('sort-objects', () => {
             newlinesBetween: 0,
           },
         ],
+      })
+    })
+
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenObjectMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        output: dedent`
+          let Obj = {
+            a: () => null,
+
+
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        code: dedent`
+          let Obj = {
+            a: () => null,
+
+
+           y: "y",
+          z: "z",
+
+              b: "b",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+      })
+    })
+
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenObjectMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          let Obj = {
+            a: () => null,
+
+
+           y: "y",
+          z: "z",
+
+              b: "b",
+          }
+        `,
+        output: dedent`
+          let Obj = {
+            a: () => null,
+           b: "b",
+          y: "y",
+
+              z: "z",
+          }
+        `,
       })
     })
 
@@ -2029,6 +2115,13 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['unknown', 'method'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           let obj = {
             a, // Comment after
@@ -2045,12 +2138,6 @@ describe('sort-objects', () => {
             c() {},
           };
         `,
-        options: [
-          {
-            groups: ['unknown', 'method'],
-            newlinesBetween: 1,
-          },
-        ],
       })
     })
 
@@ -5558,9 +5645,13 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsOrder',
             data: { right: 'b', left: 'z' },
           },
+        ],
+        options: [
           {
-            messageId: 'extraSpacingBetweenObjectMembers',
-            data: { right: 'b', left: 'z' },
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
           },
         ],
         code: dedent`
@@ -5579,16 +5670,10 @@ describe('sort-objects', () => {
             a: () => null,
            b: "b",
           y: "y",
+
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -5833,6 +5918,13 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['unknown', 'method'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           let obj = {
             a, // Comment after
@@ -5849,12 +5941,6 @@ describe('sort-objects', () => {
             c() {},
           };
         `,
-        options: [
-          {
-            groups: ['unknown', 'method'],
-            newlinesBetween: 1,
-          },
-        ],
       })
     })
 
@@ -8206,9 +8292,13 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsOrder',
             data: { right: 'bbb', left: 'z' },
           },
+        ],
+        options: [
           {
-            messageId: 'extraSpacingBetweenObjectMembers',
-            data: { right: 'bbb', left: 'z' },
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
           },
         ],
         code: dedent`
@@ -8227,16 +8317,10 @@ describe('sort-objects', () => {
             aaaa: () => null,
            bbb: "b",
           yy: "y",
+
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -8481,6 +8565,13 @@ describe('sort-objects', () => {
             messageId: 'unexpectedObjectsGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['unknown', 'method'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           let obj = {
             a, // Comment after
@@ -8497,12 +8588,6 @@ describe('sort-objects', () => {
             c() {},
           };
         `,
-        options: [
-          {
-            groups: ['unknown', 'method'],
-            newlinesBetween: 1,
-          },
-        ],
       })
     })
 

@@ -84,6 +84,7 @@ let defaultOptions: Required<SortModulesOptions[number]> = {
     'function',
   ],
   fallbackSort: { type: 'unsorted' },
+  newlinesInside: 'newlinesBetween',
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',

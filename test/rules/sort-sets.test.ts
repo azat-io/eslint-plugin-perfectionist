@@ -1089,7 +1089,7 @@ describe('sort-sets', () => {
       },
     )
 
-    it('removes newlines between groups when newlinesBetween is 0', async () => {
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       let newlinesOptions = [
         {
           ...options,
@@ -1135,6 +1135,108 @@ describe('sort-sets', () => {
             'a',
            'b',
           'y',
+              'z'
+          ])
+        `,
+        options: newlinesOptions,
+      })
+    })
+
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
+            {
+              elementNamePattern: 'a',
+              groupName: 'a',
+            },
+          ],
+          groups: ['a', 'unknown'],
+          newlinesInside: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedSetsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenSetsMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        output: dedent`
+          new Set([
+            'a',
+
+
+           'b',
+          'y',
+              'z'
+          ])
+        `,
+        code: dedent`
+          new Set([
+            'a',
+
+
+           'y',
+          'z',
+
+              'b'
+          ])
+        `,
+        options: newlinesOptions,
+      })
+    })
+
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
+            {
+              elementNamePattern: 'a',
+              groupName: 'a',
+            },
+          ],
+          groups: ['a', 'unknown'],
+          newlinesInside: 'ignore',
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenSetsMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedSetsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        code: dedent`
+          new Set([
+            'a',
+
+
+           'y',
+          'z',
+
+              'b'
+          ])
+        `,
+        output: dedent`
+          new Set([
+            'a',
+           'b',
+          'y',
+
               'z'
           ])
         `,
@@ -1397,6 +1499,7 @@ describe('sort-sets', () => {
           ],
           groups: ['unknown', 'b|c'],
           newlinesBetween: 1,
+          newlinesInside: 0,
         },
       ]
 
@@ -2524,6 +2627,7 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['a', 'unknown'],
+          newlinesInside: 'ignore',
           newlinesBetween: 0,
         },
       ]
@@ -2536,10 +2640,6 @@ describe('sort-sets', () => {
           },
           {
             messageId: 'unexpectedSetsOrder',
-            data: { right: 'b', left: 'z' },
-          },
-          {
-            messageId: 'extraSpacingBetweenSetsMembers',
             data: { right: 'b', left: 'z' },
           },
         ],
@@ -2559,6 +2659,7 @@ describe('sort-sets', () => {
             'a',
            'b',
           'y',
+
               'z'
           ])
         `,
@@ -2821,6 +2922,7 @@ describe('sort-sets', () => {
           ],
           groups: ['unknown', 'b|c'],
           newlinesBetween: 1,
+          newlinesInside: 0,
         },
       ]
 
@@ -3948,6 +4050,7 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['a', 'unknown'],
+          newlinesInside: 'ignore',
           newlinesBetween: 0,
         },
       ]
@@ -3964,10 +4067,6 @@ describe('sort-sets', () => {
           {
             data: { right: 'bbb', left: 'z' },
             messageId: 'unexpectedSetsOrder',
-          },
-          {
-            messageId: 'extraSpacingBetweenSetsMembers',
-            data: { right: 'bbb', left: 'z' },
           },
         ],
         code: dedent`
@@ -3986,6 +4085,7 @@ describe('sort-sets', () => {
             'aaaa',
            'bbb',
           'yy',
+
               'z'
           ])
         `,
@@ -4248,6 +4348,7 @@ describe('sort-sets', () => {
           ],
           groups: ['unknown', 'b|c'],
           newlinesBetween: 1,
+          newlinesInside: 0,
         },
       ]
 

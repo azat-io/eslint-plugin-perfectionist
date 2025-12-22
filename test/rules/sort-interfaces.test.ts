@@ -1783,7 +1783,7 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
         errors: [
           {
@@ -1825,6 +1825,92 @@ describe('sort-interfaces', () => {
             newlinesBetween: 0,
           },
         ],
+      })
+    })
+
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a: () => null,
+
+
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            a: () => null,
+
+
+           y: "y",
+          z: "z",
+
+              b: "b",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+      })
+    })
+
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenInterfaceMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          interface Interface {
+            a: () => null,
+
+
+           y: "y",
+          z: "z",
+
+              b: "b",
+          }
+        `,
+        output: dedent`
+          interface Interface {
+            a: () => null,
+           b: "b",
+          y: "y",
+
+              z: "z",
+          }
+        `,
       })
     })
 
@@ -2090,6 +2176,7 @@ describe('sort-interfaces', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })
@@ -4325,7 +4412,7 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         errors: [
           {
@@ -4336,9 +4423,13 @@ describe('sort-interfaces', () => {
             messageId: 'unexpectedInterfacePropertiesOrder',
             data: { right: 'b', left: 'z' },
           },
+        ],
+        options: [
           {
-            messageId: 'extraSpacingBetweenInterfaceMembers',
-            data: { right: 'b', left: 'z' },
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
           },
         ],
         code: dedent`
@@ -4357,16 +4448,10 @@ describe('sort-interfaces', () => {
             a: () => null,
            b: "b",
           y: "y",
+
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -4632,6 +4717,7 @@ describe('sort-interfaces', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })
@@ -6725,7 +6811,7 @@ describe('sort-interfaces', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         errors: [
           {
@@ -6739,9 +6825,13 @@ describe('sort-interfaces', () => {
             messageId: 'unexpectedInterfacePropertiesOrder',
             data: { right: 'bbb', left: 'z' },
           },
+        ],
+        options: [
           {
-            messageId: 'extraSpacingBetweenInterfaceMembers',
-            data: { right: 'bbb', left: 'z' },
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
           },
         ],
         code: dedent`
@@ -6760,16 +6850,10 @@ describe('sort-interfaces', () => {
             aaaa: () => null,
            bbb: "b",
           yy: "y",
+
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -7035,6 +7119,7 @@ describe('sort-interfaces', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })

@@ -1288,21 +1288,7 @@ describe('sort-array-includes', () => {
       },
     )
 
-    it('removes newlines between groups when newlinesBetween is 0', async () => {
-      let newlinesOptions = [
-        {
-          ...options,
-          customGroups: [
-            {
-              elementNamePattern: 'a',
-              groupName: 'a',
-            },
-          ],
-          groups: ['a', 'unknown'],
-          newlinesBetween: 0,
-        },
-      ]
-
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
         errors: [
           {
@@ -1315,6 +1301,115 @@ describe('sort-array-includes', () => {
           },
           {
             messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          [
+            'a',
+
+
+           'y',
+          'z',
+
+              'b'
+          ].includes(value)
+        `,
+        output: dedent`
+          [
+            'a',
+           'b',
+          'y',
+              'z'
+          ].includes(value)
+        `,
+      })
+    })
+
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedArrayIncludesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: {
+          ...options,
+          customGroups: [
+            {
+              elementNamePattern: 'a',
+              groupName: 'a',
+            },
+          ],
+          groups: ['a', 'unknown'],
+          newlinesInside: 0,
+        },
+        output: dedent`
+          [
+            'a',
+
+
+           'b',
+          'y',
+              'z'
+          ].includes(value)
+        `,
+        code: dedent`
+          [
+            'a',
+
+
+           'y',
+          'z',
+
+              'b'
+          ].includes(value)
+        `,
+      })
+    })
+
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
+            {
+              elementNamePattern: 'a',
+              groupName: 'a',
+            },
+          ],
+          groups: ['a', 'unknown'],
+          newlinesInside: 'ignore',
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedArrayIncludesOrder',
             data: { right: 'b', left: 'z' },
           },
         ],
@@ -1334,6 +1429,7 @@ describe('sort-array-includes', () => {
             'a',
            'b',
           'y',
+
               'z'
           ].includes(value)
         `,
@@ -1654,6 +1750,7 @@ describe('sort-array-includes', () => {
           ],
           groups: ['unknown', 'b|c'],
           newlinesBetween: 1,
+          newlinesInside: 0,
         },
       ]
 
@@ -2982,6 +3079,7 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['a', 'unknown'],
+          newlinesInside: 'ignore',
           newlinesBetween: 0,
         },
       ]
@@ -2994,10 +3092,6 @@ describe('sort-array-includes', () => {
           },
           {
             messageId: 'unexpectedArrayIncludesOrder',
-            data: { right: 'b', left: 'z' },
-          },
-          {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
             data: { right: 'b', left: 'z' },
           },
         ],
@@ -3017,6 +3111,7 @@ describe('sort-array-includes', () => {
             'a',
            'b',
           'y',
+
               'z'
           ].includes(value)
         `,
@@ -3337,6 +3432,7 @@ describe('sort-array-includes', () => {
           ],
           groups: ['unknown', 'b|c'],
           newlinesBetween: 1,
+          newlinesInside: 0,
         },
       ]
 
@@ -4649,6 +4745,7 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['aa', 'unknown'],
+          newlinesInside: 'ignore',
           newlinesBetween: 0,
         },
       ]
@@ -4664,10 +4761,6 @@ describe('sort-array-includes', () => {
           },
           {
             messageId: 'unexpectedArrayIncludesOrder',
-            data: { right: 'bbb', left: 'z' },
-          },
-          {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
             data: { right: 'bbb', left: 'z' },
           },
         ],
@@ -4687,6 +4780,7 @@ describe('sort-array-includes', () => {
             'aaaa',
            'bbb',
           'yy',
+
               'z'
           ].includes(value)
         `,
@@ -5010,6 +5104,7 @@ describe('sort-array-includes', () => {
           ],
           groups: ['unknown', 'b|c'],
           newlinesBetween: 1,
+          newlinesInside: 0,
         },
       ]
 

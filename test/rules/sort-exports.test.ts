@@ -952,7 +952,7 @@ describe('sort-exports', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
         errors: [
           {
@@ -994,6 +994,96 @@ describe('sort-exports', () => {
             export { a } from 'a'
            export { b } from 'b'
           export { y } from 'y'
+              export { z } from 'z'
+        `,
+      })
+    })
+
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenExports',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        code: dedent`
+            export { a } from 'a'
+
+
+           export { y } from 'y'
+          export { z } from 'z'
+
+              export { b } from 'b'
+        `,
+        output: dedent`
+          export { a } from 'a'
+
+
+           export { b } from 'b'
+          export { y } from 'y'
+              export { z } from 'z'
+        `,
+      })
+    })
+
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenExports',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        code: dedent`
+            export { a } from 'a'
+
+
+           export { y } from 'y'
+          export { z } from 'z'
+
+              export { b } from 'b'
+        `,
+        output: dedent`
+            export { a } from 'a'
+           export { b } from 'b'
+          export { y } from 'y'
+
               export { z } from 'z'
         `,
       })
@@ -2293,22 +2383,8 @@ describe('sort-exports', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenExports',
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: 'unexpectedExportsOrder',
-            data: { right: 'b', left: 'z' },
-          },
-          {
-            messageId: 'extraSpacingBetweenExports',
-            data: { right: 'b', left: 'z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -2319,7 +2395,18 @@ describe('sort-exports', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenExports',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -2335,6 +2422,7 @@ describe('sort-exports', () => {
             export { a } from 'a'
            export { b } from 'b'
           export { y } from 'y'
+
               export { z } from 'z'
         `,
       })
@@ -2614,107 +2702,6 @@ describe('sort-exports', () => {
 
             export { b } from 'b'
           `,
-          code: dedent`
-            export { a } from 'a'
-            export { b } from 'b'
-          `,
-        })
-      },
-    )
-
-    it.each([1, 2, 'ignore', 0])(
-      'enforces no newline if the global option is %s and newlinesBetween: 0 exists between all groups',
-      async globalNewlinesBetween => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                { elementNamePattern: 'a', groupName: 'a' },
-                { elementNamePattern: 'b', groupName: 'b' },
-                { elementNamePattern: 'c', groupName: 'c' },
-                { groupName: 'unusedGroup', elementNamePattern: 'X' },
-              ],
-              groups: [
-                'a',
-                { newlinesBetween: 0 },
-                'unusedGroup',
-                { newlinesBetween: 0 },
-                'b',
-                { newlinesBetween: 1 },
-                'c',
-              ],
-              newlinesBetween: globalNewlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'extraSpacingBetweenExports',
-              data: { right: 'b', left: 'a' },
-            },
-          ],
-          output: dedent`
-            export { a } from 'a'
-            export { b } from 'b'
-          `,
-          code: dedent`
-            export { a } from 'a'
-
-            export { b } from 'b'
-          `,
-        })
-      },
-    )
-
-    it.each([
-      ['ignore', 0],
-      [0, 'ignore'],
-    ])(
-      'does not enforce a newline if the global option is %s and the group option is %s',
-      async (globalNewlinesBetween, groupNewlinesBetween) => {
-        await valid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                { elementNamePattern: 'a', groupName: 'a' },
-                { elementNamePattern: 'b', groupName: 'b' },
-                { groupName: 'unusedGroup', elementNamePattern: 'X' },
-              ],
-              groups: [
-                'a',
-                'unusedGroup',
-                { newlinesBetween: groupNewlinesBetween },
-                'b',
-              ],
-              newlinesBetween: globalNewlinesBetween,
-            },
-          ],
-          code: dedent`
-            export { a } from 'a'
-
-            export { b } from 'b'
-          `,
-        })
-
-        await valid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                { elementNamePattern: 'a', groupName: 'a' },
-                { elementNamePattern: 'b', groupName: 'b' },
-                { groupName: 'unusedGroup', elementNamePattern: 'X' },
-              ],
-              groups: [
-                'a',
-                'unusedGroup',
-                { newlinesBetween: groupNewlinesBetween },
-                'b',
-              ],
-              newlinesBetween: globalNewlinesBetween,
-            },
-          ],
           code: dedent`
             export { a } from 'a'
             export { b } from 'b'
@@ -3771,7 +3758,7 @@ describe('sort-exports', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         options: [
           {
@@ -3783,17 +3770,8 @@ describe('sort-exports', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
-          },
-        ],
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenExports',
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: 'extraSpacingBetweenExports',
-            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -3809,8 +3787,15 @@ describe('sort-exports', () => {
             export { a } from 'a'
            export { y } from 'y'
           export { z } from 'z'
+
               export { b } from 'b'
         `,
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenExports',
+            data: { right: 'y', left: 'a' },
+          },
+        ],
       })
     })
 
@@ -3902,153 +3887,6 @@ describe('sort-exports', () => {
         `,
       })
     })
-
-    it.each([
-      [2, 0],
-      [2, 'ignore'],
-      [0, 2],
-      ['ignore', 2],
-    ])(
-      'enforces newlines if the global option is %s and the group option is %s',
-      async (globalNewlinesBetween, groupNewlinesBetween) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                { elementNamePattern: 'a', groupName: 'a' },
-                { elementNamePattern: 'b', groupName: 'b' },
-                { groupName: 'unusedGroup', elementNamePattern: 'X' },
-              ],
-              groups: [
-                'a',
-                'unusedGroup',
-                { newlinesBetween: groupNewlinesBetween },
-                'b',
-              ],
-              newlinesBetween: globalNewlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'missedSpacingBetweenExports',
-              data: { right: 'b', left: 'a' },
-            },
-          ],
-          output: dedent`
-            export { a } from 'a'
-
-
-            export { b } from 'b'
-          `,
-          code: dedent`
-            export { a } from 'a'
-            export { b } from 'b'
-          `,
-        })
-      },
-    )
-
-    it.each([1, 2, 'ignore', 0])(
-      'enforces no newline if the global option is %s and newlinesBetween: 0 exists between all groups',
-      async globalNewlinesBetween => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                { elementNamePattern: 'a', groupName: 'a' },
-                { elementNamePattern: 'b', groupName: 'b' },
-                { elementNamePattern: 'c', groupName: 'c' },
-                { groupName: 'unusedGroup', elementNamePattern: 'X' },
-              ],
-              groups: [
-                'a',
-                { newlinesBetween: 0 },
-                'unusedGroup',
-                { newlinesBetween: 0 },
-                'b',
-                { newlinesBetween: 1 },
-                'c',
-              ],
-              newlinesBetween: globalNewlinesBetween,
-            },
-          ],
-          errors: [
-            {
-              messageId: 'extraSpacingBetweenExports',
-              data: { right: 'b', left: 'a' },
-            },
-          ],
-          output: dedent`
-            export { a } from 'a'
-            export { b } from 'b'
-          `,
-          code: dedent`
-            export { a } from 'a'
-
-            export { b } from 'b'
-          `,
-        })
-      },
-    )
-
-    it.each([
-      ['ignore', 0],
-      [0, 'ignore'],
-    ])(
-      'does not enforce a newline if the global option is %s and the group option is %s',
-      async (globalNewlinesBetween, groupNewlinesBetween) => {
-        await valid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                { elementNamePattern: 'a', groupName: 'a' },
-                { elementNamePattern: 'b', groupName: 'b' },
-                { groupName: 'unusedGroup', elementNamePattern: 'X' },
-              ],
-              groups: [
-                'a',
-                'unusedGroup',
-                { newlinesBetween: groupNewlinesBetween },
-                'b',
-              ],
-              newlinesBetween: globalNewlinesBetween,
-            },
-          ],
-          code: dedent`
-            export { a } from 'a'
-
-            export { b } from 'b'
-          `,
-        })
-
-        await valid({
-          options: [
-            {
-              ...options,
-              customGroups: [
-                { elementNamePattern: 'a', groupName: 'a' },
-                { elementNamePattern: 'b', groupName: 'b' },
-                { groupName: 'unusedGroup', elementNamePattern: 'X' },
-              ],
-              groups: [
-                'a',
-                'unusedGroup',
-                { newlinesBetween: groupNewlinesBetween },
-                'b',
-              ],
-              newlinesBetween: globalNewlinesBetween,
-            },
-          ],
-          code: dedent`
-            export { a } from 'a'
-            export { b } from 'b'
-          `,
-        })
-      },
-    )
 
     it.each([
       [2, 0],

@@ -12,7 +12,10 @@ import type { CommonOptions } from '../types/common-options'
  * rule-specific options.
  */
 export type Settings = Partial<
-  Pick<CommonGroupsOptions<unknown, unknown, string>, 'newlinesBetween'> &
+  Pick<
+    CommonGroupsOptions<unknown, unknown, string>,
+    'newlinesBetween' | 'newlinesInside'
+  > &
     CommonPartitionOptions &
     CommonOptions
 >
@@ -66,6 +69,7 @@ export function getSettings(
       'partitionByNewLine',
       'specialCharacters',
       'newlinesBetween',
+      'newlinesInside',
       'fallbackSort',
       'ignoreCase',
       'alphabet',

@@ -55,6 +55,7 @@ type MessageId =
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
+  newlinesInside: 'newlinesBetween',
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
   partitionByNewLine: false,

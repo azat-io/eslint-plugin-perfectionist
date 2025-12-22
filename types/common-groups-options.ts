@@ -43,14 +43,14 @@ export type CustomGroupsOption<
    */
   fallbackSort?: FallbackSortOption<CustomTypeOption>
 
+  /** Specify the exact number of newlines required between elements of groups. */
+  newlinesInside?: NewlinesInsideOption
+
   /**
    * Regular expression pattern to match the element's name. Elements matching
    * this pattern will be included in this custom group.
    */
   elementNamePattern?: RegexOption
-
-  /** Specify the exact number of newlines required. */
-  newlinesInside?: number
 
   /**
    * Sorting algorithm type for this custom group. Overrides the global type
@@ -72,41 +72,20 @@ export type CustomGroupsOption<
 } & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) &
   AdditionalOptions)[]
 
-/**
- * Configuration for groups with overriding settings.
- *
- * @example
- *   const groups = [
- *     'imports',
- *     { group: 'group', commentAbove: '// Component Definitions' },
- *     'components',
- *   ]
- */
-export interface GroupWithOverridesOption<CustomTypeOption extends string> {
-  /** Name of the group or array of group names for composite groups. */
-  group: string[] | string
-
-  /** Specify the exact number of newlines required inside the group. */
-  newlinesInside?: number
-
-  /** Same as `type` in CommonOptions - Sorting algorithm to use for this group. */
-  type?: CustomTypeOption
-
-  /**
-   * Text of the comment to insert above the group. The comment will be
-   * formatted as a line comment (// ...).
-   */
-  commentAbove?: string
-
-  /** Same as `order` in CommonOptions - Sort direction for this group. */
-  order?: OrderOption
-}
-
 export interface CommonGroupsOptions<
   SingleCustomGroup,
   AdditionalOptions,
   CustomTypeOption extends string,
 > {
+  /** Specify the exact number of newlines required between elements of groups. */
+  newlinesInside:
+    | NewlinesInsideOption
+    /**
+     * @deprecated The `newlinesBetween` value is deprecated and will be removed
+     *   in V6.
+     */
+    | 'newlinesBetween'
+
   /** Custom groups for organizing nodes. */
   customGroups: CustomGroupsOption<
     SingleCustomGroup,
@@ -120,8 +99,38 @@ export interface CommonGroupsOptions<
    */
   groups: GroupsOptions<CustomTypeOption>
 
-  /** Controls the placement of newlines between different groups of nodes. */
+  /** Specify the exact number of newlines required between groups. */
   newlinesBetween: NewlinesBetweenOption
+}
+
+/**
+ * Configuration for groups with overriding settings.
+ *
+ * @example
+ *   const groups = [
+ *     'imports',
+ *     { group: 'group', commentAbove: '// Component Definitions' },
+ *     'components',
+ *   ]
+ */
+export interface GroupWithOverridesOption<CustomTypeOption extends string> {
+  /** Specify the exact number of newlines required inside the group. */
+  newlinesInside?: NewlinesInsideOption
+
+  /** Name of the group or array of group names for composite groups. */
+  group: string[] | string
+
+  /** Same as `type` in CommonOptions - Sorting algorithm to use for this group. */
+  type?: CustomTypeOption
+
+  /**
+   * Text of the comment to insert above the group. The comment will be
+   * formatted as a line comment (// ...).
+   */
+  commentAbove?: string
+
+  /** Same as `order` in CommonOptions - Sort direction for this group. */
+  order?: OrderOption
 }
 
 /**
@@ -200,6 +209,13 @@ export interface GroupNewlinesBetweenOption {
 
   group?: never
 }
+
+export type NewlinesInsideOption =
+  /** Preserve existing newlines without modification. */
+  | 'ignore'
+
+  /** Require exactly this number of blank lines between elements of a group. */
+  | number
 
 /**
  * Configuration for organizing elements into groups with optional formatting.

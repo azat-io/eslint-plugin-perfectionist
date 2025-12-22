@@ -25,9 +25,19 @@ export let newlinesBetweenJsonSchema: JSONSchema4 = {
   ],
 }
 
-let newlinesInsideJsonSchema: JSONSchema4 = {
-  type: 'number',
-  minimum: 0,
+/** JSON schema for the newlines inside option. */
+export let newlinesInsideJsonSchema: JSONSchema4 = {
+  oneOf: [
+    {
+      description: 'Specifies how to handle newlines between groups elements',
+      enum: ['ignore'],
+      type: 'string',
+    },
+    {
+      type: 'number',
+      minimum: 0,
+    },
+  ],
 }
 
 /**
@@ -192,6 +202,12 @@ export function buildCommonGroupsJsonSchemas({
       allowedAdditionalTypeValues,
       singleCustomGroupJsonSchema,
     }),
+    newlinesInside: {
+      oneOf: [
+        newlinesInsideJsonSchema,
+        { enum: ['newlinesBetween'], type: 'string' },
+      ],
+    },
     groups: buildGroupsJsonSchema({
       allowedAdditionalTypeValues,
     }),

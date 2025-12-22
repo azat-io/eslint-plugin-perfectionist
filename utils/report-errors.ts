@@ -1,8 +1,8 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
+import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
-import type { MakeFixesParameters } from './make-fixes'
 
 import { makeFixes } from './make-fixes'
 
@@ -47,9 +47,9 @@ interface ReportErrorsParameters<
   T extends SortingNode,
 > {
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
+  options?: CommonGroupsOptions<unknown, unknown, string>
   context: TSESLint.RuleContext<MessageIds, unknown[]>
   ignoreFirstNodeHighestBlockComment?: boolean
-  options?: MakeFixesParameters<T>['options']
   firstUnorderedNodeDependentOnRight?: T
   sourceCode: TSESLint.SourceCode
   commentAboveMissing?: string

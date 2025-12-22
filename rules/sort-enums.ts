@@ -51,6 +51,7 @@ type MessageId =
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
+  newlinesInside: 'newlinesBetween',
   sortByValue: 'ifNumericEnum',
   partitionByComment: false,
   partitionByNewLine: false,

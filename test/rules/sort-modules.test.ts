@@ -1791,7 +1791,7 @@ describe('sort-modules', () => {
       })
     })
 
-    it('removes newlines between groups when newlinesBetween is 0', async () => {
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
         errors: [
           {
@@ -1830,6 +1830,98 @@ describe('sort-modules', () => {
         `,
         output: dedent`
             function b() {}
+           function y() {}
+          function z() {}
+              interface A {}
+        `,
+      })
+    })
+
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'interface',
+              rightGroup: 'unknown',
+              right: 'y',
+              left: 'A',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['unknown', 'interface'],
+            newlinesInside: 0,
+          },
+        ],
+        code: dedent`
+            interface A {}
+
+
+           function y() {}
+          function z() {}
+
+              function b() {}
+        `,
+        output: dedent`
+          function b() {}
+           function y() {}
+          function z() {}
+
+              interface A {}
+        `,
+      })
+    })
+
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'interface',
+              rightGroup: 'unknown',
+              right: 'y',
+              left: 'A',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['unknown', 'interface'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+            interface A {}
+
+
+           function y() {}
+          function z() {}
+
+              function b() {}
+        `,
+        output: dedent`
+          function b() {}
+
+
            function y() {}
           function z() {}
               interface A {}
@@ -2139,18 +2231,19 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['function', 'type'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           function a() {} // Comment after
 
           type B = string
           type C = string
         `,
-        options: [
-          {
-            groups: ['function', 'type'],
-            newlinesBetween: 1,
-          },
-        ],
         code: dedent`
           type B = string
           function a() {} // Comment after
@@ -4224,18 +4317,23 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesOrder',
             data: { right: 'b', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenModulesMembers',
-            data: { right: 'b', left: 'z' },
-          },
         ],
         options: [
           {
             ...options,
             groups: ['unknown', 'interface'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
+        output: dedent`
+            function b() {}
+
+
+           function y() {}
+          function z() {}
+              interface A {}
+        `,
         code: dedent`
             interface A {}
 
@@ -4244,12 +4342,6 @@ describe('sort-modules', () => {
           function z() {}
 
               function b() {}
-        `,
-        output: dedent`
-            function b() {}
-           function y() {}
-          function z() {}
-              interface A {}
         `,
       })
     })
@@ -4556,18 +4648,19 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['function', 'type'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           function a() {} // Comment after
 
           type B = string
           type C = string
         `,
-        options: [
-          {
-            groups: ['function', 'type'],
-            newlinesBetween: 1,
-          },
-        ],
         code: dedent`
           type B = string
           function a() {} // Comment after
@@ -6601,18 +6694,23 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesOrder',
             data: { right: 'bbb', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenModulesMembers',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         options: [
           {
             ...options,
             groups: ['unknown', 'interface'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
+        output: dedent`
+            function bbb() {}
+
+
+           function yy() {}
+          function z() {}
+              interface AAAA {}
+        `,
         code: dedent`
             interface AAAA {}
 
@@ -6621,12 +6719,6 @@ describe('sort-modules', () => {
           function z() {}
 
               function bbb() {}
-        `,
-        output: dedent`
-            function bbb() {}
-           function yy() {}
-          function z() {}
-              interface AAAA {}
         `,
       })
     })
@@ -6936,18 +7028,19 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['function', 'type'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           function a() {} // Comment after
 
           type B = string
           type C = string
         `,
-        options: [
-          {
-            groups: ['function', 'type'],
-            newlinesBetween: 1,
-          },
-        ],
         code: dedent`
           type B = string
           function a() {} // Comment after

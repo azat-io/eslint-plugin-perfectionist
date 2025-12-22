@@ -1642,7 +1642,7 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
         errors: [
           {
@@ -1684,6 +1684,92 @@ describe('sort-object-types', () => {
             newlinesBetween: 0,
           },
         ],
+      })
+    })
+
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        output: dedent`
+          type Type = {
+            a: () => null,
+
+
+           b: "b",
+          y: "y",
+              z: "z",
+          }
+        `,
+        code: dedent`
+          type Type = {
+            a: () => null,
+
+
+           y: "y",
+          z: "z",
+
+              b: "b",
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+      })
+    })
+
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenObjectTypeMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          type Type = {
+            a: () => null,
+
+
+           y: "y",
+          z: "z",
+
+              b: "b",
+          }
+        `,
+        output: dedent`
+          type Type = {
+            a: () => null,
+           b: "b",
+          y: "y",
+
+              z: "z",
+          }
+        `,
       })
     })
 
@@ -1954,6 +2040,7 @@ describe('sort-object-types', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })
@@ -4887,7 +4974,7 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         errors: [
           {
@@ -4898,9 +4985,13 @@ describe('sort-object-types', () => {
             messageId: 'unexpectedObjectTypesOrder',
             data: { right: 'b', left: 'z' },
           },
+        ],
+        options: [
           {
-            messageId: 'extraSpacingBetweenObjectTypeMembers',
-            data: { right: 'b', left: 'z' },
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
           },
         ],
         code: dedent`
@@ -4919,16 +5010,10 @@ describe('sort-object-types', () => {
             a: () => null,
            b: "b",
           y: "y",
+
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -5199,6 +5284,7 @@ describe('sort-object-types', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })
@@ -7246,7 +7332,7 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         errors: [
           {
@@ -7260,9 +7346,13 @@ describe('sort-object-types', () => {
             messageId: 'unexpectedObjectTypesOrder',
             data: { right: 'bbb', left: 'z' },
           },
+        ],
+        options: [
           {
-            messageId: 'extraSpacingBetweenObjectTypeMembers',
-            data: { right: 'bbb', left: 'z' },
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
           },
         ],
         code: dedent`
@@ -7281,16 +7371,10 @@ describe('sort-object-types', () => {
             aaaa: () => null,
            bbb: "b",
           yy: "y",
+
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -7561,6 +7645,7 @@ describe('sort-object-types', () => {
           {
             groups: ['property', 'method'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
       })

@@ -65,6 +65,7 @@ type SortArrayIncludesSortingNode = SortingNode<
 
 export let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
+  newlinesInside: 'newlinesBetween',
   specialCharacters: 'keep',
   partitionByComment: false,
   partitionByNewLine: false,

@@ -958,7 +958,7 @@ describe('sort-named-exports', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
         errors: [
           {
@@ -1003,6 +1003,104 @@ describe('sort-named-exports', () => {
               a,
              b,
             y,
+                z,
+          }
+        `,
+      })
+    })
+
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedNamedExportsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenNamedExports',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        output: dedent`
+          export {
+              a,
+
+
+             b,
+            y,
+                z,
+          }
+        `,
+        code: dedent`
+          export {
+              a,
+
+
+             y,
+            z,
+
+                b,
+          }
+        `,
+      })
+    })
+
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenNamedExports',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedNamedExportsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        code: dedent`
+          export {
+              a,
+
+
+             y,
+            z,
+
+                b,
+          }
+        `,
+        output: dedent`
+          export {
+              a,
+             b,
+            y,
+
                 z,
           }
         `,
@@ -1255,6 +1353,7 @@ describe('sort-named-exports', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -2236,22 +2335,8 @@ describe('sort-named-exports', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenNamedExports',
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: 'unexpectedNamedExportsOrder',
-            data: { right: 'b', left: 'z' },
-          },
-          {
-            messageId: 'extraSpacingBetweenNamedExports',
-            data: { right: 'b', left: 'z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -2262,7 +2347,18 @@ describe('sort-named-exports', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenNamedExports',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedNamedExportsOrder',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -2281,6 +2377,7 @@ describe('sort-named-exports', () => {
               a,
              b,
             y,
+
                 z,
           }
         `,
@@ -2533,6 +2630,7 @@ describe('sort-named-exports', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -3514,8 +3612,22 @@ describe('sort-named-exports', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         errors: [
           {
             data: {
@@ -3527,23 +3639,6 @@ describe('sort-named-exports', () => {
           {
             messageId: 'unexpectedNamedExportsOrder',
             data: { right: 'bbb', left: 'z' },
-          },
-          {
-            messageId: 'extraSpacingBetweenNamedExports',
-            data: { right: 'bbb', left: 'z' },
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'aaaa',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            newlinesBetween: 0,
           },
         ],
         code: dedent`
@@ -3562,6 +3657,7 @@ describe('sort-named-exports', () => {
               aaaa,
              bbb,
             yy,
+
                 z,
           }
         `,
@@ -3814,6 +3910,7 @@ describe('sort-named-exports', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [

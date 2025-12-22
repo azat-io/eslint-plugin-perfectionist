@@ -1,14 +1,19 @@
 import { describe, expect, it } from 'vitest'
 
+import type {
+  NewlinesBetweenOption,
+  NewlinesInsideOption,
+  CustomGroupsOption,
+  GroupsOptions,
+} from '../../types/common-groups-options'
 import type { GetNewlinesBetweenOptionParameters } from '../../utils/get-newlines-between-option'
-import type { NewlinesBetweenOption } from '../../types/common-groups-options'
 
 import { getNewlinesBetweenOption } from '../../utils/get-newlines-between-option'
 
 const MULTIPLE_LINES_OPTIONS = [1, 2] as const
 
 describe('get-newlines-between-option', () => {
-  describe('global "newlinesBetween" option', () => {
+  describe('global "newlinesBetween"/"newlinesInside" option', () => {
     it.each([...MULTIPLE_LINES_OPTIONS, 'ignore', 0] as const)(
       'should return the global option (`%s`) if "customGroups" is not defined',
       newlinesBetween => {
@@ -42,6 +47,7 @@ describe('get-newlines-between-option', () => {
         expect(
           getNewlinesBetweenOption({
             options: {
+              newlinesInside: 'ignore',
               customGroups: [],
               newlinesBetween,
               groups,
@@ -53,35 +59,24 @@ describe('get-newlines-between-option', () => {
       },
     )
 
-    it('should return 1 if "newlinesBetween" is 1 and nodeGroupIndex !== nextNodeGroupIndex', () => {
-      let groups = ['group1', 'group2']
-      expect(
-        getNewlinesBetweenOption({
-          options: {
-            newlinesBetween: 1,
-            customGroups: [],
-            groups,
-          },
-          nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group2'),
-          nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
-        }),
-      ).toBe(1)
-    })
-
-    it('should return 0 if "newlinesBetween" is 1 and nodeGroupNumber === nextNodeGroupNumber', () => {
-      let groups = ['group1']
-      expect(
-        getNewlinesBetweenOption({
-          options: {
-            newlinesBetween: 1,
-            customGroups: [],
-            groups,
-          },
-          nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
-          nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
-        }),
-      ).toBe(0)
-    })
+    it.each(MULTIPLE_LINES_OPTIONS)(
+      'should return the entered newlinesInside ("%s") if nodeGroupNumber === nextNodeGroupNumber',
+      newlinesInside => {
+        let groups = ['group1', 'group2']
+        expect(
+          getNewlinesBetweenOption({
+            options: {
+              newlinesBetween: 'ignore',
+              customGroups: [],
+              newlinesInside,
+              groups,
+            },
+            nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+            nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+          }),
+        ).toBe(newlinesInside)
+      },
+    )
 
     it.each([...MULTIPLE_LINES_OPTIONS, 'ignore', 0] as const)(
       "should return the global option (`%s`) if the node's group is within an array",
@@ -122,7 +117,7 @@ describe('get-newlines-between-option', () => {
     )
   })
 
-  describe('custom groups "newlinesBetween" option', () => {
+  describe('custom groups "newlinesBetween"/"newlinesInside" option', () => {
     describe('when the node and next node belong to the same custom group', () => {
       let parameters = {
         customGroups: [
@@ -155,24 +150,42 @@ describe('get-newlines-between-option', () => {
         },
       )
 
-      it.each(['ignore', 0] as const)(
-        'should return the global option (`%s`) if the "newlinesInside" option is not defined',
-        newlinesBetween => {
+      describe('when "newlinesInside" is "newlinesBetween"', () => {
+        it('should return "ignore" "newlinesBetween" and "ignore"', () => {
+          let groups = ['group1']
           expect(
-            getNewlinesBetweenOption(
-              buildParameters({
-                ...parameters,
-                customGroups: [
-                  {
-                    groupName: 'group1',
-                  },
-                ],
-                newlinesBetween,
+            getNewlinesBetweenOption({
+              options: {
+                newlinesInside: 'newlinesBetween',
+                newlinesBetween: 'ignore',
+                customGroups: [],
+                groups,
+              },
+              nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+              nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+            }),
+          ).toBe('ignore')
+        })
+
+        it.each([0, 1])(
+          'should return 0 if "newlinesBetween" is`%s',
+          newlinesBetween => {
+            let groups = ['group1']
+            expect(
+              getNewlinesBetweenOption({
+                options: {
+                  newlinesInside: 'newlinesBetween',
+                  customGroups: [],
+                  newlinesBetween,
+                  groups,
+                },
+                nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+                nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
               }),
-            ),
-          ).toBe(newlinesBetween)
-        },
-      )
+            ).toBe(0)
+          },
+        )
+      })
     })
 
     describe('when the node and next node do not belong to the same custom group', () => {
@@ -352,26 +365,29 @@ describe('get-newlines-between-option', () => {
     nextNodeGroupIndexGroup,
     sortingNodeGroup,
     newlinesBetween,
+    newlinesInside,
     customGroups,
     groups,
   }: {
-    newlinesBetween: GetNewlinesBetweenOptionParameters['options']['newlinesBetween']
-    customGroups?: GetNewlinesBetweenOptionParameters['options']['customGroups']
-    groups?: GetNewlinesBetweenOptionParameters['options']['groups']
+    customGroups?: CustomGroupsOption<unknown, unknown, string>
+    newlinesBetween: NewlinesBetweenOption
+    newlinesInside?: NewlinesInsideOption
     nextNodeGroupIndexGroup?: string
     sortingNodeGroup?: string
+    groups?: GroupsOptions
   }): GetNewlinesBetweenOptionParameters {
     let finalGroups = groups ?? ['group1', 'group2']
     return {
-      nextNodeGroupIndex: generateNodeGroupIndex(
-        finalGroups,
-        nextNodeGroupIndexGroup ?? 'group2',
-      ),
       options: {
+        newlinesInside: newlinesInside ?? 'ignore',
         customGroups: customGroups ?? [],
         groups: finalGroups,
         newlinesBetween,
       },
+      nextNodeGroupIndex: generateNodeGroupIndex(
+        finalGroups,
+        nextNodeGroupIndexGroup ?? 'group2',
+      ),
       nodeGroupIndex: generateNodeGroupIndex(
         finalGroups,
         sortingNodeGroup ?? 'group1',

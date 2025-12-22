@@ -3825,7 +3825,7 @@ describe('sort-classes', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
         errors: [
           {
@@ -3841,9 +3841,16 @@ describe('sort-classes', () => {
             data: { right: 'b', left: 'z' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           class Class {
-            a = () => null
+            a() {}
 
 
            y = "y"
@@ -3854,19 +3861,98 @@ describe('sort-classes', () => {
         `,
         output: dedent`
           class Class {
-            a = () => null
+            a() {}
            b = "b"
           y = "y"
               z = "z"
           }
         `,
+      })
+    })
+
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
         options: [
           {
             ...options,
             groups: ['method', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+        output: dedent`
+          class Class {
+            a() {}
+
+
+           b = "b"
+          y = "y"
+              z = "z"
+          }
+        `,
+        code: dedent`
+          class Class {
+            a() {}
+
+
+           y = "y"
+          z = "z"
+
+              b = "b"
+          }
+        `,
+      })
+    })
+
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
+        code: dedent`
+          class Class {
+            a() {}
+
+
+           y = "y"
+          z = "z"
+
+              b = "b"
+          }
+        `,
+        output: dedent`
+          class Class {
+            a() {}
+           b = "b"
+          y = "y"
+
+              z = "z"
+          }
+        `,
       })
     })
 
@@ -4155,6 +4241,13 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['property', 'method'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           class Class {
             a // Comment after
@@ -4171,12 +4264,6 @@ describe('sort-classes', () => {
             c() {}
           }
         `,
-        options: [
-          {
-            groups: ['property', 'method'],
-            newlinesBetween: 1,
-          },
-        ],
       })
     })
 
@@ -8337,7 +8424,7 @@ describe('sort-classes', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
         errors: [
           {
@@ -8348,14 +8435,18 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesOrder',
             data: { right: 'b', left: 'z' },
           },
+        ],
+        options: [
           {
-            messageId: 'extraSpacingBetweenClassMembers',
-            data: { right: 'b', left: 'z' },
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
           },
         ],
         code: dedent`
           class Class {
-            a = () => null
+            a() {}
 
 
            y = "y"
@@ -8366,19 +8457,13 @@ describe('sort-classes', () => {
         `,
         output: dedent`
           class Class {
-            a = () => null
+            a() {}
            b = "b"
           y = "y"
+
               z = "z"
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -8667,6 +8752,13 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['property', 'method'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           class Class {
             a // Comment after
@@ -8683,12 +8775,6 @@ describe('sort-classes', () => {
             c() {}
           }
         `,
-        options: [
-          {
-            groups: ['property', 'method'],
-            newlinesBetween: 1,
-          },
-        ],
       })
     })
 
@@ -12793,21 +12879,25 @@ describe('sort-classes', () => {
       })
     })
 
-    it('removes newlines when newlinesBetween is 0', async () => {
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         errors: [
           {
             messageId: 'extraSpacingBetweenClassMembers',
             data: { right: 'b', left: 'a' },
           },
-          {
-            messageId: 'extraSpacingBetweenClassMembers',
-            data: { right: 'z', left: 'y' },
-          },
         ],
         code: dedent`
           class Class {
-            a = () => null
+            a() {}
 
 
            b = "b"
@@ -12818,19 +12908,13 @@ describe('sort-classes', () => {
         `,
         output: dedent`
           class Class {
-            a = () => null
+            a() {}
            b = "b"
           y = "y"
+
               z = "z"
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -13119,6 +13203,13 @@ describe('sort-classes', () => {
             messageId: 'unexpectedClassesGroupOrder',
           },
         ],
+        options: [
+          {
+            groups: ['property', 'method'],
+            newlinesBetween: 1,
+            newlinesInside: 0,
+          },
+        ],
         output: dedent`
           class Class {
             a // Comment after
@@ -13135,12 +13226,6 @@ describe('sort-classes', () => {
             c() {}
           }
         `,
-        options: [
-          {
-            groups: ['property', 'method'],
-            newlinesBetween: 1,
-          },
-        ],
       })
     })
 

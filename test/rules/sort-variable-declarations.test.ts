@@ -1378,7 +1378,7 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it('removes newlines between groups when newlinesBetween is 0', async () => {
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
         errors: [
           {
@@ -1423,6 +1423,53 @@ describe('sort-variable-declarations', () => {
            b,
           y,
               z,
+        `,
+      })
+    })
+
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+        output: dedent`
+          let
+            a,
+
+
+           b,
+          y,
+              z,
+        `,
+        code: dedent`
+          let
+            a,
+
+
+           y,
+          z,
+
+              b,
         `,
       })
     })
@@ -1714,6 +1761,7 @@ describe('sort-variable-declarations', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -3111,20 +3159,6 @@ describe('sort-variable-declarations', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: 'unexpectedVariableDeclarationsOrder',
-            data: { right: 'b', left: 'z' },
-          },
-          {
-            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            data: { right: 'b', left: 'z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -3135,7 +3169,18 @@ describe('sort-variable-declarations', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -3153,6 +3198,7 @@ describe('sort-variable-declarations', () => {
             a,
            b,
           y,
+
               z,
         `,
       })
@@ -3445,6 +3491,7 @@ describe('sort-variable-declarations', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
@@ -4851,10 +4898,6 @@ describe('sort-variable-declarations', () => {
             messageId: 'unexpectedVariableDeclarationsOrder',
             data: { right: 'bbb', left: 'z' },
           },
-          {
-            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            data: { right: 'bbb', left: 'z' },
-          },
         ],
         options: [
           {
@@ -4866,6 +4909,7 @@ describe('sort-variable-declarations', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -4884,6 +4928,7 @@ describe('sort-variable-declarations', () => {
             aaaa,
            bbb,
           yy,
+
               z,
         `,
       })
@@ -5179,6 +5224,7 @@ describe('sort-variable-declarations', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [

@@ -911,7 +911,7 @@ describe('sort-decorators', () => {
       })
     })
 
-    it('removes newlines between groups when newlinesBetween is 0', async () => {
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
         errors: [
           {
@@ -954,6 +954,100 @@ describe('sort-decorators', () => {
             @a
            @b
           @y
+              @z
+          class Class {}
+        `,
+      })
+    })
+
+    it('removes newlines inside groups when newlinesInside is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedDecoratorsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenDecorators',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        code: dedent`
+            @a
+
+
+           @y
+          @z
+
+              @b
+          class Class {}
+        `,
+        output: dedent`
+          @a
+
+
+           @b
+          @y
+              @z
+          class Class {}
+        `,
+      })
+    })
+
+    it('removes newlines between groups when newlinesBetween is 0', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenDecorators',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedDecoratorsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        code: dedent`
+            @a
+
+
+           @y
+          @z
+
+              @b
+          class Class {}
+        `,
+        output: dedent`
+            @a
+           @b
+          @y
+
               @z
           class Class {}
         `,
@@ -1247,6 +1341,7 @@ describe('sort-decorators', () => {
             ],
             groups: ['unknown', 'b|c'],
             newlinesBetween: 1,
+            newlinesInside: 0,
           },
         ],
         errors: [
