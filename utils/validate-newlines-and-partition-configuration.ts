@@ -128,8 +128,12 @@ function validateNewlinesInsideConfiguration({
   CommonGroupsOptions<unknown, unknown, string>,
   'newlinesInside' | 'customGroups' | 'groups'
 >): void {
-  if (newlinesInside !== 'ignore') {
-    throw new Error(NEWLINES_INSIDE_ERROR_MESSAGE)
+  switch (newlinesInside) {
+    case 'newlinesBetween':
+    case 'ignore':
+      break
+    default:
+      throw new Error(NEWLINES_INSIDE_ERROR_MESSAGE)
   }
 
   validateGroups()
@@ -153,12 +157,12 @@ function validateNewlinesInsideConfiguration({
   function throwErrorIfNeeded(
     newlinesInsideOptions: NewlinesInsideOption | undefined,
   ): void {
-    if (newlinesInsideOptions === undefined) {
-      return
-    }
-
-    if (newlinesInsideOptions !== 'ignore') {
-      throw new Error(NEWLINES_INSIDE_ERROR_MESSAGE)
+    switch (newlinesInsideOptions) {
+      case undefined:
+      case 'ignore':
+        return
+      default:
+        throw new Error(NEWLINES_INSIDE_ERROR_MESSAGE)
     }
   }
 }

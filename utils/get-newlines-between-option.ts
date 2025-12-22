@@ -1,5 +1,6 @@
 import type {
   NewlinesBetweenOption,
+  NewlinesInsideOption,
   CommonGroupsOptions,
   GroupsOptions,
 } from '../types/common-groups-options'
@@ -16,7 +17,12 @@ import { computeGroupName } from './compute-group-name'
  */
 export interface GetNewlinesBetweenOptionParameters {
   /** Configuration options for newlines and groups. */
-  options: CommonGroupsOptions<unknown, unknown, string>
+  options: Omit<
+    CommonGroupsOptions<unknown, unknown, string>,
+    'newlinesInside'
+  > & {
+    newlinesInside: NewlinesInsideOption | 'newlinesBetween'
+  }
 
   /** Group index of the next/second node. */
   nextNodeGroupIndex: number
@@ -117,9 +123,11 @@ function computeNewlinesInsideOption({
   options: GetNewlinesBetweenOptionParameters['options']
   groupIndex: number
 }): NewlinesBetweenOption {
+  let globalNewlinesInsideOption = computeGlobalNewlinesInsideOption()
+
   let group = options.groups[groupIndex]
   if (!group) {
-    return options.newlinesInside
+    return globalNewlinesInsideOption
   }
 
   let groupName = computeGroupName(group)
@@ -133,8 +141,19 @@ function computeNewlinesInsideOption({
   return (
     nodeCustomGroup?.newlinesInside ??
     groupOverrideNewlinesInside ??
-    options.newlinesInside
+    globalNewlinesInsideOption
   )
+
+  function computeGlobalNewlinesInsideOption(): NewlinesInsideOption {
+    switch (options.newlinesInside) {
+      case 'newlinesBetween':
+        return options.newlinesBetween === 'ignore' ? 'ignore' : 0
+      case 'ignore':
+        return 'ignore'
+      default:
+        return options.newlinesInside
+    }
+  }
 }
 
 /**

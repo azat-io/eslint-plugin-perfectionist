@@ -94,7 +94,13 @@ export interface CommonGroupsOptions<
   newlinesBetween: NewlinesBetweenOption
 
   /** Specify the exact number of newlines required between elements of groups. */
-  newlinesInside: NewlinesInsideOption
+  newlinesInside:
+    | NewlinesInsideOption
+    /**
+     * @deprecated The `newlinesBetween` value is deprecated and will be removed
+     *   in V6.
+     */
+    | 'newlinesBetween'
 }
 
 /**

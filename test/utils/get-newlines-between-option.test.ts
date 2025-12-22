@@ -149,6 +149,43 @@ describe('get-newlines-between-option', () => {
           ).toBe(newlinesInside)
         },
       )
+
+      describe('when "newlinesInside" is "newlinesBetween"', () => {
+        it('should return "ignore" "newlinesBetween" and "ignore"', () => {
+          let groups = ['group1']
+          expect(
+            getNewlinesBetweenOption({
+              options: {
+                newlinesInside: 'newlinesBetween',
+                newlinesBetween: 'ignore',
+                customGroups: [],
+                groups,
+              },
+              nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+              nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+            }),
+          ).toBe('ignore')
+        })
+
+        it.each([0, 1])(
+          'should return 0 if "newlinesBetween" is`%s',
+          newlinesBetween => {
+            let groups = ['group1']
+            expect(
+              getNewlinesBetweenOption({
+                options: {
+                  newlinesInside: 'newlinesBetween',
+                  customGroups: [],
+                  newlinesBetween,
+                  groups,
+                },
+                nextNodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+                nodeGroupIndex: generateNodeGroupIndex(groups, 'group1'),
+              }),
+            ).toBe(0)
+          },
+        )
+      })
     })
 
     describe('when the node and next node do not belong to the same custom group', () => {

@@ -206,7 +206,12 @@ export function buildCommonGroupsJsonSchemas({
       allowedAdditionalTypeValues,
     }),
     newlinesBetween: newlinesBetweenJsonSchema,
-    newlinesInside: newlinesInsideJsonSchema,
+    newlinesInside: {
+      oneOf: [
+        newlinesInsideJsonSchema,
+        { enum: ['newlinesBetween'], type: 'string' },
+      ],
+    },
   }
 }
 

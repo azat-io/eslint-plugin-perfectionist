@@ -72,21 +72,6 @@ describe('validate-newlines-and-partition-configuration', () => {
       },
     )
 
-    it.each([1, 0, 'ignore'] as const)(
-      "allows `newlinesInside: '%s'` when 'partitionByNewline' is 'false'",
-      newlinesInside => {
-        expect(() => {
-          validateNewlinesAndPartitionConfiguration({
-            partitionByNewLine: false,
-            newlinesBetween: 'ignore',
-            customGroups: [],
-            newlinesInside,
-            groups: [],
-          })
-        }).not.toThrowError()
-      },
-    )
-
     it.each([1, 0] as const)(
       "throws an error when 'partitionByNewline' is enabled and `newlinesInside: '%s'` exists in 'groups'",
       newlinesInside => {
@@ -118,6 +103,36 @@ describe('validate-newlines-and-partition-configuration', () => {
         }).toThrowError(
           "The 'partitionByNewLine' and 'newlinesInside' options cannot be used together",
         )
+      },
+    )
+
+    it.each(['ignore', 'newlinesBetween'] as const)(
+      "allows `newlinesInside: '%s'` when 'partitionByNewline' enabled'",
+      newlinesInside => {
+        expect(() => {
+          validateNewlinesAndPartitionConfiguration({
+            newlinesBetween: 'ignore',
+            partitionByNewLine: true,
+            customGroups: [],
+            newlinesInside,
+            groups: [],
+          })
+        }).not.toThrowError()
+      },
+    )
+
+    it.each([1, 0, 'ignore'] as const)(
+      "allows `newlinesInside: '%s'` when 'partitionByNewline' is 'false'",
+      newlinesInside => {
+        expect(() => {
+          validateNewlinesAndPartitionConfiguration({
+            partitionByNewLine: false,
+            newlinesBetween: 'ignore',
+            customGroups: [],
+            newlinesInside,
+            groups: [],
+          })
+        }).not.toThrowError()
       },
     )
   })

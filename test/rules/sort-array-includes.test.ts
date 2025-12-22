@@ -1288,6 +1288,59 @@ describe('sort-array-includes', () => {
       },
     )
 
+    it('removes newlines between and inside groups', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
+            {
+              elementNamePattern: 'a',
+              groupName: 'a',
+            },
+          ],
+          groups: ['a', 'unknown'],
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedArrayIncludesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        code: dedent`
+          [
+            'a',
+
+
+           'y',
+          'z',
+
+              'b'
+          ].includes(value)
+        `,
+        output: dedent`
+          [
+            'a',
+           'b',
+          'y',
+              'z'
+          ].includes(value)
+        `,
+        options: newlinesOptions,
+      })
+    })
+
     it('removes newlines inside groups when newlinesInside is 0', async () => {
       await invalid({
         errors: [
