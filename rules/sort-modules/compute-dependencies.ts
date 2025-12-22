@@ -25,7 +25,7 @@ type DependencyDetection = HardDependencyDetection | SoftDependencyDetection
  * @returns The names of the dependencies.
  */
 export function computeDependencies(
-  node: TSESTree.TSEnumMember | TSESTree.ClassBody,
+  node: TSESTree.ClassDeclaration | TSESTree.TSEnumMember,
   dependencyDetection: DependencyDetection,
 ): string[] {
   let dependencies: string[] = []
@@ -117,6 +117,9 @@ export function computeDependencies(
       }
       if ('right' in nodeToCheck) {
         checkNode(nodeToCheck.right)
+      }
+      if ('superClass' in nodeToCheck && nodeToCheck.superClass) {
+        checkNode(nodeToCheck.superClass)
       }
       if ('test' in nodeToCheck && nodeToCheck.test) {
         checkNode(nodeToCheck.test)

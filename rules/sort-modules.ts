@@ -262,13 +262,7 @@ function analyzeModule({
               decorator,
             }),
           )
-          dependencies = [
-            ...dependencies,
-            ...(nodeToParse.superClass && 'name' in nodeToParse.superClass
-              ? [nodeToParse.superClass.name]
-              : []),
-            ...extractDependencies(nodeToParse.body),
-          ]
+          dependencies = [...dependencies, ...extractDependencies(nodeToParse)]
           break
         default:
       }
@@ -374,15 +368,15 @@ function analyzeModule({
 }
 
 function extractDependencies(
-  expression: TSESTree.TSEnumDeclaration | TSESTree.ClassBody,
+  expression: TSESTree.TSEnumDeclaration | TSESTree.ClassDeclaration,
 ): string[] {
   /**
    * Search static methods only if there is a static block or a static property
    * that is not an arrow function.
    */
   let searchStaticMethodsAndFunctionProperties =
-    expression.type === AST_NODE_TYPES.ClassBody &&
-    expression.body.some(
+    expression.type === AST_NODE_TYPES.ClassDeclaration &&
+    expression.body.body.some(
       classElement =>
         classElement.type === AST_NODE_TYPES.StaticBlock ||
         (classElement.static &&
