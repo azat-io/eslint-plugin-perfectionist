@@ -952,6 +952,53 @@ describe('sort-exports', () => {
       })
     })
 
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenExports',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenExports',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+            export { a } from 'a'
+
+
+           export { y } from 'y'
+          export { z } from 'z'
+
+              export { b } from 'b'
+        `,
+        output: dedent`
+            export { a } from 'a'
+           export { b } from 'b'
+          export { y } from 'y'
+              export { z } from 'z'
+        `,
+      })
+    })
+
     it('removes newlines inside groups when newlinesInside is 0', async () => {
       await invalid({
         options: [

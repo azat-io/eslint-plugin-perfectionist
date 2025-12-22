@@ -1091,6 +1091,57 @@ describe('sort-enums', () => {
       })
     })
 
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenEnumsMembers',
+            data: { right: 'Y', left: 'A' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'B', left: 'Z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenEnumsMembers',
+            data: { right: 'B', left: 'Z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          enum Enum {
+            A = null,
+
+
+           Y = null,
+          Z = null,
+
+              B = null,
+          }
+        `,
+        output: dedent`
+          enum Enum {
+            A = null,
+           B = null,
+          Y = null,
+              Z = null,
+          }
+        `,
+      })
+    })
+
     it('removes newlines inside groups when newlinesInside is 0', async () => {
       await invalid({
         options: [

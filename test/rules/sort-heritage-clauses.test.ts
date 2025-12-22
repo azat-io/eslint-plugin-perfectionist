@@ -522,6 +522,57 @@ describe('sort-heritage-clauses', () => {
       })
     })
 
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenHeritageClauses',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedHeritageClausesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenHeritageClauses',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          class Class implements
+              a,
+
+
+             y,
+            z,
+
+                b
+          {}
+        `,
+        output: dedent`
+          class Class implements
+              a,
+             b,
+            y,
+                z
+          {}
+        `,
+      })
+    })
+
     it('removes newlines inside groups when newlinesInside is 0', async () => {
       await invalid({
         options: [

@@ -1089,6 +1089,59 @@ describe('sort-sets', () => {
       },
     )
 
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
+      let newlinesOptions = [
+        {
+          ...options,
+          customGroups: [
+            {
+              elementNamePattern: 'a',
+              groupName: 'a',
+            },
+          ],
+          groups: ['a', 'unknown'],
+          newlinesBetween: 0,
+        },
+      ]
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenSetsMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedSetsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenSetsMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        code: dedent`
+          new Set([
+            'a',
+
+
+           'y',
+          'z',
+
+              'b'
+          ])
+        `,
+        output: dedent`
+          new Set([
+            'a',
+           'b',
+          'y',
+              'z'
+          ])
+        `,
+        options: newlinesOptions,
+      })
+    })
+
     it('removes newlines inside groups when newlinesInside is 0', async () => {
       let newlinesOptions = [
         {

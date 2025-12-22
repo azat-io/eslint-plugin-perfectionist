@@ -3825,6 +3825,51 @@ describe('sort-classes', () => {
       })
     })
 
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+          class Class {
+            a() {}
+
+
+           y = "y"
+          z = "z"
+
+              b = "b"
+          }
+        `,
+        output: dedent`
+          class Class {
+            a() {}
+           b = "b"
+          y = "y"
+              z = "z"
+          }
+        `,
+      })
+    })
+
     it('removes newlines inside groups when newlinesInside is 0', async () => {
       await invalid({
         errors: [

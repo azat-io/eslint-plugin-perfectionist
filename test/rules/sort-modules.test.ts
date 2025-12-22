@@ -1791,6 +1791,52 @@ describe('sort-modules', () => {
       })
     })
 
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'interface',
+              rightGroup: 'unknown',
+              right: 'y',
+              left: 'A',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenModulesMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['unknown', 'interface'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+            interface A {}
+
+
+           function y() {}
+          function z() {}
+
+              function b() {}
+        `,
+        output: dedent`
+            function b() {}
+           function y() {}
+          function z() {}
+              interface A {}
+        `,
+      })
+    })
+
     it('removes newlines inside groups when newlinesInside is 0', async () => {
       await invalid({
         errors: [

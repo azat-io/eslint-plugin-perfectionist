@@ -911,6 +911,55 @@ describe('sort-decorators', () => {
       })
     })
 
+    it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenDecorators',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedDecoratorsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenDecorators',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesBetween: 0,
+          },
+        ],
+        code: dedent`
+            @a
+
+
+           @y
+          @z
+
+              @b
+          class Class {}
+        `,
+        output: dedent`
+            @a
+           @b
+          @y
+              @z
+          class Class {}
+        `,
+      })
+    })
+
     it('removes newlines inside groups when newlinesInside is 0', async () => {
       await invalid({
         options: [
