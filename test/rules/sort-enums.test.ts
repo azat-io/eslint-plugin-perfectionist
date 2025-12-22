@@ -1152,6 +1152,7 @@ describe('sort-enums', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -2572,6 +2573,7 @@ describe('sort-enums', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -3950,6 +3952,20 @@ describe('sort-enums', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'AAAA',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         errors: [
           {
             data: {
@@ -3961,19 +3977,6 @@ describe('sort-enums', () => {
           {
             data: { right: 'BBB', left: 'Z' },
             messageId: 'unexpectedEnumsOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'AAAA',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            newlinesBetween: 0,
           },
         ],
         code: dedent`

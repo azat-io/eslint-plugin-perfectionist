@@ -583,6 +583,7 @@ describe('sort-heritage-clauses', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],

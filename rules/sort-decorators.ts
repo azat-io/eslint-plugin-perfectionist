@@ -55,7 +55,7 @@ let defaultOptions: Required<Options[number]> = {
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
-  newlinesInside: 'ignore',
+  newlinesInside: 'newlinesBetween',
   sortOnProperties: true,
   sortOnParameters: true,
   sortOnAccessors: true,

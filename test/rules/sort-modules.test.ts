@@ -1859,6 +1859,7 @@ describe('sort-modules', () => {
           {
             ...options,
             groups: ['unknown', 'interface'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -4275,6 +4276,7 @@ describe('sort-modules', () => {
           {
             ...options,
             groups: ['unknown', 'interface'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -6651,6 +6653,7 @@ describe('sort-modules', () => {
           {
             ...options,
             groups: ['unknown', 'interface'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],

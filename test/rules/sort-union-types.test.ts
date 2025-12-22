@@ -879,6 +879,7 @@ describe('sort-union-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -2465,6 +2466,7 @@ describe('sort-union-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -3992,6 +3994,7 @@ describe('sort-union-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],

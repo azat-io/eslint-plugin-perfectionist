@@ -1838,6 +1838,14 @@ describe('sort-interfaces', () => {
             data: { right: 'b', left: 'z' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           interface Interface {
             a: () => null,
@@ -1858,13 +1866,6 @@ describe('sort-interfaces', () => {
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -4378,6 +4379,14 @@ describe('sort-interfaces', () => {
             data: { right: 'b', left: 'z' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           interface Interface {
             a: () => null,
@@ -4398,13 +4407,6 @@ describe('sort-interfaces', () => {
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -6779,6 +6781,14 @@ describe('sort-interfaces', () => {
             data: { right: 'bbb', left: 'z' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           interface Interface {
             aaaa: () => null,
@@ -6799,13 +6809,6 @@ describe('sort-interfaces', () => {
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 

@@ -100,7 +100,7 @@ let defaultOptions: Required<SortClassesOptions[number]> = {
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
   specialCharacters: 'keep',
-  newlinesInside: 'ignore',
+  newlinesInside: 'newlinesBetween',
   type: 'alphabetical',
   ignoreCase: true,
   customGroups: [],

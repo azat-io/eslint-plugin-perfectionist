@@ -70,7 +70,7 @@ let defaultOptions: Required<Options[number]> = {
   partitionByComment: false,
   newlinesBetween: 'ignore',
   partitionByNewLine: false,
-  newlinesInside: 'ignore',
+  newlinesInside: 'newlinesBetween',
   type: 'alphabetical',
   customGroups: [],
   ignoreCase: true,

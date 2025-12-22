@@ -65,7 +65,7 @@ let defaultOptions: Required<Options[number]> = {
   partitionByNewLine: false,
   partitionByComment: false,
   newlinesBetween: 'ignore',
-  newlinesInside: 'ignore',
+  newlinesInside: 'newlinesBetween',
   type: 'alphabetical',
   ignoreAlias: false,
   customGroups: [],

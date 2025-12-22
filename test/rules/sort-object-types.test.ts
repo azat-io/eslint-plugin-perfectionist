@@ -1697,6 +1697,14 @@ describe('sort-object-types', () => {
             data: { right: 'b', left: 'z' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           type Type = {
             a: () => null,
@@ -1717,13 +1725,6 @@ describe('sort-object-types', () => {
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -4940,6 +4941,14 @@ describe('sort-object-types', () => {
             data: { right: 'b', left: 'z' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           type Type = {
             a: () => null,
@@ -4960,13 +4969,6 @@ describe('sort-object-types', () => {
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -7300,6 +7302,14 @@ describe('sort-object-types', () => {
             data: { right: 'bbb', left: 'z' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           type Type = {
             aaaa: () => null,
@@ -7320,13 +7330,6 @@ describe('sort-object-types', () => {
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 

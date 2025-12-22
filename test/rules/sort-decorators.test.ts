@@ -970,6 +970,7 @@ describe('sort-decorators', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],

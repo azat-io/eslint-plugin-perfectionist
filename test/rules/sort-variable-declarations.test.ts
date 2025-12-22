@@ -3110,16 +3110,6 @@ describe('sort-variable-declarations', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
-            data: { right: 'y', left: 'a' },
-          },
-          {
-            messageId: 'unexpectedVariableDeclarationsOrder',
-            data: { right: 'b', left: 'z' },
-          },
-        ],
         options: [
           {
             ...options,
@@ -3130,7 +3120,18 @@ describe('sort-variable-declarations', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenVariableDeclarationsMembers',
+            data: { right: 'y', left: 'a' },
+          },
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
@@ -4859,6 +4860,7 @@ describe('sort-variable-declarations', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],

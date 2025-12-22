@@ -81,7 +81,7 @@ export let defaultOptions: Required<Options[number]> = {
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
   specialCharacters: 'keep',
-  newlinesInside: 'ignore',
+  newlinesInside: 'newlinesBetween',
   useConfigurationIf: {},
   type: 'alphabetical',
   ignoreCase: true,

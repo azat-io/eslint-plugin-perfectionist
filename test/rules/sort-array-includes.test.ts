@@ -1399,6 +1399,7 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['a', 'unknown'],
+          newlinesInside: 'ignore',
           newlinesBetween: 0,
         },
       ]
@@ -3080,6 +3081,7 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['a', 'unknown'],
+          newlinesInside: 'ignore',
           newlinesBetween: 0,
         },
       ]
@@ -4745,6 +4747,7 @@ describe('sort-array-includes', () => {
             },
           ],
           groups: ['aa', 'unknown'],
+          newlinesInside: 'ignore',
           newlinesBetween: 0,
         },
       ]

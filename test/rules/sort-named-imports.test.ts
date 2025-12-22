@@ -1155,6 +1155,7 @@ describe('sort-named-imports', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -2562,6 +2563,7 @@ describe('sort-named-imports', () => {
               },
             ],
             groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -3952,6 +3954,20 @@ describe('sort-named-imports', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'aaaa',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         errors: [
           {
             data: {
@@ -3963,19 +3979,6 @@ describe('sort-named-imports', () => {
           {
             messageId: 'unexpectedNamedImportsOrder',
             data: { right: 'bbb', left: 'z' },
-          },
-        ],
-        options: [
-          {
-            ...options,
-            customGroups: [
-              {
-                elementNamePattern: 'aaaa',
-                groupName: 'a',
-              },
-            ],
-            groups: ['a', 'unknown'],
-            newlinesBetween: 0,
           },
         ],
         code: dedent`

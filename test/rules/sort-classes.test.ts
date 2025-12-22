@@ -3884,6 +3884,7 @@ describe('sort-classes', () => {
           {
             ...options,
             groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -8394,6 +8395,7 @@ describe('sort-classes', () => {
           {
             ...options,
             groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -12834,17 +12836,18 @@ describe('sort-classes', () => {
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'extraSpacingBetweenClassMembers',
-            data: { right: 'b', left: 'a' },
-          },
-        ],
         options: [
           {
             ...options,
             groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenClassMembers',
+            data: { right: 'b', left: 'a' },
           },
         ],
         code: dedent`

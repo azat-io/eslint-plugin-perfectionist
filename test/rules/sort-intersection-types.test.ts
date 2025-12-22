@@ -878,6 +878,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -2456,6 +2457,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],
@@ -3988,6 +3990,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
         ],

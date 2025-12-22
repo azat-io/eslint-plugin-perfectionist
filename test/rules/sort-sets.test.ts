@@ -1151,6 +1151,7 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['a', 'unknown'],
+          newlinesInside: 'ignore',
           newlinesBetween: 0,
         },
       ]
@@ -2573,6 +2574,7 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['a', 'unknown'],
+          newlinesInside: 'ignore',
           newlinesBetween: 0,
         },
       ]
@@ -3995,6 +3997,7 @@ describe('sort-sets', () => {
             },
           ],
           groups: ['a', 'unknown'],
+          newlinesInside: 'ignore',
           newlinesBetween: 0,
         },
       ]

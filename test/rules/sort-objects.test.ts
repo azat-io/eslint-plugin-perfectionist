@@ -1798,6 +1798,14 @@ describe('sort-objects', () => {
             data: { right: 'b', left: 'z' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           let Obj = {
             a: () => null,
@@ -1818,13 +1826,6 @@ describe('sort-objects', () => {
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -5600,6 +5601,14 @@ describe('sort-objects', () => {
             data: { right: 'b', left: 'z' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           let Obj = {
             a: () => null,
@@ -5620,13 +5629,6 @@ describe('sort-objects', () => {
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
@@ -8246,6 +8248,14 @@ describe('sort-objects', () => {
             data: { right: 'bbb', left: 'z' },
           },
         ],
+        options: [
+          {
+            ...options,
+            groups: ['method', 'unknown'],
+            newlinesInside: 'ignore',
+            newlinesBetween: 0,
+          },
+        ],
         code: dedent`
           let Obj = {
             aaaa: () => null,
@@ -8266,13 +8276,6 @@ describe('sort-objects', () => {
               z: "z",
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['method', 'unknown'],
-            newlinesBetween: 0,
-          },
-        ],
       })
     })
 
