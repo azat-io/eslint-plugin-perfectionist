@@ -180,12 +180,13 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
 
 ### newlinesInside
 
-<sub>type: `number | 'ignore'`</sub>
-<sub>default: `'ignore'`</sub>
+<sub>type: `number | 'ignore' | 'newlinesBetween'`</sub>
+<sub>default: `'newlinesBetween'`</sub>
 
 Specifies how to handle newlines inside groups.
 
 - `'ignore'` — Do not report errors related to newlines.
+- `'newlinesBetween'` — [DEPRECATED] If [`newlinesBetween`](#newlinesbetween) is `'ignore'`, then `'ignore'`, otherwise `0`.
 - `0` — No newlines are allowed.
 - Any other number — Enforce this number of newlines between each element of the same group.
 
