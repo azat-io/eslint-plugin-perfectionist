@@ -63,8 +63,7 @@ type CustomGroupMatcher<SingleCustomGroup> = (
  * @param params - Parameters for group computation.
  * @param params.options - Configuration with available groups and custom
  *   groups.
- * @param params.customGroupMatcher - Optional matcher function for custom
- *   groups.
+ * @param params.customGroupMatcher - Matcher function for custom groups.
  * @param params.predefinedGroups - Fallback predefined groups to check.
  * @returns The matched group name or 'unknown' if no group matches.
  */
