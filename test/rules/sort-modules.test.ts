@@ -1198,510 +1198,512 @@ describe('sort-modules', () => {
       })
     })
 
-    it('ignores non-static class method dependencies', async () => {
-      await valid({
-        code: dedent`
-          class A {
-            f() {
-              return Enum.V
-            }
-          }
-
-          enum Enum {
-            V = 'V'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-    })
-
-    it('ignores static class method dependencies when no static block or properties exist', async () => {
-      await valid({
-        code: dedent`
-          class A {
-            static f() {
-              return Enum.V
-            }
-          }
-
-          enum Enum {
-            V = 'V'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-    })
-
-    it('detects static class method dependencies when static block is present', async () => {
-      await valid({
-        code: dedent`
-          enum Enum {
-            V = 'V'
-          }
-
-          class A {
-            static {
-              console.log(Enum.V)
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          enum Enum {
-            V = 'V'
-          }
-
-          class A {
-            static {
-              console.log(A.f())
-            }
-
-            static f = () => {
-              return Enum.V
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          enum Enum {
-            V = 'V'
-          }
-
-          class Class {
-            static {
-              const method = () => {
-                return Enum.V || true;
-              };
-              method();
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-    })
-
-    it('detects static class method dependencies when static property is present', async () => {
-      await valid({
-        code: dedent`
-          enum Enum {
-            V = 'V'
-          }
-
-          class A {
-            static a = Enum.V
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          enum Enum {
-            V = 'V'
-          }
-
-          class A {
-            static accessor a = Enum.V
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          enum Enum {
-            V = 'V'
-          }
-
-          class A {
-            static a = Object.values(Enum)
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-    })
-
-    it('ignores non-static arrow method dependencies', async () => {
-      await valid({
-        code: dedent`
-          class A {
-            f = () => {
-              return Enum.V
-            }
-          }
-
-          enum Enum {
-            V = 'V'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class A {
-            accessor f = () => {
-              return Enum.V
-            }
-          }
-
-          enum Enum {
-            V = 'V'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-    })
-
-    it('ignores static arrow method dependencies when no static block or properties exist', async () => {
-      await valid({
-        code: dedent`
-          class A {
-            static f = () => {
-              return Enum.V
-            }
-          }
-
-          enum Enum {
-            V = 'V'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-    })
-
-    it('ignores interface type dependencies', async () => {
-      await valid({
-        code: dedent`
-          interface A {
-            a: Enum.V
-          }
-
-          enum Enum {
-            V = 'V'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-    })
-
-    it('ignores type alias dependencies', async () => {
-      await valid({
-        code: dedent`
-          type A = {
-            a: Enum.V
-          }
-
-          enum Enum {
-            V = 'V'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-    })
-
-    it('detects enum value dependencies', async () => {
-      await valid({
-        code: dedent`
-          enum B {
-            V = 'V'
-          }
-
-          enum A {
-            V = B.V
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-    })
-
-    it('detects deeply nested dependencies', async () => {
-      await invalid({
-        output: dedent`
-          class B {
-            static b = 1
-          }
-
-          class A {
-            static a = x > y ? new Class([...{...!!method(1 + <any>(B?.b! as any))}]) : null
-          }
-        `,
-        code: dedent`
-          class A {
-            static a = x > y ? new Class([...{...!!method(1 + <any>(B?.b! as any))}]) : null
-          }
-
-          class B {
-            static b = 1
-          }
-        `,
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'A', right: 'B' },
-            messageId: 'unexpectedModulesDependencyOrder',
-          },
-        ],
-        options: [options],
-      })
-    })
-
-    it('detects dependencies in template literal expressions', async () => {
-      await valid({
-        code: dedent`
-          class B {
-            static b = 1
-          }
-
-          class A {
-            static a = \`\${B.b}\`
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-    })
-
-    it('detects dependencies in class inheritance', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        code: dedent`
-          class B {}
-
-          class A extends B {}
-        `,
-      })
-    })
-
-    it('detects dependencies in decorator expressions', async () => {
-      await invalid({
-        output: dedent`
-          enum B {}
-
-          class A {
-            @SomeDecorator({
-              a: {
-                b: c.concat([B])
+    describe('dependency detection', () => {
+      it('ignores non-static class method dependencies', async () => {
+        await valid({
+          code: dedent`
+            class A {
+              f() {
+                return Enum.V
               }
-            })
-            property
-          }
-        `,
-        code: dedent`
-          class A {
-            @SomeDecorator({
-              a: {
-                b: c.concat([B])
+            }
+
+            enum Enum {
+              V = 'V'
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
+      it('ignores static class method dependencies when no static block or properties exist', async () => {
+        await valid({
+          code: dedent`
+            class A {
+              static f() {
+                return Enum.V
               }
-            })
-            property
-          }
+            }
 
-          enum B {}
-        `,
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'A', right: 'B' },
-            messageId: 'unexpectedModulesDependencyOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
+            enum Enum {
+              V = 'V'
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
       })
-    })
 
-    it('detects and handles circular dependencies', async () => {
-      await invalid({
-        output: dedent`
-          class A {
-            static a = B.b
-          }
+      it('detects static class method dependencies when static block is present', async () => {
+        await valid({
+          code: dedent`
+            enum Enum {
+              V = 'V'
+            }
 
-          class B {
-            static b = C.c
-          }
+            class A {
+              static {
+                console.log(Enum.V)
+              }
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
 
-          class C {
-            static c = A.a
-          }
-        `,
-        code: dedent`
-          class B {
-            static b = C.c
-          }
+        await valid({
+          code: dedent`
+            enum Enum {
+              V = 'V'
+            }
 
-          class A {
-            static a = B.b
-          }
+            class A {
+              static {
+                console.log(A.f())
+              }
 
-          class C {
-            static c = A.a
-          }
-        `,
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'A', left: 'B' },
-          },
-        ],
-        options: [options],
+              static f = () => {
+                return Enum.V
+              }
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await valid({
+          code: dedent`
+            enum Enum {
+              V = 'V'
+            }
+
+            class Class {
+              static {
+                const method = () => {
+                  return Enum.V || true;
+                };
+                method();
+              }
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
       })
-    })
 
-    it('prioritizes dependencies over group configuration', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            groups: ['export-class', 'class'],
-          },
-        ],
-        code: dedent`
-          class B { static b }
-          export class A { static a = B.b }
-        `,
+      it('detects static class method dependencies when static property is present', async () => {
+        await valid({
+          code: dedent`
+            enum Enum {
+              V = 'V'
+            }
+
+            class A {
+              static a = Enum.V
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await valid({
+          code: dedent`
+            enum Enum {
+              V = 'V'
+            }
+
+            class A {
+              static accessor a = Enum.V
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await valid({
+          code: dedent`
+            enum Enum {
+              V = 'V'
+            }
+
+            class A {
+              static a = Object.values(Enum)
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
       })
-    })
 
-    it('prioritizes dependencies over partition by comment', async () => {
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'B', right: 'A' },
-            messageId: 'unexpectedModulesDependencyOrder',
-          },
-        ],
-        output: dedent`
-          class A { static a }
-          // Part1
-          class B { static b = A.a }
-        `,
-        code: dedent`
-          class B { static b = A.a }
-          // Part1
-          class A { static a }
-        `,
-        options: [
-          {
-            ...options,
-            partitionByComment: 'Part',
-          },
-        ],
+      it('ignores non-static arrow method dependencies', async () => {
+        await valid({
+          code: dedent`
+            class A {
+              f = () => {
+                return Enum.V
+              }
+            }
+
+            enum Enum {
+              V = 'V'
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await valid({
+          code: dedent`
+            class A {
+              accessor f = () => {
+                return Enum.V
+              }
+            }
+
+            enum Enum {
+              V = 'V'
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
       })
-    })
 
-    it('prioritizes dependencies over partition by new line', async () => {
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'B', right: 'A' },
-            messageId: 'unexpectedModulesDependencyOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            partitionByNewLine: true,
-          },
-        ],
-        output: dedent`
-          class A { static a }
+      it('ignores static arrow method dependencies when no static block or properties exist', async () => {
+        await valid({
+          code: dedent`
+            class A {
+              static f = () => {
+                return Enum.V
+              }
+            }
 
-          class B { static = A.a }
-        `,
-        code: dedent`
-          class B { static = A.a }
+            enum Enum {
+              V = 'V'
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
 
-          class A { static a }
-        `,
+      it('ignores interface type dependencies', async () => {
+        await valid({
+          code: dedent`
+            interface A {
+              a: Enum.V
+            }
+
+            enum Enum {
+              V = 'V'
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
+      it('ignores type alias dependencies', async () => {
+        await valid({
+          code: dedent`
+            type A = {
+              a: Enum.V
+            }
+
+            enum Enum {
+              V = 'V'
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
+      it('detects enum value dependencies', async () => {
+        await valid({
+          code: dedent`
+            enum B {
+              V = 'V'
+            }
+
+            enum A {
+              V = B.V
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
+      it('detects deeply nested dependencies', async () => {
+        await invalid({
+          output: dedent`
+            class B {
+              static b = 1
+            }
+
+            class A {
+              static a = x > y ? new Class([...{...!!method(1 + <any>(B?.b! as any))}]) : null
+            }
+          `,
+          code: dedent`
+            class A {
+              static a = x > y ? new Class([...{...!!method(1 + <any>(B?.b! as any))}]) : null
+            }
+
+            class B {
+              static b = 1
+            }
+          `,
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [options],
+        })
+      })
+
+      it('detects dependencies in template literal expressions', async () => {
+        await valid({
+          code: dedent`
+            class B {
+              static b = 1
+            }
+
+            class A {
+              static a = \`\${B.b}\`
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
+      it('detects dependencies in class inheritance', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            class B {}
+
+            class A extends B {}
+          `,
+        })
+      })
+
+      it('detects dependencies in decorator expressions', async () => {
+        await invalid({
+          output: dedent`
+            enum B {}
+
+            class A {
+              @SomeDecorator({
+                a: {
+                  b: c.concat([B])
+                }
+              })
+              property
+            }
+          `,
+          code: dedent`
+            class A {
+              @SomeDecorator({
+                a: {
+                  b: c.concat([B])
+                }
+              })
+              property
+            }
+
+            enum B {}
+          `,
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
+      it('detects and handles circular dependencies', async () => {
+        await invalid({
+          output: dedent`
+            class A {
+              static a = B.b
+            }
+
+            class B {
+              static b = C.c
+            }
+
+            class C {
+              static c = A.a
+            }
+          `,
+          code: dedent`
+            class B {
+              static b = C.c
+            }
+
+            class A {
+              static a = B.b
+            }
+
+            class C {
+              static c = A.a
+            }
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'A', left: 'B' },
+            },
+          ],
+          options: [options],
+        })
+      })
+
+      it('prioritizes dependencies over group configuration', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['export-class', 'class'],
+            },
+          ],
+          code: dedent`
+            class B { static b }
+            export class A { static a = B.b }
+          `,
+        })
+      })
+
+      it('prioritizes dependencies over partition by comment', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'B', right: 'A' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          output: dedent`
+            class A { static a }
+            // Part1
+            class B { static b = A.a }
+          `,
+          options: [
+            {
+              ...options,
+              partitionByComment: 'Part',
+            },
+          ],
+          code: dedent`
+            class B { static b = A.a }
+            // Part1
+            class A { static a }
+          `,
+        })
+      })
+
+      it('prioritizes dependencies over partition by new line', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'B', right: 'A' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              partitionByNewLine: true,
+            },
+          ],
+          output: dedent`
+            class A { static a }
+
+            class B { static = A.a }
+          `,
+          code: dedent`
+            class B { static = A.a }
+
+            class A { static a }
+          `,
+        })
       })
     })
 
