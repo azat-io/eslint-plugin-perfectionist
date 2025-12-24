@@ -10,6 +10,7 @@ describe('computeGroup', () => {
           groups: ['group2'],
           customGroups: [],
         },
+        customGroupMatcher: () => false,
         predefinedGroups: ['group1'],
       }),
     ).toBe('unknown')
@@ -23,6 +24,7 @@ describe('computeGroup', () => {
           customGroups: [],
         },
         predefinedGroups: ['group2', 'group1'],
+        customGroupMatcher: () => false,
       }),
     ).toBe('group2')
   })
@@ -35,6 +37,7 @@ describe('computeGroup', () => {
           customGroups: [],
         },
         predefinedGroups: ['group3', 'group4'],
+        customGroupMatcher: () => false,
       }),
     ).toBe('group3')
   })
@@ -52,6 +55,7 @@ describe('computeGroup', () => {
           customGroups: [],
         },
         predefinedGroups: ['group3', 'group4'],
+        customGroupMatcher: () => false,
       }),
     ).toBe('group3')
   })
@@ -68,6 +72,7 @@ describe('computeGroup', () => {
           customGroups: [],
         },
         predefinedGroups: ['group3', 'group4'],
+        customGroupMatcher: () => false,
       }),
     ).toBe('group3')
   })
