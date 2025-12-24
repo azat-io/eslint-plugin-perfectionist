@@ -1,8 +1,9 @@
 import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
-import { describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
+import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-exports'
 
@@ -4421,6 +4422,12 @@ describe('sort-exports', () => {
   })
 
   describe('misc', () => {
+    it('validates the JSON schema', async () => {
+      await expect(
+        validateRuleJsonSchema(rule.meta.schema),
+      ).resolves.not.toThrowError()
+    })
+
     it('sets alphabetical asc sorting as default', async () => {
       await valid(
         dedent`
