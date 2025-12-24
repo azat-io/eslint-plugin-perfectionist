@@ -1472,6 +1472,246 @@ describe('sort-modules', () => {
         })
       })
 
+      it('ignores usages in interface values', async () => {
+        await valid({
+          code: dedent`
+            export default interface A {
+              field?: Record<string, [B | null] & C>;
+            }
+
+            type B = Something;
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
+      it('ignores usages in type keys', async () => {
+        await valid({
+          code: dedent`
+            type A = {
+              [B]: string;
+            }
+
+            type B = 'b';
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
+      it('ignores usages in type values', async () => {
+        await valid({
+          code: dedent`
+            type A = {
+              field: typeof B
+            }
+
+            type B = Something;
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await valid({
+          code: dedent`
+            type A = {
+              (...args: B): void;
+            }
+
+            type B = 'b';
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
+      it('ignores usages in type generics', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            type A<T extends B> = {}
+
+            type B = 'b';
+          `,
+        })
+      })
+
+      it('ignores usages in type indexes', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            type A = Foo[B]
+
+            type B = 'b';
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            type A = B['foo']
+
+            type B = 'b';
+          `,
+        })
+      })
+
+      it('ignores usages in conditional types', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            type A = Foo extends B ? true : false;
+
+            type B = 'b';
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            type A = B extends Foo ? true : false;
+
+            type B = 'b';
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            type A = Foo extends Bar ? B : false;
+
+            type B = 'b';
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            type A = Foo extends Bar ? true : B;
+
+            type B = 'b';
+          `,
+        })
+
+        await valid({
+          code: dedent`
+            type A<T> = T extends {
+              (...args: any[]): infer B;
+            } ? Foo : Bar
+
+            type B = 'b';
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
+      it('ignores usages in interface extends', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            interface A extends B {}
+
+            interface B {}
+          `,
+        })
+      })
+
+      it('ignores usages in classes implements', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            class A implements B {}
+
+            interface B {}
+          `,
+        })
+      })
+
+      it('ignores usages in functions', async () => {
+        await valid({
+          code: dedent`
+            function a() {
+              let foo: B;
+            }
+
+            type B = 'b';
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
       it('detects enum value dependencies', async () => {
         await valid({
           code: dedent`
