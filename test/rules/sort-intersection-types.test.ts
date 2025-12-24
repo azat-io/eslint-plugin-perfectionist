@@ -4953,6 +4953,37 @@ describe('sort-intersection-types', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          type Type =
+            & CCC
+            & BB
+            & A
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          type Type =
+            & A
+            & BB
+            & CCC
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('respects eslint-disable comments', async () => {
       await valid({
         code: dedent`

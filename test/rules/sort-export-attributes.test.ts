@@ -1102,6 +1102,39 @@ describe('sort-export-attributes', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          export { data } from 'module' with {
+            ccc: 'ccc',
+            bb: 'bb',
+            a: 'a',
+          }
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          export { data } from 'module' with {
+            a: 'a',
+            bb: 'bb',
+            ccc: 'ccc',
+          }
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('sorts attributes with eslint-disable-line comments', async () => {
       await invalid({
         output: dedent`

@@ -4486,6 +4486,35 @@ describe('sort-exports', () => {
       )
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          export { ccc } from 'module'
+          export { bb } from 'module'
+          export { a } from 'module'
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          export { a } from 'module'
+          export { bb } from 'module'
+          export { ccc } from 'module'
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('handles eslint-disable-next-line comments', async () => {
       await valid({
         code: dedent`

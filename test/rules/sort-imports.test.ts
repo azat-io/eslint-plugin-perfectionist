@@ -11182,6 +11182,35 @@ describe('sort-imports', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          import { ccc } from 'ccc'
+          import { bb } from 'bb'
+          import { a } from 'a'
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          import { a } from 'a'
+          import { bb } from 'bb'
+          import { ccc } from 'ccc'
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('respects ESLint disable comments when sorting imports', async () => {
       await valid({
         code: dedent`

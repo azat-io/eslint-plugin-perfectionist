@@ -5164,6 +5164,39 @@ describe('sort-enums', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          enum Enum {
+            CCC = 'ccc',
+            BB = 'bb',
+            A = 'a',
+          }
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          enum Enum {
+            A = 'a',
+            BB = 'bb',
+            CCC = 'ccc',
+          }
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('preserves comments with their associated nodes', async () => {
       await invalid({
         output: dedent`

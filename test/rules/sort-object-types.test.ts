@@ -8581,6 +8581,39 @@ describe('sort-object-types', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          type Type = {
+            ccc: string
+            bb: string
+            a: string
+          }
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          type Type = {
+            a: string
+            bb: string
+            ccc: string
+          }
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('respects eslint-disable comments', async () => {
       await valid({
         code: dedent`

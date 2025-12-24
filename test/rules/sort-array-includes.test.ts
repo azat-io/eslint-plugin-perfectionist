@@ -5440,6 +5440,39 @@ describe('sort-array-includes', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          [
+            ccc,
+            bb,
+            a,
+          ].includes(value)
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          [
+            a,
+            bb,
+            ccc,
+          ].includes(value)
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     describe('with eslint-disable comments', () => {
       it('excludes disabled elements from sorting', async () => {
         await valid({

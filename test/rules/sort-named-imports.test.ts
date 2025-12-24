@@ -4504,6 +4504,39 @@ describe('sort-named-imports', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          import {
+            ccc,
+            bb,
+            a,
+          } from 'module'
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          import {
+            a,
+            bb,
+            ccc,
+          } from 'module'
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('handles eslint-disable comments correctly', async () => {
       await valid({
         code: dedent`

@@ -7680,6 +7680,39 @@ describe('sort-interfaces', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          interface Interface {
+            ccc: string
+            bb: string
+            a: string
+          }
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          interface Interface {
+            a: string
+            bb: string
+            ccc: string
+          }
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('supports eslint-disable for individual nodes', async () => {
       await valid({
         code: dedent`
