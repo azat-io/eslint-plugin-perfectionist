@@ -97,12 +97,10 @@ export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
       ...buildCommonJsonSchemas({
-        additionalFallbackSortProperties: {
-          sortBy: sortByJsonSchema,
-        },
+        additionalSortProperties: { sortBy: sortByJsonSchema },
       }),
       ...buildCommonGroupsJsonSchemas({
-        additionalFallbackSortProperties: { sortBy: sortByJsonSchema },
+        additionalSortProperties: { sortBy: sortByJsonSchema },
         singleCustomGroupJsonSchema,
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
@@ -118,7 +116,6 @@ export let jsonSchema: JSONSchema4 = {
       }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
-      sortBy: sortByJsonSchema,
     },
     additionalProperties: false,
     type: 'object',

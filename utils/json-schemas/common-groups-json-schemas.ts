@@ -62,24 +62,23 @@ export let newlinesInsideJsonSchema: JSONSchema4 = {
  *   ]
  *
  * @param options - Configuration options.
- * @param options.additionalFallbackSortProperties - Extra properties for
- *   fallback sort.
+ * @param options.additionalSortProperties - Extra properties for sorting.
  * @param options.singleCustomGroupJsonSchema - Schema for individual custom
  *   group properties.
  * @returns JSON schema for custom groups array validation.
  */
 export function buildCustomGroupsArrayJsonSchema({
-  additionalFallbackSortProperties,
   singleCustomGroupJsonSchema,
   allowedAdditionalTypeValues,
+  additionalSortProperties,
 }: {
-  additionalFallbackSortProperties: Record<string, JSONSchema4> | undefined
   singleCustomGroupJsonSchema: Record<string, JSONSchema4> | undefined
+  additionalSortProperties: Record<string, JSONSchema4> | undefined
   allowedAdditionalTypeValues: undefined | string[]
 }): JSONSchema4 {
   let commonCustomGroupJsonSchemas = buildCommonCustomGroupJsonSchemas({
-    additionalFallbackSortProperties,
     allowedAdditionalTypeValues,
+    additionalSortProperties,
   })
   let populatedSingleCustomGroupJsonSchema =
     buildPopulatedSingleCustomGroupJsonSchema(singleCustomGroupJsonSchema)
@@ -188,19 +187,19 @@ export function buildGroupsJsonSchema({
 }
 
 export function buildCommonGroupsJsonSchemas({
-  additionalFallbackSortProperties,
   singleCustomGroupJsonSchema,
   allowedAdditionalTypeValues,
+  additionalSortProperties,
 }: {
-  additionalFallbackSortProperties?: Record<string, JSONSchema4>
   singleCustomGroupJsonSchema?: Record<string, JSONSchema4>
+  additionalSortProperties?: Record<string, JSONSchema4>
   allowedAdditionalTypeValues?: string[]
 } = {}): Record<string, JSONSchema4> {
   return {
     customGroups: buildCustomGroupsArrayJsonSchema({
-      additionalFallbackSortProperties,
       allowedAdditionalTypeValues,
       singleCustomGroupJsonSchema,
+      additionalSortProperties,
     }),
     newlinesInside: {
       oneOf: [
@@ -275,15 +274,15 @@ export function buildCustomGroupSelectorJsonSchema(
 }
 
 function buildCommonCustomGroupJsonSchemas({
-  additionalFallbackSortProperties,
   allowedAdditionalTypeValues,
+  additionalSortProperties,
 }: {
-  additionalFallbackSortProperties: Record<string, JSONSchema4> | undefined
+  additionalSortProperties: Record<string, JSONSchema4> | undefined
   allowedAdditionalTypeValues: undefined | string[]
 }): Record<string, JSONSchema4> {
   return {
     fallbackSort: buildFallbackSortJsonSchema({
-      additionalProperties: additionalFallbackSortProperties,
+      additionalProperties: additionalSortProperties,
       allowedAdditionalTypeValues,
     }),
     type: buildTypeJsonSchema({
@@ -295,6 +294,7 @@ function buildCommonCustomGroupJsonSchemas({
     },
     newlinesInside: newlinesInsideJsonSchema,
     order: orderJsonSchema,
+    ...additionalSortProperties,
   }
 }
 

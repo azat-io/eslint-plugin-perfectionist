@@ -193,8 +193,8 @@ describe('common-groups-json-schemas', () => {
           customGroupProperty2: { type: 'string' },
           customGroupProperty: { type: 'string' },
         },
-        additionalFallbackSortProperties: {},
         allowedAdditionalTypeValues: [],
+        additionalSortProperties: {},
       }),
     )
 
@@ -250,8 +250,8 @@ describe('common-groups-json-schemas', () => {
         customGroupsJsonSchema = new Ajv().compile(
           buildCustomGroupsArrayJsonSchema({
             allowedAdditionalTypeValues: ['my-type'],
-            additionalFallbackSortProperties: {},
             singleCustomGroupJsonSchema: {},
+            additionalSortProperties: {},
           }),
         )
 
@@ -271,8 +271,8 @@ describe('common-groups-json-schemas', () => {
         customGroupsJsonSchema = new Ajv().compile(
           buildCustomGroupsArrayJsonSchema({
             allowedAdditionalTypeValues: ['my-type'],
-            additionalFallbackSortProperties: {},
             singleCustomGroupJsonSchema: {},
+            additionalSortProperties: {},
           }),
         )
 

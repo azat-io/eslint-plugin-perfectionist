@@ -29,19 +29,19 @@ import type {
  *
  * @template SingleCustomGroup - Type defining the structure of a single custom
  *   group.
- * @template AdditionalOptions - Additional type-specific options that extend
- *   the base configuration.
+ * @template AdditionalSortProperties - Additional sort options that extend the
+ *   base configuration.
  */
 export type CustomGroupsOption<
   SingleCustomGroup,
-  AdditionalOptions,
+  AdditionalSortProperties,
   CustomTypeOption extends string,
 > = ({
   /**
    * Fallback sorting configuration used when primary sort returns equal. Useful
    * for stable sorting when elements have identical primary sort values.
    */
-  fallbackSort?: FallbackSortOption<CustomTypeOption>
+  fallbackSort?: FallbackSortOption<CustomTypeOption, AdditionalSortProperties>
 
   /** Specify the exact number of newlines required between elements of groups. */
   newlinesInside?: NewlinesInsideOption
@@ -70,11 +70,11 @@ export type CustomGroupsOption<
    */
   groupName: string
 } & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) &
-  AdditionalOptions)[]
+  AdditionalSortProperties)[]
 
 export interface CommonGroupsOptions<
   SingleCustomGroup,
-  AdditionalOptions,
+  AdditionalSortProperties,
   CustomTypeOption extends string,
 > {
   /** Specify the exact number of newlines required between elements of groups. */
@@ -89,7 +89,7 @@ export interface CommonGroupsOptions<
   /** Custom groups for organizing nodes. */
   customGroups: CustomGroupsOption<
     SingleCustomGroup,
-    AdditionalOptions,
+    AdditionalSortProperties,
     CustomTypeOption
   >
 
