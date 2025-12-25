@@ -4675,6 +4675,39 @@ describe('sort-sets', () => {
       )
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          new Set([
+            ccc,
+            bb,
+            a,
+          ])
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          new Set([
+            a,
+            bb,
+            ccc,
+          ])
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('respects eslint-disable-next-line comments', async () => {
       await valid({
         code: dedent`

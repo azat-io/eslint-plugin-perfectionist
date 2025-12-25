@@ -17,14 +17,12 @@ interface GetGroupParameters<SingleCustomGroup> {
     'customGroups' | 'groups'
   >
   /**
-   * Optional function to test if an element matches a custom group.
+   * Function to test if an element matches a custom group.
    *
    * @param customGroup - Custom group configuration to test against.
    * @returns True if the element matches the custom group.
    */
-  customGroupMatcher?(
-    customGroup: AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup,
-  ): boolean
+  customGroupMatcher: CustomGroupMatcher<SingleCustomGroup>
 
   /**
    * List of predefined groups that the element belongs to. These are checked
@@ -32,6 +30,10 @@ interface GetGroupParameters<SingleCustomGroup> {
    */
   predefinedGroups: string[]
 }
+
+type CustomGroupMatcher<SingleCustomGroup> = (
+  customGroup: AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup,
+) => boolean
 
 /**
  * Determines which group an element belongs to based on custom and predefined
@@ -61,8 +63,7 @@ interface GetGroupParameters<SingleCustomGroup> {
  * @param params - Parameters for group computation.
  * @param params.options - Configuration with available groups and custom
  *   groups.
- * @param params.customGroupMatcher - Optional matcher function for custom
- *   groups.
+ * @param params.customGroupMatcher - Matcher function for custom groups.
  * @param params.predefinedGroups - Fallback predefined groups to check.
  * @returns The matched group name or 'unknown' if no group matches.
  */
@@ -71,37 +72,37 @@ export function computeGroup<SingleCustomGroup>({
   predefinedGroups,
   options,
 }: GetGroupParameters<SingleCustomGroup>): 'unknown' | string {
-  let group: undefined | string
   // For lookup performance.
   let groupsSet = new Set(computeGroupsNames(options.groups))
 
-  /**
-   * Attempts to set the group if it's valid and not already set.
-   *
-   * @param value - Group name(s) to define.
-   * @returns True if the group was successfully defined, false otherwise.
-   */
-  function defineGroup(value: string[] | string): boolean {
-    if (Array.isArray(value)) {
-      return value.some(defineGroup)
+  return (
+    computeFirstMatchingCustomGroupName(
+      groupsSet,
+      options.customGroups,
+      customGroupMatcher,
+    ) ??
+    predefinedGroups.find(group => groupsSet.has(group)) ??
+    'unknown'
+  )
+}
+
+function computeFirstMatchingCustomGroupName<SingleCustomGroup>(
+  groupsSet: Set<string>,
+  customGroups: CommonGroupsOptions<
+    SingleCustomGroup,
+    unknown,
+    string
+  >['customGroups'],
+  customGroupMatcher: CustomGroupMatcher<SingleCustomGroup>,
+): string | null {
+  for (let customGroup of customGroups) {
+    if (
+      customGroupMatcher(customGroup) &&
+      groupsSet.has(customGroup.groupName)
+    ) {
+      return customGroup.groupName
     }
-    if (group || !groupsSet.has(value)) {
-      return false
-    }
-    group = value
-    return true
   }
 
-  for (let customGroup of options.customGroups) {
-    if (customGroupMatcher?.(customGroup)) {
-      let groupDefined = defineGroup(customGroup.groupName)
-      if (groupDefined) {
-        break
-      }
-    }
-  }
-
-  defineGroup(predefinedGroups)
-
-  return group ?? 'unknown'
+  return null
 }

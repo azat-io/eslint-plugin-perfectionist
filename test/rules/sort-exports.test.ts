@@ -1,8 +1,9 @@
 import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
-import { describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
+import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-exports'
 
@@ -4421,6 +4422,12 @@ describe('sort-exports', () => {
   })
 
   describe('misc', () => {
+    it('validates the JSON schema', async () => {
+      await expect(
+        validateRuleJsonSchema(rule.meta.schema),
+      ).resolves.not.toThrowError()
+    })
+
     it('sets alphabetical asc sorting as default', async () => {
       await valid(
         dedent`
@@ -4477,6 +4484,35 @@ describe('sort-exports', () => {
           export let c = ''
         `,
       )
+    })
+
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          export { ccc } from 'module'
+          export { bb } from 'module'
+          export { a } from 'module'
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          export { a } from 'module'
+          export { bb } from 'module'
+          export { ccc } from 'module'
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
     })
 
     it('handles eslint-disable-next-line comments', async () => {

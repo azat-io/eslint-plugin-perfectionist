@@ -4146,6 +4146,39 @@ describe('sort-jsx-props', () => {
       )
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          <Element
+            ccc="ccc"
+            bb="bb"
+            a="a"
+          />
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          <Element
+            a="a"
+            bb="bb"
+            ccc="ccc"
+          />
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('ignores props disabled with eslint-disable-next-line', async () => {
       await valid({
         code: dedent`

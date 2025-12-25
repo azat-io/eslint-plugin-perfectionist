@@ -4463,6 +4463,39 @@ describe('sort-maps', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          new Map([
+            [ccc, 'ccc'],
+            [bb, 'bb'],
+            [a, 'a']
+          ])
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          new Map([
+            [a, 'a'],
+            [bb, 'bb'],
+            [ccc, 'ccc'],
+          ])
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('excludes disabled elements from sorting', async () => {
       await valid({
         code: dedent`
