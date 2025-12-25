@@ -35,7 +35,10 @@ export function computeDependencies(
   checkNode(node)
   return dependencies
 
-  function checkNode(nodeToCheck: TSESTree.Node): void {
+  function checkNode(
+    nodeToCheck: TSESTree.Node,
+    options?: { ignoreNextIdentifier: boolean },
+  ): void {
     switch (dependencyDetection.type) {
       case 'hard':
         if (
@@ -58,7 +61,10 @@ export function computeDependencies(
     checkNodesForCommonDependencies()
 
     function checkNodesForCommonDependencies(): void {
-      if (nodeToCheck.type === AST_NODE_TYPES.Identifier) {
+      if (
+        !options?.ignoreNextIdentifier &&
+        nodeToCheck.type === AST_NODE_TYPES.Identifier
+      ) {
         dependencies.push(nodeToCheck.name)
       }
       if ('alternate' in nodeToCheck && nodeToCheck.alternate) {
@@ -166,7 +172,7 @@ export function computeDependencies(
         checkNode(nodeToCheck.falseType)
       }
       if ('key' in nodeToCheck) {
-        checkNode(nodeToCheck.key)
+        checkNode(nodeToCheck.key, { ignoreNextIdentifier: true })
       }
       if ('id' in nodeToCheck && nodeToCheck.id) {
         checkNode(nodeToCheck.id)
@@ -184,7 +190,7 @@ export function computeDependencies(
         checkNode(nodeToCheck.objectType)
       }
       if ('params' in nodeToCheck) {
-        traverseNode(nodeToCheck.params)
+        traverseNode(nodeToCheck.params, { ignoreNextIdentifier: true })
       }
       if ('returnType' in nodeToCheck && nodeToCheck.returnType) {
         checkNode(nodeToCheck.returnType)
@@ -213,13 +219,16 @@ export function computeDependencies(
     }
   }
 
-  function traverseNode(nodeToTraverse: TSESTree.Node[] | TSESTree.Node): void {
+  function traverseNode(
+    nodeToTraverse: TSESTree.Node[] | TSESTree.Node,
+    options?: { ignoreNextIdentifier: boolean },
+  ): void {
     if (Array.isArray(nodeToTraverse)) {
       for (let nodeItem of nodeToTraverse) {
-        traverseNode(nodeItem)
+        traverseNode(nodeItem, options)
       }
     } else {
-      checkNode(nodeToTraverse)
+      checkNode(nodeToTraverse, options)
     }
   }
 }

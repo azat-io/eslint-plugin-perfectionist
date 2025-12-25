@@ -1712,6 +1712,106 @@ describe('sort-modules', () => {
         })
       })
 
+      it('ignores parameter binding usages that shadow module-level names', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            function a(B: number) {}
+
+            type B = 'b'
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            function a(...B) {}
+
+            type B = 'b'
+          `,
+        })
+      })
+
+      it('ignores usages in simple object keys', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            const a = {
+              B: 'b'
+            }
+
+            type B = 'b'
+          `,
+        })
+      })
+
+      it('ignores usages in simple object type keys', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            type A = {
+              B: 'b'
+            }
+
+            type B = 'b'
+          `,
+        })
+      })
+
+      it('ignores usages in simple arguments', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            type A = (B: 'b') => void
+
+            type B = 'b'
+          `,
+        })
+      })
+
+      it('ignores usages in simple interface keys', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            interface A {
+              B: 'b'
+            }
+
+            type B = 'b'
+          `,
+        })
+      })
+
       it('detects enum value dependencies', async () => {
         await valid({
           code: dedent`
@@ -7937,18 +8037,22 @@ describe('sort-modules', () => {
     it('detects usages in type keys', async () => {
       await invalid({
         output: dedent`
-          type B = 'b';
+          enum B {
+            value = 'b'
+          }
 
           type A = {
-            [B]: string;
+            [B.value]: string;
           }
         `,
         code: dedent`
           type A = {
-            [B]: string;
+            [B.value]: string;
           }
 
-          type B = 'b';
+          enum B {
+            value = 'b'
+          }
         `,
         options: [
           {
@@ -8303,6 +8407,123 @@ describe('sort-modules', () => {
             messageId: 'unexpectedModulesOrder',
           },
         ],
+      })
+    })
+
+    it('ignores parameter binding usages that shadow module-level names', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        code: dedent`
+          function a(B: number) {}
+
+          type B = 'b'
+        `,
+      })
+    })
+
+    it('ignores usages in simple object keys', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        code: dedent`
+          const a = {
+            B: 'b'
+          }
+
+          type B = 'b'
+        `,
+      })
+    })
+
+    it('ignores usages in simple object type keys', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        code: dedent`
+          type A = {
+            B: 'b'
+          }
+
+          type B = 'b'
+        `,
+      })
+    })
+
+    it('ignores usages in simple arguments', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        code: dedent`
+          type A = (B: 'b') => void
+
+          type B = 'b'
+        `,
+      })
+    })
+
+    it('ignores usages in simple interface keys', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        code: dedent`
+          interface A {
+            B: 'b'
+          }
+
+          type B = 'b'
+        `,
+      })
+    })
+
+    /* Unhandled cases */
+    it("doesn't support the following cases", async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        code: dedent`
+          type B = 'b'
+
+          function a(...B) {}
+        `,
+      })
+
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        code: dedent`
+          type B = 'b'
+
+          type A<B> = void
+        `,
       })
     })
   })
