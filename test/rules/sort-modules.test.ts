@@ -1735,6 +1735,52 @@ describe('sort-modules', () => {
             },
           ],
           code: dedent`
+            const a = (...B) => {}
+
+            type B = 'b'
+          `,
+        })
+
+        await valid({
+          code: dedent`
+            class A {
+              a = (...B) => {}
+            }
+
+            type B = 'b'
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await valid({
+          code: dedent`
+            class A {
+              a(...B) {}
+            }
+
+            type B = 'b'
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
             function a(...B) {}
 
             type B = 'b'
@@ -8510,6 +8556,52 @@ describe('sort-modules', () => {
 
           function a(...B) {}
         `,
+      })
+
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        code: dedent`
+          type B = 'b'
+
+          const a = (...B) => {}
+        `,
+      })
+
+      await valid({
+        code: dedent`
+          type B = 'b'
+
+          class A {
+            a = (...B) => {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+      })
+
+      await valid({
+        code: dedent`
+          type B = 'b'
+
+          class A {
+            a(...B) {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
       })
 
       await valid({
