@@ -1,14 +1,14 @@
-import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
+  SortModulesSortingNode,
   SortModulesOptions,
   Modifier,
   Selector,
 } from './sort-modules/types'
-import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
   DEPENDENCY_ORDER_ERROR,
@@ -21,21 +21,25 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
-import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import {
   singleCustomGroupJsonSchema,
+  USAGE_TYPE_OPTION,
   allModifiers,
   allSelectors,
 } from './sort-modules/types'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { buildComparatorByOptionsComputer } from './sort-modules/build-comparator-by-options-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { isPropertyOrAccessorNode } from './sort-modules/is-property-or-accessor-node'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isArrowFunctionNode } from './sort-modules/is-arrow-function-node'
+import { computeDependencies } from './sort-modules/compute-dependencies'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -44,7 +48,6 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getDecoratorName } from '../utils/get-decorator-name'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { getEnumMembers } from '../utils/get-enum-members'
 import { getGroupIndex } from '../utils/get-group-index'
 import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -102,8 +105,11 @@ export default createEslintRule<SortModulesOptions, MessageId>({
     schema: [
       {
         properties: {
-          ...buildCommonJsonSchemas(),
+          ...buildCommonJsonSchemas({
+            allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
+          }),
           ...buildCommonGroupsJsonSchemas({
+            allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
             singleCustomGroupJsonSchema,
           }),
           partitionByComment: partitionByCommentJsonSchema,
@@ -150,9 +156,9 @@ export default createEslintRule<SortModulesOptions, MessageId>({
         if (isSortable(program.body)) {
           return analyzeModule({
             eslintDisabledLines,
+            module: program,
             sourceCode,
             options,
-            program,
             context,
           })
         }
@@ -167,17 +173,20 @@ function analyzeModule({
   eslintDisabledLines,
   sourceCode,
   options,
-  program,
   context,
+  module,
 }: {
   context: TSESLint.RuleContext<MessageId, SortModulesOptions>
-  program: TSESTree.TSModuleBlock | TSESTree.Program
+  module: TSESTree.TSModuleBlock | TSESTree.Program
   options: Required<SortModulesOptions[number]>
   sourceCode: TSESLint.SourceCode
   eslintDisabledLines: number[]
 }): void {
-  let formattedNodes: SortingNodeWithDependencies[][] = [[]]
-  for (let node of program.body) {
+  let optionsByGroupIndexComputer =
+    buildDefaultOptionsByGroupIndexComputer(options)
+
+  let formattedNodes: SortModulesSortingNode[][] = [[]]
+  for (let node of module.body) {
     let selector: undefined | Selector
     let name: undefined | string
     let modifiers: Modifier[] = []
@@ -229,7 +238,7 @@ function analyzeModule({
           formattedNodes.push([])
           if (nodeToParse.body) {
             analyzeModule({
-              program: nodeToParse.body,
+              module: nodeToParse.body,
               eslintDisabledLines,
               sourceCode,
               options,
@@ -244,10 +253,7 @@ function analyzeModule({
         case AST_NODE_TYPES.TSEnumDeclaration:
           selector = 'enum'
           ;({ name } = nodeToParse.id)
-          dependencies = [
-            ...dependencies,
-            ...getEnumMembers(nodeToParse).flatMap(extractDependencies),
-          ]
+          dependencies = [...dependencies, ...extractDependencies(nodeToParse)]
           break
         case AST_NODE_TYPES.ClassDeclaration:
           selector = 'class'
@@ -263,13 +269,7 @@ function analyzeModule({
               decorator,
             }),
           )
-          dependencies = [
-            ...dependencies,
-            ...(nodeToParse.superClass && 'name' in nodeToParse.superClass
-              ? [nodeToParse.superClass.name]
-              : []),
-            ...extractDependencies(nodeToParse.body),
-          ]
+          dependencies = [...dependencies, ...extractDependencies(nodeToParse)]
           break
         default:
       }
@@ -308,7 +308,7 @@ function analyzeModule({
       options,
     })
 
-    let sortingNode: Omit<SortingNodeWithDependencies, 'partitionId'> = {
+    let sortingNode: Omit<SortModulesSortingNode, 'partitionId'> = {
       isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
       size: rangeToDiff(node, sourceCode),
       addSafetySemicolonWhenInline,
@@ -339,14 +339,16 @@ function analyzeModule({
 
   function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
-  ): SortingNodeWithDependencies[] {
+  ): SortModulesSortingNode[] {
     let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
       sortNodesByGroups({
+        comparatorByOptionsComputer: buildComparatorByOptionsComputer({
+          ignoreEslintDisabledNodes,
+          sortingNodes: nodes,
+        }),
         isNodeIgnored: sortingNode =>
           getGroupIndex(options.groups, sortingNode) === options.groups.length,
-        optionsByGroupIndexComputer:
-          buildDefaultOptionsByGroupIndexComputer(options),
-        comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+        optionsByGroupIndexComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes,
@@ -375,162 +377,24 @@ function analyzeModule({
 }
 
 function extractDependencies(
-  expression: TSESTree.TSEnumMember | TSESTree.ClassBody,
+  expression: TSESTree.TSEnumDeclaration | TSESTree.ClassDeclaration,
 ): string[] {
-  let dependencies: string[] = []
-
   /**
    * Search static methods only if there is a static block or a static property
    * that is not an arrow function.
    */
   let searchStaticMethodsAndFunctionProperties =
-    expression.type === 'ClassBody' &&
-    expression.body.some(
+    expression.type === AST_NODE_TYPES.ClassDeclaration &&
+    expression.body.body.some(
       classElement =>
-        classElement.type === 'StaticBlock' ||
+        classElement.type === AST_NODE_TYPES.StaticBlock ||
         (classElement.static &&
-          isPropertyOrAccessor(classElement) &&
-          !isArrowFunction(classElement)),
+          isPropertyOrAccessorNode(classElement) &&
+          !isArrowFunctionNode(classElement)),
     )
 
-  function checkNode(nodeValue: TSESTree.Node): void {
-    if (
-      (nodeValue.type === 'MethodDefinition' || isArrowFunction(nodeValue)) &&
-      (!nodeValue.static || !searchStaticMethodsAndFunctionProperties)
-    ) {
-      return
-    }
-
-    if ('decorators' in nodeValue) {
-      traverseNode(nodeValue.decorators)
-    }
-
-    if (
-      nodeValue.type === 'NewExpression' &&
-      nodeValue.callee.type === 'Identifier'
-    ) {
-      dependencies.push(nodeValue.callee.name)
-    }
-
-    if (nodeValue.type === 'Identifier') {
-      dependencies.push(nodeValue.name)
-    }
-
-    if (nodeValue.type === 'ConditionalExpression') {
-      checkNode(nodeValue.test)
-      checkNode(nodeValue.consequent)
-      checkNode(nodeValue.alternate)
-    }
-
-    if (
-      'expression' in nodeValue &&
-      typeof nodeValue.expression !== 'boolean'
-    ) {
-      checkNode(nodeValue.expression)
-    }
-
-    if ('object' in nodeValue) {
-      checkNode(nodeValue.object)
-    }
-
-    if ('callee' in nodeValue) {
-      checkNode(nodeValue.callee)
-    }
-
-    if ('init' in nodeValue && nodeValue.init) {
-      checkNode(nodeValue.init)
-    }
-
-    if ('body' in nodeValue && nodeValue.body) {
-      traverseNode(nodeValue.body)
-    }
-
-    if ('left' in nodeValue) {
-      checkNode(nodeValue.left)
-    }
-
-    if ('right' in nodeValue) {
-      checkNode(nodeValue.right)
-    }
-
-    if ('initializer' in nodeValue && nodeValue.initializer) {
-      checkNode(nodeValue.initializer)
-    }
-
-    if ('elements' in nodeValue) {
-      let elements = nodeValue.elements.filter(
-        currentNode => currentNode !== null,
-      )
-
-      for (let element of elements) {
-        traverseNode(element)
-      }
-    }
-
-    if ('argument' in nodeValue && nodeValue.argument) {
-      checkNode(nodeValue.argument)
-    }
-
-    if ('arguments' in nodeValue) {
-      for (let argument of nodeValue.arguments) {
-        checkNode(argument)
-      }
-    }
-
-    if ('declarations' in nodeValue) {
-      for (let declaration of nodeValue.declarations) {
-        checkNode(declaration)
-      }
-    }
-
-    if ('properties' in nodeValue) {
-      for (let property of nodeValue.properties) {
-        checkNode(property)
-      }
-    }
-
-    if (
-      'value' in nodeValue &&
-      nodeValue.value &&
-      typeof nodeValue.value === 'object' &&
-      'type' in nodeValue.value
-    ) {
-      checkNode(nodeValue.value)
-    }
-
-    if ('expressions' in nodeValue) {
-      for (let nodeExpression of nodeValue.expressions) {
-        checkNode(nodeExpression)
-      }
-    }
-  }
-
-  function traverseNode(nodeValue: TSESTree.Node[] | TSESTree.Node): void {
-    if (Array.isArray(nodeValue)) {
-      for (let nodeItem of nodeValue) {
-        traverseNode(nodeItem)
-      }
-    } else {
-      checkNode(nodeValue)
-    }
-  }
-
-  checkNode(expression)
-  return dependencies
-}
-
-function isArrowFunction(
-  node: TSESTree.Node,
-): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty {
-  return (
-    isPropertyOrAccessor(node) &&
-    node.value !== null &&
-    node.value.type === 'ArrowFunctionExpression'
-  )
-}
-
-function isPropertyOrAccessor(
-  node: TSESTree.Node,
-): node is TSESTree.PropertyDefinition | TSESTree.AccessorProperty {
-  return node.type === 'PropertyDefinition' || node.type === 'AccessorProperty'
+  return computeDependencies(expression, {
+    searchStaticMethodsAndFunctionProperties,
+    type: 'hard',
+  })
 }

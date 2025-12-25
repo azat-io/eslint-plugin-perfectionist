@@ -1,10 +1,12 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import type {
   CommonOptions,
   RegexOption,
   TypeOption,
 } from '../../types/common-options'
+import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { CommonPartitionOptions } from '../../types/common-partition-options'
 import type { CommonGroupsOptions } from '../../types/common-groups-options'
 
@@ -22,11 +24,19 @@ import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schem
  */
 export type SortModulesOptions = [
   Partial<
-    CommonGroupsOptions<SingleCustomGroup, Record<string, never>, TypeOption> &
-      CommonOptions<TypeOption> &
+    CommonGroupsOptions<
+      SingleCustomGroup,
+      Record<string, never>,
+      CustomTypeOption
+    > &
+      CommonOptions<CustomTypeOption> &
       CommonPartitionOptions
   >,
 ]
+
+/** Represents a sorting node for a module statement. */
+export type SortModulesSortingNode =
+  SortingNodeWithDependencies<TSESTree.ProgramStatement>
 
 /**
  * Union type of all available module member selectors. Used to categorize
@@ -59,6 +69,8 @@ interface SingleCustomGroup {
   /** The type of module member this group applies to. */
   selector?: Selector
 }
+
+type CustomTypeOption = typeof USAGE_TYPE_OPTION | TypeOption
 
 /**
  * Complete list of available module member selectors. Used for validation and
@@ -95,3 +107,5 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   decoratorNamePattern: buildRegexJsonSchema(),
 }
+
+export const USAGE_TYPE_OPTION = 'usage'

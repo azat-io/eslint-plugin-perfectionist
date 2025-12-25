@@ -30,7 +30,10 @@ import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
  * @returns Set of nodes that participate in circular dependencies.
  */
 export function computeNodesInCircularDependencies<
-  T extends SortingNodeWithDependencies,
+  T extends Pick<
+    SortingNodeWithDependencies,
+    'dependencyNames' | 'dependencies'
+  >,
 >(elements: T[]): Set<T> {
   let elementsInCycles = new Set<T>()
   let visitingElements = new Set<T>()
