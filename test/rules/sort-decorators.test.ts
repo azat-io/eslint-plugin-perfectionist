@@ -5454,6 +5454,77 @@ describe('sort-decorators', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          @CCC
+          @BB
+          @A
+          class Class {
+
+            @CCC
+            @BB
+            @A
+            property
+
+            @CCC
+            @BB
+            @A
+            accessor field
+
+            @CCC
+            @BB
+            @A
+            method(
+              @CCC
+              @BB
+              @A
+              parameter) {}
+          }
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          @A
+          @BB
+          @CCC
+          class Class {
+
+            @A
+            @BB
+            @CCC
+            property
+
+            @A
+            @BB
+            @CCC
+            accessor field
+
+            @A
+            @BB
+            @CCC
+            method(
+              @A
+              @BB
+              @CCC
+              parameter) {}
+          }
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('sorts decorators with eslint-disable-line comments', async () => {
       await invalid({
         output: dedent`

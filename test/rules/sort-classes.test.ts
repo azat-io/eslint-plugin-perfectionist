@@ -14876,6 +14876,39 @@ describe('sort-classes', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          class Class {
+            ccc
+            bb
+            a
+          }
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          class Class {
+            a
+            bb
+            ccc
+          }
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('keeps comments associated to their node', async () => {
       await invalid({
         output: dedent`

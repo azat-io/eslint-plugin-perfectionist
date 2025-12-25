@@ -1,8 +1,9 @@
 import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
-import { describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
+import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import rule from '../../rules/sort-object-types'
 import { Alphabet } from '../../utils/alphabet'
 
@@ -8355,6 +8356,12 @@ describe('sort-object-types', () => {
   })
 
   describe('misc', () => {
+    it('validates the JSON schema', async () => {
+      await expect(
+        validateRuleJsonSchema(rule.meta.schema),
+      ).resolves.not.toThrowError()
+    })
+
     it('ignores semi at the end of value', async () => {
       await valid({
         code: dedent`
@@ -8571,6 +8578,39 @@ describe('sort-object-types', () => {
             [a]
           }
         `,
+      })
+    })
+
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          type Type = {
+            ccc: string
+            bb: string
+            a: string
+          }
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          type Type = {
+            a: string
+            bb: string
+            ccc: string
+          }
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
       })
     })
 

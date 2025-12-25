@@ -5521,6 +5521,37 @@ describe('sort-variable-declarations', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          let
+            ccc,
+            bb,
+            a,
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          let
+            a,
+            bb,
+            ccc,
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('handles inline eslint-disable-line comments', async () => {
       await invalid({
         errors: [

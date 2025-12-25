@@ -2232,6 +2232,39 @@ describe('sort-heritage-clauses', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          interface Interface extends
+            ccc,
+            bb,
+            a
+          {}
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          interface Interface extends
+            a,
+            bb,
+            ccc
+          {}
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     describe('handles eslint-disable comments', () => {
       it('accepts heritage clauses with eslint-disable-next-line comments', async () => {
         await valid({

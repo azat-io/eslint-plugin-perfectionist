@@ -9691,7 +9691,14 @@ describe('sort-objects', () => {
       })
     })
 
-    it('respects global settings configuration', async () => {
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
       await valid({
         code: dedent`
           let obj = {
@@ -9700,13 +9707,20 @@ describe('sort-objects', () => {
             a: 'a',
           }
         `,
-        settings: {
-          perfectionist: {
-            type: 'line-length',
-            order: 'desc',
-          },
-        },
         options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          let obj = {
+            a: 'a',
+            bb: 'bb',
+            ccc: 'ccc',
+          }
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
       })
     })
 

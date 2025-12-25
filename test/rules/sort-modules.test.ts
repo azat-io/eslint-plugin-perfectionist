@@ -7724,6 +7724,35 @@ describe('sort-modules', () => {
       })
     })
 
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          function ccc() {}
+          function bb() {}
+          function a() {}
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          function a() {}
+          function bb() {}
+          function ccc() {}
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
+
     it('preserves comments attached to their respective nodes', async () => {
       await invalid({
         output: dedent`

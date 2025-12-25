@@ -3213,5 +3213,40 @@ describe('sort-switch-case', () => {
         ],
       })
     })
+
+    it('respects the global settings configuration', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'line-length',
+          order: 'desc',
+        },
+      }
+
+      await valid({
+        code: dedent`
+          switch (variable) {
+            case 'ccc':
+            case 'bb':
+            case 'a':
+              break;
+          }
+        `,
+        options: [{}],
+        settings,
+      })
+
+      await valid({
+        code: dedent`
+          switch (variable) {
+            case 'a':
+            case 'bb':
+            case 'ccc':
+              break;
+          }
+        `,
+        options: [{ type: 'alphabetical', order: 'asc' }],
+        settings,
+      })
+    })
   })
 })
