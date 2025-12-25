@@ -33,7 +33,7 @@ import {
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildOptionsByGroupIndexComputer } from './sort-object-types/build-options-by-group-index-computer'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { computeMatchedContextOptions } from './sort-object-types/compute-matched-context-options'
 import { comparatorByOptionsComputer } from './sort-object-types/comparator-by-options-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
@@ -328,7 +328,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
               throw new UnreachableCaseError(groupOptions.sortBy)
           }
         },
-        optionsByGroupIndexComputer: buildOptionsByGroupIndexComputer(options),
+        optionsByGroupIndexComputer:
+          buildDefaultOptionsByGroupIndexComputer(options),
         comparatorByOptionsComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
