@@ -24,6 +24,17 @@ import sortEnums from './rules/sort-enums'
 import sortMaps from './rules/sort-maps'
 import sortSets from './rules/sort-sets'
 
+interface PluginConfigs {
+  'recommended-alphabetical-legacy': Linter.LegacyConfig
+  'recommended-line-length-legacy': Linter.LegacyConfig
+  'recommended-natural-legacy': Linter.LegacyConfig
+  'recommended-custom-legacy': Linter.LegacyConfig
+  'recommended-alphabetical': Linter.Config
+  'recommended-line-length': Linter.Config
+  'recommended-natural': Linter.Config
+  'recommended-custom': Linter.Config
+}
+
 interface BaseOptions {
   type: 'alphabetical' | 'line-length' | 'natural' | 'custom'
   order: 'desc' | 'asc'
@@ -89,7 +100,7 @@ function createLegacyConfig(options: BaseOptions): Linter.LegacyConfig {
   }
 }
 
-export let configs = {
+export let configs: PluginConfigs = {
   'recommended-alphabetical-legacy': createLegacyConfig({
     type: 'alphabetical',
     order: 'asc',
@@ -122,9 +133,9 @@ export let configs = {
     type: 'custom',
     order: 'asc',
   }),
-} as unknown as ESLint.Plugin['configs']
+}
 
 export default {
   ...plugin,
   configs,
-} as ESLint.Plugin
+} as { configs: PluginConfigs } & ESLint.Plugin
