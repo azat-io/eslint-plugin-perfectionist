@@ -40,6 +40,9 @@ describe('common-groups-json-schemas', () => {
   describe('groups', () => {
     let groupsJsonSchemaValidator = new Ajv().compile(
       buildGroupsJsonSchema({
+        additionalSortProperties: {
+          sortField: { type: 'string' },
+        },
         allowedAdditionalTypeValues: [],
       }),
     )
@@ -101,9 +104,28 @@ describe('common-groups-json-schemas', () => {
         expect(
           groupsJsonSchemaValidator([
             {
+              fallbackSort: {
+                type: 'alphabetical',
+                order: 'asc',
+              },
               newlinesInside: 1,
               group: 'group',
               order: 'asc',
+            },
+          ]),
+        ).toBeTruthy()
+      })
+
+      it('should allow additional sort properties', () => {
+        expect(
+          groupsJsonSchemaValidator([
+            {
+              fallbackSort: {
+                sortField: 'my-field',
+                type: 'alphabetical',
+              },
+              sortField: 'my-field',
+              group: 'group',
             },
           ]),
         ).toBeTruthy()
@@ -114,6 +136,7 @@ describe('common-groups-json-schemas', () => {
           groupsJsonSchemaValidator = new Ajv().compile(
             buildGroupsJsonSchema({
               allowedAdditionalTypeValues: ['my-type'],
+              additionalSortProperties: {},
             }),
           )
 

@@ -62,11 +62,20 @@ export function computeOverriddenOptionsByGroupIndex<T extends Options>(
     ...options,
   }
   if (matchingGroup && isGroupWithOverridesOption(matchingGroup)) {
-    let { newlinesInside, commentAbove, group, ...relevantGroupFields } =
-      matchingGroup
+    let {
+      newlinesInside,
+      commentAbove,
+      fallbackSort,
+      group,
+      ...relevantGroupFields
+    } = matchingGroup
     returnValue = {
       ...returnValue,
       ...relevantGroupFields,
+      fallbackSort: {
+        ...returnValue.fallbackSort,
+        ...fallbackSort,
+      },
     }
   }
 

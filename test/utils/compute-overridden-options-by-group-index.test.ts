@@ -170,13 +170,14 @@ describe('compute-overridden-options-by-group-index', () => {
       })
     })
 
-    it('takes "fallbackSort.order" if the custom group does not override it', () => {
+    it('takes the custom group "fallbackSort.order" if it overrides the default options', () => {
       let groupOptions = {
         customGroups: [
           {
             fallbackSort: {
-              type: 'alphabetical' as const,
-            },
+              type: 'alphabetical',
+              order: 'asc',
+            } as const,
             groupName: 'group',
           },
         ],
@@ -185,6 +186,81 @@ describe('compute-overridden-options-by-group-index', () => {
           order: 'desc',
         } as const,
         groups: ['group'],
+      }
+
+      let result = computeOverriddenOptionsByGroupIndex(
+        {
+          ...commonOptions,
+          ...groupOptions,
+        },
+        0,
+      )
+
+      expect(result).toStrictEqual({
+        ...commonOptions,
+        ...groupOptions,
+        fallbackSort: {
+          type: 'alphabetical',
+          order: 'asc',
+        },
+      })
+    })
+
+    it('takes the custom group "fallbackSort.order" if it overrides the group with overrides options', () => {
+      let groupOptions = {
+        customGroups: [
+          {
+            fallbackSort: {
+              type: 'alphabetical',
+              order: 'asc',
+            } as const,
+            groupName: 'group',
+          },
+        ],
+        groups: [
+          {
+            fallbackSort: {
+              type: 'natural',
+              order: 'desc',
+            } as const,
+            group: 'group',
+          },
+        ],
+      }
+
+      let result = computeOverriddenOptionsByGroupIndex(
+        {
+          ...commonOptions,
+          ...groupOptions,
+        },
+        0,
+      )
+
+      expect(result).toStrictEqual({
+        ...commonOptions,
+        ...groupOptions,
+        fallbackSort: {
+          type: 'alphabetical',
+          order: 'asc',
+        },
+      })
+    })
+
+    it('takes group with overrides "fallbackSort.order" if it overrides the default options', () => {
+      let groupOptions = {
+        groups: [
+          {
+            fallbackSort: {
+              type: 'alphabetical' as const,
+            },
+            group: 'group',
+          },
+        ],
+        fallbackSort: {
+          type: 'natural',
+          order: 'desc',
+        } as const,
+        customGroups: [],
       }
 
       let result = computeOverriddenOptionsByGroupIndex(

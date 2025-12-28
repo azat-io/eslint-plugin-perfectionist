@@ -27,8 +27,17 @@ import type {
  * @param groupOption - A single element from the groups configuration array.
  * @returns True if the element is a group with overrides configuration object.
  */
-export function isGroupWithOverridesOption<CustomTypeOption extends string>(
-  groupOption: GroupsOptions<CustomTypeOption>[number],
-): groupOption is GroupWithOverridesOption<CustomTypeOption> {
+export function isGroupWithOverridesOption<
+  CustomTypeOption extends string,
+  AdditionalSortProperties,
+>(
+  groupOption: GroupsOptions<
+    CustomTypeOption,
+    AdditionalSortProperties
+  >[number],
+): groupOption is GroupWithOverridesOption<
+  CustomTypeOption,
+  AdditionalSortProperties
+> {
   return typeof groupOption === 'object' && 'group' in groupOption
 }

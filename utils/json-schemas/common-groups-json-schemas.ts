@@ -124,7 +124,9 @@ export function buildCustomGroupsArrayJsonSchema({
 
 export function buildGroupsJsonSchema({
   allowedAdditionalTypeValues,
+  additionalSortProperties,
 }: {
+  additionalSortProperties: Record<string, JSONSchema4> | undefined
   allowedAdditionalTypeValues: undefined | string[]
 }): JSONSchema4 {
   return {
@@ -164,6 +166,10 @@ export function buildGroupsJsonSchema({
                 },
               ],
             },
+            fallbackSort: buildFallbackSortJsonSchema({
+              additionalProperties: additionalSortProperties,
+              allowedAdditionalTypeValues,
+            }),
             commentAbove: {
               description: 'Specifies a comment to enforce above the group.',
               type: 'string',
@@ -173,6 +179,7 @@ export function buildGroupsJsonSchema({
             }),
             newlinesInside: newlinesInsideJsonSchema,
             order: orderJsonSchema,
+            ...additionalSortProperties,
           },
           additionalProperties: false,
           required: ['group'],
@@ -209,6 +216,7 @@ export function buildCommonGroupsJsonSchemas({
     },
     groups: buildGroupsJsonSchema({
       allowedAdditionalTypeValues,
+      additionalSortProperties,
     }),
     newlinesBetween: newlinesBetweenJsonSchema,
   }

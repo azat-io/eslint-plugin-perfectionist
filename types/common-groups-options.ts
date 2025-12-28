@@ -97,7 +97,7 @@ export interface CommonGroupsOptions<
    * Defines the order and grouping of nodes. Nodes are sorted within their
    * groups and groups are ordered as specified.
    */
-  groups: GroupsOptions<CustomTypeOption>
+  groups: GroupsOptions<CustomTypeOption, AdditionalSortProperties>
 
   /** Specify the exact number of newlines required between groups. */
   newlinesBetween: NewlinesBetweenOption
@@ -113,7 +113,16 @@ export interface CommonGroupsOptions<
  *     'components',
  *   ]
  */
-export interface GroupWithOverridesOption<CustomTypeOption extends string> {
+export type GroupWithOverridesOption<
+  CustomTypeOption extends string,
+  AdditionalSortProperties,
+> = {
+  /**
+   * Fallback sorting configuration used when primary sort returns equal. Useful
+   * for stable sorting when elements have identical primary sort values.
+   */
+  fallbackSort?: FallbackSortOption<CustomTypeOption, AdditionalSortProperties>
+
   /** Specify the exact number of newlines required inside the group. */
   newlinesInside?: NewlinesInsideOption
 
@@ -131,7 +140,7 @@ export interface GroupWithOverridesOption<CustomTypeOption extends string> {
 
   /** Same as `order` in CommonOptions - Sort direction for this group. */
   order?: OrderOption
-}
+} & AdditionalSortProperties
 
 /**
  * Configuration for matching multiple patterns in custom groups.
@@ -210,13 +219,6 @@ export interface GroupNewlinesBetweenOption {
   group?: never
 }
 
-export type NewlinesInsideOption =
-  /** Preserve existing newlines without modification. */
-  | 'ignore'
-
-  /** Require exactly this number of blank lines between elements of a group. */
-  | number
-
 /**
  * Configuration for organizing elements into groups with optional formatting.
  *
@@ -235,9 +237,19 @@ export type NewlinesInsideOption =
  *     'utils',
  *   ]
  */
-export type GroupsOptions<CustomTypeOption extends string = string> = (
-  | GroupWithOverridesOption<CustomTypeOption>
+export type GroupsOptions<
+  CustomTypeOption extends string = string,
+  AdditionalSortProperties = object,
+> = (
+  | GroupWithOverridesOption<CustomTypeOption, AdditionalSortProperties>
   | GroupNewlinesBetweenOption
   | string[]
   | string
 )[]
+
+export type NewlinesInsideOption =
+  /** Preserve existing newlines without modification. */
+  | 'ignore'
+
+  /** Require exactly this number of blank lines between elements of a group. */
+  | number
