@@ -72,37 +72,6 @@ export type CustomGroupsOption<
 } & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) &
   AdditionalSortProperties)[]
 
-export interface CommonGroupsOptions<
-  SingleCustomGroup,
-  AdditionalSortProperties,
-  CustomTypeOption extends string,
-> {
-  /** Specify the exact number of newlines required between elements of groups. */
-  newlinesInside:
-    | NewlinesInsideOption
-    /**
-     * @deprecated The `newlinesBetween` value is deprecated and will be removed
-     *   in V6.
-     */
-    | 'newlinesBetween'
-
-  /** Custom groups for organizing nodes. */
-  customGroups: CustomGroupsOption<
-    SingleCustomGroup,
-    AdditionalSortProperties,
-    CustomTypeOption
-  >
-
-  /**
-   * Defines the order and grouping of nodes. Nodes are sorted within their
-   * groups and groups are ordered as specified.
-   */
-  groups: GroupsOptions<CustomTypeOption, AdditionalSortProperties>
-
-  /** Specify the exact number of newlines required between groups. */
-  newlinesBetween: NewlinesBetweenOption
-}
-
 /**
  * Configuration for groups with overriding settings.
  *
@@ -141,6 +110,37 @@ export type GroupWithOverridesOption<
   /** Same as `order` in CommonOptions - Sort direction for this group. */
   order?: OrderOption
 } & AdditionalSortProperties
+
+export interface CommonGroupsOptions<
+  SingleCustomGroup,
+  AdditionalSortProperties,
+  CustomTypeOption extends string,
+> {
+  /** Specify the exact number of newlines required between elements of groups. */
+  newlinesInside:
+    | NewlinesInsideOption
+    /**
+     * @deprecated The `newlinesBetween` value is deprecated and will be removed
+     *   in V6.
+     */
+    | 'newlinesBetween'
+
+  /** Custom groups for organizing nodes. */
+  customGroups: CustomGroupsOption<
+    SingleCustomGroup,
+    AdditionalSortProperties,
+    CustomTypeOption
+  >
+
+  /**
+   * Defines the order and grouping of nodes. Nodes are sorted within their
+   * groups and groups are ordered as specified.
+   */
+  groups: GroupsOptions<CustomTypeOption, AdditionalSortProperties>
+
+  /** Specify the exact number of newlines required between groups. */
+  newlinesBetween: NewlinesBetweenOption
+}
 
 /**
  * Configuration for matching multiple patterns in custom groups.

@@ -40,6 +40,77 @@ export let newlinesInsideJsonSchema: JSONSchema4 = {
   ],
 }
 
+export function buildGroupsJsonSchema({
+  allowedAdditionalTypeValues,
+  additionalSortProperties,
+}: {
+  additionalSortProperties: Record<string, JSONSchema4> | undefined
+  allowedAdditionalTypeValues: undefined | string[]
+}): JSONSchema4 {
+  return {
+    items: {
+      oneOf: [
+        {
+          type: 'string',
+        },
+        {
+          items: {
+            type: 'string',
+          },
+          type: 'array',
+          minItems: 1,
+        },
+        {
+          properties: {
+            newlinesBetween: newlinesBetweenJsonSchema,
+          },
+          required: ['newlinesBetween'],
+          additionalProperties: false,
+          type: 'object',
+        },
+        {
+          properties: {
+            group: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  items: {
+                    type: 'string',
+                  },
+                  type: 'array',
+                  minItems: 1,
+                },
+              ],
+            },
+            fallbackSort: buildFallbackSortJsonSchema({
+              additionalProperties: additionalSortProperties,
+              allowedAdditionalTypeValues,
+            }),
+            commentAbove: {
+              description: 'Specifies a comment to enforce above the group.',
+              type: 'string',
+            },
+            type: buildTypeJsonSchema({
+              allowedAdditionalValues: allowedAdditionalTypeValues,
+            }),
+            newlinesInside: newlinesInsideJsonSchema,
+            order: orderJsonSchema,
+            ...additionalSortProperties,
+          },
+          additionalProperties: false,
+          required: ['group'],
+          minProperties: 2,
+          type: 'object',
+        },
+      ],
+    },
+    description: 'Specifies a list of groups for sorting.',
+    type: 'array',
+  }
+}
+
 /**
  * Builds JSON schema for custom groups array configuration.
  *
@@ -118,77 +189,6 @@ export function buildCustomGroupsArrayJsonSchema({
       ],
     },
     description: 'Defines custom groups to match specific members.',
-    type: 'array',
-  }
-}
-
-export function buildGroupsJsonSchema({
-  allowedAdditionalTypeValues,
-  additionalSortProperties,
-}: {
-  additionalSortProperties: Record<string, JSONSchema4> | undefined
-  allowedAdditionalTypeValues: undefined | string[]
-}): JSONSchema4 {
-  return {
-    items: {
-      oneOf: [
-        {
-          type: 'string',
-        },
-        {
-          items: {
-            type: 'string',
-          },
-          type: 'array',
-          minItems: 1,
-        },
-        {
-          properties: {
-            newlinesBetween: newlinesBetweenJsonSchema,
-          },
-          required: ['newlinesBetween'],
-          additionalProperties: false,
-          type: 'object',
-        },
-        {
-          properties: {
-            group: {
-              oneOf: [
-                {
-                  type: 'string',
-                },
-                {
-                  items: {
-                    type: 'string',
-                  },
-                  type: 'array',
-                  minItems: 1,
-                },
-              ],
-            },
-            fallbackSort: buildFallbackSortJsonSchema({
-              additionalProperties: additionalSortProperties,
-              allowedAdditionalTypeValues,
-            }),
-            commentAbove: {
-              description: 'Specifies a comment to enforce above the group.',
-              type: 'string',
-            },
-            type: buildTypeJsonSchema({
-              allowedAdditionalValues: allowedAdditionalTypeValues,
-            }),
-            newlinesInside: newlinesInsideJsonSchema,
-            order: orderJsonSchema,
-            ...additionalSortProperties,
-          },
-          additionalProperties: false,
-          required: ['group'],
-          minProperties: 2,
-          type: 'object',
-        },
-      ],
-    },
-    description: 'Specifies a list of groups for sorting.',
     type: 'array',
   }
 }
