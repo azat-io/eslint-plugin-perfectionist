@@ -19,6 +19,7 @@ import {
 import {
   TYPE_IMPORT_FIRST_TYPE_OPTION,
   singleCustomGroupJsonSchema,
+  sortByJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-imports/types'
@@ -107,6 +108,7 @@ let defaultOptions: Required<Options[number]> = {
   customGroups: [],
   ignoreCase: true,
   locales: 'en-US',
+  sortBy: 'path',
   alphabet: '',
   order: 'asc',
 }
@@ -285,9 +287,11 @@ export default createEslintRule<Options, MessageId>({
         properties: {
           ...buildCommonJsonSchemas({
             allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
+            additionalSortProperties: { sortBy: sortByJsonSchema },
           }),
           ...buildCommonGroupsJsonSchemas({
             allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
+            additionalSortProperties: { sortBy: sortByJsonSchema },
             singleCustomGroupJsonSchema,
           }),
           tsconfig: {

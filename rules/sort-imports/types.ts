@@ -67,10 +67,10 @@ export type Options = Partial<
     maxLineLength: number
   } & CommonGroupsOptions<
     SingleCustomGroup,
-    Record<string, never>,
+    { sortBy: 'specifier' | 'path' },
     CustomTypeOption
   > &
-    CommonOptions<CustomTypeOption> &
+    CommonOptions<CustomTypeOption, { sortBy: 'specifier' | 'path' }> &
     CommonPartitionOptions
 >[]
 
@@ -168,6 +168,11 @@ export let allModifiers = [
 export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
+}
+
+export let sortByJsonSchema: JSONSchema4 = {
+  enum: ['specifier', 'path'],
+  type: 'string',
 }
 
 export const TYPE_IMPORT_FIRST_TYPE_OPTION = 'type-import-first'
