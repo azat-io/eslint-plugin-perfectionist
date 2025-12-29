@@ -15,7 +15,14 @@ import {
  * From '...'`) to improve code organization and maintainability.
  */
 export type Options = Partial<
-  AllCommonOptions<TypeOption, AdditionalSortOptions, CustomGroupMatchOptions>
+  {
+    /** Number of newlines required after the last sorted element. */
+    newlinesAfter: 'ignore' | number
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortOptions,
+    CustomGroupMatchOptions
+  >
 >[]
 
 /**
