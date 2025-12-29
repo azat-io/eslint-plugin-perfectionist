@@ -3,37 +3,40 @@ import Ajv from 'ajv-draft-04'
 
 import {
   buildCustomGroupsArrayJsonSchema,
-  newlinesBetweenJsonSchema,
-  newlinesInsideJsonSchema,
+  buildCommonGroupsJsonSchemas,
   buildGroupsJsonSchema,
+  newlinesJsonSchema,
 } from '../../../utils/json-schemas/common-groups-json-schemas'
 
 describe('common-groups-json-schemas', () => {
-  describe('newlinesBetween', () => {
-    let newlinesBetweenJsonSchemaValidator = new Ajv().compile(
-      newlinesBetweenJsonSchema,
-    )
+  describe('newlines', () => {
+    let newlinesJsonSchemaValidator = new Ajv().compile(newlinesJsonSchema)
 
     it.each(['ignore', 1, 0])("should allow '%s'", newlinesBetween => {
-      expect(newlinesBetweenJsonSchemaValidator(newlinesBetween)).toBeTruthy()
+      expect(newlinesJsonSchemaValidator(newlinesBetween)).toBeTruthy()
     })
 
     it('should not allow invalid values', () => {
-      expect(newlinesBetweenJsonSchemaValidator('invalid')).toBeFalsy()
+      expect(newlinesJsonSchemaValidator('invalid')).toBeFalsy()
     })
   })
 
   describe('newlinesInside', () => {
-    let newlinesInsideJsonSchemaValidator = new Ajv().compile(
+    let newlinesInsideJsonSchema =
+      buildCommonGroupsJsonSchemas()['newlinesInside']!
+    let commonGroupsJsonSchemaValidator = new Ajv().compile(
       newlinesInsideJsonSchema,
     )
 
-    it.each(['ignore', 1, 0])("should allow '%s'", newlinesInside => {
-      expect(newlinesInsideJsonSchemaValidator(newlinesInside)).toBeTruthy()
-    })
+    it.each(['ignore', 'newlinesBetween', 1, 0])(
+      "should allow '%s'",
+      newlinesInside => {
+        expect(commonGroupsJsonSchemaValidator(newlinesInside)).toBeTruthy()
+      },
+    )
 
     it('should not allow invalid values', () => {
-      expect(newlinesInsideJsonSchemaValidator('invalid')).toBeFalsy()
+      expect(commonGroupsJsonSchemaValidator('invalid')).toBeFalsy()
     })
   })
 
