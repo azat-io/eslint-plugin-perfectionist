@@ -47,6 +47,7 @@ import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
 import { computeDependencyNames } from './sort-imports/compute-dependency-names'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
+import { computeSpecifierName } from './sort-imports/compute-specifier-name'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { computeDependencies } from './sort-imports/compute-dependencies'
 import { isSideEffectImport } from './sort-imports/is-side-effect-import'
@@ -249,6 +250,7 @@ export default createEslintRule<Options, MessageId>({
           (!isStyleSideEffect || !shouldRegroupSideEffectStyleNodes),
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         dependencyNames: computeDependencyNames({ sourceCode, node }),
+        specifierName: computeSpecifierName({ sourceCode, node }),
         isTypeImport: modifiers.includes('type'),
         dependencies: computeDependencies(node),
         addSafetySemicolonWhenInline: true,

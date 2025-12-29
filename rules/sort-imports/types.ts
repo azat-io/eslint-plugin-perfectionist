@@ -83,6 +83,9 @@ export interface SortImportsSortingNode extends SortingNodeWithDependencies<
   | TSESTree.VariableDeclaration
   | TSESTree.ImportDeclaration
 > {
+  /** The name of the import specifier for sorting purposes. */
+  specifierName: string | null
+
   /** Whether this import is a type-only import. */
   isTypeImport: boolean
 

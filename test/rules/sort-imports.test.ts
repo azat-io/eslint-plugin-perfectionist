@@ -3527,6 +3527,77 @@ describe('sort-imports', () => {
         `,
       })
     })
+
+    it('sorts imports by specifier names when sortBy is "specifier"', async () => {
+      await invalid({
+        errors: [
+          {
+            data: { right: 'foo3', left: 'foo2' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo4', left: 'foo3' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo7', left: 'foo6' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo8', left: 'foo7' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo10', left: 'foo9' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo13', left: 'foo12' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+        output: dedent`
+          import 'foo4'
+          import {} from 'foo10';
+          const {} = require('foo11')
+          const [] = require('foo13')
+          import a from 'foo8'
+          import { c, l } from 'foo7'
+          import { default as d } from 'foo1'
+          import e = Foo.e
+          import * as f from 'foo5'
+          const { ...g } = require('foo3')
+          import h from 'foo2'
+          const [i] = require('foo12')
+          const j = require('foo6')
+          import { b as k } from 'foo9'
+        `,
+        code: dedent`
+          import { default as d } from 'foo1'
+          import h from 'foo2'
+          const { ...g } = require('foo3')
+          import 'foo4'
+          import e = Foo.e
+          import * as f from 'foo5'
+          const j = require('foo6')
+          import { c, l } from 'foo7'
+          import a from 'foo8'
+          import { b as k } from 'foo9'
+          import {} from 'foo10';
+          const {} = require('foo11')
+          const [i] = require('foo12')
+          const [] = require('foo13')
+        `,
+        options: [
+          {
+            ...options,
+            sortSideEffects: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+      })
+    })
   })
 
   describe('natural', () => {
@@ -6800,6 +6871,77 @@ describe('sort-imports', () => {
           // Comment above b
           import b from '~/b'; // Comment after b
         `,
+      })
+    })
+
+    it('sorts imports by specifier names when sortBy is "specifier"', async () => {
+      await invalid({
+        errors: [
+          {
+            data: { right: 'foo3', left: 'foo2' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo4', left: 'foo3' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo7', left: 'foo6' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo8', left: 'foo7' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo10', left: 'foo9' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo13', left: 'foo12' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+        output: dedent`
+          import 'foo4'
+          import {} from 'foo10';
+          const {} = require('foo11')
+          const [] = require('foo13')
+          import a from 'foo8'
+          import { c, l } from 'foo7'
+          import { default as d } from 'foo1'
+          import e = Foo.e
+          import * as f from 'foo5'
+          const { ...g } = require('foo3')
+          import h from 'foo2'
+          const [i] = require('foo12')
+          const j = require('foo6')
+          import { b as k } from 'foo9'
+        `,
+        code: dedent`
+          import { default as d } from 'foo1'
+          import h from 'foo2'
+          const { ...g } = require('foo3')
+          import 'foo4'
+          import e = Foo.e
+          import * as f from 'foo5'
+          const j = require('foo6')
+          import { c, l } from 'foo7'
+          import a from 'foo8'
+          import { b as k } from 'foo9'
+          import {} from 'foo10';
+          const {} = require('foo11')
+          const [i] = require('foo12')
+          const [] = require('foo13')
+        `,
+        options: [
+          {
+            ...options,
+            sortSideEffects: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
       })
     })
   })
@@ -10213,6 +10355,85 @@ describe('sort-imports', () => {
         ],
       })
     })
+
+    it('sorts imports by line-length even when sortBy is "specifier"', async () => {
+      await invalid({
+        errors: [
+          {
+            data: { right: 'foo3', left: 'foo2' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'Foo.e', left: 'foo4' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo5', left: 'Foo.e' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo6', left: 'foo5' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo7', left: 'foo6' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo9', left: 'foo8' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo11', left: 'foo10' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo12', left: 'foo11' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+        output: dedent`
+          import { bb as kkkkkkkkkkk } from 'foo9'
+          import { ccc, lllllllllll } from 'foo7'
+          import { default as dddd } from 'foo1'
+          const { ...ggggggg } = require('foo3')
+          const [iiiiiiiii] = require('foo12')
+          const jjjjjjjjjj = require('foo6')
+          import * as ffffff from 'foo5'
+          import hhhhhhhh from 'foo2'
+          const {} = require('foo11')
+          const [] = require('foo13')
+          import {} from 'foo10';
+          import eeeee = Foo.e
+          import a from 'foo8'
+          import 'foo4'
+        `,
+        code: dedent`
+          import { default as dddd } from 'foo1'
+          import hhhhhhhh from 'foo2'
+          const { ...ggggggg } = require('foo3')
+          import 'foo4'
+          import eeeee = Foo.e
+          import * as ffffff from 'foo5'
+          const jjjjjjjjjj = require('foo6')
+          import { ccc, lllllllllll } from 'foo7'
+          import a from 'foo8'
+          import { bb as kkkkkkkkkkk } from 'foo9'
+          import {} from 'foo10';
+          const {} = require('foo11')
+          const [iiiiiiiii] = require('foo12')
+          const [] = require('foo13')
+        `,
+        options: [
+          {
+            ...options,
+            sortSideEffects: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+      })
+    })
   })
 
   describe('type-import-first', () => {
@@ -10408,6 +10629,77 @@ describe('sort-imports', () => {
           import { a1, a2 } from 'a'
         `,
         options: [options],
+      })
+    })
+
+    it('sorts imports by specifier names when sortBy is "specifier"', async () => {
+      await invalid({
+        errors: [
+          {
+            data: { right: 'foo3', left: 'foo2' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo4', left: 'foo3' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo7', left: 'foo6' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo8', left: 'foo7' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo10', left: 'foo9' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo13', left: 'foo12' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+        output: dedent`
+          import 'foo4'
+          import {} from 'foo10';
+          const {} = require('foo11')
+          const [] = require('foo13')
+          import a from 'foo8'
+          import { c, l } from 'foo7'
+          import { default as d } from 'foo1'
+          import e = Foo.e
+          import * as f from 'foo5'
+          const { ...g } = require('foo3')
+          import h from 'foo2'
+          const [i] = require('foo12')
+          const j = require('foo6')
+          import { b as k } from 'foo9'
+        `,
+        code: dedent`
+          import { default as d } from 'foo1'
+          import h from 'foo2'
+          const { ...g } = require('foo3')
+          import 'foo4'
+          import e = Foo.e
+          import * as f from 'foo5'
+          const j = require('foo6')
+          import { c, l } from 'foo7'
+          import a from 'foo8'
+          import { b as k } from 'foo9'
+          import {} from 'foo10';
+          const {} = require('foo11')
+          const [i] = require('foo12')
+          const [] = require('foo13')
+        `,
+        options: [
+          {
+            ...options,
+            sortSideEffects: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
       })
     })
   })
