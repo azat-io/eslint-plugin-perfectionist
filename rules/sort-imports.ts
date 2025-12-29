@@ -11,20 +11,22 @@ import type {
 } from './sort-imports/types'
 
 import {
-  additionalCustomGroupMatchOptionsJsonSchema,
-  additionalSortOptionsJsonSchema,
-  TYPE_IMPORT_FIRST_TYPE_OPTION,
-  allModifiers,
-  allSelectors,
-} from './sort-imports/types'
-import {
   MISSED_COMMENT_ABOVE_ERROR,
+  MISSED_SPACING_AFTER_ERROR,
+  EXTRA_SPACING_AFTER_ERROR,
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  additionalCustomGroupMatchOptionsJsonSchema,
+  additionalSortOptionsJsonSchema,
+  TYPE_IMPORT_FIRST_TYPE_OPTION,
+  allModifiers,
+  allSelectors,
+} from './sort-imports/types'
 import {
   useExperimentalDependencyDetectionJsonSchema,
   buildCommonJsonSchemas,
@@ -34,13 +36,16 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
+import {
+  buildCommonGroupsJsonSchemas,
+  newlinesJsonSchema,
+} from '../utils/json-schemas/common-groups-json-schemas'
 import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { isNonExternalReferenceTsImportEquals } from './sort-imports/is-non-external-reference-ts-import-equals'
 import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeDependenciesBySortingNode } from '../utils/compute-dependencies-by-sorting-node'
-import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { comparatorByOptionsComputer } from './sort-imports/comparator-by-options-computer'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
@@ -76,12 +81,16 @@ let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 const ORDER_ERROR_ID = 'unexpectedImportsOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedImportsGroupOrder'
 const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenImports'
+const EXTRA_SPACING_AFTER_ERROR_ID = 'extraSpacingAfterImports'
 const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenImports'
+const MISSED_SPACING_AFTER_ERROR_ID = 'missedSpacingAfterImports'
 const MISSED_COMMENT_ABOVE_ERROR_ID = 'missedCommentAboveImport'
 const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedImportsDependencyOrder'
 
 export type MessageId =
   | typeof MISSED_COMMENT_ABOVE_ERROR_ID
+  | typeof MISSED_SPACING_AFTER_ERROR_ID
+  | typeof EXTRA_SPACING_AFTER_ERROR_ID
   | typeof DEPENDENCY_ORDER_ERROR_ID
   | typeof MISSED_SPACING_ERROR_ID
   | typeof EXTRA_SPACING_ERROR_ID
@@ -107,6 +116,7 @@ let defaultOptions: Required<Options[number]> = {
   specialCharacters: 'keep',
   tsconfig: { rootDir: '' },
   maxLineLength: Infinity,
+  newlinesAfter: 'ignore',
   sortSideEffects: false,
   type: 'alphabetical',
   environment: 'node',
@@ -345,6 +355,7 @@ export default createEslintRule<Options, MessageId>({
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
           internalPattern: buildRegexJsonSchema(),
+          newlinesAfter: newlinesJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
@@ -354,6 +365,8 @@ export default createEslintRule<Options, MessageId>({
     },
     messages: {
       [MISSED_COMMENT_ABOVE_ERROR_ID]: MISSED_COMMENT_ABOVE_ERROR,
+      [MISSED_SPACING_AFTER_ERROR_ID]: MISSED_SPACING_AFTER_ERROR,
+      [EXTRA_SPACING_AFTER_ERROR_ID]: EXTRA_SPACING_AFTER_ERROR,
       [DEPENDENCY_ORDER_ERROR_ID]: DEPENDENCY_ORDER_ERROR,
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
       [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
@@ -433,6 +446,8 @@ function sortImportNodes({
 
     reportAllErrors<MessageId>({
       availableMessageIds: {
+        missedSpacingAfterMembers: MISSED_SPACING_AFTER_ERROR_ID,
+        extraSpacingAfterMembers: EXTRA_SPACING_AFTER_ERROR_ID,
         unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
         missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
         extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,

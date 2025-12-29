@@ -36,6 +36,9 @@ export type Options = Partial<
     /** Enables experimental dependency detection. */
     useExperimentalDependencyDetection: boolean
 
+    /** Number of newlines required after the last sorted element. */
+    newlinesAfter: 'ignore' | number
+
     /**
      * Patterns to identify internal imports. Imports matching these patterns
      * are categorized as 'internal'.
