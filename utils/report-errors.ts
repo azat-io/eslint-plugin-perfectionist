@@ -31,8 +31,14 @@ export const GROUP_ORDER_ERROR =
 export const EXTRA_SPACING_ERROR =
   `Extra spacing between "{{${LEFT}}}" and "{{${RIGHT}}}".` as const
 
+export const EXTRA_SPACING_AFTER_ERROR =
+  `Extra spacing after "{{${RIGHT}}}".` as const
+
 export const MISSED_SPACING_ERROR =
   `Missed spacing between "{{${LEFT}}}" and "{{${RIGHT}}}".` as const
+
+export const MISSED_SPACING_AFTER_ERROR =
+  `Missed spacing after "{{${RIGHT}}}".` as const
 
 export const MISSED_COMMENT_ABOVE_ERROR =
   `Missed comment "{{${MISSED_COMMENT_ABOVE}}}" above "{{${RIGHT}}}".` as const
@@ -48,7 +54,9 @@ interface ReportErrorsParameters<
   T extends SortingNode,
 > {
   options?: Pick<CommonPartitionOptions, 'partitionByComment'> &
-    CommonGroupsOptions<string, unknown, unknown>
+    {
+      newlinesAfter?: 'ignore' | number
+    } & CommonGroupsOptions<string, unknown, unknown>
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
   context: TSESLint.RuleContext<MessageIds, unknown[]>
   ignoreFirstNodeHighestBlockComment?: boolean

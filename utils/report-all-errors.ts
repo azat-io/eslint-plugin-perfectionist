@@ -10,6 +10,7 @@ import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-
 import { getCommentAboveThatShouldExist } from './get-comment-above-that-should-exist'
 import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
 import { getNewlinesBetweenErrors } from './get-newlines-between-errors'
+import { getNewlinesAfterErrors } from './get-newlines-after-errors'
 import { createNodeIndexMap } from './create-node-index-map'
 import { getGroupIndex } from './get-group-index'
 import { reportErrors } from './report-errors'
@@ -53,6 +54,15 @@ interface ReportAllErrorsParameters<
     /** Message when a dependency order is violated. */
     unexpectedDependencyOrder?: MessageIds
 
+    /** Message when required spacing after all members is missing. */
+    missedSpacingAfterMembers?: MessageIds
+
+    /**
+     * Message when there's extra spacing after all members where it shouldn't
+     * be.
+     */
+    extraSpacingAfterMembers?: MessageIds
+
     /** Message when elements are in wrong groups. */
     unexpectedGroupOrder: MessageIds
 
@@ -80,7 +90,9 @@ interface ReportAllErrorsParameters<
    *   }
    */
   options: Pick<CommonPartitionOptions, 'partitionByComment'> &
-    CommonGroupsOptions<string, unknown, unknown>
+    {
+      newlinesAfter?: 'ignore' | number
+    } & CommonGroupsOptions<string, unknown, unknown>
 
   /**
    * Function to get sorted nodes with or without ESLint-disabled nodes.
@@ -279,6 +291,27 @@ export function reportAllErrors<
           left,
         }),
       )
+    }
+
+    if (
+      right === nodes.at(-1) &&
+      availableMessageIds.missedSpacingAfterMembers &&
+      availableMessageIds.extraSpacingAfterMembers &&
+      options.newlinesAfter !== undefined
+    ) {
+      messageIds = [
+        ...messageIds,
+        ...getNewlinesAfterErrors({
+          options: {
+            ...options,
+            newlinesAfter: options.newlinesAfter,
+          },
+          missedSpacingError: availableMessageIds.missedSpacingAfterMembers,
+          extraSpacingError: availableMessageIds.extraSpacingAfterMembers,
+          sortingNode: right,
+          sourceCode,
+        }),
+      ]
     }
 
     let commentAboveMissing: undefined | string
