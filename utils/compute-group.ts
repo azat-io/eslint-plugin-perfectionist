@@ -5,6 +5,10 @@ import type {
 
 import { computeGroupsNames } from './compute-groups-names'
 
+export type CustomGroupMatcher<MatchOptions> = (
+  customGroup: AnyOfCustomGroup<MatchOptions> | Partial<MatchOptions>,
+) => boolean
+
 /**
  * Parameters for computing the group of an element.
  *
@@ -30,10 +34,6 @@ interface ComputeGroupParameters<CustomGroupMatchOptions> {
    */
   predefinedGroups: string[]
 }
-
-type CustomGroupMatcher<MatchOptions> = (
-  customGroup: AnyOfCustomGroup<MatchOptions> | Partial<MatchOptions>,
-) => boolean
 
 /**
  * Determines which group an element belongs to based on custom and predefined
