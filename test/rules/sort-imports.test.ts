@@ -48,6 +48,64 @@ describe('sort-imports', () => {
       order: 'asc',
     } as const
 
+    it('aaaa', async () => {
+      await invalid({
+        output: dedent`
+          import { a1 } from 'a'
+          import { b1 } from 'b'
+
+          const a = 4
+        `,
+        code: dedent`
+          import { a1 } from 'a'
+          import { b1 } from 'b'
+          const a = 4
+        `,
+        options: [
+          {
+            ...options,
+            newlinesAfter: 1,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'missedSpacingAfterImports',
+          },
+        ],
+      })
+    })
+
+    it('bbb', async () => {
+      await invalid({
+        output: dedent`
+          import { a1 } from 'a'
+          import { b1 } from 'b'
+
+          // a
+          const a = 4
+        `,
+        code: dedent`
+          import { a1 } from 'a'
+          import { b1 } from 'b'
+
+
+          // a
+          const a = 4
+        `,
+        options: [
+          {
+            ...options,
+            newlinesAfter: 1,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingAfterImports',
+          },
+        ],
+      })
+    })
+
     it('sorts imports by module name', async () => {
       await valid({
         code: dedent`
