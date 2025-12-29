@@ -247,6 +247,19 @@ or [`customGroups`](#customgroups) options.
 
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
+### newlinesAfter
+
+<sub>
+  type: `number | 'ignore'`
+</sub>
+<sub>default: `ignore`</sub>
+
+Specifies how to handles newlines after the last export statement.
+
+- `'ignore'` — Do not report errors related to newlines.
+- `0` — No newlines are allowed after the last export statement.
+- Any other number — Enforce this number of newlines after the last export statement.
+
 ### groups
 
 <sub>

@@ -8,6 +8,8 @@ import type { SortingNode } from '../types/sorting-node'
 
 import {
   MISSED_COMMENT_ABOVE_ERROR,
+  MISSED_SPACING_AFTER_ERROR,
+  EXTRA_SPACING_AFTER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
@@ -18,6 +20,10 @@ import {
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import {
+  buildCommonGroupsJsonSchemas,
+  newlinesJsonSchema,
+} from '../utils/json-schemas/common-groups-json-schemas'
+import {
   additionalCustomGroupMatchOptionsJsonSchema,
   allModifiers,
   allSelectors,
@@ -25,7 +31,6 @@ import {
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
-import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
@@ -50,11 +55,15 @@ let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 const ORDER_ERROR_ID = 'unexpectedExportsOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedExportsGroupOrder'
 const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenExports'
+const EXTRA_SPACING_AFTER_ERROR_ID = 'extraSpacingAfterExports'
 const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenExports'
+const MISSED_SPACING_AFTER_ERROR_ID = 'missedSpacingAfterExports'
 const MISSED_COMMENT_ABOVE_ERROR_ID = 'missedCommentAboveExport'
 
 type MessageId =
   | typeof MISSED_COMMENT_ABOVE_ERROR_ID
+  | typeof MISSED_SPACING_AFTER_ERROR_ID
+  | typeof EXTRA_SPACING_AFTER_ERROR_ID
   | typeof MISSED_SPACING_ERROR_ID
   | typeof EXTRA_SPACING_ERROR_ID
   | typeof GROUP_ORDER_ERROR_ID
@@ -71,6 +80,7 @@ let defaultOptions: Required<Options[number]> = {
   partitionByComment: false,
   newlinesBetween: 'ignore',
   partitionByNewLine: false,
+  newlinesAfter: 'ignore',
   type: 'alphabetical',
   customGroups: [],
   ignoreCase: true,
@@ -184,6 +194,7 @@ export default createEslintRule<Options, MessageId>({
           }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
+          newlinesAfter: newlinesJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
@@ -193,6 +204,8 @@ export default createEslintRule<Options, MessageId>({
     },
     messages: {
       [MISSED_COMMENT_ABOVE_ERROR_ID]: MISSED_COMMENT_ABOVE_ERROR,
+      [MISSED_SPACING_AFTER_ERROR_ID]: MISSED_SPACING_AFTER_ERROR,
+      [EXTRA_SPACING_AFTER_ERROR_ID]: EXTRA_SPACING_AFTER_ERROR,
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
       [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
       [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
@@ -224,6 +237,8 @@ function sortExportNodes({
   let nodes = formattedMembers.flat()
   reportAllErrors<MessageId>({
     availableMessageIds: {
+      missedSpacingAfterMembers: MISSED_SPACING_AFTER_ERROR_ID,
+      extraSpacingAfterMembers: EXTRA_SPACING_AFTER_ERROR_ID,
       missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
       extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
       missedCommentAbove: MISSED_COMMENT_ABOVE_ERROR_ID,
