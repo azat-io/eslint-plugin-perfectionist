@@ -31,7 +31,7 @@ interface ComputeGroupParameters<CustomGroupMatchOptions> {
   predefinedGroups: string[]
 }
 
-type CustomGroupMatcher<MatchOptions> = (
+export type CustomGroupMatcher<MatchOptions> = (
   customGroup: AnyOfCustomGroup<MatchOptions> | Partial<MatchOptions>,
 ) => boolean
 
