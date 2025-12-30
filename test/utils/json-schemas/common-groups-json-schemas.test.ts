@@ -216,8 +216,10 @@ describe('common-groups-json-schemas', () => {
           customGroupProperty2: { type: 'string' },
           customGroupProperty: { type: 'string' },
         },
+        additionalSortProperties: {
+          sortField: { type: 'string' },
+        },
         allowedAdditionalTypeValues: [],
-        additionalSortProperties: {},
       }),
     )
 
@@ -230,6 +232,26 @@ describe('common-groups-json-schemas', () => {
           },
         ]),
       ).toBeTruthy()
+    })
+
+    it('should allow additional sort fields', () => {
+      expect(
+        customGroupsJsonSchema([
+          {
+            sortField: 'my-field',
+            groupName: 'group',
+          },
+        ]),
+      ).toBeTruthy()
+
+      expect(
+        customGroupsJsonSchema([
+          {
+            anyOf: [{ sortField: 'my-field' }],
+            groupName: 'group',
+          },
+        ]),
+      ).toBeFalsy()
     })
 
     it("should allow arrays of 'anyOf' custom groups", () => {
@@ -247,7 +269,7 @@ describe('common-groups-json-schemas', () => {
       ).toBeTruthy()
     })
 
-    it('should enforce at least 2 properties if no `arrayOf`', () => {
+    it('should enforce at least 2 properties if no `anyOf`', () => {
       expect(
         customGroupsJsonSchema([
           {
