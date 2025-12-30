@@ -59,7 +59,7 @@ function computeVariableDeclarationSpecifierName(
       case AST_NODE_TYPES.RestElement:
         return sourceCode.getText(property.argument)
       case AST_NODE_TYPES.Property:
-        return sourceCode.getText(property.key)
+        return sourceCode.getText(property.value)
       /* v8 ignore next 2 -- @preserve Exhaustive guard. */
       default:
         throw new UnreachableCaseError(property)

@@ -3552,25 +3552,30 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsOrder',
           },
           {
-            data: { right: 'foo13', left: 'foo12' },
+            data: { right: 'foo11', left: 'foo10' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo14', left: 'foo13' },
             messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
           import 'foo4'
-          import {} from 'foo10';
-          const {} = require('foo11')
-          const [] = require('foo13')
+          import {} from 'foo11';
+          const {} = require('foo12')
+          const [] = require('foo14')
           import a from 'foo8'
-          import { c, l } from 'foo7'
+          import { c, m } from 'foo7'
           import { default as d } from 'foo1'
           import e = Foo.e
           import * as f from 'foo5'
           const { ...g } = require('foo3')
           import h from 'foo2'
-          const [i] = require('foo12')
+          const [i] = require('foo13')
           const j = require('foo6')
-          import { b as k } from 'foo9'
+          import { b as k } from 'foo10'
+          const { a: l } = require('foo9')
         `,
         code: dedent`
           import { default as d } from 'foo1'
@@ -3580,13 +3585,14 @@ describe('sort-imports', () => {
           import e = Foo.e
           import * as f from 'foo5'
           const j = require('foo6')
-          import { c, l } from 'foo7'
+          import { c, m } from 'foo7'
           import a from 'foo8'
-          import { b as k } from 'foo9'
-          import {} from 'foo10';
-          const {} = require('foo11')
-          const [i] = require('foo12')
-          const [] = require('foo13')
+          const { a: l } = require('foo9')
+          import { b as k } from 'foo10'
+          import {} from 'foo11';
+          const {} = require('foo12')
+          const [i] = require('foo13')
+          const [] = require('foo14')
         `,
         options: [
           {
@@ -6898,25 +6904,30 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsOrder',
           },
           {
-            data: { right: 'foo13', left: 'foo12' },
+            data: { right: 'foo11', left: 'foo10' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo14', left: 'foo13' },
             messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
           import 'foo4'
-          import {} from 'foo10';
-          const {} = require('foo11')
-          const [] = require('foo13')
+          import {} from 'foo11';
+          const {} = require('foo12')
+          const [] = require('foo14')
           import a from 'foo8'
-          import { c, l } from 'foo7'
+          import { c, m } from 'foo7'
           import { default as d } from 'foo1'
           import e = Foo.e
           import * as f from 'foo5'
           const { ...g } = require('foo3')
           import h from 'foo2'
-          const [i] = require('foo12')
+          const [i] = require('foo13')
           const j = require('foo6')
-          import { b as k } from 'foo9'
+          import { b as k } from 'foo10'
+          const { a: l } = require('foo9')
         `,
         code: dedent`
           import { default as d } from 'foo1'
@@ -6926,13 +6937,14 @@ describe('sort-imports', () => {
           import e = Foo.e
           import * as f from 'foo5'
           const j = require('foo6')
-          import { c, l } from 'foo7'
+          import { c, m } from 'foo7'
           import a from 'foo8'
-          import { b as k } from 'foo9'
-          import {} from 'foo10';
-          const {} = require('foo11')
-          const [i] = require('foo12')
-          const [] = require('foo13')
+          const { a: l } = require('foo9')
+          import { b as k } from 'foo10'
+          import {} from 'foo11';
+          const {} = require('foo12')
+          const [i] = require('foo13')
+          const [] = require('foo14')
         `,
         options: [
           {
@@ -10393,8 +10405,9 @@ describe('sort-imports', () => {
           },
         ],
         output: dedent`
+          const { a: llllllllllll } = require('foo9')
+          import { ccc, mmmmmmmmmmmmm } from 'foo7'
           import { bb as kkkkkkkkkkk } from 'foo9'
-          import { ccc, lllllllllll } from 'foo7'
           import { default as dddd } from 'foo1'
           const { ...ggggggg } = require('foo3')
           const [iiiiiiiii] = require('foo12')
@@ -10416,8 +10429,9 @@ describe('sort-imports', () => {
           import eeeee = Foo.e
           import * as ffffff from 'foo5'
           const jjjjjjjjjj = require('foo6')
-          import { ccc, lllllllllll } from 'foo7'
+          import { ccc, mmmmmmmmmmmmm } from 'foo7'
           import a from 'foo8'
+          const { a: llllllllllll } = require('foo9')
           import { bb as kkkkkkkkkkk } from 'foo9'
           import {} from 'foo10';
           const {} = require('foo11')
@@ -10656,25 +10670,30 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsOrder',
           },
           {
-            data: { right: 'foo13', left: 'foo12' },
+            data: { right: 'foo11', left: 'foo10' },
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            data: { right: 'foo14', left: 'foo13' },
             messageId: 'unexpectedImportsOrder',
           },
         ],
         output: dedent`
           import 'foo4'
-          import {} from 'foo10';
-          const {} = require('foo11')
-          const [] = require('foo13')
+          import {} from 'foo11';
+          const {} = require('foo12')
+          const [] = require('foo14')
           import a from 'foo8'
-          import { c, l } from 'foo7'
+          import { c, m } from 'foo7'
           import { default as d } from 'foo1'
           import e = Foo.e
           import * as f from 'foo5'
           const { ...g } = require('foo3')
           import h from 'foo2'
-          const [i] = require('foo12')
+          const [i] = require('foo13')
           const j = require('foo6')
-          import { b as k } from 'foo9'
+          import { b as k } from 'foo10'
+          const { a: l } = require('foo9')
         `,
         code: dedent`
           import { default as d } from 'foo1'
@@ -10684,13 +10703,14 @@ describe('sort-imports', () => {
           import e = Foo.e
           import * as f from 'foo5'
           const j = require('foo6')
-          import { c, l } from 'foo7'
+          import { c, m } from 'foo7'
           import a from 'foo8'
-          import { b as k } from 'foo9'
-          import {} from 'foo10';
-          const {} = require('foo11')
-          const [i] = require('foo12')
-          const [] = require('foo13')
+          const { a: l } = require('foo9')
+          import { b as k } from 'foo10'
+          import {} from 'foo11';
+          const {} = require('foo12')
+          const [i] = require('foo13')
+          const [] = require('foo14')
         `,
         options: [
           {
