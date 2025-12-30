@@ -269,6 +269,17 @@ describe('common-groups-json-schemas', () => {
       ).toBeTruthy()
     })
 
+    it("should enforce at least 1 element in 'anyOf'", () => {
+      expect(
+        customGroupsJsonSchema([
+          {
+            groupName: 'group',
+            anyOf: [],
+          },
+        ]),
+      ).toBeFalsy()
+    })
+
     it('should enforce at least 2 properties if no `anyOf`', () => {
       expect(
         customGroupsJsonSchema([

@@ -168,6 +168,7 @@ export function buildCustomGroupsArrayJsonSchema({
                 type: 'object',
               },
               type: 'array',
+              minItems: 1,
             },
           },
           description: 'Custom group block.',
