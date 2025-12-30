@@ -124,14 +124,6 @@ interface SingleCustomGroup {
   modifiers?: Modifier[]
 
   /**
-   * Override sorting method for this specific group.
-   *
-   * - 'name': Sort by member name
-   * - 'value': Sort by type annotation value.
-   */
-  sortBy?: SortByOption
-
-  /**
    * The selector type this group matches. Determines what kind of object
    * members belong to this group.
    */
