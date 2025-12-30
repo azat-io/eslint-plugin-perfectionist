@@ -9,6 +9,22 @@ import {
 describe('common-json-schemas', () => {
   let commonJsonSchemaValidator = compileObjectSchema(buildCommonJsonSchemas())
 
+  it('should allow additional sort properties', () => {
+    commonJsonSchemaValidator = compileObjectSchema(
+      buildCommonJsonSchemas({
+        additionalSortProperties: {
+          myProperty: { type: 'string' },
+        },
+      }),
+    )
+
+    expect(
+      commonJsonSchemaValidator({
+        myProperty: 'my-property',
+      }),
+    ).toBeTruthy()
+  })
+
   describe('type', () => {
     it.each(['alphabetical', 'natural', 'line-length', 'custom', 'unsorted'])(
       "should allow '%s'",
@@ -157,6 +173,25 @@ describe('common-json-schemas', () => {
           }),
         ).toBeFalsy()
       })
+    })
+
+    it('should allow additional sort properties', () => {
+      commonJsonSchemaValidator = compileObjectSchema(
+        buildCommonJsonSchemas({
+          additionalSortProperties: {
+            myProperty: { type: 'string' },
+          },
+        }),
+      )
+
+      expect(
+        commonJsonSchemaValidator({
+          fallbackSort: {
+            myProperty: 'my-property',
+            type: 'alphabetical',
+          },
+        }),
+      ).toBeTruthy()
     })
 
     it('should not allow additional properties', () => {

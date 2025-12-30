@@ -4,7 +4,6 @@ import type { TSESTree } from '@typescript-eslint/types'
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
-  FallbackSortOption,
   CommonOptions,
   RegexOption,
   TypeOption,
@@ -58,33 +57,12 @@ export type Options = Partial<
        */
       hasNumericKeysOnly?: boolean
     }
-
-    /**
-     * Fallback sorting configuration for elements that don't match any group.
-     * Includes an additional option to sort by member value or name.
-     */
-    fallbackSort: FallbackSortOption<TypeOption> & { sortBy?: 'value' | 'name' }
-
-    /**
-     * Determines what to sort by when comparing object type members.
-     *
-     * - 'name': Sort by the member's property/method name
-     * - 'value': Sort by the member's type annotation value.
-     *
-     * @default 'name'
-     */
-    sortBy: 'value' | 'name'
   } & CommonGroupsOptions<
     SingleCustomGroup,
-    {
-      /** Fallback sorting configuration for elements within custom groups. */
-      fallbackSort?: {
-        sortBy?: 'value' | 'name'
-      } & FallbackSortOption<TypeOption>
-    },
+    { sortBy?: SortByOption },
     TypeOption
   > &
-    Omit<CommonOptions<TypeOption>, 'fallbackSort'> &
+    CommonOptions<TypeOption, { sortBy: SortByOption }> &
     CommonPartitionOptions
 >[]
 
@@ -102,6 +80,8 @@ export interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeEle
    */
   value: string
 }
+
+type SortByOption = 'value' | 'name'
 
 export let objectTypeParentTypes = [
   AST_NODE_TYPES.TSTypeAliasDeclaration,
@@ -136,14 +116,6 @@ interface SingleCustomGroup {
    * value. Only applicable to properties.
    */
   elementValuePattern?: RegexOption
-
-  /**
-   * Override sorting method for this specific group.
-   *
-   * - 'name': Sort by member name
-   * - 'value': Sort by type annotation value.
-   */
-  sortBy?: 'value' | 'name'
 
   /**
    * Array of modifiers that members must have to match this group. Only
@@ -201,5 +173,4 @@ export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   elementValuePattern: buildRegexJsonSchema(),
-  sortBy: sortByJsonSchema,
 }

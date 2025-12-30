@@ -13,15 +13,16 @@ import type {
 } from './sort-object-types/types'
 
 import {
-  partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
-} from '../utils/json-schemas/common-partition-json-schemas'
-import {
   singleCustomGroupJsonSchema,
+  objectTypeParentTypes,
   sortByJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-object-types/types'
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+} from '../utils/json-schemas/common-partition-json-schemas'
 import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -33,7 +34,7 @@ import {
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildOptionsByGroupIndexComputer } from './sort-object-types/build-options-by-group-index-computer'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { computeMatchedContextOptions } from './sort-object-types/compute-matched-context-options'
 import { comparatorByOptionsComputer } from './sort-object-types/comparator-by-options-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
@@ -50,7 +51,6 @@ import { computeNodeName } from './sort-object-types/compute-node-name'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { isNodeFunctionType } from '../utils/is-node-function-type'
-import { objectTypeParentTypes } from './sort-object-types/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -97,12 +97,10 @@ export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
       ...buildCommonJsonSchemas({
-        additionalFallbackSortProperties: {
-          sortBy: sortByJsonSchema,
-        },
+        additionalSortProperties: { sortBy: sortByJsonSchema },
       }),
       ...buildCommonGroupsJsonSchemas({
-        additionalFallbackSortProperties: { sortBy: sortByJsonSchema },
+        additionalSortProperties: { sortBy: sortByJsonSchema },
         singleCustomGroupJsonSchema,
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
@@ -118,7 +116,6 @@ export let jsonSchema: JSONSchema4 = {
       }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
-      sortBy: sortByJsonSchema,
     },
     additionalProperties: false,
     type: 'object',
@@ -328,7 +325,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
               throw new UnreachableCaseError(groupOptions.sortBy)
           }
         },
-        optionsByGroupIndexComputer: buildOptionsByGroupIndexComputer(options),
+        optionsByGroupIndexComputer:
+          buildDefaultOptionsByGroupIndexComputer(options),
         comparatorByOptionsComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,

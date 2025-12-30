@@ -20,13 +20,16 @@
  *     },
  *   }
  */
-export interface CommonOptions<CustomTypeOption extends string = string> {
+export type CommonOptions<
+  CustomTypeOption extends string = string,
+  AdditionalSortProperties = object,
+> = {
   /**
    * Secondary sorting method applied when primary comparison returns equal.
    * Ensures stable and predictable sorting when elements have identical primary
    * values.
    */
-  fallbackSort: FallbackSortOption<CustomTypeOption>
+  fallbackSort: FallbackSortOption<CustomTypeOption, AdditionalSortProperties>
 
   /**
    * Specifies how to handle special characters during sorting.
@@ -70,7 +73,7 @@ export interface CommonOptions<CustomTypeOption extends string = string> {
    * sorted after those in the alphabet.
    */
   alphabet: string
-}
+} & AdditionalSortProperties
 
 /**
  * Sorting algorithm type that determines how elements are ordered.
@@ -166,7 +169,10 @@ export type SpecialCharactersOption =
  *     order: 'asc',
  *   }
  */
-export interface FallbackSortOption<CustomTypeOption extends string> {
+export type FallbackSortOption<
+  CustomTypeOption extends string,
+  AdditionalProperties,
+> = {
   /**
    * Sorting algorithm to use as the fallback method. Applied only when the
    * primary sort comparison returns equal.
@@ -178,7 +184,7 @@ export interface FallbackSortOption<CustomTypeOption extends string> {
    * the primary sort order.
    */
   order?: OrderOption
-}
+} & Partial<AdditionalProperties>
 
 /**
  * Sort direction that determines the ordering of elements.

@@ -540,6 +540,40 @@ describe('sort-object-types', () => {
       })
     })
 
+    it('allows overriding "fallbackSort.sortBy" in groups', async () => {
+      await invalid({
+        options: [
+          {
+            groups: [
+              {
+                fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+                type: 'line-length',
+                group: 'unknown',
+              },
+            ],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'a' },
+          },
+        ],
+        output: dedent`
+          type Type = {
+            b: a;
+            a: b;
+          }
+        `,
+        code: dedent`
+          type Type = {
+            a: b;
+            b: a;
+          }
+        `,
+      })
+    })
+
     it('filters on selector and modifiers', async () => {
       await invalid({
         options: [
@@ -856,6 +890,51 @@ describe('sort-object-types', () => {
           }
         `,
       })
+
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                fallbackSort: {
+                  type: 'alphabetical',
+                  sortBy: 'name',
+                },
+                elementValuePattern: '.*',
+                groupName: 'allElements',
+              },
+            ],
+            groups: [
+              {
+                fallbackSort: {
+                  type: 'line-length',
+                  sortBy: 'value',
+                },
+                group: 'allElements',
+              },
+            ],
+            type: 'line-length',
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          type Type = {
+            a: b
+            b: a
+          }
+        `,
+        code: dedent`
+          type Type = {
+            b: a
+            a: b
+          }
+        `,
+      })
     })
 
     it('sorts custom groups by overriding sortBy', async () => {
@@ -916,6 +995,98 @@ describe('sort-object-types', () => {
             fooA: Date
             a: string
             fooMethod(): void
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'allElements',
+                elementNamePattern: '.*',
+                sortBy: 'name',
+              },
+            ],
+            groups: [
+              {
+                group: 'allElements',
+                sortBy: 'value',
+              },
+            ],
+            type: 'alphabetical',
+            order: 'asc',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type = {
+            a: b;
+            b: a;
+          }
+        `,
+        code: dedent`
+          type Type = {
+            b: a;
+            a: b;
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                fallbackSort: {
+                  type: 'alphabetical',
+                  sortBy: 'name',
+                },
+                groupName: 'allElements',
+                elementNamePattern: '.*',
+              },
+            ],
+            groups: [
+              {
+                fallbackSort: {
+                  type: 'alphabetical',
+                  sortBy: 'value',
+                },
+                group: 'allElements',
+              },
+            ],
+            type: 'line-length',
+            order: 'asc',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedObjectTypesOrder',
+          },
+        ],
+        output: dedent`
+          type Type = {
+            a: b;
+            b: a;
+          }
+        `,
+        code: dedent`
+          type Type = {
+            b: a;
+            a: b;
           }
         `,
       })

@@ -50,33 +50,52 @@ export function computeOverriddenOptionsByGroupIndex<T extends Options>(
   options: T,
   groupIndex: number,
 ): T {
-  let { customGroups, fallbackSort, groups, order, type } = options
+  let { customGroups, groups } = options
 
-  let group = groups[groupIndex]
-  let groupName = group ? computeGroupName(group) : null
+  let matchingGroup = groups[groupIndex]
+  let matchingGroupName = matchingGroup ? computeGroupName(matchingGroup) : null
   let customGroup = customGroups.find(
-    currentGroup => groupName === currentGroup.groupName,
+    currentGroup => matchingGroupName === currentGroup.groupName,
   )
 
-  if (group && isGroupWithOverridesOption(group)) {
-    type = group.type ?? type
-    order = group.order ?? order
+  let returnValue: T = {
+    ...options,
+  }
+  if (matchingGroup && isGroupWithOverridesOption(matchingGroup)) {
+    let {
+      newlinesInside,
+      commentAbove,
+      fallbackSort,
+      group,
+      ...relevantGroupFields
+    } = matchingGroup
+    returnValue = {
+      ...returnValue,
+      ...relevantGroupFields,
+      fallbackSort: {
+        ...returnValue.fallbackSort,
+        ...fallbackSort,
+      },
+    }
   }
 
   if (customGroup) {
-    let fallbackOrder = customGroup.fallbackSort?.order ?? fallbackSort.order
-    fallbackSort = {
-      type: customGroup.fallbackSort?.type ?? fallbackSort.type,
-      ...(fallbackOrder ? { order: fallbackOrder } : {}),
+    let {
+      elementNamePattern,
+      newlinesInside,
+      fallbackSort,
+      groupName,
+      ...relevantCustomGroupFields
+    } = customGroup
+    returnValue = {
+      ...returnValue,
+      ...relevantCustomGroupFields,
+      fallbackSort: {
+        ...returnValue.fallbackSort,
+        ...fallbackSort,
+      },
     }
-    order = customGroup.order ?? order
-    type = customGroup.type ?? type
   }
 
-  return {
-    ...options,
-    fallbackSort,
-    order,
-    type,
-  }
+  return returnValue
 }

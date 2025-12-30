@@ -735,6 +735,40 @@ describe('sort-interfaces', () => {
       })
     })
 
+    it('allows overriding "fallbackSort.sortBy" in groups', async () => {
+      await invalid({
+        options: [
+          {
+            groups: [
+              {
+                fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+                type: 'line-length',
+                group: 'unknown',
+              },
+            ],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'a' },
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            b: a;
+            a: b;
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            a: b;
+            b: a;
+          }
+        `,
+      })
+    })
+
     it('filters on selector and modifiers', async () => {
       await invalid({
         options: [
@@ -1045,6 +1079,51 @@ describe('sort-interfaces', () => {
           }
         `,
       })
+
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                fallbackSort: {
+                  type: 'alphabetical',
+                  sortBy: 'name',
+                },
+                elementValuePattern: '.*',
+                groupName: 'allElements',
+              },
+            ],
+            groups: [
+              {
+                fallbackSort: {
+                  type: 'line-length',
+                  sortBy: 'value',
+                },
+                group: 'allElements',
+              },
+            ],
+            type: 'line-length',
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a: b
+            b: a
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            b: a
+            a: b
+          }
+        `,
+      })
     })
 
     it('sorts custom groups by overriding sortBy', async () => {
@@ -1105,6 +1184,98 @@ describe('sort-interfaces', () => {
             fooA: Date
             a: string
             fooMethod(): void
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                groupName: 'allElements',
+                elementNamePattern: '.*',
+                sortBy: 'name',
+              },
+            ],
+            groups: [
+              {
+                group: 'allElements',
+                sortBy: 'value',
+              },
+            ],
+            type: 'alphabetical',
+            order: 'asc',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedInterfacePropertiesOrder',
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a: b;
+            b: a;
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            b: a;
+            a: b;
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            customGroups: [
+              {
+                fallbackSort: {
+                  type: 'alphabetical',
+                  sortBy: 'name',
+                },
+                groupName: 'allElements',
+                elementNamePattern: '.*',
+              },
+            ],
+            groups: [
+              {
+                fallbackSort: {
+                  type: 'alphabetical',
+                  sortBy: 'value',
+                },
+                group: 'allElements',
+              },
+            ],
+            type: 'line-length',
+            order: 'asc',
+          },
+        ],
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedInterfacePropertiesOrder',
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a: b;
+            b: a;
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            b: a;
+            a: b;
           }
         `,
       })

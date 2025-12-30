@@ -29,19 +29,19 @@ import type {
  *
  * @template SingleCustomGroup - Type defining the structure of a single custom
  *   group.
- * @template AdditionalOptions - Additional type-specific options that extend
- *   the base configuration.
+ * @template AdditionalSortProperties - Additional sort options that extend the
+ *   base configuration.
  */
 export type CustomGroupsOption<
   SingleCustomGroup,
-  AdditionalOptions,
+  AdditionalSortProperties,
   CustomTypeOption extends string,
 > = ({
   /**
    * Fallback sorting configuration used when primary sort returns equal. Useful
    * for stable sorting when elements have identical primary sort values.
    */
-  fallbackSort?: FallbackSortOption<CustomTypeOption>
+  fallbackSort?: FallbackSortOption<CustomTypeOption, AdditionalSortProperties>
 
   /** Specify the exact number of newlines required between elements of groups. */
   newlinesInside?: NewlinesInsideOption
@@ -70,38 +70,7 @@ export type CustomGroupsOption<
    */
   groupName: string
 } & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) &
-  AdditionalOptions)[]
-
-export interface CommonGroupsOptions<
-  SingleCustomGroup,
-  AdditionalOptions,
-  CustomTypeOption extends string,
-> {
-  /** Specify the exact number of newlines required between elements of groups. */
-  newlinesInside:
-    | NewlinesInsideOption
-    /**
-     * @deprecated The `newlinesBetween` value is deprecated and will be removed
-     *   in V6.
-     */
-    | 'newlinesBetween'
-
-  /** Custom groups for organizing nodes. */
-  customGroups: CustomGroupsOption<
-    SingleCustomGroup,
-    AdditionalOptions,
-    CustomTypeOption
-  >
-
-  /**
-   * Defines the order and grouping of nodes. Nodes are sorted within their
-   * groups and groups are ordered as specified.
-   */
-  groups: GroupsOptions<CustomTypeOption>
-
-  /** Specify the exact number of newlines required between groups. */
-  newlinesBetween: NewlinesBetweenOption
-}
+  AdditionalSortProperties)[]
 
 /**
  * Configuration for groups with overriding settings.
@@ -113,7 +82,16 @@ export interface CommonGroupsOptions<
  *     'components',
  *   ]
  */
-export interface GroupWithOverridesOption<CustomTypeOption extends string> {
+export type GroupWithOverridesOption<
+  CustomTypeOption extends string,
+  AdditionalSortProperties,
+> = {
+  /**
+   * Fallback sorting configuration used when primary sort returns equal. Useful
+   * for stable sorting when elements have identical primary sort values.
+   */
+  fallbackSort?: FallbackSortOption<CustomTypeOption, AdditionalSortProperties>
+
   /** Specify the exact number of newlines required inside the group. */
   newlinesInside?: NewlinesInsideOption
 
@@ -131,6 +109,37 @@ export interface GroupWithOverridesOption<CustomTypeOption extends string> {
 
   /** Same as `order` in CommonOptions - Sort direction for this group. */
   order?: OrderOption
+} & AdditionalSortProperties
+
+export interface CommonGroupsOptions<
+  SingleCustomGroup,
+  AdditionalSortProperties,
+  CustomTypeOption extends string,
+> {
+  /** Specify the exact number of newlines required between elements of groups. */
+  newlinesInside:
+    | NewlinesInsideOption
+    /**
+     * @deprecated The `newlinesBetween` value is deprecated and will be removed
+     *   in V6.
+     */
+    | 'newlinesBetween'
+
+  /** Custom groups for organizing nodes. */
+  customGroups: CustomGroupsOption<
+    SingleCustomGroup,
+    AdditionalSortProperties,
+    CustomTypeOption
+  >
+
+  /**
+   * Defines the order and grouping of nodes. Nodes are sorted within their
+   * groups and groups are ordered as specified.
+   */
+  groups: GroupsOptions<CustomTypeOption, AdditionalSortProperties>
+
+  /** Specify the exact number of newlines required between groups. */
+  newlinesBetween: NewlinesBetweenOption
 }
 
 /**
@@ -210,13 +219,6 @@ export interface GroupNewlinesBetweenOption {
   group?: never
 }
 
-export type NewlinesInsideOption =
-  /** Preserve existing newlines without modification. */
-  | 'ignore'
-
-  /** Require exactly this number of blank lines between elements of a group. */
-  | number
-
 /**
  * Configuration for organizing elements into groups with optional formatting.
  *
@@ -235,9 +237,19 @@ export type NewlinesInsideOption =
  *     'utils',
  *   ]
  */
-export type GroupsOptions<CustomTypeOption extends string = string> = (
-  | GroupWithOverridesOption<CustomTypeOption>
+export type GroupsOptions<
+  CustomTypeOption extends string = string,
+  AdditionalSortProperties = object,
+> = (
+  | GroupWithOverridesOption<CustomTypeOption, AdditionalSortProperties>
   | GroupNewlinesBetweenOption
   | string[]
   | string
 )[]
+
+export type NewlinesInsideOption =
+  /** Preserve existing newlines without modification. */
+  | 'ignore'
+
+  /** Require exactly this number of blank lines between elements of a group. */
+  | number

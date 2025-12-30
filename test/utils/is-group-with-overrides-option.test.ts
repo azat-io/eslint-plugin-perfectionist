@@ -5,7 +5,7 @@ import { isGroupWithOverridesOption } from '../../utils/is-group-with-overrides-
 describe('is-group-with-overrides-option', () => {
   it.each([{ group: 'group' }, { group: ['group'] }])(
     'should return `true` if the element is a group with overrides option (%s)',
-    option => {
+    (option: { group: string[] | string }) => {
       expect(isGroupWithOverridesOption(option)).toBeTruthy()
     },
   )

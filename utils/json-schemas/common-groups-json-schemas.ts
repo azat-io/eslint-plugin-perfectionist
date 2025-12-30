@@ -40,92 +40,11 @@ export let newlinesInsideJsonSchema: JSONSchema4 = {
   ],
 }
 
-/**
- * Builds JSON schema for custom groups array configuration.
- *
- * Creates a schema that validates an array of custom group definitions.
- * Supports both single custom groups and "anyOf" groups containing multiple
- * subgroups. Each group must have a groupName and can include various matching
- * criteria.
- *
- * @example
- *   // Valid configuration:
- *   ;[
- *     {
- *       groupName: 'react',
- *       anyOf: [{ elementNamePattern: 'use*' }, { selector: 'hook' }],
- *     },
- *     {
- *       groupName: 'utils',
- *       elementNamePattern: '*Utils',
- *     },
- *   ]
- *
- * @param options - Configuration options.
- * @param options.additionalFallbackSortProperties - Extra properties for
- *   fallback sort.
- * @param options.singleCustomGroupJsonSchema - Schema for individual custom
- *   group properties.
- * @returns JSON schema for custom groups array validation.
- */
-export function buildCustomGroupsArrayJsonSchema({
-  additionalFallbackSortProperties,
-  singleCustomGroupJsonSchema,
-  allowedAdditionalTypeValues,
-}: {
-  additionalFallbackSortProperties: Record<string, JSONSchema4> | undefined
-  singleCustomGroupJsonSchema: Record<string, JSONSchema4> | undefined
-  allowedAdditionalTypeValues: undefined | string[]
-}): JSONSchema4 {
-  let commonCustomGroupJsonSchemas = buildCommonCustomGroupJsonSchemas({
-    additionalFallbackSortProperties,
-    allowedAdditionalTypeValues,
-  })
-  let populatedSingleCustomGroupJsonSchema =
-    buildPopulatedSingleCustomGroupJsonSchema(singleCustomGroupJsonSchema)
-
-  return {
-    items: {
-      oneOf: [
-        {
-          properties: {
-            ...commonCustomGroupJsonSchemas,
-            anyOf: {
-              items: {
-                properties: populatedSingleCustomGroupJsonSchema,
-                description: 'Custom group.',
-                additionalProperties: false,
-                type: 'object',
-              },
-              type: 'array',
-            },
-          },
-          description: 'Custom group block.',
-          required: ['groupName', 'anyOf'],
-          additionalProperties: false,
-          type: 'object',
-        },
-        {
-          properties: {
-            ...commonCustomGroupJsonSchemas,
-            ...populatedSingleCustomGroupJsonSchema,
-          },
-          description: 'Custom group.',
-          additionalProperties: false,
-          required: ['groupName'],
-          minProperties: 2,
-          type: 'object',
-        },
-      ],
-    },
-    description: 'Defines custom groups to match specific members.',
-    type: 'array',
-  }
-}
-
 export function buildGroupsJsonSchema({
   allowedAdditionalTypeValues,
+  additionalSortProperties,
 }: {
+  additionalSortProperties: Record<string, JSONSchema4> | undefined
   allowedAdditionalTypeValues: undefined | string[]
 }): JSONSchema4 {
   return {
@@ -165,6 +84,10 @@ export function buildGroupsJsonSchema({
                 },
               ],
             },
+            fallbackSort: buildFallbackSortJsonSchema({
+              additionalProperties: additionalSortProperties,
+              allowedAdditionalTypeValues,
+            }),
             commentAbove: {
               description: 'Specifies a comment to enforce above the group.',
               type: 'string',
@@ -174,6 +97,7 @@ export function buildGroupsJsonSchema({
             }),
             newlinesInside: newlinesInsideJsonSchema,
             order: orderJsonSchema,
+            ...additionalSortProperties,
           },
           additionalProperties: false,
           required: ['group'],
@@ -187,20 +111,103 @@ export function buildGroupsJsonSchema({
   }
 }
 
-export function buildCommonGroupsJsonSchemas({
-  additionalFallbackSortProperties,
+/**
+ * Builds JSON schema for custom groups array configuration.
+ *
+ * Creates a schema that validates an array of custom group definitions.
+ * Supports both single custom groups and "anyOf" groups containing multiple
+ * subgroups. Each group must have a groupName and can include various matching
+ * criteria.
+ *
+ * @example
+ *   // Valid configuration:
+ *   ;[
+ *     {
+ *       groupName: 'react',
+ *       anyOf: [{ elementNamePattern: 'use*' }, { selector: 'hook' }],
+ *     },
+ *     {
+ *       groupName: 'utils',
+ *       elementNamePattern: '*Utils',
+ *     },
+ *   ]
+ *
+ * @param options - Configuration options.
+ * @param options.additionalSortProperties - Extra properties for sorting.
+ * @param options.singleCustomGroupJsonSchema - Schema for individual custom
+ *   group properties.
+ * @returns JSON schema for custom groups array validation.
+ */
+export function buildCustomGroupsArrayJsonSchema({
   singleCustomGroupJsonSchema,
   allowedAdditionalTypeValues,
+  additionalSortProperties,
 }: {
-  additionalFallbackSortProperties?: Record<string, JSONSchema4>
+  singleCustomGroupJsonSchema: Record<string, JSONSchema4> | undefined
+  additionalSortProperties: Record<string, JSONSchema4> | undefined
+  allowedAdditionalTypeValues: undefined | string[]
+}): JSONSchema4 {
+  let commonCustomGroupJsonSchemas = buildCommonCustomGroupJsonSchemas({
+    allowedAdditionalTypeValues,
+    additionalSortProperties,
+  })
+  let populatedSingleCustomGroupJsonSchema =
+    buildPopulatedSingleCustomGroupJsonSchema(singleCustomGroupJsonSchema)
+
+  return {
+    items: {
+      oneOf: [
+        {
+          properties: {
+            ...commonCustomGroupJsonSchemas,
+            anyOf: {
+              items: {
+                properties: populatedSingleCustomGroupJsonSchema,
+                description: 'Custom group.',
+                additionalProperties: false,
+                type: 'object',
+              },
+              type: 'array',
+              minItems: 1,
+            },
+          },
+          description: 'Custom group block.',
+          required: ['groupName', 'anyOf'],
+          additionalProperties: false,
+          type: 'object',
+        },
+        {
+          properties: {
+            ...commonCustomGroupJsonSchemas,
+            ...populatedSingleCustomGroupJsonSchema,
+          },
+          description: 'Custom group.',
+          additionalProperties: false,
+          required: ['groupName'],
+          minProperties: 2,
+          type: 'object',
+        },
+      ],
+    },
+    description: 'Defines custom groups to match specific members.',
+    type: 'array',
+  }
+}
+
+export function buildCommonGroupsJsonSchemas({
+  singleCustomGroupJsonSchema,
+  allowedAdditionalTypeValues,
+  additionalSortProperties,
+}: {
   singleCustomGroupJsonSchema?: Record<string, JSONSchema4>
+  additionalSortProperties?: Record<string, JSONSchema4>
   allowedAdditionalTypeValues?: string[]
 } = {}): Record<string, JSONSchema4> {
   return {
     customGroups: buildCustomGroupsArrayJsonSchema({
-      additionalFallbackSortProperties,
       allowedAdditionalTypeValues,
       singleCustomGroupJsonSchema,
+      additionalSortProperties,
     }),
     newlinesInside: {
       oneOf: [
@@ -210,6 +217,7 @@ export function buildCommonGroupsJsonSchemas({
     },
     groups: buildGroupsJsonSchema({
       allowedAdditionalTypeValues,
+      additionalSortProperties,
     }),
     newlinesBetween: newlinesBetweenJsonSchema,
   }
@@ -275,15 +283,15 @@ export function buildCustomGroupSelectorJsonSchema(
 }
 
 function buildCommonCustomGroupJsonSchemas({
-  additionalFallbackSortProperties,
   allowedAdditionalTypeValues,
+  additionalSortProperties,
 }: {
-  additionalFallbackSortProperties: Record<string, JSONSchema4> | undefined
+  additionalSortProperties: Record<string, JSONSchema4> | undefined
   allowedAdditionalTypeValues: undefined | string[]
 }): Record<string, JSONSchema4> {
   return {
     fallbackSort: buildFallbackSortJsonSchema({
-      additionalProperties: additionalFallbackSortProperties,
+      additionalProperties: additionalSortProperties,
       allowedAdditionalTypeValues,
     }),
     type: buildTypeJsonSchema({
@@ -295,6 +303,7 @@ function buildCommonCustomGroupJsonSchemas({
     },
     newlinesInside: newlinesInsideJsonSchema,
     order: orderJsonSchema,
+    ...additionalSortProperties,
   }
 }
 

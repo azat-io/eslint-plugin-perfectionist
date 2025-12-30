@@ -67,20 +67,20 @@ let specialCharactersJsonSchema: JSONSchema4 = {
  * rules. This ensures consistent validation across the plugin.
  *
  * @param options - Configuration options.
- * @param options.additionalFallbackSortProperties - Extra properties to add to
- *   fallback sort schema.
+ * @param options.additionalSortProperties - Extra sort-related option schemas
+ *   to add at the root level and inside fallbackSort.
  * @returns Object containing common JSON schemas for rule validation.
  */
 export function buildCommonJsonSchemas({
-  additionalFallbackSortProperties,
   allowedAdditionalTypeValues,
+  additionalSortProperties,
 }: {
-  additionalFallbackSortProperties?: Record<string, JSONSchema4>
+  additionalSortProperties?: Record<string, JSONSchema4>
   allowedAdditionalTypeValues?: string[]
 } = {}): Record<string, JSONSchema4> {
   return {
     fallbackSort: buildFallbackSortJsonSchema({
-      additionalProperties: additionalFallbackSortProperties,
+      additionalProperties: additionalSortProperties,
       allowedAdditionalTypeValues,
     }),
     type: buildTypeJsonSchema({
@@ -91,6 +91,7 @@ export function buildCommonJsonSchemas({
     alphabet: alphabetJsonSchema,
     locales: localesJsonSchema,
     order: orderJsonSchema,
+    ...additionalSortProperties,
   }
 }
 
