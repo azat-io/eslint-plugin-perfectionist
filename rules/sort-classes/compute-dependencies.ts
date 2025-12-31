@@ -53,6 +53,21 @@ export function computeDependencies({
           }),
         ]
         break
+      case AST_NODE_TYPES.CallExpression:
+        if (!('name' in nodeValue.callee)) {
+          traverseNode(nodeValue.arguments)
+          break
+        }
+        if (
+          matches(nodeValue.callee.name, ignoreCallbackDependenciesPatterns)
+        ) {
+          break
+        }
+        traverseNode(nodeValue.arguments)
+        break
+      case AST_NODE_TYPES.NewExpression:
+        traverseNode(nodeValue.arguments)
+        break
       case AST_NODE_TYPES.Property:
         traverseNode(nodeValue.key)
         traverseNode(nodeValue.value)
@@ -101,20 +116,6 @@ export function computeDependencies({
 
     if ('argument' in nodeValue && nodeValue.argument) {
       traverseNode(nodeValue.argument)
-    }
-
-    if ('arguments' in nodeValue) {
-      let shouldIgnore = false
-      if (nodeValue.type === AST_NODE_TYPES.CallExpression) {
-        let functionName =
-          'name' in nodeValue.callee ? nodeValue.callee.name : null
-        shouldIgnore =
-          functionName !== null &&
-          matches(functionName, ignoreCallbackDependenciesPatterns)
-      }
-      if (!shouldIgnore) {
-        traverseNode(nodeValue.arguments)
-      }
     }
 
     if ('declarations' in nodeValue) {
