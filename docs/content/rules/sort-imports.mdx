@@ -229,6 +229,15 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
+### sortBy
+
+<sub>default: `'path'`</sub>
+
+Controls whether sorting should be done using the import's path or first specifier.
+
+- `'path'` — Use the import's path.
+- `'specifier'` — Use the import's first specifier if it exists.
+
 ### internalPattern
 
 <sub>default: `['^~/.+', '^@/.+']`</sub>
@@ -706,6 +715,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
+                  sortBy: 'path',
                   internalPattern: ['^~/.+', '^@/.+'],
                   partitionByComment: false,
                   partitionByNewLine: false,
@@ -749,6 +759,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
+                sortBy: 'path',
                 internalPattern: ['^~/.+', '^@/.+'],
                 partitionByComment: false,
                 partitionByNewLine: false,
