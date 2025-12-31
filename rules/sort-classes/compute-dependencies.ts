@@ -36,36 +36,29 @@ export function computeDependencies({
   let dependencies: string[] = []
 
   function checkNode(nodeValue: TSESTree.Node): void {
-    if (
-      nodeValue.type === AST_NODE_TYPES.MemberExpression &&
-      (nodeValue.object.type === AST_NODE_TYPES.ThisExpression ||
-        (nodeValue.object.type === AST_NODE_TYPES.Identifier &&
-          nodeValue.object.name === className)) &&
-      (nodeValue.property.type === AST_NODE_TYPES.Identifier ||
-        nodeValue.property.type === AST_NODE_TYPES.PrivateIdentifier)
-    ) {
-      let isStaticDependency =
-        isMemberStatic || nodeValue.object.type === AST_NODE_TYPES.Identifier
-      let dependencyName = computeDependencyName({
-        isPrivateHash:
-          nodeValue.property.type === AST_NODE_TYPES.PrivateIdentifier,
-        nodeNameWithoutStartingHash: nodeValue.property.name,
-        isStatic: isStaticDependency,
-      })
-      if (!classMethodsDependencyNames.has(dependencyName)) {
-        dependencies.push(dependencyName)
-      }
-    }
-
-    if (nodeValue.type === AST_NODE_TYPES.Property) {
-      traverseNode(nodeValue.key)
-      traverseNode(nodeValue.value)
-    }
-
-    if (nodeValue.type === AST_NODE_TYPES.ConditionalExpression) {
-      traverseNode(nodeValue.test)
-      traverseNode(nodeValue.consequent)
-      traverseNode(nodeValue.alternate)
+    switch (nodeValue.type) {
+      case AST_NODE_TYPES.ConditionalExpression:
+        traverseNode(nodeValue.test)
+        traverseNode(nodeValue.consequent)
+        traverseNode(nodeValue.alternate)
+        break
+      case AST_NODE_TYPES.MemberExpression:
+        dependencies = [
+          ...dependencies,
+          ...computeMemberExpressionDependencies({
+            classMethodsDependencyNames,
+            memberExpression: nodeValue,
+            isMemberStatic,
+            className,
+          }),
+        ]
+        break
+      case AST_NODE_TYPES.Property:
+        traverseNode(nodeValue.key)
+        traverseNode(nodeValue.value)
+        break
+      default:
+        break
     }
 
     if (
@@ -159,4 +152,56 @@ export function computeDependencies({
 
   traverseNode(expression)
   return dependencies
+}
+
+function computeMemberExpressionDependencies({
+  classMethodsDependencyNames,
+  memberExpression,
+  isMemberStatic,
+  className,
+}: {
+  memberExpression: TSESTree.MemberExpression
+  classMethodsDependencyNames: Set<string>
+  className: undefined | string
+  isMemberStatic: boolean
+}): string[] {
+  switch (memberExpression.object.type) {
+    case AST_NODE_TYPES.ThisExpression:
+      return computeIdentifierOrThisExpressionDependencies()
+    case AST_NODE_TYPES.Identifier:
+      return memberExpression.object.name === className
+        ? computeIdentifierOrThisExpressionDependencies()
+        : []
+    default:
+      return []
+  }
+
+  function computeIdentifierOrThisExpressionDependencies(): string[] {
+    let dependencyName = computePropertyDependencyName()
+    if (!dependencyName) {
+      return []
+    }
+
+    if (classMethodsDependencyNames.has(dependencyName)) {
+      return []
+    }
+    return [dependencyName]
+  }
+
+  function computePropertyDependencyName(): string | null {
+    switch (memberExpression.property.type) {
+      case AST_NODE_TYPES.PrivateIdentifier:
+      case AST_NODE_TYPES.Identifier:
+        return computeDependencyName({
+          isStatic:
+            isMemberStatic ||
+            memberExpression.object.type === AST_NODE_TYPES.Identifier,
+          isPrivateHash:
+            memberExpression.property.type === AST_NODE_TYPES.PrivateIdentifier,
+          nodeNameWithoutStartingHash: memberExpression.property.name,
+        })
+      default:
+        return null
+    }
+  }
 }
