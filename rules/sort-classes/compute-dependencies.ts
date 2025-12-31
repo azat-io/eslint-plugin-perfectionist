@@ -96,9 +96,7 @@ export function computeDependencies({
       let elements = nodeValue.elements.filter(
         currentNode => currentNode !== null,
       )
-      for (let element of elements) {
-        traverseNode(element)
-      }
+      traverseNode(elements)
     }
 
     if ('argument' in nodeValue && nodeValue.argument) {
@@ -115,28 +113,20 @@ export function computeDependencies({
           matches(functionName, ignoreCallbackDependenciesPatterns)
       }
       if (!shouldIgnore) {
-        for (let argument of nodeValue.arguments) {
-          traverseNode(argument)
-        }
+        traverseNode(nodeValue.arguments)
       }
     }
 
     if ('declarations' in nodeValue) {
-      for (let declaration of nodeValue.declarations) {
-        traverseNode(declaration)
-      }
+      traverseNode(nodeValue.declarations)
     }
 
     if ('properties' in nodeValue) {
-      for (let property of nodeValue.properties) {
-        traverseNode(property)
-      }
+      traverseNode(nodeValue.properties)
     }
 
     if ('expressions' in nodeValue) {
-      for (let nodeExpression of nodeValue.expressions) {
-        traverseNode(nodeExpression)
-      }
+      traverseNode(nodeValue.expressions)
     }
   }
 
