@@ -37,6 +37,10 @@
       setTimeout(() => {
         copied = false
       }, 2000)
+
+      if (globalThis.fathom) {
+        globalThis.fathom.trackEvent('code: copy clicked')
+      }
     }
   }
 
@@ -54,6 +58,18 @@
     <button
       on:click={() => {
         codeSettings.setKey(type, codeValue.value)
+
+        if (globalThis.fathom) {
+          if (type === 'package-manager') {
+            globalThis.fathom.trackEvent(
+              `settings: package manager ${codeValue.value}`,
+            )
+          } else if (type === 'config-type') {
+            globalThis.fathom.trackEvent(
+              `settings: config type ${codeValue.value}`,
+            )
+          }
+        }
       }}
       class:active-tab={mounted && currentCodeSettings === codeValue.value}
       aria-selected={currentCodeSettings === codeValue.value}

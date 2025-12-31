@@ -11,12 +11,18 @@ import Logo from './Logo.astro'
     <Typography size="4xl" tag="h1" bold>Perfectionist</Typography>
     <Typography size="l">Take Your Code to a Beauty Salon</Typography>
     <div class="button-group">
-      <Button href="/guide/getting-started" color="primary" tag="a">
+      <Button
+        href="/guide/getting-started"
+        id="hero-get-started"
+        color="primary"
+        tag="a"
+      >
         Get Started
       </Button>
       <Button
         href="https://github.com/azat-io/eslint-plugin-perfectionist"
         color="secondary"
+        id="hero-github"
         target="_blank"
         tag="a"
       >
@@ -35,6 +41,71 @@ import Logo from './Logo.astro'
     <div class="line line-end line-s"></div>
   </div>
 </main>
+
+<script>
+  {
+    let controller: AbortController | undefined
+
+    let cleanup = () => {
+      controller?.abort()
+      controller = undefined
+    }
+
+    let scheduleNext = () => {
+      document.addEventListener(
+        'astro:before-swap',
+        () => {
+          cleanup()
+        },
+        { once: true },
+      )
+      document.addEventListener(
+        'astro:after-swap',
+        () => {
+          setup()
+        },
+        { once: true },
+      )
+    }
+
+    let setup = () => {
+      cleanup()
+
+      controller = new AbortController()
+
+      let getStartedButton = document.getElementById('hero-get-started')
+      let githubButton = document.getElementById('hero-github')
+
+      if (getStartedButton) {
+        getStartedButton.addEventListener(
+          'click',
+          () => {
+            if (globalThis.fathom) {
+              globalThis.fathom.trackEvent('click: hero get started')
+            }
+          },
+          { signal: controller.signal },
+        )
+      }
+
+      if (githubButton) {
+        githubButton.addEventListener(
+          'click',
+          () => {
+            if (globalThis.fathom) {
+              globalThis.fathom.trackEvent('click: hero github')
+            }
+          },
+          { signal: controller.signal },
+        )
+      }
+
+      scheduleNext()
+    }
+
+    setup()
+  }
+</script>
 
 <style>
   :root {

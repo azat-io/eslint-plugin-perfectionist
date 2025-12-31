@@ -16,7 +16,6 @@ jobs:
         with:
           egress-policy: block
           allowed-endpoints: >
-            analytics.azat.io:443
             api.github.com:443
             api.netlify.com:443
             github.com:443

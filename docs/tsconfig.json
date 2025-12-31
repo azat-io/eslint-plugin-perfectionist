@@ -1,3 +1,4 @@
 {
-  "extends": ["astro/tsconfigs/strictest", "../tsconfig.json"]
+  "extends": ["astro/tsconfigs/strictest", "../tsconfig.json"],
+  "include": ["**/*.ts", "**/*.astro", "**/*.svelte"]
 }

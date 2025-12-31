@@ -35,6 +35,7 @@ export default defineConfig({
     'tses',
     'uncategorized',
     'undici',
+    'usefathom',
     'vimrc',
   ],
   ignorePaths: [

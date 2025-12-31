@@ -37,6 +37,7 @@ import IconSun from '../icons/sun.svg'
       <a
         href={`https://github.com/${repository}`}
         aria-label="GitHub"
+        id="github-link"
         target="_blank"
         class="link"
       >
@@ -48,49 +49,72 @@ import IconSun from '../icons/sun.svg'
 
 <script>
   import { toggleTheme } from '../stores/theme'
+  {
+    let controller: AbortController | undefined
 
-  let controller: AbortController | undefined
-
-  let cleanup = () => {
-    controller?.abort()
-    controller = undefined
-  }
-
-  let scheduleNext = () => {
-    document.addEventListener(
-      'astro:before-swap',
-      () => {
-        cleanup()
-      },
-      { once: true },
-    )
-    document.addEventListener(
-      'astro:after-swap',
-      () => {
-        setup()
-      },
-      { once: true },
-    )
-  }
-
-  let setup = () => {
-    cleanup()
-
-    let toggleButton = document.getElementById('toggle-theme')
-    if (!toggleButton) {
-      scheduleNext()
-      return
+    let cleanup = () => {
+      controller?.abort()
+      controller = undefined
     }
 
-    controller = new AbortController()
-    toggleButton.addEventListener('click', toggleTheme, {
-      signal: controller.signal,
-    })
+    let scheduleNext = () => {
+      document.addEventListener(
+        'astro:before-swap',
+        () => {
+          cleanup()
+        },
+        { once: true },
+      )
+      document.addEventListener(
+        'astro:after-swap',
+        () => {
+          setup()
+        },
+        { once: true },
+      )
+    }
 
-    scheduleNext()
+    let setup = () => {
+      cleanup()
+
+      let toggleButton = document.getElementById('toggle-theme')
+      let githubLink = document.getElementById('github-link')
+
+      if (!toggleButton) {
+        scheduleNext()
+        return
+      }
+
+      controller = new AbortController()
+
+      toggleButton.addEventListener(
+        'click',
+        () => {
+          toggleTheme()
+          if (globalThis.fathom) {
+            globalThis.fathom.trackEvent('settings: theme toggled')
+          }
+        },
+        { signal: controller.signal },
+      )
+
+      if (githubLink) {
+        githubLink.addEventListener(
+          'click',
+          () => {
+            if (globalThis.fathom) {
+              globalThis.fathom.trackEvent('click: navigation github')
+            }
+          },
+          { signal: controller.signal },
+        )
+      }
+
+      scheduleNext()
+    }
+
+    setup()
   }
-
-  setup()
 </script>
 
 <style>

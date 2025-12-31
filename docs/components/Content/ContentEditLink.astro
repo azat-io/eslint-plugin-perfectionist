@@ -11,12 +11,63 @@ let { url } = Astro.props
 
 {
   url && (
-    <ContentFooterLink url={url}>
+    <ContentFooterLink id="edit-page-link" url={url}>
       <PencilIcon class="icon" slot="icon" />
       Edit this page
     </ContentFooterLink>
   )
 }
+
+<script>
+  {
+    let controller: AbortController | undefined
+
+    let cleanup = () => {
+      controller?.abort()
+      controller = undefined
+    }
+
+    let scheduleNext = () => {
+      document.addEventListener(
+        'astro:before-swap',
+        () => {
+          cleanup()
+        },
+        { once: true },
+      )
+      document.addEventListener(
+        'astro:after-swap',
+        () => {
+          setup()
+        },
+        { once: true },
+      )
+    }
+
+    let setup = () => {
+      cleanup()
+
+      controller = new AbortController()
+
+      let editLink = document.getElementById('edit-page-link')
+      if (editLink) {
+        editLink.addEventListener(
+          'click',
+          () => {
+            if (globalThis.fathom) {
+              globalThis.fathom.trackEvent('click: edit this page')
+            }
+          },
+          { signal: controller.signal },
+        )
+      }
+
+      scheduleNext()
+    }
+
+    setup()
+  }
+</script>
 
 <style>
   .icon {

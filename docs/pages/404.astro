@@ -13,6 +13,30 @@ import Title from '../components/Title.astro'
   </div>
 </LayoutBlank>
 
+<script>
+  {
+    let tracked = false
+
+    if (globalThis.fathom) {
+      globalThis.fathom.trackEvent('view: 404 page')
+      tracked = true
+    }
+
+    if (!tracked) {
+      document.addEventListener(
+        'astro:page-load',
+        () => {
+          if (!tracked && globalThis.fathom) {
+            globalThis.fathom.trackEvent('view: 404 page')
+            tracked = true
+          }
+        },
+        { once: true },
+      )
+    }
+  }
+</script>
+
 <style>
   .wrapper {
     display: flex;

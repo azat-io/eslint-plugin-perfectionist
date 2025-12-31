@@ -3,69 +3,71 @@ import IconArrowTurnRightDown from '../icons/arrow-turn-right-down.svg'
 ---
 
 <script is:inline>
-  let controller
+  {
+    let controller
 
-  let cleanup = () => {
-    controller?.abort()
-    controller = undefined
-  }
-
-  let scheduleNext = () => {
-    document.addEventListener(
-      'astro:before-swap',
-      () => {
-        cleanup()
-      },
-      { once: true },
-    )
-    document.addEventListener(
-      'astro:after-swap',
-      () => {
-        setup()
-      },
-      { once: true },
-    )
-  }
-
-  let setup = () => {
-    cleanup()
-
-    let skipLink = document.getElementById('skip-link')
-    if (!skipLink) {
-      scheduleNext()
-      return
+    let cleanup = () => {
+      controller?.abort()
+      controller = undefined
     }
 
-    controller = new AbortController()
-    skipLink.addEventListener(
-      'click',
-      event => {
-        event.preventDefault()
-        let main = document.querySelector('main')
-        if (!main) {
-          return
-        }
-        if (main instanceof HTMLElement) {
-          main.setAttribute('tabindex', '-1')
-          main.focus()
-        }
-      },
-      { signal: controller.signal },
-    )
+    let scheduleNext = () => {
+      document.addEventListener(
+        'astro:before-swap',
+        () => {
+          cleanup()
+        },
+        { once: true },
+      )
+      document.addEventListener(
+        'astro:after-swap',
+        () => {
+          setup()
+        },
+        { once: true },
+      )
+    }
 
-    scheduleNext()
-  }
+    let setup = () => {
+      cleanup()
 
-  if (document.readyState === 'loading') {
-    document.addEventListener(
-      'DOMContentLoaded',
-      () => {
-        setup()
-      },
-      { once: true },
-    )
-  } else {
-    setup()
+      let skipLink = document.getElementById('skip-link')
+      if (!skipLink) {
+        scheduleNext()
+        return
+      }
+
+      controller = new AbortController()
+      skipLink.addEventListener(
+        'click',
+        event => {
+          event.preventDefault()
+          let main = document.querySelector('main')
+          if (!main) {
+            return
+          }
+          if (main instanceof HTMLElement) {
+            main.setAttribute('tabindex', '-1')
+            main.focus()
+          }
+        },
+        { signal: controller.signal },
+      )
+
+      scheduleNext()
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener(
+        'DOMContentLoaded',
+        () => {
+          setup()
+        },
+        { once: true },
+      )
+    } else {
+      setup()
+    }
   }
 </script>
 
