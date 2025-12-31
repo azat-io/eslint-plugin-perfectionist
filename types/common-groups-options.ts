@@ -154,7 +154,7 @@ export type GroupWithOverridesOption<
  *
  * @template MatchOptions - Options for matching elements to the custom group.
  */
-export interface AnyOfCustomGroup<MatchOptions> {
+interface AnyOfCustomGroup<MatchOptions> {
   /**
    * Regular expression pattern to match the element's name. Elements matching
    * this pattern will be included in this custom group.
