@@ -96,7 +96,8 @@ export default createEslintRule<Options, MessageId>({
         return
       }
 
-      let isDestructuredObject = nodeObject.type === 'ObjectPattern'
+      let isDestructuredObject =
+        nodeObject.type === AST_NODE_TYPES.ObjectPattern
       let matchedContextOptions = computeMatchedContextOptions({
         isDestructuredObject,
         nodeObject,

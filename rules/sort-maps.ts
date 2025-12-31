@@ -1,5 +1,7 @@
-import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { SortingNode } from '../types/sorting-node'
 import type { Options } from './sort-maps/types'
@@ -69,10 +71,10 @@ export default createEslintRule<Options, MessageId>({
   create: context => ({
     NewExpression: node => {
       if (
-        node.callee.type !== 'Identifier' ||
+        node.callee.type !== AST_NODE_TYPES.Identifier ||
         node.callee.name !== 'Map' ||
         node.arguments.length === 0 ||
-        node.arguments[0]?.type !== 'ArrayExpression'
+        node.arguments[0]?.type !== AST_NODE_TYPES.ArrayExpression
       ) {
         return
       }
@@ -87,7 +89,8 @@ export default createEslintRule<Options, MessageId>({
       let matchedContextOptions = filterOptionsByAllNamesMatch({
         nodeNames: elements
           .filter(
-            element => element !== null && element.type !== 'SpreadElement',
+            element =>
+              element !== null && element.type !== AST_NODE_TYPES.SpreadElement,
           )
           .map(element => getNodeName({ sourceCode, element })),
         contextOptions: context.options,
@@ -111,7 +114,10 @@ export default createEslintRule<Options, MessageId>({
           accumulator: TSESTree.Expression[][],
           element: TSESTree.SpreadElement | TSESTree.Expression | null,
         ) => {
-          if (element === null || element.type === 'SpreadElement') {
+          if (
+            element === null ||
+            element.type === AST_NODE_TYPES.SpreadElement
+          ) {
             accumulator.push([])
           } else {
             accumulator.at(-1)!.push(element)
@@ -258,12 +264,12 @@ function getNodeName({
   sourceCode: TSESLint.SourceCode
   element: TSESTree.Expression
 }): string {
-  if (element.type === 'ArrayExpression') {
+  if (element.type === AST_NODE_TYPES.ArrayExpression) {
     let [left] = element.elements
 
     if (!left) {
       return `${left}`
-    } else if (left.type === 'Literal') {
+    } else if (left.type === AST_NODE_TYPES.Literal) {
       return left.raw
     }
     return sourceCode.getText(left)

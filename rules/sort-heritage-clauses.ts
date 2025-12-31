@@ -1,6 +1,8 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { Options } from './sort-heritage-clauses/types'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -228,7 +230,7 @@ function sortHeritageClauses(
 function getHeritageClauseExpressionName(
   expression: TSESTree.PrivateIdentifier | TSESTree.Expression,
 ): string {
-  if (expression.type === 'Identifier') {
+  if (expression.type === AST_NODE_TYPES.Identifier) {
     return expression.name
   }
   /* v8 ignore else -- @preserve Exhaustive guard for unsupported expressions. */
