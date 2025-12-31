@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
-import { getArrayCombinations } from '../../utils/get-array-combinations'
 
 describe('validate-groups-configuration', () => {
   let selectors = [
@@ -122,7 +121,26 @@ describe('validate-groups-configuration', () => {
 function getAllNonEmptyCombinations(array: string[]): string[][] {
   let result: string[][] = []
   for (let i = 1; i < array.length; i++) {
-    result = [...result, ...getArrayCombinations(array, i)]
+    result = [...result, ...getArrayCombinations(i)]
   }
   return result
+
+  function getArrayCombinations(number: number): string[][] {
+    let arrayCombinations: string[][] = []
+
+    function backtrack(start: number, comb: string[]): void {
+      if (comb.length === number) {
+        arrayCombinations.push([...comb])
+        return
+      }
+      for (let i = start; i < array.length; i++) {
+        comb.push(array[i]!)
+        backtrack(i + 1, comb)
+        comb.pop()
+      }
+    }
+
+    backtrack(0, [])
+    return arrayCombinations
+  }
 }
