@@ -23,9 +23,7 @@ export function computeNodeName(
     case AST_NODE_TYPES.PropertyDefinition:
     case AST_NODE_TYPES.AccessorProperty:
     case AST_NODE_TYPES.MethodDefinition:
-      return node.key.type === AST_NODE_TYPES.Identifier
-        ? node.key.name
-        : sourceCode.getText(node.key)
+      return computeMethodOrPropertyName(node, sourceCode)
     case AST_NODE_TYPES.TSIndexSignature:
       return sourceCode.text.slice(
         node.range.at(0),
@@ -36,5 +34,25 @@ export function computeNodeName(
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
       throw new UnreachableCaseError(node)
+  }
+}
+
+function computeMethodOrPropertyName(
+  method:
+    | TSESTree.TSAbstractPropertyDefinition
+    | TSESTree.TSAbstractMethodDefinition
+    | TSESTree.TSAbstractAccessorProperty
+    | TSESTree.PropertyDefinition
+    | TSESTree.MethodDefinition
+    | TSESTree.AccessorProperty,
+  sourceCode: TSESLint.SourceCode,
+): string {
+  switch (method.key.type) {
+    case AST_NODE_TYPES.Identifier:
+      return method.key.name
+    case AST_NODE_TYPES.Literal:
+      return `${method.key.value}`
+    default:
+      return sourceCode.getText(method.key)
   }
 }

@@ -2652,6 +2652,54 @@ describe('sort-classes', () => {
           },
         ],
       })
+
+      await valid({
+        code: dedent`
+          class Class {
+            b = function () {
+              return 1
+            }
+            a = [1].map(this["b"]);
+          }
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          class Class {
+            ["b"] = function () {
+              return 1
+            }
+            a = [1].map(this.b);
+          }
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          class Class {
+            ['b'] = function () {
+              return 1
+            }
+            a = [1].map(this.b);
+          }
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          class Class {
+            ["'b'"] = function () {
+              return 1
+            }
+            a = [1].map(this["'b'"]);
+          }
+        `,
+        options: [options],
+      })
     })
 
     it('detects static block dependencies', async () => {

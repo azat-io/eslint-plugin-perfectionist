@@ -4,6 +4,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { RegexOption } from '../../types/common-options'
 
+import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { computeDependencyName } from './compute-dependency-name'
 import { matches } from '../../utils/matches'
 
@@ -157,31 +158,51 @@ function computeMemberExpressionDependencies({
   }
 
   function computeIdentifierOrThisExpressionDependencies(): string[] {
-    let dependencyName = computePropertyDependencyName()
-    if (!dependencyName) {
+    let dependency = computeDependencyFromProperty()
+    /* v8 ignore next 2 -- @preserve Unhandled cases */
+    if (!dependency) {
       return []
     }
 
-    if (classMethodsDependencyNames.has(dependencyName)) {
+    if (classMethodsDependencyNames.has(dependency)) {
       return []
     }
-    return [dependencyName]
+    return [dependency]
   }
 
-  function computePropertyDependencyName(): string | null {
+  function computeDependencyFromProperty(): string | null {
     switch (memberExpression.property.type) {
       case AST_NODE_TYPES.PrivateIdentifier:
       case AST_NODE_TYPES.Identifier:
+      case AST_NODE_TYPES.Literal:
         return computeDependencyName({
           isStatic:
             isMemberStatic ||
             memberExpression.object.type === AST_NODE_TYPES.Identifier,
+          nodeNameWithoutStartingHash: computeIdentifierName(
+            memberExpression.property,
+          ),
           isPrivateHash:
             memberExpression.property.type === AST_NODE_TYPES.PrivateIdentifier,
-          nodeNameWithoutStartingHash: memberExpression.property.name,
         })
+      /* v8 ignore next 2 -- @preserve Unhandled cases */
       default:
         return null
+    }
+  }
+
+  function computeIdentifierName(
+    node: TSESTree.PrivateIdentifier | TSESTree.Identifier | TSESTree.Literal,
+  ): string {
+    switch (node.type) {
+      case AST_NODE_TYPES.PrivateIdentifier:
+      case AST_NODE_TYPES.Identifier:
+        return node.name
+      case AST_NODE_TYPES.Literal:
+        return `${node.value}`
+      /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+      default:
+        throw new UnreachableCaseError(node)
     }
   }
 }

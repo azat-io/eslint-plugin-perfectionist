@@ -37,9 +37,11 @@ function computeClassElementDependencyName(
       return null
     case AST_NODE_TYPES.TSAbstractMethodDefinition:
     case AST_NODE_TYPES.MethodDefinition:
+      /* v8 ignore start -- @preserve Should not happen */
       if (!('name' in classElement.key)) {
         return null
       }
+      /* v8 ignore stop -- @preserve Should not happen */
       return computeDependencyName({
         isPrivateHash:
           classElement.key.type === AST_NODE_TYPES.PrivateIdentifier,
