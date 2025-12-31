@@ -2627,9 +2627,9 @@ describe('sort-classes', () => {
       await valid({
         code: dedent`
           class Class {
-            querystring = createQueryString();
-            state = createState((set) => {
-                set('query', this.queryString.value);
+            b = createQueryString();
+            a = createState((set) => {
+                set('query', this.b.value);
              });
           }
         `,
@@ -7226,9 +7226,9 @@ describe('sort-classes', () => {
       await valid({
         code: dedent`
           class Class {
-            querystring = createQueryString();
-            state = createState((set) => {
-                set('query', this.queryString.value);
+            b = createQueryString();
+            a = createState((set) => {
+                set('query', this.b.value);
              });
           }
         `,
