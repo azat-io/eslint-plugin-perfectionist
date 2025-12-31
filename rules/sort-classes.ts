@@ -45,6 +45,7 @@ import { computeDependencies } from './sort-classes/compute-dependencies'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
+import { computeNodeName } from './sort-classes/compute-node-name'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -146,21 +147,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
       let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
       let formattedNodes: SortClassSortingNode[][] = node.body.reduce(
         (accumulator: SortClassSortingNode[][], member) => {
-          let name: string
           let dependencies: string[] = []
-
-          if (member.type === AST_NODE_TYPES.StaticBlock) {
-            name = 'static'
-          } else if (member.type === AST_NODE_TYPES.TSIndexSignature) {
-            name = sourceCode.text.slice(
-              member.range.at(0),
-              member.typeAnnotation?.range.at(0) ?? member.range.at(1),
-            )
-          } else if (member.key.type === AST_NODE_TYPES.Identifier) {
-            ;({ name } = member.key)
-          } else {
-            name = sourceCode.getText(member.key)
-          }
 
           let isPrivateHash =
             'key' in member &&
@@ -379,6 +366,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
             selectors,
             modifiers,
           })
+          let name: string = computeNodeName(member, sourceCode)
           let group = computeGroup({
             customGroupMatcher: customGroup =>
               doesCustomGroupMatch({
