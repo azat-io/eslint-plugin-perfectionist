@@ -114,7 +114,7 @@ let defaultOptions: Required<SortClassesOptions[number]> = {
   order: 'asc',
 }
 
-interface SortClassSortingNodes extends SortingNodeWithDependencies<TSESTree.ClassElement> {
+interface SortClassSortingNode extends SortingNodeWithDependencies<TSESTree.ClassElement> {
   overloadSignaturesGroupId: number | null
 }
 
@@ -144,8 +144,8 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
       let classMethodsDependencyNames = computeClassMethodsDependencyNames(node)
       let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
-      let formattedNodes: SortClassSortingNodes[][] = node.body.reduce(
-        (accumulator: SortClassSortingNodes[][], member) => {
+      let formattedNodes: SortClassSortingNode[][] = node.body.reduce(
+        (accumulator: SortClassSortingNode[][], member) => {
           let name: string
           let dependencies: string[] = []
 
@@ -408,7 +408,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
           let overloadSignatureGroupMember =
             overloadSignatureGroups[overloadSignatureGroupMemberIndex]?.at(-1)
 
-          let sortingNode: Omit<SortClassSortingNodes, 'partitionId'> = {
+          let sortingNode: Omit<SortClassSortingNode, 'partitionId'> = {
             dependencyNames: [
               computeDependencyName({
                 nodeNameWithoutStartingHash: name.startsWith('#')
@@ -458,7 +458,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
       function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
-      ): SortClassSortingNodes[] {
+      ): SortClassSortingNode[] {
         let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
           sortNodesByGroups({
             isNodeIgnored: sortingNode =>
@@ -480,7 +480,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
       let nodes = formattedNodes.flat()
 
-      reportAllErrors<MessageId, SortClassSortingNodes>({
+      reportAllErrors<MessageId, SortClassSortingNode>({
         newlinesBetweenValueGetter: ({
           computedNewlinesBetween,
           right,
