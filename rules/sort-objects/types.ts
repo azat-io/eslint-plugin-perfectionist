@@ -155,7 +155,7 @@ export let allSelectors = ['member', 'method', 'property'] as const
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allModifiers = ['optional', 'required', 'multiline'] as const
+export let allModifiers = ['multiline'] as const
 
 /**
  * JSON Schema definitions for single custom group configurations.
