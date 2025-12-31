@@ -76,58 +76,47 @@ export function computeDependencies({
         break
     }
 
-    if (
-      'expression' in nodeValue &&
-      typeof nodeValue.expression !== 'boolean'
-    ) {
-      traverseNode(nodeValue.expression)
+    if ('argument' in nodeValue && nodeValue.argument) {
+      traverseNode(nodeValue.argument)
     }
-
-    if ('object' in nodeValue) {
-      traverseNode(nodeValue.object)
-    }
-
-    if ('callee' in nodeValue) {
-      traverseNode(nodeValue.callee)
-    }
-
-    if ('init' in nodeValue && nodeValue.init) {
-      traverseNode(nodeValue.init)
-    }
-
     if ('body' in nodeValue && nodeValue.body) {
       traverseNode(nodeValue.body)
     }
-
-    if ('left' in nodeValue) {
-      traverseNode(nodeValue.left)
+    if ('callee' in nodeValue) {
+      traverseNode(nodeValue.callee)
     }
-
-    if ('right' in nodeValue) {
-      traverseNode(nodeValue.right)
+    if ('declarations' in nodeValue) {
+      traverseNode(nodeValue.declarations)
     }
-
     if ('elements' in nodeValue) {
       let elements = nodeValue.elements.filter(
         currentNode => currentNode !== null,
       )
       traverseNode(elements)
     }
-
-    if ('argument' in nodeValue && nodeValue.argument) {
-      traverseNode(nodeValue.argument)
+    if (
+      'expression' in nodeValue &&
+      typeof nodeValue.expression !== 'boolean'
+    ) {
+      traverseNode(nodeValue.expression)
     }
-
-    if ('declarations' in nodeValue) {
-      traverseNode(nodeValue.declarations)
+    if ('expressions' in nodeValue) {
+      traverseNode(nodeValue.expressions)
     }
-
+    if ('init' in nodeValue && nodeValue.init) {
+      traverseNode(nodeValue.init)
+    }
+    if ('left' in nodeValue) {
+      traverseNode(nodeValue.left)
+    }
+    if ('object' in nodeValue) {
+      traverseNode(nodeValue.object)
+    }
     if ('properties' in nodeValue) {
       traverseNode(nodeValue.properties)
     }
-
-    if ('expressions' in nodeValue) {
-      traverseNode(nodeValue.expressions)
+    if ('right' in nodeValue) {
+      traverseNode(nodeValue.right)
     }
   }
 
