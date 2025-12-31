@@ -41,6 +41,7 @@ import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -517,6 +518,9 @@ export default createEslintRule<SortClassesOptions, MessageId>({
               dependencies = extractDependencies(member, true)
 
               break
+            /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+            default:
+              throw new UnreachableCaseError(member)
           }
 
           let predefinedGroups = generatePredefinedGroups({
