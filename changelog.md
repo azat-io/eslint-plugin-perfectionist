@@ -1,5 +1,24 @@
 # Changelog
 
+## v5.2.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.1.0...v5.2.0)
+
+### 🚀 Features
+
+- **sort-modules:** Sort by order of use ([fc297a2](https://github.com/azat-io/eslint-plugin-perfectionist/commit/fc297a2))
+- Allow fallback sort override in groups with overrides ([64a9fee](https://github.com/azat-io/eslint-plugin-perfectionist/commit/64a9fee))
+- **sort-imports:** Allow sorting by specifiers ([05c66aa](https://github.com/azat-io/eslint-plugin-perfectionist/commit/05c66aa))
+
+### 🐞 Bug Fixes
+
+- Add explicit type annotation for plugin configs ([780a25a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/780a25a))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+- Azat S. ([@azat-io](https://github.com/azat-io))
+
 ## v5.1.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.0.0...v5.1.0)
