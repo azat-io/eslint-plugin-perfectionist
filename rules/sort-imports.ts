@@ -240,9 +240,9 @@ export default createEslintRule<Options, MessageId>({
           name,
         }) ?? 'unknown'
 
-      let hasMultipleImportDeclarations = isSortable(
-        (node as TSESTree.ImportDeclaration).specifiers,
-      )
+      let hasMultipleImportDeclarations =
+        node.type === AST_NODE_TYPES.ImportDeclaration &&
+        isSortable(node.specifiers)
       let size = rangeToDiff(node, sourceCode)
       if (hasMultipleImportDeclarations && size > options.maxLineLength) {
         size = name.length + 10

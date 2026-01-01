@@ -290,7 +290,7 @@ function extractDependencies(init: TSESTree.Expression): string[] {
     }
 
     if ('right' in nodeValue) {
-      checkNode(nodeValue.right as TSESTree.Node)
+      checkNode(nodeValue.right)
     }
 
     if ('elements' in nodeValue) {

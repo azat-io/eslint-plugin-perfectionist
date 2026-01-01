@@ -179,7 +179,7 @@ export default createEslintRule<Options, MessageId>({
           }
 
           if ('right' in nodeValue) {
-            traverseNode(nodeValue.right as TSESTree.Node)
+            traverseNode(nodeValue.right)
           }
 
           if ('elements' in nodeValue) {
