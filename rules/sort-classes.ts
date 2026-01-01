@@ -27,6 +27,7 @@ import {
   buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
+import { computeClassMethodsDependencyNames } from './sort-classes/compute-class-methods-dependency-names'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
@@ -37,8 +38,10 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { getOverloadSignatureGroups } from './sort-classes/get-overload-signature-groups'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
+import { computeDependencyName } from './sort-classes/compute-dependency-name'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { computeDependencies } from './sort-classes/compute-dependencies'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
@@ -54,7 +57,6 @@ import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
-import { matches } from '../utils/matches'
 
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
@@ -139,173 +141,8 @@ export default createEslintRule<SortClassesOptions, MessageId>({
         sourceCode,
       })
       let className = node.parent.id?.name
-      function getDependencyName(props: {
-        nodeNameWithoutStartingHash: string
-        isPrivateHash: boolean
-        isStatic: boolean
-      }): string {
-        return `${props.isStatic ? 'static ' : ''}${props.isPrivateHash ? '#' : ''}${props.nodeNameWithoutStartingHash}`
-      }
-      /**
-       * Class methods should not be considered as dependencies because they can
-       * be put in any order without causing a reference error.
-       */
-      let classMethodsDependencyNames = new Set(
-        node.body
-          .map(member => {
-            if (
-              (member.type === AST_NODE_TYPES.MethodDefinition ||
-                member.type === AST_NODE_TYPES.TSAbstractMethodDefinition) &&
-              'name' in member.key
-            ) {
-              return getDependencyName({
-                isPrivateHash:
-                  member.key.type === AST_NODE_TYPES.PrivateIdentifier,
-                nodeNameWithoutStartingHash: member.key.name,
-                isStatic: member.static,
-              })
-            }
-            return null
-          })
-          .filter(Boolean),
-      )
-      function extractDependencies(
-        expression: TSESTree.StaticBlock | TSESTree.Expression,
-        isMemberStatic: boolean,
-      ): string[] {
-        let dependencies: string[] = []
 
-        function checkNode(nodeValue: TSESTree.Node): void {
-          if (
-            nodeValue.type === AST_NODE_TYPES.MemberExpression &&
-            (nodeValue.object.type === AST_NODE_TYPES.ThisExpression ||
-              (nodeValue.object.type === AST_NODE_TYPES.Identifier &&
-                nodeValue.object.name === className)) &&
-            (nodeValue.property.type === AST_NODE_TYPES.Identifier ||
-              nodeValue.property.type === AST_NODE_TYPES.PrivateIdentifier)
-          ) {
-            let isStaticDependency =
-              isMemberStatic ||
-              nodeValue.object.type === AST_NODE_TYPES.Identifier
-            let dependencyName = getDependencyName({
-              isPrivateHash:
-                nodeValue.property.type === AST_NODE_TYPES.PrivateIdentifier,
-              nodeNameWithoutStartingHash: nodeValue.property.name,
-              isStatic: isStaticDependency,
-            })
-            if (!classMethodsDependencyNames.has(dependencyName)) {
-              dependencies.push(dependencyName)
-            }
-          }
-
-          if (nodeValue.type === AST_NODE_TYPES.Property) {
-            traverseNode(nodeValue.key)
-            traverseNode(nodeValue.value)
-          }
-
-          if (nodeValue.type === AST_NODE_TYPES.ConditionalExpression) {
-            traverseNode(nodeValue.test)
-            traverseNode(nodeValue.consequent)
-            traverseNode(nodeValue.alternate)
-          }
-
-          if (
-            'expression' in nodeValue &&
-            typeof nodeValue.expression !== 'boolean'
-          ) {
-            traverseNode(nodeValue.expression)
-          }
-
-          if ('object' in nodeValue) {
-            traverseNode(nodeValue.object)
-          }
-
-          if ('callee' in nodeValue) {
-            traverseNode(nodeValue.callee)
-          }
-
-          if ('init' in nodeValue && nodeValue.init) {
-            traverseNode(nodeValue.init)
-          }
-
-          if ('body' in nodeValue && nodeValue.body) {
-            traverseNode(nodeValue.body)
-          }
-
-          if ('left' in nodeValue) {
-            traverseNode(nodeValue.left)
-          }
-
-          if ('right' in nodeValue) {
-            traverseNode(nodeValue.right)
-          }
-
-          if ('elements' in nodeValue) {
-            let elements = nodeValue.elements.filter(
-              currentNode => currentNode !== null,
-            )
-            for (let element of elements) {
-              traverseNode(element)
-            }
-          }
-
-          if ('argument' in nodeValue && nodeValue.argument) {
-            traverseNode(nodeValue.argument)
-          }
-
-          if ('arguments' in nodeValue) {
-            let shouldIgnore = false
-            if (nodeValue.type === AST_NODE_TYPES.CallExpression) {
-              let functionName =
-                'name' in nodeValue.callee ? nodeValue.callee.name : null
-              shouldIgnore =
-                functionName !== null &&
-                matches(
-                  functionName,
-                  options.ignoreCallbackDependenciesPatterns,
-                )
-            }
-            if (!shouldIgnore) {
-              for (let argument of nodeValue.arguments) {
-                traverseNode(argument)
-              }
-            }
-          }
-
-          if ('declarations' in nodeValue) {
-            for (let declaration of nodeValue.declarations) {
-              traverseNode(declaration)
-            }
-          }
-
-          if ('properties' in nodeValue) {
-            for (let property of nodeValue.properties) {
-              traverseNode(property)
-            }
-          }
-
-          if ('expressions' in nodeValue) {
-            for (let nodeExpression of nodeValue.expressions) {
-              traverseNode(nodeExpression)
-            }
-          }
-        }
-
-        function traverseNode(
-          nodeValue: TSESTree.Node[] | TSESTree.Node,
-        ): void {
-          if (Array.isArray(nodeValue)) {
-            for (let nodeItem of nodeValue) {
-              traverseNode(nodeItem)
-            }
-          } else {
-            checkNode(nodeValue)
-          }
-        }
-
-        traverseNode(expression)
-        return dependencies
-      }
+      let classMethodsDependencyNames = computeClassMethodsDependencyNames(node)
       let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
       let formattedNodes: SortClassSortingNodes[][] = node.body.reduce(
         (accumulator: SortClassSortingNodes[][], member) => {
@@ -405,7 +242,14 @@ export default createEslintRule<SortClassesOptions, MessageId>({
                 selectors.push('function-property')
               } else if (member.value) {
                 memberValue = sourceCode.getText(member.value)
-                dependencies = extractDependencies(member.value, member.static)
+                dependencies = computeDependencies({
+                  ignoreCallbackDependenciesPatterns:
+                    options.ignoreCallbackDependenciesPatterns,
+                  isMemberStatic: member.static,
+                  classMethodsDependencyNames,
+                  expression: member.value,
+                  className,
+                })
               }
 
               selectors.push('property')
@@ -515,7 +359,14 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
               selectors.push('static-block')
 
-              dependencies = extractDependencies(member, true)
+              dependencies = computeDependencies({
+                ignoreCallbackDependenciesPatterns:
+                  options.ignoreCallbackDependenciesPatterns,
+                classMethodsDependencyNames,
+                isMemberStatic: true,
+                expression: member,
+                className,
+              })
 
               break
             /* v8 ignore next 2 -- @preserve Exhaustive guard. */
@@ -559,7 +410,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
           let sortingNode: Omit<SortClassSortingNodes, 'partitionId'> = {
             dependencyNames: [
-              getDependencyName({
+              computeDependencyName({
                 nodeNameWithoutStartingHash: name.startsWith('#')
                   ? name.slice(1)
                   : name,
