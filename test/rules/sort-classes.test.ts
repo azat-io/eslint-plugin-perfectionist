@@ -2495,6 +2495,18 @@ describe('sort-classes', () => {
         `,
         options: [options],
       })
+
+      await valid({
+        code: dedent`
+          class MyClass {
+            static {
+              MyClass.z()
+            }
+            static z() {}
+          }
+        `,
+        options: [options],
+      })
     })
 
     it('detects function property dependencies', async () => {
