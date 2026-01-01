@@ -1,11 +1,11 @@
 export function computeDependencyName({
   nodeNameWithoutStartingHash,
-  isPrivateHash,
+  hasPrivateHash,
   isStatic,
 }: {
   nodeNameWithoutStartingHash: string
-  isPrivateHash: boolean
+  hasPrivateHash: boolean
   isStatic: boolean
 }): string {
-  return `${isStatic ? 'static ' : ''}${isPrivateHash ? '#' : ''}${nodeNameWithoutStartingHash}`
+  return `${isStatic ? 'static ' : ''}${hasPrivateHash ? '#' : ''}${nodeNameWithoutStartingHash}`
 }

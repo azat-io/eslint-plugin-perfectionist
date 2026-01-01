@@ -4,7 +4,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { RegexOption } from '../../types/common-options'
 
-import { UnreachableCaseError } from '../../utils/unreachable-case-error'
+import { computeIdentifierNameDetails } from './compute-identifier-name-details'
 import { computeDependencyName } from './compute-dependency-name'
 import { matches } from '../../utils/matches'
 
@@ -14,8 +14,6 @@ import { matches } from '../../utils/matches'
  * @param params - Parameters object.
  * @param params.ignoreCallbackDependenciesPatterns - Patterns to ignore
  *   callback dependencies.
- * @param params.classMethodsDependencyNames - Set of class method dependency
- *   names.
  * @param params.isMemberStatic - Indicates if the member is static.
  * @param params.expression - The AST node expression to analyze.
  * @param params.className - The name of the class, if available.
@@ -23,14 +21,12 @@ import { matches } from '../../utils/matches'
  */
 export function computeDependencies({
   ignoreCallbackDependenciesPatterns,
-  classMethodsDependencyNames,
   isMemberStatic,
   expression,
   className,
 }: {
   expression: TSESTree.StaticBlock | TSESTree.Expression
   ignoreCallbackDependenciesPatterns: RegexOption
-  classMethodsDependencyNames: Set<string>
   className: undefined | string
   isMemberStatic: boolean
 }): string[] {
@@ -47,7 +43,6 @@ export function computeDependencies({
         dependencies = [
           ...dependencies,
           ...computeMemberExpressionDependencies({
-            classMethodsDependencyNames,
             memberExpression: nodeValue,
             isMemberStatic,
             className,
@@ -136,13 +131,11 @@ export function computeDependencies({
 }
 
 function computeMemberExpressionDependencies({
-  classMethodsDependencyNames,
   memberExpression,
   isMemberStatic,
   className,
 }: {
   memberExpression: TSESTree.MemberExpression
-  classMethodsDependencyNames: Set<string>
   className: undefined | string
   isMemberStatic: boolean
 }): string[] {
@@ -163,10 +156,6 @@ function computeMemberExpressionDependencies({
     if (!dependency) {
       return []
     }
-
-    if (classMethodsDependencyNames.has(dependency)) {
-      return []
-    }
     return [dependency]
   }
 
@@ -174,35 +163,21 @@ function computeMemberExpressionDependencies({
     switch (memberExpression.property.type) {
       case AST_NODE_TYPES.PrivateIdentifier:
       case AST_NODE_TYPES.Identifier:
-      case AST_NODE_TYPES.Literal:
+      case AST_NODE_TYPES.Literal: {
+        let { nameWithoutStartingHash, hasPrivateHash } =
+          computeIdentifierNameDetails(memberExpression.property)
+
         return computeDependencyName({
           isStatic:
             isMemberStatic ||
             memberExpression.object.type === AST_NODE_TYPES.Identifier,
-          nodeNameWithoutStartingHash: computeIdentifierName(
-            memberExpression.property,
-          ),
-          isPrivateHash:
-            memberExpression.property.type === AST_NODE_TYPES.PrivateIdentifier,
+          nodeNameWithoutStartingHash: nameWithoutStartingHash,
+          hasPrivateHash,
         })
+      }
       /* v8 ignore next 2 -- @preserve Unhandled cases */
       default:
         return null
-    }
-  }
-
-  function computeIdentifierName(
-    node: TSESTree.PrivateIdentifier | TSESTree.Identifier | TSESTree.Literal,
-  ): string {
-    switch (node.type) {
-      case AST_NODE_TYPES.PrivateIdentifier:
-      case AST_NODE_TYPES.Identifier:
-        return node.name
-      case AST_NODE_TYPES.Literal:
-        return `${node.value}`
-      /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-      default:
-        throw new UnreachableCaseError(node)
     }
   }
 }

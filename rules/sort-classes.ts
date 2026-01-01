@@ -27,25 +27,26 @@ import {
   buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
-import { computeClassMethodsDependencyNames } from './sort-classes/compute-class-methods-dependency-names'
+import { computeIndexSignatureDetails } from './sort-classes/node-info/compute-index-signature-details'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-classes/types'
+import { computeStaticBlockDetails } from './sort-classes/node-info/compute-static-block-details'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { computePropertyDetails } from './sort-classes/node-info/compute-property-details'
+import { computeAccessorDetails } from './sort-classes/node-info/compute-accessor-details'
 import { getOverloadSignatureGroups } from './sort-classes/get-overload-signature-groups'
+import { computeMethodDetails } from './sort-classes/node-info/compute-method-details'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
-import { computeDependencyName } from './sort-classes/compute-dependency-name'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { computeDependencies } from './sort-classes/compute-dependencies'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
-import { computeNodeName } from './sort-classes/compute-node-name'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -143,218 +144,88 @@ export default createEslintRule<SortClassesOptions, MessageId>({
       })
       let className = node.parent.id?.name
 
-      let classMethodsDependencyNames = computeClassMethodsDependencyNames(node)
       let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
       let formattedNodes: SortClassSortingNode[][] = node.body.reduce(
         (accumulator: SortClassSortingNode[][], member) => {
           let dependencies: string[] = []
 
-          let isPrivateHash =
-            'key' in member &&
-            member.key.type === AST_NODE_TYPES.PrivateIdentifier
-
-          let decorated = false
+          let isDecorated = false
           let decorators: string[] = []
 
           if ('decorators' in member) {
             decorators = getNodeDecorators(member).map(decorator =>
               getDecoratorName({ sourceCode, decorator }),
             )
-            decorated = decorators.length > 0
+            isDecorated = decorators.length > 0
           }
 
+          let addSafetySemicolonWhenInline: boolean
+          let dependencyNames: string[]
+          let name: string
           let memberValue: undefined | string
-          let modifiers: Modifier[] = []
-          let selectors: Selector[] = []
-          let addSafetySemicolonWhenInline: boolean = true
+          let modifiers: Modifier[]
+          let selectors: Selector[]
+
           switch (member.type) {
             case AST_NODE_TYPES.TSAbstractPropertyDefinition:
             case AST_NODE_TYPES.PropertyDefinition:
-              /**
-               * Member is necessarily a property similarly to above for
-               * methods, prioritize 'static', 'declare', 'decorated',
-               * 'abstract', 'override' and 'readonly' over accessibility
-               * modifiers.
-               */
-              if ('static' in member && member.static) {
-                modifiers.push('static')
-              }
-
-              if ('declare' in member && member.declare) {
-                modifiers.push('declare')
-              }
-
-              if (member.type === AST_NODE_TYPES.TSAbstractPropertyDefinition) {
-                modifiers.push('abstract')
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if ('override' in member && member.override) {
-                modifiers.push('override')
-              }
-
-              if ('readonly' in member && member.readonly) {
-                modifiers.push('readonly')
-              }
-
-              if (
-                'accessibility' in member &&
-                member.accessibility === 'protected'
-              ) {
-                modifiers.push('protected')
-              } else if (
-                ('accessibility' in member &&
-                  member.accessibility === 'private') ||
-                isPrivateHash
-              ) {
-                modifiers.push('private')
-              } else {
-                modifiers.push('public')
-              }
-
-              if ('optional' in member && member.optional) {
-                modifiers.push('optional')
-              }
-
-              if (
-                member.value?.type === AST_NODE_TYPES.ArrowFunctionExpression ||
-                member.value?.type === AST_NODE_TYPES.FunctionExpression
-              ) {
-                if (member.value.async) {
-                  modifiers.push('async')
-                }
-                selectors.push('function-property')
-              } else if (member.value) {
-                memberValue = sourceCode.getText(member.value)
-                dependencies = computeDependencies({
-                  ignoreCallbackDependenciesPatterns:
-                    options.ignoreCallbackDependenciesPatterns,
-                  isMemberStatic: member.static,
-                  classMethodsDependencyNames,
-                  expression: member.value,
-                  className,
-                })
-              }
-
-              selectors.push('property')
-              break
-
-            case AST_NODE_TYPES.TSAbstractMethodDefinition:
-            case AST_NODE_TYPES.MethodDefinition:
-              /**
-               * By putting the static modifier before accessibility modifiers,
-               * we prioritize 'static' over those in cases like: config:
-               * ['static-method', 'public-method'] element: public static
-               * method(); Element will be classified as 'static-method' before
-               * 'public-method'.
-               */
-              if (member.static) {
-                modifiers.push('static')
-              }
-              if (member.type === AST_NODE_TYPES.TSAbstractMethodDefinition) {
-                modifiers.push('abstract')
-              } else if (!node.parent.declare) {
-                addSafetySemicolonWhenInline = false
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if (member.override) {
-                modifiers.push('override')
-              }
-
-              if (member.accessibility === 'protected') {
-                modifiers.push('protected')
-              } else if (member.accessibility === 'private' || isPrivateHash) {
-                modifiers.push('private')
-              } else {
-                modifiers.push('public')
-              }
-
-              if (member.optional) {
-                modifiers.push('optional')
-              }
-
-              if (member.value.async) {
-                modifiers.push('async')
-              }
-
-              if (member.kind === 'constructor') {
-                selectors.push('constructor')
-              }
-
-              if (member.kind === 'get') {
-                selectors.push('get-method')
-              }
-
-              if (member.kind === 'set') {
-                selectors.push('set-method')
-              }
-              selectors.push('method')
-
-              break
-
-            case AST_NODE_TYPES.TSAbstractAccessorProperty:
-            case AST_NODE_TYPES.AccessorProperty:
-              if (member.static) {
-                modifiers.push('static')
-              }
-
-              if (member.type === AST_NODE_TYPES.TSAbstractAccessorProperty) {
-                modifiers.push('abstract')
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if (member.override) {
-                modifiers.push('override')
-              }
-
-              if (member.accessibility === 'protected') {
-                modifiers.push('protected')
-              } else if (member.accessibility === 'private' || isPrivateHash) {
-                modifiers.push('private')
-              } else {
-                modifiers.push('public')
-              }
-              selectors.push('accessor-property')
-
-              break
-
-            case AST_NODE_TYPES.TSIndexSignature:
-              if (member.static) {
-                modifiers.push('static')
-              }
-
-              if (member.readonly) {
-                modifiers.push('readonly')
-              }
-
-              selectors.push('index-signature')
-
-              break
-
-            case AST_NODE_TYPES.StaticBlock:
-              addSafetySemicolonWhenInline = false
-
-              selectors.push('static-block')
-
-              dependencies = computeDependencies({
+              addSafetySemicolonWhenInline = true
+              ;({
+                dependencyNames,
+                dependencies,
+                memberValue,
+                modifiers,
+                selectors,
+                name,
+              } = computePropertyDetails({
                 ignoreCallbackDependenciesPatterns:
                   options.ignoreCallbackDependenciesPatterns,
-                classMethodsDependencyNames,
-                isMemberStatic: true,
-                expression: member,
+                property: member,
+                isDecorated,
+                sourceCode,
                 className,
-              })
-
+              }))
+              break
+            case AST_NODE_TYPES.TSAbstractMethodDefinition:
+            case AST_NODE_TYPES.MethodDefinition:
+              dependencyNames = []
+              ;({ addSafetySemicolonWhenInline, selectors, modifiers, name } =
+                computeMethodDetails({
+                  hasParentDeclare: node.parent.declare,
+                  method: member,
+                  isDecorated,
+                  sourceCode,
+                }))
+              break
+            case AST_NODE_TYPES.TSAbstractAccessorProperty:
+            case AST_NODE_TYPES.AccessorProperty:
+              addSafetySemicolonWhenInline = true
+              ;({ dependencyNames, selectors, modifiers, name } =
+                computeAccessorDetails({
+                  accessor: member,
+                  isDecorated,
+                  sourceCode,
+                }))
+              break
+            case AST_NODE_TYPES.TSIndexSignature:
+              addSafetySemicolonWhenInline = true
+              dependencyNames = []
+              ;({ modifiers, selectors, name } = computeIndexSignatureDetails({
+                indexSignature: member,
+                sourceCode,
+              }))
+              break
+            case AST_NODE_TYPES.StaticBlock:
+              addSafetySemicolonWhenInline = false
+              dependencyNames = []
+              name = 'static'
+              ;({ dependencies, selectors, modifiers } =
+                computeStaticBlockDetails({
+                  ignoreCallbackDependenciesPatterns:
+                    options.ignoreCallbackDependenciesPatterns,
+                  staticBlock: member,
+                  className,
+                }))
               break
             /* v8 ignore next 2 -- @preserve Exhaustive guard. */
             default:
@@ -366,7 +237,6 @@ export default createEslintRule<SortClassesOptions, MessageId>({
             selectors,
             modifiers,
           })
-          let name: string = computeNodeName(member, sourceCode)
           let group = computeGroup({
             customGroupMatcher: customGroup =>
               doesCustomGroupMatch({
@@ -397,15 +267,6 @@ export default createEslintRule<SortClassesOptions, MessageId>({
             overloadSignatureGroups[overloadSignatureGroupMemberIndex]?.at(-1)
 
           let sortingNode: Omit<SortClassSortingNode, 'partitionId'> = {
-            dependencyNames: [
-              computeDependencyName({
-                nodeNameWithoutStartingHash: name.startsWith('#')
-                  ? name.slice(1)
-                  : name,
-                isStatic: modifiers.includes('static'),
-                isPrivateHash,
-              }),
-            ],
             overloadSignaturesGroupId:
               overloadSignatureGroupMemberIndex === -1
                 ? null
@@ -415,6 +276,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
               : rangeToDiff(member, sourceCode),
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
             addSafetySemicolonWhenInline,
+            dependencyNames,
             node: member,
             dependencies,
             group,
