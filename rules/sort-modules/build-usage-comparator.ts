@@ -26,7 +26,10 @@ export function buildUsageComparator({
   sortingNodes: SortModulesSortingNode[]
   ignoreEslintDisabledNodes: boolean
 }): Comparator<SortModulesSortingNode> {
-  let orderByNode = buildOrderByNodeMap()
+  let orderByNode = buildOrderByNodeMap({
+    ignoreEslintDisabledNodes,
+    sortingNodes,
+  })
   return (a, b) => {
     let nodeA = a.node
     let nodeB = b.node
@@ -36,26 +39,32 @@ export function buildUsageComparator({
 
     return computeOrderedValue(orderA - orderB, options.order)
   }
+}
 
-  function buildOrderByNodeMap(): Map<TSESTree.ProgramStatement, number> {
-    let sortingNodesWithUpdatedDependencies = sortingNodes.map(
-      ({ isEslintDisabled, dependencyNames, node }) => ({
-        dependencies: computeDependencies(node, { type: 'soft' }),
-        isEslintDisabled,
-        dependencyNames,
-        node,
-      }),
-    )
-    let sortedSortingNodes = sortNodesByDependencies(
-      sortingNodesWithUpdatedDependencies,
-      { ignoreEslintDisabledNodes },
-    )
+function buildOrderByNodeMap({
+  ignoreEslintDisabledNodes,
+  sortingNodes,
+}: {
+  sortingNodes: SortModulesSortingNode[]
+  ignoreEslintDisabledNodes: boolean
+}): Map<TSESTree.ProgramStatement, number> {
+  let sortingNodesWithUpdatedDependencies = sortingNodes.map(
+    ({ isEslintDisabled, dependencyNames, node }) => ({
+      dependencies: computeDependencies(node, { type: 'soft' }),
+      isEslintDisabled,
+      dependencyNames,
+      node,
+    }),
+  )
+  let sortedSortingNodes = sortNodesByDependencies(
+    sortingNodesWithUpdatedDependencies,
+    { ignoreEslintDisabledNodes },
+  )
 
-    let orderByNodeMap = new Map<TSESTree.ProgramStatement, number>()
-    for (let [i, { node }] of sortedSortingNodes.entries()) {
-      orderByNodeMap.set(node, i)
-    }
-
-    return orderByNodeMap
+  let orderByNodeMap = new Map<TSESTree.ProgramStatement, number>()
+  for (let [i, { node }] of sortedSortingNodes.entries()) {
+    orderByNodeMap.set(node, i)
   }
+
+  return orderByNodeMap
 }
