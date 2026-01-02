@@ -8,6 +8,18 @@ export default eslintConfig({
     eslintPlugin.configs.recommended,
     {
       rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            paths: [
+              {
+                message: 'Only type imports are allowed.',
+                name: '@typescript-eslint/types',
+                allowTypeImports: true,
+              },
+            ],
+          },
+        ],
         'eslint-plugin/require-meta-default-options': 'off',
       },
     },
