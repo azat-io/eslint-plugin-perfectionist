@@ -187,7 +187,8 @@ Specifies the sorting method.
 - `'natural'` — Sort items in a [natural](https://github.com/yobacca/natural-orderby) order (e.g., “item2” < “item10”).
 - `'line-length'` — Sort items by code line length (shorter lines first).
 - `'custom'` — Sort items using the alphabet specified in the [`alphabet`](#alphabet) option.
-- `'usage'` — Sort items by the order they are first used or referenced within their [`group`](#groups). Items with no usage within their group may appear in any position.
+- `'usage'` — Enforces items referenced by other items within the same [`group`](#groups) to appear before the items that reference them.
+[`fallbackSort`](#fallbacksort) is currently not supported with this primary type.
 - `'unsorted'` — Do not sort items. [`grouping`](#groups) and [`newlines behavior`](#newlinesbetween) are still enforced.
 
 ### order
