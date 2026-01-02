@@ -7,6 +7,10 @@ import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import rule from '../../rules/sort-classes'
 
 describe('sort-classes', () => {
+  let { valid: validEspree } = createRuleTester({
+    name: 'sort-classes (espree)',
+    rule,
+  })
   let { invalid, valid } = createRuleTester({
     parser: typescriptParser,
     name: 'sort-classes',
@@ -15643,7 +15647,7 @@ describe('sort-classes', () => {
     })
 
     it('handles non typescript-eslint parser', async () => {
-      await valid({
+      await validEspree({
         code: dedent`
           class A {
 

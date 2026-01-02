@@ -8,6 +8,10 @@ import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-modules'
 
 describe('sort-modules', () => {
+  let { valid: validEspree } = createRuleTester({
+    name: 'sort-modules (espree)',
+    rule,
+  })
   let { invalid, valid } = createRuleTester({
     parser: typescriptParser,
     name: 'sort-modules',
@@ -9382,6 +9386,16 @@ describe('sort-modules', () => {
             data: { right: 'a', left: 'b' },
           },
         ],
+        options: [{}],
+      })
+    })
+
+    it('handles non typescript-eslint parser', async () => {
+      await validEspree({
+        code: dedent`
+          class A {}
+          function func() {}
+        `,
         options: [{}],
       })
     })
