@@ -8050,6 +8050,43 @@ describe('sort-modules', () => {
       order: 'asc',
     }
 
+    it('enforces used elements to be first', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'C' },
+          },
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        output: dedent`
+          type A = 'a';
+          type B = A;
+          type C = B;
+        `,
+        code: dedent`
+          type C = B;
+          type B = A;
+          type A = 'a';
+        `,
+        options: [options],
+      })
+    })
+
+    it('detects and handles circular dependencies', async () => {
+      await valid({
+        code: dedent`
+          type C = B;
+          type B = A;
+          type A = C;
+        `,
+        options: [options],
+      })
+    })
+
     it('detects usages in interface values', async () => {
       await invalid({
         output: dedent`
