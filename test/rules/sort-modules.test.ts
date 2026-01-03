@@ -8674,57 +8674,51 @@ describe('sort-modules', () => {
 
     /* Unhandled cases */
     it("doesn't support the following cases", async () => {
-      await valid({
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'a' },
+          },
+        ],
         options: [
           {
             ...options,
             groups: ['unknown'],
           },
         ],
-        code: dedent`
+        output: dedent`
           type B = 'b'
 
           function a(...B) {}
         `,
-      })
-
-      await valid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
         code: dedent`
-          type B = 'b'
+          function a(...B) {}
 
-          const a = (...B) => {}
+          type B = 'b'
         `,
       })
 
-      await valid({
-        code: dedent`
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'A' },
+          },
+        ],
+        output: dedent`
           type B = 'b'
 
           class A {
             a = (...B) => {}
           }
         `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-
-      await valid({
         code: dedent`
-          type B = 'b'
-
           class A {
-            a(...B) {}
+            a = (...B) => {}
           }
+
+          type B = 'b'
         `,
         options: [
           {
@@ -8734,17 +8728,57 @@ describe('sort-modules', () => {
         ],
       })
 
-      await valid({
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'A' },
+          },
+        ],
+        output: dedent`
+          type B = 'b'
+
+          class A {
+            a(...B) {}
+          }
+        `,
+        code: dedent`
+          class A {
+            a(...B) {}
+          }
+
+          type B = 'b'
+        `,
         options: [
           {
             ...options,
             groups: ['unknown'],
           },
         ],
-        code: dedent`
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'A' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
           type B = 'b'
 
           type A<B> = void
+        `,
+        code: dedent`
+          type A<B> = void
+
+          type B = 'b'
         `,
       })
     })
