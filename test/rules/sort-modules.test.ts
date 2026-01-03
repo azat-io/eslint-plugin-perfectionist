@@ -8215,34 +8215,6 @@ describe('sort-modules', () => {
     it('detects usages in type values', async () => {
       await invalid({
         output: dedent`
-          type B = Something;
-
-          type A = {
-            field: typeof B
-          }
-        `,
-        code: dedent`
-          type A = {
-            field: typeof B
-          }
-
-          type B = Something;
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-
-      await invalid({
-        output: dedent`
           type B = 'b';
 
           type A = {
@@ -8468,34 +8440,6 @@ describe('sort-modules', () => {
 
           type B = 'b';
         `,
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-
-      await invalid({
-        output: dedent`
-          type B = 'b';
-
-          type A<T> = T extends {
-            (...args: any[]): infer B;
-          } ? Foo : Bar
-        `,
-        code: dedent`
-          type A<T> = T extends {
-            (...args: any[]): infer B;
-          } ? Foo : Bar
-
-          type B = 'b';
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
         errors: [
           {
             messageId: 'unexpectedModulesOrder',
@@ -8780,6 +8724,62 @@ describe('sort-modules', () => {
 
           type B = 'b'
         `,
+      })
+
+      await invalid({
+        output: dedent`
+          type B = Something;
+
+          type A = {
+            field: typeof B
+          }
+        `,
+        code: dedent`
+          type A = {
+            field: typeof B
+          }
+
+          type B = Something;
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        output: dedent`
+          type B = 'b';
+
+          type A<T> = T extends {
+            (...args: any[]): infer B;
+          } ? Foo : Bar
+        `,
+        code: dedent`
+          type A<T> = T extends {
+            (...args: any[]): infer B;
+          } ? Foo : Bar
+
+          type B = 'b';
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
       })
     })
   })
