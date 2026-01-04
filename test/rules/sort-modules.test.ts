@@ -9437,5 +9437,4 @@ describe('sort-modules', () => {
       })
     })
   })
-
 })

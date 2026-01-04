@@ -5710,5 +5710,4 @@ describe('sort-enums', () => {
       })
     })
   })
-
 })

@@ -11818,5 +11818,4 @@ describe('sort-imports', () => {
       })
     })
   })
-
 })

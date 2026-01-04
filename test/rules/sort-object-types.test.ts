@@ -9102,5 +9102,4 @@ describe('sort-object-types', () => {
       })
     })
   })
-
 })
