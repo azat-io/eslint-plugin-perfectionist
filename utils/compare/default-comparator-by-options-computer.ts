@@ -1,5 +1,5 @@
-import type { GroupsOptions } from '../../types/common-groups-options'
 import type { CommonOptions, TypeOption } from '../../types/common-options'
+import type { GroupsOptions } from '../../types/common-groups-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import { buildSubgroupOrderComparator } from './build-subgroup-order-comparator'

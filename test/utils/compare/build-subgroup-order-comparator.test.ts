@@ -91,6 +91,11 @@ describe('build-subgroup-order-comparator', () => {
 
   function buildTestNode({ group }: { group: string }): SortingNode {
     return {
+      name: 'test-node',
+      size: 0,
+      node: {} as SortingNode['node'],
+      isEslintDisabled: false,
+      partitionId: 0,
       group,
     } as SortingNode
   }

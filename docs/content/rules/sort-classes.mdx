@@ -363,9 +363,9 @@ Without `ignoreCallbackDependenciesPatterns: ['^computed$']`, `role` and `userna
       | { newlinesBetween: number | 'ignore' }
       | {
           group: string | string[];
-          type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+          type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'subgroup-order' | 'unsorted';
           order?: 'asc' | 'desc';
-          fallbackSort?: { type: string; order?: 'asc' | 'desc' };
+          fallbackSort?: { type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'subgroup-order' | 'unsorted'; order?: 'asc' | 'desc' };
           newlinesInside?: number | 'ignore';
         }
     >
@@ -724,9 +724,9 @@ A custom group definition may follow one of the two following interfaces:
 ```ts
 interface CustomGroupDefinition {
   groupName: string
-  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'subgroup-order' | 'unsorted'
   order?: 'asc' | 'desc'
-  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  fallbackSort?: { type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'subgroup-order' | 'unsorted'; order?: 'asc' | 'desc' }
   newlinesInside?: number | 'ignore'
   selector?: string
   modifiers?: string[]
@@ -742,9 +742,9 @@ or:
 ```ts
 interface CustomGroupAnyOfDefinition {
   groupName: string
-  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'subgroup-order' | 'unsorted'
   order?: 'asc' | 'desc'
-  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  fallbackSort?: { type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'subgroup-order' | 'unsorted'; order?: 'asc' | 'desc' }
   newlinesInside?: number | 'ignore'
   anyOf: Array<{
       selector?: string
