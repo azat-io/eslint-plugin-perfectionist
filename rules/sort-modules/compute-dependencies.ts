@@ -123,6 +123,9 @@ export function computeDependencies(
       if ('properties' in nodeToCheck) {
         traverseNode(nodeToCheck.properties)
       }
+      if ('property' in nodeToCheck) {
+        checkNode(nodeToCheck.property)
+      }
       if ('right' in nodeToCheck) {
         checkNode(nodeToCheck.right)
       }

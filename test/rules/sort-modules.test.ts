@@ -1370,6 +1370,26 @@ describe('sort-modules', () => {
             },
           ],
         })
+
+        await valid({
+          code: dedent`
+            namespace Namespace {
+              export class B {
+                static foo = 'foo'
+              }
+
+              class A {
+                static a = Namespace.B.foo
+              }
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
       })
 
       it('ignores non-static arrow method dependencies', async () => {
