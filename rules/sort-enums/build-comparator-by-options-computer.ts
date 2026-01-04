@@ -52,6 +52,7 @@ let byNonNumericValueComparatorComputer: ComparatorByOptionsComputer<
   SortEnumsSortingNode
 > = options => {
   switch (options.type) {
+    /* v8 ignore next 2 -- @preserve Untested for now as not a relevant sort for this rule. */
     case 'subgroup-order':
       return defaultComparatorByOptionsComputer(options)
     case 'alphabetical':
@@ -77,6 +78,7 @@ let byNumericValueComparatorComputer: ComparatorByOptionsComputer<
   SortEnumsSortingNode
 > = options => {
   switch (options.type) {
+    /* v8 ignore next 2 -- @preserve Untested for now as not a relevant sort for this rule. */
     case 'subgroup-order':
       return defaultComparatorByOptionsComputer(options)
     case 'alphabetical':

@@ -1,8 +1,8 @@
-import type { Comparator } from './default-comparator-by-options-computer'
 import type {
   CommonGroupsOptions,
   GroupsOptions,
 } from '../../types/common-groups-options'
+import type { Comparator } from './default-comparator-by-options-computer'
 import type { CommonOptions } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
