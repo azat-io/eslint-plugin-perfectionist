@@ -30,9 +30,14 @@ export let defaultComparatorByOptionsComputer: ComparatorByOptionsComputer<
 > = options => {
   switch (options.type) {
     case 'subgroup-order':
+      /* v8 ignore start -- @preserve sort-switch-case specific */
+      if (!options.groups) {
+        return unsortedComparator
+      }
+      /* v8 ignore stop -- @preserve sort-switch-case specific */
       return buildSubgroupOrderComparator({
         ...options,
-        groups: options.groups ?? [],
+        groups: options.groups,
       })
     case 'alphabetical':
       return (a, b) => compareAlphabetically(a.name, b.name, options)
