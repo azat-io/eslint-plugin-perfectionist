@@ -1,52 +1,76 @@
 import type { Comparator } from './default-comparator-by-options-computer'
-import type { GroupsOptions } from '../../types/common-groups-options'
-import type { OrderOption } from '../../types/common-options'
+import type {
+  CommonGroupsOptions,
+  GroupsOptions,
+} from '../../types/common-groups-options'
+import type { CommonOptions } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import { isGroupWithOverridesOption } from '../is-group-with-overrides-option'
 import { isNewlinesBetweenOption } from '../is-newlines-between-option'
 import { UnreachableCaseError } from '../unreachable-case-error'
+import { computeOrderedValue } from './compute-ordered-value'
 
-export function getSubgroupOrder(
-  group: GroupsOptions[number] | undefined,
-): string[] | null {
-  if (!group) {
-    return null
-  }
-  if (typeof group === 'string' || Array.isArray(group)) {
-    return Array.isArray(group) ? group : null
-  }
-  if (isGroupWithOverridesOption(group)) {
-    return Array.isArray(group.group) ? group.group : null
-  }
-  /* v8 ignore else -- @preserve Exhaustive guard: other directives are filtered out earlier. */
-  if (isNewlinesBetweenOption(group)) {
-    return null
-  }
-  /* v8 ignore next -- @preserve Exhaustive guard: other directives are filtered out earlier. */
-  throw new UnreachableCaseError(group)
-}
-
-export function buildSubgroupOrderComparator(
-  subgroupOrder: string[] | null,
-  order: OrderOption,
-): Comparator<SortingNode> {
-  if (!subgroupOrder) {
-    return () => 0
-  }
-
-  let subgroupIndexMap = new Map(
-    subgroupOrder.map((name, index) => [name, index]),
-  )
-  let direction = order === 'desc' ? -1 : 1
-
+export function buildSubgroupOrderComparator({
+  groups,
+  order,
+}: Pick<CommonOptions, 'order'> & {
+  groups: GroupsOptions
+}): Comparator<SortingNode> {
   return (a, b) => {
-    let aIndex = subgroupIndexMap.get(a.group)
-    let bIndex = subgroupIndexMap.get(b.group)
-    if (aIndex === undefined || bIndex === undefined) {
+    let subgroupContainingA = computeSubgroupContainingNode(a, groups)
+    let subgroupContainingB = computeSubgroupContainingNode(b, groups)
+
+    if (
+      !subgroupContainingA ||
+      !subgroupContainingB ||
+      subgroupContainingA !== subgroupContainingB
+    ) {
       return 0
     }
 
-    return (aIndex - bIndex) * direction
+    let indexOfAInSubgroup = subgroupContainingA.indexOf(a.group)
+    let indexOfBInSubgroup = subgroupContainingB.indexOf(b.group)
+
+    let result = indexOfAInSubgroup - indexOfBInSubgroup
+    return computeOrderedValue(result, order)
   }
+}
+
+function computeSubgroupContainingNode(
+  sortingNode: SortingNode,
+  groups: CommonGroupsOptions<unknown, unknown, string>['groups'],
+): string[] | null {
+  for (let group of groups) {
+    if (isNewlinesBetweenOption(group)) {
+      continue
+    }
+    if (typeof group === 'string' || Array.isArray(group)) {
+      if (doesStringSubgroupContainsNode(sortingNode, group)) {
+        return group
+      }
+      continue
+    }
+    if (isGroupWithOverridesOption(group)) {
+      if (doesStringSubgroupContainsNode(sortingNode, group.group)) {
+        return group.group
+      }
+      continue
+    }
+
+    /* v8 ignore next -- @preserve Exhaustive guard for unsupported group option. */
+    throw new UnreachableCaseError(group)
+  }
+
+  return null
+}
+
+function doesStringSubgroupContainsNode(
+  sortingNode: SortingNode,
+  subgroup: string[] | string,
+): subgroup is string[] {
+  if (typeof subgroup === 'string') {
+    return false
+  }
+  return subgroup.includes(sortingNode.group)
 }

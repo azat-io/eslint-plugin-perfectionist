@@ -3,7 +3,6 @@ import type { CommonOptions, TypeOption } from '../../types/common-options'
 import type { SortImportsSortingNode, Options } from './types'
 
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
-import { buildSubgroupOrderComparator } from '../../utils/compare/build-subgroup-order-comparator'
 import { buildLineLengthComparator } from '../../utils/compare/build-line-length-comparator'
 import { compareAlphabetically } from '../../utils/compare/compare-alphabetically'
 import { compareByCustomSort } from '../../utils/compare/compare-by-custom-sort'
@@ -73,18 +72,12 @@ function compareTypeImportFirst(
 }
 
 let bySpecifierComparatorByOptionsComputer: ComparatorByOptionsComputer<
-  {
-    subgroupOrder?: string[] | null
-    type: TypeOption
-  } & Omit<Required<Options[number]>, 'type'>,
+  Omit<Required<Options[number]>, 'type'> & { type: TypeOption },
   SortImportsSortingNode
 > = options => {
   switch (options.type) {
     case 'subgroup-order':
-      return buildSubgroupOrderComparator(
-        options.subgroupOrder ?? null,
-        options.order,
-      )
+      return defaultComparatorByOptionsComputer(options)
     case 'alphabetical':
       return (a, b) =>
         compareAlphabetically(

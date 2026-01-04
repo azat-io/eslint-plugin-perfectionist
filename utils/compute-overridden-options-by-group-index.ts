@@ -3,13 +3,12 @@ import type { CommonOptions } from '../types/common-options'
 
 import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { computeGroupName } from './compute-group-name'
-import { getSubgroupOrder } from './compare/build-subgroup-order-comparator'
 
 type Options = Pick<
   CommonGroupsOptions<unknown, unknown, string>,
   'customGroups' | 'groups'
 > &
-  { subgroupOrder?: string[] | null } & CommonOptions
+  CommonOptions
 
 /**
  * Retrieves sorting options potentially overridden by a custom group or group
@@ -95,19 +94,6 @@ export function computeOverriddenOptionsByGroupIndex<T extends Options>(
         ...returnValue.fallbackSort,
         ...fallbackSort,
       },
-    }
-  }
-
-  if (
-    returnValue.type === 'subgroup-order' ||
-    returnValue.fallbackSort.type === 'subgroup-order'
-  ) {
-    let subgroupOrder = getSubgroupOrder(matchingGroup)
-    if (subgroupOrder) {
-      returnValue = {
-        ...returnValue,
-        subgroupOrder,
-      }
     }
   }
 

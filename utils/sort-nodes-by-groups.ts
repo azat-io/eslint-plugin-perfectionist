@@ -96,7 +96,7 @@ interface SortNodesByGroupsParameters<Node extends SortingNode, Options> {
  */
 export function sortNodesByGroups<
   T extends SortingNode,
-  Options extends Pick<CommonOptions, 'fallbackSort' | 'order' | 'type'>,
+  Options extends Pick<CommonOptions, 'fallbackSort'>,
 >({
   comparatorByOptionsComputer,
   optionsByGroupIndexComputer,

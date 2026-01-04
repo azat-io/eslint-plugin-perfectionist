@@ -37,6 +37,10 @@ describe('sort-nodes-by-groups subgroup-order', () => {
   it('handles newlinesBetween group entries', () => {
     let getGroupIndexMock = vi.mocked(getGroupIndex)
     getGroupIndexMock.mockReturnValue(1)
+    options = {
+      ...options,
+      groups: ['group-a', { newlinesBetween: 1 }, 'group-b'],
+    }
 
     let nodeA = createTestNode({ group: 'group-a', name: 'same' })
     let nodeB = createTestNode({ group: 'group-b', name: 'same' })
@@ -57,7 +61,7 @@ describe('sort-nodes-by-groups subgroup-order', () => {
     getGroupIndexMock.mockReturnValue(0)
     options = {
       ...options,
-      subgroupOrder: ['group-a', 'group-b'],
+      groups: [['group-a', 'group-b']],
     }
 
     let nodeA = createTestNode({ group: 'group-c', name: 'same' })
@@ -80,7 +84,7 @@ describe('sort-nodes-by-groups subgroup-order', () => {
     options = {
       ...options,
       fallbackSort: { type: 'subgroup-order', order: 'desc' },
-      subgroupOrder: ['group-a', 'group-b'],
+      groups: [['group-a', 'group-b']],
     }
 
     let nodeA = createTestNode({ group: 'group-a', name: 'same' })
