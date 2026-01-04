@@ -10,12 +10,10 @@ import { createModuleResolutionCache } from 'typescript'
 import { describe, expect, it, vi } from 'vitest'
 import dedent from 'dedent'
 
-import type { SortImportsSortingNode } from '../../rules/sort-imports/types'
 import type { Options } from '../../rules/sort-imports/types'
 import type { MessageId } from '../../rules/sort-imports'
 
 import * as readClosestTsConfigUtilities from '../../rules/sort-imports/read-closest-ts-config-by-path'
-import { comparatorByOptionsComputer } from '../../rules/sort-imports/comparator-by-options-computer'
 import * as getTypescriptImportUtilities from '../../rules/sort-imports/get-typescript-import'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
@@ -11821,51 +11819,4 @@ describe('sort-imports', () => {
     })
   })
 
-  describe('comparatorByOptionsComputer', () => {
-    it('handles subgroup-order for specifier sorting', () => {
-      let comparator = comparatorByOptionsComputer(getComparatorOptions())
-
-      expect(comparator(createComparatorNode(), createComparatorNode())).toBe(0)
-    })
-  })
 })
-
-function getComparatorOptions(): Required<Options[number]> {
-  return {
-    fallbackSort: { type: 'unsorted' },
-    partitionByComment: false,
-    partitionByNewLine: false,
-    specialCharacters: 'keep',
-    newlinesBetween: 'ignore',
-    tsconfig: { rootDir: '' },
-    newlinesInside: 'ignore',
-    maxLineLength: Infinity,
-    type: 'subgroup-order',
-    sortSideEffects: false,
-    sortBy: 'specifier',
-    environment: 'node',
-    internalPattern: [],
-    ignoreCase: false,
-    locales: 'en-US',
-    customGroups: [],
-    order: 'asc',
-    alphabet: '',
-    groups: [],
-  } as Required<Options[number]>
-}
-
-function createComparatorNode(): SortImportsSortingNode {
-  return {
-    node: {} as SortImportsSortingNode['node'],
-    isEslintDisabled: false,
-    specifierName: 'value',
-    dependencyNames: [],
-    isTypeImport: false,
-    dependencies: [],
-    isIgnored: false,
-    group: 'group',
-    partitionId: 0,
-    name: 'name',
-    size: 0,
-  }
-}

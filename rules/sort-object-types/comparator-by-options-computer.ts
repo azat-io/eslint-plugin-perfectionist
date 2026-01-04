@@ -2,6 +2,7 @@ import type { ComparatorByOptionsComputer } from '../../utils/compare/default-co
 import type { SortObjectTypesSortingNode, Options } from './types'
 
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
+import { buildSubgroupOrderComparator } from '../../utils/compare/build-subgroup-order-comparator'
 import { buildLineLengthComparator } from '../../utils/compare/build-line-length-comparator'
 import { compareAlphabetically } from '../../utils/compare/compare-alphabetically'
 import { compareByCustomSort } from '../../utils/compare/compare-by-custom-sort'
@@ -25,12 +26,15 @@ export let comparatorByOptionsComputer: ComparatorByOptionsComputer<
 }
 
 let byValueComparatorComputer: ComparatorByOptionsComputer<
-  Required<Options[number]>,
+  Required<Options[number]> & { subgroupOrder?: string[] | null },
   SortObjectTypesSortingNode
 > = options => {
   switch (options.type) {
     case 'subgroup-order':
-      return unsortedComparator
+      return buildSubgroupOrderComparator(
+        options.subgroupOrder ?? null,
+        options.order,
+      )
     case 'alphabetical':
       return (a, b) => compareAlphabetically(a.value, b.value, options)
     case 'line-length':

@@ -132,9 +132,9 @@ export function sortNodesByGroups<
     let options = optionsByGroupIndexComputer(groupIndex)
     let nodesToPush = nodesByNonIgnoredGroupIndex[groupIndex]!
     let subgroupOrder = getSubgroupOrder(groups[groupIndex])
-    let subgroupIndexMap = subgroupOrder
-      ? new Map(subgroupOrder.map((name, index) => [name, index]))
-      : null
+    let optionsForGroup = subgroupOrder
+      ? { ...options, subgroupOrder }
+      : options
 
     let groupIgnoredNodes = new Set(
       nodesToPush.filter(node =>
@@ -148,30 +148,11 @@ export function sortNodesByGroups<
 
     sortedNodes.push(
       ...sortNodes({
-        comparatorByOptionsComputer: optionsToCompare => {
-          if (optionsToCompare.type !== 'subgroup-order') {
-            return comparatorByOptionsComputer(optionsToCompare)
-          }
-
-          return (a, b) => {
-            if (!subgroupIndexMap) {
-              return 0
-            }
-
-            let aIndex = subgroupIndexMap.get(a.group)
-            let bIndex = subgroupIndexMap.get(b.group)
-            if (aIndex === undefined || bIndex === undefined) {
-              return 0
-            }
-
-            let direction = optionsToCompare.order === 'desc' ? -1 : 1
-            return (aIndex - bIndex) * direction
-          }
-        },
         isNodeIgnored: node => groupIgnoredNodes.has(node),
         ignoreEslintDisabledNodes: false,
+        comparatorByOptionsComputer,
+        options: optionsForGroup,
         nodes: nodesToPush,
-        options,
       }),
     )
   }

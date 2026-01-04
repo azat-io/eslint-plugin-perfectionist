@@ -3,12 +3,6 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
-import type {
-  SortObjectTypesSortingNode,
-  Options,
-} from '../../rules/sort-object-types/types'
-
-import { comparatorByOptionsComputer } from '../../rules/sort-object-types/comparator-by-options-computer'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import rule from '../../rules/sort-object-types'
 import { Alphabet } from '../../utils/alphabet'
@@ -9109,43 +9103,4 @@ describe('sort-object-types', () => {
     })
   })
 
-  describe('comparatorByOptionsComputer', () => {
-    it('handles subgroup-order for value sorting', () => {
-      let comparator = comparatorByOptionsComputer(getComparatorOptions())
-
-      expect(comparator(createComparatorNode(), createComparatorNode())).toBe(0)
-    })
-  })
 })
-
-function getComparatorOptions(): Required<Options[number]> {
-  return {
-    fallbackSort: { type: 'unsorted' },
-    partitionByComment: false,
-    partitionByNewLine: false,
-    specialCharacters: 'keep',
-    newlinesBetween: 'ignore',
-    newlinesInside: 'ignore',
-    type: 'subgroup-order',
-    useConfigurationIf: {},
-    ignoreCase: false,
-    locales: 'en-US',
-    customGroups: [],
-    sortBy: 'value',
-    order: 'asc',
-    alphabet: '',
-    groups: [],
-  } as Required<Options[number]>
-}
-
-function createComparatorNode(): SortObjectTypesSortingNode {
-  return {
-    node: {} as SortObjectTypesSortingNode['node'],
-    isEslintDisabled: false,
-    value: 'value',
-    group: 'group',
-    partitionId: 0,
-    name: 'name',
-    size: 0,
-  }
-}

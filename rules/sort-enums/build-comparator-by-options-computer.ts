@@ -2,6 +2,7 @@ import type { ComparatorByOptionsComputer } from '../../utils/compare/default-co
 import type { SortEnumsSortingNode, Options } from './types'
 
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
+import { buildSubgroupOrderComparator } from '../../utils/compare/build-subgroup-order-comparator'
 import { buildLineLengthComparator } from '../../utils/compare/build-line-length-comparator'
 import { compareAlphabetically } from '../../utils/compare/compare-alphabetically'
 import { compareByCustomSort } from '../../utils/compare/compare-by-custom-sort'
@@ -48,12 +49,15 @@ export function buildComparatorByOptionsComputer(
 }
 
 let byNonNumericValueComparatorComputer: ComparatorByOptionsComputer<
-  Required<Options[number]>,
+  Required<Options[number]> & { subgroupOrder?: string[] | null },
   SortEnumsSortingNode
 > = options => {
   switch (options.type) {
     case 'subgroup-order':
-      return unsortedComparator
+      return buildSubgroupOrderComparator(
+        options.subgroupOrder ?? null,
+        options.order,
+      )
     case 'alphabetical':
       return (a, b) =>
         compareAlphabetically(a.value ?? '', b.value ?? '', options)
@@ -73,12 +77,15 @@ let byNonNumericValueComparatorComputer: ComparatorByOptionsComputer<
 }
 
 let byNumericValueComparatorComputer: ComparatorByOptionsComputer<
-  Required<Options[number]>,
+  Required<Options[number]> & { subgroupOrder?: string[] | null },
   SortEnumsSortingNode
 > = options => {
   switch (options.type) {
     case 'subgroup-order':
-      return unsortedComparator
+      return buildSubgroupOrderComparator(
+        options.subgroupOrder ?? null,
+        options.order,
+      )
     case 'alphabetical':
     case 'line-length':
     case 'natural':

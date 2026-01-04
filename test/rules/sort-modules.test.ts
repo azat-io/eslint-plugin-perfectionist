@@ -3,12 +3,6 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
-import type {
-  SortModulesSortingNode,
-  SortModulesOptions,
-} from '../../rules/sort-modules/types'
-
-import { buildComparatorByOptionsComputer } from '../../rules/sort-modules/build-comparator-by-options-computer'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-modules'
@@ -9444,45 +9438,4 @@ describe('sort-modules', () => {
     })
   })
 
-  describe('comparatorByOptionsComputer', () => {
-    it('handles subgroup-order', () => {
-      let comparator = buildComparatorByOptionsComputer({
-        ignoreEslintDisabledNodes: false,
-        sortingNodes: [],
-      })(getComparatorOptions())
-
-      expect(comparator(createComparatorNode(), createComparatorNode())).toBe(0)
-    })
-  })
 })
-
-function getComparatorOptions(): Required<SortModulesOptions[number]> {
-  return {
-    fallbackSort: { type: 'unsorted' },
-    partitionByComment: false,
-    partitionByNewLine: false,
-    specialCharacters: 'keep',
-    newlinesBetween: 'ignore',
-    newlinesInside: 'ignore',
-    type: 'subgroup-order',
-    ignoreCase: false,
-    locales: 'en-US',
-    customGroups: [],
-    order: 'asc',
-    alphabet: '',
-    groups: [],
-  }
-}
-
-function createComparatorNode(): SortModulesSortingNode {
-  return {
-    node: {} as SortModulesSortingNode['node'],
-    isEslintDisabled: false,
-    dependencyNames: [],
-    dependencies: [],
-    group: 'group',
-    partitionId: 0,
-    name: 'name',
-    size: 0,
-  }
-}
