@@ -358,6 +358,7 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
           group: string | string[];
           type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'usage' | 'unsorted';
           order?: 'asc' | 'desc';
+          fallbackSort?: { type: string; order?: 'asc' | 'desc' };
           newlinesInside?: number | 'ignore';
         }
     >
