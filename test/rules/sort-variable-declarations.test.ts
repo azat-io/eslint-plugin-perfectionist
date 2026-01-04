@@ -468,8 +468,18 @@ describe('sort-variable-declarations', () => {
 
       await valid({
         code: dedent`
-          let a = () => {return b},
+          let a = () => { return b },
           b = 1;
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          let f = () => {
+              let b = 1,
+              a = b;
+          }
         `,
         options: [options],
       })
