@@ -1,6 +1,8 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type {
   SortImportAttributesSortingNode,
   Options,
@@ -215,7 +217,7 @@ function getAttributeName(
   sourceCode: TSESLint.SourceCode,
 ): string {
   let { key } = attribute
-  if (key.type === 'Identifier') {
+  if (key.type === AST_NODE_TYPES.Identifier) {
     return key.name
   }
   return key.value?.toString() ?? sourceCode.getText(attribute)

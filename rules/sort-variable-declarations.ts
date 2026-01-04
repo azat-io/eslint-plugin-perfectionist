@@ -1,5 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 import type { Selector, Options } from './sort-variable-declarations/types'
 
@@ -103,8 +105,8 @@ export default createEslintRule<Options, MessageId>({
           let name
 
           if (
-            declaration.id.type === 'ArrayPattern' ||
-            declaration.id.type === 'ObjectPattern'
+            declaration.id.type === AST_NODE_TYPES.ArrayPattern ||
+            declaration.id.type === AST_NODE_TYPES.ObjectPattern
           ) {
             name = sourceCode.text.slice(...declaration.id.range)
           } else {
@@ -247,22 +249,22 @@ function extractDependencies(init: TSESTree.Expression): string[] {
   function checkNode(nodeValue: TSESTree.Node): void {
     /** No need to check the body of functions and arrow functions. */
     if (
-      nodeValue.type === 'ArrowFunctionExpression' ||
-      nodeValue.type === 'FunctionExpression'
+      nodeValue.type === AST_NODE_TYPES.ArrowFunctionExpression ||
+      nodeValue.type === AST_NODE_TYPES.FunctionExpression
     ) {
       return
     }
 
-    if (nodeValue.type === 'Identifier') {
+    if (nodeValue.type === AST_NODE_TYPES.Identifier) {
       dependencies.push(nodeValue.name)
     }
 
-    if (nodeValue.type === 'Property') {
+    if (nodeValue.type === AST_NODE_TYPES.Property) {
       checkNode(nodeValue.key)
       checkNode(nodeValue.value)
     }
 
-    if (nodeValue.type === 'ConditionalExpression') {
+    if (nodeValue.type === AST_NODE_TYPES.ConditionalExpression) {
       checkNode(nodeValue.test)
       checkNode(nodeValue.consequent)
       checkNode(nodeValue.alternate)
@@ -288,7 +290,7 @@ function extractDependencies(init: TSESTree.Expression): string[] {
     }
 
     if ('right' in nodeValue) {
-      checkNode(nodeValue.right as TSESTree.Node)
+      checkNode(nodeValue.right)
     }
 
     if ('elements' in nodeValue) {

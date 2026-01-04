@@ -1,5 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { SortEnumsSortingNode, Options } from './sort-enums/types'
 
 import {
@@ -103,13 +105,13 @@ export default createEslintRule<Options, MessageId>({
         while (stack.length > 0) {
           let node = stack.pop()!
           if (
-            node.type === 'MemberExpression' &&
-            node.object.type === 'Identifier' &&
+            node.type === AST_NODE_TYPES.MemberExpression &&
+            node.object.type === AST_NODE_TYPES.Identifier &&
             node.object.name === enumName &&
-            node.property.type === 'Identifier'
+            node.property.type === AST_NODE_TYPES.Identifier
           ) {
             dependencies.push(node.property.name)
-          } else if (node.type === 'Identifier') {
+          } else if (node.type === AST_NODE_TYPES.Identifier) {
             dependencies.push(node.name)
           }
 
@@ -135,7 +137,7 @@ export default createEslintRule<Options, MessageId>({
           )
 
           let name =
-            member.id.type === 'Literal'
+            member.id.type === AST_NODE_TYPES.Literal
               ? member.id.value
               : sourceCode.getText(member.id)
 
@@ -155,7 +157,7 @@ export default createEslintRule<Options, MessageId>({
           let lastSortingNode = accumulator.at(-1)?.at(-1)
           let sortingNode: Omit<SortEnumsSortingNode, 'partitionId'> = {
             value:
-              member.initializer?.type === 'Literal'
+              member.initializer?.type === AST_NODE_TYPES.Literal
                 ? (member.initializer.value?.toString() ?? null)
                 : null,
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
@@ -329,18 +331,18 @@ function getBinaryExpressionNumberValue(
  */
 function getExpressionNumberValue(expression: TSESTree.Node): number | null {
   switch (expression.type) {
-    case 'BinaryExpression':
+    case AST_NODE_TYPES.BinaryExpression:
       return getBinaryExpressionNumberValue(
         expression.left,
         expression.right,
         expression.operator,
       )
-    case 'UnaryExpression':
+    case AST_NODE_TYPES.UnaryExpression:
       return getUnaryExpressionNumberValue(
         expression.argument,
         expression.operator,
       )
-    case 'Literal':
+    case AST_NODE_TYPES.Literal:
       return typeof expression.value === 'number' ? expression.value : null
     default:
       return null

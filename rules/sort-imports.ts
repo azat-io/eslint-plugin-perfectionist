@@ -1,5 +1,7 @@
-import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
+import type { TSESTree } from '@typescript-eslint/types'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
   SortImportsSortingNode,
@@ -178,7 +180,10 @@ export default createEslintRule<Options, MessageId>({
       let modifiers: Modifier[] = []
       let group: string | null = null
 
-      if (node.type !== 'VariableDeclaration' && node.importKind === 'type') {
+      if (
+        node.type !== AST_NODE_TYPES.VariableDeclaration &&
+        node.importKind === 'type'
+      ) {
         selectors.push('type')
         modifiers.push('type')
       }
@@ -211,11 +216,11 @@ export default createEslintRule<Options, MessageId>({
         modifiers.push('value')
       }
 
-      if (node.type === 'TSImportEqualsDeclaration') {
+      if (node.type === AST_NODE_TYPES.TSImportEqualsDeclaration) {
         modifiers.push('ts-equals')
       }
 
-      if (node.type === 'VariableDeclaration') {
+      if (node.type === AST_NODE_TYPES.VariableDeclaration) {
         modifiers.push('require')
       }
 
@@ -235,9 +240,9 @@ export default createEslintRule<Options, MessageId>({
           name,
         }) ?? 'unknown'
 
-      let hasMultipleImportDeclarations = isSortable(
-        (node as TSESTree.ImportDeclaration).specifiers,
-      )
+      let hasMultipleImportDeclarations =
+        node.type === AST_NODE_TYPES.ImportDeclaration &&
+        isSortable(node.specifiers)
       let size = rangeToDiff(node, sourceCode)
       if (hasMultipleImportDeclarations && size > options.maxLineLength) {
         size = name.length + 10
@@ -264,10 +269,11 @@ export default createEslintRule<Options, MessageId>({
     return {
       VariableDeclaration: node => {
         if (
-          node.declarations[0].init?.type === 'CallExpression' &&
-          node.declarations[0].init.callee.type === 'Identifier' &&
+          node.declarations[0].init?.type === AST_NODE_TYPES.CallExpression &&
+          node.declarations[0].init.callee.type === AST_NODE_TYPES.Identifier &&
           node.declarations[0].init.callee.name === 'require' &&
-          node.declarations[0].init.arguments[0]?.type === 'Literal'
+          node.declarations[0].init.arguments[0]?.type ===
+            AST_NODE_TYPES.Literal
         ) {
           registerNode(node)
         }

@@ -3,6 +3,8 @@ import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { Selector, Options } from './sort-array-includes/types'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -102,13 +104,13 @@ export default createEslintRule<Options, MessageId>({
   create: context => ({
     MemberExpression: node => {
       if (
-        (node.object.type === 'ArrayExpression' ||
-          node.object.type === 'NewExpression') &&
-        node.property.type === 'Identifier' &&
+        (node.object.type === AST_NODE_TYPES.ArrayExpression ||
+          node.object.type === AST_NODE_TYPES.NewExpression) &&
+        node.property.type === AST_NODE_TYPES.Identifier &&
         node.property.name === 'includes'
       ) {
         let elements =
-          node.object.type === 'ArrayExpression'
+          node.object.type === AST_NODE_TYPES.ArrayExpression
             ? node.object.elements
             : node.object.arguments
         sortArray<MessageId>({
@@ -197,7 +199,7 @@ export function sortArray<MessageIds extends string>({
 
       let name = getNodeName({ sourceCode, element })
       let selector: Selector =
-        element.type === 'SpreadElement' ? 'spread' : 'literal'
+        element.type === AST_NODE_TYPES.SpreadElement ? 'spread' : 'literal'
       let predefinedGroups = generatePredefinedGroups({
         cache: cachedGroupsByModifiersAndSelectors,
         selectors: [selector],
@@ -277,7 +279,7 @@ function getNodeName({
   element: TSESTree.SpreadElement | TSESTree.Expression
   sourceCode: TSESLint.SourceCode
 }): string {
-  return element.type === 'Literal'
+  return element.type === AST_NODE_TYPES.Literal
     ? `${element.value}`
     : sourceCode.getText(element)
 }

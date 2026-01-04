@@ -1,6 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/types'
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 /**
  * Determines whether the given AST node is a non-external-reference TS import

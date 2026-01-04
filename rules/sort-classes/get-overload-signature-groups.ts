@@ -1,5 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/utils'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import { isSortable } from '../../utils/is-sortable'
 
 /**
@@ -14,8 +16,8 @@ export function getOverloadSignatureGroups(
   let methods = members
     .filter(
       member =>
-        member.type === 'MethodDefinition' ||
-        member.type === 'TSAbstractMethodDefinition',
+        member.type === AST_NODE_TYPES.MethodDefinition ||
+        member.type === AST_NODE_TYPES.TSAbstractMethodDefinition,
     )
     .filter(member => member.kind === 'method')
 
@@ -27,7 +29,7 @@ export function getOverloadSignatureGroups(
   let overloadSignaturesByName = new Map<string, TSESTree.ClassElement[]>()
 
   for (let method of methods) {
-    if (method.key.type !== 'Identifier') {
+    if (method.key.type !== AST_NODE_TYPES.Identifier) {
       continue
     }
 

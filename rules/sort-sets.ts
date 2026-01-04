@@ -1,3 +1,5 @@
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { Options } from './sort-array-includes/types'
 
 import {
@@ -24,16 +26,16 @@ export default createEslintRule<Options, MessageId>({
   create: context => ({
     NewExpression: node => {
       if (
-        node.callee.type === 'Identifier' &&
+        node.callee.type === AST_NODE_TYPES.Identifier &&
         node.callee.name === 'Set' &&
         node.arguments.length > 0 &&
-        (node.arguments[0]?.type === 'ArrayExpression' ||
-          (node.arguments[0]?.type === 'NewExpression' &&
+        (node.arguments[0]?.type === AST_NODE_TYPES.ArrayExpression ||
+          (node.arguments[0]?.type === AST_NODE_TYPES.NewExpression &&
             'name' in node.arguments[0].callee &&
             node.arguments[0].callee.name === 'Array'))
       ) {
         let elements =
-          node.arguments[0].type === 'ArrayExpression'
+          node.arguments[0].type === AST_NODE_TYPES.ArrayExpression
             ? node.arguments[0].elements
             : node.arguments[0].arguments
         sortArray<MessageId>({

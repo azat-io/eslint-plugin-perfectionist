@@ -3,9 +3,8 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { Modifier, Selector } from './sort-jsx-props/types'
+import type { Modifier, Selector, Options } from './sort-jsx-props/types'
 import type { SortingNode } from '../types/sorting-node'
-import type { Options } from './sort-jsx-props/types'
 
 import {
   buildUseConfigurationIfJsonSchema,

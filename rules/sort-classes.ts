@@ -1,5 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type {
   SortClassesOptions,
   Modifier,
@@ -151,12 +153,13 @@ export default createEslintRule<SortClassesOptions, MessageId>({
         node.body
           .map(member => {
             if (
-              (member.type === 'MethodDefinition' ||
-                member.type === 'TSAbstractMethodDefinition') &&
+              (member.type === AST_NODE_TYPES.MethodDefinition ||
+                member.type === AST_NODE_TYPES.TSAbstractMethodDefinition) &&
               'name' in member.key
             ) {
               return getDependencyName({
-                isPrivateHash: member.key.type === 'PrivateIdentifier',
+                isPrivateHash:
+                  member.key.type === AST_NODE_TYPES.PrivateIdentifier,
                 nodeNameWithoutStartingHash: member.key.name,
                 isStatic: member.static,
               })
@@ -173,17 +176,19 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
         function checkNode(nodeValue: TSESTree.Node): void {
           if (
-            nodeValue.type === 'MemberExpression' &&
-            (nodeValue.object.type === 'ThisExpression' ||
-              (nodeValue.object.type === 'Identifier' &&
+            nodeValue.type === AST_NODE_TYPES.MemberExpression &&
+            (nodeValue.object.type === AST_NODE_TYPES.ThisExpression ||
+              (nodeValue.object.type === AST_NODE_TYPES.Identifier &&
                 nodeValue.object.name === className)) &&
-            (nodeValue.property.type === 'Identifier' ||
-              nodeValue.property.type === 'PrivateIdentifier')
+            (nodeValue.property.type === AST_NODE_TYPES.Identifier ||
+              nodeValue.property.type === AST_NODE_TYPES.PrivateIdentifier)
           ) {
             let isStaticDependency =
-              isMemberStatic || nodeValue.object.type === 'Identifier'
+              isMemberStatic ||
+              nodeValue.object.type === AST_NODE_TYPES.Identifier
             let dependencyName = getDependencyName({
-              isPrivateHash: nodeValue.property.type === 'PrivateIdentifier',
+              isPrivateHash:
+                nodeValue.property.type === AST_NODE_TYPES.PrivateIdentifier,
               nodeNameWithoutStartingHash: nodeValue.property.name,
               isStatic: isStaticDependency,
             })
@@ -192,12 +197,12 @@ export default createEslintRule<SortClassesOptions, MessageId>({
             }
           }
 
-          if (nodeValue.type === 'Property') {
+          if (nodeValue.type === AST_NODE_TYPES.Property) {
             traverseNode(nodeValue.key)
             traverseNode(nodeValue.value)
           }
 
-          if (nodeValue.type === 'ConditionalExpression') {
+          if (nodeValue.type === AST_NODE_TYPES.ConditionalExpression) {
             traverseNode(nodeValue.test)
             traverseNode(nodeValue.consequent)
             traverseNode(nodeValue.alternate)
@@ -249,7 +254,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
           if ('arguments' in nodeValue) {
             let shouldIgnore = false
-            if (nodeValue.type === 'CallExpression') {
+            if (nodeValue.type === AST_NODE_TYPES.CallExpression) {
               let functionName =
                 'name' in nodeValue.callee ? nodeValue.callee.name : null
               shouldIgnore =
@@ -306,21 +311,22 @@ export default createEslintRule<SortClassesOptions, MessageId>({
           let name: string
           let dependencies: string[] = []
 
-          if (member.type === 'StaticBlock') {
+          if (member.type === AST_NODE_TYPES.StaticBlock) {
             name = 'static'
-          } else if (member.type === 'TSIndexSignature') {
+          } else if (member.type === AST_NODE_TYPES.TSIndexSignature) {
             name = sourceCode.text.slice(
               member.range.at(0),
               member.typeAnnotation?.range.at(0) ?? member.range.at(1),
             )
-          } else if (member.key.type === 'Identifier') {
+          } else if (member.key.type === AST_NODE_TYPES.Identifier) {
             ;({ name } = member.key)
           } else {
             name = sourceCode.getText(member.key)
           }
 
           let isPrivateHash =
-            'key' in member && member.key.type === 'PrivateIdentifier'
+            'key' in member &&
+            member.key.type === AST_NODE_TYPES.PrivateIdentifier
 
           let decorated = false
           let decorators: string[] = []
@@ -337,8 +343,8 @@ export default createEslintRule<SortClassesOptions, MessageId>({
           let selectors: Selector[] = []
           let addSafetySemicolonWhenInline: boolean = true
           switch (member.type) {
-            case 'TSAbstractPropertyDefinition':
-            case 'PropertyDefinition':
+            case AST_NODE_TYPES.TSAbstractPropertyDefinition:
+            case AST_NODE_TYPES.PropertyDefinition:
               /**
                * Member is necessarily a property similarly to above for
                * methods, prioritize 'static', 'declare', 'decorated',
@@ -353,7 +359,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
                 modifiers.push('declare')
               }
 
-              if (member.type === 'TSAbstractPropertyDefinition') {
+              if (member.type === AST_NODE_TYPES.TSAbstractPropertyDefinition) {
                 modifiers.push('abstract')
               }
 
@@ -389,8 +395,8 @@ export default createEslintRule<SortClassesOptions, MessageId>({
               }
 
               if (
-                member.value?.type === 'ArrowFunctionExpression' ||
-                member.value?.type === 'FunctionExpression'
+                member.value?.type === AST_NODE_TYPES.ArrowFunctionExpression ||
+                member.value?.type === AST_NODE_TYPES.FunctionExpression
               ) {
                 if (member.value.async) {
                   modifiers.push('async')
@@ -404,8 +410,8 @@ export default createEslintRule<SortClassesOptions, MessageId>({
               selectors.push('property')
               break
 
-            case 'TSAbstractMethodDefinition':
-            case 'MethodDefinition':
+            case AST_NODE_TYPES.TSAbstractMethodDefinition:
+            case AST_NODE_TYPES.MethodDefinition:
               /**
                * By putting the static modifier before accessibility modifiers,
                * we prioritize 'static' over those in cases like: config:
@@ -416,7 +422,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
               if (member.static) {
                 modifiers.push('static')
               }
-              if (member.type === 'TSAbstractMethodDefinition') {
+              if (member.type === AST_NODE_TYPES.TSAbstractMethodDefinition) {
                 modifiers.push('abstract')
               } else if (!node.parent.declare) {
                 addSafetySemicolonWhenInline = false
@@ -461,13 +467,13 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
               break
 
-            case 'TSAbstractAccessorProperty':
-            case 'AccessorProperty':
+            case AST_NODE_TYPES.TSAbstractAccessorProperty:
+            case AST_NODE_TYPES.AccessorProperty:
               if (member.static) {
                 modifiers.push('static')
               }
 
-              if (member.type === 'TSAbstractAccessorProperty') {
+              if (member.type === AST_NODE_TYPES.TSAbstractAccessorProperty) {
                 modifiers.push('abstract')
               }
 
@@ -490,7 +496,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
               break
 
-            case 'TSIndexSignature':
+            case AST_NODE_TYPES.TSIndexSignature:
               if (member.static) {
                 modifiers.push('static')
               }
@@ -503,7 +509,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
               break
 
-            case 'StaticBlock':
+            case AST_NODE_TYPES.StaticBlock:
               addSafetySemicolonWhenInline = false
 
               selectors.push('static-block')

@@ -1,6 +1,8 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { CommonOptions, TypeOption } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -55,7 +57,7 @@ export default createEslintRule<Options, MessageId>({
 
       let { sourceCode } = context
       let isDiscriminantTrue =
-        switchNode.discriminant.type === 'Literal' &&
+        switchNode.discriminant.type === AST_NODE_TYPES.Literal &&
         switchNode.discriminant.value === true
       if (isDiscriminantTrue) {
         return
@@ -338,7 +340,7 @@ function getCaseName(
   sourceCode: TSESLint.SourceCode,
   caseNode: TSESTree.SwitchCase,
 ): string {
-  if (caseNode.test?.type === 'Literal') {
+  if (caseNode.test?.type === AST_NODE_TYPES.Literal) {
     return `${caseNode.test.value}`
   } else if (caseNode.test === null) {
     return 'default'
@@ -357,7 +359,7 @@ function getCaseName(
  */
 function caseHasBreakOrReturn(caseNode: TSESTree.SwitchCase): boolean {
   let statements =
-    caseNode.consequent[0]?.type === 'BlockStatement'
+    caseNode.consequent[0]?.type === AST_NODE_TYPES.BlockStatement
       ? caseNode.consequent[0].body
       : caseNode.consequent
 
@@ -374,6 +376,7 @@ function statementIsBreakOrReturn(
   statement: TSESTree.Statement,
 ): statement is TSESTree.ReturnStatement | TSESTree.BreakStatement {
   return (
-    statement.type === 'BreakStatement' || statement.type === 'ReturnStatement'
+    statement.type === AST_NODE_TYPES.BreakStatement ||
+    statement.type === AST_NODE_TYPES.ReturnStatement
   )
 }
