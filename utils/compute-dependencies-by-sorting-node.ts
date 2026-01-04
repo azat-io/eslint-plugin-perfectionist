@@ -10,15 +10,20 @@ export type ShouldIgnoreIdentifierComputer<T> = (parameters: {
   identifier: TSESTree.JSXIdentifier | TSESTree.Identifier
   referencingSortingNode: T
 }) => boolean
+export type AdditionalIdentifierDependenciesComputer<T> = (parameters: {
+  identifier: TSESTree.JSXIdentifier | TSESTree.Identifier
+}) => T[]
 
 export function computeDependenciesBySortingNode<
   Node extends TSESTree.Node,
   T extends Pick<SortingNodeWithDependencies<Node>, 'dependencyNames' | 'node'>,
 >({
+  additionalIdentifierDependenciesComputer,
   shouldIgnoreIdentifierComputer,
   sortingNodes,
   sourceCode,
 }: {
+  additionalIdentifierDependenciesComputer?: AdditionalIdentifierDependenciesComputer<T>
   shouldIgnoreIdentifierComputer?: ShouldIgnoreIdentifierComputer<T>
   sourceCode: TSESLint.SourceCode
   sortingNodes: T[]
@@ -54,6 +59,9 @@ export function computeDependenciesBySortingNode<
         identifier,
         resolved,
       }),
+      ...(additionalIdentifierDependenciesComputer?.({
+        identifier,
+      }) ?? []),
     )
   }
 
