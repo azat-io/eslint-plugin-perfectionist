@@ -51,6 +51,7 @@ function computeSubgroupContainingNode(
       }
       continue
     }
+    /* v8 ignore else -- @preserve Exhaustive guard for unsupported group option. */ 
     if (isGroupWithOverridesOption(group)) {
       if (doesStringSubgroupContainsNode(sortingNode, group.group)) {
         return group.group
