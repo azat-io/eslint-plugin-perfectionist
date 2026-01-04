@@ -52,11 +52,11 @@ import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
+import { isStyleComponent } from './sort-objects/is-style-component'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { isStyleNode } from './sort-objects/is-style-node'
 import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
@@ -113,26 +113,16 @@ export default createEslintRule<Options, MessageId>({
       })
       validateNewlinesAndPartitionConfiguration(options)
 
+      if (!options.styledComponents && isStyleComponent(nodeObject)) {
+        return
+      }
+
       let eslintDisabledLines = getEslintDisabledLines({
         ruleName: id,
         sourceCode,
       })
       let optionsByGroupIndexComputer =
         buildOptionsByGroupIndexComputer(options)
-
-      let objectRoot =
-        nodeObject.type === AST_NODE_TYPES.ObjectPattern
-          ? null
-          : getRootObject(nodeObject)
-      if (
-        objectRoot &&
-        !options.styledComponents &&
-        (isStyleNode(objectRoot.parent) ||
-          (objectRoot.parent.type === AST_NODE_TYPES.ArrowFunctionExpression &&
-            isStyleNode(objectRoot.parent.parent)))
-      ) {
-        return
-      }
 
       function extractDependencies(init: TSESTree.Expression): string[] {
         let dependencies: string[] = []
@@ -491,17 +481,4 @@ function getNodeValue({
     default:
       return sourceCode.getText(property.value)
   }
-}
-
-function getRootObject(
-  node: TSESTree.ObjectExpression,
-): TSESTree.ObjectExpression {
-  let objectRoot = node
-  while (
-    objectRoot.parent.type === AST_NODE_TYPES.Property &&
-    objectRoot.parent.parent.type === AST_NODE_TYPES.ObjectExpression
-  ) {
-    objectRoot = objectRoot.parent.parent
-  }
-  return objectRoot
 }
