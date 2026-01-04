@@ -53,7 +53,6 @@ import { getGroupIndex } from '../utils/get-group-index'
 import { computeGroup } from '../utils/compute-group'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
 /** Cache computed groups by modifiers and selectors for performance. */
@@ -154,17 +153,14 @@ export default createEslintRule<SortModulesOptions, MessageId>({
     })
 
     return {
-      Program: program => {
-        if (isSortable(program.body)) {
-          return analyzeModule({
-            eslintDisabledLines,
-            module: program,
-            sourceCode,
-            options,
-            context,
-          })
-        }
-      },
+      Program: program =>
+        analyzeModule({
+          eslintDisabledLines,
+          module: program,
+          sourceCode,
+          options,
+          context,
+        }),
     }
   },
   defaultOptions: [defaultOptions],

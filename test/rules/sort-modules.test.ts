@@ -8248,6 +8248,38 @@ describe('sort-modules', () => {
           },
         ],
       })
+
+      await invalid({
+        output: dedent`
+          namespace Namespace1 {
+            export namespace Namespace2 {
+              export type B = 'b'
+
+              type A = Namespace1.Namespace2.B
+            }
+          }
+        `,
+        code: dedent`
+          namespace Namespace1 {
+            export namespace Namespace2 {
+              type A = Namespace1.Namespace2.B
+
+              export type B = 'b'
+            }
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
     })
 
     it('detects usages in type generics', async () => {
