@@ -5016,165 +5016,179 @@ describe('sort-enums', () => {
       })
     })
 
-    it('handles dependencies between enum members', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedEnumsOrder',
-            data: { right: 'B', left: 'C' },
-          },
-        ],
-        output: dedent`
-          enum Enum {
-            B = 0,
-            A = B,
-            C = 'C',
-          }
-        `,
-        code: dedent`
-          enum Enum {
-            C = 'C',
-            B = 0,
-            A = B,
-          }
-        `,
-        options: [
-          {
-            type: 'alphabetical',
-          },
-        ],
-      })
+    function testDependencyDetection(
+      useExperimentalDependencyDetection: boolean,
+    ): void {
+      describe(`experimental dependency detection: ${useExperimentalDependencyDetection}`, () => {
+        it('handles dependencies between enum members', async () => {
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: { right: 'B', left: 'C' },
+              },
+            ],
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                B = 0,
+                A = B,
+                C = 'C',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                C = 'C',
+                B = 0,
+                A = B,
+              }
+            `,
+          })
 
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedEnumsOrder',
-            data: { right: 'B', left: 'C' },
-          },
-        ],
-        output: dedent`
-          enum Enum {
-            B = 0,
-            A = Enum.B,
-            C = 'C',
-          }
-        `,
-        code: dedent`
-          enum Enum {
-            C = 'C',
-            B = 0,
-            A = Enum.B,
-          }
-        `,
-        options: [
-          {
-            type: 'alphabetical',
-          },
-        ],
-      })
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: { right: 'B', left: 'C' },
+              },
+            ],
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                B = 0,
+                A = Enum.B,
+                C = 'C',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                C = 'C',
+                B = 0,
+                A = Enum.B,
+              }
+            `,
+          })
 
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedEnumsOrder',
-            data: { right: 'B', left: 'C' },
-          },
-        ],
-        output: dedent`
-          enum Enum {
-            B = 0,
-            A = 1 | 2 | B | Enum.B,
-            C = 3,
-          }
-        `,
-        code: dedent`
-          enum Enum {
-            C = 3,
-            B = 0,
-            A = 1 | 2 | B | Enum.B,
-          }
-        `,
-        options: [
-          {
-            type: 'alphabetical',
-          },
-        ],
-      })
+          await invalid({
+            output: dedent`
+              enum Enum {
+                B = 0,
+                A = 1 | 2 | B | Enum.B,
+                C = 3,
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: { right: 'B', left: 'C' },
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                C = 3,
+                B = 0,
+                A = 1 | 2 | B | Enum.B,
+              }
+            `,
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+          })
 
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedEnumsOrder',
-            data: { right: 'A', left: 'B' },
-          },
-        ],
-        output: dedent`
-          enum Enum {
-            A = AnotherEnum.B,
-            B = 'B',
-            C = 'C',
-          }
-        `,
-        code: dedent`
-          enum Enum {
-            B = 'B',
-            A = AnotherEnum.B,
-            C = 'C',
-          }
-        `,
-        options: [
-          {
-            type: 'alphabetical',
-          },
-        ],
-      })
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: { right: 'A', left: 'B' },
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                A = AnotherEnum.B,
+                B = 'B',
+                C = 'C',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                B = 'B',
+                A = AnotherEnum.B,
+                C = 'C',
+              }
+            `,
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+          })
 
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'A', right: 'C' },
-            messageId: 'unexpectedEnumsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          enum Enum {
-            C = 10,
-            A = Enum.C,
-            B = 10,
-          }
-        `,
-        code: dedent`
-          enum Enum {
-            A = Enum.C,
-            B = 10,
-            C = 10,
-          }
-        `,
-        options: [
-          {
-            type: 'alphabetical',
-          },
-        ],
-      })
-    })
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'A', right: 'C' },
+                messageId: 'unexpectedEnumsDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                C = 10,
+                A = Enum.C,
+                B = 10,
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                A = Enum.C,
+                B = 10,
+                C = 10,
+              }
+            `,
+          })
+        })
 
-    it('detects dependencies in template literal expressions', async () => {
-      await valid({
-        code: dedent`
-          enum Enum {
-            A = \`\${AnotherEnum.D}\`,
-            D = 'D',
-            B = \`\${Enum.D}\`,
-            C = \`\${D}\`,
-          }
-        `,
-        options: [
-          {
-            type: 'alphabetical',
-          },
-        ],
+        it('detects dependencies in template literal expressions', async () => {
+          await valid({
+            code: dedent`
+              enum Enum {
+                A = \`\${AnotherEnum.D}\`,
+                D = 'D',
+                B = \`\${Enum.D}\`,
+                C = \`\${D}\`,
+              }
+            `,
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+          })
+        })
       })
-    })
+    }
+    testDependencyDetection(true)
+    testDependencyDetection(false)
 
     it('ignores circular dependencies when sorting', async () => {
       await invalid({

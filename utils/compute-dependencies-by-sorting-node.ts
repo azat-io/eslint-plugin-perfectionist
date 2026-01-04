@@ -6,6 +6,10 @@ import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 import { computeDeepScopeReferences } from './compute-deep-scope-references'
 import { rangeContainsRange } from './range-contains-range'
 
+export type AdditionalIdentifierDependenciesComputer<T> = (parameters: {
+  identifier: TSESTree.JSXIdentifier | TSESTree.Identifier
+  referencingSortingNode: T
+}) => T[]
 export type ShouldIgnoreIdentifierComputer<T> = (parameters: {
   identifier: TSESTree.JSXIdentifier | TSESTree.Identifier
   referencingSortingNode: T
@@ -15,6 +19,8 @@ export type ShouldIgnoreIdentifierComputer<T> = (parameters: {
  * Compute the list of dependencies for each sorting node.
  *
  * @param params - The parameters object.
+ * @param params.additionalIdentifierDependenciesComputer - A function to
+ *   compute additional dependencies for an identifier.
  * @param params.shouldIgnoreIdentifierComputer - A function to determine if an
  *   identifier should be ignored.
  * @param params.sortingNodes - The sorting nodes to compute dependencies for.
@@ -25,10 +31,12 @@ export function computeDependenciesBySortingNode<
   Node extends TSESTree.Node,
   T extends Pick<SortingNodeWithDependencies<Node>, 'dependencyNames' | 'node'>,
 >({
+  additionalIdentifierDependenciesComputer,
   shouldIgnoreIdentifierComputer,
   sortingNodes,
   sourceCode,
 }: {
+  additionalIdentifierDependenciesComputer?: AdditionalIdentifierDependenciesComputer<T>
   shouldIgnoreIdentifierComputer?: ShouldIgnoreIdentifierComputer<T>
   sourceCode: TSESLint.SourceCode
   sortingNodes: T[]
@@ -64,6 +72,10 @@ export function computeDependenciesBySortingNode<
         identifier,
         resolved,
       }),
+      ...(additionalIdentifierDependenciesComputer?.({
+        referencingSortingNode,
+        identifier,
+      }) ?? []),
     )
   }
 

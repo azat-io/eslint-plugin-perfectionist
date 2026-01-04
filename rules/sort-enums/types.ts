@@ -23,6 +23,9 @@ export type Options = Partial<
      * @default ifNumericEnum
      */
     sortByValue: 'ifNumericEnum' | 'always' | 'never'
+
+    /** Enables experimental dependency detection. */
+    useExperimentalDependencyDetection: boolean
   } & AllCommonOptions<
     TypeOption,
     AdditionalSortOptions,
