@@ -26,7 +26,7 @@ export let comparatorByOptionsComputer: ComparatorByOptionsComputer<
 }
 
 let byValueComparatorComputer: ComparatorByOptionsComputer<
-  Required<Options[number]> & { subgroupOrder?: string[] | null },
+  { subgroupOrder?: string[] | null } & Required<Options[number]>,
   SortObjectTypesSortingNode
 > = options => {
   switch (options.type) {

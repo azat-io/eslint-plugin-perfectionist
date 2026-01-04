@@ -55,6 +55,10 @@ describe('sort-nodes-by-groups subgroup-order', () => {
   it('ignores nodes missing from the subgroup order', () => {
     let getGroupIndexMock = vi.mocked(getGroupIndex)
     getGroupIndexMock.mockReturnValue(0)
+    options = {
+      ...options,
+      subgroupOrder: ['group-a', 'group-b'],
+    }
 
     let nodeA = createTestNode({ group: 'group-c', name: 'same' })
     let nodeB = createTestNode({ group: 'group-b', name: 'same' })
@@ -76,6 +80,7 @@ describe('sort-nodes-by-groups subgroup-order', () => {
     options = {
       ...options,
       fallbackSort: { type: 'subgroup-order', order: 'desc' },
+      subgroupOrder: ['group-a', 'group-b'],
     }
 
     let nodeA = createTestNode({ group: 'group-a', name: 'same' })

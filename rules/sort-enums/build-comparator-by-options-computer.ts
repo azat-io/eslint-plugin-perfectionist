@@ -49,7 +49,7 @@ export function buildComparatorByOptionsComputer(
 }
 
 let byNonNumericValueComparatorComputer: ComparatorByOptionsComputer<
-  Required<Options[number]> & { subgroupOrder?: string[] | null },
+  { subgroupOrder?: string[] | null } & Required<Options[number]>,
   SortEnumsSortingNode
 > = options => {
   switch (options.type) {
@@ -77,7 +77,7 @@ let byNonNumericValueComparatorComputer: ComparatorByOptionsComputer<
 }
 
 let byNumericValueComparatorComputer: ComparatorByOptionsComputer<
-  Required<Options[number]> & { subgroupOrder?: string[] | null },
+  { subgroupOrder?: string[] | null } & Required<Options[number]>,
   SortEnumsSortingNode
 > = options => {
   switch (options.type) {

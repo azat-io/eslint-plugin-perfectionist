@@ -3,9 +3,6 @@ import type { GroupsOptions } from '../types/common-groups-options'
 import type { CommonOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
-import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
-import { isNewlinesBetweenOption } from './is-newlines-between-option'
-import { UnreachableCaseError } from './unreachable-case-error'
 import { getGroupIndex } from './get-group-index'
 import { sortNodes } from './sort-nodes'
 
@@ -131,10 +128,6 @@ export function sortNodesByGroups<
     let groupIndex = Number(groupIndexString)
     let options = optionsByGroupIndexComputer(groupIndex)
     let nodesToPush = nodesByNonIgnoredGroupIndex[groupIndex]!
-    let subgroupOrder = getSubgroupOrder(groups[groupIndex])
-    let optionsForGroup = subgroupOrder
-      ? { ...options, subgroupOrder }
-      : options
 
     let groupIgnoredNodes = new Set(
       nodesToPush.filter(node =>
@@ -151,8 +144,8 @@ export function sortNodesByGroups<
         isNodeIgnored: node => groupIgnoredNodes.has(node),
         ignoreEslintDisabledNodes: false,
         comparatorByOptionsComputer,
-        options: optionsForGroup,
         nodes: nodesToPush,
+        options,
       }),
     )
   }
@@ -163,24 +156,4 @@ export function sortNodesByGroups<
   }
 
   return sortedNodes
-}
-
-function getSubgroupOrder(
-  group: GroupsOptions[number] | undefined,
-): string[] | null {
-  if (!group) {
-    return null
-  }
-  if (typeof group === 'string' || Array.isArray(group)) {
-    return Array.isArray(group) ? group : null
-  }
-  if (isGroupWithOverridesOption(group)) {
-    return Array.isArray(group.group) ? group.group : null
-  }
-  /* v8 ignore else -- @preserve Exhaustive guard: other directives are filtered out earlier. */
-  if (isNewlinesBetweenOption(group)) {
-    return null
-  }
-  /* v8 ignore next -- @preserve Exhaustive guard: other directives are filtered out earlier. */
-  throw new UnreachableCaseError(group)
 }

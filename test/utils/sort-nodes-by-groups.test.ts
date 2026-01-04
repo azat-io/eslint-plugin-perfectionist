@@ -130,6 +130,7 @@ describe('sort-nodes-by-groups', () => {
           optionsByGroupIndexComputer: () => ({
             ...options,
             fallbackSort: { type: 'subgroup-order' },
+            subgroupOrder: ['group-b', 'group-a'],
           }),
           comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
           ignoreEslintDisabledNodes: false,
@@ -148,6 +149,7 @@ describe('sort-nodes-by-groups', () => {
           optionsByGroupIndexComputer: () => ({
             ...options,
             fallbackSort: { type: 'subgroup-order' },
+            subgroupOrder: ['group-b', 'group-a'],
           }),
           comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
           groups: [{ group: ['group-b', 'group-a'] }],
