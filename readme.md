@@ -147,7 +147,7 @@ export default [
 ]
 ```
 
-### Legacy Config ([`.eslintrc`](https://eslint.org/docs/latest/use/configure/configuration-files-deprecated))
+### Legacy Config ([`.eslintrc.js`](https://eslint.org/docs/latest/use/configure/configuration-files-deprecated))
 
 <!-- prettier-ignore -->
 ```js
