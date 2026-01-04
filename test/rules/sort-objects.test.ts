@@ -10607,6 +10607,32 @@ describe('sort-objects', () => {
         `,
         options: styledComponentsOptions,
       })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          let Func = ({
+            a,
+            b,
+          }) => {
+            // ...
+          }
+        `,
+        code: dedent`
+          let Func = ({
+            b,
+            a,
+          }) => {
+            // ...
+          }
+        `,
+        options: styledComponentsOptions,
+      })
     })
 
     it('respects the global settings configuration', async () => {
