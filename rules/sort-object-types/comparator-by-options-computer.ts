@@ -29,6 +29,8 @@ let byValueComparatorComputer: ComparatorByOptionsComputer<
   SortObjectTypesSortingNode
 > = options => {
   switch (options.type) {
+    case 'subgroup-order':
+      return unsortedComparator
     case 'alphabetical':
       return (a, b) => compareAlphabetically(a.value, b.value, options)
     case 'line-length':

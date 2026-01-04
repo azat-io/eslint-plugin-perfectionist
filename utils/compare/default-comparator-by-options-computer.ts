@@ -25,6 +25,8 @@ export let defaultComparatorByOptionsComputer: ComparatorByOptionsComputer<
   SortingNode
 > = options => {
   switch (options.type) {
+    case 'subgroup-order':
+      return () => 0
     case 'alphabetical':
       return (a, b) => compareAlphabetically(a.name, b.name, options)
     case 'line-length':

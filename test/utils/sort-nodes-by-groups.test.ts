@@ -120,6 +120,44 @@ describe('sort-nodes-by-groups', () => {
     })
   })
 
+  describe('fallbackSort subgroup-order', () => {
+    it('sorts by subgroup order in array groups', () => {
+      let nodeA = createTestNode({ group: 'group-b', name: 'same' })
+      let nodeB = createTestNode({ group: 'group-a', name: 'same' })
+
+      expect(
+        sortNodesByGroups({
+          optionsByGroupIndexComputer: () => ({
+            ...options,
+            fallbackSort: { type: 'subgroup-order' },
+          }),
+          comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+          ignoreEslintDisabledNodes: false,
+          groups: [['group-b', 'group-a']],
+          nodes: [nodeB, nodeA],
+        }),
+      ).toStrictEqual([nodeA, nodeB])
+    })
+
+    it('sorts by subgroup order in groups with overrides', () => {
+      let nodeA = createTestNode({ group: 'group-b', name: 'same' })
+      let nodeB = createTestNode({ group: 'group-a', name: 'same' })
+
+      expect(
+        sortNodesByGroups({
+          optionsByGroupIndexComputer: () => ({
+            ...options,
+            fallbackSort: { type: 'subgroup-order' },
+          }),
+          comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+          groups: [{ group: ['group-b', 'group-a'] }],
+          ignoreEslintDisabledNodes: false,
+          nodes: [nodeB, nodeA],
+        }),
+      ).toStrictEqual([nodeA, nodeB])
+    })
+  })
+
   function createTestNode<T extends object>(
     node: {
       isEslintDisabled?: boolean

@@ -3,6 +3,12 @@ import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
+import type {
+  SortEnumsSortingNode,
+  Options,
+} from '../../rules/sort-enums/types'
+
+import { buildComparatorByOptionsComputer } from '../../rules/sort-enums/build-comparator-by-options-computer'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-enums'
@@ -5710,4 +5716,60 @@ describe('sort-enums', () => {
       })
     })
   })
+
+  describe('comparatorByOptionsComputer', () => {
+    it('handles subgroup-order for numeric enums', () => {
+      let comparator = buildComparatorByOptionsComputer(true)(getOptions())
+
+      expect(
+        comparator(
+          createNode({ numericValue: 1 }),
+          createNode({ numericValue: 2 }),
+        ),
+      ).toBe(0)
+    })
+
+    it('handles subgroup-order for non-numeric enums', () => {
+      let comparator = buildComparatorByOptionsComputer(false)(getOptions())
+
+      expect(comparator(createNode(), createNode())).toBe(0)
+    })
+  })
 })
+
+function getOptions(): Required<Options[number]> {
+  return {
+    fallbackSort: { type: 'unsorted' },
+    partitionByComment: false,
+    partitionByNewLine: false,
+    specialCharacters: 'keep',
+    newlinesBetween: 'ignore',
+    newlinesInside: 'ignore',
+    type: 'subgroup-order',
+    sortByValue: 'always',
+    ignoreCase: false,
+    locales: 'en-US',
+    customGroups: [],
+    order: 'asc',
+    alphabet: '',
+    groups: [],
+  } as Required<Options[number]>
+}
+
+function createNode(
+  overrides: Partial<SortEnumsSortingNode> = {},
+): SortEnumsSortingNode {
+  return {
+    node: {} as SortEnumsSortingNode['node'],
+    isEslintDisabled: false,
+    dependencyNames: [],
+    numericValue: null,
+    dependencies: [],
+    group: 'group',
+    partitionId: 0,
+    name: 'name',
+    value: null,
+    size: 0,
+    ...overrides,
+  }
+}

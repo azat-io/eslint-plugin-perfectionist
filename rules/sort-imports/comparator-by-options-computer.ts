@@ -18,6 +18,7 @@ export let comparatorByOptionsComputer: ComparatorByOptionsComputer<
   switch (options.type) {
     case 'type-import-first':
       return (a, b) => compareTypeImportFirst(a, b, options)
+    case 'subgroup-order':
     case 'alphabetical':
     case 'line-length':
     case 'unsorted':
@@ -77,6 +78,8 @@ let bySpecifierComparatorByOptionsComputer: ComparatorByOptionsComputer<
   SortImportsSortingNode
 > = options => {
   switch (options.type) {
+    case 'subgroup-order':
+      return unsortedComparator
     case 'alphabetical':
       return (a, b) =>
         compareAlphabetically(

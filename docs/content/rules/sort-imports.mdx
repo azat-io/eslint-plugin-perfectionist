@@ -144,7 +144,7 @@ Specifies whether to sort items in ascending or descending order.
   type:
   ```ts
   {
-    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'type-import-first' | 'unsorted'
+    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'type-import-first' | 'subgroup-order' | 'unsorted'
     order?: 'asc' | 'desc'
   }
   ```
@@ -170,6 +170,17 @@ When importing a type and value import from the same module, you can enforce the
   type: 'alphabetical',
   order: 'desc',
   fallbackSort: { type: 'type-import-first', order: 'asc' } // The type import will come before its value import
+}
+```
+
+You can also sort by subgroup order inside composite groups using `subgroup-order`.
+
+```ts
+{
+  groups: [['type-import', 'value-import']],
+  type: 'alphabetical',
+  order: 'desc',
+  fallbackSort: { type: 'subgroup-order', order: 'asc' }
 }
 ```
 

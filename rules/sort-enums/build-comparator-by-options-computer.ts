@@ -52,6 +52,8 @@ let byNonNumericValueComparatorComputer: ComparatorByOptionsComputer<
   SortEnumsSortingNode
 > = options => {
   switch (options.type) {
+    case 'subgroup-order':
+      return unsortedComparator
     case 'alphabetical':
       return (a, b) =>
         compareAlphabetically(a.value ?? '', b.value ?? '', options)
@@ -75,6 +77,8 @@ let byNumericValueComparatorComputer: ComparatorByOptionsComputer<
   SortEnumsSortingNode
 > = options => {
   switch (options.type) {
+    case 'subgroup-order':
+      return unsortedComparator
     case 'alphabetical':
     case 'line-length':
     case 'natural':

@@ -24,6 +24,7 @@ export function buildComparatorByOptionsComputer({
 > {
   return options => {
     switch (options.type) {
+      case 'subgroup-order':
       case 'alphabetical':
       case 'line-length':
       case 'unsorted':

@@ -96,17 +96,23 @@ export type TypeOption =
    * Traditional alphabetical sorting using locale-aware comparison. Best for
    * standard text sorting where consistency is important.
    */
-  | 'alphabetical'
+  | 'subgroup-order'
 
   /**
    * Sort by the character length of each line. Useful for creating visual
    * hierarchies or grouping by complexity.
    */
-  | 'line-length'
+  | 'alphabetical'
 
   /**
    * Preserves the original order without sorting. Used when you want to apply
    * other features (like grouping) without reordering.
+   */
+  | 'line-length'
+
+  /**
+   * Sorts by the subgroup order defined in `groups` arrays. Useful as a
+   * fallback when elements are equal under the primary comparison.
    */
   | 'unsorted'
 
