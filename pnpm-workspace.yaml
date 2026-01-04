@@ -4,3 +4,7 @@ configDependencies:
 onlyBuiltDependenciesFile: node_modules/.pnpm-config/@pnpm/plugin-trusted-deps/allow.json
 
 sideEffectsCache: false
+
+packages:
+  - .
+
