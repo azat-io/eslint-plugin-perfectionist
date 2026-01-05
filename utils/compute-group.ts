@@ -32,7 +32,7 @@ interface ComputeGroupParameters<CustomGroupMatchOptions> {
 }
 
 type CustomGroupMatcher<MatchOptions> = (
-  customGroup: AnyOfCustomGroup<MatchOptions> | MatchOptions,
+  customGroup: AnyOfCustomGroup<MatchOptions> | Partial<MatchOptions>,
 ) => boolean
 
 /**
