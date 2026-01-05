@@ -1845,7 +1845,7 @@ describe('sort-classes', () => {
           {
             messageId: 'unexpectedClassesOrder',
             data: { right: 'a', left: 'b' },
-          }
+          },
         ],
         options: [
           {

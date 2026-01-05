@@ -49,10 +49,7 @@ describe('build-subgroup-order-comparator', () => {
 
   it('handles group overrides and newlinesBetween entries', () => {
     let comparator = buildSubgroupOrderComparator({
-      groups: [
-        { newlinesBetween: 1 },
-        { group: ['group-b', 'group-a'] },
-      ],
+      groups: [{ newlinesBetween: 1 }, { group: ['group-b', 'group-a'] }],
       order: 'asc',
     })
 
@@ -85,7 +82,10 @@ describe('build-subgroup-order-comparator', () => {
     })
 
     expect(() => {
-      comparator(buildTestNode({ group: 'group-a' }), buildTestNode({ group: 'group-b' }))
+      comparator(
+        buildTestNode({ group: 'group-a' }),
+        buildTestNode({ group: 'group-b' }),
+      )
     }).toThrowError()
   })
 

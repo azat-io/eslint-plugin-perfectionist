@@ -93,8 +93,8 @@ export type CommonOptions<
  */
 export type TypeOption =
   /**
-   * Sort by the subgroup order defined in `groups` arrays. Useful as a
-   * fallback when elements are equal under the primary comparison.
+   * Sort by the subgroup order defined in `groups` arrays. Useful as a fallback
+   * when elements are equal under the primary comparison.
    */
   | 'subgroup-order'
 
