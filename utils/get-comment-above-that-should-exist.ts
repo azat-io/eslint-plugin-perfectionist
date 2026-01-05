@@ -14,7 +14,7 @@ import { getCommentsBefore } from './get-comments-before'
 interface GetCommentAboveMissingParameters<T extends SortingNode> {
   /** Configuration options for grouping. */
   options: Pick<
-    CommonGroupsOptions<unknown, unknown, string>,
+    CommonGroupsOptions<string, unknown, unknown>,
     'customGroups' | 'groups'
   >
 

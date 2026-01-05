@@ -22,7 +22,7 @@ interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
 
   /** Configuration options for groups and newlines. */
-  options: CommonGroupsOptions<unknown, unknown, string>
+  options: CommonGroupsOptions<string, unknown, unknown>
 
   /** ESLint source code object for accessing text and locations. */
   sourceCode: TSESLint.SourceCode

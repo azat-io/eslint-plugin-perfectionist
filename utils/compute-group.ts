@@ -13,7 +13,7 @@ import { computeGroupsNames } from './compute-groups-names'
 interface ComputeGroupParameters<CustomGroupMatchOptions> {
   /** Configuration options for grouping. */
   options: Pick<
-    CommonGroupsOptions<CustomGroupMatchOptions, unknown, string>,
+    CommonGroupsOptions<string, unknown, CustomGroupMatchOptions>,
     'customGroups' | 'groups'
   >
   /**
@@ -89,9 +89,9 @@ export function computeGroup<CustomGroupMatchOptions>({
 function computeFirstMatchingCustomGroupName<CustomGroupMatchOptions>(
   groupsSet: Set<string>,
   customGroups: CommonGroupsOptions<
-    CustomGroupMatchOptions,
+    string,
     unknown,
-    string
+    CustomGroupMatchOptions
   >['customGroups'],
   customGroupMatcher: CustomGroupMatcher<CustomGroupMatchOptions>,
 ): string | null {

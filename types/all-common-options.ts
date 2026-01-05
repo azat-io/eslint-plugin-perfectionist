@@ -7,9 +7,9 @@ export type AllCommonOptions<
   AdditionalSortProperties,
   CustomGroupMatchOptions,
 > = CommonGroupsOptions<
-  CustomGroupMatchOptions,
+  CustomTypeOption,
   AdditionalSortProperties,
-  CustomTypeOption
+  CustomGroupMatchOptions
 > &
   CommonOptions<CustomTypeOption, AdditionalSortProperties> &
   CommonPartitionOptions

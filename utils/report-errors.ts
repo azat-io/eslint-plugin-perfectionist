@@ -47,7 +47,7 @@ interface ReportErrorsParameters<
   T extends SortingNode,
 > {
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
-  options?: CommonGroupsOptions<unknown, unknown, string>
+  options?: CommonGroupsOptions<string, unknown, unknown>
   context: TSESLint.RuleContext<MessageIds, unknown[]>
   ignoreFirstNodeHighestBlockComment?: boolean
   firstUnorderedNodeDependentOnRight?: T

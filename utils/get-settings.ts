@@ -13,7 +13,7 @@ import type { CommonOptions } from '../types/common-options'
  */
 export type Settings = Partial<
   Pick<
-    CommonGroupsOptions<unknown, unknown, string>,
+    CommonGroupsOptions<string, unknown, unknown>,
     'newlinesBetween' | 'newlinesInside'
   > &
     CommonPartitionOptions &

@@ -1,9 +1,9 @@
 import type { CommonOptions, RegexOption } from './common-options'
 
 export interface CommonGroupsOptions<
-  CustomGroupMatchOptions,
-  AdditionalSortProperties,
   CustomTypeOption extends string,
+  AdditionalSortProperties,
+  CustomGroupMatchOptions,
 > {
   /** Specify the exact number of newlines required between elements of groups. */
   newlinesInside:
@@ -16,9 +16,9 @@ export interface CommonGroupsOptions<
 
   /** Custom groups for organizing nodes. */
   customGroups: CustomGroupsOption<
-    CustomGroupMatchOptions,
+    CustomTypeOption,
     AdditionalSortProperties,
-    CustomTypeOption
+    CustomGroupMatchOptions
   >
 
   /**
@@ -59,9 +59,9 @@ export interface CommonGroupsOptions<
  *   base configuration.
  */
 export type CustomGroupsOption<
-  MatchOptions,
-  AdditionalSortProperties,
   CustomTypeOption extends string,
+  AdditionalSortProperties,
+  MatchOptions,
 > = ({
   /** Specify the exact number of newlines required between elements of groups. */
   newlinesInside?: NewlinesInsideOption

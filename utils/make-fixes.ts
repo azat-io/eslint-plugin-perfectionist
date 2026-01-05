@@ -20,7 +20,7 @@ interface MakeFixesParameters<T extends SortingNode> {
   options?: {
     /** Configuration for partition comments that separate code sections. */
     partitionByComment?: PartitionByCommentOption
-  } & CommonGroupsOptions<unknown, unknown, string>
+  } & CommonGroupsOptions<string, unknown, unknown>
 
   /** Optional function to customize newlines between specific nodes. */
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>

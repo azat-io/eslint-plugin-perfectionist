@@ -18,7 +18,7 @@ import { computeGroupName } from './compute-group-name'
 export interface GetNewlinesBetweenOptionParameters {
   /** Configuration options for newlines and groups. */
   options: Omit<
-    CommonGroupsOptions<unknown, unknown, string>,
+    CommonGroupsOptions<string, unknown, unknown>,
     'newlinesInside'
   > & {
     newlinesInside: NewlinesInsideOption | 'newlinesBetween'

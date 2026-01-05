@@ -121,7 +121,7 @@ interface ReportAllErrorsParameters<
    *   partitionByComment: true
    *   }
    */
-  options: CommonGroupsOptions<unknown, unknown, string>
+  options: CommonGroupsOptions<string, unknown, unknown>
 
   /**
    * ESLint rule context for reporting errors.

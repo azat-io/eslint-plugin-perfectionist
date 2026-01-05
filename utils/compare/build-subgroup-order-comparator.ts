@@ -37,7 +37,7 @@ export function buildSubgroupOrderComparator({
 
 function computeSubgroupContainingNode(
   sortingNode: SortingNode,
-  groups: CommonGroupsOptions<unknown, unknown, string>['groups'],
+  groups: CommonGroupsOptions<string, unknown, unknown>['groups'],
 ): string[] | null {
   for (let group of groups) {
     if (isNewlinesBetweenOption(group)) {
