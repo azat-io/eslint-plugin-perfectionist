@@ -181,7 +181,7 @@ Specifies whether to sort items in ascending or descending order.
   type:
   ```ts
   {
-    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted'
+    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'subgroup-order' | 'unsorted'
     order?: 'asc' | 'desc'
   }
   ```
@@ -190,12 +190,24 @@ Specifies whether to sort items in ascending or descending order.
 
 Specifies fallback sort options for elements that are equal according to the primary sort [`type`](#type).
 
+You can also sort by subgroup order inside composite groups using `subgroup-order`.
+
 Example: enforce alphabetical sort between two elements with the same length.
 ```ts
 {
   type: 'line-length',
   order: 'desc',
   fallbackSort: { type: 'alphabetical', order: 'asc' }
+}
+```
+
+Example: enforce subgroup ordering for getters and setters.
+```ts
+{
+  groups: [['get-method', 'set-method']],
+  type: 'alphabetical',
+  order: 'desc',
+  fallbackSort: { type: 'subgroup-order', order: 'asc' }
 }
 ```
 
@@ -301,7 +313,7 @@ option.
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
 ### newlinesInside
-
+ 
 <sub>
   type: `number | 'ignore' | 'newlinesBetween'`
 </sub>
@@ -351,9 +363,9 @@ Without `ignoreCallbackDependenciesPatterns: ['^computed$']`, `role` and `userna
       | { newlinesBetween: number | 'ignore' }
       | {
           group: string | string[];
-          type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
+          type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'subgroup-order' | 'unsorted';
           order?: 'asc' | 'desc';
-          fallbackSort?: { type: string; order?: 'asc' | 'desc' };
+          fallbackSort?: { type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'subgroup-order' | 'unsorted'; order?: 'asc' | 'desc' };
           newlinesInside?: number | 'ignore';
         }
     >
@@ -712,9 +724,9 @@ A custom group definition may follow one of the two following interfaces:
 ```ts
 interface CustomGroupDefinition {
   groupName: string
-  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'subgroup-order' | 'unsorted'
   order?: 'asc' | 'desc'
-  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  fallbackSort?: { type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'subgroup-order' | 'unsorted'; order?: 'asc' | 'desc' }
   newlinesInside?: number | 'ignore'
   selector?: string
   modifiers?: string[]
@@ -730,9 +742,9 @@ or:
 ```ts
 interface CustomGroupAnyOfDefinition {
   groupName: string
-  type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
+  type?: 'alphabetical' | 'natural' | 'line-length' | 'subgroup-order' | 'unsorted'
   order?: 'asc' | 'desc'
-  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  fallbackSort?: { type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'subgroup-order' | 'unsorted'; order?: 'asc' | 'desc' }
   newlinesInside?: number | 'ignore'
   anyOf: Array<{
       selector?: string

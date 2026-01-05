@@ -1835,6 +1835,44 @@ describe('sort-classes', () => {
       })
     })
 
+    it('sorts getters and setters using subgroup-order fallback', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: [['get-method', 'set-method'], 'unknown'],
+            fallbackSort: { type: 'subgroup-order' },
+          },
+        ],
+        output: dedent`
+          class Class {
+            get a() {}
+            set a(value) {}
+            get b() {}
+            set b(value) {}
+          }
+        `,
+        code: dedent`
+          class Class {
+            set b(value) {}
+            set a(value) {}
+            get b() {}
+            get a() {}
+          }
+        `,
+      })
+    })
+
     it('sorts decorated properties', async () => {
       await invalid({
         output: dedent`

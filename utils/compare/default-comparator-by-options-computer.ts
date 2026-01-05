@@ -1,6 +1,8 @@
 import type { CommonOptions, TypeOption } from '../../types/common-options'
+import type { GroupsOptions } from '../../types/common-groups-options'
 import type { SortingNode } from '../../types/sorting-node'
 
+import { buildSubgroupOrderComparator } from './build-subgroup-order-comparator'
 import { buildLineLengthComparator } from './build-line-length-comparator'
 import { compareAlphabetically } from './compare-alphabetically'
 import { UnreachableCaseError } from '../unreachable-case-error'
@@ -18,13 +20,25 @@ type Options = Pick<
   CommonOptions<TypeOption>,
   'specialCharacters' | 'ignoreCase' | 'alphabet' | 'locales' | 'order' | 'type'
 > &
-  Pick<CommonOptions, 'fallbackSort'>
+  Pick<CommonOptions, 'fallbackSort'> & {
+    groups?: GroupsOptions
+  }
 
 export let defaultComparatorByOptionsComputer: ComparatorByOptionsComputer<
   Options,
   SortingNode
 > = options => {
   switch (options.type) {
+    case 'subgroup-order':
+      /* v8 ignore start -- @preserve sort-switch-case specific */
+      if (!options.groups) {
+        return unsortedComparator
+      }
+      /* v8 ignore stop -- @preserve sort-switch-case specific */
+      return buildSubgroupOrderComparator({
+        ...options,
+        groups: options.groups,
+      })
     case 'alphabetical':
       return (a, b) => compareAlphabetically(a.name, b.name, options)
     case 'line-length':
