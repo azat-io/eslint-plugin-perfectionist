@@ -1,4 +1,4 @@
-import type { SpecialCharactersOption } from '../../types/common-options'
+import type { CommonOptions } from '../../types/common-options'
 
 import { UnreachableCaseError } from '../unreachable-case-error'
 
@@ -26,10 +26,7 @@ import { UnreachableCaseError } from '../unreachable-case-error'
 export function buildStringFormatter({
   specialCharacters,
   ignoreCase,
-}: {
-  specialCharacters: SpecialCharactersOption
-  ignoreCase: boolean
-}) {
+}: Pick<CommonOptions, 'specialCharacters' | 'ignoreCase'>) {
   return (value: string): string => {
     let valueToCompare = value
     if (ignoreCase) {

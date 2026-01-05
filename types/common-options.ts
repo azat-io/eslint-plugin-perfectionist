@@ -129,6 +129,34 @@ export type TypeOption =
   | 'custom'
 
 /**
+ * Regular expression pattern configuration for matching strings.
+ *
+ * Supports multiple formats for flexibility in pattern definition, from simple
+ * string patterns to complex regular expressions with flags.
+ *
+ * @example
+ *   // Simple string pattern
+ *   const pattern: RegexOption = '^TODO:'
+ *
+ * @example
+ *   // Pattern with flags
+ *   const pattern: RegexOption = {
+ *     pattern: '^(TODO|FIXME):',
+ *     flags: 'i',
+ *   }
+ *
+ * @example
+ *   // Multiple patterns (OR logic)
+ *   const patterns: RegexOption = [
+ *     '^TODO:',
+ *     { pattern: '^FIXME:', flags: 'i' },
+ *   ]
+ */
+export type RegexOption<AdditionalProperties extends object = object> =
+  | SingleRegexOption<AdditionalProperties>[]
+  | SingleRegexOption<AdditionalProperties>
+
+/**
  * Configuration for handling special characters during string comparison.
  *
  * Determines how non-alphanumeric characters are processed when sorting,
@@ -142,7 +170,7 @@ export type TypeOption =
  *   // With 'trim': '_abc' becomes 'abc', but 'a_bc' stays 'a_bc'
  *   const option: SpecialCharactersOption = 'trim'
  */
-export type SpecialCharactersOption =
+type SpecialCharactersOption =
   /**
    * Remove all special characters before comparison. Only alphanumeric
    * characters are considered for sorting.
@@ -162,6 +190,30 @@ export type SpecialCharactersOption =
   | 'keep'
 
 /**
+ * Single regular expression pattern configuration.
+ *
+ * Can be either a simple string pattern or an object with pattern and flags for
+ * more complex matching requirements.
+ *
+ * @internal
+ */
+type SingleRegexOption<AdditionalProperties> =
+  | ({
+      /**
+       * The regular expression pattern string. Will be compiled into a RegExp
+       * for matching.
+       */
+      pattern: string
+
+      /**
+       * Optional RegExp flags to modify pattern matching behavior. Common
+       * flags: 'i' (case-insensitive), 'g' (global), 'm' (multiline).
+       */
+      flags?: string
+    } & AdditionalProperties)
+  | string
+
+/**
  * Configuration for fallback sorting when primary comparison returns equal.
  *
  * Provides a secondary sorting method to ensure stable and predictable ordering
@@ -175,7 +227,7 @@ export type SpecialCharactersOption =
  *     order: 'asc',
  *   }
  */
-export type FallbackSortOption<
+type FallbackSortOption<
   CustomTypeOption extends string,
   AdditionalProperties,
 > = {
@@ -207,7 +259,7 @@ export type FallbackSortOption<
  *   // Descending: Z → A, 9 → 0
  *   const order: OrderOption = 'desc'
  */
-export type OrderOption =
+type OrderOption =
   /**
    * Descending order - from largest to smallest. Letters: Z to A, Numbers: 9 to
    * 0, Length: longest to shortest.
@@ -219,55 +271,3 @@ export type OrderOption =
    * 9, Length: shortest to longest.
    */
   | 'asc'
-
-/**
- * Regular expression pattern configuration for matching strings.
- *
- * Supports multiple formats for flexibility in pattern definition, from simple
- * string patterns to complex regular expressions with flags.
- *
- * @example
- *   // Simple string pattern
- *   const pattern: RegexOption = '^TODO:'
- *
- * @example
- *   // Pattern with flags
- *   const pattern: RegexOption = {
- *     pattern: '^(TODO|FIXME):',
- *     flags: 'i',
- *   }
- *
- * @example
- *   // Multiple patterns (OR logic)
- *   const patterns: RegexOption = [
- *     '^TODO:',
- *     { pattern: '^FIXME:', flags: 'i' },
- *   ]
- */
-export type RegexOption<AdditionalProperties extends object = object> =
-  | SingleRegexOption<AdditionalProperties>[]
-  | SingleRegexOption<AdditionalProperties>
-
-/**
- * Single regular expression pattern configuration.
- *
- * Can be either a simple string pattern or an object with pattern and flags for
- * more complex matching requirements.
- *
- * @internal
- */
-type SingleRegexOption<AdditionalProperties> =
-  | ({
-      /**
-       * The regular expression pattern string. Will be compiled into a RegExp
-       * for matching.
-       */
-      pattern: string
-
-      /**
-       * Optional RegExp flags to modify pattern matching behavior. Common
-       * flags: 'i' (case-insensitive), 'g' (global), 'm' (multiline).
-       */
-      flags?: string
-    } & AdditionalProperties)
-  | string
