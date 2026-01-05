@@ -54,13 +54,15 @@ export function computeNodeDetails({
   let addSafetySemicolonWhenInline: boolean = false
   let moduleBlock: TSESTree.TSModuleBlock | null = null
   let shouldPartitionAfterNode: boolean = false
+  let ignoredDueToDecoratedThenExportedDecoratedClass: boolean = false
+  let exportNode:
+    | TSESTree.ExportDefaultDeclaration
+    | TSESTree.ExportNamedDeclaration
 
   parseNode(node)
 
-  let ignoredDueToExportedDecoratedClass =
-    decorators.length > 0 && modifiers.includes('export')
-
-  if (!selector || !name || ignoredDueToExportedDecoratedClass) {
+  // eslint-disable-next-line typescript/no-unnecessary-condition
+  if (!selector || !name || ignoredDueToDecoratedThenExportedDecoratedClass) {
     return {
       shouldPartitionAfterNode,
       moduleBlock,
@@ -89,10 +91,12 @@ export function computeNodeDetails({
     }
     switch (nodeToParse.type) {
       case AST_NODE_TYPES.ExportDefaultDeclaration:
+        exportNode = nodeToParse
         modifiers.push('default', 'export')
         parseNode(nodeToParse.declaration)
         break
       case AST_NODE_TYPES.ExportNamedDeclaration:
+        exportNode = nodeToParse
         if (nodeToParse.declaration) {
           parseNode(nodeToParse.declaration)
         }
@@ -135,8 +139,13 @@ export function computeNodeDetails({
         name = nodeToParse.id?.name
         // eslint-disable-next-line no-case-declarations -- Easier to handle
         let nodeDecorators = getNodeDecorators(nodeToParse)
-        if (nodeDecorators.length > 0) {
+        if (nodeDecorators[0]) {
           modifiers.push('decorated')
+          ignoredDueToDecoratedThenExportedDecoratedClass =
+            isExportAfterDecorators({
+              firstDecorator: nodeDecorators[0],
+              exportNode,
+            })
         }
         decorators = nodeDecorators.map(decorator =>
           getDecoratorName({
@@ -174,4 +183,21 @@ function extractDependencies(
     searchStaticMethodsAndFunctionProperties,
     type: 'hard',
   })
+}
+
+function isExportAfterDecorators({
+  firstDecorator,
+  exportNode,
+}: {
+  exportNode:
+    | TSESTree.ExportDefaultDeclaration
+    | TSESTree.ExportNamedDeclaration
+    | undefined
+  firstDecorator: TSESTree.Decorator
+}): boolean {
+  if (!exportNode) {
+    return false
+  }
+
+  return exportNode.range[0] > firstDecorator.range[0]
 }

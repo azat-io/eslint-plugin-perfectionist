@@ -2975,6 +2975,78 @@ describe('sort-modules', () => {
     })
 
     describe('exported decorated classes', () => {
+      it('allows exported then decorated classes to be sorted', async () => {
+        await invalid({
+          output: dedent`
+            // A
+            export @A class A {}
+
+            @B
+            class B {}
+
+            @C
+            class C {}
+          `,
+          code: dedent`
+            @C
+            class C {}
+
+            // A
+            export @A class A {}
+
+            @B
+            class B {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'A', left: 'C' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await invalid({
+          output: dedent`
+            // A
+            export default @A class A {}
+
+            @B
+            class B {}
+
+            @C
+            class C {}
+          `,
+          code: dedent`
+            @C
+            class C {}
+
+            // A
+            export default @A class A {}
+
+            @B
+            class B {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'A', left: 'C' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
       it('ignores decorated then exported classes when sorting', async () => {
         await invalid({
           output: dedent`
