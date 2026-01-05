@@ -25,11 +25,7 @@ export type Options = Partial<
      * @default false
      */
     ignoreAlias: boolean
-  } & CommonGroupsOptions<
-    CustomGroupMatchOptions,
-    Record<string, never>,
-    TypeOption
-  > &
+  } & CommonGroupsOptions<CustomGroupMatchOptions, object, TypeOption> &
     CommonOptions<TypeOption> &
     CommonPartitionOptions
 >[]

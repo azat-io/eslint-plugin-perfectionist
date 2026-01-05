@@ -29,11 +29,7 @@ export type SortClassesOptions = [
        * callbacks won't influence the ordering.
        */
       ignoreCallbackDependenciesPatterns: RegexOption
-    } & CommonGroupsOptions<
-      CustomGroupMatchOptions,
-      Record<string, never>,
-      TypeOption
-    > &
+    } & CommonGroupsOptions<CustomGroupMatchOptions, object, TypeOption> &
       CommonOptions<TypeOption> &
       CommonPartitionOptions
   >,
@@ -113,8 +109,8 @@ export let allModifiers = [
  * Additional custom group match options JSON schema. Used by ESLint to validate
  * rule options at configuration time.
  *
- * Note: Ideally, we should generate as many schemas as there are selectors,
- * and ensure that users do not enter invalid modifiers for a given selector.
+ * Note: Ideally, we should generate as many schemas as there are selectors, and
+ * ensure that users do not enter invalid modifiers for a given selector.
  */
 export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),

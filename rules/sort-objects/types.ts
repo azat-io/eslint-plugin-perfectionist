@@ -89,11 +89,7 @@ export type Options = Partial<
      * @default true
      */
     styledComponents: boolean
-  } & CommonGroupsOptions<
-    CustomGroupMatchOptions,
-    Record<string, never>,
-    TypeOption
-  > &
+  } & CommonGroupsOptions<CustomGroupMatchOptions, object, TypeOption> &
     CommonOptions<TypeOption> &
     CommonPartitionOptions
 >[]

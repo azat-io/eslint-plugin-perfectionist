@@ -13,11 +13,7 @@ import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/com
  * such as `const a = 1, b, c = 3;`.
  */
 export type Options = Partial<
-  CommonGroupsOptions<
-    CustomGroupMatchOptions,
-    Record<string, never>,
-    TypeOption
-  > &
+  CommonGroupsOptions<CustomGroupMatchOptions, object, TypeOption> &
     CommonOptions<TypeOption> &
     CommonPartitionOptions
 >[]

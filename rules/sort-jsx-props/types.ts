@@ -39,11 +39,7 @@ export type Options = Partial<
        */
       tagMatchesPattern?: RegexOption
     }
-  } & CommonGroupsOptions<
-    CustomGroupMatchOptions,
-    Record<string, never>,
-    TypeOption
-  > &
+  } & CommonGroupsOptions<CustomGroupMatchOptions, object, TypeOption> &
     Pick<CommonPartitionOptions, 'partitionByNewLine'> &
     CommonOptions<TypeOption>
 >[]

@@ -12,11 +12,7 @@ import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/com
  * Controls how TypeScript union type members are sorted.
  */
 export type Options = Partial<
-  CommonGroupsOptions<
-    CustomGroupMatchOptions,
-    Record<string, never>,
-    TypeOption
-  > &
+  CommonGroupsOptions<CustomGroupMatchOptions, object, TypeOption> &
     CommonOptions<TypeOption> &
     CommonPartitionOptions
 >[]

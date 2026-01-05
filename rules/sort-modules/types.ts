@@ -24,11 +24,7 @@ import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schem
  */
 export type SortModulesOptions = [
   Partial<
-    CommonGroupsOptions<
-      CustomGroupMatchOptions,
-      Record<string, never>,
-      CustomTypeOption
-    > &
+    CommonGroupsOptions<CustomGroupMatchOptions, object, CustomTypeOption> &
       CommonOptions<CustomTypeOption> &
       CommonPartitionOptions
   >,

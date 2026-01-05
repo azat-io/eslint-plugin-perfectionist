@@ -12,11 +12,7 @@ export type Options = Partial<
     sortOnAccessors: boolean
     sortOnMethods: boolean
     sortOnClasses: boolean
-  } & CommonGroupsOptions<
-    CustomGroupMatchOptions,
-    Record<string, never>,
-    TypeOption
-  > &
+  } & CommonGroupsOptions<CustomGroupMatchOptions, object, TypeOption> &
     CommonOptions<TypeOption> &
     CommonPartitionOptions
 >[]
@@ -24,4 +20,4 @@ export type Options = Partial<
 export type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
 /** Match options for a custom group. */
-type CustomGroupMatchOptions = Record<string, never>
+type CustomGroupMatchOptions = object
