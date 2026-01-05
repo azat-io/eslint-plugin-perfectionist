@@ -6,9 +6,6 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type {
   SortModulesSortingNode,
   SortModulesOptions,
-  SortModulesNode,
-  Modifier,
-  Selector,
 } from './sort-modules/types'
 
 import {
@@ -33,20 +30,16 @@ import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-
 import { buildComparatorByOptionsComputer } from './sort-modules/build-comparator-by-options-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { isPropertyOrAccessorNode } from './sort-modules/is-property-or-accessor-node'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isArrowFunctionNode } from './sort-modules/is-arrow-function-node'
-import { computeDependencies } from './sort-modules/compute-dependencies'
+import { computeNodeDetails } from './sort-modules/compute-node-details'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getDecoratorName } from '../utils/get-decorator-name'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { getGroupIndex } from '../utils/get-group-index'
@@ -205,109 +198,32 @@ function analyzeModule({
         continue
     }
 
-    let selector: undefined | Selector
-    let name: undefined | string
-    let modifiers: Modifier[] = []
-    let dependencies: string[] = []
-    let decorators: string[] = []
-    let addSafetySemicolonWhenInline: boolean = false
+    let details = computeNodeDetails({ sourceCode, node })
 
-    function parseNode(
-      nodeToParse:
-        | TSESTree.DefaultExportDeclarations
-        | TSESTree.NamedExportDeclarations
-        | SortModulesNode,
-    ): void {
-      if ('declare' in nodeToParse && nodeToParse.declare) {
-        modifiers.push('declare')
+    if (!details.nodeDetails) {
+      if (details.shouldPartitionAfterNode) {
+        formattedNodes.push([])
       }
-      switch (nodeToParse.type) {
-        case AST_NODE_TYPES.ExportDefaultDeclaration:
-          modifiers.push('default', 'export')
-          parseNode(nodeToParse.declaration)
-          break
-        case AST_NODE_TYPES.ExportNamedDeclaration:
-          if (nodeToParse.declaration) {
-            parseNode(nodeToParse.declaration)
-          }
-          modifiers.push('export')
-          break
-        case AST_NODE_TYPES.TSInterfaceDeclaration:
-          selector = 'interface'
-          ;({ name } = nodeToParse.id)
-          break
-        case AST_NODE_TYPES.TSTypeAliasDeclaration:
-          selector = 'type'
-          ;({ name } = nodeToParse.id)
-          addSafetySemicolonWhenInline = true
-          break
-        case AST_NODE_TYPES.FunctionDeclaration:
-        case AST_NODE_TYPES.TSDeclareFunction:
-          selector = 'function'
-          if (nodeToParse.async) {
-            modifiers.push('async')
-          }
-          if (modifiers.includes('declare')) {
-            addSafetySemicolonWhenInline = true
-          }
-          name = nodeToParse.id?.name
-          break
-        case AST_NODE_TYPES.TSModuleDeclaration:
-          formattedNodes.push([])
-          if (nodeToParse.body) {
-            analyzeModule({
-              module: nodeToParse.body,
-              eslintDisabledLines,
-              sourceCode,
-              options,
-              context,
-            })
-          }
-          break
-        case AST_NODE_TYPES.VariableDeclaration:
-          formattedNodes.push([])
-          break
-        case AST_NODE_TYPES.TSEnumDeclaration:
-          selector = 'enum'
-          ;({ name } = nodeToParse.id)
-          dependencies = [...dependencies, ...extractDependencies(nodeToParse)]
-          break
-        case AST_NODE_TYPES.ClassDeclaration:
-          selector = 'class'
-          name = nodeToParse.id?.name
-          // eslint-disable-next-line no-case-declarations -- Easier to handle
-          let nodeDecorators = getNodeDecorators(nodeToParse)
-          if (nodeDecorators.length > 0) {
-            modifiers.push('decorated')
-          }
-          decorators = nodeDecorators.map(decorator =>
-            getDecoratorName({
-              sourceCode,
-              decorator,
-            }),
-          )
-          dependencies = [...dependencies, ...extractDependencies(nodeToParse)]
-          break
-        /* v8 ignore next 2 -- @preserve Unhandled cases */
-        default:
-          break
+      if (details.moduleBlock) {
+        analyzeModule({
+          module: details.moduleBlock,
+          eslintDisabledLines,
+          sourceCode,
+          options,
+          context,
+        })
       }
-    }
-
-    parseNode(node)
-
-    if (!selector || !name) {
       continue
     }
 
-    if (
-      selector === 'class' &&
-      modifiers.includes('export') &&
-      modifiers.includes('decorated')
-    ) {
-      // Not always handled correctly at the moment.
-      continue
-    }
+    let {
+      addSafetySemicolonWhenInline,
+      dependencies,
+      decorators,
+      modifiers,
+      selector,
+      name,
+    } = details.nodeDetails
 
     let predefinedGroups = generatePredefinedGroups({
       cache: cachedGroupsByModifiersAndSelectors,
@@ -317,8 +233,8 @@ function analyzeModule({
     let group = computeGroup({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
-          selectors: [selector!],
-          elementName: name!,
+          selectors: [selector],
+          elementName: name,
           customGroup,
           decorators,
           modifiers,
@@ -394,27 +310,4 @@ function analyzeModule({
       ignoreEslintDisabledNodes,
     })
   }
-}
-
-function extractDependencies(
-  expression: TSESTree.TSEnumDeclaration | TSESTree.ClassDeclaration,
-): string[] {
-  /**
-   * Search static methods only if there is a static block or a static property
-   * that is not an arrow function.
-   */
-  let searchStaticMethodsAndFunctionProperties =
-    expression.type === AST_NODE_TYPES.ClassDeclaration &&
-    expression.body.body.some(
-      classElement =>
-        classElement.type === AST_NODE_TYPES.StaticBlock ||
-        (classElement.static &&
-          isPropertyOrAccessorNode(classElement) &&
-          !isArrowFunctionNode(classElement)),
-    )
-
-  return computeDependencies(expression, {
-    searchStaticMethodsAndFunctionProperties,
-    type: 'hard',
-  })
 }
