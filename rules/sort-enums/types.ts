@@ -1,14 +1,9 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  CommonOptions,
-  RegexOption,
-  TypeOption,
-} from '../../types/common-options'
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { RegexOption, TypeOption } from '../../types/common-options'
+import type { AllCommonOptions } from '../../types/all-common-options'
 
 import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
@@ -28,9 +23,11 @@ export type Options = Partial<
      * @default ifNumericEnum
      */
     sortByValue: 'ifNumericEnum' | 'always' | 'never'
-  } & CommonGroupsOptions<CustomGroupMatchOptions, object, TypeOption> &
-    CommonOptions<TypeOption> &
-    CommonPartitionOptions
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortProperties,
+    CustomGroupMatchOptions
+  >
 >[]
 
 export interface SortEnumsSortingNode extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
@@ -46,6 +43,8 @@ interface CustomGroupMatchOptions {
    */
   elementValuePattern?: RegexOption
 }
+
+type AdditionalSortProperties = object
 
 /**
  * Additional custom group match options JSON schema. Used by ESLint to validate

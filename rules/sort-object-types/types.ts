@@ -3,14 +3,9 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type {
-  CommonOptions,
-  RegexOption,
-  TypeOption,
-} from '../../types/common-options'
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { ScopedRegexOption } from '../../types/scoped-regex-option'
+import type { AllCommonOptions } from '../../types/all-common-options'
 import type { SortingNode } from '../../types/sorting-node'
 import type { NodeOfType } from '../../types/node-of-type'
 
@@ -57,13 +52,11 @@ export type Options = Partial<
        */
       hasNumericKeysOnly?: boolean
     }
-  } & CommonGroupsOptions<
-    CustomGroupMatchOptions,
+  } & AllCommonOptions<
+    TypeOption,
     AdditionalSortProperties,
-    TypeOption
-  > &
-    CommonOptions<TypeOption, AdditionalSortProperties> &
-    CommonPartitionOptions
+    CustomGroupMatchOptions
+  >
 >[]
 
 /**

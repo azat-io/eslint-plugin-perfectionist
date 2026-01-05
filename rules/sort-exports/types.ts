@@ -1,8 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { CommonOptions, TypeOption } from '../../types/common-options'
+import type { AllCommonOptions } from '../../types/all-common-options'
+import type { TypeOption } from '../../types/common-options'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -16,9 +15,11 @@ import {
  * From '...'`) to improve code organization and maintainability.
  */
 export type Options = Partial<
-  CommonGroupsOptions<CustomGroupMatchOptions, object, TypeOption> &
-    CommonOptions<TypeOption> &
-    CommonPartitionOptions
+  AllCommonOptions<
+    TypeOption,
+    AdditionalSortProperties,
+    CustomGroupMatchOptions
+  >
 >[]
 
 /**
@@ -58,6 +59,8 @@ interface CustomGroupMatchOptions {
    */
   selector?: Selector
 }
+
+type AdditionalSortProperties = object
 
 /**
  * Complete list of available export selectors. Used for validation and JSON

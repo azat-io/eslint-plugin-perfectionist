@@ -1,14 +1,9 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  CommonOptions,
-  RegexOption,
-  TypeOption,
-} from '../../types/common-options'
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { RegexOption, TypeOption } from '../../types/common-options'
+import type { AllCommonOptions } from '../../types/all-common-options'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -65,13 +60,11 @@ export type Options = Partial<
      * sorting instead of the entire line.
      */
     maxLineLength: number
-  } & CommonGroupsOptions<
-    CustomGroupMatchOptions,
+  } & AllCommonOptions<
+    CustomTypeOption,
     AdditionalSortProperties,
-    CustomTypeOption
-  > &
-    CommonOptions<CustomTypeOption, AdditionalSortProperties> &
-    CommonPartitionOptions
+    CustomGroupMatchOptions
+  >
 >[]
 
 /**

@@ -1,9 +1,8 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { CommonOptions, TypeOption } from '../../types/common-options'
+import type { AllCommonOptions } from '../../types/all-common-options'
+import type { TypeOption } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import {
@@ -25,9 +24,11 @@ export type Options = Partial<
      * @default false
      */
     ignoreAlias: boolean
-  } & CommonGroupsOptions<CustomGroupMatchOptions, object, TypeOption> &
-    CommonOptions<TypeOption> &
-    CommonPartitionOptions
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortProperties,
+    CustomGroupMatchOptions
+  >
 >[]
 
 /** Extended sorting node for named export specifiers. */
@@ -61,6 +62,8 @@ interface CustomGroupMatchOptions {
    */
   selector?: Selector
 }
+
+type AdditionalSortProperties = object
 
 /**
  * Array of all available selectors for named exports.

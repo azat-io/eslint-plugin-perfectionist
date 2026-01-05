@@ -2,14 +2,9 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type {
-  CommonOptions,
-  RegexOption,
-  TypeOption,
-} from '../../types/common-options'
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { ScopedRegexOption } from '../../types/scoped-regex-option'
+import type { AllCommonOptions } from '../../types/all-common-options'
 import type { NodeOfType } from '../../types/node-of-type'
 
 import {
@@ -89,10 +84,14 @@ export type Options = Partial<
      * @default true
      */
     styledComponents: boolean
-  } & CommonGroupsOptions<CustomGroupMatchOptions, object, TypeOption> &
-    CommonOptions<TypeOption> &
-    CommonPartitionOptions
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortProperties,
+    CustomGroupMatchOptions
+  >
 >[]
+
+type AdditionalSortProperties = object
 
 export let objectParentTypes = [
   AST_NODE_TYPES.VariableDeclarator,
