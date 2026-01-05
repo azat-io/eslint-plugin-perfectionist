@@ -338,6 +338,22 @@ function analyzeModule({
     })
   }
 
+  let sortingNodes = formattedNodes.flat()
+
+  reportAllErrors<MessageId>({
+    availableMessageIds: {
+      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+      unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
+      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+      unexpectedOrder: ORDER_ERROR_ID,
+    },
+    sortNodesExcludingEslintDisabled,
+    nodes: sortingNodes,
+    options,
+    context,
+  })
+
   function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
   ): SortModulesSortingNode[] {
@@ -360,21 +376,6 @@ function analyzeModule({
       ignoreEslintDisabledNodes,
     })
   }
-  let nodes = formattedNodes.flat()
-
-  reportAllErrors<MessageId>({
-    availableMessageIds: {
-      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-      unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
-      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-      unexpectedOrder: ORDER_ERROR_ID,
-    },
-    sortNodesExcludingEslintDisabled,
-    options,
-    context,
-    nodes,
-  })
 }
 
 function extractDependencies(
