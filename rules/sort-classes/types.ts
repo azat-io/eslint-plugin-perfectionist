@@ -30,7 +30,7 @@ export type SortClassesOptions = [
        */
       ignoreCallbackDependenciesPatterns: RegexOption
     } & CommonGroupsOptions<
-      SingleCustomGroup,
+      CustomGroupMatchOptions,
       Record<string, never>,
       TypeOption
     > &
@@ -58,7 +58,7 @@ export type Modifier = (typeof allModifiers)[number]
  * property, etc.) and various patterns matching their names, values, or
  * decorators.
  */
-interface SingleCustomGroup {
+interface CustomGroupMatchOptions {
   /** Pattern to match decorator names (e.g., '@Component'). */
   decoratorNamePattern?: RegexOption
 
@@ -110,13 +110,13 @@ export let allModifiers = [
 ] as const
 
 /**
- * JSON schema definition for validating single custom group configurations.
- * Used by ESLint to validate rule options at configuration time.
+ * Additional custom group match options JSON schema. Used by ESLint to validate
+ * rule options at configuration time.
  *
- * Note: Ideally, we should generate as many schemas as there are selectors, and
- * ensure that users do not enter invalid modifiers for a given selector.
+ * Note: Ideally, we should generate as many schemas as there are selectors,
+ * and ensure that users do not enter invalid modifiers for a given selector.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   decoratorNamePattern: buildRegexJsonSchema(),

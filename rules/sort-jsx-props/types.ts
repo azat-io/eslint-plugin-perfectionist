@@ -40,7 +40,7 @@ export type Options = Partial<
       tagMatchesPattern?: RegexOption
     }
   } & CommonGroupsOptions<
-    SingleCustomGroup,
+    CustomGroupMatchOptions,
     Record<string, never>,
     TypeOption
   > &
@@ -69,7 +69,7 @@ export type Selector = (typeof allSelectors)[number]
  *     "modifiers": ["shorthand"]
  *   }
  */
-interface SingleCustomGroup {
+interface CustomGroupMatchOptions {
   /**
    * Regular expression pattern to match prop values. Props with values matching
    * this pattern will be included in this custom group.
@@ -103,10 +103,10 @@ export let allSelectors = ['prop'] as const
 export let allModifiers = ['shorthand', 'multiline'] as const
 
 /**
- * JSON schema definition for validating single custom group configurations.
- * Used by ESLint to validate rule options at configuration time.
+ * Additional custom group match options JSON schema. Used by ESLint to validate
+ * rule options at configuration time.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   elementValuePattern: buildRegexJsonSchema(),

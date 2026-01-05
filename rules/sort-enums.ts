@@ -26,8 +26,8 @@ import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { customGroupMatchOptionsJsonSchema } from './sort-enums/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { singleCustomGroupJsonSchema } from './sort-enums/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
@@ -237,7 +237,8 @@ export default createEslintRule<Options, MessageId>({
         properties: {
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
-            singleCustomGroupJsonSchema,
+            additionalCustomGroupMatchProperties:
+              customGroupMatchOptionsJsonSchema,
           }),
           sortByValue: {
             description: 'Specifies whether to sort enums by value.',

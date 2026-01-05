@@ -58,7 +58,7 @@ export type Options = Partial<
       hasNumericKeysOnly?: boolean
     }
   } & CommonGroupsOptions<
-    SingleCustomGroup,
+    CustomGroupMatchOptions,
     { sortBy?: SortByOption },
     TypeOption
   > &
@@ -109,8 +109,8 @@ export type Selector = (typeof allSelectors)[number]
  */
 export type Modifier = (typeof allModifiers)[number]
 
-/** Additional configuration for a single custom group. */
-interface SingleCustomGroup {
+/** Match options for a custom group. */
+interface CustomGroupMatchOptions {
   /**
    * Regular expression pattern to match against the member's type annotation
    * value. Only applicable to properties.
@@ -160,16 +160,10 @@ export let sortByJsonSchema: JSONSchema4 = {
 }
 
 /**
- * JSON Schema definitions for single custom group configurations.
- *
- * Provides additional schema properties specific to the sort-object-types rule,
- * extending the base custom group schema with element patterns and sorting
- * options.
- *
- * Note: Ideally, we should generate as many schemas as there are selectors, and
- * ensure that users do not enter invalid modifiers for a given selector.
+ * Additional custom group match options JSON schema. Used by ESLint to validate
+ * rule options at configuration time.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   elementValuePattern: buildRegexJsonSchema(),

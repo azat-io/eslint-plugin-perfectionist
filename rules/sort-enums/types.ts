@@ -29,7 +29,7 @@ export type Options = Partial<
      */
     sortByValue: 'ifNumericEnum' | 'always' | 'never'
   } & CommonGroupsOptions<
-    SingleCustomGroup,
+    CustomGroupMatchOptions,
     Record<string, never>,
     TypeOption
   > &
@@ -42,8 +42,8 @@ export interface SortEnumsSortingNode extends SortingNodeWithDependencies<TSESTr
   value: string | null
 }
 
-/** Additional configuration for a single custom group. */
-interface SingleCustomGroup {
+/** Match options for a custom group. */
+interface CustomGroupMatchOptions {
   /**
    * Regular expression pattern to match enum member values. Members with values
    * matching this pattern will be included in this custom group.
@@ -52,9 +52,9 @@ interface SingleCustomGroup {
 }
 
 /**
- * JSON schema definition for validating single custom group configurations.
- * Used by ESLint to validate rule options at configuration time.
+ * Additional custom group match options JSON schema. Used by ESLint to validate
+ * rule options at configuration time.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
   elementValuePattern: buildRegexJsonSchema(),
 }

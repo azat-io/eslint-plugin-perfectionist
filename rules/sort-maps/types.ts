@@ -26,7 +26,7 @@ export type Options = Partial<
       allNamesMatchPattern?: RegexOption
     }
   } & CommonGroupsOptions<
-    SingleCustomGroup,
+    CustomGroupMatchOptions,
     Record<string, never>,
     TypeOption
   > &
@@ -34,5 +34,5 @@ export type Options = Partial<
     CommonPartitionOptions
 >[]
 
-/** Additional configuration for a single custom group. */
-type SingleCustomGroup = Record<string, never>
+/** Match options for a custom group. */
+type CustomGroupMatchOptions = Record<string, never>

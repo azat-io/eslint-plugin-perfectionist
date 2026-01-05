@@ -27,12 +27,12 @@ import {
   buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
-import { computeIndexSignatureDetails } from './sort-classes/node-info/compute-index-signature-details'
 import {
-  singleCustomGroupJsonSchema,
+  customGroupMatchOptionsJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-classes/types'
+import { computeIndexSignatureDetails } from './sort-classes/node-info/compute-index-signature-details'
 import { computeStaticBlockDetails } from './sort-classes/node-info/compute-static-block-details'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -364,7 +364,8 @@ export default createEslintRule<SortClassesOptions, MessageId>({
         properties: {
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
-            singleCustomGroupJsonSchema,
+            additionalCustomGroupMatchProperties:
+              customGroupMatchOptionsJsonSchema,
           }),
           ignoreCallbackDependenciesPatterns: buildRegexJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,

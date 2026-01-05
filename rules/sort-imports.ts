@@ -19,8 +19,8 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import {
+  customGroupMatchOptionsJsonSchema,
   TYPE_IMPORT_FIRST_TYPE_OPTION,
-  singleCustomGroupJsonSchema,
   sortByJsonSchema,
   allModifiers,
   allSelectors,
@@ -298,9 +298,10 @@ export default createEslintRule<Options, MessageId>({
             additionalSortProperties: { sortBy: sortByJsonSchema },
           }),
           ...buildCommonGroupsJsonSchemas({
+            additionalCustomGroupMatchProperties:
+              customGroupMatchOptionsJsonSchema,
             allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
             additionalSortProperties: { sortBy: sortByJsonSchema },
-            singleCustomGroupJsonSchema,
           }),
           tsconfig: {
             properties: {

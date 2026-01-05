@@ -12,7 +12,11 @@ import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/com
  * Controls how TypeScript union type members are sorted.
  */
 export type Options = Partial<
-  CommonGroupsOptions<SingleCustomGroup, Record<string, never>, TypeOption> &
+  CommonGroupsOptions<
+    CustomGroupMatchOptions,
+    Record<string, never>,
+    TypeOption
+  > &
     CommonOptions<TypeOption> &
     CommonPartitionOptions
 >[]
@@ -25,8 +29,8 @@ export type Options = Partial<
  */
 export type Selector = (typeof allSelectors)[number]
 
-/** Additional configuration for a single custom group. */
-interface SingleCustomGroup {
+/** Match options for a custom group. */
+interface CustomGroupMatchOptions {
   /**
    * The selector type this group matches. Determines what kind of type members
    * belong to this group.
@@ -55,10 +59,9 @@ export let allSelectors = [
 ] as const
 
 /**
- * JSON Schema definitions for single custom group configurations.
- *
- * Provides additional schema properties specific to the sort-union-types rule.
+ * Additional custom group match options JSON schema. Used by ESLint to validate
+ * rule options at configuration time.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
 }

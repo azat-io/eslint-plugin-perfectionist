@@ -20,7 +20,7 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import {
-  singleCustomGroupJsonSchema,
+  customGroupMatchOptionsJsonSchema,
   allSelectors,
 } from './sort-variable-declarations/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
@@ -215,7 +215,8 @@ export default createEslintRule<Options, MessageId>({
         properties: {
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
-            singleCustomGroupJsonSchema,
+            additionalCustomGroupMatchProperties:
+              customGroupMatchOptionsJsonSchema,
           }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,

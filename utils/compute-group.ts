@@ -8,12 +8,12 @@ import { computeGroupsNames } from './compute-groups-names'
 /**
  * Parameters for computing the group of an element.
  *
- * @template SingleCustomGroup - Type of individual custom group configuration.
+ * @template CustomGroupMatchOptions - Type of custom group match options.
  */
-interface GetGroupParameters<SingleCustomGroup> {
+interface ComputeGroupParameters<CustomGroupMatchOptions> {
   /** Configuration options for grouping. */
   options: Pick<
-    CommonGroupsOptions<SingleCustomGroup, unknown, string>,
+    CommonGroupsOptions<CustomGroupMatchOptions, unknown, string>,
     'customGroups' | 'groups'
   >
   /**
@@ -22,7 +22,7 @@ interface GetGroupParameters<SingleCustomGroup> {
    * @param customGroup - Custom group configuration to test against.
    * @returns True if the element matches the custom group.
    */
-  customGroupMatcher: CustomGroupMatcher<SingleCustomGroup>
+  customGroupMatcher: CustomGroupMatcher<CustomGroupMatchOptions>
 
   /**
    * List of predefined groups that the element belongs to. These are checked
@@ -31,8 +31,8 @@ interface GetGroupParameters<SingleCustomGroup> {
   predefinedGroups: string[]
 }
 
-type CustomGroupMatcher<SingleCustomGroup> = (
-  customGroup: AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup,
+type CustomGroupMatcher<MatchOptions> = (
+  customGroup: AnyOfCustomGroup<MatchOptions> | MatchOptions,
 ) => boolean
 
 /**
@@ -59,7 +59,7 @@ type CustomGroupMatcher<SingleCustomGroup> = (
  *   })
  *   // Returns: 'react'
  *
- * @template SingleCustomGroup - Type of individual custom group configuration.
+ * @template CustomGroupMatchOptions - Type of custom group match options.
  * @param params - Parameters for group computation.
  * @param params.options - Configuration with available groups and custom
  *   groups.
@@ -67,11 +67,11 @@ type CustomGroupMatcher<SingleCustomGroup> = (
  * @param params.predefinedGroups - Fallback predefined groups to check.
  * @returns The matched group name or 'unknown' if no group matches.
  */
-export function computeGroup<SingleCustomGroup>({
+export function computeGroup<CustomGroupMatchOptions>({
   customGroupMatcher,
   predefinedGroups,
   options,
-}: GetGroupParameters<SingleCustomGroup>): 'unknown' | string {
+}: ComputeGroupParameters<CustomGroupMatchOptions>): 'unknown' | string {
   // For lookup performance.
   let groupsSet = new Set(computeGroupsNames(options.groups))
 
@@ -86,14 +86,14 @@ export function computeGroup<SingleCustomGroup>({
   )
 }
 
-function computeFirstMatchingCustomGroupName<SingleCustomGroup>(
+function computeFirstMatchingCustomGroupName<CustomGroupMatchOptions>(
   groupsSet: Set<string>,
   customGroups: CommonGroupsOptions<
-    SingleCustomGroup,
+    CustomGroupMatchOptions,
     unknown,
     string
   >['customGroups'],
-  customGroupMatcher: CustomGroupMatcher<SingleCustomGroup>,
+  customGroupMatcher: CustomGroupMatcher<CustomGroupMatchOptions>,
 ): string | null {
   for (let customGroup of customGroups) {
     if (

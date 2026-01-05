@@ -22,7 +22,7 @@ import {
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import {
-  singleCustomGroupJsonSchema,
+  customGroupMatchOptionsJsonSchema,
   USAGE_TYPE_OPTION,
   allModifiers,
   allSelectors,
@@ -109,8 +109,9 @@ export default createEslintRule<SortModulesOptions, MessageId>({
             allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
           }),
           ...buildCommonGroupsJsonSchemas({
+            additionalCustomGroupMatchProperties:
+              customGroupMatchOptionsJsonSchema,
             allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
-            singleCustomGroupJsonSchema,
           }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,

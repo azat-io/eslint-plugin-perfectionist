@@ -48,7 +48,7 @@ export interface DoesCustomGroupMatchParameters {
  * custom group. All specified criteria must match for the element to be
  * considered part of the group.
  */
-interface BaseSingleCustomGroup {
+interface BaseCustomGroupMatchOptions {
   /**
    * Pattern to match against decorator names. Element must have at least one
    * decorator matching this pattern.
@@ -116,17 +116,19 @@ interface BaseSingleCustomGroup {
  *   })
  *   // Returns: true (matches first subgroup)
  *
- * @template SingleCustomGroup - Type of individual custom group configuration.
+ * @template CustomGroupMatchOptions - Type of custom group match options.
  * @param props - Combined parameters including the custom group and element
  *   properties.
  * @returns True if the element matches the custom group criteria, false
  *   otherwise.
  */
 export function doesCustomGroupMatch<
-  SingleCustomGroup extends BaseSingleCustomGroup,
+  CustomGroupMatchOptions extends BaseCustomGroupMatchOptions,
 >(
   props: {
-    customGroup: AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup
+    customGroup:
+      | AnyOfCustomGroup<CustomGroupMatchOptions>
+      | CustomGroupMatchOptions
   } & DoesCustomGroupMatchParameters,
 ): boolean {
   if ('anyOf' in props.customGroup) {
@@ -175,7 +177,7 @@ function doesSingleCustomGroupMatch({
   selectors,
   modifiers,
 }: {
-  customGroup: BaseSingleCustomGroup
+  customGroup: BaseCustomGroupMatchOptions
   elementValue?: string | null
   decorators?: string[]
   selectors?: string[]

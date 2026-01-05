@@ -66,7 +66,7 @@ export type Options = Partial<
      */
     maxLineLength: number
   } & CommonGroupsOptions<
-    SingleCustomGroup,
+    CustomGroupMatchOptions,
     { sortBy: 'specifier' | 'path' },
     CustomTypeOption
   > &
@@ -119,7 +119,7 @@ export type Modifier = (typeof allModifiers)[number]
  *     "selector": "external"
  *   }
  */
-interface SingleCustomGroup {
+interface CustomGroupMatchOptions {
   /** List of modifiers that imports must have to be included in this group. */
   modifiers?: Modifier[]
 
@@ -168,7 +168,7 @@ export let allModifiers = [
  * Ideally, we should generate as many schemas as there are selectors, and
  * ensure that users do not enter invalid modifiers for a given selector.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
 }

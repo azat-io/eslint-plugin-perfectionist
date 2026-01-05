@@ -25,7 +25,7 @@ import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schem
 export type SortModulesOptions = [
   Partial<
     CommonGroupsOptions<
-      SingleCustomGroup,
+      CustomGroupMatchOptions,
       Record<string, never>,
       CustomTypeOption
     > &
@@ -56,7 +56,7 @@ export type Modifier = (typeof allModifiers)[number]
  * Custom groups allow fine-grained control over how module members are grouped
  * and sorted based on their types, modifiers, and patterns.
  */
-interface SingleCustomGroup {
+interface CustomGroupMatchOptions {
   /**
    * Regular expression pattern to match decorator names. Members with
    * decorators matching this pattern will be included in this custom group.
@@ -102,7 +102,7 @@ export let allModifiers = [
  * Ideally, we should generate as many schemas as there are selectors, and
  * ensure that users do not enter invalid modifiers for a given selector.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   decoratorNamePattern: buildRegexJsonSchema(),

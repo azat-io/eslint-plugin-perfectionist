@@ -26,7 +26,7 @@ export type Options = Partial<
      */
     ignoreAlias: boolean
   } & CommonGroupsOptions<
-    SingleCustomGroup,
+    CustomGroupMatchOptions,
     Record<string, never>,
     TypeOption
   > &
@@ -51,8 +51,8 @@ export type Modifier = (typeof allModifiers)[number]
  */
 export type Selector = (typeof allSelectors)[number]
 
-/** Additional configuration for a single custom group. */
-interface SingleCustomGroup {
+/** Match options for a custom group. */
+interface CustomGroupMatchOptions {
   /**
    * Array of modifiers that exports must have to match this group. Can include
    * 'type' for type exports or 'value' for value exports.
@@ -81,11 +81,10 @@ export let allSelectors = ['export'] as const
 export let allModifiers = ['value', 'type'] as const
 
 /**
- * JSON Schema definitions for single custom group configurations.
- *
- * Provides additional schema properties specific to the sort-named-exports.
+ * Additional custom group match options JSON schema. Used by ESLint to validate
+ * rule options at configuration time.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
 }

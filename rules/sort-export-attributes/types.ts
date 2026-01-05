@@ -6,7 +6,11 @@ import type { CommonOptions, TypeOption } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 export type Options = Partial<
-  CommonGroupsOptions<SingleCustomGroup, Record<string, never>, TypeOption> &
+  CommonGroupsOptions<
+    CustomGroupMatchOptions,
+    Record<string, never>,
+    TypeOption
+  > &
     CommonOptions<TypeOption> &
     CommonPartitionOptions
 >[]
@@ -14,5 +18,5 @@ export type Options = Partial<
 export type SortExportAttributesSortingNode =
   SortingNode<TSESTree.ImportAttribute>
 
-/** Additional configuration for a single custom group. */
-type SingleCustomGroup = Record<string, unknown>
+/** Match options for a custom group. */
+type CustomGroupMatchOptions = Record<string, never>

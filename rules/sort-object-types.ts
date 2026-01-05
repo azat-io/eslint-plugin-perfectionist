@@ -13,7 +13,7 @@ import type {
 } from './sort-object-types/types'
 
 import {
-  singleCustomGroupJsonSchema,
+  customGroupMatchOptionsJsonSchema,
   objectTypeParentTypes,
   sortByJsonSchema,
   allModifiers,
@@ -100,8 +100,8 @@ export let jsonSchema: JSONSchema4 = {
         additionalSortProperties: { sortBy: sortByJsonSchema },
       }),
       ...buildCommonGroupsJsonSchemas({
+        additionalCustomGroupMatchProperties: customGroupMatchOptionsJsonSchema,
         additionalSortProperties: { sortBy: sortByJsonSchema },
-        singleCustomGroupJsonSchema,
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {

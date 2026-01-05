@@ -27,13 +27,12 @@ import type {
  *     },
  *   ]
  *
- * @template SingleCustomGroup - Type defining the structure of a single custom
- *   group.
+ * @template MatchOptions - Options for matching elements to the custom group.
  * @template AdditionalSortProperties - Additional sort options that extend the
  *   base configuration.
  */
 export type CustomGroupsOption<
-  SingleCustomGroup,
+  MatchOptions,
   AdditionalSortProperties,
   CustomTypeOption extends string,
 > = ({
@@ -69,7 +68,7 @@ export type CustomGroupsOption<
    * groups configuration array.
    */
   groupName: string
-} & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) &
+} & (AnyOfCustomGroup<MatchOptions> | MatchOptions) &
   AdditionalSortProperties)[]
 
 /**
@@ -112,7 +111,7 @@ export type GroupWithOverridesOption<
 } & AdditionalSortProperties
 
 export interface CommonGroupsOptions<
-  SingleCustomGroup,
+  CustomGroupMatchOptions,
   AdditionalSortProperties,
   CustomTypeOption extends string,
 > {
@@ -127,7 +126,7 @@ export interface CommonGroupsOptions<
 
   /** Custom groups for organizing nodes. */
   customGroups: CustomGroupsOption<
-    SingleCustomGroup,
+    CustomGroupMatchOptions,
     AdditionalSortProperties,
     CustomTypeOption
   >
@@ -153,9 +152,9 @@ export interface CommonGroupsOptions<
  *     anyOf: ['react', 'react-*', '@react/*'],
  *   }
  *
- * @template SingleCustomGroup - Type of individual pattern matchers.
+ * @template MatchOptions - Options for matching elements to the custom group.
  */
-export interface AnyOfCustomGroup<SingleCustomGroup> {
+export interface AnyOfCustomGroup<MatchOptions> {
   /**
    * Regular expression pattern to match the element's name. Elements matching
    * this pattern will be included in this custom group.
@@ -166,7 +165,7 @@ export interface AnyOfCustomGroup<SingleCustomGroup> {
    * Array of patterns where matching any single pattern includes the element in
    * the group. Provides OR logic for group membership.
    */
-  anyOf: SingleCustomGroup[]
+  anyOf: MatchOptions[]
 }
 
 /**
