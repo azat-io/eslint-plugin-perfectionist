@@ -2954,40 +2954,77 @@ describe('sort-modules', () => {
       })
     })
 
-    it('ignores exported decorated classes when sorting', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'B', left: 'C' },
-          },
-        ],
-        output: dedent`
-          @B
-          class B {}
+    describe('exported decorated classes', () => {
+      it('ignores decorated then exported classes when sorting', async () => {
+        await invalid({
+          output: dedent`
+            @B
+            class B {}
 
-          @A
-          export class A {}
+            @A
+            export class A {}
 
-          @C
-          class C {}
-        `,
-        code: dedent`
-          @C
-          class C {}
+            @C
+            class C {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'B', left: 'C' },
+            },
+          ],
+          code: dedent`
+            @C
+            class C {}
 
-          @A
-          export class A {}
+            @A
+            export class A {}
 
-          @B
-          class B {}
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
+            @B
+            class B {}
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await invalid({
+          output: dedent`
+            @B
+            class B {}
+
+            @A
+            export default class A {}
+
+            @C
+            class C {}
+          `,
+          code: dedent`
+            @C
+            class C {}
+
+            @A
+            export default class A {}
+
+            @B
+            class B {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'B', left: 'C' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
       })
     })
   })
