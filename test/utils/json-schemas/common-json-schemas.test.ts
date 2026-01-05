@@ -26,16 +26,20 @@ describe('common-json-schemas', () => {
   })
 
   describe('type', () => {
-    it.each(['alphabetical', 'natural', 'line-length', 'custom', 'unsorted'])(
-      "should allow '%s'",
-      type => {
-        expect(
-          commonJsonSchemaValidator({
-            type,
-          }),
-        ).toBeTruthy()
-      },
-    )
+    it.each([
+      'alphabetical',
+      'natural',
+      'line-length',
+      'custom',
+      'unsorted',
+      'subgroup-order',
+    ])("should allow '%s'", type => {
+      expect(
+        commonJsonSchemaValidator({
+          type,
+        }),
+      ).toBeTruthy()
+    })
 
     it('should allow additional values', () => {
       commonJsonSchemaValidator = compileObjectSchema(
@@ -101,18 +105,22 @@ describe('common-json-schemas', () => {
 
   describe('fallbackSort', () => {
     describe('type', () => {
-      it.each(['alphabetical', 'natural', 'line-length', 'custom', 'unsorted'])(
-        "should allow '%s'",
-        type => {
-          expect(
-            commonJsonSchemaValidator({
-              fallbackSort: {
-                type,
-              },
-            }),
-          ).toBeTruthy()
-        },
-      )
+      it.each([
+        'alphabetical',
+        'natural',
+        'line-length',
+        'custom',
+        'unsorted',
+        'subgroup-order',
+      ])("should allow '%s'", type => {
+        expect(
+          commonJsonSchemaValidator({
+            fallbackSort: {
+              type,
+            },
+          }),
+        ).toBeTruthy()
+      })
 
       it('should allow additional values', () => {
         commonJsonSchemaValidator = compileObjectSchema(

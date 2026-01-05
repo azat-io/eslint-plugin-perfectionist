@@ -29,6 +29,9 @@ let byValueComparatorComputer: ComparatorByOptionsComputer<
   SortObjectTypesSortingNode
 > = options => {
   switch (options.type) {
+    /* v8 ignore next 2 -- @preserve Untested for now as not a relevant sort for this rule. */
+    case 'subgroup-order':
+      return defaultComparatorByOptionsComputer(options)
     case 'alphabetical':
       return (a, b) => compareAlphabetically(a.value, b.value, options)
     case 'line-length':

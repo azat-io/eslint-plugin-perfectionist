@@ -18,6 +18,8 @@ export let comparatorByOptionsComputer: ComparatorByOptionsComputer<
   switch (options.type) {
     case 'type-import-first':
       return (a, b) => compareTypeImportFirst(a, b, options)
+    /* v8 ignore next -- @preserve Untested for now as not a relevant sort for this rule. */
+    case 'subgroup-order':
     case 'alphabetical':
     case 'line-length':
     case 'unsorted':
@@ -71,12 +73,13 @@ function compareTypeImportFirst(
 }
 
 let bySpecifierComparatorByOptionsComputer: ComparatorByOptionsComputer<
-  Omit<Required<Options[number]>, 'type'> & {
-    type: TypeOption
-  },
+  Omit<Required<Options[number]>, 'type'> & { type: TypeOption },
   SortImportsSortingNode
 > = options => {
   switch (options.type) {
+    /* v8 ignore next 2 -- @preserve Untested for now as not a relevant sort for this rule. */
+    case 'subgroup-order':
+      return defaultComparatorByOptionsComputer(options)
     case 'alphabetical':
       return (a, b) =>
         compareAlphabetically(

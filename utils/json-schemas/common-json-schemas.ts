@@ -158,6 +158,26 @@ export function buildUseConfigurationIfJsonSchema({
   }
 }
 
+export function buildTypeJsonSchema({
+  allowedAdditionalValues,
+}: {
+  allowedAdditionalValues: undefined | string[]
+}): JSONSchema4 {
+  return {
+    enum: [
+      'alphabetical',
+      'natural',
+      'line-length',
+      'custom',
+      'unsorted',
+      'subgroup-order',
+      ...(allowedAdditionalValues ?? []),
+    ],
+    description: 'Specifies the sorting method.',
+    type: 'string',
+  }
+}
+
 export function buildRegexJsonSchema({
   additionalProperties,
 }: {
@@ -172,25 +192,6 @@ export function buildRegexJsonSchema({
       buildSingleRegexJsonSchema({ additionalProperties }),
     ],
     description: 'Regular expression.',
-  }
-}
-
-export function buildTypeJsonSchema({
-  allowedAdditionalValues,
-}: {
-  allowedAdditionalValues: undefined | string[]
-}): JSONSchema4 {
-  return {
-    enum: [
-      'alphabetical',
-      'natural',
-      'line-length',
-      'custom',
-      'unsorted',
-      ...(allowedAdditionalValues ?? []),
-    ],
-    description: 'Specifies the sorting method.',
-    type: 'string',
   }
 }
 
