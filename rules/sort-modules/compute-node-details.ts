@@ -54,7 +54,7 @@ export function computeNodeDetails({
   let addSafetySemicolonWhenInline: boolean = false
   let moduleBlock: TSESTree.TSModuleBlock | null = null
   let shouldPartitionAfterNode: boolean = false
-  let ignoredDueToDecoratedThenExportedDecoratedClass: boolean = false
+  let ignoredDueToDecoratorBeforeExportClass: boolean = false
   let exportNode:
     | TSESTree.ExportDefaultDeclaration
     | TSESTree.ExportNamedDeclaration
@@ -62,7 +62,7 @@ export function computeNodeDetails({
   parseNode(node)
 
   // eslint-disable-next-line typescript/no-unnecessary-condition
-  if (!selector || !name || ignoredDueToDecoratedThenExportedDecoratedClass) {
+  if (!selector || !name || ignoredDueToDecoratorBeforeExportClass) {
     return {
       shouldPartitionAfterNode,
       moduleBlock,
@@ -141,11 +141,10 @@ export function computeNodeDetails({
         let nodeDecorators = getNodeDecorators(nodeToParse)
         if (nodeDecorators[0]) {
           modifiers.push('decorated')
-          ignoredDueToDecoratedThenExportedDecoratedClass =
-            isExportAfterDecorators({
-              firstDecorator: nodeDecorators[0],
-              exportNode,
-            })
+          ignoredDueToDecoratorBeforeExportClass = isExportAfterDecorators({
+            firstDecorator: nodeDecorators[0],
+            exportNode,
+          })
         }
         decorators = nodeDecorators.map(decorator =>
           getDecoratorName({
