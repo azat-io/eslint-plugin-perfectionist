@@ -67,10 +67,10 @@ export type Options = Partial<
     maxLineLength: number
   } & CommonGroupsOptions<
     CustomGroupMatchOptions,
-    { sortBy: 'specifier' | 'path' },
+    AdditionalSortProperties,
     CustomTypeOption
   > &
-    CommonOptions<CustomTypeOption, { sortBy: 'specifier' | 'path' }> &
+    CommonOptions<CustomTypeOption, AdditionalSortProperties> &
     CommonPartitionOptions
 >[]
 
@@ -127,6 +127,10 @@ interface CustomGroupMatchOptions {
   selector?: Selector
 }
 
+interface AdditionalSortProperties {
+  sortBy: SortByOption
+}
+
 /**
  * Complete list of available active import selectors. Used for validation and
  * JSON schema generation.
@@ -173,9 +177,14 @@ export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
 }
 
-export let sortByJsonSchema: JSONSchema4 = {
-  enum: ['specifier', 'path'],
-  type: 'string',
+const SORT_BY_OPTION = ['specifier', 'path'] as const
+type SortByOption = (typeof SORT_BY_OPTION)[number]
+
+export let additionalSortPropertiesJsonSchema: Record<string, JSONSchema4> = {
+  sortBy: {
+    enum: [...SORT_BY_OPTION],
+    type: 'string',
+  },
 }
 
 export const TYPE_IMPORT_FIRST_TYPE_OPTION = 'type-import-first'

@@ -59,10 +59,10 @@ export type Options = Partial<
     }
   } & CommonGroupsOptions<
     CustomGroupMatchOptions,
-    { sortBy?: SortByOption },
+    AdditionalSortProperties,
     TypeOption
   > &
-    CommonOptions<TypeOption, { sortBy: SortByOption }> &
+    CommonOptions<TypeOption, AdditionalSortProperties> &
     CommonPartitionOptions
 >[]
 
@@ -81,7 +81,9 @@ export interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeEle
   value: string
 }
 
-type SortByOption = 'value' | 'name'
+interface AdditionalSortProperties {
+  sortBy: SortByOption
+}
 
 export let objectTypeParentTypes = [
   AST_NODE_TYPES.TSTypeAliasDeclaration,
@@ -149,14 +151,19 @@ export let allSelectors = [
  */
 export let allModifiers = ['optional', 'required', 'multiline'] as const
 
+const SORT_BY_OPTION = ['name', 'value'] as const
+type SortByOption = (typeof SORT_BY_OPTION)[number]
+
 /**
  * JSON Schema definition for the sortBy configuration option.
  *
  * Validates the sortBy parameter in ESLint rule configuration.
  */
-export let sortByJsonSchema: JSONSchema4 = {
-  enum: ['name', 'value'],
-  type: 'string',
+export let additionalSortPropertiesJsonSchema: Record<string, JSONSchema4> = {
+  sortBy: {
+    enum: [...SORT_BY_OPTION],
+    type: 'string',
+  },
 }
 
 /**

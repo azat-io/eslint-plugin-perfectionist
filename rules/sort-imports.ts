@@ -21,7 +21,6 @@ import {
 import {
   customGroupMatchOptionsJsonSchema,
   TYPE_IMPORT_FIRST_TYPE_OPTION,
-  sortByJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-imports/types'
@@ -41,6 +40,7 @@ import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-group
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { comparatorByOptionsComputer } from './sort-imports/comparator-by-options-computer'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
+import { additionalSortPropertiesJsonSchema } from './sort-imports/types'
 import { computeSpecifierModifiers } from './sort-imports/compute-specifier-modifiers'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
@@ -295,13 +295,13 @@ export default createEslintRule<Options, MessageId>({
         properties: {
           ...buildCommonJsonSchemas({
             allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
-            additionalSortProperties: { sortBy: sortByJsonSchema },
+            additionalSortProperties: additionalSortPropertiesJsonSchema,
           }),
           ...buildCommonGroupsJsonSchemas({
             additionalCustomGroupMatchProperties:
               customGroupMatchOptionsJsonSchema,
             allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
-            additionalSortProperties: { sortBy: sortByJsonSchema },
+            additionalSortProperties: additionalSortPropertiesJsonSchema,
           }),
           tsconfig: {
             properties: {

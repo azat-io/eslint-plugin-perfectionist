@@ -15,7 +15,6 @@ import type {
 import {
   customGroupMatchOptionsJsonSchema,
   objectTypeParentTypes,
-  sortByJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-object-types/types'
@@ -37,6 +36,7 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { computeMatchedContextOptions } from './sort-object-types/compute-matched-context-options'
 import { comparatorByOptionsComputer } from './sort-object-types/comparator-by-options-computer'
+import { additionalSortPropertiesJsonSchema } from './sort-object-types/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { computeParentNodesWithTypes } from '../utils/compute-parent-nodes-with-types'
@@ -97,11 +97,11 @@ export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
       ...buildCommonJsonSchemas({
-        additionalSortProperties: { sortBy: sortByJsonSchema },
+        additionalSortProperties: additionalSortPropertiesJsonSchema,
       }),
       ...buildCommonGroupsJsonSchemas({
         additionalCustomGroupMatchProperties: customGroupMatchOptionsJsonSchema,
-        additionalSortProperties: { sortBy: sortByJsonSchema },
+        additionalSortProperties: additionalSortPropertiesJsonSchema,
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {
