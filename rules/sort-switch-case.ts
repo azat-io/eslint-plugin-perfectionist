@@ -18,8 +18,8 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
-import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
+import { pairwise } from '../utils/pairwise'
 
 interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
@@ -95,8 +95,8 @@ export default createEslintRule<Options, MessageId>({
       for (let caseNodesSortingNodeGroup of caseNameSortingNodeGroups) {
         let sortedCaseNameSortingNodes = sortNodes({
           comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
-          nodes: caseNodesSortingNodeGroup,
           ignoreEslintDisabledNodes: false,
+          nodes: caseNodesSortingNodeGroup,
           options,
         })
         hasUnsortedNodes ||= sortedCaseNameSortingNodes.some(
@@ -139,8 +139,8 @@ export default createEslintRule<Options, MessageId>({
           isDefaultClause: !caseNode.test,
           isEslintDisabled: false,
           group: 'unknown',
-          partitionId: 0,
           node: caseNode,
+          partitionId: 0,
         }),
       )
 

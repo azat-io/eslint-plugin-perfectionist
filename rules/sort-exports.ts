@@ -1,5 +1,5 @@
-import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
@@ -31,8 +31,8 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -67,10 +67,10 @@ type SortExportsSortingNode = SortingNode<
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
-  specialCharacters: 'keep',
-  partitionByComment: false,
   newlinesBetween: 'ignore',
+  partitionByComment: false,
   partitionByNewLine: false,
+  specialCharacters: 'keep',
   type: 'alphabetical',
   customGroups: [],
   ignoreCase: true,
@@ -232,8 +232,8 @@ function sortExportNodes({
       unexpectedOrder: ORDER_ERROR_ID,
     },
     sortNodesExcludingEslintDisabled,
-    options,
     context,
+    options,
     nodes,
   })
 

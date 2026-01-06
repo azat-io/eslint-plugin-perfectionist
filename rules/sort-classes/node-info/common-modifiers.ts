@@ -17,12 +17,12 @@ export function computeAbstractModifier(
 ): Modifier[] {
   switch (node.type) {
     case AST_NODE_TYPES.TSAbstractPropertyDefinition:
-    case AST_NODE_TYPES.TSAbstractMethodDefinition:
     case AST_NODE_TYPES.TSAbstractAccessorProperty:
+    case AST_NODE_TYPES.TSAbstractMethodDefinition:
       return ['abstract']
     case AST_NODE_TYPES.PropertyDefinition:
-    case AST_NODE_TYPES.MethodDefinition:
     case AST_NODE_TYPES.AccessorProperty:
+    case AST_NODE_TYPES.MethodDefinition:
       return []
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:

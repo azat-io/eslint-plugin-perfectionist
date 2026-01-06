@@ -1,9 +1,9 @@
 ---
 interface Props {
-  size?: '4xl' | '3xl' | '2xl' | 'xl' | 'xs' | 'l' | 'm' | 's'
-  color?: 'secondary' | 'primary' | 'inherit' | 'brand'
-  mbs?: '2xs' | 'xs' | 'xl' | 's' | 'm' | 'l'
-  mbe?: '2xs' | 'xs' | 'xl' | 's' | 'm' | 'l'
+  size?: '2xl' | '3xl' | '4xl' | 'xl' | 'xs' | 'l' | 'm' | 's'
+  color?: 'secondary' | 'inherit' | 'primary' | 'brand'
+  mbe?: '2xs' | 'xl' | 'xs' | 'l' | 'm' | 's'
+  mbs?: '2xs' | 'xl' | 'xs' | 'l' | 'm' | 's'
   align?: 'center' | 'start' | 'end'
   noWrap?: boolean
   bold?: boolean
@@ -20,8 +20,8 @@ let {
   size = 'm',
   tag = 'p',
   align,
-  mbs,
   mbe,
+  mbs,
   ...props
 } = Astro.props
 

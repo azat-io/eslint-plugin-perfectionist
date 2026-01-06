@@ -1622,8 +1622,8 @@ describe('sort-union-types', () => {
             customGroups: [
               {
                 groupName: 'group1',
-                selector: 'named',
                 newlinesInside: 1,
+                selector: 'named',
               },
             ],
             groups: ['group1'],
@@ -1656,8 +1656,8 @@ describe('sort-union-types', () => {
             customGroups: [
               {
                 groupName: 'group1',
-                selector: 'named',
                 newlinesInside: 0,
+                selector: 'named',
               },
             ],
             type: 'alphabetical',
@@ -3170,8 +3170,8 @@ describe('sort-union-types', () => {
             customGroups: [
               {
                 groupName: 'group1',
-                selector: 'named',
                 newlinesInside: 1,
+                selector: 'named',
               },
             ],
             groups: ['group1'],
@@ -3204,8 +3204,8 @@ describe('sort-union-types', () => {
             customGroups: [
               {
                 groupName: 'group1',
-                selector: 'named',
                 newlinesInside: 0,
+                selector: 'named',
               },
             ],
             type: 'alphabetical',
@@ -4698,8 +4698,8 @@ describe('sort-union-types', () => {
             customGroups: [
               {
                 groupName: 'group1',
-                selector: 'named',
                 newlinesInside: 1,
+                selector: 'named',
               },
             ],
             groups: ['group1'],
@@ -4732,8 +4732,8 @@ describe('sort-union-types', () => {
             customGroups: [
               {
                 groupName: 'group1',
-                selector: 'named',
                 newlinesInside: 0,
+                selector: 'named',
               },
             ],
             type: 'alphabetical',
@@ -5198,18 +5198,18 @@ describe('sort-union-types', () => {
             | C
             | A // eslint-disable-line rule-to-test/sort-union-types
         `,
-        errors: [
-          {
-            messageId: 'unexpectedUnionTypesOrder',
-            data: { right: 'B', left: 'C' },
-          },
-        ],
         code: dedent`
           type T =
             C
             | B
             | A // eslint-disable-line rule-to-test/sort-union-types
         `,
+        errors: [
+          {
+            messageId: 'unexpectedUnionTypesOrder',
+            data: { right: 'B', left: 'C' },
+          },
+        ],
         options: [{}],
       })
     })

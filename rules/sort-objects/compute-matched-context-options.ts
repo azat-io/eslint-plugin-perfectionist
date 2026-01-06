@@ -7,8 +7,8 @@ import type { ObjectParent, MessageId, Options } from './types'
 
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
 import { passesCallingFunctionNamePatternFilter } from './passes-calling-function-name-pattern-filter'
-import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
 import { passesDeclarationCommentMatchesFilter } from './passes-declaration-comment-matches-filter'
+import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
 import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
 import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
@@ -26,8 +26,8 @@ import { objectParentTypes } from './types'
  */
 export function computeMatchedContextOptions({
   isDestructuredObject,
-  sourceCode,
   nodeObject,
+  sourceCode,
   context,
 }: {
   nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
@@ -57,8 +57,8 @@ export function computeMatchedContextOptions({
     isContextOptionMatching({
       isDestructuredObject,
       parentNodes,
-      sourceCode,
       nodeObject,
+      sourceCode,
       options,
     }),
   )
@@ -67,8 +67,8 @@ export function computeMatchedContextOptions({
 function isContextOptionMatching({
   isDestructuredObject,
   parentNodes,
-  sourceCode,
   nodeObject,
+  sourceCode,
   options,
 }: {
   nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern

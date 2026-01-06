@@ -19,8 +19,8 @@ export function computeNodeParentName(
   sourceCode: TSESLint.SourceCode,
 ): string {
   switch (node.type) {
-    case AST_NODE_TYPES.TSTypeAliasDeclaration:
     case AST_NODE_TYPES.TSInterfaceDeclaration:
+    case AST_NODE_TYPES.TSTypeAliasDeclaration:
       return node.id.name
     case AST_NODE_TYPES.TSPropertySignature:
     case AST_NODE_TYPES.PropertyDefinition:

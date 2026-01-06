@@ -1673,7 +1673,7 @@ describe('sort-enums', () => {
         errors: [
           {
             messageId: 'unexpectedEnumsOrder',
-            data: { right: '8', left: '12' },
+            data: { left: '12', right: '8' },
           },
         ],
         options: [options],
@@ -4623,8 +4623,8 @@ describe('sort-enums', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 1,
             groups: ['b', 'a'],
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -5122,12 +5122,6 @@ describe('sort-enums', () => {
             B = A,
           }
         `,
-        options: [
-          {
-            partitionByComment: '^Part',
-            type: 'alphabetical',
-          },
-        ],
         code: dedent`
           enum Enum {
             B = A,
@@ -5135,6 +5129,12 @@ describe('sort-enums', () => {
             A = 'A',
           }
         `,
+        options: [
+          {
+            partitionByComment: '^Part',
+            type: 'alphabetical',
+          },
+        ],
       })
     })
 

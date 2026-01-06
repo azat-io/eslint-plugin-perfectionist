@@ -12,15 +12,15 @@ describe('sort-nodes-by-groups', () => {
   let options: CommonGroupsOptions<TypeOption, unknown, unknown> &
     CommonOptions<TypeOption> = {
     fallbackSort: { type: 'unsorted' },
-    specialCharacters: 'keep',
     newlinesBetween: 'ignore',
+    specialCharacters: 'keep',
     newlinesInside: 'ignore',
     type: 'alphabetical',
     ignoreCase: false,
-    locales: 'en-US',
     customGroups: [],
-    order: 'asc',
+    locales: 'en-US',
     alphabet: '',
+    order: 'asc',
     groups: [],
   }
 

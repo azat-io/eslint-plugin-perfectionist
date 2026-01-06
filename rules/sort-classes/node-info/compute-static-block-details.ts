@@ -25,8 +25,8 @@ export function computeStaticBlockDetails({
   className: undefined | string
 }): {
   dependencies: string[]
-  selectors: Selector[]
   modifiers: Modifier[]
+  selectors: Selector[]
 } {
   return {
     dependencies: computeDependencies({

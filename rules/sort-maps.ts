@@ -27,8 +27,8 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -53,14 +53,14 @@ type MessageId =
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
-  specialCharacters: 'keep',
+  newlinesBetween: 'ignore',
   partitionByComment: false,
   partitionByNewLine: false,
-  newlinesBetween: 'ignore',
+  specialCharacters: 'keep',
   useConfigurationIf: {},
   type: 'alphabetical',
-  ignoreCase: true,
   customGroups: [],
+  ignoreCase: true,
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
@@ -99,8 +99,8 @@ export default createEslintRule<Options, MessageId>({
       let options = complete(matchedContextOptions[0], settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGroupsConfiguration({
-        selectors: [],
         modifiers: [],
+        selectors: [],
         options,
       })
 
@@ -140,8 +140,8 @@ export default createEslintRule<Options, MessageId>({
             customGroupMatcher: customGroup =>
               doesCustomGroupMatch({
                 elementName: name,
-                selectors: [],
                 modifiers: [],
+                selectors: [],
                 customGroup,
               }),
             predefinedGroups: [],
@@ -203,8 +203,8 @@ export default createEslintRule<Options, MessageId>({
             },
             sortNodesExcludingEslintDisabled:
               createSortNodesExcludingEslintDisabled(nodes),
-            options,
             context,
+            options,
             nodes,
           })
         }

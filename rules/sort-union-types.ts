@@ -30,8 +30,8 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -58,14 +58,14 @@ type MessageId =
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
-  specialCharacters: 'keep',
   newlinesBetween: 'ignore',
-  partitionByNewLine: false,
   partitionByComment: false,
+  partitionByNewLine: false,
+  specialCharacters: 'keep',
   type: 'alphabetical',
+  customGroups: [],
   ignoreCase: true,
   locales: 'en-US',
-  customGroups: [],
   alphabet: '',
   order: 'asc',
   groups: [],
@@ -168,8 +168,8 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
           selectors.push('literal')
           break
         case AST_NODE_TYPES.TSIndexedAccessType:
-        case AST_NODE_TYPES.TSTypeReference:
         case AST_NODE_TYPES.TSQualifiedName:
+        case AST_NODE_TYPES.TSTypeReference:
         case AST_NODE_TYPES.TSArrayType:
         case AST_NODE_TYPES.TSInferType:
           selectors.push('named')
@@ -291,8 +291,8 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
       sortNodesExcludingEslintDisabled:
         createSortNodesExcludingEslintDisabled(nodes),
       availableMessageIds,
-      options,
       context,
+      options,
       nodes,
     })
   }

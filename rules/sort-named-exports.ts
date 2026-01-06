@@ -32,8 +32,8 @@ import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schema
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { computeNodeName } from './sort-named-exports/compute-node-name'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -62,10 +62,10 @@ let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
-  specialCharacters: 'keep',
-  partitionByNewLine: false,
-  partitionByComment: false,
   newlinesBetween: 'ignore',
+  partitionByComment: false,
+  partitionByNewLine: false,
+  specialCharacters: 'keep',
   type: 'alphabetical',
   ignoreAlias: false,
   customGroups: [],
@@ -176,8 +176,8 @@ export default createEslintRule<Options, MessageId>({
           unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
-        options,
         context,
+        options,
         nodes,
       })
     },

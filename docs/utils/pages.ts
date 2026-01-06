@@ -30,8 +30,8 @@ export let pages: ({ links: Page[] } & Page)[] = [
         title: 'Getting Started',
       },
     ],
-    title: 'Guide',
     redirect: true,
+    title: 'Guide',
     url: '/guide',
   },
   {

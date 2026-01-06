@@ -32,10 +32,10 @@ describe('complete', () => {
   })
 
   it.each([
-    { settingsValue: false, defaultsValue: false },
+    { defaultsValue: false, settingsValue: false },
     { settingsValue: false, defaultsValue: true },
     { defaultsValue: false, settingsValue: true },
-    { settingsValue: true, defaultsValue: true },
+    { defaultsValue: true, settingsValue: true },
   ])(
     'should always prioritize option values when defined',
     ({ defaultsValue, settingsValue }) => {

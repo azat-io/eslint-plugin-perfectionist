@@ -32,8 +32,8 @@ import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-nam
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -63,13 +63,13 @@ type MessageId =
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
-  specialCharacters: 'keep',
   newlinesBetween: 'ignore',
   partitionByNewLine: false,
+  specialCharacters: 'keep',
   useConfigurationIf: {},
   type: 'alphabetical',
-  ignoreCase: true,
   customGroups: [],
+  ignoreCase: true,
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
@@ -94,8 +94,8 @@ export default createEslintRule<Options, MessageId>({
       let options = complete(matchedContextOptions, settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGroupsConfiguration({
-        selectors: allSelectors,
         modifiers: allModifiers,
+        selectors: allSelectors,
         options,
       })
       validateNewlinesAndPartitionConfiguration(options)
@@ -131,8 +131,8 @@ export default createEslintRule<Options, MessageId>({
 
             let predefinedGroups = generatePredefinedGroups({
               cache: cachedGroupsByModifiersAndSelectors,
-              selectors,
               modifiers,
+              selectors,
             })
             let group = computeGroup({
               customGroupMatcher: customGroup =>
@@ -142,8 +142,8 @@ export default createEslintRule<Options, MessageId>({
                     : null,
                   elementName: name,
                   customGroup,
-                  selectors,
                   modifiers,
+                  selectors,
                 }),
               predefinedGroups,
               options,

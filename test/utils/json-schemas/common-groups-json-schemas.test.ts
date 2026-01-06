@@ -305,8 +305,8 @@ describe('common-groups-json-schemas', () => {
       it('should allow additional values', () => {
         customGroupsJsonSchema = new Ajv().compile(
           buildCustomGroupsArrayJsonSchema({
-            allowedAdditionalTypeValues: ['my-type'],
             additionalCustomGroupMatchProperties: {},
+            allowedAdditionalTypeValues: ['my-type'],
             additionalSortProperties: {},
           }),
         )
@@ -326,8 +326,8 @@ describe('common-groups-json-schemas', () => {
       it('should allow additional type values', () => {
         customGroupsJsonSchema = new Ajv().compile(
           buildCustomGroupsArrayJsonSchema({
-            allowedAdditionalTypeValues: ['my-type'],
             additionalCustomGroupMatchProperties: {},
+            allowedAdditionalTypeValues: ['my-type'],
             additionalSortProperties: {},
           }),
         )

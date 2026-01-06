@@ -251,8 +251,8 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...d',
               left: 'c',
             },
@@ -260,8 +260,8 @@ describe('sort-array-includes', () => {
           },
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...b',
               left: 'a',
             },
@@ -447,8 +447,8 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...d',
               left: 'c',
             },
@@ -456,8 +456,8 @@ describe('sort-array-includes', () => {
           },
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...b',
               left: 'a',
             },
@@ -842,8 +842,8 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'literal',
+              rightGroup: 'spread',
               right: '...b',
               left: 'c',
             },
@@ -2073,8 +2073,8 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...d',
               left: 'c',
             },
@@ -2082,8 +2082,8 @@ describe('sort-array-includes', () => {
           },
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...b',
               left: 'a',
             },
@@ -2269,8 +2269,8 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...d',
               left: 'c',
             },
@@ -2278,8 +2278,8 @@ describe('sort-array-includes', () => {
           },
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...b',
               left: 'a',
             },
@@ -2622,8 +2622,8 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'literal',
+              rightGroup: 'spread',
               right: '...b',
               left: 'c',
             },
@@ -3739,8 +3739,8 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...d',
               left: 'c',
             },
@@ -3748,8 +3748,8 @@ describe('sort-array-includes', () => {
           },
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...b',
               left: 'a',
             },
@@ -3935,8 +3935,8 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...d',
               left: 'c',
             },
@@ -3944,8 +3944,8 @@ describe('sort-array-includes', () => {
           },
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...b',
               left: 'a',
             },
@@ -4288,8 +4288,8 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'literal',
+              rightGroup: 'spread',
               right: '...b',
               left: 'c',
             },
@@ -5325,8 +5325,8 @@ describe('sort-array-includes', () => {
               groupName: 'b',
             },
           ],
-          newlinesBetween: 1,
           groups: ['b', 'a'],
+          newlinesBetween: 1,
         },
       ]
 

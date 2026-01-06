@@ -1,12 +1,12 @@
-import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
   SortImportsSortingNode,
-  Selector,
   Modifier,
+  Selector,
   Options,
 } from './sort-imports/types'
 
@@ -45,16 +45,16 @@ import { computeSpecifierModifiers } from './sort-imports/compute-specifier-modi
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
-import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
 import { computeDependencyNames } from './sort-imports/compute-dependency-names'
+import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { computeSpecifierName } from './sort-imports/compute-specifier-name'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { computeDependencies } from './sort-imports/compute-dependencies'
 import { isSideEffectImport } from './sort-imports/is-side-effect-import'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { computeNodeName } from './sort-imports/compute-node-name'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -126,8 +126,8 @@ export default createEslintRule<Options, MessageId>({
     )
 
     validateGroupsConfiguration({
-      selectors: allSelectors,
       modifiers: allModifiers,
+      selectors: allSelectors,
       options,
     })
     validateCustomSortConfiguration(options)
@@ -234,8 +234,8 @@ export default createEslintRule<Options, MessageId>({
 
       group ??=
         computeGroupExceptUnknown({
-          selectors,
           modifiers,
+          selectors,
           options,
           name,
         }) ?? 'unknown'
@@ -260,9 +260,9 @@ export default createEslintRule<Options, MessageId>({
         dependencies: computeDependencies(node),
         addSafetySemicolonWhenInline: true,
         group,
-        size,
         name,
         node,
+        size,
       })
     }
 
@@ -366,8 +366,8 @@ export default createEslintRule<Options, MessageId>({
 
 function sortImportNodes({
   sortingNodesWithoutPartitionId,
-  options,
   context,
+  options,
 }: {
   sortingNodesWithoutPartitionId: Omit<SortImportsSortingNode, 'partitionId'>[]
   context: Readonly<TSESLint.RuleContext<MessageId, Options>>
@@ -414,8 +414,8 @@ function sortImportNodes({
 
     reportAllErrors<MessageId>({
       availableMessageIds: {
-        unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
         missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+        unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
         extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
         missedCommentAbove: MISSED_COMMENT_ABOVE_ERROR_ID,
         unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
@@ -423,8 +423,8 @@ function sortImportNodes({
       },
       sortNodesExcludingEslintDisabled:
         createSortNodesExcludingEslintDisabled(sortingNodeGroups),
-      options,
       context,
+      options,
       nodes,
     })
   }
@@ -444,8 +444,8 @@ function sortImportNodes({
             return isSideEffectOnlyGroup(options.groups[groupIndex])
           },
           isNodeIgnored: node => node.isIgnored,
-          optionsByGroupIndexComputer,
           comparatorByOptionsComputer,
+          optionsByGroupIndexComputer,
           ignoreEslintDisabledNodes,
           groups: options.groups,
           nodes,
@@ -471,20 +471,20 @@ function sortImportNodes({
 }
 
 function computeGroupExceptUnknown({
-  selectors,
   modifiers,
+  selectors,
   options,
   name,
 }: {
   options: Required<Options[number]>
-  selectors: Selector[]
   modifiers: Modifier[]
+  selectors: Selector[]
   name: string
 }): string | null {
   let predefinedGroups = generatePredefinedGroups({
     cache: cachedGroupsByModifiersAndSelectors,
-    selectors,
     modifiers,
+    selectors,
   })
   let computedCustomGroup = computeGroup({
     customGroupMatcher: customGroup =>

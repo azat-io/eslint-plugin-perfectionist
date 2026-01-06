@@ -3,19 +3,19 @@ import ContentAdditionalPages from '../components/Content/ContentAdditionalPages
 import TableOfContents from '../components/TableOfContents/TableOfContents.astro'
 import ContentEditLink from '../components/Content/ContentEditLink.astro'
 import ContentFooter from '../components/Content/ContentFooter.astro'
-import Sidebar from '../components/Sidebar/Sidebar.astro'
 import Breadcrumbs from '../components/Breadcrumbs.astro'
+import Sidebar from '../components/Sidebar/Sidebar.astro'
 import Container from '../components/Container.astro'
 import Header from '../components/Header.astro'
+import Body from '../components/Body.astro'
 import Head from '../components/Head.astro'
 import Html from '../components/Html.astro'
-import Body from '../components/Body.astro'
 
 interface Props {
   headings?: {
     depth: number
-    text: string
     slug: string
+    text: string
   }[]
   path?: {
     href: string

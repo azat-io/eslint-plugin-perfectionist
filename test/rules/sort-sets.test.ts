@@ -226,8 +226,8 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...d',
               left: 'c',
             },
@@ -235,8 +235,8 @@ describe('sort-sets', () => {
           },
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...b',
               left: 'a',
             },
@@ -643,8 +643,8 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'literal',
+              rightGroup: 'spread',
               right: '...b',
               left: 'c',
             },
@@ -1795,8 +1795,8 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...d',
               left: 'c',
             },
@@ -1804,8 +1804,8 @@ describe('sort-sets', () => {
           },
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...b',
               left: 'a',
             },
@@ -2170,8 +2170,8 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'literal',
+              rightGroup: 'spread',
               right: '...b',
               left: 'c',
             },
@@ -3218,8 +3218,8 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...d',
               left: 'c',
             },
@@ -3227,8 +3227,8 @@ describe('sort-sets', () => {
           },
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
+              rightGroup: 'spread',
               right: '...b',
               left: 'a',
             },
@@ -3593,8 +3593,8 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'literal',
+              rightGroup: 'spread',
               right: '...b',
               left: 'c',
             },
@@ -4567,8 +4567,8 @@ describe('sort-sets', () => {
               groupName: 'b',
             },
           ],
-          newlinesBetween: 1,
           groups: ['b', 'a'],
+          newlinesBetween: 1,
         },
       ]
 

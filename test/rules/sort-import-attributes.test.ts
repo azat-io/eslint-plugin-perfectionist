@@ -388,7 +388,7 @@ describe('sort-import-attributes', () => {
         errors: [
           {
             messageId: 'unexpectedImportAttributesOrder',
-            data: { right: 'link2', left: 'link10' },
+            data: { left: 'link10', right: 'link2' },
           },
         ],
         output: dedent`
@@ -961,8 +961,8 @@ describe('sort-import-attributes', () => {
               { elementNamePattern: '^b', groupName: 'b' },
               { elementNamePattern: '^a', groupName: 'a' },
             ],
-            newlinesBetween: 1,
             groups: ['b', 'a'],
+            newlinesBetween: 1,
           },
         ],
         errors: [

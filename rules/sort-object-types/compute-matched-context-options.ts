@@ -5,8 +5,8 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { ObjectTypeParent, Options } from './types'
 
-import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
 import { passesDeclarationCommentMatchesFilter } from './passes-declaration-comment-matches-filter'
+import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
 import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { computeNodeName } from './compute-node-name'

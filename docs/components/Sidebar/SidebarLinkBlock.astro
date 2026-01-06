@@ -4,8 +4,8 @@ import Typography from '../Typography.astro'
 
 interface Props {
   class?: string
-  title: string
   links: Link[]
+  title: string
   url: string
 }
 
@@ -14,7 +14,7 @@ interface Link {
   url: string
 }
 
-let { class: className, title, links, url, ...props } = Astro.props
+let { class: className, links, title, url, ...props } = Astro.props
 ---
 
 <a class:list={['title-link', className]} href={url} {...props}>

@@ -714,8 +714,8 @@ describe('sort-exports', () => {
             {
               data: {
                 rightGroup: 'valuesStartingWithHello',
-                right: 'helloExport',
                 leftGroup: 'unknown',
+                right: 'helloExport',
                 left: 'b',
               },
               messageId: 'unexpectedExportsGroupOrder',
@@ -2145,8 +2145,8 @@ describe('sort-exports', () => {
             {
               data: {
                 rightGroup: 'valuesStartingWithHello',
-                right: 'helloExport',
                 leftGroup: 'unknown',
+                right: 'helloExport',
                 left: 'b',
               },
               messageId: 'unexpectedExportsGroupOrder',
@@ -3520,8 +3520,8 @@ describe('sort-exports', () => {
             {
               data: {
                 rightGroup: 'valuesStartingWithHello',
-                right: 'helloExport',
                 leftGroup: 'unknown',
+                right: 'helloExport',
                 left: 'b',
               },
               messageId: 'unexpectedExportsGroupOrder',
@@ -4398,8 +4398,8 @@ describe('sort-exports', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 1,
             groups: ['b', 'a'],
+            newlinesBetween: 1,
           },
         ],
         errors: [

@@ -63,10 +63,10 @@ type MessageId =
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
-  specialCharacters: 'keep',
-  partitionByNewLine: false,
-  partitionByComment: false,
   newlinesBetween: 'ignore',
+  partitionByComment: false,
+  partitionByNewLine: false,
+  specialCharacters: 'keep',
   type: 'alphabetical',
   customGroups: [],
   ignoreCase: true,
@@ -203,8 +203,8 @@ export default createEslintRule<Options, MessageId>({
           unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
-        options,
         context,
+        options,
         nodes,
       })
     },

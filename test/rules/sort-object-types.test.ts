@@ -1004,8 +1004,8 @@ describe('sort-object-types', () => {
           {
             customGroups: [
               {
-                groupName: 'allElements',
                 elementNamePattern: '.*',
+                groupName: 'allElements',
                 sortBy: 'name',
               },
             ],
@@ -1051,8 +1051,8 @@ describe('sort-object-types', () => {
                   type: 'alphabetical',
                   sortBy: 'name',
                 },
-                groupName: 'allElements',
                 elementNamePattern: '.*',
+                groupName: 'allElements',
               },
             ],
             groups: [
@@ -8149,18 +8149,18 @@ describe('sort-object-types', () => {
             a: 'b'
           }
         `,
-        options: [
-          {
-            sortBy: 'value',
-            ...options,
-          },
-        ],
         code: dedent`
           type Type = {
             a: 'b'
             b: 'aa'
           }
         `,
+        options: [
+          {
+            sortBy: 'value',
+            ...options,
+          },
+        ],
       })
     })
 
@@ -8173,7 +8173,7 @@ describe('sort-object-types', () => {
           },
           {
             messageId: 'unexpectedObjectTypesOrder',
-            data: { right: 'yy', left: 'aaa' },
+            data: { left: 'aaa', right: 'yy' },
           },
         ],
         output: dedent`
@@ -8499,8 +8499,8 @@ describe('sort-object-types', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 1,
             groups: ['b', 'a'],
+            newlinesBetween: 1,
           },
         ],
         errors: [

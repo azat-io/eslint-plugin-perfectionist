@@ -12,8 +12,8 @@ describe('sort-nodes', () => {
     type: 'alphabetical',
     ignoreCase: false,
     locales: 'en-US',
-    order: 'asc',
     alphabet: '',
+    order: 'asc',
   } as const
 
   it('sorts nodes', () => {

@@ -1193,8 +1193,8 @@ describe('sort-interfaces', () => {
           {
             customGroups: [
               {
-                groupName: 'allElements',
                 elementNamePattern: '.*',
+                groupName: 'allElements',
                 sortBy: 'name',
               },
             ],
@@ -1240,8 +1240,8 @@ describe('sort-interfaces', () => {
                   type: 'alphabetical',
                   sortBy: 'name',
                 },
-                groupName: 'allElements',
                 elementNamePattern: '.*',
+                groupName: 'allElements',
               },
             ],
             groups: [
@@ -2822,8 +2822,8 @@ describe('sort-interfaces', () => {
         errors: [
           {
             data: {
-              rightGroup: 'method',
               leftGroup: 'unknown',
+              rightGroup: 'method',
               right: 'a',
               left: 'z',
             },
@@ -5236,8 +5236,8 @@ describe('sort-interfaces', () => {
         errors: [
           {
             data: {
-              rightGroup: 'method',
               leftGroup: 'unknown',
+              rightGroup: 'method',
               right: 'a',
               left: 'z',
             },
@@ -7602,8 +7602,8 @@ describe('sort-interfaces', () => {
         errors: [
           {
             data: {
-              rightGroup: 'method',
               leftGroup: 'unknown',
+              rightGroup: 'method',
               right: 'a',
               left: 'z',
             },
@@ -7775,8 +7775,8 @@ describe('sort-interfaces', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 1,
             groups: ['b', 'a'],
+            newlinesBetween: 1,
           },
         ],
         errors: [

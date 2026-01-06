@@ -23,6 +23,12 @@ export interface DoesCustomGroupMatchParameters {
   decorators?: string[]
 
   /**
+   * Name of the element. Used for matching against elementNamePattern in custom
+   * groups.
+   */
+  elementName: string
+
+  /**
    * List of modifiers applied to the element (e.g., 'static', 'private',
    * 'async'). Must include all modifiers specified in the custom group.
    */
@@ -33,12 +39,6 @@ export interface DoesCustomGroupMatchParameters {
    * the selector field in custom groups.
    */
   selectors: string[]
-
-  /**
-   * Name of the element. Used for matching against elementNamePattern in custom
-   * groups.
-   */
-  elementName: string
 }
 
 /**
@@ -174,14 +174,14 @@ function doesSingleCustomGroupMatch({
   customGroup,
   elementName,
   decorators,
-  selectors,
   modifiers,
+  selectors,
 }: {
   customGroup: BaseCustomGroupMatchOptions
   elementValue?: string | null
   decorators?: string[]
-  selectors?: string[]
   modifiers?: string[]
+  selectors?: string[]
   elementName: string
 }): boolean {
   if (customGroup.selector && !selectors?.includes(customGroup.selector)) {

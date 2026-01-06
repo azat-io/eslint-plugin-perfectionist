@@ -2,8 +2,8 @@
 import IconColorPalette from '../../icons/color-palette.svg'
 import IconRocketShip from '../../icons/rocket-ship.svg'
 import Typography from '../Typography.astro'
-import IconTool from '../../icons/tool.svg'
 import IconCode from '../../icons/code.svg'
+import IconTool from '../../icons/tool.svg'
 
 interface Props {
   description: string
@@ -16,8 +16,8 @@ let { description, title, icon } = Astro.props
 let icons = {
   'color-palette': IconColorPalette,
   'rocket-ship': IconRocketShip,
-  tool: IconTool,
   code: IconCode,
+  tool: IconTool,
 }
 
 let Icon = icons[icon as keyof typeof icons]

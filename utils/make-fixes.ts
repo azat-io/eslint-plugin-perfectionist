@@ -6,8 +6,8 @@ import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { makeNewlinesBetweenFixes } from './make-newlines-between-fixes'
-import { makeCommentAfterFixes } from './make-comment-after-fixes'
 import { makeCommentAboveFixes } from './make-comment-above-fixes'
+import { makeCommentAfterFixes } from './make-comment-after-fixes'
 import { makeOrderFixes } from './make-order-fixes'
 
 /**
@@ -29,11 +29,11 @@ interface MakeFixesParameters<T extends SortingNode> {
    */
   ignoreFirstNodeHighestBlockComment?: boolean
 
-  /** ESLint source code object for accessing comments and tokens. */
-  sourceCode: TSESLint.SourceCode
-
   /** Whether any comment-above configuration is missing its comment. */
   hasCommentAboveMissing: boolean
+
+  /** ESLint source code object for accessing comments and tokens. */
+  sourceCode: TSESLint.SourceCode
 
   /** ESLint fixer object for creating fix operations. */
   fixer: TSESLint.RuleFixer
@@ -106,15 +106,15 @@ export function makeFixes<T extends SortingNode>({
     sortedNodes,
     sourceCode,
     options,
-    nodes,
     fixer,
+    nodes,
   })
 
   let commentAfterFixes = makeCommentAfterFixes({
     sortedNodes,
     sourceCode,
-    nodes,
     fixer,
+    nodes,
   })
   if (commentAfterFixes.length > 0) {
     return [...orderFixes, ...commentAfterFixes]

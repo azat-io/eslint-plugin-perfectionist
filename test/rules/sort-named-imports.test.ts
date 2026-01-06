@@ -4446,8 +4446,8 @@ describe('sort-named-imports', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 1,
             groups: ['b', 'a'],
+            newlinesBetween: 1,
           },
         ],
         errors: [

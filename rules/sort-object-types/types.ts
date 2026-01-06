@@ -89,20 +89,20 @@ export type ObjectTypeParentType = (typeof objectTypeParentTypes)[number]
 export type ObjectTypeParent = NodeOfType<ObjectTypeParentType>
 
 /**
- * Union type of all available selectors for object type members.
- *
- * Selectors identify the type of object member for grouping and sorting
- * purposes.
- */
-export type Selector = (typeof allSelectors)[number]
-
-/**
  * Union type of all available modifiers for object type members.
  *
  * Modifiers provide additional context about member characteristics, such as
  * whether they are optional, required, or span multiple lines.
  */
 export type Modifier = (typeof allModifiers)[number]
+
+/**
+ * Union type of all available selectors for object type members.
+ *
+ * Selectors identify the type of object member for grouping and sorting
+ * purposes.
+ */
+export type Selector = (typeof allSelectors)[number]
 
 /** Match options for a custom group. */
 interface CustomGroupMatchOptions {

@@ -1621,8 +1621,8 @@ describe('sort-intersection-types', () => {
             customGroups: [
               {
                 groupName: 'group1',
-                selector: 'named',
                 newlinesInside: 1,
+                selector: 'named',
               },
             ],
             groups: ['group1'],
@@ -1655,8 +1655,8 @@ describe('sort-intersection-types', () => {
             customGroups: [
               {
                 groupName: 'group1',
-                selector: 'named',
                 newlinesInside: 0,
+                selector: 'named',
               },
             ],
             type: 'alphabetical',
@@ -3161,8 +3161,8 @@ describe('sort-intersection-types', () => {
             customGroups: [
               {
                 groupName: 'group1',
-                selector: 'named',
                 newlinesInside: 1,
+                selector: 'named',
               },
             ],
             groups: ['group1'],
@@ -3195,8 +3195,8 @@ describe('sort-intersection-types', () => {
             customGroups: [
               {
                 groupName: 'group1',
-                selector: 'named',
                 newlinesInside: 0,
+                selector: 'named',
               },
             ],
             type: 'alphabetical',
@@ -4694,8 +4694,8 @@ describe('sort-intersection-types', () => {
             customGroups: [
               {
                 groupName: 'group1',
-                selector: 'named',
                 newlinesInside: 1,
+                selector: 'named',
               },
             ],
             groups: ['group1'],
@@ -4728,8 +4728,8 @@ describe('sort-intersection-types', () => {
             customGroups: [
               {
                 groupName: 'group1',
-                selector: 'named',
                 newlinesInside: 0,
+                selector: 'named',
               },
             ],
             type: 'alphabetical',
@@ -5184,18 +5184,18 @@ describe('sort-intersection-types', () => {
             & C
             & A // eslint-disable-line rule-to-test/sort-intersection-types
         `,
-        errors: [
-          {
-            messageId: 'unexpectedIntersectionTypesOrder',
-            data: { right: 'B', left: 'C' },
-          },
-        ],
         code: dedent`
           type T =
             C
             & B
             & A // eslint-disable-line rule-to-test/sort-intersection-types
         `,
+        errors: [
+          {
+            messageId: 'unexpectedIntersectionTypesOrder',
+            data: { right: 'B', left: 'C' },
+          },
+        ],
         options: [{}],
       })
 

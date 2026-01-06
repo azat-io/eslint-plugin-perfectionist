@@ -1,7 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { CommonPartitionOptions } from '../types/common-partition-options'
+import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 

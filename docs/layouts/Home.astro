@@ -7,14 +7,14 @@ import DemoBlock from '../components/Demo/DemoBlock.astro'
 import Sidebar from '../components/Sidebar/Sidebar.astro'
 import Footer from '../components/Footer.astro'
 import Header from '../components/Header.astro'
+import Body from '../components/Body.astro'
 import Head from '../components/Head.astro'
 import Hero from '../components/Hero.astro'
 import Html from '../components/Html.astro'
-import Body from '../components/Body.astro'
 
 interface Props {
-  keywords?: string[]
   description: string
+  keywords?: string[]
 }
 
 let { keywords = [], description } = Astro.props

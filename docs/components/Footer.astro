@@ -71,7 +71,7 @@ let footerLinks = [
     </div>
     <div class="links">
       {
-        footerLinks.map(({ title, links }) => (
+        footerLinks.map(({ links, title }) => (
           <div>
             <Typography class="title" size="m" mbe="m">
               {title}
@@ -98,7 +98,7 @@ let footerLinks = [
     </div>
   </Container>
   <Container class="license">
-    <Typography size="xs" mbe="2xs" mbs="xl">
+    <Typography mbe="2xs" size="xs" mbs="xl">
       Released under the MIT License
     </Typography>
     <Typography size="xs"> Copyright © 2025 Azat S. & Contributors </Typography>

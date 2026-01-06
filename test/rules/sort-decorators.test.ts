@@ -6353,13 +6353,13 @@ describe('sort-decorators', () => {
 
 function duplicate5Times(
   errors: TestCaseError<
-    | 'unexpectedDecoratorsGroupOrder'
     | 'missedSpacingBetweenDecorators'
+    | 'unexpectedDecoratorsGroupOrder'
     | 'unexpectedDecoratorsOrder'
   >[],
 ): TestCaseError<
-  | 'unexpectedDecoratorsGroupOrder'
   | 'missedSpacingBetweenDecorators'
+  | 'unexpectedDecoratorsGroupOrder'
   | 'unexpectedDecoratorsOrder'
 >[] {
   return Array.from({ length: 5 }, () => errors).flat()

@@ -32,6 +32,13 @@ export type CommonOptions<
   fallbackSort: FallbackSortOption<CustomTypeOption, AdditionalSortOptions>
 
   /**
+   * Locale(s) to use for locale-aware string comparison. Affects how characters
+   * are ordered according to language-specific rules. Can be a string locale
+   * code or array of locale codes for fallback behavior.
+   */
+  locales: NonNullable<Intl.LocalesArgument>
+
+  /**
    * Specifies how to handle special characters during sorting.
    *
    * - 'keep': Preserve special characters in their original positions
@@ -39,13 +46,6 @@ export type CommonOptions<
    * - 'remove': Remove all special characters before sorting.
    */
   specialCharacters: SpecialCharactersOption
-
-  /**
-   * Locale(s) to use for locale-aware string comparison. Affects how characters
-   * are ordered according to language-specific rules. Can be a string locale
-   * code or array of locale codes for fallback behavior.
-   */
-  locales: NonNullable<Intl.LocalesArgument>
 
   /**
    * Sorting algorithm to use for ordering elements. Each algorithm has
@@ -181,13 +181,13 @@ type SpecialCharactersOption =
    * Remove leading special characters only. Useful for sorting names that may
    * have underscore or other prefixes.
    */
-  | 'trim'
+  | 'keep'
 
   /**
    * Keep all special characters in their original positions. Special characters
    * participate in the sort comparison.
    */
-  | 'keep'
+  | 'trim'
 
 /**
  * Single regular expression pattern configuration.

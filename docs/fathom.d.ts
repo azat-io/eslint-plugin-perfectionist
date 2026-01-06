@@ -1,14 +1,5 @@
 interface Fathom {
   /**
-   * Manually track a page view.
-   *
-   * @param opts - Optional parameters.
-   * @param opts.url - Override the page URL.
-   * @param opts.referrer - Override the referrer.
-   */
-  trackPageview(options?: { referrer?: string; url?: string }): void
-
-  /**
    * Track a custom event.
    *
    * @param eventName - The name of the event to track.
@@ -17,6 +8,15 @@ interface Fathom {
    *   in cents).
    */
   trackEvent(eventName: string, options?: { _value?: number }): void
+
+  /**
+   * Manually track a page view.
+   *
+   * @param opts - Optional parameters.
+   * @param opts.url - Override the page URL.
+   * @param opts.referrer - Override the referrer.
+   */
+  trackPageview(options?: { referrer?: string; url?: string }): void
 
   /**
    * Enable tracking for the current user Reverses the effect of

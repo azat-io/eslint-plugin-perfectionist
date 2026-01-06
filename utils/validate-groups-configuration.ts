@@ -10,8 +10,8 @@ interface ValidateGenerateGroupsConfigurationParameters {
     CommonGroupsOptions<string, unknown, unknown>,
     'customGroups' | 'groups'
   >
-  selectors: readonly string[]
   modifiers: readonly string[]
+  selectors: readonly string[]
 }
 
 /**
@@ -73,8 +73,8 @@ interface ValidateGenerateGroupsConfigurationParameters {
  * @throws {Error} If any group is neither predefined nor custom.
  */
 export function validateGroupsConfiguration({
-  selectors,
   modifiers,
+  selectors,
   options,
 }: ValidateGenerateGroupsConfigurationParameters): void {
   let availableCustomGroupNames = new Set(

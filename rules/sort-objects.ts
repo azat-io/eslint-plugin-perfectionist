@@ -48,8 +48,8 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -69,15 +69,15 @@ let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
-  partitionByNewLine: false,
-  partitionByComment: false,
   newlinesBetween: 'ignore',
+  partitionByComment: false,
+  partitionByNewLine: false,
   specialCharacters: 'keep',
   styledComponents: true,
   useConfigurationIf: {},
   type: 'alphabetical',
-  ignoreCase: true,
   customGroups: [],
+  ignoreCase: true,
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
@@ -107,8 +107,8 @@ export default createEslintRule<Options, MessageId>({
       let options = complete(matchedContextOptions, settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGroupsConfiguration({
-        selectors: allSelectors,
         modifiers: allModifiers,
+        selectors: allSelectors,
         options,
       })
       validateNewlinesAndPartitionConfiguration(options)
@@ -277,8 +277,8 @@ export default createEslintRule<Options, MessageId>({
             }
             let predefinedGroups = generatePredefinedGroups({
               cache: cachedGroupsByModifiersAndSelectors,
-              selectors,
               modifiers,
+              selectors,
             })
             let group = computeGroup({
               customGroupMatcher: customGroup =>
@@ -289,8 +289,8 @@ export default createEslintRule<Options, MessageId>({
                   }),
                   elementName: name,
                   customGroup,
-                  selectors,
                   modifiers,
+                  selectors,
                 }),
               predefinedGroups,
               options,
@@ -362,8 +362,8 @@ export default createEslintRule<Options, MessageId>({
           unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
-        options,
         context,
+        options,
         nodes,
       })
     }

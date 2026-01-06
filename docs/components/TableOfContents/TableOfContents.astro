@@ -5,8 +5,8 @@ import Typography from '../Typography.astro'
 
 interface Heading {
   depth: number
-  text: string
   slug: string
+  text: string
 }
 
 type HeadingWithSubheadings = { subheadings: Heading[] } & Heading
@@ -44,7 +44,7 @@ let toc = buildToc(headings)
 {
   toc.length > 0 && (
     <div class="table-of-content">
-      <Typography class="title" tag="h2" size="m" mbs="s">
+      <Typography class="title" size="m" tag="h2" mbs="s">
         {' '}
         Table of Contents{' '}
       </Typography>

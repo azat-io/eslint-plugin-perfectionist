@@ -115,8 +115,8 @@ describe('sort-imports', () => {
           },
           {
             data: {
-              rightGroup: 'type-internal',
               leftGroup: 'value-internal',
+              rightGroup: 'type-internal',
               right: '~/i',
               left: '~/b',
             },
@@ -671,8 +671,8 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['builtin', 'external', 'unknown'],
-            newlinesBetween: 0,
             environment: 'bun',
+            newlinesBetween: 0,
           },
         ],
         code: dedent`
@@ -697,8 +697,8 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['builtin', 'external', 'unknown'],
-            newlinesBetween: 0,
             environment: 'bun',
+            newlinesBetween: 0,
           },
         ],
         output: dedent`
@@ -1590,8 +1590,8 @@ describe('sort-imports', () => {
         errors: [
           {
             data: {
-              rightGroup: 'unknown',
               leftGroup: 'external',
+              rightGroup: 'unknown',
               right: './a',
               left: 'b',
             },
@@ -2184,8 +2184,8 @@ describe('sort-imports', () => {
           {
             data: {
               rightGroup: 'side-effect',
-              right: 'something',
               leftGroup: 'style',
+              right: 'something',
               left: 'style.css',
             },
             messageId: 'unexpectedImportsGroupOrder',
@@ -2623,8 +2623,8 @@ describe('sort-imports', () => {
           {
             data: {
               rightGroup: 'importsStartingWithHello',
-              right: 'helloImport',
               leftGroup: 'unknown',
+              right: 'helloImport',
               left: 'a',
             },
             messageId: 'unexpectedImportsGroupOrder',
@@ -2816,8 +2816,8 @@ describe('sort-imports', () => {
                     selector: 'external',
                   },
                   {
-                    selector: 'sibling',
                     modifiers: ['type'],
+                    selector: 'sibling',
                   },
                 ],
                 groupName: 'externalAndTypeSiblingImports',
@@ -3406,8 +3406,8 @@ describe('sort-imports', () => {
           },
           {
             data: {
-              rightGroup: 'sibling',
               leftGroup: 'internal',
+              rightGroup: 'sibling',
               right: './b',
               left: '~/c',
             },
@@ -3598,8 +3598,8 @@ describe('sort-imports', () => {
           {
             ...options,
             sortSideEffects: true,
-            sortBy: 'specifier',
             groups: ['unknown'],
+            sortBy: 'specifier',
           },
         ],
       })
@@ -3679,8 +3679,8 @@ describe('sort-imports', () => {
           },
           {
             data: {
-              rightGroup: 'type-internal',
               leftGroup: 'value-internal',
+              rightGroup: 'type-internal',
               right: '~/i',
               left: '~/b',
             },
@@ -4242,8 +4242,8 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['builtin', 'external', 'unknown'],
-            newlinesBetween: 0,
             environment: 'bun',
+            newlinesBetween: 0,
           },
         ],
         code: dedent`
@@ -4268,8 +4268,8 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['builtin', 'external', 'unknown'],
-            newlinesBetween: 0,
             environment: 'bun',
+            newlinesBetween: 0,
           },
         ],
         output: dedent`
@@ -5115,8 +5115,8 @@ describe('sort-imports', () => {
         errors: [
           {
             data: {
-              rightGroup: 'unknown',
               leftGroup: 'external',
+              rightGroup: 'unknown',
               right: './a',
               left: 'b',
             },
@@ -5709,8 +5709,8 @@ describe('sort-imports', () => {
           {
             data: {
               rightGroup: 'side-effect',
-              right: 'something',
               leftGroup: 'style',
+              right: 'something',
               left: 'style.css',
             },
             messageId: 'unexpectedImportsGroupOrder',
@@ -6045,8 +6045,8 @@ describe('sort-imports', () => {
           {
             data: {
               rightGroup: 'importsStartingWithHello',
-              right: 'helloImport',
               leftGroup: 'unknown',
+              right: 'helloImport',
               left: 'a',
             },
             messageId: 'unexpectedImportsGroupOrder',
@@ -6238,8 +6238,8 @@ describe('sort-imports', () => {
                     selector: 'external',
                   },
                   {
-                    selector: 'sibling',
                     modifiers: ['type'],
+                    selector: 'sibling',
                   },
                 ],
                 groupName: 'externalAndTypeSiblingImports',
@@ -6758,8 +6758,8 @@ describe('sort-imports', () => {
           },
           {
             data: {
-              rightGroup: 'sibling',
               leftGroup: 'internal',
+              rightGroup: 'sibling',
               right: './b',
               left: '~/c',
             },
@@ -6950,8 +6950,8 @@ describe('sort-imports', () => {
           {
             ...options,
             sortSideEffects: true,
-            sortBy: 'specifier',
             groups: ['unknown'],
+            sortBy: 'specifier',
           },
         ],
       })
@@ -7027,8 +7027,8 @@ describe('sort-imports', () => {
         errors: [
           {
             data: {
-              rightGroup: 'type-internal',
               leftGroup: 'value-internal',
+              rightGroup: 'type-internal',
               right: '~/i',
               left: '~/b',
             },
@@ -7662,8 +7662,8 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['builtin', 'external', 'unknown'],
-            newlinesBetween: 0,
             environment: 'bun',
+            newlinesBetween: 0,
           },
         ],
         code: dedent`
@@ -7688,8 +7688,8 @@ describe('sort-imports', () => {
           {
             ...options,
             groups: ['builtin', 'external', 'unknown'],
-            newlinesBetween: 0,
             environment: 'bun',
+            newlinesBetween: 0,
           },
         ],
         output: dedent`
@@ -8272,7 +8272,7 @@ describe('sort-imports', () => {
           errors: [
             {
               messageId: 'extraSpacingBetweenImports',
-              data: { right: '~/y', left: 'aaaa' },
+              data: { left: 'aaaa', right: '~/y' },
             },
             {
               data: { right: '~/bb', left: '~/z' },
@@ -8529,8 +8529,8 @@ describe('sort-imports', () => {
         errors: [
           {
             data: {
-              rightGroup: 'unknown',
               leftGroup: 'external',
+              rightGroup: 'unknown',
               right: './a',
               left: 'b',
             },
@@ -9113,8 +9113,8 @@ describe('sort-imports', () => {
           {
             data: {
               rightGroup: 'side-effect',
-              right: 'something',
               leftGroup: 'style',
+              right: 'something',
               left: 'style.css',
             },
             messageId: 'unexpectedImportsGroupOrder',
@@ -9464,8 +9464,8 @@ describe('sort-imports', () => {
           {
             data: {
               rightGroup: 'importsStartingWithHello',
-              right: 'helloImport',
               leftGroup: 'unknown',
+              right: 'helloImport',
               left: 'a',
             },
             messageId: 'unexpectedImportsGroupOrder',
@@ -9657,8 +9657,8 @@ describe('sort-imports', () => {
                     selector: 'external',
                   },
                   {
-                    selector: 'sibling',
                     modifiers: ['type'],
+                    selector: 'sibling',
                   },
                 ],
                 groupName: 'externalAndTypeSiblingImports',
@@ -10177,8 +10177,8 @@ describe('sort-imports', () => {
           },
           {
             data: {
-              rightGroup: 'sibling',
               leftGroup: 'internal',
+              rightGroup: 'sibling',
               right: './bbb',
               left: '~/cc',
             },
@@ -10380,7 +10380,7 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsOrder',
           },
           {
-            data: { right: 'foo5', left: 'Foo.e' },
+            data: { left: 'Foo.e', right: 'foo5' },
             messageId: 'unexpectedImportsOrder',
           },
           {
@@ -10442,8 +10442,8 @@ describe('sort-imports', () => {
           {
             ...options,
             sortSideEffects: true,
-            sortBy: 'specifier',
             groups: ['unknown'],
+            sortBy: 'specifier',
           },
         ],
       })
@@ -10716,8 +10716,8 @@ describe('sort-imports', () => {
           {
             ...options,
             sortSideEffects: true,
-            sortBy: 'specifier',
             groups: ['unknown'],
+            sortBy: 'specifier',
           },
         ],
       })

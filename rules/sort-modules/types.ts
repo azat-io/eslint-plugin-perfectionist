@@ -43,16 +43,16 @@ export type SortModulesSortingNode =
   SortingNodeWithDependencies<SortModulesNode>
 
 /**
- * Union type of all available module member selectors. Used to categorize
- * different types of module-level declarations.
- */
-export type Selector = (typeof allSelectors)[number]
-
-/**
  * Union type of all available module member modifiers. Used to identify
  * specific characteristics of module declarations.
  */
 export type Modifier = (typeof allModifiers)[number]
+
+/**
+ * Union type of all available module member selectors. Used to categorize
+ * different types of module-level declarations.
+ */
+export type Selector = (typeof allSelectors)[number]
 
 /**
  * Additional configuration for a single custom group.

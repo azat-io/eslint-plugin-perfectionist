@@ -33,16 +33,16 @@ export type SortClassesOptions = [
 ]
 
 /**
- * Union type of all available class member selectors. Used to identify and
- * categorize different types of class members.
- */
-export type Selector = (typeof allSelectors)[number]
-
-/**
  * Union type of all available class member modifiers. Includes access
  * modifiers, async, static, abstract, and other TypeScript modifiers.
  */
 export type Modifier = (typeof allModifiers)[number]
+
+/**
+ * Union type of all available class member selectors. Used to identify and
+ * categorize different types of class members.
+ */
+export type Selector = (typeof allSelectors)[number]
 
 /**
  * Defines a custom group configuration for class members.

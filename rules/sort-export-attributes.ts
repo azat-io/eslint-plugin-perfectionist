@@ -26,8 +26,8 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -52,13 +52,13 @@ type MessageId =
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
-  specialCharacters: 'keep',
+  newlinesBetween: 'ignore',
   partitionByComment: false,
   partitionByNewLine: false,
-  newlinesBetween: 'ignore',
+  specialCharacters: 'keep',
   type: 'alphabetical',
-  ignoreCase: true,
   customGroups: [],
+  ignoreCase: true,
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
@@ -78,8 +78,8 @@ export default createEslintRule<Options, MessageId>({
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGroupsConfiguration({
-        selectors: [],
         modifiers: [],
+        selectors: [],
         options,
       })
       validateNewlinesAndPartitionConfiguration(options)
@@ -97,8 +97,8 @@ export default createEslintRule<Options, MessageId>({
           customGroupMatcher: customGroup =>
             doesCustomGroupMatch({
               elementName: name,
-              selectors: [],
               modifiers: [],
+              selectors: [],
               customGroup,
             }),
           predefinedGroups: [],
@@ -162,8 +162,8 @@ export default createEslintRule<Options, MessageId>({
           },
           sortNodesExcludingEslintDisabled:
             createSortNodesExcludingEslintDisabled(nodes),
-          options,
           context,
+          options,
           nodes,
         })
       }

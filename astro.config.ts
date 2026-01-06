@@ -74,8 +74,8 @@ export default defineConfig({
     defaultStrategy: 'hover',
   },
   server: {
-    port: 3000,
     host: true,
+    port: 3000,
   },
   srcDir: path.join(dirname, './docs'),
   root: path.join(dirname, './docs'),

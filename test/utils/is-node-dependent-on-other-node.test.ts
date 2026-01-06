@@ -20,8 +20,8 @@ describe('isNodeDependentOnOtherNode', () => {
       dependencies: [],
     })
     let node2 = createNodeWithDependencies({
-      dependencyNames: [],
       dependencies: ['b'],
+      dependencyNames: [],
     })
 
     expect(isNodeDependentOnOtherNode(node1, node2)).toBeTruthy()

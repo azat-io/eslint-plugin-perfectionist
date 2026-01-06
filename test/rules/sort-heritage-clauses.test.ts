@@ -1963,18 +1963,18 @@ describe('sort-heritage-clauses', () => {
 
     it('removes special characters in heritage clauses', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            specialCharacters: 'remove',
-          },
-        ],
         code: dedent`
           interface MyInterface extends
             abc,
             a_c {
           }
         `,
+        options: [
+          {
+            ...options,
+            specialCharacters: 'remove',
+          },
+        ],
       })
     })
 
@@ -2366,12 +2366,6 @@ describe('sort-heritage-clauses', () => {
               A /* eslint-disable-line */
             {}
           `,
-          errors: [
-            {
-              messageId: 'unexpectedHeritageClausesOrder',
-              data: { right: 'B', left: 'C' },
-            },
-          ],
           code: dedent`
             interface Interface extends
               C,
@@ -2379,6 +2373,12 @@ describe('sort-heritage-clauses', () => {
               A /* eslint-disable-line */
             {}
           `,
+          errors: [
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: { right: 'B', left: 'C' },
+            },
+          ],
           options: [{}],
         })
       })

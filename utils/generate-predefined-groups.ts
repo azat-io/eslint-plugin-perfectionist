@@ -21,8 +21,8 @@ interface GeneratePredefinedGroupsParameters {
  * @returns An array of generated group names.
  */
 export function generatePredefinedGroups({
-  selectors,
   modifiers,
+  selectors,
   cache,
 }: GeneratePredefinedGroupsParameters): string[] {
   let modifiersAndSelectorsKey = `${modifiers.join('&')}/${selectors.join('&')}`

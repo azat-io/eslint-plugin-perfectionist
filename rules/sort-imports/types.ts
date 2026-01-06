@@ -92,16 +92,16 @@ export interface SortImportsSortingNode extends SortingNodeWithDependencies<
 export type CustomTypeOption = 'type-import-first' | TypeOption
 
 /**
- * Union type of all available import selectors. Used to categorize different
- * types of import statements.
- */
-export type Selector = (typeof allSelectors)[number]
-
-/**
  * Union type of all available import modifiers. Used to identify specific
  * characteristics of import statements.
  */
 export type Modifier = (typeof allModifiers)[number]
+
+/**
+ * Union type of all available import selectors. Used to categorize different
+ * types of import statements.
+ */
+export type Selector = (typeof allSelectors)[number]
 
 /**
  * Additional configuration for a single custom group.

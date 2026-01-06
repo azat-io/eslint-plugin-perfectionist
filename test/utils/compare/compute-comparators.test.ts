@@ -53,8 +53,8 @@ describe('compute-comparators', () => {
       specialCharacters: 'trim',
       ignoreCase: true,
       locales: ['en'],
-      order: 'asc',
       alphabet: '',
+      order: 'asc',
       type,
     }
   }

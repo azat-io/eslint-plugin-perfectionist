@@ -8,8 +8,8 @@ import remarkFrontmatter from 'remark-frontmatter'
 import { toText } from 'hast-util-to-text'
 import remarkRehype from 'remark-rehype'
 import remarkParse from 'remark-parse'
-import remarkMdx from 'remark-mdx'
 import remarkGfm from 'remark-gfm'
+import remarkMdx from 'remark-mdx'
 import { unified } from 'unified'
 
 export interface SearchIndexItem {

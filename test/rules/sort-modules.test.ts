@@ -373,8 +373,8 @@ describe('sort-modules', () => {
               },
               {
                 groupName: 'exportInterfaceGroup',
-                selector: 'interface',
                 modifiers: ['export'],
+                selector: 'interface',
               },
               {
                 groupName: 'interfaceGroup',
@@ -763,12 +763,12 @@ describe('sort-modules', () => {
               {
                 anyOf: [
                   {
-                    selector: 'interface',
                     modifiers: ['export'],
+                    selector: 'interface',
                   },
                   {
-                    selector: 'function',
                     modifiers: ['async'],
+                    selector: 'function',
                   },
                 ],
                 groupName: 'exportInterfacesAndAsyncFunctions',
@@ -1866,12 +1866,6 @@ describe('sort-modules', () => {
 
       it('ignores usages in simple interface keys', async () => {
         await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
           code: dedent`
             interface A {
               B: 'b'
@@ -1879,6 +1873,12 @@ describe('sort-modules', () => {
 
             type B = 'b'
           `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
         })
       })
 
@@ -3059,12 +3059,6 @@ describe('sort-modules', () => {
             @C
             class C {}
           `,
-          errors: [
-            {
-              messageId: 'unexpectedModulesOrder',
-              data: { right: 'B', left: 'C' },
-            },
-          ],
           code: dedent`
             @C
             class C {}
@@ -3075,6 +3069,12 @@ describe('sort-modules', () => {
             @B
             class B {}
           `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'B', left: 'C' },
+            },
+          ],
           options: [
             {
               ...options,
@@ -3400,8 +3400,8 @@ describe('sort-modules', () => {
               },
               {
                 groupName: 'exportInterfaceGroup',
-                selector: 'interface',
                 modifiers: ['export'],
+                selector: 'interface',
               },
               {
                 groupName: 'interfaceGroup',
@@ -3790,12 +3790,12 @@ describe('sort-modules', () => {
               {
                 anyOf: [
                   {
-                    selector: 'interface',
                     modifiers: ['export'],
+                    selector: 'interface',
                   },
                   {
-                    selector: 'function',
                     modifiers: ['async'],
+                    selector: 'function',
                   },
                 ],
                 groupName: 'exportInterfacesAndAsyncFunctions',
@@ -5818,8 +5818,8 @@ describe('sort-modules', () => {
               },
               {
                 groupName: 'exportInterfaceGroup',
-                selector: 'interface',
                 modifiers: ['export'],
+                selector: 'interface',
               },
               {
                 groupName: 'interfaceGroup',
@@ -6208,12 +6208,12 @@ describe('sort-modules', () => {
               {
                 anyOf: [
                   {
-                    selector: 'interface',
                     modifiers: ['export'],
+                    selector: 'interface',
                   },
                   {
-                    selector: 'function',
                     modifiers: ['async'],
+                    selector: 'function',
                   },
                 ],
                 groupName: 'exportInterfacesAndAsyncFunctions',
@@ -8134,8 +8134,8 @@ describe('sort-modules', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 1,
             groups: ['b', 'a'],
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -8672,12 +8672,6 @@ describe('sort-modules', () => {
 
     it('ignores usages in simple interface keys', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
         code: dedent`
           interface A {
             B: 'b'
@@ -8685,6 +8679,12 @@ describe('sort-modules', () => {
 
           type B = 'b'
         `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
       })
     })
 

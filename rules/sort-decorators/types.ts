@@ -9,8 +9,8 @@ export type Options = Partial<
     sortOnParameters: boolean
     sortOnProperties: boolean
     sortOnAccessors: boolean
-    sortOnMethods: boolean
     sortOnClasses: boolean
+    sortOnMethods: boolean
   } & AllCommonOptions<
     TypeOption,
     AdditionalSortOptions,

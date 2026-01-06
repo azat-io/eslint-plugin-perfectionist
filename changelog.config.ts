@@ -5,18 +5,18 @@ export default {
     perf: {
       title: '🏎 Performance Improvements',
     },
-    fix: {
-      title: '🐞 Bug Fixes',
-    },
     feat: {
       title: '🚀 Features',
     },
+    fix: {
+      title: '🐞 Bug Fixes',
+    },
     refactor: false,
-    style: false,
-    chore: false,
     build: false,
-    test: false,
+    chore: false,
+    style: false,
     docs: false,
+    test: false,
     ci: false,
   },
   templates: {

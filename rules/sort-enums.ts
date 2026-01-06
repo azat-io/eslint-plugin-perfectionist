@@ -25,8 +25,8 @@ import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schema
 import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-enums/types'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -55,14 +55,14 @@ let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
   sortByValue: 'ifNumericEnum',
+  newlinesBetween: 'ignore',
   partitionByComment: false,
   partitionByNewLine: false,
   specialCharacters: 'keep',
-  newlinesBetween: 'ignore',
   type: 'alphabetical',
+  customGroups: [],
   ignoreCase: true,
   locales: 'en-US',
-  customGroups: [],
   alphabet: '',
   order: 'asc',
   groups: [],
@@ -83,8 +83,8 @@ export default createEslintRule<Options, MessageId>({
       let options = complete(context.options.at(0), settings, defaultOptions)
       validateCustomSortConfiguration(options)
       validateGroupsConfiguration({
-        selectors: [],
         modifiers: [],
+        selectors: [],
         options,
       })
       validateNewlinesAndPartitionConfiguration(options)
@@ -146,8 +146,8 @@ export default createEslintRule<Options, MessageId>({
               doesCustomGroupMatch({
                 elementValue: sourceCode.getText(member.initializer),
                 elementName: name,
-                selectors: [],
                 modifiers: [],
+                selectors: [],
                 customGroup,
               }),
             predefinedGroups: [],
@@ -164,8 +164,8 @@ export default createEslintRule<Options, MessageId>({
             numericValue: getExpressionNumberValue(member.initializer!),
             size: rangeToDiff(member, sourceCode),
             dependencyNames: [name],
-            node: member,
             dependencies,
+            node: member,
             group,
             name,
           }
@@ -225,8 +225,8 @@ export default createEslintRule<Options, MessageId>({
           unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
-        options,
         context,
+        options,
         nodes,
       })
     },

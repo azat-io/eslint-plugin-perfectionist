@@ -9,8 +9,8 @@ describe('validate-newlines-and-partition-configuration', () => {
       newlinesBetween => {
         expect(() => {
           validateNewlinesAndPartitionConfiguration({
-            partitionByNewLine: true,
             newlinesInside: 'ignore',
+            partitionByNewLine: true,
             customGroups: [],
             newlinesBetween,
             groups: [],
@@ -28,8 +28,8 @@ describe('validate-newlines-and-partition-configuration', () => {
           validateNewlinesAndPartitionConfiguration({
             groups: [{ newlinesBetween }],
             newlinesBetween: 'ignore',
-            partitionByNewLine: true,
             newlinesInside: 'ignore',
+            partitionByNewLine: true,
             customGroups: [],
           })
         }).toThrowError(
@@ -79,8 +79,8 @@ describe('validate-newlines-and-partition-configuration', () => {
           validateNewlinesAndPartitionConfiguration({
             groups: [{ group: 'group', newlinesInside }],
             newlinesBetween: 'ignore',
-            partitionByNewLine: true,
             newlinesInside: 'ignore',
+            partitionByNewLine: true,
             customGroups: [],
           })
         }).toThrowError(
@@ -96,8 +96,8 @@ describe('validate-newlines-and-partition-configuration', () => {
           validateNewlinesAndPartitionConfiguration({
             customGroups: [{ groupName: 'group', newlinesInside }],
             newlinesBetween: 'ignore',
-            partitionByNewLine: true,
             newlinesInside: 'ignore',
+            partitionByNewLine: true,
             groups: ['group'],
           })
         }).toThrowError(
@@ -126,8 +126,8 @@ describe('validate-newlines-and-partition-configuration', () => {
       newlinesInside => {
         expect(() => {
           validateNewlinesAndPartitionConfiguration({
-            partitionByNewLine: false,
             newlinesBetween: 'ignore',
+            partitionByNewLine: false,
             customGroups: [],
             newlinesInside,
             groups: [],
@@ -147,8 +147,8 @@ describe('validate-newlines-and-partition-configuration', () => {
         ],
         customGroups: [{ newlinesInside: 'ignore', groupName: 'group' }],
         newlinesBetween: 'ignore',
-        partitionByNewLine: true,
         newlinesInside: 'ignore',
+        partitionByNewLine: true,
       })
     }).not.toThrowError()
   })

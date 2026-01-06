@@ -26,12 +26,12 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
-import { getDecoratorName } from '../utils/get-decorator-name'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getDecoratorName } from '../utils/get-decorator-name'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { computeGroup } from '../utils/compute-group'
@@ -54,18 +54,18 @@ type MessageId =
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
-  specialCharacters: 'keep',
+  newlinesBetween: 'ignore',
   partitionByComment: false,
   partitionByNewLine: false,
-  newlinesBetween: 'ignore',
-  sortOnProperties: true,
+  specialCharacters: 'keep',
   sortOnParameters: true,
+  sortOnProperties: true,
   sortOnAccessors: true,
   type: 'alphabetical',
   sortOnClasses: true,
   sortOnMethods: true,
-  ignoreCase: true,
   customGroups: [],
+  ignoreCase: true,
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
@@ -225,8 +225,8 @@ function sortDecorators(
         customGroupMatcher: customGroup =>
           doesCustomGroupMatch({
             elementName: name,
-            selectors: [],
             modifiers: [],
+            selectors: [],
             customGroup,
           }),
         predefinedGroups: [],
@@ -288,8 +288,8 @@ function sortDecorators(
     },
     ignoreFirstNodeHighestBlockComment: true,
     sortNodesExcludingEslintDisabled,
-    options,
     context,
+    options,
     nodes,
   })
 }

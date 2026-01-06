@@ -9,11 +9,11 @@ import { convertBooleanToSign } from './convert-boolean-to-sign'
  * and lowercase variations for case-sensitive operations.
  */
 interface Character {
-  /** The Unicode code point of the uppercase variant of the character. */
-  uppercaseCharacterCodePoint?: number
-
   /** The Unicode code point of the lowercase variant of the character. */
   lowercaseCharacterCodePoint?: number
+
+  /** The Unicode code point of the uppercase variant of the character. */
+  uppercaseCharacterCodePoint?: number
 
   /** The Unicode code point of the character. */
   codePoint: number
@@ -228,7 +228,7 @@ export class Alphabet {
    *   all the characters with the other case.
    */
   public placeAllWithCaseBeforeAllWithOtherCase(
-    caseToComeFirst: 'uppercase' | 'lowercase',
+    caseToComeFirst: 'lowercase' | 'uppercase',
   ): this {
     let charactersWithCase = this.getCharactersWithCase()
     let orderedCharacters = [

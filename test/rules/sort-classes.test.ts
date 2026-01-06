@@ -4076,19 +4076,19 @@ describe('sort-classes', () => {
               data: { right: 'method', left: 'method' },
             },
           ],
-          output: dedent`
-            class Class {
-              method(a: string): void {}
-              method(a: number): void {}
-              method(a: string | number): void {}
-            }
-          `,
           code: dedent`
             class Class {
               method(a: string): void {}
 
               method(a: number): void {}
 
+              method(a: string | number): void {}
+            }
+          `,
+          output: dedent`
+            class Class {
+              method(a: string): void {}
+              method(a: number): void {}
               method(a: string | number): void {}
             }
           `,
@@ -8587,19 +8587,19 @@ describe('sort-classes', () => {
               data: { right: 'method', left: 'method' },
             },
           ],
-          output: dedent`
-            class Class {
-              method(a: string): void {}
-              method(a: number): void {}
-              method(a: string | number): void {}
-            }
-          `,
           code: dedent`
             class Class {
               method(a: string): void {}
 
               method(a: number): void {}
 
+              method(a: string | number): void {}
+            }
+          `,
+          output: dedent`
+            class Class {
+              method(a: string): void {}
+              method(a: number): void {}
               method(a: string | number): void {}
             }
           `,
@@ -13038,19 +13038,19 @@ describe('sort-classes', () => {
               data: { right: 'method', left: 'method' },
             },
           ],
-          output: dedent`
-            class Class {
-              method(a: string): void {}
-              method(a: number): void {}
-              method(a: string | number): void {}
-            }
-          `,
           code: dedent`
             class Class {
               method(a: string): void {}
 
               method(a: number): void {}
 
+              method(a: string | number): void {}
+            }
+          `,
+          output: dedent`
+            class Class {
+              method(a: string): void {}
+              method(a: number): void {}
               method(a: string | number): void {}
             }
           `,
@@ -13357,12 +13357,6 @@ describe('sort-classes', () => {
             c
           }
         `,
-        errors: [
-          {
-            messageId: 'unexpectedClassesOrder',
-            data: { right: 'bb', left: 'c' },
-          },
-        ],
         code: dedent`
           class Class {
             aaa
@@ -13373,6 +13367,12 @@ describe('sort-classes', () => {
             bb
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'bb', left: 'c' },
+          },
+        ],
       })
     })
 
@@ -13716,8 +13716,8 @@ describe('sort-classes', () => {
                 groupName: 'b',
               },
             ],
-            newlinesBetween: 1,
             groups: ['b', 'a'],
+            newlinesBetween: 1,
           },
         ],
         errors: [
@@ -14655,19 +14655,19 @@ describe('sort-classes', () => {
               groups: ['methods'],
             },
           ],
-          output: dedent`
-            class Class {
-              method(a: string): void {}
-              method(a: number): void {}
-              method(a: string | number): void {}
-            }
-          `,
           code: dedent`
             class Class {
               method(a: string): void {}
 
               method(a: number): void {}
 
+              method(a: string | number): void {}
+            }
+          `,
+          output: dedent`
+            class Class {
+              method(a: string): void {}
+              method(a: number): void {}
               method(a: string | number): void {}
             }
           `,
@@ -15192,13 +15192,6 @@ describe('sort-classes', () => {
 
     it('allows to use all comments as parts', async () => {
       await valid({
-        options: [
-          {
-            partitionByComment: {
-              line: true,
-            },
-          },
-        ],
         code: dedent`
           class Class {
             b() {}
@@ -15206,6 +15199,13 @@ describe('sort-classes', () => {
             a() {}
           }
         `,
+        options: [
+          {
+            partitionByComment: {
+              line: true,
+            },
+          },
+        ],
       })
     })
 

@@ -1,5 +1,5 @@
-import type { OptionsByGroupIndexComputer } from './sort-nodes-by-groups'
 import type { CommonGroupsOptions } from '../types/common-groups-options'
+import type { OptionsByGroupIndexComputer } from './sort-nodes-by-groups'
 import type { CommonOptions } from '../types/common-options'
 
 import { computeOverriddenOptionsByGroupIndex } from './compute-overridden-options-by-group-index'

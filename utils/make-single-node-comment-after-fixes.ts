@@ -1,5 +1,5 @@
-import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 /** Parameters for generating comment-after fixes for a single node. */
 interface MakeSingleNodeCommentAfterFixesParameters {

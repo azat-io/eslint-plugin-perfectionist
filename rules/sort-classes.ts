@@ -36,16 +36,16 @@ import { computeIndexSignatureDetails } from './sort-classes/node-info/compute-i
 import { computeStaticBlockDetails } from './sort-classes/node-info/compute-static-block-details'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { computePropertyDetails } from './sort-classes/node-info/compute-property-details'
 import { computeAccessorDetails } from './sort-classes/node-info/compute-accessor-details'
+import { computePropertyDetails } from './sort-classes/node-info/compute-property-details'
 import { getOverloadSignatureGroups } from './sort-classes/get-overload-signature-groups'
 import { computeMethodDetails } from './sort-classes/node-info/compute-method-details'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
@@ -104,13 +104,13 @@ let defaultOptions: Required<SortClassesOptions[number]> = {
   ignoreCallbackDependenciesPatterns: [],
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
+  newlinesBetween: 'ignore',
   partitionByComment: false,
   partitionByNewLine: false,
-  newlinesBetween: 'ignore',
   specialCharacters: 'keep',
   type: 'alphabetical',
-  ignoreCase: true,
   customGroups: [],
+  ignoreCase: true,
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
@@ -189,7 +189,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
             case AST_NODE_TYPES.TSAbstractMethodDefinition:
             case AST_NODE_TYPES.MethodDefinition:
               dependencyNames = []
-              ;({ addSafetySemicolonWhenInline, selectors, modifiers, name } =
+              ;({ addSafetySemicolonWhenInline, modifiers, selectors, name } =
                 computeMethodDetails({
                   hasParentDeclare: node.parent.declare,
                   method: member,
@@ -200,7 +200,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
             case AST_NODE_TYPES.TSAbstractAccessorProperty:
             case AST_NODE_TYPES.AccessorProperty:
               addSafetySemicolonWhenInline = true
-              ;({ dependencyNames, selectors, modifiers, name } =
+              ;({ dependencyNames, modifiers, selectors, name } =
                 computeAccessorDetails({
                   accessor: member,
                   isDecorated,
@@ -219,7 +219,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
               addSafetySemicolonWhenInline = false
               dependencyNames = []
               name = 'static'
-              ;({ dependencies, selectors, modifiers } =
+              ;({ dependencies, modifiers, selectors } =
                 computeStaticBlockDetails({
                   ignoreCallbackDependenciesPatterns:
                     options.ignoreCallbackDependenciesPatterns,
@@ -234,8 +234,8 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
           let predefinedGroups = generatePredefinedGroups({
             cache: cachedGroupsByModifiersAndSelectors,
-            selectors,
             modifiers,
+            selectors,
           })
           let group = computeGroup({
             customGroupMatcher: customGroup =>
@@ -277,8 +277,8 @@ export default createEslintRule<SortClassesOptions, MessageId>({
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
             addSafetySemicolonWhenInline,
             dependencyNames,
-            node: member,
             dependencies,
+            node: member,
             group,
             name,
           }
@@ -352,8 +352,8 @@ export default createEslintRule<SortClassesOptions, MessageId>({
           unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
-        options,
         context,
+        options,
         nodes,
       })
     },

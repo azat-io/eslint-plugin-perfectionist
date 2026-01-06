@@ -1,5 +1,5 @@
-import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
@@ -36,8 +36,8 @@ import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { computeNodeDetails } from './sort-modules/compute-node-details'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -81,13 +81,13 @@ let defaultOptions: Required<SortModulesOptions[number]> = {
   ],
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
+  newlinesBetween: 'ignore',
   partitionByComment: false,
   partitionByNewLine: false,
-  newlinesBetween: 'ignore',
   specialCharacters: 'keep',
   type: 'alphabetical',
-  ignoreCase: true,
   customGroups: [],
+  ignoreCase: true,
   locales: 'en-US',
   alphabet: '',
   order: 'asc',
@@ -151,8 +151,8 @@ export default createEslintRule<SortModulesOptions, MessageId>({
           eslintDisabledLines,
           module: program,
           sourceCode,
-          options,
           context,
+          options,
         }),
     }
   },
@@ -163,8 +163,8 @@ export default createEslintRule<SortModulesOptions, MessageId>({
 function analyzeModule({
   eslintDisabledLines,
   sourceCode,
-  options,
   context,
+  options,
   module,
 }: {
   context: TSESLint.RuleContext<MessageId, SortModulesOptions>
@@ -186,8 +186,8 @@ function analyzeModule({
       case AST_NODE_TYPES.FunctionDeclaration:
       case AST_NODE_TYPES.TSModuleDeclaration:
         break
-      case AST_NODE_TYPES.VariableDeclaration:
       case AST_NODE_TYPES.ExpressionStatement:
+      case AST_NODE_TYPES.VariableDeclaration:
         formattedNodes.push([])
         continue
       case AST_NODE_TYPES.TSDeclareFunction:
@@ -209,8 +209,8 @@ function analyzeModule({
           module: details.moduleBlock,
           eslintDisabledLines,
           sourceCode,
-          options,
           context,
+          options,
         })
       }
       continue
@@ -284,8 +284,8 @@ function analyzeModule({
     },
     sortNodesExcludingEslintDisabled,
     nodes: sortingNodes,
-    options,
     context,
+    options,
   })
 
   function sortNodesExcludingEslintDisabled(

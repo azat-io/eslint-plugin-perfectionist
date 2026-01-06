@@ -18,10 +18,10 @@ import { matches } from '../../utils/matches'
 type CommonSelector = Extract<
   Selector,
   | 'tsconfig-path'
-  | 'internal'
   | 'external'
-  | 'sibling'
+  | 'internal'
   | 'builtin'
+  | 'sibling'
   | 'subpath'
   | 'parent'
   | 'index'
@@ -151,7 +151,7 @@ function getInternalOrExternalGroup({
   tsConfigOutput: ReadClosestTsConfigByPathValue | null
   filename: string
   name: string
-}): 'internal' | 'external' | null {
+}): 'external' | 'internal' | null {
   let typescriptImport = getTypescriptImport()
   if (!typescriptImport) {
     return !name.startsWith('.') && !name.startsWith('/') ? 'external' : null

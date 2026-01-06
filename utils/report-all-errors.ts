@@ -1,8 +1,8 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
-import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { CommonPartitionOptions } from '../types/common-partition-options'
+import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
+import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -299,14 +299,14 @@ export function reportAllErrors<
 
     reportErrors({
       sortedNodes: sortedNodesExcludingEslintDisabled,
-      ignoreFirstNodeHighestBlockComment,
       firstUnorderedNodeDependentOnRight,
+      ignoreFirstNodeHighestBlockComment,
       newlinesBetweenValueGetter,
       commentAboveMissing,
       messageIds,
       sourceCode,
-      options,
       context,
+      options,
       nodes,
       right,
       left,

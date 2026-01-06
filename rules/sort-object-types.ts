@@ -46,8 +46,8 @@ import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { isNodeFunctionType } from './sort-object-types/is-node-function-type'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isMemberOptional } from './sort-object-types/is-member-optional'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { computeNodeName } from './sort-object-types/compute-node-name'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
@@ -78,14 +78,14 @@ type MessageId =
 export let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted', sortBy: 'name' },
   newlinesInside: 'newlinesBetween',
+  newlinesBetween: 'ignore',
   partitionByComment: false,
   partitionByNewLine: false,
-  newlinesBetween: 'ignore',
   specialCharacters: 'keep',
   useConfigurationIf: {},
   type: 'alphabetical',
-  ignoreCase: true,
   customGroups: [],
+  ignoreCase: true,
   locales: 'en-US',
   sortBy: 'name',
   alphabet: '',
@@ -192,8 +192,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
-    selectors: allSelectors,
     modifiers: allModifiers,
+    selectors: allSelectors,
     options,
   })
   validateNewlinesAndPartitionConfiguration(options)
@@ -257,8 +257,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
 
     let predefinedGroups = generatePredefinedGroups({
       cache: cachedGroupsByModifiersAndSelectors,
-      selectors,
       modifiers,
+      selectors,
     })
     let group = computeGroup({
       customGroupMatcher: customGroup =>
@@ -266,8 +266,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
           elementValue: value,
           elementName: name,
           customGroup,
-          selectors,
           modifiers,
+          selectors,
         }),
       predefinedGroups,
       options,
@@ -305,8 +305,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
   reportAllErrors<MessageIds>({
     sortNodesExcludingEslintDisabled,
     availableMessageIds,
-    options,
     context,
+    options,
     nodes,
   })
 

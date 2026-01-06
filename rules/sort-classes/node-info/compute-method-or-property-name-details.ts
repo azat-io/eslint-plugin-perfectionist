@@ -18,11 +18,11 @@ import { computeIdentifierNameDetails } from '../compute-identifier-name-details
 export function computeMethodOrPropertyNameDetails(
   node:
     | TSESTree.TSAbstractPropertyDefinition
-    | TSESTree.TSAbstractMethodDefinition
     | TSESTree.TSAbstractAccessorProperty
+    | TSESTree.TSAbstractMethodDefinition
     | TSESTree.PropertyDefinition
-    | TSESTree.MethodDefinition
-    | TSESTree.AccessorProperty,
+    | TSESTree.AccessorProperty
+    | TSESTree.MethodDefinition,
   sourceCode: TSESLint.SourceCode,
 ): NodeNameDetails {
   switch (node.key.type) {

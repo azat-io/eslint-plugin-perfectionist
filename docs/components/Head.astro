@@ -94,7 +94,7 @@ let isProduction = import.meta.env.PROD
     content={Astro.url.toString().replace(/\.html/u, '')}
     property="og:url"
   />
-  <meta property="og:title" content={pageTitle} />
+  <meta content={pageTitle} property="og:title" />
   <meta property="og:description" content={description} />
   <meta property="og:image" content={image} />
   <meta property="og:image:type" content="image/png" />

@@ -35,8 +35,8 @@ import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-nam
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -68,16 +68,16 @@ type SortArrayIncludesSortingNode = SortingNode<
 export let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
-  specialCharacters: 'keep',
+  newlinesBetween: 'ignore',
   partitionByComment: false,
   partitionByNewLine: false,
-  newlinesBetween: 'ignore',
+  specialCharacters: 'keep',
   useConfigurationIf: {},
   type: 'alphabetical',
   groups: ['literal'],
+  customGroups: [],
   ignoreCase: true,
   locales: 'en-US',
-  customGroups: [],
   alphabet: '',
   order: 'asc',
 }
@@ -267,8 +267,8 @@ export function sortArray<MessageIds extends string>({
   reportAllErrors<MessageIds>({
     sortNodesExcludingEslintDisabled,
     availableMessageIds,
-    options,
     context,
+    options,
     nodes,
   })
 }
