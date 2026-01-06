@@ -22,14 +22,14 @@
  */
 export type CommonOptions<
   CustomTypeOption extends string = string,
-  AdditionalSortProperties = object,
+  AdditionalSortOptions = object,
 > = {
   /**
    * Secondary sorting method applied when primary comparison returns equal.
    * Ensures stable and predictable sorting when elements have identical primary
    * values.
    */
-  fallbackSort: FallbackSortOption<CustomTypeOption, AdditionalSortProperties>
+  fallbackSort: FallbackSortOption<CustomTypeOption, AdditionalSortOptions>
 
   /**
    * Specifies how to handle special characters during sorting.
@@ -73,7 +73,7 @@ export type CommonOptions<
    * sorted after those in the alphabet.
    */
   alphabet: string
-} & AdditionalSortProperties
+} & AdditionalSortOptions
 
 /**
  * Sorting algorithm type that determines how elements are ordered.

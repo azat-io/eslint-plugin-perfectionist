@@ -29,15 +29,12 @@ import type {
  */
 export function isGroupWithOverridesOption<
   CustomTypeOption extends string,
-  AdditionalSortProperties,
+  AdditionalSortOptions,
 >(
-  groupOption: GroupsOptions<
-    CustomTypeOption,
-    AdditionalSortProperties
-  >[number],
+  groupOption: GroupsOptions<CustomTypeOption, AdditionalSortOptions>[number],
 ): groupOption is GroupWithOverridesOption<
   CustomTypeOption,
-  AdditionalSortProperties
+  AdditionalSortOptions
 > {
   return typeof groupOption === 'object' && 'group' in groupOption
 }

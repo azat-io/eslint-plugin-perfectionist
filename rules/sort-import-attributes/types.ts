@@ -5,17 +5,13 @@ import type { TypeOption } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 export type Options = Partial<
-  AllCommonOptions<
-    TypeOption,
-    AdditionalSortProperties,
-    CustomGroupMatchOptions
-  >
+  AllCommonOptions<TypeOption, AdditionalSortOptions, CustomGroupMatchOptions>
 >[]
 
 export type SortImportAttributesSortingNode =
   SortingNode<TSESTree.ImportAttribute>
 
-type AdditionalSortProperties = object
-
 /** Match options for a custom group. */
 type CustomGroupMatchOptions = object
+
+type AdditionalSortOptions = object

@@ -26,7 +26,7 @@ import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-new
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import {
-  customGroupMatchOptionsJsonSchema,
+  additionalCustomGroupMatchOptionsJsonSchema,
   allSelectors,
 } from './sort-array-includes/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
@@ -87,7 +87,8 @@ export let jsonSchema: JSONSchema4 = {
     properties: {
       ...buildCommonJsonSchemas(),
       ...buildCommonGroupsJsonSchemas({
-        additionalCustomGroupMatchProperties: customGroupMatchOptionsJsonSchema,
+        additionalCustomGroupMatchProperties:
+          additionalCustomGroupMatchOptionsJsonSchema,
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema(),
       partitionByComment: partitionByCommentJsonSchema,

@@ -11,6 +11,13 @@ import type {
 } from './sort-imports/types'
 
 import {
+  additionalCustomGroupMatchOptionsJsonSchema,
+  additionalSortOptionsJsonSchema,
+  TYPE_IMPORT_FIRST_TYPE_OPTION,
+  allModifiers,
+  allSelectors,
+} from './sort-imports/types'
+import {
   MISSED_COMMENT_ABOVE_ERROR,
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
@@ -18,12 +25,6 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import {
-  customGroupMatchOptionsJsonSchema,
-  TYPE_IMPORT_FIRST_TYPE_OPTION,
-  allModifiers,
-  allSelectors,
-} from './sort-imports/types'
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
@@ -50,7 +51,6 @@ import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { computeSpecifierName } from './sort-imports/compute-specifier-name'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { additionalSortPropertiesJsonSchema } from './sort-imports/types'
 import { computeDependencies } from './sort-imports/compute-dependencies'
 import { isSideEffectImport } from './sort-imports/is-side-effect-import'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -295,13 +295,13 @@ export default createEslintRule<Options, MessageId>({
         properties: {
           ...buildCommonJsonSchemas({
             allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
-            additionalSortProperties: additionalSortPropertiesJsonSchema,
+            additionalSortProperties: additionalSortOptionsJsonSchema,
           }),
           ...buildCommonGroupsJsonSchemas({
             additionalCustomGroupMatchProperties:
-              customGroupMatchOptionsJsonSchema,
+              additionalCustomGroupMatchOptionsJsonSchema,
             allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
-            additionalSortProperties: additionalSortPropertiesJsonSchema,
+            additionalSortProperties: additionalSortOptionsJsonSchema,
           }),
           tsconfig: {
             properties: {

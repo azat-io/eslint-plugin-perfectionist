@@ -20,6 +20,11 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
+import {
+  additionalCustomGroupMatchOptionsJsonSchema,
+  allModifiers,
+  allSelectors,
+} from './sort-classes/types'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import {
@@ -27,11 +32,6 @@ import {
   buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
-import {
-  customGroupMatchOptionsJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-classes/types'
 import { computeIndexSignatureDetails } from './sort-classes/node-info/compute-index-signature-details'
 import { computeStaticBlockDetails } from './sort-classes/node-info/compute-static-block-details'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
@@ -365,7 +365,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
             additionalCustomGroupMatchProperties:
-              customGroupMatchOptionsJsonSchema,
+              additionalCustomGroupMatchOptionsJsonSchema,
           }),
           ignoreCallbackDependenciesPatterns: buildRegexJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,

@@ -37,7 +37,7 @@ export type Options = Partial<
   } & Omit<
     AllCommonOptions<
       TypeOption,
-      AdditionalSortProperties,
+      AdditionalSortOptions,
       CustomGroupMatchOptions
     >,
     'partitionByComment'
@@ -86,7 +86,7 @@ interface CustomGroupMatchOptions {
   selector?: Selector
 }
 
-type AdditionalSortProperties = object
+type AdditionalSortOptions = object
 
 /**
  * Complete list of available JSX prop selectors. Used for validation and JSON
@@ -104,7 +104,10 @@ export let allModifiers = ['shorthand', 'multiline'] as const
  * Additional custom group match options JSON schema. Used by ESLint to validate
  * rule options at configuration time.
  */
-export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   elementValuePattern: buildRegexJsonSchema(),

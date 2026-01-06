@@ -22,11 +22,11 @@ import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-group
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
+import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-enums/types'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
-import { customGroupMatchOptionsJsonSchema } from './sort-enums/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -238,7 +238,7 @@ export default createEslintRule<Options, MessageId>({
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
             additionalCustomGroupMatchProperties:
-              customGroupMatchOptionsJsonSchema,
+              additionalCustomGroupMatchOptionsJsonSchema,
           }),
           sortByValue: {
             description: 'Specifies whether to sort enums by value.',

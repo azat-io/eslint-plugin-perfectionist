@@ -17,13 +17,13 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import {
-  customGroupMatchOptionsJsonSchema,
+  additionalCustomGroupMatchOptionsJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-jsx-props/types'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { partitionByNewLineJsonSchema } from '../utils/json-schemas/common-partition-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
@@ -225,7 +225,7 @@ export default createEslintRule<Options, MessageId>({
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
             additionalCustomGroupMatchProperties:
-              customGroupMatchOptionsJsonSchema,
+              additionalCustomGroupMatchOptionsJsonSchema,
           }),
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {

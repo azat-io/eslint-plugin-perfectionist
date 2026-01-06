@@ -2,8 +2,8 @@ import type { CommonOptions, RegexOption } from './common-options'
 
 export interface CommonGroupsOptions<
   CustomTypeOption extends string,
-  AdditionalSortProperties,
-  CustomGroupMatchOptions,
+  AdditionalSortOptions,
+  AdditionalCustomGroupMatchOptions,
 > {
   /** Specify the exact number of newlines required between elements of groups. */
   newlinesInside:
@@ -17,15 +17,15 @@ export interface CommonGroupsOptions<
   /** Custom groups for organizing nodes. */
   customGroups: CustomGroupsOption<
     CustomTypeOption,
-    AdditionalSortProperties,
-    CustomGroupMatchOptions
+    AdditionalSortOptions,
+    AdditionalCustomGroupMatchOptions
   >
 
   /**
    * Defines the order and grouping of nodes. Nodes are sorted within their
    * groups and groups are ordered as specified.
    */
-  groups: GroupsOptions<CustomTypeOption, AdditionalSortProperties>
+  groups: GroupsOptions<CustomTypeOption, AdditionalSortOptions>
 
   /** Specify the exact number of newlines required between groups. */
   newlinesBetween: NewlinesBetweenOption
@@ -54,14 +54,15 @@ export interface CommonGroupsOptions<
  *     },
  *   ]
  *
- * @template MatchOptions - Options for matching elements to the custom group.
- * @template AdditionalSortProperties - Additional sort options that extend the
+ * @template AdditionalMatchOptions - Options for matching elements to the
+ *   custom group.
+ * @template AdditionalSortOptions - Additional sort options that extend the
  *   base configuration.
  */
 export type CustomGroupsOption<
   CustomTypeOption extends string,
-  AdditionalSortProperties,
-  MatchOptions,
+  AdditionalSortOptions,
+  AdditionalMatchOptions,
 > = ({
   /** Specify the exact number of newlines required between elements of groups. */
   newlinesInside?: NewlinesInsideOption
@@ -79,12 +80,12 @@ export type CustomGroupsOption<
   groupName: string
 } & Partial<
   Pick<
-    CommonOptions<CustomTypeOption, AdditionalSortProperties>,
+    CommonOptions<CustomTypeOption, AdditionalSortOptions>,
     'fallbackSort' | 'order' | 'type'
   >
 > &
-  (AnyOfCustomGroup<MatchOptions> | Partial<MatchOptions>) &
-  Partial<AdditionalSortProperties>)[]
+  (AnyOfCustomGroup<AdditionalMatchOptions> | Partial<AdditionalMatchOptions>) &
+  Partial<AdditionalSortOptions>)[]
 
 /**
  * Configuration for groups with overriding settings.
@@ -98,7 +99,7 @@ export type CustomGroupsOption<
  */
 export type GroupWithOverridesOption<
   CustomTypeOption extends string,
-  AdditionalSortProperties,
+  AdditionalSortOptions,
 > = {
   /** Specify the exact number of newlines required inside the group. */
   newlinesInside?: NewlinesInsideOption
@@ -113,11 +114,11 @@ export type GroupWithOverridesOption<
   commentAbove?: string
 } & Partial<
   Pick<
-    CommonOptions<CustomTypeOption, AdditionalSortProperties>,
+    CommonOptions<CustomTypeOption, AdditionalSortOptions>,
     'fallbackSort' | 'order' | 'type'
   >
 > &
-  Partial<AdditionalSortProperties>
+  Partial<AdditionalSortOptions>
 
 /**
  * Configuration for matching multiple patterns in custom groups.
@@ -193,9 +194,9 @@ export type NewlinesBetweenOption =
  */
 export type GroupsOptions<
   CustomTypeOption extends string = string,
-  AdditionalSortProperties = object,
+  AdditionalSortOptions = object,
 > = (
-  | GroupWithOverridesOption<CustomTypeOption, AdditionalSortProperties>
+  | GroupWithOverridesOption<CustomTypeOption, AdditionalSortOptions>
   | GroupNewlinesBetweenOption
   | string[]
   | string

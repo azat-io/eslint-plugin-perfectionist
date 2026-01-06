@@ -13,7 +13,8 @@ import type {
 } from './sort-object-types/types'
 
 import {
-  customGroupMatchOptionsJsonSchema,
+  additionalCustomGroupMatchOptionsJsonSchema,
+  additionalSortOptionsJsonSchema,
   objectTypeParentTypes,
   allModifiers,
   allSelectors,
@@ -41,7 +42,6 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { computeParentNodesWithTypes } from '../utils/compute-parent-nodes-with-types'
 import { scopedRegexJsonSchema } from '../utils/json-schemas/scoped-regex-json-schema'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { additionalSortPropertiesJsonSchema } from './sort-object-types/types'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { isNodeFunctionType } from './sort-object-types/is-node-function-type'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -97,11 +97,12 @@ export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
       ...buildCommonJsonSchemas({
-        additionalSortProperties: additionalSortPropertiesJsonSchema,
+        additionalSortProperties: additionalSortOptionsJsonSchema,
       }),
       ...buildCommonGroupsJsonSchemas({
-        additionalCustomGroupMatchProperties: customGroupMatchOptionsJsonSchema,
-        additionalSortProperties: additionalSortPropertiesJsonSchema,
+        additionalCustomGroupMatchProperties:
+          additionalCustomGroupMatchOptionsJsonSchema,
+        additionalSortProperties: additionalSortOptionsJsonSchema,
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {

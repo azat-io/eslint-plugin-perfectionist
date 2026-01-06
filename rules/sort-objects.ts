@@ -12,7 +12,7 @@ import type {
 import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
-  customGroupMatchOptionsJsonSchema,
+  additionalCustomGroupMatchOptionsJsonSchema,
   DEPENDENCY_ORDER_ERROR_ID,
   MISSED_SPACING_ERROR_ID,
   EXTRA_SPACING_ERROR_ID,
@@ -380,7 +380,7 @@ export default createEslintRule<Options, MessageId>({
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
             additionalCustomGroupMatchProperties:
-              customGroupMatchOptionsJsonSchema,
+              additionalCustomGroupMatchOptionsJsonSchema,
           }),
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {

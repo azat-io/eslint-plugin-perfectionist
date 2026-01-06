@@ -86,12 +86,12 @@ export type Options = Partial<
     styledComponents: boolean
   } & AllCommonOptions<
     TypeOption,
-    AdditionalSortProperties,
+    AdditionalSortOptions,
     CustomGroupMatchOptions
   >
 >[]
 
-type AdditionalSortProperties = object
+type AdditionalSortOptions = object
 
 export let objectParentTypes = [
   AST_NODE_TYPES.VariableDeclarator,
@@ -156,7 +156,10 @@ export let allModifiers = ['multiline'] as const
  * Additional custom group match options JSON schema. Used by ESLint to validate
  * rule options at configuration time.
  */
-export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   elementValuePattern: buildRegexJsonSchema(),

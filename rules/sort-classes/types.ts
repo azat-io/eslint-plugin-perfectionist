@@ -26,7 +26,7 @@ export type SortClassesOptions = [
       ignoreCallbackDependenciesPatterns: RegexOption
     } & AllCommonOptions<
       TypeOption,
-      AdditionalSortProperties,
+      AdditionalSortOptions,
       CustomGroupMatchOptions
     >
   >,
@@ -68,7 +68,7 @@ interface CustomGroupMatchOptions {
   selector?: Selector
 }
 
-type AdditionalSortProperties = object
+type AdditionalSortOptions = object
 
 /**
  * Complete list of available class member selectors. Used for validation and
@@ -111,7 +111,10 @@ export let allModifiers = [
  * Note: Ideally, we should generate as many schemas as there are selectors, and
  * ensure that users do not enter invalid modifiers for a given selector.
  */
-export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   decoratorNamePattern: buildRegexJsonSchema(),

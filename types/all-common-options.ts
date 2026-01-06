@@ -4,12 +4,12 @@ import type { CommonOptions } from './common-options'
 
 export type AllCommonOptions<
   CustomTypeOption extends string,
-  AdditionalSortProperties,
+  AdditionalSortOptions,
   CustomGroupMatchOptions,
 > = CommonGroupsOptions<
   CustomTypeOption,
-  AdditionalSortProperties,
+  AdditionalSortOptions,
   CustomGroupMatchOptions
 > &
-  CommonOptions<CustomTypeOption, AdditionalSortProperties> &
+  CommonOptions<CustomTypeOption, AdditionalSortOptions> &
   CommonPartitionOptions

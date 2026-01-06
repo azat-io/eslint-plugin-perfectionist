@@ -13,14 +13,14 @@ export type Options = Partial<
     sortOnClasses: boolean
   } & AllCommonOptions<
     TypeOption,
-    AdditionalSortProperties,
+    AdditionalSortOptions,
     CustomGroupMatchOptions
   >
 >[]
 
 export type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
-type AdditionalSortProperties = object
-
 /** Match options for a custom group. */
 type CustomGroupMatchOptions = object
+
+type AdditionalSortOptions = object

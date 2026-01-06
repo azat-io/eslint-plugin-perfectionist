@@ -21,7 +21,7 @@ export type SortModulesOptions = [
   Partial<
     AllCommonOptions<
       CustomTypeOption,
-      AdditionalSortProperties,
+      AdditionalSortOptions,
       CustomGroupMatchOptions
     >
   >,
@@ -65,7 +65,7 @@ interface CustomGroupMatchOptions {
 
 type CustomTypeOption = typeof USAGE_TYPE_OPTION | TypeOption
 
-type AdditionalSortProperties = object
+type AdditionalSortOptions = object
 
 /**
  * Complete list of available module member selectors. Used for validation and
@@ -97,7 +97,10 @@ export let allModifiers = [
  * Ideally, we should generate as many schemas as there are selectors, and
  * ensure that users do not enter invalid modifiers for a given selector.
  */
-export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   decoratorNamePattern: buildRegexJsonSchema(),

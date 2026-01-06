@@ -62,7 +62,7 @@ export type Options = Partial<
     maxLineLength: number
   } & AllCommonOptions<
     CustomTypeOption,
-    AdditionalSortProperties,
+    AdditionalSortOptions,
     CustomGroupMatchOptions
   >
 >[]
@@ -120,7 +120,7 @@ interface CustomGroupMatchOptions {
   selector?: Selector
 }
 
-interface AdditionalSortProperties {
+interface AdditionalSortOptions {
   sortBy: SortByOption
 }
 
@@ -165,7 +165,10 @@ export let allModifiers = [
  * Ideally, we should generate as many schemas as there are selectors, and
  * ensure that users do not enter invalid modifiers for a given selector.
  */
-export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
 }
@@ -173,7 +176,7 @@ export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
 const SORT_BY_OPTION = ['specifier', 'path'] as const
 type SortByOption = (typeof SORT_BY_OPTION)[number]
 
-export let additionalSortPropertiesJsonSchema: Record<string, JSONSchema4> = {
+export let additionalSortOptionsJsonSchema: Record<string, JSONSchema4> = {
   sortBy: {
     enum: [...SORT_BY_OPTION],
     type: 'string',

@@ -22,12 +22,12 @@ export type Options = Partial<
     }
   } & AllCommonOptions<
     TypeOption,
-    AdditionalSortProperties,
+    AdditionalSortOptions,
     CustomGroupMatchOptions
   >
 >[]
 
-type AdditionalSortProperties = object
-
 /** Match options for a custom group. */
 type CustomGroupMatchOptions = object
+
+type AdditionalSortOptions = object

@@ -15,11 +15,7 @@ import {
  * From '...'`) to improve code organization and maintainability.
  */
 export type Options = Partial<
-  AllCommonOptions<
-    TypeOption,
-    AdditionalSortProperties,
-    CustomGroupMatchOptions
-  >
+  AllCommonOptions<TypeOption, AdditionalSortOptions, CustomGroupMatchOptions>
 >[]
 
 /**
@@ -60,7 +56,7 @@ interface CustomGroupMatchOptions {
   selector?: Selector
 }
 
-type AdditionalSortProperties = object
+type AdditionalSortOptions = object
 
 /**
  * Complete list of available export selectors. Used for validation and JSON
@@ -85,7 +81,10 @@ export let allModifiers = [
  * Additional custom group match options JSON schema. Used by ESLint to validate
  * rule options at configuration time.
  */
-export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
 }

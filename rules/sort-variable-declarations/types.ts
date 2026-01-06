@@ -12,11 +12,7 @@ import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/com
  * such as `const a = 1, b, c = 3;`.
  */
 export type Options = Partial<
-  AllCommonOptions<
-    TypeOption,
-    AdditionalSortProperties,
-    CustomGroupMatchOptions
-  >
+  AllCommonOptions<TypeOption, AdditionalSortOptions, CustomGroupMatchOptions>
 >[]
 
 /**
@@ -35,7 +31,7 @@ interface CustomGroupMatchOptions {
   selector?: Selector
 }
 
-type AdditionalSortProperties = object
+type AdditionalSortOptions = object
 
 /**
  * Array of all available selectors for variable declarations.
@@ -48,6 +44,9 @@ export let allSelectors = ['initialized', 'uninitialized'] as const
  * Additional custom group match options JSON schema. Used by ESLint to validate
  * rule options at configuration time.
  */
-export let customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
 }
