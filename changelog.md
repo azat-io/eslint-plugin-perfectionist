@@ -1,5 +1,23 @@
 # Changelog
 
+## v5.3.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.2.0...v5.3.0)
+
+### 🚀 Features
+
+- Fallback sort subgroup order ([3c8fecf](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3c8fecf))
+- **sort-modules:** Allow exported then decorated classes to be sorted ([53b00c8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/53b00c8))
+
+### 🐞 Bug Fixes
+
+- Use runtime-safe node type checks ([a0ec110](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a0ec110))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+- Sam ([@Lievesley](https://github.com/Lievesley))
+
 ## v5.2.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.1.0...v5.2.0)
