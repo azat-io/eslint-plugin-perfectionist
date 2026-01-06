@@ -1,5 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 /**
  * Determines if an AST node represents a function type.
  *
@@ -47,13 +49,19 @@ import type { TSESTree } from '@typescript-eslint/types'
  * @returns True if the node represents a function type, false otherwise.
  */
 export function isNodeFunctionType(node: TSESTree.Node): boolean {
-  if (node.type === 'TSMethodSignature' || node.type === 'TSFunctionType') {
+  if (
+    node.type === AST_NODE_TYPES.TSMethodSignature ||
+    node.type === AST_NODE_TYPES.TSFunctionType
+  ) {
     return true
   }
-  if (node.type === 'TSUnionType' || node.type === 'TSIntersectionType') {
+  if (
+    node.type === AST_NODE_TYPES.TSUnionType ||
+    node.type === AST_NODE_TYPES.TSIntersectionType
+  ) {
     return node.types.every(isNodeFunctionType)
   }
-  if (node.type === 'TSPropertySignature' && node.typeAnnotation) {
+  if (node.type === AST_NODE_TYPES.TSPropertySignature && node.typeAnnotation) {
     return isNodeFunctionType(node.typeAnnotation.typeAnnotation)
   }
   return false
