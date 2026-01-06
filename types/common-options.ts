@@ -178,14 +178,14 @@ type SpecialCharactersOption =
   | 'remove'
 
   /**
-   * Remove leading special characters only. Useful for sorting names that may
-   * have underscore or other prefixes.
+   * Keep all special characters in their original positions. Special characters
+   * participate in the sort comparison.
    */
   | 'keep'
 
   /**
-   * Keep all special characters in their original positions. Special characters
-   * participate in the sort comparison.
+   * Remove leading special characters only. Useful for sorting names that may
+   * have underscore or other prefixes.
    */
   | 'trim'
 
