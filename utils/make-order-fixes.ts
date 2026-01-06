@@ -1,6 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { PartitionByCommentOption } from '../types/common-partition-options'
+import type { CommonPartitionOptions } from '../types/common-partition-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getNodeRange } from './get-node-range'
@@ -8,10 +8,7 @@ import { getNodeRange } from './get-node-range'
 /** Parameters for generating order fixes. */
 interface MakeOrderFixesParameters {
   /** Optional configuration options. */
-  options?: {
-    /** Configuration for partition comments that separate code sections. */
-    partitionByComment?: PartitionByCommentOption
-  }
+  options?: Pick<CommonPartitionOptions, 'partitionByComment'>
 
   /**
    * Whether to ignore the highest block comment for the first node. Useful for

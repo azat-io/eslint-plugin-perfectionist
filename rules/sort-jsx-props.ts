@@ -163,10 +163,13 @@ export default createEslintRule<Options, MessageId>({
             let lastSortingNode = accumulator.at(-1)?.at(-1)
             if (
               shouldPartition({
+                options: {
+                  partitionByNewLine: options.partitionByNewLine,
+                  partitionByComment: false,
+                },
                 lastSortingNode,
                 sortingNode,
                 sourceCode,
-                options,
               })
             ) {
               accumulator.push([])
@@ -205,8 +208,11 @@ export default createEslintRule<Options, MessageId>({
           },
           sortNodesExcludingEslintDisabled:
             createSortNodesExcludingEslintDisabled(currentNodes),
+          options: {
+            ...options,
+            partitionByComment: false,
+          },
           nodes: currentNodes,
-          options,
           context,
         })
       }

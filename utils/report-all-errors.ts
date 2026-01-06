@@ -2,6 +2,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
+import type { CommonPartitionOptions } from '../types/common-partition-options'
 import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -63,6 +64,25 @@ interface ReportAllErrorsParameters<
   }
 
   /**
+   * Configuration options for sorting and grouping.
+   *
+   * Extends MakeFixesParameters options with groups configuration. Includes all
+   * sorting preferences, partition settings, newlines configuration, and custom
+   * group definitions.
+   *
+   * @example
+   *   options: {
+   *   type: 'alphabetical',
+   *   order: 'asc',
+   *   groups: ['static-property', 'property', 'constructor', 'method'],
+   *   newlinesBetween: 1,
+   *   partitionByComment: true
+   *   }
+   */
+  options: Pick<CommonPartitionOptions, 'partitionByComment'> &
+    CommonGroupsOptions<string, unknown, unknown>
+
+  /**
    * Function to get sorted nodes with or without ESLint-disabled nodes.
    *
    * This function is called twice by reportAllErrors:
@@ -104,24 +124,6 @@ interface ReportAllErrorsParameters<
    * @returns Number of required newlines or 'ignore'.
    */
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
-
-  /**
-   * Configuration options for sorting and grouping.
-   *
-   * Extends MakeFixesParameters options with groups configuration. Includes all
-   * sorting preferences, partition settings, newlines configuration, and custom
-   * group definitions.
-   *
-   * @example
-   *   options: {
-   *   type: 'alphabetical',
-   *   order: 'asc',
-   *   groups: ['static-property', 'property', 'constructor', 'method'],
-   *   newlinesBetween: 1,
-   *   partitionByComment: true
-   *   }
-   */
-  options: CommonGroupsOptions<string, unknown, unknown>
 
   /**
    * ESLint rule context for reporting errors.

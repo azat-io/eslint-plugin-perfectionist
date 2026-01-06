@@ -1,7 +1,10 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { PartitionByCommentOption } from '../types/common-partition-options'
+import type {
+  PartitionByCommentOption,
+  CommonPartitionOptions,
+} from '../types/common-partition-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { isPartitionComment } from './is-partition-comment'
@@ -10,13 +13,10 @@ import { getLinesBetween } from './get-lines-between'
 
 /** Parameters for determining if a new partition should start. */
 interface ShouldPartitionParameters {
-  options: {
-    partitionByComment?: PartitionByCommentOption
-    partitionByNewLine: boolean
-  }
   lastSortingNode: Pick<SortingNode, 'node'> | undefined
   sortingNode: Pick<SortingNode, 'node'>
   tokenValueToIgnoreBefore?: string
+  options: CommonPartitionOptions
   sourceCode: TSESLint.SourceCode
 }
 
