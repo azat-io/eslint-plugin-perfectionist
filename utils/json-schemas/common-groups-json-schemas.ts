@@ -134,16 +134,16 @@ export function buildGroupsJsonSchema({
  *
  * @param options - Configuration options.
  * @param options.additionalSortProperties - Extra properties for sorting.
- * @param options.singleCustomGroupJsonSchema - Schema for individual custom
- *   group properties.
+ * @param options.additionalCustomGroupMatchProperties - Extra properties for
+ *   matching custom groups.
  * @returns JSON schema for custom groups array validation.
  */
 export function buildCustomGroupsArrayJsonSchema({
-  singleCustomGroupJsonSchema,
+  additionalCustomGroupMatchProperties,
   allowedAdditionalTypeValues,
   additionalSortProperties,
 }: {
-  singleCustomGroupJsonSchema: Record<string, JSONSchema4> | undefined
+  additionalCustomGroupMatchProperties: Record<string, JSONSchema4> | undefined
   additionalSortProperties: Record<string, JSONSchema4> | undefined
   allowedAdditionalTypeValues: undefined | string[]
 }): JSONSchema4 {
@@ -151,8 +151,10 @@ export function buildCustomGroupsArrayJsonSchema({
     allowedAdditionalTypeValues,
     additionalSortProperties,
   })
-  let populatedSingleCustomGroupJsonSchema =
-    buildPopulatedSingleCustomGroupJsonSchema(singleCustomGroupJsonSchema)
+  let populatedCustomGroupMatchOptionsJsonSchema =
+    buildPopulatedCustomGroupMatchPropertiesJsonSchema(
+      additionalCustomGroupMatchProperties,
+    )
 
   return {
     items: {
@@ -162,7 +164,7 @@ export function buildCustomGroupsArrayJsonSchema({
             ...commonCustomGroupJsonSchemas,
             anyOf: {
               items: {
-                properties: populatedSingleCustomGroupJsonSchema,
+                properties: populatedCustomGroupMatchOptionsJsonSchema,
                 description: 'Custom group.',
                 additionalProperties: false,
                 type: 'object',
@@ -179,7 +181,7 @@ export function buildCustomGroupsArrayJsonSchema({
         {
           properties: {
             ...commonCustomGroupJsonSchemas,
-            ...populatedSingleCustomGroupJsonSchema,
+            ...populatedCustomGroupMatchOptionsJsonSchema,
           },
           description: 'Custom group.',
           additionalProperties: false,
@@ -195,18 +197,18 @@ export function buildCustomGroupsArrayJsonSchema({
 }
 
 export function buildCommonGroupsJsonSchemas({
-  singleCustomGroupJsonSchema,
+  additionalCustomGroupMatchProperties,
   allowedAdditionalTypeValues,
   additionalSortProperties,
 }: {
-  singleCustomGroupJsonSchema?: Record<string, JSONSchema4>
+  additionalCustomGroupMatchProperties?: Record<string, JSONSchema4>
   additionalSortProperties?: Record<string, JSONSchema4>
   allowedAdditionalTypeValues?: string[]
 } = {}): Record<string, JSONSchema4> {
   return {
     customGroups: buildCustomGroupsArrayJsonSchema({
+      additionalCustomGroupMatchProperties,
       allowedAdditionalTypeValues,
-      singleCustomGroupJsonSchema,
       additionalSortProperties,
     }),
     newlinesInside: {
@@ -307,11 +309,11 @@ function buildCommonCustomGroupJsonSchemas({
   }
 }
 
-function buildPopulatedSingleCustomGroupJsonSchema(
-  singleCustomGroupJsonSchema: Record<string, JSONSchema4> | undefined,
+function buildPopulatedCustomGroupMatchPropertiesJsonSchema(
+  customGroupMatchOptionsJsonSchema: Record<string, JSONSchema4> | undefined,
 ): Record<string, JSONSchema4> {
   return {
     elementNamePattern: buildRegexJsonSchema(),
-    ...singleCustomGroupJsonSchema,
+    ...customGroupMatchOptionsJsonSchema,
   }
 }

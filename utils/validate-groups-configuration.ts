@@ -7,7 +7,7 @@ import { computeGroupsNames } from './compute-groups-names'
 /** Parameters for validating generated groups configuration. */
 interface ValidateGenerateGroupsConfigurationParameters {
   options: Pick<
-    CommonGroupsOptions<unknown, unknown, string>,
+    CommonGroupsOptions<string, unknown, unknown>,
     'customGroups' | 'groups'
   >
   selectors: readonly string[]

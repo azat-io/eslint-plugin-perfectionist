@@ -1,14 +1,9 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  CommonOptions,
-  RegexOption,
-  TypeOption,
-} from '../../types/common-options'
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { RegexOption, TypeOption } from '../../types/common-options'
+import type { AllCommonOptions } from '../../types/all-common-options'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -65,13 +60,11 @@ export type Options = Partial<
      * sorting instead of the entire line.
      */
     maxLineLength: number
-  } & CommonGroupsOptions<
-    SingleCustomGroup,
-    { sortBy: 'specifier' | 'path' },
-    CustomTypeOption
-  > &
-    CommonOptions<CustomTypeOption, { sortBy: 'specifier' | 'path' }> &
-    CommonPartitionOptions
+  } & AllCommonOptions<
+    CustomTypeOption,
+    AdditionalSortOptions,
+    CustomGroupMatchOptions
+  >
 >[]
 
 /**
@@ -119,12 +112,16 @@ export type Modifier = (typeof allModifiers)[number]
  *     "selector": "external"
  *   }
  */
-interface SingleCustomGroup {
+interface CustomGroupMatchOptions {
   /** List of modifiers that imports must have to be included in this group. */
   modifiers?: Modifier[]
 
   /** The selector type that imports must match to be included in this group. */
   selector?: Selector
+}
+
+interface AdditionalSortOptions {
+  sortBy: SortByOption
 }
 
 /**
@@ -168,14 +165,22 @@ export let allModifiers = [
  * Ideally, we should generate as many schemas as there are selectors, and
  * ensure that users do not enter invalid modifiers for a given selector.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
 }
 
-export let sortByJsonSchema: JSONSchema4 = {
-  enum: ['specifier', 'path'],
-  type: 'string',
+const SORT_BY_OPTION = ['specifier', 'path'] as const
+type SortByOption = (typeof SORT_BY_OPTION)[number]
+
+export let additionalSortOptionsJsonSchema: Record<string, JSONSchema4> = {
+  sortBy: {
+    enum: [...SORT_BY_OPTION],
+    type: 'string',
+  },
 }
 
 export const TYPE_IMPORT_FIRST_TYPE_OPTION = 'type-import-first'

@@ -1,14 +1,9 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  CommonOptions,
-  RegexOption,
-  TypeOption,
-} from '../../types/common-options'
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { RegexOption, TypeOption } from '../../types/common-options'
+import type { AllCommonOptions } from '../../types/all-common-options'
 
 import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
@@ -28,13 +23,11 @@ export type Options = Partial<
      * @default ifNumericEnum
      */
     sortByValue: 'ifNumericEnum' | 'always' | 'never'
-  } & CommonGroupsOptions<
-    SingleCustomGroup,
-    Record<string, never>,
-    TypeOption
-  > &
-    CommonOptions<TypeOption> &
-    CommonPartitionOptions
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortOptions,
+    CustomGroupMatchOptions
+  >
 >[]
 
 export interface SortEnumsSortingNode extends SortingNodeWithDependencies<TSESTree.TSEnumMember> {
@@ -42,8 +35,8 @@ export interface SortEnumsSortingNode extends SortingNodeWithDependencies<TSESTr
   value: string | null
 }
 
-/** Additional configuration for a single custom group. */
-interface SingleCustomGroup {
+/** Match options for a custom group. */
+interface CustomGroupMatchOptions {
   /**
    * Regular expression pattern to match enum member values. Members with values
    * matching this pattern will be included in this custom group.
@@ -51,10 +44,15 @@ interface SingleCustomGroup {
   elementValuePattern?: RegexOption
 }
 
+type AdditionalSortOptions = object
+
 /**
- * JSON schema definition for validating single custom group configurations.
- * Used by ESLint to validate rule options at configuration time.
+ * Additional custom group match options JSON schema. Used by ESLint to validate
+ * rule options at configuration time.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   elementValuePattern: buildRegexJsonSchema(),
 }

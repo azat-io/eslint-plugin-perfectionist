@@ -1,8 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
-import type { CommonOptions, TypeOption } from '../../types/common-options'
+import type { AllCommonOptions } from '../../types/all-common-options'
+import type { TypeOption } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 export type Options = Partial<
@@ -12,16 +11,16 @@ export type Options = Partial<
     sortOnAccessors: boolean
     sortOnMethods: boolean
     sortOnClasses: boolean
-  } & CommonGroupsOptions<
-    SingleCustomGroup,
-    Record<string, never>,
-    TypeOption
-  > &
-    CommonOptions<TypeOption> &
-    CommonPartitionOptions
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortOptions,
+    CustomGroupMatchOptions
+  >
 >[]
 
 export type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
-/** Additional configuration for a single custom group. */
-type SingleCustomGroup = Record<string, never>
+/** Match options for a custom group. */
+type CustomGroupMatchOptions = object
+
+type AdditionalSortOptions = object

@@ -3,7 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { ASTUtils } from '@typescript-eslint/utils'
 
-import type { PartitionByCommentOption } from '../types/common-partition-options'
+import type { CommonPartitionOptions } from '../types/common-partition-options'
 
 import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 import { isPartitionComment } from './is-partition-comment'
@@ -17,24 +17,18 @@ import { getCommentsBefore } from './get-comments-before'
  */
 interface GetNodeRangeParameters {
   /** Optional configuration for comment handling. */
-  options?: {
-    /**
-     * Configuration for partition comments that separate code sections. If
-     * specified, partition comments stop the inclusion of preceding comments.
-     */
-    partitionByComment?: PartitionByCommentOption
-  }
+  options?: Pick<CommonPartitionOptions, 'partitionByComment'>
 
   /**
    * Whether to exclude the highest-level block comment from the range. Useful
    * for preserving file-level documentation comments in their original
    * position.
    */
-
   ignoreHighestBlockComment?: boolean
-  /** ESLint source code object for accessing comments and tokens. */
 
+  /** ESLint source code object for accessing comments and tokens. */
   sourceCode: TSESLint.SourceCode
+
   /** AST node to get the range for. */
   node: TSESTree.Node
 }

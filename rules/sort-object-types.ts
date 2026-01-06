@@ -13,9 +13,9 @@ import type {
 } from './sort-object-types/types'
 
 import {
-  singleCustomGroupJsonSchema,
+  additionalCustomGroupMatchOptionsJsonSchema,
+  additionalSortOptionsJsonSchema,
   objectTypeParentTypes,
-  sortByJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-object-types/types'
@@ -43,6 +43,7 @@ import { computeParentNodesWithTypes } from '../utils/compute-parent-nodes-with-
 import { scopedRegexJsonSchema } from '../utils/json-schemas/scoped-regex-json-schema'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
+import { isNodeFunctionType } from './sort-object-types/is-node-function-type'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isMemberOptional } from './sort-object-types/is-member-optional'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -50,7 +51,6 @@ import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { computeNodeName } from './sort-object-types/compute-node-name'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
-import { isNodeFunctionType } from '../utils/is-node-function-type'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -97,11 +97,12 @@ export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
       ...buildCommonJsonSchemas({
-        additionalSortProperties: { sortBy: sortByJsonSchema },
+        additionalSortProperties: additionalSortOptionsJsonSchema,
       }),
       ...buildCommonGroupsJsonSchemas({
-        additionalSortProperties: { sortBy: sortByJsonSchema },
-        singleCustomGroupJsonSchema,
+        additionalCustomGroupMatchProperties:
+          additionalCustomGroupMatchOptionsJsonSchema,
+        additionalSortProperties: additionalSortOptionsJsonSchema,
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {

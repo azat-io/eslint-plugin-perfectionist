@@ -17,14 +17,14 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
-import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import {
-  singleCustomGroupJsonSchema,
+  additionalCustomGroupMatchOptionsJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-jsx-props/types'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { partitionByNewLineJsonSchema } from '../utils/json-schemas/common-partition-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -163,10 +163,13 @@ export default createEslintRule<Options, MessageId>({
             let lastSortingNode = accumulator.at(-1)?.at(-1)
             if (
               shouldPartition({
+                options: {
+                  partitionByNewLine: options.partitionByNewLine,
+                  partitionByComment: false,
+                },
                 lastSortingNode,
                 sortingNode,
                 sourceCode,
-                options,
               })
             ) {
               accumulator.push([])
@@ -205,8 +208,11 @@ export default createEslintRule<Options, MessageId>({
           },
           sortNodesExcludingEslintDisabled:
             createSortNodesExcludingEslintDisabled(currentNodes),
+          options: {
+            ...options,
+            partitionByComment: false,
+          },
           nodes: currentNodes,
-          options,
           context,
         })
       }
@@ -218,7 +224,8 @@ export default createEslintRule<Options, MessageId>({
         properties: {
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
-            singleCustomGroupJsonSchema,
+            additionalCustomGroupMatchProperties:
+              additionalCustomGroupMatchOptionsJsonSchema,
           }),
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {

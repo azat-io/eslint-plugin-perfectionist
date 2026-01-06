@@ -1,14 +1,9 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type {
-  CommonOptions,
-  RegexOption,
-  TypeOption,
-} from '../../types/common-options'
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { RegexOption, TypeOption } from '../../types/common-options'
+import type { AllCommonOptions } from '../../types/all-common-options'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -24,13 +19,11 @@ import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schem
  */
 export type SortModulesOptions = [
   Partial<
-    CommonGroupsOptions<
-      SingleCustomGroup,
-      Record<string, never>,
-      CustomTypeOption
-    > &
-      CommonOptions<CustomTypeOption> &
-      CommonPartitionOptions
+    AllCommonOptions<
+      CustomTypeOption,
+      AdditionalSortOptions,
+      CustomGroupMatchOptions
+    >
   >,
 ]
 
@@ -56,7 +49,7 @@ export type Modifier = (typeof allModifiers)[number]
  * Custom groups allow fine-grained control over how module members are grouped
  * and sorted based on their types, modifiers, and patterns.
  */
-interface SingleCustomGroup {
+interface CustomGroupMatchOptions {
   /**
    * Regular expression pattern to match decorator names. Members with
    * decorators matching this pattern will be included in this custom group.
@@ -71,6 +64,8 @@ interface SingleCustomGroup {
 }
 
 type CustomTypeOption = typeof USAGE_TYPE_OPTION | TypeOption
+
+type AdditionalSortOptions = object
 
 /**
  * Complete list of available module member selectors. Used for validation and
@@ -102,7 +97,10 @@ export let allModifiers = [
  * Ideally, we should generate as many schemas as there are selectors, and
  * ensure that users do not enter invalid modifiers for a given selector.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   decoratorNamePattern: buildRegexJsonSchema(),

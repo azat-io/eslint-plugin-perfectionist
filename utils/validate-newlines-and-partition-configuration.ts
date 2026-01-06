@@ -9,7 +9,7 @@ import { isNewlinesBetweenOption } from './is-newlines-between-option'
 
 /** Options for validating newlines and partition configuration. */
 type Options = Pick<
-  CommonGroupsOptions<unknown, unknown, string>,
+  CommonGroupsOptions<string, unknown, unknown>,
   'newlinesBetween' | 'newlinesInside' | 'customGroups' | 'groups'
 > &
   Pick<CommonPartitionOptions, 'partitionByNewLine'>
@@ -125,7 +125,7 @@ function validateNewlinesInsideConfiguration({
   customGroups,
   groups,
 }: Pick<
-  CommonGroupsOptions<unknown, unknown, string>,
+  CommonGroupsOptions<string, unknown, unknown>,
   'newlinesInside' | 'customGroups' | 'groups'
 >): void {
   switch (newlinesInside) {
@@ -171,7 +171,7 @@ function validateNewlinesBetweenConfiguration({
   newlinesBetween,
   groups,
 }: Pick<
-  CommonGroupsOptions<unknown, unknown, string>,
+  CommonGroupsOptions<string, unknown, unknown>,
   'newlinesBetween' | 'groups'
 >): void {
   if (newlinesBetween !== 'ignore') {

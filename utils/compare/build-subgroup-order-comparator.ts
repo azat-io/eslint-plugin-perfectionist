@@ -1,9 +1,6 @@
-import type {
-  CommonGroupsOptions,
-  GroupsOptions,
-} from '../../types/common-groups-options'
+import type { CommonGroupsOptions } from '../../types/common-groups-options'
 import type { Comparator } from './default-comparator-by-options-computer'
-import type { CommonOptions } from '../../types/common-options'
+import type { AllCommonOptions } from '../../types/all-common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 import { isGroupWithOverridesOption } from '../is-group-with-overrides-option'
@@ -14,9 +11,10 @@ import { computeOrderedValue } from './compute-ordered-value'
 export function buildSubgroupOrderComparator({
   groups,
   order,
-}: Pick<CommonOptions, 'order'> & {
-  groups: GroupsOptions
-}): Comparator<SortingNode> {
+}: Pick<
+  AllCommonOptions<string, unknown, unknown>,
+  'groups' | 'order'
+>): Comparator<SortingNode> {
   return (a, b) => {
     let subgroupContainingA = computeSubgroupContainingNode(a, groups)
     let subgroupContainingB = computeSubgroupContainingNode(b, groups)
@@ -39,7 +37,7 @@ export function buildSubgroupOrderComparator({
 
 function computeSubgroupContainingNode(
   sortingNode: SortingNode,
-  groups: CommonGroupsOptions<unknown, unknown, string>['groups'],
+  groups: CommonGroupsOptions<string, unknown, unknown>['groups'],
 ): string[] | null {
   for (let group of groups) {
     if (isNewlinesBetweenOption(group)) {

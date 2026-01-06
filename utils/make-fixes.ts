@@ -1,6 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { PartitionByCommentOption } from '../types/common-partition-options'
+import type { CommonPartitionOptions } from '../types/common-partition-options'
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
@@ -17,10 +17,8 @@ import { makeOrderFixes } from './make-order-fixes'
  */
 interface MakeFixesParameters<T extends SortingNode> {
   /** Optional configuration for various sorting behaviors. */
-  options?: {
-    /** Configuration for partition comments that separate code sections. */
-    partitionByComment?: PartitionByCommentOption
-  } & CommonGroupsOptions<unknown, unknown, string>
+  options?: Pick<CommonPartitionOptions, 'partitionByComment'> &
+    CommonGroupsOptions<string, unknown, unknown>
 
   /** Optional function to customize newlines between specific nodes. */
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>

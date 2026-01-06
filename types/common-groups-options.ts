@@ -1,8 +1,35 @@
-import type {
-  FallbackSortOption,
-  OrderOption,
-  RegexOption,
-} from './common-options'
+import type { CommonOptions, RegexOption } from './common-options'
+
+export interface CommonGroupsOptions<
+  CustomTypeOption extends string,
+  AdditionalSortOptions,
+  AdditionalCustomGroupMatchOptions,
+> {
+  /** Specify the exact number of newlines required between elements of groups. */
+  newlinesInside:
+    | NewlinesInsideOption
+    /**
+     * @deprecated The `newlinesBetween` value is deprecated and will be removed
+     *   in V6.
+     */
+    | 'newlinesBetween'
+
+  /** Custom groups for organizing nodes. */
+  customGroups: CustomGroupsOption<
+    CustomTypeOption,
+    AdditionalSortOptions,
+    AdditionalCustomGroupMatchOptions
+  >
+
+  /**
+   * Defines the order and grouping of nodes. Nodes are sorted within their
+   * groups and groups are ordered as specified.
+   */
+  groups: GroupsOptions<CustomTypeOption, AdditionalSortOptions>
+
+  /** Specify the exact number of newlines required between groups. */
+  newlinesBetween: NewlinesBetweenOption
+}
 
 /**
  * Configuration for custom groups with sorting and newline options.
@@ -27,22 +54,16 @@ import type {
  *     },
  *   ]
  *
- * @template SingleCustomGroup - Type defining the structure of a single custom
- *   group.
- * @template AdditionalSortProperties - Additional sort options that extend the
+ * @template AdditionalMatchOptions - Options for matching elements to the
+ *   custom group.
+ * @template AdditionalSortOptions - Additional sort options that extend the
  *   base configuration.
  */
 export type CustomGroupsOption<
-  SingleCustomGroup,
-  AdditionalSortProperties,
   CustomTypeOption extends string,
+  AdditionalSortOptions,
+  AdditionalMatchOptions,
 > = ({
-  /**
-   * Fallback sorting configuration used when primary sort returns equal. Useful
-   * for stable sorting when elements have identical primary sort values.
-   */
-  fallbackSort?: FallbackSortOption<CustomTypeOption, AdditionalSortProperties>
-
   /** Specify the exact number of newlines required between elements of groups. */
   newlinesInside?: NewlinesInsideOption
 
@@ -53,24 +74,18 @@ export type CustomGroupsOption<
   elementNamePattern?: RegexOption
 
   /**
-   * Sorting algorithm type for this custom group. Overrides the global type
-   * setting for elements in this group.
-   */
-  type?: CustomTypeOption
-
-  /**
-   * Sort direction for this custom group. Overrides the global order setting
-   * for elements in this group.
-   */
-  order?: OrderOption
-
-  /**
    * Name identifier for the custom group. Used to reference this group in the
    * groups configuration array.
    */
   groupName: string
-} & (AnyOfCustomGroup<SingleCustomGroup> | SingleCustomGroup) &
-  AdditionalSortProperties)[]
+} & Partial<
+  Pick<
+    CommonOptions<CustomTypeOption, AdditionalSortOptions>,
+    'fallbackSort' | 'order' | 'type'
+  >
+> &
+  (AnyOfCustomGroup<AdditionalMatchOptions> | Partial<AdditionalMatchOptions>) &
+  Partial<AdditionalSortOptions>)[]
 
 /**
  * Configuration for groups with overriding settings.
@@ -84,63 +99,26 @@ export type CustomGroupsOption<
  */
 export type GroupWithOverridesOption<
   CustomTypeOption extends string,
-  AdditionalSortProperties,
+  AdditionalSortOptions,
 > = {
-  /**
-   * Fallback sorting configuration used when primary sort returns equal. Useful
-   * for stable sorting when elements have identical primary sort values.
-   */
-  fallbackSort?: FallbackSortOption<CustomTypeOption, AdditionalSortProperties>
-
   /** Specify the exact number of newlines required inside the group. */
   newlinesInside?: NewlinesInsideOption
 
   /** Name of the group or array of group names for composite groups. */
   group: string[] | string
 
-  /** Same as `type` in CommonOptions - Sorting algorithm to use for this group. */
-  type?: CustomTypeOption
-
   /**
    * Text of the comment to insert above the group. The comment will be
    * formatted as a line comment (// ...).
    */
   commentAbove?: string
-
-  /** Same as `order` in CommonOptions - Sort direction for this group. */
-  order?: OrderOption
-} & AdditionalSortProperties
-
-export interface CommonGroupsOptions<
-  SingleCustomGroup,
-  AdditionalSortProperties,
-  CustomTypeOption extends string,
-> {
-  /** Specify the exact number of newlines required between elements of groups. */
-  newlinesInside:
-    | NewlinesInsideOption
-    /**
-     * @deprecated The `newlinesBetween` value is deprecated and will be removed
-     *   in V6.
-     */
-    | 'newlinesBetween'
-
-  /** Custom groups for organizing nodes. */
-  customGroups: CustomGroupsOption<
-    SingleCustomGroup,
-    AdditionalSortProperties,
-    CustomTypeOption
+} & Partial<
+  Pick<
+    CommonOptions<CustomTypeOption, AdditionalSortOptions>,
+    'fallbackSort' | 'order' | 'type'
   >
-
-  /**
-   * Defines the order and grouping of nodes. Nodes are sorted within their
-   * groups and groups are ordered as specified.
-   */
-  groups: GroupsOptions<CustomTypeOption, AdditionalSortProperties>
-
-  /** Specify the exact number of newlines required between groups. */
-  newlinesBetween: NewlinesBetweenOption
-}
+> &
+  Partial<AdditionalSortOptions>
 
 /**
  * Configuration for matching multiple patterns in custom groups.
@@ -153,9 +131,9 @@ export interface CommonGroupsOptions<
  *     anyOf: ['react', 'react-*', '@react/*'],
  *   }
  *
- * @template SingleCustomGroup - Type of individual pattern matchers.
+ * @template MatchOptions - Options for matching elements to the custom group.
  */
-export interface AnyOfCustomGroup<SingleCustomGroup> {
+export interface AnyOfCustomGroup<MatchOptions> {
   /**
    * Regular expression pattern to match the element's name. Elements matching
    * this pattern will be included in this custom group.
@@ -166,7 +144,7 @@ export interface AnyOfCustomGroup<SingleCustomGroup> {
    * Array of patterns where matching any single pattern includes the element in
    * the group. Provides OR logic for group membership.
    */
-  anyOf: SingleCustomGroup[]
+  anyOf: Partial<MatchOptions>[]
 }
 
 /**
@@ -197,29 +175,6 @@ export type NewlinesBetweenOption =
   | number
 
 /**
- * Configuration for controlling newlines between groups.
- *
- * Placed between group names in the groups array to specify how many blank
- * lines should separate adjacent groups in the sorted output.
- *
- * @example
- *   const groups = [
- *     'imports',
- *     { newlinesBetween: 1 }, // One newline after imports
- *     'types',
- *   ]
- */
-export interface GroupNewlinesBetweenOption {
-  /**
-   * Specifies the newline requirement between adjacent groups. This option is
-   * placed between group names to control their spacing.
-   */
-  newlinesBetween: NewlinesBetweenOption
-
-  group?: never
-}
-
-/**
  * Configuration for organizing elements into groups with optional formatting.
  *
  * Supports flexible group definitions including simple group names, arrays of
@@ -239,13 +194,34 @@ export interface GroupNewlinesBetweenOption {
  */
 export type GroupsOptions<
   CustomTypeOption extends string = string,
-  AdditionalSortProperties = object,
+  AdditionalSortOptions = object,
 > = (
-  | GroupWithOverridesOption<CustomTypeOption, AdditionalSortProperties>
+  | GroupWithOverridesOption<CustomTypeOption, AdditionalSortOptions>
   | GroupNewlinesBetweenOption
   | string[]
   | string
 )[]
+
+/**
+ * Configuration for controlling newlines between groups.
+ *
+ * Placed between group names in the groups array to specify how many blank
+ * lines should separate adjacent groups in the sorted output.
+ *
+ * @example
+ *   const groups = [
+ *     'imports',
+ *     { newlinesBetween: 1 }, // One newline after imports
+ *     'types',
+ *   ]
+ */
+export interface GroupNewlinesBetweenOption {
+  /**
+   * Specifies the newline requirement between adjacent groups. This option is
+   * placed between group names to control their spacing.
+   */
+  newlinesBetween: NewlinesBetweenOption
+}
 
 export type NewlinesInsideOption =
   /** Preserve existing newlines without modification. */

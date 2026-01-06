@@ -3,14 +3,9 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type {
-  CommonOptions,
-  RegexOption,
-  TypeOption,
-} from '../../types/common-options'
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { ScopedRegexOption } from '../../types/scoped-regex-option'
+import type { AllCommonOptions } from '../../types/all-common-options'
 import type { SortingNode } from '../../types/sorting-node'
 import type { NodeOfType } from '../../types/node-of-type'
 
@@ -57,13 +52,11 @@ export type Options = Partial<
        */
       hasNumericKeysOnly?: boolean
     }
-  } & CommonGroupsOptions<
-    SingleCustomGroup,
-    { sortBy?: SortByOption },
-    TypeOption
-  > &
-    CommonOptions<TypeOption, { sortBy: SortByOption }> &
-    CommonPartitionOptions
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortOptions,
+    CustomGroupMatchOptions
+  >
 >[]
 
 /**
@@ -81,7 +74,9 @@ export interface SortObjectTypesSortingNode extends SortingNode<TSESTree.TypeEle
   value: string
 }
 
-type SortByOption = 'value' | 'name'
+interface AdditionalSortOptions {
+  sortBy: SortByOption
+}
 
 export let objectTypeParentTypes = [
   AST_NODE_TYPES.TSTypeAliasDeclaration,
@@ -109,8 +104,8 @@ export type Selector = (typeof allSelectors)[number]
  */
 export type Modifier = (typeof allModifiers)[number]
 
-/** Additional configuration for a single custom group. */
-interface SingleCustomGroup {
+/** Match options for a custom group. */
+interface CustomGroupMatchOptions {
   /**
    * Regular expression pattern to match against the member's type annotation
    * value. Only applicable to properties.
@@ -149,27 +144,29 @@ export let allSelectors = [
  */
 export let allModifiers = ['optional', 'required', 'multiline'] as const
 
+const SORT_BY_OPTION = ['name', 'value'] as const
+type SortByOption = (typeof SORT_BY_OPTION)[number]
+
 /**
  * JSON Schema definition for the sortBy configuration option.
  *
  * Validates the sortBy parameter in ESLint rule configuration.
  */
-export let sortByJsonSchema: JSONSchema4 = {
-  enum: ['name', 'value'],
-  type: 'string',
+export let additionalSortOptionsJsonSchema: Record<string, JSONSchema4> = {
+  sortBy: {
+    enum: [...SORT_BY_OPTION],
+    type: 'string',
+  },
 }
 
 /**
- * JSON Schema definitions for single custom group configurations.
- *
- * Provides additional schema properties specific to the sort-object-types rule,
- * extending the base custom group schema with element patterns and sorting
- * options.
- *
- * Note: Ideally, we should generate as many schemas as there are selectors, and
- * ensure that users do not enter invalid modifiers for a given selector.
+ * Additional custom group match options JSON schema. Used by ESLint to validate
+ * rule options at configuration time.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   elementValuePattern: buildRegexJsonSchema(),

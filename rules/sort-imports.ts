@@ -11,6 +11,13 @@ import type {
 } from './sort-imports/types'
 
 import {
+  additionalCustomGroupMatchOptionsJsonSchema,
+  additionalSortOptionsJsonSchema,
+  TYPE_IMPORT_FIRST_TYPE_OPTION,
+  allModifiers,
+  allSelectors,
+} from './sort-imports/types'
+import {
   MISSED_COMMENT_ABOVE_ERROR,
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
@@ -18,13 +25,6 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import {
-  TYPE_IMPORT_FIRST_TYPE_OPTION,
-  singleCustomGroupJsonSchema,
-  sortByJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-imports/types'
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
@@ -295,12 +295,13 @@ export default createEslintRule<Options, MessageId>({
         properties: {
           ...buildCommonJsonSchemas({
             allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
-            additionalSortProperties: { sortBy: sortByJsonSchema },
+            additionalSortProperties: additionalSortOptionsJsonSchema,
           }),
           ...buildCommonGroupsJsonSchemas({
+            additionalCustomGroupMatchProperties:
+              additionalCustomGroupMatchOptionsJsonSchema,
             allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
-            additionalSortProperties: { sortBy: sortByJsonSchema },
-            singleCustomGroupJsonSchema,
+            additionalSortProperties: additionalSortOptionsJsonSchema,
           }),
           tsconfig: {
             properties: {

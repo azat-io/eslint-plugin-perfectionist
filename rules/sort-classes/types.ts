@@ -1,12 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  CommonOptions,
-  RegexOption,
-  TypeOption,
-} from '../../types/common-options'
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { RegexOption, TypeOption } from '../../types/common-options'
+import type { AllCommonOptions } from '../../types/all-common-options'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -29,13 +24,11 @@ export type SortClassesOptions = [
        * callbacks won't influence the ordering.
        */
       ignoreCallbackDependenciesPatterns: RegexOption
-    } & CommonGroupsOptions<
-      SingleCustomGroup,
-      Record<string, never>,
-      TypeOption
-    > &
-      CommonOptions<TypeOption> &
-      CommonPartitionOptions
+    } & AllCommonOptions<
+      TypeOption,
+      AdditionalSortOptions,
+      CustomGroupMatchOptions
+    >
   >,
 ]
 
@@ -58,7 +51,7 @@ export type Modifier = (typeof allModifiers)[number]
  * property, etc.) and various patterns matching their names, values, or
  * decorators.
  */
-interface SingleCustomGroup {
+interface CustomGroupMatchOptions {
   /** Pattern to match decorator names (e.g., '@Component'). */
   decoratorNamePattern?: RegexOption
 
@@ -74,6 +67,8 @@ interface SingleCustomGroup {
   /** The type of class member this group applies to. */
   selector?: Selector
 }
+
+type AdditionalSortOptions = object
 
 /**
  * Complete list of available class member selectors. Used for validation and
@@ -110,13 +105,16 @@ export let allModifiers = [
 ] as const
 
 /**
- * JSON schema definition for validating single custom group configurations.
- * Used by ESLint to validate rule options at configuration time.
+ * Additional custom group match options JSON schema. Used by ESLint to validate
+ * rule options at configuration time.
  *
  * Note: Ideally, we should generate as many schemas as there are selectors, and
  * ensure that users do not enter invalid modifiers for a given selector.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   decoratorNamePattern: buildRegexJsonSchema(),

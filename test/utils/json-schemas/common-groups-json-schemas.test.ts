@@ -212,7 +212,7 @@ describe('common-groups-json-schemas', () => {
   describe('customGroups', () => {
     let customGroupsJsonSchema = new Ajv().compile(
       buildCustomGroupsArrayJsonSchema({
-        singleCustomGroupJsonSchema: {
+        additionalCustomGroupMatchProperties: {
           customGroupProperty2: { type: 'string' },
           customGroupProperty: { type: 'string' },
         },
@@ -306,7 +306,7 @@ describe('common-groups-json-schemas', () => {
         customGroupsJsonSchema = new Ajv().compile(
           buildCustomGroupsArrayJsonSchema({
             allowedAdditionalTypeValues: ['my-type'],
-            singleCustomGroupJsonSchema: {},
+            additionalCustomGroupMatchProperties: {},
             additionalSortProperties: {},
           }),
         )
@@ -327,7 +327,7 @@ describe('common-groups-json-schemas', () => {
         customGroupsJsonSchema = new Ajv().compile(
           buildCustomGroupsArrayJsonSchema({
             allowedAdditionalTypeValues: ['my-type'],
-            singleCustomGroupJsonSchema: {},
+            additionalCustomGroupMatchProperties: {},
             additionalSortProperties: {},
           }),
         )

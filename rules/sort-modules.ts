@@ -18,15 +18,15 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import {
-  partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
-} from '../utils/json-schemas/common-partition-json-schemas'
-import {
-  singleCustomGroupJsonSchema,
+  additionalCustomGroupMatchOptionsJsonSchema,
   USAGE_TYPE_OPTION,
   allModifiers,
   allSelectors,
 } from './sort-modules/types'
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+} from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { buildComparatorByOptionsComputer } from './sort-modules/build-comparator-by-options-computer'
@@ -109,8 +109,9 @@ export default createEslintRule<SortModulesOptions, MessageId>({
             allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
           }),
           ...buildCommonGroupsJsonSchemas({
+            additionalCustomGroupMatchProperties:
+              additionalCustomGroupMatchOptionsJsonSchema,
             allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
-            singleCustomGroupJsonSchema,
           }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,

@@ -369,7 +369,7 @@ describe('get-newlines-between-option', () => {
     customGroups,
     groups,
   }: {
-    customGroups?: CustomGroupsOption<unknown, unknown, string>
+    customGroups?: CustomGroupsOption<string, unknown, unknown>
     newlinesBetween: NewlinesBetweenOption
     newlinesInside?: NewlinesInsideOption
     nextNodeGroupIndexGroup?: string

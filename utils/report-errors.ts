@@ -1,6 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
+import type { CommonPartitionOptions } from '../types/common-partition-options'
 import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
@@ -46,8 +47,9 @@ interface ReportErrorsParameters<
   MessageIds extends string,
   T extends SortingNode,
 > {
+  options?: Pick<CommonPartitionOptions, 'partitionByComment'> &
+    CommonGroupsOptions<string, unknown, unknown>
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
-  options?: CommonGroupsOptions<unknown, unknown, string>
   context: TSESLint.RuleContext<MessageIds, unknown[]>
   ignoreFirstNodeHighestBlockComment?: boolean
   firstUnorderedNodeDependentOnRight?: T

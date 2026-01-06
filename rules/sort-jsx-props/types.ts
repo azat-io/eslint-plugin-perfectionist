@@ -1,12 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  CommonOptions,
-  RegexOption,
-  TypeOption,
-} from '../../types/common-options'
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { RegexOption, TypeOption } from '../../types/common-options'
+import type { AllCommonOptions } from '../../types/all-common-options'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -39,13 +34,14 @@ export type Options = Partial<
        */
       tagMatchesPattern?: RegexOption
     }
-  } & CommonGroupsOptions<
-    SingleCustomGroup,
-    Record<string, never>,
-    TypeOption
-  > &
-    Pick<CommonPartitionOptions, 'partitionByNewLine'> &
-    CommonOptions<TypeOption>
+  } & Omit<
+    AllCommonOptions<
+      TypeOption,
+      AdditionalSortOptions,
+      CustomGroupMatchOptions
+    >,
+    'partitionByComment'
+  >
 >[]
 
 /**
@@ -69,7 +65,7 @@ export type Selector = (typeof allSelectors)[number]
  *     "modifiers": ["shorthand"]
  *   }
  */
-interface SingleCustomGroup {
+interface CustomGroupMatchOptions {
   /**
    * Regular expression pattern to match prop values. Props with values matching
    * this pattern will be included in this custom group.
@@ -90,6 +86,8 @@ interface SingleCustomGroup {
   selector?: Selector
 }
 
+type AdditionalSortOptions = object
+
 /**
  * Complete list of available JSX prop selectors. Used for validation and JSON
  * schema generation.
@@ -103,10 +101,13 @@ export let allSelectors = ['prop'] as const
 export let allModifiers = ['shorthand', 'multiline'] as const
 
 /**
- * JSON schema definition for validating single custom group configurations.
- * Used by ESLint to validate rule options at configuration time.
+ * Additional custom group match options JSON schema. Used by ESLint to validate
+ * rule options at configuration time.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
   elementValuePattern: buildRegexJsonSchema(),

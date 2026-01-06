@@ -17,14 +17,14 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
-import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import {
-  singleCustomGroupJsonSchema,
+  additionalCustomGroupMatchOptionsJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-exports/types'
+import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
+import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
+import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -179,7 +179,8 @@ export default createEslintRule<Options, MessageId>({
         properties: {
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
-            singleCustomGroupJsonSchema,
+            additionalCustomGroupMatchProperties:
+              additionalCustomGroupMatchOptionsJsonSchema,
           }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,

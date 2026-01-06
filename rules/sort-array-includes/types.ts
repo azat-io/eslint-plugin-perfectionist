@@ -1,12 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
-import type {
-  CommonOptions,
-  RegexOption,
-  TypeOption,
-} from '../../types/common-options'
-import type { CommonPartitionOptions } from '../../types/common-partition-options'
-import type { CommonGroupsOptions } from '../../types/common-groups-options'
+import type { RegexOption, TypeOption } from '../../types/common-options'
+import type { AllCommonOptions } from '../../types/all-common-options'
 
 import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/common-groups-json-schemas'
 
@@ -30,13 +25,11 @@ export type Options = Partial<
        */
       allNamesMatchPattern?: RegexOption
     }
-  } & CommonGroupsOptions<
-    SingleCustomGroup,
-    Record<string, never>,
-    TypeOption
-  > &
-    CommonOptions<TypeOption> &
-    CommonPartitionOptions
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortOptions,
+    CustomGroupMatchOptions
+  >
 >[]
 
 /**
@@ -56,13 +49,15 @@ export type Selector = (typeof allSelectors)[number]
  *     "selector": "literal"
  *   }
  */
-interface SingleCustomGroup {
+interface CustomGroupMatchOptions {
   /**
    * Specifies the type of array elements to include in this group. Can be
    * 'literal' for literal values or 'spread' for spread elements.
    */
   selector?: Selector
 }
+
+type AdditionalSortOptions = object
 
 /**
  * Complete list of available selectors for array elements. Used for validation
@@ -71,9 +66,12 @@ interface SingleCustomGroup {
 export let allSelectors = ['literal', 'spread'] as const
 
 /**
- * JSON schema definition for validating single custom group configurations.
- * Used by ESLint to validate rule options at configuration time.
+ * Additional custom group match options JSON schema. Used by ESLint to validate
+ * rule options at configuration time.
  */
-export let singleCustomGroupJsonSchema: Record<string, JSONSchema4> = {
+export let additionalCustomGroupMatchOptionsJsonSchema: Record<
+  string,
+  JSONSchema4
+> = {
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
 }
