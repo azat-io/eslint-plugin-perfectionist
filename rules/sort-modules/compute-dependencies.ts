@@ -2,6 +2,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { SortModulesNode } from './types'
+
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { isArrowFunctionNode } from './is-arrow-function-node'
 
@@ -25,10 +27,7 @@ type DependencyDetection = HardDependencyDetection | SoftDependencyDetection
  * @returns The names of the dependencies.
  */
 export function computeDependencies(
-  node:
-    | TSESTree.ClassDeclaration
-    | TSESTree.ProgramStatement
-    | TSESTree.TSEnumMember,
+  node: SortModulesNode,
   dependencyDetection: DependencyDetection,
 ): string[] {
   let dependencies: string[] = []
@@ -123,6 +122,9 @@ export function computeDependencies(
       }
       if ('properties' in nodeToCheck) {
         traverseNode(nodeToCheck.properties)
+      }
+      if ('property' in nodeToCheck) {
+        checkNode(nodeToCheck.property)
       }
       if ('right' in nodeToCheck) {
         checkNode(nodeToCheck.right)

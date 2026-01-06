@@ -171,7 +171,9 @@ This rule sorts the following module members:
 The following elements are not sorted by this rule:
 - `imports` (see the `sort-imports` rule).
 - `'from' exports` (see the `sort-exports` rule).
-- any other `expression`, in order to ensure compilation and runtime behavior.
+- Decorated **then** exported classes due to a known ESLint [limitation](https://github.com/estree/estree/issues/315).
+Place the `export`/`export default` keyword **before** the decorators in order to sort those classes.
+- Any other `expression`, in order to ensure compilation and runtime behavior.
 
 ## Options
 

@@ -265,7 +265,7 @@ describe('sort-modules', () => {
       await valid({
         code: dedent`
           interface B {}
-          let a;
+          export let a;
           interface A {}
         `,
         options: [options],
@@ -1361,6 +1361,26 @@ describe('sort-modules', () => {
 
             class A {
               static a = Object.values(Enum)
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await valid({
+          code: dedent`
+            namespace Namespace {
+              export class B {
+                static foo = 'foo'
+              }
+
+              class A {
+                static a = Namespace.B.foo
+              }
             }
           `,
           options: [
@@ -2954,40 +2974,149 @@ describe('sort-modules', () => {
       })
     })
 
-    it('ignores exported decorated classes when sorting', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'B', left: 'C' },
-          },
-        ],
-        output: dedent`
-          @B
-          class B {}
+    describe('exported decorated classes', () => {
+      it('allows exported then decorated classes to be sorted', async () => {
+        await invalid({
+          output: dedent`
+            // A
+            export @A class A {}
 
-          @A
-          export class A {}
+            @B
+            class B {}
 
-          @C
-          class C {}
-        `,
-        code: dedent`
-          @C
-          class C {}
+            @C
+            class C {}
+          `,
+          code: dedent`
+            @C
+            class C {}
 
-          @A
-          export class A {}
+            // A
+            export @A class A {}
 
-          @B
-          class B {}
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
+            @B
+            class B {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'A', left: 'C' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await invalid({
+          output: dedent`
+            // A
+            export default @A class A {}
+
+            @B
+            class B {}
+
+            @C
+            class C {}
+          `,
+          code: dedent`
+            @C
+            class C {}
+
+            // A
+            export default @A class A {}
+
+            @B
+            class B {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'A', left: 'C' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
+      it('ignores decorated then exported classes when sorting', async () => {
+        await invalid({
+          output: dedent`
+            @B
+            class B {}
+
+            @A
+            export class A {}
+
+            @C
+            class C {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'B', left: 'C' },
+            },
+          ],
+          code: dedent`
+            @C
+            class C {}
+
+            @A
+            export class A {}
+
+            @B
+            class B {}
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await invalid({
+          output: dedent`
+            @B
+            class B {}
+
+            @A
+            export default class A {}
+
+            @C
+            class C {}
+          `,
+          code: dedent`
+            @C
+            class C {}
+
+            @A
+            export default class A {}
+
+            @B
+            class B {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'B', left: 'C' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+        })
       })
     })
   })
@@ -3200,7 +3329,7 @@ describe('sort-modules', () => {
       await valid({
         code: dedent`
           interface B {}
-          let a;
+          export let a;
           interface A {}
         `,
         options: [options],
@@ -5618,7 +5747,7 @@ describe('sort-modules', () => {
       await valid({
         code: dedent`
           interface B {}
-          let a;
+          export let a;
           interface A {}
         `,
         options: [options],
@@ -8158,18 +8287,18 @@ describe('sort-modules', () => {
     it('detects usages in type values', async () => {
       await invalid({
         output: dedent`
-          type B = Something;
+          type B = 'b';
 
           type A = {
-            field: typeof B
+            (...args: B): void;
           }
         `,
         code: dedent`
           type A = {
-            field: typeof B
+            (...args: B): void;
           }
 
-          type B = Something;
+          type B = 'b';
         `,
         options: [
           {
@@ -8186,18 +8315,22 @@ describe('sort-modules', () => {
 
       await invalid({
         output: dedent`
-          type B = 'b';
+          namespace Namespace1 {
+            export namespace Namespace2 {
+              export type B = 'b'
 
-          type A = {
-            (...args: B): void;
+              type A = Namespace1.Namespace2.B
+            }
           }
         `,
         code: dedent`
-          type A = {
-            (...args: B): void;
-          }
+          namespace Namespace1 {
+            export namespace Namespace2 {
+              type A = Namespace1.Namespace2.B
 
-          type B = 'b';
+              export type B = 'b'
+            }
+          }
         `,
         options: [
           {
@@ -8385,34 +8518,6 @@ describe('sort-modules', () => {
           },
         ],
       })
-
-      await invalid({
-        output: dedent`
-          type B = 'b';
-
-          type A<T> = T extends {
-            (...args: any[]): infer B;
-          } ? Foo : Bar
-        `,
-        code: dedent`
-          type A<T> = T extends {
-            (...args: any[]): infer B;
-          } ? Foo : Bar
-
-          type B = 'b';
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
     })
 
     it('detects usages in interface extends', async () => {
@@ -8585,42 +8690,52 @@ describe('sort-modules', () => {
 
     /* Unhandled cases */
     it("doesn't support the following cases", async () => {
-      await valid({
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'a' },
+          },
+        ],
         options: [
           {
             ...options,
             groups: ['unknown'],
           },
         ],
-        code: dedent`
+        output: dedent`
           type B = 'b'
 
           function a(...B) {}
         `,
-      })
-
-      await valid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
         code: dedent`
-          type B = 'b'
+          function a(...B) {}
 
-          const a = (...B) => {}
+          type B = 'b'
         `,
       })
 
-      await valid({
-        code: dedent`
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'A' },
+          },
+        ],
+        output: dedent`
           type B = 'b'
 
           class A {
             a = (...B) => {}
           }
         `,
+        code: dedent`
+          class A {
+            a = (...B) => {}
+          }
+
+          type B = 'b'
+        `,
         options: [
           {
             ...options,
@@ -8629,14 +8744,27 @@ describe('sort-modules', () => {
         ],
       })
 
-      await valid({
-        code: dedent`
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'A' },
+          },
+        ],
+        output: dedent`
           type B = 'b'
 
           class A {
             a(...B) {}
           }
         `,
+        code: dedent`
+          class A {
+            a(...B) {}
+          }
+
+          type B = 'b'
+        `,
         options: [
           {
             ...options,
@@ -8645,18 +8773,85 @@ describe('sort-modules', () => {
         ],
       })
 
-      await valid({
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'A' },
+          },
+        ],
         options: [
           {
             ...options,
             groups: ['unknown'],
           },
         ],
-        code: dedent`
+        output: dedent`
           type B = 'b'
 
           type A<B> = void
         `,
+        code: dedent`
+          type A<B> = void
+
+          type B = 'b'
+        `,
+      })
+
+      await invalid({
+        output: dedent`
+          type B = Something;
+
+          type A = {
+            field: typeof B
+          }
+        `,
+        code: dedent`
+          type A = {
+            field: typeof B
+          }
+
+          type B = Something;
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        output: dedent`
+          type B = 'b';
+
+          type A<T> = T extends {
+            (...args: any[]): infer B;
+          } ? Foo : Bar
+        `,
+        code: dedent`
+          type A<T> = T extends {
+            (...args: any[]): infer B;
+          } ? Foo : Bar
+
+          type B = 'b';
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
       })
     })
   })
