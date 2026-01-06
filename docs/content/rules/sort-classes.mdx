@@ -313,7 +313,7 @@ option.
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
 ### newlinesInside
- 
+
 <sub>
   type: `number | 'ignore' | 'newlinesBetween'`
 </sub>
@@ -652,7 +652,7 @@ You may directly override options for a specific group by using an object with t
 - `type` — Overrides the [`type`](#type) option for that group.
 - `order` — Overrides the [`order`](#order) option for that group.
 - `fallbackSort` — Overrides the [`fallbackSort`](#fallbacksort) option for that group.
-- `newlinesInside` — Enforces a specific newline behavior between elements of the group.
+- `newlinesInside` — Overrides the [`newlinesInside`](#newlinesinside) option for that group.
 
 ```ts
 {
@@ -766,10 +766,10 @@ A class member will match a `CustomGroupAnyOfDefinition` group if it matches all
 - `elementNamePattern` — If entered, will check that the name of the element matches the pattern entered.
 - `elementValuePattern` — Only for non-function properties. If entered, will check that the value of the property matches the pattern entered.
 - `decoratorNamePattern` — If entered, will check that at least one `decorator` matches the pattern entered.
-- `type` — Overrides the [`type`](#type) option for that custom group. `'unsorted'` will not sort the group.
+- `type` — Overrides the [`type`](#type) option for that custom group.
 - `order` — Overrides the [`order`](#order) option for that custom group.
 - `fallbackSort` — Overrides the [`fallbackSort`](#fallbacksort) option for that custom group.
-- `newlinesInside` — Enforces a specific newline behavior between elements of the group.
+- `newlinesInside` — Overrides the [`newlinesInside`](#newlinesinside) option for that custom group.
 
 #### Match importance
 
