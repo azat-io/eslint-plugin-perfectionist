@@ -22,6 +22,11 @@ export default eslintConfig({
         ],
         'eslint-plugin/require-meta-default-options': 'off',
       },
+      settings: {
+        perfectionist: {
+          fallbackSort: { type: 'alphabetical', order: 'asc' },
+        },
+      },
     },
   ],
   perfectionist: true,
