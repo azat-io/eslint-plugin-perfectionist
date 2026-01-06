@@ -27,20 +27,26 @@ import {
   buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
+import { computeIndexSignatureDetails } from './sort-classes/node-info/compute-index-signature-details'
 import {
   singleCustomGroupJsonSchema,
   allModifiers,
   allSelectors,
 } from './sort-classes/types'
+import { computeStaticBlockDetails } from './sort-classes/node-info/compute-static-block-details'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { computePropertyDetails } from './sort-classes/node-info/compute-property-details'
+import { computeAccessorDetails } from './sort-classes/node-info/compute-accessor-details'
 import { getOverloadSignatureGroups } from './sort-classes/get-overload-signature-groups'
+import { computeMethodDetails } from './sort-classes/node-info/compute-method-details'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -53,7 +59,6 @@ import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
-import { matches } from '../utils/matches'
 
 /** Cache computed groups by modifiers and selectors for performance. */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
@@ -111,7 +116,7 @@ let defaultOptions: Required<SortClassesOptions[number]> = {
   order: 'asc',
 }
 
-interface SortClassSortingNodes extends SortingNodeWithDependencies<TSESTree.ClassElement> {
+interface SortClassSortingNode extends SortingNodeWithDependencies<TSESTree.ClassElement> {
   overloadSignaturesGroupId: number | null
 }
 
@@ -138,385 +143,93 @@ export default createEslintRule<SortClassesOptions, MessageId>({
         sourceCode,
       })
       let className = node.parent.id?.name
-      function getDependencyName(props: {
-        nodeNameWithoutStartingHash: string
-        isPrivateHash: boolean
-        isStatic: boolean
-      }): string {
-        return `${props.isStatic ? 'static ' : ''}${props.isPrivateHash ? '#' : ''}${props.nodeNameWithoutStartingHash}`
-      }
-      /**
-       * Class methods should not be considered as dependencies because they can
-       * be put in any order without causing a reference error.
-       */
-      let classMethodsDependencyNames = new Set(
-        node.body
-          .map(member => {
-            if (
-              (member.type === AST_NODE_TYPES.MethodDefinition ||
-                member.type === AST_NODE_TYPES.TSAbstractMethodDefinition) &&
-              'name' in member.key
-            ) {
-              return getDependencyName({
-                isPrivateHash:
-                  member.key.type === AST_NODE_TYPES.PrivateIdentifier,
-                nodeNameWithoutStartingHash: member.key.name,
-                isStatic: member.static,
-              })
-            }
-            return null
-          })
-          .filter(Boolean),
-      )
-      function extractDependencies(
-        expression: TSESTree.StaticBlock | TSESTree.Expression,
-        isMemberStatic: boolean,
-      ): string[] {
-        let dependencies: string[] = []
 
-        function checkNode(nodeValue: TSESTree.Node): void {
-          if (
-            nodeValue.type === AST_NODE_TYPES.MemberExpression &&
-            (nodeValue.object.type === AST_NODE_TYPES.ThisExpression ||
-              (nodeValue.object.type === AST_NODE_TYPES.Identifier &&
-                nodeValue.object.name === className)) &&
-            (nodeValue.property.type === AST_NODE_TYPES.Identifier ||
-              nodeValue.property.type === AST_NODE_TYPES.PrivateIdentifier)
-          ) {
-            let isStaticDependency =
-              isMemberStatic ||
-              nodeValue.object.type === AST_NODE_TYPES.Identifier
-            let dependencyName = getDependencyName({
-              isPrivateHash:
-                nodeValue.property.type === AST_NODE_TYPES.PrivateIdentifier,
-              nodeNameWithoutStartingHash: nodeValue.property.name,
-              isStatic: isStaticDependency,
-            })
-            if (!classMethodsDependencyNames.has(dependencyName)) {
-              dependencies.push(dependencyName)
-            }
-          }
-
-          if (nodeValue.type === AST_NODE_TYPES.Property) {
-            traverseNode(nodeValue.key)
-            traverseNode(nodeValue.value)
-          }
-
-          if (nodeValue.type === AST_NODE_TYPES.ConditionalExpression) {
-            traverseNode(nodeValue.test)
-            traverseNode(nodeValue.consequent)
-            traverseNode(nodeValue.alternate)
-          }
-
-          if (
-            'expression' in nodeValue &&
-            typeof nodeValue.expression !== 'boolean'
-          ) {
-            traverseNode(nodeValue.expression)
-          }
-
-          if ('object' in nodeValue) {
-            traverseNode(nodeValue.object)
-          }
-
-          if ('callee' in nodeValue) {
-            traverseNode(nodeValue.callee)
-          }
-
-          if ('init' in nodeValue && nodeValue.init) {
-            traverseNode(nodeValue.init)
-          }
-
-          if ('body' in nodeValue && nodeValue.body) {
-            traverseNode(nodeValue.body)
-          }
-
-          if ('left' in nodeValue) {
-            traverseNode(nodeValue.left)
-          }
-
-          if ('right' in nodeValue) {
-            traverseNode(nodeValue.right)
-          }
-
-          if ('elements' in nodeValue) {
-            let elements = nodeValue.elements.filter(
-              currentNode => currentNode !== null,
-            )
-            for (let element of elements) {
-              traverseNode(element)
-            }
-          }
-
-          if ('argument' in nodeValue && nodeValue.argument) {
-            traverseNode(nodeValue.argument)
-          }
-
-          if ('arguments' in nodeValue) {
-            let shouldIgnore = false
-            if (nodeValue.type === AST_NODE_TYPES.CallExpression) {
-              let functionName =
-                'name' in nodeValue.callee ? nodeValue.callee.name : null
-              shouldIgnore =
-                functionName !== null &&
-                matches(
-                  functionName,
-                  options.ignoreCallbackDependenciesPatterns,
-                )
-            }
-            if (!shouldIgnore) {
-              for (let argument of nodeValue.arguments) {
-                traverseNode(argument)
-              }
-            }
-          }
-
-          if ('declarations' in nodeValue) {
-            for (let declaration of nodeValue.declarations) {
-              traverseNode(declaration)
-            }
-          }
-
-          if ('properties' in nodeValue) {
-            for (let property of nodeValue.properties) {
-              traverseNode(property)
-            }
-          }
-
-          if ('expressions' in nodeValue) {
-            for (let nodeExpression of nodeValue.expressions) {
-              traverseNode(nodeExpression)
-            }
-          }
-        }
-
-        function traverseNode(
-          nodeValue: TSESTree.Node[] | TSESTree.Node,
-        ): void {
-          if (Array.isArray(nodeValue)) {
-            for (let nodeItem of nodeValue) {
-              traverseNode(nodeItem)
-            }
-          } else {
-            checkNode(nodeValue)
-          }
-        }
-
-        traverseNode(expression)
-        return dependencies
-      }
       let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
-      let formattedNodes: SortClassSortingNodes[][] = node.body.reduce(
-        (accumulator: SortClassSortingNodes[][], member) => {
-          let name: string
+      let formattedNodes: SortClassSortingNode[][] = node.body.reduce(
+        (accumulator: SortClassSortingNode[][], member) => {
           let dependencies: string[] = []
 
-          if (member.type === AST_NODE_TYPES.StaticBlock) {
-            name = 'static'
-          } else if (member.type === AST_NODE_TYPES.TSIndexSignature) {
-            name = sourceCode.text.slice(
-              member.range.at(0),
-              member.typeAnnotation?.range.at(0) ?? member.range.at(1),
-            )
-          } else if (member.key.type === AST_NODE_TYPES.Identifier) {
-            ;({ name } = member.key)
-          } else {
-            name = sourceCode.getText(member.key)
-          }
-
-          let isPrivateHash =
-            'key' in member &&
-            member.key.type === AST_NODE_TYPES.PrivateIdentifier
-
-          let decorated = false
+          let isDecorated = false
           let decorators: string[] = []
 
           if ('decorators' in member) {
             decorators = getNodeDecorators(member).map(decorator =>
               getDecoratorName({ sourceCode, decorator }),
             )
-            decorated = decorators.length > 0
+            isDecorated = decorators.length > 0
           }
 
+          let addSafetySemicolonWhenInline: boolean
+          let dependencyNames: string[]
+          let name: string
           let memberValue: undefined | string
-          let modifiers: Modifier[] = []
-          let selectors: Selector[] = []
-          let addSafetySemicolonWhenInline: boolean = true
+          let modifiers: Modifier[]
+          let selectors: Selector[]
+
           switch (member.type) {
             case AST_NODE_TYPES.TSAbstractPropertyDefinition:
             case AST_NODE_TYPES.PropertyDefinition:
-              /**
-               * Member is necessarily a property similarly to above for
-               * methods, prioritize 'static', 'declare', 'decorated',
-               * 'abstract', 'override' and 'readonly' over accessibility
-               * modifiers.
-               */
-              if ('static' in member && member.static) {
-                modifiers.push('static')
-              }
-
-              if ('declare' in member && member.declare) {
-                modifiers.push('declare')
-              }
-
-              if (member.type === AST_NODE_TYPES.TSAbstractPropertyDefinition) {
-                modifiers.push('abstract')
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if ('override' in member && member.override) {
-                modifiers.push('override')
-              }
-
-              if ('readonly' in member && member.readonly) {
-                modifiers.push('readonly')
-              }
-
-              if (
-                'accessibility' in member &&
-                member.accessibility === 'protected'
-              ) {
-                modifiers.push('protected')
-              } else if (
-                ('accessibility' in member &&
-                  member.accessibility === 'private') ||
-                isPrivateHash
-              ) {
-                modifiers.push('private')
-              } else {
-                modifiers.push('public')
-              }
-
-              if ('optional' in member && member.optional) {
-                modifiers.push('optional')
-              }
-
-              if (
-                member.value?.type === AST_NODE_TYPES.ArrowFunctionExpression ||
-                member.value?.type === AST_NODE_TYPES.FunctionExpression
-              ) {
-                if (member.value.async) {
-                  modifiers.push('async')
-                }
-                selectors.push('function-property')
-              } else if (member.value) {
-                memberValue = sourceCode.getText(member.value)
-                dependencies = extractDependencies(member.value, member.static)
-              }
-
-              selectors.push('property')
+              addSafetySemicolonWhenInline = true
+              ;({
+                dependencyNames,
+                dependencies,
+                memberValue,
+                modifiers,
+                selectors,
+                name,
+              } = computePropertyDetails({
+                ignoreCallbackDependenciesPatterns:
+                  options.ignoreCallbackDependenciesPatterns,
+                property: member,
+                isDecorated,
+                sourceCode,
+                className,
+              }))
               break
-
             case AST_NODE_TYPES.TSAbstractMethodDefinition:
             case AST_NODE_TYPES.MethodDefinition:
-              /**
-               * By putting the static modifier before accessibility modifiers,
-               * we prioritize 'static' over those in cases like: config:
-               * ['static-method', 'public-method'] element: public static
-               * method(); Element will be classified as 'static-method' before
-               * 'public-method'.
-               */
-              if (member.static) {
-                modifiers.push('static')
-              }
-              if (member.type === AST_NODE_TYPES.TSAbstractMethodDefinition) {
-                modifiers.push('abstract')
-              } else if (!node.parent.declare) {
-                addSafetySemicolonWhenInline = false
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if (member.override) {
-                modifiers.push('override')
-              }
-
-              if (member.accessibility === 'protected') {
-                modifiers.push('protected')
-              } else if (member.accessibility === 'private' || isPrivateHash) {
-                modifiers.push('private')
-              } else {
-                modifiers.push('public')
-              }
-
-              if (member.optional) {
-                modifiers.push('optional')
-              }
-
-              if (member.value.async) {
-                modifiers.push('async')
-              }
-
-              if (member.kind === 'constructor') {
-                selectors.push('constructor')
-              }
-
-              if (member.kind === 'get') {
-                selectors.push('get-method')
-              }
-
-              if (member.kind === 'set') {
-                selectors.push('set-method')
-              }
-              selectors.push('method')
-
+              dependencyNames = []
+              ;({ addSafetySemicolonWhenInline, selectors, modifiers, name } =
+                computeMethodDetails({
+                  hasParentDeclare: node.parent.declare,
+                  method: member,
+                  isDecorated,
+                  sourceCode,
+                }))
               break
-
             case AST_NODE_TYPES.TSAbstractAccessorProperty:
             case AST_NODE_TYPES.AccessorProperty:
-              if (member.static) {
-                modifiers.push('static')
-              }
-
-              if (member.type === AST_NODE_TYPES.TSAbstractAccessorProperty) {
-                modifiers.push('abstract')
-              }
-
-              if (decorated) {
-                modifiers.push('decorated')
-              }
-
-              if (member.override) {
-                modifiers.push('override')
-              }
-
-              if (member.accessibility === 'protected') {
-                modifiers.push('protected')
-              } else if (member.accessibility === 'private' || isPrivateHash) {
-                modifiers.push('private')
-              } else {
-                modifiers.push('public')
-              }
-              selectors.push('accessor-property')
-
+              addSafetySemicolonWhenInline = true
+              ;({ dependencyNames, selectors, modifiers, name } =
+                computeAccessorDetails({
+                  accessor: member,
+                  isDecorated,
+                  sourceCode,
+                }))
               break
-
             case AST_NODE_TYPES.TSIndexSignature:
-              if (member.static) {
-                modifiers.push('static')
-              }
-
-              if (member.readonly) {
-                modifiers.push('readonly')
-              }
-
-              selectors.push('index-signature')
-
+              addSafetySemicolonWhenInline = true
+              dependencyNames = []
+              ;({ modifiers, selectors, name } = computeIndexSignatureDetails({
+                indexSignature: member,
+                sourceCode,
+              }))
               break
-
             case AST_NODE_TYPES.StaticBlock:
               addSafetySemicolonWhenInline = false
-
-              selectors.push('static-block')
-
-              dependencies = extractDependencies(member, true)
-
+              dependencyNames = []
+              name = 'static'
+              ;({ dependencies, selectors, modifiers } =
+                computeStaticBlockDetails({
+                  ignoreCallbackDependenciesPatterns:
+                    options.ignoreCallbackDependenciesPatterns,
+                  staticBlock: member,
+                  className,
+                }))
               break
+            /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+            default:
+              throw new UnreachableCaseError(member)
           }
 
           let predefinedGroups = generatePredefinedGroups({
@@ -553,16 +266,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
           let overloadSignatureGroupMember =
             overloadSignatureGroups[overloadSignatureGroupMemberIndex]?.at(-1)
 
-          let sortingNode: Omit<SortClassSortingNodes, 'partitionId'> = {
-            dependencyNames: [
-              getDependencyName({
-                nodeNameWithoutStartingHash: name.startsWith('#')
-                  ? name.slice(1)
-                  : name,
-                isStatic: modifiers.includes('static'),
-                isPrivateHash,
-              }),
-            ],
+          let sortingNode: Omit<SortClassSortingNode, 'partitionId'> = {
             overloadSignaturesGroupId:
               overloadSignatureGroupMemberIndex === -1
                 ? null
@@ -572,6 +276,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
               : rangeToDiff(member, sourceCode),
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
             addSafetySemicolonWhenInline,
+            dependencyNames,
             node: member,
             dependencies,
             group,
@@ -603,7 +308,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
       function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
-      ): SortClassSortingNodes[] {
+      ): SortClassSortingNode[] {
         let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
           sortNodesByGroups({
             isNodeIgnored: sortingNode =>
@@ -625,7 +330,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
       let nodes = formattedNodes.flat()
 
-      reportAllErrors<MessageId, SortClassSortingNodes>({
+      reportAllErrors<MessageId, SortClassSortingNode>({
         newlinesBetweenValueGetter: ({
           computedNewlinesBetween,
           right,

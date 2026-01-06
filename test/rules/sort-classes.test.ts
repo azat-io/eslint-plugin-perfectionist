@@ -2533,6 +2533,18 @@ describe('sort-classes', () => {
         `,
         options: [options],
       })
+
+      await valid({
+        code: dedent`
+          class MyClass {
+            static {
+              MyClass.z()
+            }
+            static z() {}
+          }
+        `,
+        options: [options],
+      })
     })
 
     it('detects function property dependencies', async () => {
@@ -2665,9 +2677,9 @@ describe('sort-classes', () => {
       await valid({
         code: dedent`
           class Class {
-            querystring = createQueryString();
-            state = createState((set) => {
-                set('query', this.queryString.value);
+            b = createQueryString();
+            a = createState((set) => {
+                set('query', this.b.value);
              });
           }
         `,
@@ -2677,6 +2689,54 @@ describe('sort-classes', () => {
             groups: [['property', 'method']],
           },
         ],
+      })
+
+      await valid({
+        code: dedent`
+          class Class {
+            b = function () {
+              return 1
+            }
+            a = [1].map(this["b"]);
+          }
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          class Class {
+            ["b"] = function () {
+              return 1
+            }
+            a = [1].map(this.b);
+          }
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          class Class {
+            ['b'] = function () {
+              return 1
+            }
+            a = [1].map(this.b);
+          }
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          class Class {
+            ["'b'"] = function () {
+              return 1
+            }
+            a = [1].map(this["'b'"]);
+          }
+        `,
+        options: [options],
       })
     })
 
@@ -7264,9 +7324,9 @@ describe('sort-classes', () => {
       await valid({
         code: dedent`
           class Class {
-            querystring = createQueryString();
-            state = createState((set) => {
-                set('query', this.queryString.value);
+            b = createQueryString();
+            a = createState((set) => {
+                set('query', this.b.value);
              });
           }
         `,
