@@ -213,6 +213,8 @@ function sortDecorators(
     ruleName: id,
     sourceCode,
   })
+  let optionsByGroupIndexComputer =
+    buildDefaultOptionsByGroupIndexComputer(options)
 
   let formattedMembers: SortDecoratorsSortingNode[][] = decorators.reduce(
     (accumulator: SortDecoratorsSortingNode[][], decorator) => {
@@ -268,9 +270,8 @@ function sortDecorators(
   ): SortDecoratorsSortingNode[] {
     return formattedMembers.flatMap(nodes =>
       sortNodesByGroups({
-        optionsByGroupIndexComputer:
-          buildDefaultOptionsByGroupIndexComputer(options),
         comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+        optionsByGroupIndexComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes,

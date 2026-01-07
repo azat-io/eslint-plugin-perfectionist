@@ -142,6 +142,8 @@ function sortHeritageClauses(
     ruleName: id,
     sourceCode,
   })
+  let optionsByGroupIndexComputer =
+    buildDefaultOptionsByGroupIndexComputer(options)
 
   let formattedMembers: SortingNode[][] = [[]]
   for (let heritageClause of heritageClauses) {
@@ -192,9 +194,8 @@ function sortHeritageClauses(
     ) {
       return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
         return sortNodesByGroups({
-          optionsByGroupIndexComputer:
-            buildDefaultOptionsByGroupIndexComputer(options),
           comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+          optionsByGroupIndexComputer,
           ignoreEslintDisabledNodes,
           groups: options.groups,
           nodes: sortingNodes,

@@ -104,6 +104,8 @@ export default createEslintRule<Options, MessageId>({
         ruleName: id,
         sourceCode,
       })
+      let optionsByGroupIndexComputer =
+        buildDefaultOptionsByGroupIndexComputer(options)
 
       let formattedMembers: SortingNode[][] =
         node.openingElement.attributes.reduce(
@@ -189,9 +191,8 @@ export default createEslintRule<Options, MessageId>({
         function createSortNodesExcludingEslintDisabled(nodes: SortingNode[]) {
           return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
             return sortNodesByGroups({
-              optionsByGroupIndexComputer:
-                buildDefaultOptionsByGroupIndexComputer(options),
               comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+              optionsByGroupIndexComputer,
               ignoreEslintDisabledNodes,
               groups: options.groups,
               nodes,

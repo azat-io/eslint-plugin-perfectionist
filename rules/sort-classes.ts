@@ -142,6 +142,8 @@ export default createEslintRule<SortClassesOptions, MessageId>({
         ruleName: id,
         sourceCode,
       })
+      let optionsByGroupIndexComputer =
+        buildDefaultOptionsByGroupIndexComputer(options)
       let className = node.parent.id?.name
 
       let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
@@ -314,9 +316,8 @@ export default createEslintRule<SortClassesOptions, MessageId>({
             isNodeIgnored: sortingNode =>
               getGroupIndex(options.groups, sortingNode) ===
               options.groups.length,
-            optionsByGroupIndexComputer:
-              buildDefaultOptionsByGroupIndexComputer(options),
             comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+            optionsByGroupIndexComputer,
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes,

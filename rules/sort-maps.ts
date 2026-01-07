@@ -108,6 +108,8 @@ export default createEslintRule<Options, MessageId>({
         ruleName: id,
         sourceCode,
       })
+      let optionsByGroupIndexComputer =
+        buildDefaultOptionsByGroupIndexComputer(options)
 
       let parts: TSESTree.Expression[][] = elements.reduce(
         (
@@ -184,9 +186,8 @@ export default createEslintRule<Options, MessageId>({
               ignoreEslintDisabledNodes: boolean,
             ): SortingNode[] {
               return sortNodesByGroups({
-                optionsByGroupIndexComputer:
-                  buildDefaultOptionsByGroupIndexComputer(options),
                 comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+                optionsByGroupIndexComputer,
                 ignoreEslintDisabledNodes,
                 groups: options.groups,
                 nodes: sortingNodes,

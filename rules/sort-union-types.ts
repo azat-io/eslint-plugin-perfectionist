@@ -157,6 +157,8 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
     ruleName: id,
     sourceCode,
   })
+  let optionsByGroupIndexComputer =
+    buildDefaultOptionsByGroupIndexComputer(options)
 
   let formattedMembers: SortingNode[][] = node.types.reduce(
     (accumulator: SortingNode[][], type) => {
@@ -277,9 +279,8 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
     ) {
       return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
         return sortNodesByGroups({
-          optionsByGroupIndexComputer:
-            buildDefaultOptionsByGroupIndexComputer(options),
           comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+          optionsByGroupIndexComputer,
           ignoreEslintDisabledNodes,
           groups: options.groups,
           nodes: sortingNodes,

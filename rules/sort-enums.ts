@@ -94,6 +94,8 @@ export default createEslintRule<Options, MessageId>({
         ruleName: id,
         sourceCode,
       })
+      let optionsByGroupIndexComputer =
+        buildDefaultOptionsByGroupIndexComputer(options)
 
       function extractDependencies(
         expression: TSESTree.Expression,
@@ -201,10 +203,9 @@ export default createEslintRule<Options, MessageId>({
       ): SortEnumsSortingNode[] {
         let nodesSortedByGroups = formattedMembers.flatMap(sortingNodes =>
           sortNodesByGroups({
-            optionsByGroupIndexComputer:
-              buildDefaultOptionsByGroupIndexComputer(options),
             comparatorByOptionsComputer:
               buildComparatorByOptionsComputer(isNumericEnum),
+            optionsByGroupIndexComputer,
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes: sortingNodes,

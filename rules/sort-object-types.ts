@@ -202,6 +202,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
     ruleName: id,
     sourceCode,
   })
+  let optionsByGroupIndexComputer =
+    buildDefaultOptionsByGroupIndexComputer(options)
 
   let formattedMembers: SortObjectTypesSortingNode[][] = [[]]
   for (let typeElement of elements) {
@@ -326,8 +328,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
               throw new UnreachableCaseError(groupOptions.sortBy)
           }
         },
-        optionsByGroupIndexComputer:
-          buildDefaultOptionsByGroupIndexComputer(options),
+        optionsByGroupIndexComputer,
         comparatorByOptionsComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,

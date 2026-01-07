@@ -188,6 +188,8 @@ export function sortArray<MessageIds extends string>({
     ruleName: id,
     sourceCode,
   })
+  let optionsByGroupIndexComputer =
+    buildDefaultOptionsByGroupIndexComputer(options)
 
   let formattedMembers: SortArrayIncludesSortingNode[][] = elements.reduce(
     (
@@ -253,9 +255,8 @@ export function sortArray<MessageIds extends string>({
   ): SortArrayIncludesSortingNode[] {
     return formattedMembers.flatMap(nodes =>
       sortNodesByGroups({
-        optionsByGroupIndexComputer:
-          buildDefaultOptionsByGroupIndexComputer(options),
         comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+        optionsByGroupIndexComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes,

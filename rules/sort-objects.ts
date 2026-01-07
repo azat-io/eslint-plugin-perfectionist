@@ -113,6 +113,13 @@ export default createEslintRule<Options, MessageId>({
       })
       validateNewlinesAndPartitionConfiguration(options)
 
+      let eslintDisabledLines = getEslintDisabledLines({
+        ruleName: id,
+        sourceCode,
+      })
+      let optionsByGroupIndexComputer =
+        buildDefaultOptionsByGroupIndexComputer(options)
+
       let objectRoot =
         nodeObject.type === AST_NODE_TYPES.ObjectPattern
           ? null
@@ -126,11 +133,6 @@ export default createEslintRule<Options, MessageId>({
       ) {
         return
       }
-
-      let eslintDisabledLines = getEslintDisabledLines({
-        ruleName: id,
-        sourceCode,
-      })
 
       function extractDependencies(init: TSESTree.Expression): string[] {
         let dependencies: string[] = []
@@ -338,9 +340,8 @@ export default createEslintRule<Options, MessageId>({
       ): SortingNodeWithDependencies[] {
         let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
           sortNodesByGroups({
-            optionsByGroupIndexComputer:
-              buildDefaultOptionsByGroupIndexComputer(options),
             comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+            optionsByGroupIndexComputer,
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes,

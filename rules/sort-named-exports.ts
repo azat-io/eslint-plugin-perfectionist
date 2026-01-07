@@ -98,6 +98,8 @@ export default createEslintRule<Options, MessageId>({
         ruleName: id,
         sourceCode,
       })
+      let optionsByGroupIndexComputer =
+        buildDefaultOptionsByGroupIndexComputer(options)
 
       let formattedMembers: SortNamedExportsSortingNode[][] = [[]]
       for (let specifier of node.specifiers) {
@@ -157,9 +159,8 @@ export default createEslintRule<Options, MessageId>({
       ): SortNamedExportsSortingNode[] {
         return formattedMembers.flatMap(groupedNodes =>
           sortNodesByGroups({
-            optionsByGroupIndexComputer:
-              buildDefaultOptionsByGroupIndexComputer(options),
             comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+            optionsByGroupIndexComputer,
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes: groupedNodes,
