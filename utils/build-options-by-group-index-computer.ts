@@ -19,15 +19,14 @@ type Options = Pick<
  * algorithms that need to apply different sorting rules to different groups.
  *
  * @example
- *   const getOverriddenOptions =
- *     buildDefaultOptionsByGroupIndexComputer(options)
+ *   const getOverriddenOptions = buildOptionsByGroupIndexComputer(options)
  *   const group1Options = getOverriddenOptions(0)
  *   const group2Options = getOverriddenOptions(1)
  *
  * @param options - Base sorting options with group configuration.
  * @returns Function that takes a group index and returns overridden options.
  */
-export function buildDefaultOptionsByGroupIndexComputer<T extends Options>(
+export function buildOptionsByGroupIndexComputer<T extends Options>(
   options: T,
 ): OptionsByGroupIndexComputer<T> {
   return groupIndex => computeOverriddenOptionsByGroupIndex(options, groupIndex)

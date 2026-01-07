@@ -30,13 +30,13 @@ import {
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { isNonExternalReferenceTsImportEquals } from './sort-imports/is-non-external-reference-ts-import-equals'
 import {
   buildCommonJsonSchemas,
   buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
+import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { comparatorByOptionsComputer } from './sort-imports/comparator-by-options-computer'
@@ -374,8 +374,7 @@ function sortImportNodes({
   options: Required<Options[number]>
 }): void {
   let { sourceCode } = context
-  let optionsByGroupIndexComputer =
-    buildDefaultOptionsByGroupIndexComputer(options)
+  let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
 
   let contentSeparatedSortingNodeGroups: SortImportsSortingNode[][][] = [[[]]]
   for (let sortingNodeWithoutPartitionId of sortingNodesWithoutPartitionId) {

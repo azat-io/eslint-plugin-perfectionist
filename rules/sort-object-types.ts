@@ -34,8 +34,8 @@ import {
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { computeMatchedContextOptions } from './sort-object-types/compute-matched-context-options'
+import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { comparatorByOptionsComputer } from './sort-object-types/comparator-by-options-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -202,8 +202,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
     ruleName: id,
     sourceCode,
   })
-  let optionsByGroupIndexComputer =
-    buildDefaultOptionsByGroupIndexComputer(options)
+  let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
 
   let formattedMembers: SortObjectTypesSortingNode[][] = [[]]
   for (let typeElement of elements) {

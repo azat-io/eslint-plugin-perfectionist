@@ -26,13 +26,13 @@ import {
   allSelectors,
 } from './sort-classes/types'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import {
   buildCommonJsonSchemas,
   buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { computeIndexSignatureDetails } from './sort-classes/node-info/compute-index-signature-details'
+import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeStaticBlockDetails } from './sort-classes/node-info/compute-static-block-details'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -143,7 +143,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
         sourceCode,
       })
       let optionsByGroupIndexComputer =
-        buildDefaultOptionsByGroupIndexComputer(options)
+        buildOptionsByGroupIndexComputer(options)
       let className = node.parent.id?.name
 
       let overloadSignatureGroups = getOverloadSignatureGroups(node.body)

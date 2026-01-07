@@ -20,8 +20,8 @@ import {
   buildUseConfigurationIfJsonSchema,
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
+import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
@@ -109,7 +109,7 @@ export default createEslintRule<Options, MessageId>({
         sourceCode,
       })
       let optionsByGroupIndexComputer =
-        buildDefaultOptionsByGroupIndexComputer(options)
+        buildOptionsByGroupIndexComputer(options)
 
       let parts: TSESTree.Expression[][] = elements.reduce(
         (
