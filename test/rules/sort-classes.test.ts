@@ -1835,44 +1835,6 @@ describe('sort-classes', () => {
       })
     })
 
-    it('sorts getters and setters using subgroup-order fallback', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedClassesOrder',
-            data: { right: 'a', left: 'b' },
-          },
-          {
-            messageId: 'unexpectedClassesOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: [['get-method', 'set-method'], 'unknown'],
-            fallbackSort: { type: 'subgroup-order' },
-          },
-        ],
-        output: dedent`
-          class Class {
-            get a() {}
-            set a(value) {}
-            get b() {}
-            set b(value) {}
-          }
-        `,
-        code: dedent`
-          class Class {
-            set b(value) {}
-            set a(value) {}
-            get b() {}
-            get a() {}
-          }
-        `,
-      })
-    })
-
     it('sorts decorated properties', async () => {
       await invalid({
         output: dedent`
@@ -13630,6 +13592,92 @@ describe('sort-classes', () => {
           }
         `,
         options: [options],
+      })
+    })
+  })
+
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+      },
+      type: 'alphabetical',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          class Class {
+            get a() {}
+            set a(value) {}
+            get b() {}
+            set b(value) {}
+          }
+        `,
+        code: dedent`
+          class Class {
+            set b(value) {}
+            set a(value) {}
+            get b() {}
+            get a() {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: [['get-method', 'set-method'], 'unknown'],
+          },
+        ],
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: [
+              { group: ['get-method', 'set-method'], newlinesInside: 0 },
+              'unknown',
+            ],
+          },
+        ],
+        output: dedent`
+          class Class {
+            get a() {}
+            set a(value) {}
+            get b() {}
+            set b(value) {}
+          }
+        `,
+        code: dedent`
+          class Class {
+            set b(value) {}
+            set a(value) {}
+            get b() {}
+            get a() {}
+          }
+        `,
       })
     })
   })
