@@ -3068,6 +3068,28 @@ describe('sort-switch-case', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      type: 'subgroup-order',
+    } as const
+
+    it('does not enforce sorting', async () => {
+      await valid({
+        code: dedent`
+          switch (x) {
+            case 'b':
+              break;
+            case 'c':
+              break;
+            case 'a':
+              break;
+          }
+        `,
+        options: [options],
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let options = {
       type: 'unsorted',
