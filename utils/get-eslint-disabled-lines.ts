@@ -87,7 +87,7 @@ export function getEslintDisabledLines(props: {
         lineRulePermanentlyDisabled = null
         break
       }
-      /* v8 ignore next 4 -- @preserve Should never reach unreachable case. */
+      /* v8 ignore next 2 -- @preserve Exhaustive guard. */
       default:
         throw new UnreachableCaseError(
           eslintDisabledRules.eslintDisableDirective,
