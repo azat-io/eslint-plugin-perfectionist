@@ -4084,6 +4084,358 @@ describe('sort-objects', () => {
         `,
       })
     })
+
+    describe('sortBy', () => {
+      it('allows sorting by value', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'c', left: 'b' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              c: 'b',
+              b: 'c',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b: 'c',
+              c: 'b',
+            }
+          `,
+          options: [
+            {
+              ...options,
+              sortBy: 'value',
+            },
+          ],
+        })
+      })
+
+      it('correctly sorts attributes without values', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              sortBy: 'value',
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              b,
+            }
+          `,
+          code: dedent`
+            let obj = {
+              b,
+              a: 'a',
+            }
+          `,
+        })
+      })
+
+      it('puts functions first', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'b', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              b() {},
+              a: 'a',
+            }
+          `,
+          options: [
+            {
+              ...options,
+              sortBy: 'value',
+            },
+          ],
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b() {},
+            }
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'b', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              b: () => {},
+              a: 'a',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b: () => {},
+            }
+          `,
+          options: [
+            {
+              ...options,
+              sortBy: 'value',
+            },
+          ],
+        })
+      })
+
+      it('takes the assignment in destructured objects', async () => {
+        await invalid({
+          output: dedent`
+            let Func = ({
+              a,
+              c = 'a',
+              b = 'c',
+            }) => {
+              // ...
+            }
+          `,
+          code: dedent`
+            let Func = ({
+              a,
+              b = 'c',
+              c = 'a',
+            }) => {
+              // ...
+            }
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'c', left: 'b' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              sortBy: 'value',
+            },
+          ],
+        })
+
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'b', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              b: () => {},
+              a: 'a',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b: () => {},
+            }
+          `,
+          options: [
+            {
+              ...options,
+              sortBy: 'value',
+            },
+          ],
+        })
+      })
+
+      it('allows sorting by value through overriding groups', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'c', left: 'b' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [{ group: 'property', sortBy: 'value' }],
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              c: 'b',
+              b: 'c',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b: 'c',
+              c: 'b',
+            }
+          `,
+        })
+      })
+
+      it('allows sorting by value through custom groups', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  selector: 'property',
+                  groupName: 'group',
+                  sortBy: 'value',
+                },
+              ],
+              groups: ['group'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'c', left: 'b' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              c: 'b',
+              b: 'c',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b: 'c',
+              c: 'b',
+            }
+          `,
+        })
+      })
+
+      it('allows fallback sorting by value', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              fallbackSort: {
+                type: 'alphabetical',
+                sortBy: 'value',
+              },
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              a: 'b',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'b',
+              a: 'a',
+            }
+          `,
+        })
+      })
+
+      it('allows fallback sorting by value through overriding groups', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              groups: [
+                {
+                  fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+                  group: 'property',
+                  sortBy: 'value',
+                },
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              a: 'b',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'b',
+              a: 'a',
+            }
+          `,
+        })
+      })
+
+      it('allows fallback sorting by value through custom groups', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+                  selector: 'property',
+                  groupName: 'group',
+                },
+              ],
+              groups: ['group'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              a: 'b',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'b',
+              a: 'a',
+            }
+          `,
+        })
+      })
+    })
   })
 
   describe('natural', () => {
@@ -6728,6 +7080,211 @@ describe('sort-objects', () => {
             b,
           }
         `,
+      })
+    })
+
+    describe('sortBy', () => {
+      it('allows sorting by value', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'c', left: 'b' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              c: 'b',
+              b: 'c',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b: 'c',
+              c: 'b',
+            }
+          `,
+          options: [
+            {
+              ...options,
+              sortBy: 'value',
+            },
+          ],
+        })
+      })
+
+      it('allows sorting by value through overriding groups', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'c', left: 'b' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [{ group: 'property', sortBy: 'value' }],
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              c: 'b',
+              b: 'c',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b: 'c',
+              c: 'b',
+            }
+          `,
+        })
+      })
+
+      it('allows sorting by value through custom groups', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  selector: 'property',
+                  groupName: 'group',
+                  sortBy: 'value',
+                },
+              ],
+              groups: ['group'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'c', left: 'b' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              c: 'b',
+              b: 'c',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b: 'c',
+              c: 'b',
+            }
+          `,
+        })
+      })
+
+      it('allows fallback sorting by value', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              fallbackSort: {
+                type: 'alphabetical',
+                sortBy: 'value',
+              },
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              a: 'b',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'b',
+              a: 'a',
+            }
+          `,
+        })
+      })
+
+      it('allows fallback sorting by value through overriding groups', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              groups: [
+                {
+                  fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+                  group: 'property',
+                  sortBy: 'value',
+                },
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              a: 'b',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'b',
+              a: 'a',
+            }
+          `,
+        })
+      })
+
+      it('allows fallback sorting by value through custom groups', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+                  selector: 'property',
+                  groupName: 'group',
+                },
+              ],
+              groups: ['group'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              a: 'b',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'b',
+              a: 'a',
+            }
+          `,
+        })
       })
     })
   })
@@ -9377,6 +9934,37 @@ describe('sort-objects', () => {
         `,
       })
     })
+
+    it('sorts as usual by line-length when using sortBy: value', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        output: dedent`
+          let obj = {
+            b: 'aaaa',
+            aa: 'c',
+            c: 'b',
+          }
+        `,
+        code: dedent`
+          let obj = {
+            aa: 'c',
+            c: 'b',
+            b: 'aaaa',
+          }
+        `,
+        options: [
+          {
+            ...options,
+            sortBy: 'value',
+          },
+        ],
+      })
+    })
   })
 
   describe('custom', () => {
@@ -9427,6 +10015,211 @@ describe('sort-objects', () => {
           },
         ],
         options: [options],
+      })
+    })
+
+    describe('sortBy', () => {
+      it('allows sorting by value', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'c', left: 'b' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              c: 'b',
+              b: 'c',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b: 'c',
+              c: 'b',
+            }
+          `,
+          options: [
+            {
+              ...options,
+              sortBy: 'value',
+            },
+          ],
+        })
+      })
+
+      it('allows sorting by value through overriding groups', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'c', left: 'b' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [{ group: 'property', sortBy: 'value' }],
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              c: 'b',
+              b: 'c',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b: 'c',
+              c: 'b',
+            }
+          `,
+        })
+      })
+
+      it('allows sorting by value through custom groups', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  selector: 'property',
+                  groupName: 'group',
+                  sortBy: 'value',
+                },
+              ],
+              groups: ['group'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'c', left: 'b' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              c: 'b',
+              b: 'c',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b: 'c',
+              c: 'b',
+            }
+          `,
+        })
+      })
+
+      it('allows fallback sorting by value', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              fallbackSort: {
+                type: 'alphabetical',
+                sortBy: 'value',
+              },
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              a: 'b',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'b',
+              a: 'a',
+            }
+          `,
+        })
+      })
+
+      it('allows fallback sorting by value through overriding groups', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              groups: [
+                {
+                  fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+                  group: 'property',
+                  sortBy: 'value',
+                },
+              ],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              a: 'b',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'b',
+              a: 'a',
+            }
+          `,
+        })
+      })
+
+      it('allows fallback sorting by value through custom groups', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+                  selector: 'property',
+                  groupName: 'group',
+                },
+              ],
+              groups: ['group'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: 'a',
+              a: 'b',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'b',
+              a: 'a',
+            }
+          `,
+        })
       })
     })
   })
@@ -9534,6 +10327,24 @@ describe('sort-objects', () => {
             aa,
           }
         `,
+      })
+    })
+
+    it('does not enforce sorting with sortBy: value', async () => {
+      await valid({
+        code: dedent`
+          let obj = {
+            b,
+            c,
+            a,
+          }
+        `,
+        options: [
+          {
+            ...options,
+            sortBy: 'value',
+          },
+        ],
       })
     })
   })

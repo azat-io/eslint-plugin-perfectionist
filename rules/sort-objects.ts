@@ -39,11 +39,11 @@ import {
 } from '../utils/json-schemas/common-json-schemas'
 import { computePropertyOrVariableDeclaratorName } from './sort-objects/compute-property-or-variable-declarator-name'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { computeMatchedContextOptions } from './sort-objects/compute-matched-context-options'
+import { comparatorByOptionsComputer } from './sort-objects/comparator-by-options-computer'
 import { scopedRegexJsonSchema } from '../utils/json-schemas/scoped-regex-json-schema'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -167,6 +167,13 @@ export default createEslintRule<Options, MessageId>({
             ...new Set(extractNamesFromPattern(property.value)),
           ]
         }
+
+        let value = computeNodeValue({
+          isDestructuredObject,
+          sourceCode,
+          property,
+        })
+
         let predefinedGroups = generatePredefinedGroups({
           cache: cachedGroupsByModifiersAndSelectors,
           selectors,
@@ -175,10 +182,7 @@ export default createEslintRule<Options, MessageId>({
         let group = computeGroup({
           customGroupMatcher: customGroup =>
             doesCustomGroupMatch({
-              elementValue: getNodeValue({
-                sourceCode,
-                property,
-              }),
+              elementValue: value,
               elementName: name,
               customGroup,
               selectors,
@@ -192,6 +196,7 @@ export default createEslintRule<Options, MessageId>({
           isEslintDisabled: isNodeEslintDisabled(property, eslintDisabledLines),
           dependencies: computeDependencies(property),
           size: rangeToDiff(property, sourceCode),
+          value: value ?? '',
           dependencyNames,
           node: property,
           group,
@@ -236,7 +241,7 @@ export default createEslintRule<Options, MessageId>({
       ): SortObjectsSortingNode[] {
         let nodesSortedByGroups = sortingNodeGroups.flatMap(nodes =>
           sortNodesByGroups({
-            comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+            comparatorByOptionsComputer,
             optionsByGroupIndexComputer,
             ignoreEslintDisabledNodes,
             groups: options.groups,
@@ -361,18 +366,22 @@ function extractNamesFromPattern(pattern: TSESTree.Node): string[] {
   }
 }
 
-function getNodeValue({
+function computeNodeValue({
+  isDestructuredObject,
   sourceCode,
   property,
 }: {
   sourceCode: TSESLint.SourceCode
+  isDestructuredObject: boolean
   property: TSESTree.Property
 }): string | null {
   switch (property.value.type) {
     case AST_NODE_TYPES.ArrowFunctionExpression:
     case AST_NODE_TYPES.FunctionExpression:
       return null
+    case AST_NODE_TYPES.AssignmentPattern:
+      return sourceCode.getText(property.value.right)
     default:
-      return sourceCode.getText(property.value)
+      return isDestructuredObject ? null : sourceCode.getText(property.value)
   }
 }

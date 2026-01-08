@@ -93,8 +93,13 @@ export type Options = Partial<
   >
 >[]
 
-export type SortObjectsSortingNode =
-  SortingNodeWithDependencies<SortObjectsNode>
+export type SortObjectsSortingNode = {
+  /**
+   * The string representation of the property's value. Used when sorting by
+   * value instead of name.
+   */
+  value: string
+} & SortingNodeWithDependencies<SortObjectsNode>
 
 export type SortObjectsNode = TSESTree.Property
 
