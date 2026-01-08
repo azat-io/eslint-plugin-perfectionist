@@ -18,7 +18,6 @@ export let comparatorByOptionsComputer: ComparatorByOptionsComputer<
   switch (options.type) {
     case 'type-import-first':
       return (a, b) => compareTypeImportFirst(a, b, options)
-    /* v8 ignore next -- @preserve Untested for now as not a relevant sort for this rule. */
     case 'subgroup-order':
     case 'alphabetical':
     case 'line-length':
