@@ -4230,6 +4230,111 @@ describe('sort-maps', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+        order: 'asc',
+      },
+      type: 'line-length',
+      order: 'desc',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: [['a', 'b'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedMapElementsOrder',
+            data: { right: 'bb', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedMapElementsOrder',
+            data: { right: 'aa', left: 'a' },
+          },
+        ],
+        output: dedent`
+          new Map([
+            [aa, aa],
+            [bb, bb],
+            [a, a],
+            [b, b],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [b, b],
+            [bb, bb],
+            [a, a],
+            [aa, aa],
+          ])
+        `,
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: [{ group: ['a', 'b'], newlinesInside: 0 }, 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedMapElementsOrder',
+            data: { right: 'bb', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedMapElementsOrder',
+            data: { right: 'aa', left: 'a' },
+          },
+        ],
+        output: dedent`
+          new Map([
+            [aa, aa],
+            [bb, bb],
+            [a, a],
+            [b, b],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [b, b],
+            [bb, bb],
+            [a, a],
+            [aa, aa],
+          ])
+        `,
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let options = {
       type: 'unsorted',

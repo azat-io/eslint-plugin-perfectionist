@@ -4412,6 +4412,111 @@ describe('sort-named-imports', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+        order: 'asc',
+      },
+      type: 'line-length',
+      order: 'desc',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: [['a', 'b'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedNamedImportsOrder',
+            data: { right: 'bb', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedNamedImportsOrder',
+            data: { right: 'aa', left: 'a' },
+          },
+        ],
+        output: dedent`
+          import {
+            aa,
+            bb,
+            a,
+            b,
+          } from 'module'
+        `,
+        code: dedent`
+          import {
+            b,
+            bb,
+            a,
+            aa,
+          } from 'module'
+        `,
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: [{ group: ['a', 'b'], newlinesInside: 0 }, 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedNamedImportsOrder',
+            data: { right: 'bb', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedNamedImportsOrder',
+            data: { right: 'aa', left: 'a' },
+          },
+        ],
+        output: dedent`
+          import {
+            aa,
+            bb,
+            a,
+            b,
+          } from 'module'
+        `,
+        code: dedent`
+          import {
+            b,
+            bb,
+            a,
+            aa,
+          } from 'module'
+        `,
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let options = {
       type: 'unsorted',

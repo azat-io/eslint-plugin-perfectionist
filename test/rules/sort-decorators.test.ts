@@ -5303,6 +5303,203 @@ describe('sort-decorators', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+        order: 'asc',
+      },
+      type: 'line-length',
+      order: 'desc',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        output: dedent`
+          @AA
+          @BB
+          @A
+          @B
+          class Class {
+
+            @AA
+            @BB
+            @A
+            @B
+            property
+
+            @AA
+            @BB
+            @A
+            @B
+            accessor field
+
+            @AA
+            @BB
+            @A
+            @B
+            method(
+              @AA
+              @BB
+              @A
+              @B
+              parameter) {}
+          }
+        `,
+        code: dedent`
+          @B
+          @BB
+          @A
+          @AA
+          class Class {
+
+            @B
+            @BB
+            @A
+            @AA
+            property
+
+            @B
+            @BB
+            @A
+            @AA
+            accessor field
+
+            @B
+            @BB
+            @A
+            @AA
+            method(
+              @B
+              @BB
+              @A
+              @AA
+              parameter) {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'A',
+              },
+              {
+                elementNamePattern: 'B',
+                groupName: 'B',
+              },
+            ],
+            groups: [['A', 'B'], 'unknown'],
+          },
+        ],
+        errors: duplicate5Times([
+          {
+            messageId: 'unexpectedDecoratorsOrder',
+            data: { right: 'BB', left: 'B' },
+          },
+          {
+            messageId: 'unexpectedDecoratorsOrder',
+            data: { right: 'AA', left: 'A' },
+          },
+        ]),
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        output: dedent`
+          @AA
+          @BB
+          @A
+          @B
+          class Class {
+
+            @AA
+            @BB
+            @A
+            @B
+            property
+
+            @AA
+            @BB
+            @A
+            @B
+            accessor field
+
+            @AA
+            @BB
+            @A
+            @B
+            method(
+              @AA
+              @BB
+              @A
+              @B
+              parameter) {}
+          }
+        `,
+        code: dedent`
+          @B
+          @BB
+          @A
+          @AA
+          class Class {
+
+            @B
+            @BB
+            @A
+            @AA
+            property
+
+            @B
+            @BB
+            @A
+            @AA
+            accessor field
+
+            @B
+            @BB
+            @A
+            @AA
+            method(
+              @B
+              @BB
+              @A
+              @AA
+              parameter) {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'A',
+              },
+              {
+                elementNamePattern: 'B',
+                groupName: 'B',
+              },
+            ],
+            groups: [{ group: ['A', 'B'], newlinesInside: 0 }, 'unknown'],
+          },
+        ],
+        errors: duplicate5Times([
+          {
+            messageId: 'unexpectedDecoratorsOrder',
+            data: { right: 'BB', left: 'B' },
+          },
+          {
+            messageId: 'unexpectedDecoratorsOrder',
+            data: { right: 'AA', left: 'A' },
+          },
+        ]),
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let options = {
       type: 'unsorted',

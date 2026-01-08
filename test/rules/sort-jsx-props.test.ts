@@ -3983,6 +3983,111 @@ describe('sort-jsx-props', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+        order: 'asc',
+      },
+      type: 'line-length',
+      order: 'desc',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: [['a', 'b'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'bb', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'aa', left: 'a' },
+          },
+        ],
+        output: dedent`
+          <Component
+            aa
+            bb
+            a
+            b
+          />
+        `,
+        code: dedent`
+          <Component
+            b
+            bb
+            a
+            aa
+          />
+        `,
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: [{ group: ['a', 'b'], newlinesInside: 0 }, 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'bb', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'aa', left: 'a' },
+          },
+        ],
+        output: dedent`
+          <Component
+            aa
+            bb
+            a
+            b
+          />
+        `,
+        code: dedent`
+          <Component
+            b
+            bb
+            a
+            aa
+          />
+        `,
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let options = {
       type: 'unsorted',
