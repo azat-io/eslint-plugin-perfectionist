@@ -1,5 +1,17 @@
 # Changelog
 
+## v5.3.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.3.0...v5.3.1)
+
+### 🐞 Bug Fixes
+
+- Align plugin configs typing with eslint ([7c44de3](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7c44de3))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](https://github.com/azat-io))
+
 ## v5.3.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.2.0...v5.3.0)

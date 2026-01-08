@@ -24,7 +24,10 @@ import sortEnums from './rules/sort-enums'
 import sortMaps from './rules/sort-maps'
 import sortSets from './rules/sort-sets'
 
-interface PluginConfigs {
+interface PluginConfigs extends Record<
+  string,
+  Linter.LegacyConfig | Linter.Config[] | Linter.Config
+> {
   'recommended-alphabetical-legacy': Linter.LegacyConfig
   'recommended-line-length-legacy': Linter.LegacyConfig
   'recommended-natural-legacy': Linter.LegacyConfig
