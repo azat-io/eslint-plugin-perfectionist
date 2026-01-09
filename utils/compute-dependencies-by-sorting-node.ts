@@ -6,13 +6,20 @@ import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 import { computeDeepScopeReferences } from './compute-deep-scope-references'
 import { rangeContainsRange } from './range-contains-range'
 
+export type ShouldIgnoreIdentifierComputer<T> = (parameters: {
+  identifier: TSESTree.JSXIdentifier | TSESTree.Identifier
+  referencingSortingNode: T
+}) => boolean
+
 export function computeDependenciesBySortingNode<
   Node extends TSESTree.Node,
   T extends Pick<SortingNodeWithDependencies<Node>, 'dependencyNames' | 'node'>,
 >({
+  shouldIgnoreIdentifierComputer,
   sortingNodes,
   sourceCode,
 }: {
+  shouldIgnoreIdentifierComputer?: ShouldIgnoreIdentifierComputer<T>
   sourceCode: TSESLint.SourceCode
   sortingNodes: T[]
 }): Map<T, T[]> {
@@ -41,8 +48,10 @@ export function computeDependenciesBySortingNode<
 
     referencedNodes.push(
       ...computeMainIdentifierDependencies({
+        shouldIgnoreIdentifierComputer,
         referencingSortingNode,
         sortingNodes,
+        identifier,
         resolved,
       }),
     )
@@ -55,14 +64,27 @@ function computeMainIdentifierDependencies<
   Node extends TSESTree.Node,
   T extends Pick<SortingNodeWithDependencies<Node>, 'node'>,
 >({
+  shouldIgnoreIdentifierComputer,
   referencingSortingNode,
   sortingNodes,
+  identifier,
   resolved,
 }: {
+  shouldIgnoreIdentifierComputer: ShouldIgnoreIdentifierComputer<T> | undefined
+  identifier: TSESTree.JSXIdentifier | TSESTree.Identifier
   resolved: TSESLint.Scope.Variable
   referencingSortingNode: T
   sortingNodes: T[]
 }): T[] {
+  if (
+    shouldIgnoreIdentifierComputer?.({
+      referencingSortingNode,
+      identifier,
+    })
+  ) {
+    return []
+  }
+
   let [firstIdentifier] = resolved.identifiers
   if (!firstIdentifier) {
     return []
