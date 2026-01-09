@@ -8209,6 +8209,96 @@ describe('sort-modules', () => {
       })
     })
 
+    it('supports fallbackSort', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            fallbackSort: {
+              type: 'alphabetical',
+            },
+            type: 'usage',
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        output: dedent`
+          type A = 'a';
+          type B = 'b';
+          type C = A | B;
+        `,
+        code: dedent`
+          type B = 'b';
+          type A = 'a';
+          type C = A | B;
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            fallbackSort: {
+              type: 'alphabetical',
+            },
+            type: 'usage',
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'C' },
+          },
+        ],
+        output: dedent`
+          type A = 'a';
+          type C = 'c';
+          type B = A | C;
+        `,
+        code: dedent`
+          type C = 'c';
+          type A = 'a';
+          type B = A | C;
+        `,
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'C', left: 'B' },
+          },
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'C' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            fallbackSort: {
+              type: 'alphabetical',
+            },
+            type: 'usage',
+          },
+        ],
+        output: dedent`
+          type A = 'a';
+          type C = 'c';
+          type B = A | C;
+        `,
+        code: dedent`
+          type B = A | C;
+          type C = 'c';
+          type A = 'a';
+        `,
+      })
+    })
+
     it('detects and handles circular dependencies', async () => {
       await valid({
         code: dedent`
