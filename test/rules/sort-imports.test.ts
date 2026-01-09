@@ -2931,97 +2931,229 @@ describe('sort-imports', () => {
       })
     })
 
-    it('detects TypeScript import-equals dependencies', async () => {
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
-            messageId: 'unexpectedImportsDependencyOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        output: dedent`
-          import { aImport } from "b";
-          import a = aImport.a1.a2;
-        `,
-        code: dedent`
-          import a = aImport.a1.a2;
-          import { aImport } from "b";
-        `,
+    describe('legacy dependency detection', () => {
+      it('ignores dependencies in require', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            import { a } from "a";
+            import b = require("a")
+          `,
+        })
       })
 
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
-            messageId: 'unexpectedImportsDependencyOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        output: dedent`
-          import * as aImport from "b";
-          import a = aImport.a1.a2;
-        `,
-        code: dedent`
-          import a = aImport.a1.a2;
-          import * as aImport from "b";
-        `,
+      it('ignores dependencies in variable declarations', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            const { a } = require('b')
+            const { b } = require('b')
+          `,
+        })
       })
 
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
-            messageId: 'unexpectedImportsDependencyOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        output: dedent`
-          import aImport from "b";
-          import a = aImport.a1.a2;
-        `,
-        code: dedent`
-          import a = aImport.a1.a2;
-          import aImport from "b";
-        `,
-      })
+      it('detects TypeScript import-equals dependencies', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+              messageId: 'unexpectedImportsDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            import { aImport } from "b";
+            import a = aImport.a1.a2;
+          `,
+          code: dedent`
+            import a = aImport.a1.a2;
+            import { aImport } from "b";
+          `,
+        })
 
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
-            messageId: 'unexpectedImportsDependencyOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        output: dedent`
-          import aImport = require("b")
-          import a = aImport.a1.a2;
-        `,
-        code: dedent`
-          import a = aImport.a1.a2;
-          import aImport = require("b")
-        `,
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+              messageId: 'unexpectedImportsDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            import * as aImport from "b";
+            import a = aImport.a1.a2;
+          `,
+          code: dedent`
+            import a = aImport.a1.a2;
+            import * as aImport from "b";
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+              messageId: 'unexpectedImportsDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            import aImport from "b";
+            import a = aImport.a1.a2;
+          `,
+          code: dedent`
+            import a = aImport.a1.a2;
+            import aImport from "b";
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+              messageId: 'unexpectedImportsDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            import aImport = require("b")
+            import a = aImport.a1.a2;
+          `,
+          code: dedent`
+            import a = aImport.a1.a2;
+            import aImport = require("b")
+          `,
+        })
+      })
+    })
+
+    describe('dependency detection', () => {
+      it('detects TypeScript import-equals dependencies', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+              messageId: 'unexpectedImportsDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            import { aImport } from "b";
+            import a = aImport.a1.a2;
+          `,
+          code: dedent`
+            import a = aImport.a1.a2;
+            import { aImport } from "b";
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+              messageId: 'unexpectedImportsDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            import * as aImport from "b";
+            import a = aImport.a1.a2;
+          `,
+          code: dedent`
+            import a = aImport.a1.a2;
+            import * as aImport from "b";
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+              messageId: 'unexpectedImportsDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            import aImport from "b";
+            import a = aImport.a1.a2;
+          `,
+          code: dedent`
+            import a = aImport.a1.a2;
+            import aImport from "b";
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'aImport.a1.a2', right: 'b' },
+              messageId: 'unexpectedImportsDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            import aImport = require("b")
+            import a = aImport.a1.a2;
+          `,
+          code: dedent`
+            import a = aImport.a1.a2;
+            import aImport = require("b")
+          `,
+        })
       })
     })
 
