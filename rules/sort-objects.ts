@@ -48,6 +48,7 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { computeDependencies } from './sort-objects/compute-dependencies'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
@@ -124,96 +125,6 @@ export default createEslintRule<Options, MessageId>({
       let optionsByGroupIndexComputer =
         buildOptionsByGroupIndexComputer(options)
 
-      function extractDependencies(init: TSESTree.Expression): string[] {
-        let dependencies: string[] = []
-
-        function checkNode(nodeValue: TSESTree.Node): void {
-          /** No need to check the body of functions and arrow functions. */
-          if (
-            nodeValue.type === AST_NODE_TYPES.ArrowFunctionExpression ||
-            nodeValue.type === AST_NODE_TYPES.FunctionExpression
-          ) {
-            return
-          }
-
-          if (nodeValue.type === AST_NODE_TYPES.Identifier) {
-            dependencies.push(nodeValue.name)
-          }
-
-          if (nodeValue.type === AST_NODE_TYPES.Property) {
-            traverseNode(nodeValue.key)
-            traverseNode(nodeValue.value)
-          }
-
-          if (nodeValue.type === AST_NODE_TYPES.ConditionalExpression) {
-            traverseNode(nodeValue.test)
-            traverseNode(nodeValue.consequent)
-            traverseNode(nodeValue.alternate)
-          }
-
-          if (
-            'expression' in nodeValue &&
-            typeof nodeValue.expression !== 'boolean'
-          ) {
-            traverseNode(nodeValue.expression)
-          }
-
-          if ('object' in nodeValue) {
-            traverseNode(nodeValue.object)
-          }
-
-          if ('callee' in nodeValue) {
-            traverseNode(nodeValue.callee)
-          }
-
-          if ('left' in nodeValue) {
-            traverseNode(nodeValue.left)
-          }
-
-          if ('right' in nodeValue) {
-            traverseNode(nodeValue.right)
-          }
-
-          if ('elements' in nodeValue) {
-            let elements = nodeValue.elements.filter(
-              currentNode => currentNode !== null,
-            )
-
-            for (let element of elements) {
-              traverseNode(element)
-            }
-          }
-
-          if ('argument' in nodeValue && nodeValue.argument) {
-            traverseNode(nodeValue.argument)
-          }
-
-          if ('arguments' in nodeValue) {
-            for (let argument of nodeValue.arguments) {
-              traverseNode(argument)
-            }
-          }
-
-          if ('properties' in nodeValue) {
-            for (let property of nodeValue.properties) {
-              traverseNode(property)
-            }
-          }
-
-          if ('expressions' in nodeValue) {
-            for (let nodeExpression of nodeValue.expressions) {
-              traverseNode(nodeExpression)
-            }
-          }
-        }
-
-        function traverseNode(nodeValue: TSESTree.Node): void {
-          checkNode(nodeValue)
-        }
-
-        traverseNode(init)
-        return dependencies
-      }
       function formatProperties(
         props: (
           | TSESTree.ObjectLiteralElement
@@ -233,14 +144,8 @@ export default createEslintRule<Options, MessageId>({
 
             let lastSortingNode = accumulator.at(-1)?.at(-1)
 
-            let dependencies: string[] = []
-
             let selectors: Selector[] = []
             let modifiers: Modifier[] = []
-
-            if (property.value.type === AST_NODE_TYPES.AssignmentPattern) {
-              dependencies = extractDependencies(property.value.right)
-            }
 
             if (
               property.value.type === AST_NODE_TYPES.ArrowFunctionExpression ||
@@ -293,10 +198,10 @@ export default createEslintRule<Options, MessageId>({
                 property,
                 eslintDisabledLines,
               ),
+              dependencies: computeDependencies(property),
               size: rangeToDiff(property, sourceCode),
               dependencyNames,
               node: property,
-              dependencies,
               group,
               name,
             }
@@ -322,9 +227,9 @@ export default createEslintRule<Options, MessageId>({
           [[]],
         )
       }
-      let formattedMembers = formatProperties(nodeObject.properties)
 
-      let nodes = formattedMembers.flat()
+      let sortingNodeGroups = formatProperties(nodeObject.properties)
+      let sortingNodes = sortingNodeGroups.flat()
 
       reportAllErrors<MessageId>({
         availableMessageIds: {
@@ -335,15 +240,15 @@ export default createEslintRule<Options, MessageId>({
           unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
+        nodes: sortingNodes,
         options,
         context,
-        nodes,
       })
 
       function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
       ): SortObjectsSortingNode[] {
-        let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
+        let nodesSortedByGroups = sortingNodeGroups.flatMap(nodes =>
           sortNodesByGroups({
             comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
             optionsByGroupIndexComputer,
