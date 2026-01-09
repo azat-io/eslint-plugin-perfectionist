@@ -714,6 +714,15 @@ you must write a custom group definition that does the same as what the predefin
 
 Specifies which environment’s built-in modules should be recognized. If you are using [Bun](https://bun.sh), change the value to `'bun'`.
 
+### useExperimentalDependencyDetection
+
+<sub>default: `true`</sub>
+
+Specifies whether to use a new experimental dependency detection logic, with reduced false positives.
+
+- `true` — Use the new experimental dependency detection logic.
+- `false` — Use the legacy dependency detection logic.
+
 ## Usage
 
 <CodeTabs
@@ -756,6 +765,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                   ],
                   customGroups: [],
                   environment: 'node',
+                  useExperimentalDependencyDetection: true,
                 },
               ],
             },
@@ -800,6 +810,7 @@ Specifies which environment’s built-in modules should be recognized. If you ar
                 ],
                 customGroups: [],
                 environment: 'node',
+                useExperimentalDependencyDetection: true,
               },
             ],
           },

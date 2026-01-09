@@ -33,6 +33,9 @@ export type Options = Partial<
       rootDir: string
     }
 
+    /** Enables experimental dependency detection. */
+    useExperimentalDependencyDetection: boolean
+
     /**
      * Patterns to identify internal imports. Imports matching these patterns
      * are categorized as 'internal'.
