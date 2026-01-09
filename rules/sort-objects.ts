@@ -13,6 +13,7 @@ import type {
 
 import {
   additionalCustomGroupMatchOptionsJsonSchema,
+  additionalSortOptionsJsonSchema,
   DEPENDENCY_ORDER_ERROR_ID,
   MISSED_SPACING_ERROR_ID,
   EXTRA_SPACING_ERROR_ID,
@@ -80,6 +81,7 @@ let defaultOptions: Required<Options[number]> = {
   ignoreCase: true,
   customGroups: [],
   locales: 'en-US',
+  sortBy: 'name',
   alphabet: '',
   order: 'asc',
   groups: [],
@@ -257,10 +259,13 @@ export default createEslintRule<Options, MessageId>({
     schema: {
       items: {
         properties: {
-          ...buildCommonJsonSchemas(),
+          ...buildCommonJsonSchemas({
+            additionalSortProperties: additionalSortOptionsJsonSchema,
+          }),
           ...buildCommonGroupsJsonSchemas({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
+            additionalSortProperties: additionalSortOptionsJsonSchema,
           }),
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {

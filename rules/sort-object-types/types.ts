@@ -147,11 +147,7 @@ export let allModifiers = ['optional', 'required', 'multiline'] as const
 const SORT_BY_OPTION = ['name', 'value'] as const
 type SortByOption = (typeof SORT_BY_OPTION)[number]
 
-/**
- * JSON Schema definition for the sortBy configuration option.
- *
- * Validates the sortBy parameter in ESLint rule configuration.
- */
+/** Additional sort options JSON schema, used by ESLint to validate rule options. */
 export let additionalSortOptionsJsonSchema: Record<string, JSONSchema4> = {
   sortBy: {
     enum: [...SORT_BY_OPTION],
