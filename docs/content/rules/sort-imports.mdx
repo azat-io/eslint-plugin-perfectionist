@@ -174,9 +174,9 @@ Example:
 }
 ```
 
-You can also sort by subgroup order inside composite groups using `subgroup-order`.
+You can also sort by subgroup order (nested groups in the [`groups`](#groups) option) using `subgroup-order`.
 
-Example: When two imports tie on the primary sort key, sort type imports before value imports inside a composite group.
+Example: When two imports tie on the primary sort key, sort type imports before value imports inside a subgroup.
 ```ts
 {
   groups: [['type-import', 'value-import']],

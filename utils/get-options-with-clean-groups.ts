@@ -20,7 +20,7 @@ interface GetOptionsWithCleanGroupsParameters<CustomTypeOption extends string> {
  *
  * - Removes empty arrays (they serve no purpose in grouping)
  * - Converts single-element arrays to plain strings (simplifies structure)
- * - Preserves multi-element arrays as-is (maintains composite groups).
+ * - Preserves multi-element arrays as-is (maintains subgroups).
  *
  * This normalization ensures consistent group handling and eliminates
  * unnecessary complexity in the configuration.

@@ -104,7 +104,7 @@ export type GroupWithOverridesOption<
   /** Specify the exact number of newlines required inside the group. */
   newlinesInside?: NewlinesInsideOption
 
-  /** Name of the group or array of group names for composite groups. */
+  /** Name of the group or array of group names for subgroups. */
   group: string[] | string
 
   /**
@@ -178,8 +178,8 @@ export type NewlinesBetweenOption =
  * Configuration for organizing elements into groups with optional formatting.
  *
  * Supports flexible group definitions including simple group names, arrays of
- * group names for composite groups, and special configuration objects for
- * controlling newlines and comments between groups.
+ * group names for subgroups, and special configuration objects for controlling
+ * newlines and comments between groups.
  *
  * @example
  *   const groups: GroupsOptions<'imports' | 'types' | 'components'> = [
@@ -187,7 +187,7 @@ export type NewlinesBetweenOption =
  *     { newlinesBetween: 1 },
  *     'types',
  *     { group: 'components', commentAbove: '// Components' }, // Object-based group
- *     ['services', 'hooks'], // Composite group
+ *     ['services', 'hooks'], // Subgroup
  *     { newlinesBetween: 2 },
  *     'utils',
  *   ]

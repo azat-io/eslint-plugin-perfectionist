@@ -15,9 +15,9 @@ type Group = GroupsOptions[number]
  * Determines the index of the group that a node belongs to.
  *
  * Searches through the groups array to find which group contains the node.
- * Supports simple groups (string), composite groups (array of strings) and
- * objects containing a `group` property. For composite groups, the node matches
- * if its group is any element in the array.
+ * Supports simple groups (string), subgroups (array of strings) and objects
+ * containing a `group` property. For subgroups, the node matches if its group
+ * is any element in the array.
  *
  * The function returns the index of the matching group. If no group matches, it
  * returns the length of the groups array, which conventionally represents the
@@ -30,7 +30,7 @@ type Group = GroupsOptions[number]
  *   const node3 = { group: 'unknown-group', name: 'misc' }
  *
  *   getGroupIndex(groups, node1) // Returns: 0
- *   getGroupIndex(groups, node2) // Returns: 1 (matches composite group)
+ *   getGroupIndex(groups, node2) // Returns: 1 (matches subgroup)
  *   getGroupIndex(groups, node3) // Returns: 3 (groups.length, unknown group)
  *
  * @param groups - Array of group configurations (strings or arrays of strings).
