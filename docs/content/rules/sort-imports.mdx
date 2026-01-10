@@ -165,11 +165,24 @@ Example: enforce alphabetical sort between two elements with the same length.
 When importing a type and value import from the same module, you can enforce the order between them using the
 `type-import-first` option.
 
+Example:
 ```ts
 {
   type: 'alphabetical',
   order: 'desc',
   fallbackSort: { type: 'type-import-first', order: 'asc' } // The type import will come before its value import
+}
+```
+
+You can also sort by subgroup order inside composite groups using `subgroup-order`.
+
+Example: When two imports tie on the primary sort key, sort type imports before value imports inside a composite group.
+```ts
+{
+  groups: [['type-import', 'value-import']],
+  type: 'alphabetical',
+  order: 'desc',
+  fallbackSort: { type: 'subgroup-order', order: 'asc' }
 }
 ```
 
