@@ -4366,6 +4366,84 @@ describe('sort-exports', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+      },
+      type: 'alphabetical',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          export type { a } from 'a'
+          export { a } from 'a'
+          export type { b } from 'b'
+          export { b } from 'b'
+        `,
+        code: dedent`
+          export { b } from 'b'
+          export { a } from 'a'
+          export type { b } from 'b'
+          export type { a } from 'a'
+        `,
+        options: [
+          {
+            ...options,
+            groups: [['type-export', 'value-export'], 'unknown'],
+          },
+        ],
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: [
+              { group: ['type-export', 'value-export'], newlinesInside: 0 },
+              'unknown',
+            ],
+          },
+        ],
+        output: dedent`
+          export type { a } from 'a'
+          export { a } from 'a'
+          export type { b } from 'b'
+          export { b } from 'b'
+        `,
+        code: dedent`
+          export { b } from 'b'
+          export { a } from 'a'
+          export type { b } from 'b'
+          export type { a } from 'a'
+        `,
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let options = {
       type: 'unsorted',

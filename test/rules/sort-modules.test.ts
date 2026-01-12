@@ -8058,6 +8058,84 @@ describe('sort-modules', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+      },
+      type: 'alphabetical',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          type a = typeof a
+          function a() {}
+          type b = typeof b
+          function b() {}
+        `,
+        code: dedent`
+          function b() {}
+          function a() {}
+          type b = typeof b
+          type a = typeof a
+        `,
+        options: [
+          {
+            ...options,
+            groups: [['type', 'function'], 'unknown'],
+          },
+        ],
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: [
+              { group: ['type', 'function'], newlinesInside: 0 },
+              'unknown',
+            ],
+          },
+        ],
+        output: dedent`
+          type a = typeof a
+          function a() {}
+          type b = typeof b
+          function b() {}
+        `,
+        code: dedent`
+          function b() {}
+          function a() {}
+          type b = typeof b
+          type a = typeof a
+        `,
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let options = {
       type: 'unsorted',

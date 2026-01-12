@@ -7693,6 +7693,111 @@ describe('sort-interfaces', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+        order: 'asc',
+      },
+      type: 'line-length',
+      order: 'desc',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: [['a', 'b'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bb', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'aa', left: 'a' },
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            aa: string;
+            bb: string;
+            a: string;
+            b: string;
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            b: string;
+            bb: string;
+            a: string;
+            aa: string;
+          }
+        `,
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: [{ group: ['a', 'b'], newlinesInside: 0 }, 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'bb', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'aa', left: 'a' },
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            aa: string;
+            bb: string;
+            a: string;
+            b: string;
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            b: string;
+            bb: string;
+            a: string;
+            aa: string;
+          }
+        `,
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let options = {
       type: 'unsorted',

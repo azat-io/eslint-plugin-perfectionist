@@ -75,9 +75,8 @@ export function computeNodesInCircularDependencies<
         .find(currentElement =>
           currentElement.dependencyNames.includes(dependency),
         )
-      /* v8 ignore next -- @preserve Dependencies are pre-filtered; missing entries are defensive fallback. */ if (
-        dependencyElement
-      ) {
+      /* v8 ignore next -- @preserve Dependencies are pre-filtered; missing entries are defensive fallback. */
+      if (dependencyElement) {
         depthFirstSearch(dependencyElement, [...path])
       }
     }

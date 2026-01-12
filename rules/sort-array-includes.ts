@@ -23,12 +23,12 @@ import {
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import {
   additionalCustomGroupMatchOptionsJsonSchema,
   allSelectors,
 } from './sort-array-includes/types'
+import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
@@ -188,6 +188,7 @@ export function sortArray<MessageIds extends string>({
     ruleName: id,
     sourceCode,
   })
+  let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
 
   let formattedMembers: SortArrayIncludesSortingNode[][] = elements.reduce(
     (
@@ -253,9 +254,8 @@ export function sortArray<MessageIds extends string>({
   ): SortArrayIncludesSortingNode[] {
     return formattedMembers.flatMap(nodes =>
       sortNodesByGroups({
-        optionsByGroupIndexComputer:
-          buildDefaultOptionsByGroupIndexComputer(options),
         comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+        optionsByGroupIndexComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes,

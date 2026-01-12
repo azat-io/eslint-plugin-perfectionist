@@ -29,7 +29,7 @@ export const GROUP_ORDER_ERROR =
   `Expected "{{${RIGHT}}}" ({{${RIGHT_GROUP}}}) to come before "{{${LEFT}}}" ({{${LEFT_GROUP}}}).` as const
 
 export const EXTRA_SPACING_ERROR =
-  `Extra spacing between "{{${LEFT}}}" and "{{${RIGHT}}}" objects.` as const
+  `Extra spacing between "{{${LEFT}}}" and "{{${RIGHT}}}".` as const
 
 export const MISSED_SPACING_ERROR =
   `Missed spacing between "{{${LEFT}}}" and "{{${RIGHT}}}".` as const

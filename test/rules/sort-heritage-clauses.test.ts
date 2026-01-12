@@ -2125,6 +2125,111 @@ describe('sort-heritage-clauses', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+        order: 'asc',
+      },
+      type: 'line-length',
+      order: 'desc',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'A',
+              },
+              {
+                elementNamePattern: 'B',
+                groupName: 'B',
+              },
+            ],
+            groups: [['A', 'B'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedHeritageClausesOrder',
+            data: { right: 'BB', left: 'B' },
+          },
+          {
+            messageId: 'unexpectedHeritageClausesOrder',
+            data: { right: 'AA', left: 'A' },
+          },
+        ],
+        output: dedent`
+          interface Interface extends
+            AA,
+            BB,
+            A,
+            B {
+          }
+        `,
+        code: dedent`
+          interface Interface extends
+            B,
+            BB,
+            A,
+            AA {
+          }
+        `,
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'A',
+              },
+              {
+                elementNamePattern: 'B',
+                groupName: 'B',
+              },
+            ],
+            groups: [{ group: ['A', 'B'], newlinesInside: 0 }, 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedHeritageClausesOrder',
+            data: { right: 'BB', left: 'B' },
+          },
+          {
+            messageId: 'unexpectedHeritageClausesOrder',
+            data: { right: 'AA', left: 'A' },
+          },
+        ],
+        output: dedent`
+          interface Interface extends
+            AA,
+            BB,
+            A,
+            B {
+          }
+        `,
+        code: dedent`
+          interface Interface extends
+            B,
+            BB,
+            A,
+            AA {
+          }
+        `,
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let options = {
       type: 'unsorted',

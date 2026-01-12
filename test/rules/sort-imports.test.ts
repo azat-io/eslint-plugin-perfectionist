@@ -10724,6 +10724,84 @@ describe('sort-imports', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+      },
+      type: 'alphabetical',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import type { a } from 'a'
+          import { a } from 'a'
+          import type { b } from 'b'
+          import { b } from 'b'
+        `,
+        code: dedent`
+          import { b } from 'b'
+          import { a } from 'a'
+          import type { b } from 'b'
+          import type { a } from 'a'
+        `,
+        options: [
+          {
+            ...options,
+            groups: [['type-import', 'value-import'], 'unknown'],
+          },
+        ],
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: [
+              { group: ['type-import', 'value-import'], newlinesInside: 0 },
+              'unknown',
+            ],
+          },
+        ],
+        output: dedent`
+          import type { a } from 'a'
+          import { a } from 'a'
+          import type { b } from 'b'
+          import { b } from 'b'
+        `,
+        code: dedent`
+          import { b } from 'b'
+          import { a } from 'a'
+          import type { b } from 'b'
+          import type { a } from 'a'
+        `,
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let options = {
       type: 'unsorted',

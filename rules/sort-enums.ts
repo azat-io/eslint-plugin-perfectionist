@@ -16,8 +16,8 @@ import {
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { buildComparatorByOptionsComputer } from './sort-enums/build-comparator-by-options-computer'
+import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -94,6 +94,8 @@ export default createEslintRule<Options, MessageId>({
         ruleName: id,
         sourceCode,
       })
+      let optionsByGroupIndexComputer =
+        buildOptionsByGroupIndexComputer(options)
 
       function extractDependencies(
         expression: TSESTree.Expression,
@@ -201,10 +203,9 @@ export default createEslintRule<Options, MessageId>({
       ): SortEnumsSortingNode[] {
         let nodesSortedByGroups = formattedMembers.flatMap(sortingNodes =>
           sortNodesByGroups({
-            optionsByGroupIndexComputer:
-              buildDefaultOptionsByGroupIndexComputer(options),
             comparatorByOptionsComputer:
               buildComparatorByOptionsComputer(isNumericEnum),
+            optionsByGroupIndexComputer,
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes: sortingNodes,

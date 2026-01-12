@@ -105,7 +105,7 @@ Specifies whether to sort items in ascending or descending order.
   type:
   ```ts
   {
-    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted'
+    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'subgroup-order' | 'unsorted'
     order?: 'asc' | 'desc'
   }
   ```
@@ -120,6 +120,18 @@ Example: enforce alphabetical sort between two elements with the same length.
   type: 'line-length',
   order: 'desc',
   fallbackSort: { type: 'alphabetical', order: 'asc' }
+}
+```
+
+You can also sort by subgroup order (nested groups in the [`groups`](#groups) option) using `subgroup-order`.
+
+Example: When two exports tie on the primary sort key, sort type exports before value exports inside a subgroup.
+```ts
+{
+  groups: [['type-export', 'value-export']],
+  type: 'alphabetical',
+  order: 'desc',
+  fallbackSort: { type: 'subgroup-order', order: 'asc' }
 }
 ```
 

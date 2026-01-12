@@ -133,11 +133,11 @@ export function getNewlinesBetweenErrors<
       left,
     }) ?? newlinesBetween
 
-  let numberOfEmptyLinesBetween = getLinesBetween(sourceCode, left, right)
   if (newlinesBetween === 'ignore') {
     return []
   }
 
+  let numberOfEmptyLinesBetween = getLinesBetween(sourceCode, left, right)
   if (numberOfEmptyLinesBetween < newlinesBetween) {
     return [missedSpacingError]
   }

@@ -8401,6 +8401,113 @@ describe('sort-object-types', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+        order: 'asc',
+      },
+      type: 'line-length',
+      order: 'desc',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: [['a', 'b'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bb', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'aa', left: 'a' },
+          },
+        ],
+        output: dedent`
+          type Type = {
+            aa: string;
+            bb: string;
+            a: string;
+            b: string;
+          }
+
+        `,
+        code: dedent`
+          type Type = {
+            b: string;
+            bb: string;
+            a: string;
+            aa: string;
+          }
+        `,
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: [{ group: ['a', 'b'], newlinesInside: 0 }, 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'bb', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'aa', left: 'a' },
+          },
+        ],
+        output: dedent`
+          type Type = {
+            aa: string;
+            bb: string;
+            a: string;
+            b: string;
+          }
+
+        `,
+        code: dedent`
+          type Type = {
+            b: string;
+            bb: string;
+            a: string;
+            aa: string;
+          }
+        `,
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let options = {
       type: 'unsorted',

@@ -79,16 +79,18 @@ Sort direction.
   type:
   ```ts
   {
-    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted'
+    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'subgroup-order' | 'unsorted'
     order?: 'asc' | 'desc'
   }
   ```
 </sub>
 <sub>default: `{ type: 'unsorted' }`</sub>
 
-Fallback sorting used when the primary comparison results are equal.
+Specifies fallback sort options for elements that are equal according to the primary sort [`type`](#type).
 
-Example: ensure alphabetical tiebreak for equal name lengths.
+You can also sort by subgroup order (nested groups in the [`groups`](#groups) option) using `subgroup-order`.
+
+Example: enforce alphabetical sort between two elements with the same length.
 ```ts
 {
   type: 'line-length',

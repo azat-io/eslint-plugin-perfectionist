@@ -4541,6 +4541,111 @@ describe('sort-enums', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+        order: 'asc',
+      },
+      type: 'line-length',
+      order: 'desc',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'A',
+              },
+              {
+                elementNamePattern: 'B',
+                groupName: 'B',
+              },
+            ],
+            groups: [['A', 'B'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'BB', left: 'B' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'AA', left: 'A' },
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            AA = 'AA',
+            BB = 'BB',
+            A = 'A',
+            B = 'B',
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            B = 'B',
+            BB = 'BB',
+            A = 'A',
+            AA = 'AA',
+          }
+        `,
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'A',
+                groupName: 'A',
+              },
+              {
+                elementNamePattern: 'B',
+                groupName: 'B',
+              },
+            ],
+            groups: [{ group: ['A', 'B'], newlinesInside: 0 }, 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'BB', left: 'B' },
+          },
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'AA', left: 'A' },
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            AA = 'AA',
+            BB = 'BB',
+            A = 'A',
+            B = 'B',
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            B = 'B',
+            BB = 'BB',
+            A = 'A',
+            AA = 'AA',
+          }
+        `,
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let options = {
       type: 'unsorted',

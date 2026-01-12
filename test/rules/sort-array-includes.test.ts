@@ -5242,6 +5242,111 @@ describe('sort-array-includes', () => {
     })
   })
 
+  describe('subgroup-order', () => {
+    let options = {
+      fallbackSort: {
+        type: 'subgroup-order',
+        order: 'asc',
+      },
+      type: 'line-length',
+      order: 'desc',
+    }
+
+    it('fallback sorts by subgroup order', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: [['a', 'b'], 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedArrayIncludesOrder',
+            data: { right: 'bb', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedArrayIncludesOrder',
+            data: { right: 'aa', left: 'a' },
+          },
+        ],
+        output: dedent`
+          [
+            'aa',
+            'bb',
+            'a',
+            'b',
+          ].includes(value)
+        `,
+        code: dedent`
+          [
+            'b',
+            'bb',
+            'a',
+            'aa',
+          ].includes(value)
+        `,
+      })
+    })
+
+    it('fallback sorts by subgroup order through overriding groups option', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+              {
+                elementNamePattern: 'b',
+                groupName: 'b',
+              },
+            ],
+            groups: [{ group: ['a', 'b'], newlinesInside: 0 }, 'unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedArrayIncludesOrder',
+            data: { right: 'bb', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedArrayIncludesOrder',
+            data: { right: 'aa', left: 'a' },
+          },
+        ],
+        output: dedent`
+          [
+            'aa',
+            'bb',
+            'a',
+            'b',
+          ].includes(value)
+        `,
+        code: dedent`
+          [
+            'b',
+            'bb',
+            'a',
+            'aa',
+          ].includes(value)
+        `,
+      })
+    })
+  })
+
   describe('unsorted', () => {
     let unsortedOptions = {
       type: 'unsorted' as const,

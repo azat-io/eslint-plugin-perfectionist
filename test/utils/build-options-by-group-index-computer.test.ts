@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 
 import type { CommonOptions } from '../../types/common-options'
 
-import { buildDefaultOptionsByGroupIndexComputer } from '../../utils/build-default-options-by-group-index-computer'
+import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 
-describe('build-default-options-by-group-index-computer', () => {
+describe('build-options-by-group-index-computer', () => {
   let commonOptions: CommonOptions = {
     fallbackSort: {
       type: 'unsorted',
@@ -24,7 +24,7 @@ describe('build-default-options-by-group-index-computer', () => {
       groups: ['group'],
     }
     expect(
-      buildDefaultOptionsByGroupIndexComputer({
+      buildOptionsByGroupIndexComputer({
         ...commonOptions,
         ...groupOptions,
       })(0),
@@ -46,7 +46,7 @@ describe('build-default-options-by-group-index-computer', () => {
       groups: [['group']],
     }
     expect(
-      buildDefaultOptionsByGroupIndexComputer({
+      buildOptionsByGroupIndexComputer({
         ...commonOptions,
         ...groupOptions,
       })(0),
@@ -69,7 +69,7 @@ describe('build-default-options-by-group-index-computer', () => {
         groups: [{ commentAbove: 'foo', group: 'group' }],
       }
       expect(
-        buildDefaultOptionsByGroupIndexComputer({
+        buildOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
         })(0),
@@ -91,7 +91,7 @@ describe('build-default-options-by-group-index-computer', () => {
         groups: [{ commentAbove: 'foo', group: ['group'] }],
       }
       expect(
-        buildDefaultOptionsByGroupIndexComputer({
+        buildOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
         })(0),
@@ -109,7 +109,7 @@ describe('build-default-options-by-group-index-computer', () => {
       customGroups: [],
     }
     expect(
-      buildDefaultOptionsByGroupIndexComputer({
+      buildOptionsByGroupIndexComputer({
         ...commonOptions,
         ...groupOptions,
       })(0),
@@ -133,7 +133,7 @@ describe('build-default-options-by-group-index-computer', () => {
         groups: ['group'],
       }
       expect(
-        buildDefaultOptionsByGroupIndexComputer({
+        buildOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
         })(0),
@@ -160,7 +160,7 @@ describe('build-default-options-by-group-index-computer', () => {
         groups: ['group'],
       }
       expect(
-        buildDefaultOptionsByGroupIndexComputer({
+        buildOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
         })(0),
@@ -187,7 +187,7 @@ describe('build-default-options-by-group-index-computer', () => {
         groups: [{ type: 'natural' as const, group: 'group' }],
       }
       expect(
-        buildDefaultOptionsByGroupIndexComputer({
+        buildOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
         })(0),
@@ -207,7 +207,7 @@ describe('build-default-options-by-group-index-computer', () => {
         customGroups: [],
       }
       expect(
-        buildDefaultOptionsByGroupIndexComputer({
+        buildOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
         })(0),
@@ -234,7 +234,7 @@ describe('build-default-options-by-group-index-computer', () => {
         groups: [{ order: 'asc' as const, group: 'group' }],
       }
       expect(
-        buildDefaultOptionsByGroupIndexComputer({
+        buildOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
         })(0),
@@ -254,7 +254,7 @@ describe('build-default-options-by-group-index-computer', () => {
         customGroups: [],
       }
       expect(
-        buildDefaultOptionsByGroupIndexComputer({
+        buildOptionsByGroupIndexComputer({
           ...commonOptions,
           ...groupOptions,
         })(0),

@@ -23,9 +23,9 @@ import {
   allSelectors,
 } from './sort-jsx-props/types'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { partitionByNewLineJsonSchema } from '../utils/json-schemas/common-partition-json-schemas'
+import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
@@ -104,6 +104,8 @@ export default createEslintRule<Options, MessageId>({
         ruleName: id,
         sourceCode,
       })
+      let optionsByGroupIndexComputer =
+        buildOptionsByGroupIndexComputer(options)
 
       let formattedMembers: SortingNode[][] =
         node.openingElement.attributes.reduce(
@@ -189,9 +191,8 @@ export default createEslintRule<Options, MessageId>({
         function createSortNodesExcludingEslintDisabled(nodes: SortingNode[]) {
           return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
             return sortNodesByGroups({
-              optionsByGroupIndexComputer:
-                buildDefaultOptionsByGroupIndexComputer(options),
               comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+              optionsByGroupIndexComputer,
               ignoreEslintDisabledNodes,
               groups: options.groups,
               nodes,

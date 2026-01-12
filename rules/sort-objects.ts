@@ -38,8 +38,8 @@ import {
 } from '../utils/json-schemas/common-json-schemas'
 import { computePropertyOrVariableDeclaratorName } from './sort-objects/compute-property-or-variable-declarator-name'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
+import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { computeMatchedContextOptions } from './sort-objects/compute-matched-context-options'
@@ -113,6 +113,13 @@ export default createEslintRule<Options, MessageId>({
       })
       validateNewlinesAndPartitionConfiguration(options)
 
+      let eslintDisabledLines = getEslintDisabledLines({
+        ruleName: id,
+        sourceCode,
+      })
+      let optionsByGroupIndexComputer =
+        buildOptionsByGroupIndexComputer(options)
+
       let objectRoot =
         nodeObject.type === AST_NODE_TYPES.ObjectPattern
           ? null
@@ -126,11 +133,6 @@ export default createEslintRule<Options, MessageId>({
       ) {
         return
       }
-
-      let eslintDisabledLines = getEslintDisabledLines({
-        ruleName: id,
-        sourceCode,
-      })
 
       function extractDependencies(init: TSESTree.Expression): string[] {
         let dependencies: string[] = []
@@ -338,9 +340,8 @@ export default createEslintRule<Options, MessageId>({
       ): SortingNodeWithDependencies[] {
         let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
           sortNodesByGroups({
-            optionsByGroupIndexComputer:
-              buildDefaultOptionsByGroupIndexComputer(options),
             comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+            optionsByGroupIndexComputer,
             ignoreEslintDisabledNodes,
             groups: options.groups,
             nodes,

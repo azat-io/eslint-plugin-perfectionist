@@ -18,12 +18,12 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { buildDefaultOptionsByGroupIndexComputer } from '../utils/build-default-options-by-group-index-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import {
   additionalCustomGroupMatchOptionsJsonSchema,
   allSelectors,
 } from './sort-union-types/types'
+import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -157,6 +157,7 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
     ruleName: id,
     sourceCode,
   })
+  let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
 
   let formattedMembers: SortingNode[][] = node.types.reduce(
     (accumulator: SortingNode[][], type) => {
@@ -277,9 +278,8 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
     ) {
       return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
         return sortNodesByGroups({
-          optionsByGroupIndexComputer:
-            buildDefaultOptionsByGroupIndexComputer(options),
           comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+          optionsByGroupIndexComputer,
           ignoreEslintDisabledNodes,
           groups: options.groups,
           nodes: sortingNodes,
