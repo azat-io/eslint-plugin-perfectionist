@@ -4017,13 +4017,9 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([
-      ['1', 1],
-      ['ignore', 'ignore'],
-      ['0', 0],
-    ])(
-      'enforces no newline between overload signatures when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
+    it.each([1, 'ignore', 0])(
+      'enforces 0 newline between overload signatures when newlinesBetween is %s',
+      async newlinesBetween => {
         await invalid({
           errors: [
             {
@@ -4053,6 +4049,7 @@ describe('sort-classes', () => {
           `,
           options: [
             {
+              ...options,
               newlinesBetween,
             },
           ],
@@ -8559,13 +8556,9 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([
-      ['1', 1],
-      ['ignore', 'ignore'],
-      ['0', 0],
-    ])(
-      'enforces no newline between overload signatures when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
+    it.each([1, 'ignore', 0])(
+      'enforces 0 newline between overload signatures when newlinesBetween is %s',
+      async newlinesBetween => {
         await invalid({
           errors: [
             {
@@ -8595,6 +8588,7 @@ describe('sort-classes', () => {
           `,
           options: [
             {
+              ...options,
               newlinesBetween,
             },
           ],
@@ -13007,13 +13001,9 @@ describe('sort-classes', () => {
       })
     })
 
-    it.each([
-      ['1', 1],
-      ['ignore', 'ignore'],
-      ['0', 0],
-    ])(
-      'enforces no newline between overload signatures when newlinesBetween is %s',
-      async (_name, newlinesBetween) => {
+    it.each([1, 'ignore', 0])(
+      'enforces 0 newline between overload signatures when newlinesBetween is %s',
+      async newlinesBetween => {
         await invalid({
           errors: [
             {
@@ -13043,6 +13033,7 @@ describe('sort-classes', () => {
           `,
           options: [
             {
+              ...options,
               newlinesBetween,
             },
           ],
@@ -14769,7 +14760,7 @@ describe('sort-classes', () => {
       ['1', 1],
       ['0', 0],
     ])(
-      'enforces no newline between overload signatures when newlinesInside is %s',
+      'enforces 0 newline between overload signatures when newlinesInside is %s',
       async (_name, newlinesInside) => {
         await invalid({
           errors: [

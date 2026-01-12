@@ -14,6 +14,8 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import { buildOverloadSignatureNewlinesBetweenValueGetter } from '../utils/overload-signature/build-overload-signature-newlines-between-value-getter'
+import { populateSortingNodeGroupsWithOverloadSignature } from '../utils/overload-signature/populate-sorting-node-groups-with-overload-signature'
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
@@ -32,12 +34,11 @@ import { defaultComparatorByOptionsComputer } from '../utils/compare/default-com
 import { computeIndexSignatureDetails } from './sort-classes/node-info/compute-index-signature-details'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeStaticBlockDetails } from './sort-classes/node-info/compute-static-block-details'
+import { computeOverloadSignatureGroups } from './sort-classes/compute-overload-signature-groups'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { computePropertyDetails } from './sort-classes/node-info/compute-property-details'
 import { computeAccessorDetails } from './sort-classes/node-info/compute-accessor-details'
-import { getOverloadSignatureGroups } from './sort-classes/get-overload-signature-groups'
-import { newlinesBetweenValueGetter } from './sort-classes/newlines-between-value-getter'
 import { computeMethodDetails } from './sort-classes/node-info/compute-method-details'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -139,11 +140,22 @@ export default createEslintRule<Options, MessageId>({
       })
       let optionsByGroupIndexComputer =
         buildOptionsByGroupIndexComputer(options)
+      let overloadSignatureNewlinesBetweenValueGetter =
+        buildOverloadSignatureNewlinesBetweenValueGetter()
+
       let className = node.parent.id?.name
 
-      let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
-      let formattedNodes: SortClassesSortingNode[][] = node.body.reduce(
-        (accumulator: SortClassesSortingNode[][], member) => {
+      let sortingNodeGroupsWithoutOverloadSignature: Omit<
+        SortClassesSortingNode,
+        'overloadSignatureImplementation'
+      >[][] = node.body.reduce(
+        (
+          accumulator: Omit<
+            SortClassesSortingNode,
+            'overloadSignatureImplementation'
+          >[][],
+          member,
+        ) => {
           let dependencies: string[] = []
 
           let isDecorated = false
@@ -248,30 +260,12 @@ export default createEslintRule<Options, MessageId>({
             options,
           })
 
-          /**
-           * Members belonging to the same overload signature group should have
-           * the same size in order to keep line-length sorting between them
-           * consistent.
-           *
-           * It is unclear what should be considered the size of an overload
-           * signature group. Take the size of the implementation by default.
-           */
-          let overloadSignatureGroupMemberIndex =
-            overloadSignatureGroups.findIndex(overloadSignatures =>
-              overloadSignatures.includes(member),
-            )
-          let overloadSignatureGroupMember =
-            overloadSignatureGroups[overloadSignatureGroupMemberIndex]?.at(-1)
-
-          let sortingNode: Omit<SortClassesSortingNode, 'partitionId'> = {
-            overloadSignaturesGroupId:
-              overloadSignatureGroupMemberIndex === -1
-                ? null
-                : overloadSignatureGroupMemberIndex,
-            size: overloadSignatureGroupMember
-              ? rangeToDiff(overloadSignatureGroupMember, sourceCode)
-              : rangeToDiff(member, sourceCode),
+          let sortingNode: Omit<
+            SortClassesSortingNode,
+            'overloadSignatureImplementation' | 'partitionId'
+          > = {
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
+            size: rangeToDiff(member, sourceCode),
             addSafetySemicolonWhenInline,
             dependencyNames,
             node: member,
@@ -303,28 +297,11 @@ export default createEslintRule<Options, MessageId>({
         [[]],
       )
 
-      function sortNodesExcludingEslintDisabled(
-        ignoreEslintDisabledNodes: boolean,
-      ): SortClassesSortingNode[] {
-        let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
-          sortNodesByGroups({
-            isNodeIgnored: sortingNode =>
-              getGroupIndex(options.groups, sortingNode) ===
-              options.groups.length,
-            comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
-            optionsByGroupIndexComputer,
-            ignoreEslintDisabledNodes,
-            groups: options.groups,
-            nodes,
-          }),
-        )
-
-        return sortNodesByDependencies(nodesSortedByGroups, {
-          ignoreEslintDisabledNodes,
-        })
-      }
-
-      let nodes = formattedNodes.flat()
+      let sortingNodeGroups = populateSortingNodeGroupsWithOverloadSignature({
+        overloadSignatureGroups: computeOverloadSignatureGroups(node.body),
+        sortingNodeGroups: sortingNodeGroupsWithoutOverloadSignature,
+      })
+      let sortingNodes = sortingNodeGroups.flat()
 
       reportAllErrors<MessageId, SortClassesSortingNode>({
         availableMessageIds: {
@@ -334,12 +311,33 @@ export default createEslintRule<Options, MessageId>({
           unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
           unexpectedOrder: ORDER_ERROR_ID,
         },
+        newlinesBetweenValueGetter: overloadSignatureNewlinesBetweenValueGetter,
         sortNodesExcludingEslintDisabled,
-        newlinesBetweenValueGetter,
+        nodes: sortingNodes,
         options,
         context,
-        nodes,
       })
+
+      function sortNodesExcludingEslintDisabled(
+        ignoreEslintDisabledNodes: boolean,
+      ): SortClassesSortingNode[] {
+        let nodesSortedByGroups = sortingNodeGroups.flatMap(sortingNodeGroup =>
+          sortNodesByGroups({
+            isNodeIgnored: sortingNode =>
+              getGroupIndex(options.groups, sortingNode) ===
+              options.groups.length,
+            comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+            optionsByGroupIndexComputer,
+            ignoreEslintDisabledNodes,
+            nodes: sortingNodeGroup,
+            groups: options.groups,
+          }),
+        )
+
+        return sortNodesByDependencies(nodesSortedByGroups, {
+          ignoreEslintDisabledNodes,
+        })
+      }
     },
   }),
   meta: {

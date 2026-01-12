@@ -35,7 +35,10 @@ export type Options = [
 ]
 
 export interface SortClassesSortingNode extends SortingNodeWithDependencies<TSESTree.ClassElement> {
-  overloadSignaturesGroupId: number | null
+  overloadSignatureImplementation:
+    | TSESTree.TSAbstractMethodDefinition
+    | TSESTree.MethodDefinition
+    | null
 }
 
 /**
