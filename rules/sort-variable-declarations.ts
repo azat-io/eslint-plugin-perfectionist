@@ -15,10 +15,12 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
+import { computeDependenciesOutsideFunctionsBySortingNode } from '../utils/compute-dependencies-outside-functions-by-sorting-node'
 import {
   additionalCustomGroupMatchOptionsJsonSchema,
   allSelectors,
 } from './sort-variable-declarations/types'
+import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
@@ -79,8 +81,8 @@ let defaultOptions: Required<Options[number]> = {
 
 export default createEslintRule<Options, MessageId>({
   create: context => ({
-    VariableDeclaration: node => {
-      if (!isSortable(node.declarations)) {
+    VariableDeclaration: variableDeclaration => {
+      if (!isSortable(variableDeclaration.declarations)) {
         return
       }
 
@@ -103,72 +105,86 @@ export default createEslintRule<Options, MessageId>({
       let optionsByGroupIndexComputer =
         buildOptionsByGroupIndexComputer(options)
 
-      let formattedMembers = node.declarations.reduce(
-        (accumulator: SortVariableDeclarationsSortingNode[][], declaration) => {
-          let name = computeNodeName({
-            node: declaration,
-            sourceCode,
-          })
-
-          let selector: Selector = declaration.init
-            ? 'initialized'
-            : 'uninitialized'
-
-          let predefinedGroups = generatePredefinedGroups({
-            cache: cachedGroupsByModifiersAndSelectors,
-            selectors: [selector],
-            modifiers: [],
-          })
-
-          let lastSortingNode = accumulator.at(-1)?.at(-1)
-          let sortingNode: Omit<
-            SortVariableDeclarationsSortingNode,
-            'partitionId'
-          > = {
-            group: computeGroup({
-              customGroupMatcher: customGroup =>
-                doesCustomGroupMatch({
-                  selectors: [selector],
-                  elementName: name,
-                  modifiers: [],
-                  customGroup,
-                }),
-              predefinedGroups,
-              options,
-            }),
-            isEslintDisabled: isNodeEslintDisabled(
-              declaration,
-              eslintDisabledLines,
-            ),
-            dependencies: computeDependencies(declaration),
-            size: rangeToDiff(declaration, sourceCode),
-            dependencyNames: [name],
-            node: declaration,
-            name,
-          }
-
-          if (
-            shouldPartition({
-              lastSortingNode,
-              sortingNode,
+      let sortingNodeGroupsWithoutDependencies =
+        variableDeclaration.declarations.reduce(
+          (
+            accumulator: SortVariableDeclarationsSortingNode[][],
+            declaration,
+          ) => {
+            let name = computeNodeName({
+              node: declaration,
               sourceCode,
-              options,
             })
-          ) {
-            accumulator.push([])
-          }
 
-          accumulator.at(-1)?.push({
-            ...sortingNode,
-            partitionId: accumulator.length,
-          })
+            let selector: Selector = declaration.init
+              ? 'initialized'
+              : 'uninitialized'
 
-          return accumulator
-        },
-        [[]],
-      )
+            let predefinedGroups = generatePredefinedGroups({
+              cache: cachedGroupsByModifiersAndSelectors,
+              selectors: [selector],
+              modifiers: [],
+            })
 
-      let sortingNodes = formattedMembers.flat()
+            let lastSortingNode = accumulator.at(-1)?.at(-1)
+            let sortingNode: Omit<
+              SortVariableDeclarationsSortingNode,
+              'partitionId'
+            > = {
+              group: computeGroup({
+                customGroupMatcher: customGroup =>
+                  doesCustomGroupMatch({
+                    selectors: [selector],
+                    elementName: name,
+                    modifiers: [],
+                    customGroup,
+                  }),
+                predefinedGroups,
+                options,
+              }),
+              isEslintDisabled: isNodeEslintDisabled(
+                declaration,
+                eslintDisabledLines,
+              ),
+              dependencies: computeDependencies(declaration),
+              size: rangeToDiff(declaration, sourceCode),
+              dependencyNames: [name],
+              node: declaration,
+              name,
+            }
+
+            if (
+              shouldPartition({
+                lastSortingNode,
+                sortingNode,
+                sourceCode,
+                options,
+              })
+            ) {
+              accumulator.push([])
+            }
+
+            accumulator.at(-1)?.push({
+              ...sortingNode,
+              partitionId: accumulator.length,
+            })
+
+            return accumulator
+          },
+          [[]],
+        )
+
+      let dependenciesBySortingNode =
+        computeDependenciesOutsideFunctionsBySortingNode({
+          sortingNodes: sortingNodeGroupsWithoutDependencies.flat(),
+          sourceCode,
+        })
+      let sortingNodeGroups: SortVariableDeclarationsSortingNode[][] =
+        populateSortingNodeGroupsWithDependencies({
+          sortingNodeGroups: sortingNodeGroupsWithoutDependencies,
+          dependenciesBySortingNode,
+        })
+      let sortingNodes = sortingNodeGroups.flat()
 
       reportAllErrors<MessageId>({
         availableMessageIds: {
@@ -187,13 +203,13 @@ export default createEslintRule<Options, MessageId>({
       function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
       ): SortVariableDeclarationsSortingNode[] {
-        let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
+        let nodesSortedByGroups = sortingNodeGroups.flatMap(sortingNodeGroup =>
           sortNodesByGroups({
             comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
             optionsByGroupIndexComputer,
             ignoreEslintDisabledNodes,
+            nodes: sortingNodeGroup,
             groups: options.groups,
-            nodes,
           }),
         )
 
