@@ -1663,10 +1663,7 @@ describe('sort-classes', () => {
         options: [
           {
             ...options,
-            groups: [
-              ['static-property', 'private-property', 'property'],
-              'constructor',
-            ],
+            groups: ['unknown'],
           },
         ],
       })
@@ -6322,10 +6319,7 @@ describe('sort-classes', () => {
         options: [
           {
             ...options,
-            groups: [
-              ['static-property', 'private-property', 'property'],
-              'constructor',
-            ],
+            groups: ['unknown'],
           },
         ],
       })
@@ -10821,10 +10815,7 @@ describe('sort-classes', () => {
         options: [
           {
             ...options,
-            groups: [
-              ['static-property', 'private-property', 'property'],
-              'constructor',
-            ],
+            groups: ['unknown'],
           },
         ],
       })
