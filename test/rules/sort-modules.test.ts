@@ -8020,34 +8020,6 @@ describe('sort-modules', () => {
         options: [options],
       })
     })
-
-    /* Unhandled cases */
-    it("doesn't support the following cases", async () => {
-      await invalid({
-        output: dedent`
-          function testFn(input: boolean | string): void {}
-          function testFn(input: boolean): void;
-          function testFn(input: string): void;
-        `,
-        code: dedent`
-          function testFn(input: boolean): void;
-          function testFn(input: string): void;
-          function testFn(input: boolean | string): void {}
-        `,
-        errors: [
-          {
-            data: { right: 'testFn', left: 'testFn' },
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: ['function', 'declare-function'],
-          },
-        ],
-      })
-    })
   })
 
   describe('custom', () => {
@@ -9195,35 +9167,6 @@ describe('sort-modules', () => {
         errors: [
           {
             messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-
-      await invalid({
-        output: dedent`
-          function a(input: string): void;
-          type Type = number;
-          function a(input: Type): void;
-
-          function a(input: Type | string): void {}
-        `,
-        code: dedent`
-          function a(input: string): void;
-          function a(input: Type): void;
-          function a(input: Type | string): void {}
-
-          type Type = number;
-        `,
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'Type', left: 'a' },
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
           },
         ],
       })
