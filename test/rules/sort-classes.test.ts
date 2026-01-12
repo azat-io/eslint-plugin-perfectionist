@@ -13619,6 +13619,72 @@ describe('sort-classes', () => {
         options: [options],
       })
     })
+
+    it('uses the implementation node when overload signatures are present', async () => {
+      await invalid({
+        output: dedent`
+          class Class {
+            b(): void;
+            b(arg: string): void {}
+
+            a(arg: string | number | boolean): void;
+            a(): void {}
+          }
+        `,
+        code: dedent`
+          class Class {
+            a(arg: string | number | boolean): void;
+            a(): void {}
+
+            b(): void;
+            b(arg: string): void {}
+          }
+        `,
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedClassesOrder',
+          },
+        ],
+        options: [options],
+      })
+    })
+
+    it('considers the latest overload signature if the implementation is not present', async () => {
+      await invalid({
+        output: dedent`
+          class Class {
+            b(): void;
+            b(arg: string): void
+
+            a(arg: string | number | boolean): void;
+            a(): void
+          }
+        `,
+        code: dedent`
+          class Class {
+            a(arg: string | number | boolean): void;
+            a(): void
+
+            b(): void;
+            b(arg: string): void
+          }
+        `,
+        errors: [
+          {
+            data: {
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedClassesOrder',
+          },
+        ],
+        options: [options],
+      })
+    })
   })
 
   describe('subgroup-order', () => {
