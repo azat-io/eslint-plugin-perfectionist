@@ -7927,6 +7927,34 @@ describe('sort-modules', () => {
         ],
       })
     })
+
+    /* Unhandled cases */
+    it("doesn't support the following cases", async () => {
+      await invalid({
+        output: dedent`
+          function testFn(input: boolean | string): void {}
+          function testFn(input: boolean): void;
+          function testFn(input: string): void;
+        `,
+        code: dedent`
+          function testFn(input: boolean): void;
+          function testFn(input: string): void;
+          function testFn(input: boolean | string): void {}
+        `,
+        errors: [
+          {
+            data: { right: 'testFn', left: 'testFn' },
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['function', 'declare-function'],
+          },
+        ],
+      })
+    })
   })
 
   describe('custom', () => {
