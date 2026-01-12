@@ -1247,6 +1247,17 @@ describe('sort-modules', () => {
         })
       })
 
+      it('supports function overload names', async () => {
+        await valid({
+          code: dedent`
+            function a(input: string): void;
+            function a(input: number): void;
+            function a(input: number | string): void {}
+          `,
+          options: [options],
+        })
+      })
+
       it('detects static class method dependencies when static block is present', async () => {
         await valid({
           code: dedent`
@@ -8856,6 +8867,17 @@ describe('sort-modules', () => {
       })
     })
 
+    it('supports function overload names', async () => {
+      await valid({
+        code: dedent`
+          function a(input: string): void;
+          function a(input: number): void;
+          function a(input: number | string): void {}
+        `,
+        options: [options],
+      })
+    })
+
     /* Unhandled cases */
     it("doesn't support the following cases", async () => {
       await invalid({
@@ -9018,6 +9040,35 @@ describe('sort-modules', () => {
         errors: [
           {
             messageId: 'unexpectedModulesOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        output: dedent`
+          function a(input: string): void;
+          type Type = number;
+          function a(input: Type): void;
+
+          function a(input: Type | string): void {}
+        `,
+        code: dedent`
+          function a(input: string): void;
+          function a(input: Type): void;
+          function a(input: Type | string): void {}
+
+          type Type = number;
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'Type', left: 'a' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
           },
         ],
       })
