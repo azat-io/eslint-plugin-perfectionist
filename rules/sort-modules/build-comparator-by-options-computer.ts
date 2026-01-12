@@ -1,5 +1,5 @@
 import type { ComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
-import type { SortModulesSortingNode, SortModulesOptions } from './types'
+import type { SortModulesSortingNode, Options } from './types'
 
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
@@ -12,7 +12,7 @@ export function buildComparatorByOptionsComputer({
   sortingNodes: SortModulesSortingNode[]
   ignoreEslintDisabledNodes: boolean
 }): ComparatorByOptionsComputer<
-  Required<SortModulesOptions[number]>,
+  Required<Options[number]>,
   SortModulesSortingNode
 > {
   return options => {

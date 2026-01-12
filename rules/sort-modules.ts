@@ -3,10 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type {
-  SortModulesSortingNode,
-  SortModulesOptions,
-} from './sort-modules/types'
+import type { SortModulesSortingNode, Options } from './sort-modules/types'
 
 import {
   DEPENDENCY_ORDER_ERROR,
@@ -15,6 +12,8 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import { buildOverloadSignatureNewlinesBetweenValueGetter } from '../utils/overload-signature/build-overload-signature-newlines-between-value-getter'
+import { populateSortingNodeGroupsWithOverloadSignature } from '../utils/overload-signature/populate-sorting-node-groups-with-overload-signature'
 import {
   additionalCustomGroupMatchOptionsJsonSchema,
   USAGE_TYPE_OPTION,
@@ -28,6 +27,7 @@ import {
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildComparatorByOptionsComputer } from './sort-modules/build-comparator-by-options-computer'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
+import { computeOverloadSignatureGroups } from './sort-modules/compute-overload-signature-groups'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
@@ -64,7 +64,7 @@ type MessageId =
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
 
-let defaultOptions: Required<SortModulesOptions[number]> = {
+let defaultOptions: Required<Options[number]> = {
   groups: [
     'declare-enum',
     'export-enum',
@@ -93,7 +93,7 @@ let defaultOptions: Required<SortModulesOptions[number]> = {
   order: 'asc',
 }
 
-export default createEslintRule<SortModulesOptions, MessageId>({
+export default createEslintRule<Options, MessageId>({
   meta: {
     schema: [
       {
@@ -167,15 +167,20 @@ function analyzeModule({
   context,
   module,
 }: {
-  context: TSESLint.RuleContext<MessageId, SortModulesOptions>
+  context: TSESLint.RuleContext<MessageId, Options>
   module: TSESTree.TSModuleBlock | TSESTree.Program
-  options: Required<SortModulesOptions[number]>
+  options: Required<Options[number]>
   sourceCode: TSESLint.SourceCode
   eslintDisabledLines: number[]
 }): void {
   let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
+  let overloadSignatureNewlinesBetweenValueGetter =
+    buildOverloadSignatureNewlinesBetweenValueGetter()
 
-  let formattedNodes: SortModulesSortingNode[][] = [[]]
+  let sortingNodeGroupsWithoutOverloadSignature: Omit<
+    SortModulesSortingNode,
+    'overloadSignatureImplementation'
+  >[][] = [[]]
   for (let node of module.body) {
     switch (node.type) {
       case AST_NODE_TYPES.ExportDefaultDeclaration:
@@ -187,7 +192,7 @@ function analyzeModule({
         break
       case AST_NODE_TYPES.VariableDeclaration:
       case AST_NODE_TYPES.ExpressionStatement:
-        formattedNodes.push([])
+        sortingNodeGroupsWithoutOverloadSignature.push([])
         continue
       case AST_NODE_TYPES.TSDeclareFunction:
       case AST_NODE_TYPES.TSEnumDeclaration:
@@ -201,7 +206,7 @@ function analyzeModule({
 
     if (!details.nodeDetails) {
       if (details.shouldPartitionAfterNode) {
-        formattedNodes.push([])
+        sortingNodeGroupsWithoutOverloadSignature.push([])
       }
       if (details.moduleBlock) {
         analyzeModule({
@@ -242,7 +247,10 @@ function analyzeModule({
       options,
     })
 
-    let sortingNode: Omit<SortModulesSortingNode, 'partitionId'> = {
+    let sortingNode: Omit<
+      SortModulesSortingNode,
+      'overloadSignatureImplementation' | 'partitionId'
+    > = {
       isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
       size: rangeToDiff(node, sourceCode),
       addSafetySemicolonWhenInline,
@@ -253,7 +261,9 @@ function analyzeModule({
       node,
     }
 
-    let lastSortingNode = formattedNodes.at(-1)?.at(-1)
+    let lastSortingNode = sortingNodeGroupsWithoutOverloadSignature
+      .at(-1)
+      ?.at(-1)
     if (
       shouldPartition({
         lastSortingNode,
@@ -262,18 +272,25 @@ function analyzeModule({
         options,
       })
     ) {
-      formattedNodes.push([])
+      sortingNodeGroupsWithoutOverloadSignature.push([])
     }
 
-    formattedNodes.at(-1)?.push({
+    sortingNodeGroupsWithoutOverloadSignature.at(-1)?.push({
       ...sortingNode,
-      partitionId: formattedNodes.length,
+      partitionId: sortingNodeGroupsWithoutOverloadSignature.length,
     })
   }
 
-  let sortingNodes = formattedNodes.flat()
+  let overloadSignatureGroups = computeOverloadSignatureGroups(
+    sortingNodeGroupsWithoutOverloadSignature.flat().map(({ node }) => node),
+  )
+  let sortingNodeGroups = populateSortingNodeGroupsWithOverloadSignature({
+    sortingNodeGroups: sortingNodeGroupsWithoutOverloadSignature,
+    overloadSignatureGroups,
+  })
+  let sortingNodes = sortingNodeGroups.flat()
 
-  reportAllErrors<MessageId>({
+  reportAllErrors<MessageId, SortModulesSortingNode>({
     availableMessageIds: {
       missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
       unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
@@ -281,6 +298,7 @@ function analyzeModule({
       unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
       unexpectedOrder: ORDER_ERROR_ID,
     },
+    newlinesBetweenValueGetter: overloadSignatureNewlinesBetweenValueGetter,
     sortNodesExcludingEslintDisabled,
     nodes: sortingNodes,
     options,
@@ -290,7 +308,7 @@ function analyzeModule({
   function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
   ): SortModulesSortingNode[] {
-    let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
+    let nodesSortedByGroups = sortingNodeGroups.flatMap(nodes =>
       sortNodesByGroups({
         comparatorByOptionsComputer: buildComparatorByOptionsComputer({
           ignoreEslintDisabledNodes,

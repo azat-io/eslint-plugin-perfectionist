@@ -1,9 +1,5 @@
-import type {
-  SortModulesSortingNode,
-  SortModulesOptions,
-  SortModulesNode,
-} from './types'
 import type { Comparator } from '../../utils/compare/default-comparator-by-options-computer'
+import type { SortModulesSortingNode, SortModulesNode, Options } from './types'
 
 import { isNodeDependentOnOtherNode } from '../../utils/is-node-dependent-on-other-node'
 import { buildSortingNodeByNodeMap } from '../../utils/build-sorting-node-by-node-map'
@@ -31,8 +27,8 @@ export function buildUsageComparator({
   sortingNodes,
   options,
 }: {
-  options: Required<SortModulesOptions[number]>
   sortingNodes: SortModulesSortingNode[]
+  options: Required<Options[number]>
   ignoreEslintDisabledNodes: boolean
 }): Comparator<SortModulesSortingNode> {
   let { updatedSortingNodeByNode, orderByUnsortedNode, orderBySortedNode } =

@@ -28,7 +28,7 @@ export type SortModulesNode =
  * This rule enforces consistent ordering of module-level declarations (classes,
  * interfaces, functions, types, enums) to improve code organization.
  */
-export type SortModulesOptions = [
+export type Options = [
   Partial<
     AllCommonOptions<
       CustomTypeOption,
@@ -39,8 +39,9 @@ export type SortModulesOptions = [
 ]
 
 /** Represents a sorting node for a module statement. */
-export type SortModulesSortingNode =
-  SortingNodeWithDependencies<SortModulesNode>
+export type SortModulesSortingNode = {
+  overloadSignatureImplementation: SortModulesNode | null
+} & SortingNodeWithDependencies<SortModulesNode>
 
 /**
  * Union type of all available module member selectors. Used to categorize
