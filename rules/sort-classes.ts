@@ -1,13 +1,11 @@
-import type { TSESTree } from '@typescript-eslint/types'
-
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
-  SortClassesOptions,
+  SortClassesSortingNode,
   Modifier,
   Selector,
+  Options,
 } from './sort-classes/types'
-import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
 
 import {
   DEPENDENCY_ORDER_ERROR,
@@ -39,6 +37,7 @@ import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-c
 import { computePropertyDetails } from './sort-classes/node-info/compute-property-details'
 import { computeAccessorDetails } from './sort-classes/node-info/compute-accessor-details'
 import { getOverloadSignatureGroups } from './sort-classes/get-overload-signature-groups'
+import { newlinesBetweenValueGetter } from './sort-classes/newlines-between-value-getter'
 import { computeMethodDetails } from './sort-classes/node-info/compute-method-details'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -76,7 +75,7 @@ type MessageId =
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
 
-let defaultOptions: Required<SortClassesOptions[number]> = {
+let defaultOptions: Required<Options[number]> = {
   groups: [
     'index-signature',
     ['static-property', 'static-accessor-property'],
@@ -116,11 +115,7 @@ let defaultOptions: Required<SortClassesOptions[number]> = {
   order: 'asc',
 }
 
-interface SortClassSortingNode extends SortingNodeWithDependencies<TSESTree.ClassElement> {
-  overloadSignaturesGroupId: number | null
-}
-
-export default createEslintRule<SortClassesOptions, MessageId>({
+export default createEslintRule<Options, MessageId>({
   create: context => ({
     ClassBody: node => {
       if (!isSortable(node.body)) {
@@ -147,8 +142,8 @@ export default createEslintRule<SortClassesOptions, MessageId>({
       let className = node.parent.id?.name
 
       let overloadSignatureGroups = getOverloadSignatureGroups(node.body)
-      let formattedNodes: SortClassSortingNode[][] = node.body.reduce(
-        (accumulator: SortClassSortingNode[][], member) => {
+      let formattedNodes: SortClassesSortingNode[][] = node.body.reduce(
+        (accumulator: SortClassesSortingNode[][], member) => {
           let dependencies: string[] = []
 
           let isDecorated = false
@@ -268,7 +263,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
           let overloadSignatureGroupMember =
             overloadSignatureGroups[overloadSignatureGroupMemberIndex]?.at(-1)
 
-          let sortingNode: Omit<SortClassSortingNode, 'partitionId'> = {
+          let sortingNode: Omit<SortClassesSortingNode, 'partitionId'> = {
             overloadSignaturesGroupId:
               overloadSignatureGroupMemberIndex === -1
                 ? null
@@ -310,7 +305,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
       function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
-      ): SortClassSortingNode[] {
+      ): SortClassesSortingNode[] {
         let nodesSortedByGroups = formattedNodes.flatMap(nodes =>
           sortNodesByGroups({
             isNodeIgnored: sortingNode =>
@@ -331,20 +326,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
 
       let nodes = formattedNodes.flat()
 
-      reportAllErrors<MessageId, SortClassSortingNode>({
-        newlinesBetweenValueGetter: ({
-          computedNewlinesBetween,
-          right,
-          left,
-        }): 'ignore' | number => {
-          if (
-            left.overloadSignaturesGroupId !== null &&
-            left.overloadSignaturesGroupId === right.overloadSignaturesGroupId
-          ) {
-            return 0
-          }
-          return computedNewlinesBetween
-        },
+      reportAllErrors<MessageId, SortClassesSortingNode>({
         availableMessageIds: {
           missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
           unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
@@ -353,6 +335,7 @@ export default createEslintRule<SortClassesOptions, MessageId>({
           unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
+        newlinesBetweenValueGetter,
         options,
         context,
         nodes,
