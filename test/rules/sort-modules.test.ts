@@ -946,6 +946,42 @@ describe('sort-modules', () => {
       })
     })
 
+    it.each([1, 'ignore', 0])(
+      'enforces 0 newline between overload signatures when newlinesBetween is %s',
+      async newlinesBetween => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'extraSpacingBetweenModulesMembers',
+              data: { right: 'a', left: 'a' },
+            },
+            {
+              messageId: 'extraSpacingBetweenModulesMembers',
+              data: { right: 'a', left: 'a' },
+            },
+          ],
+          output: dedent`
+            function a(arg: string): void
+            function a(arg: number): void
+            export function a(arg: string | number): void {}
+          `,
+          code: dedent`
+            function a(arg: string): void
+
+            function a(arg: number): void
+
+            export function a(arg: string | number): void {}
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetween,
+            },
+          ],
+        })
+      },
+    )
+
     it('prioritizes declare modifier over export modifier', async () => {
       await invalid({
         errors: [
@@ -1252,7 +1288,7 @@ describe('sort-modules', () => {
           code: dedent`
             function a(input: string): void;
             function a(input: number): void;
-            function a(input: number | string): void {}
+            export function a(input: number | string): void {}
           `,
           options: [options],
         })
@@ -7928,6 +7964,63 @@ describe('sort-modules', () => {
       })
     })
 
+    it('uses the implementation node when overload signatures are present', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'export-function',
+              leftGroup: 'function',
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
+        output: dedent`
+          function b(): void;
+          export function b(arg: string): void {}
+
+          function a(arg: string | number | boolean): void;
+          function a(): void {}
+        `,
+        code: dedent`
+          function a(arg: string | number | boolean): void;
+          function a(): void {}
+
+          function b(): void;
+          export function b(arg: string): void {}
+        `,
+        options: [options],
+      })
+    })
+
+    it('considers the latest overload signature if the implementation is not present', async () => {
+      await invalid({
+        output: dedent`
+          function b(): void
+          declare function b(arg: string): void
+
+          function a(arg: string | number | boolean): void
+          declare function a(): void
+        `,
+        code: dedent`
+          function a(arg: string | number | boolean): void
+          declare function a(): void
+
+          function b(): void
+          declare function b(arg: string): void
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'a' },
+          },
+        ],
+        options: [options],
+      })
+    })
+
     /* Unhandled cases */
     it("doesn't support the following cases", async () => {
       await invalid({
@@ -8900,9 +8993,43 @@ describe('sort-modules', () => {
         code: dedent`
           function a(input: string): void;
           function a(input: number): void;
-          function a(input: number | string): void {}
+          export function a(input: number | string): void {}
         `,
         options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'function',
+              rightGroup: 'type',
+              right: 'Type',
+              left: 'a',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
+        output: dedent`
+          type Type = number;
+
+          function a(input: string): void;
+          function a(input: Type): void;
+          function a(input: Type | string): void {}
+        `,
+        code: dedent`
+          function a(input: string): void;
+          function a(input: Type): void;
+          function a(input: Type | string): void {}
+
+          type Type = number;
+        `,
+        options: [
+          {
+            ...options,
+            newlinesBetween: 1,
+          },
+        ],
       })
     })
 
