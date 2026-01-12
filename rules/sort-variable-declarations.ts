@@ -1,7 +1,3 @@
-import type { TSESTree } from '@typescript-eslint/types'
-
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
-
 import type {
   SortVariableDeclarationsSortingNode,
   Selector,
@@ -28,8 +24,10 @@ import { defaultComparatorByOptionsComputer } from '../utils/compare/default-com
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { computeDependencies } from './sort-variable-declarations/compute-dependencies'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
+import { computeNodeName } from './sort-variable-declarations/compute-node-name'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -107,26 +105,15 @@ export default createEslintRule<Options, MessageId>({
 
       let formattedMembers = node.declarations.reduce(
         (accumulator: SortVariableDeclarationsSortingNode[][], declaration) => {
-          let name
+          let name = computeNodeName({
+            node: declaration,
+            sourceCode,
+          })
 
-          if (
-            declaration.id.type === AST_NODE_TYPES.ArrayPattern ||
-            declaration.id.type === AST_NODE_TYPES.ObjectPattern
-          ) {
-            name = sourceCode.text.slice(...declaration.id.range)
-          } else {
-            ;({ name } = declaration.id)
-          }
+          let selector: Selector = declaration.init
+            ? 'initialized'
+            : 'uninitialized'
 
-          let selector: Selector
-
-          let dependencies: string[] = extractDependencies(declaration.id)
-          if (declaration.init) {
-            dependencies.push(...extractDependencies(declaration.init))
-            selector = 'initialized'
-          } else {
-            selector = 'uninitialized'
-          }
           let predefinedGroups = generatePredefinedGroups({
             cache: cachedGroupsByModifiersAndSelectors,
             selectors: [selector],
@@ -153,10 +140,10 @@ export default createEslintRule<Options, MessageId>({
               declaration,
               eslintDisabledLines,
             ),
+            dependencies: computeDependencies(declaration),
             size: rangeToDiff(declaration, sourceCode),
             dependencyNames: [name],
             node: declaration,
-            dependencies,
             name,
           }
 
@@ -250,90 +237,3 @@ export default createEslintRule<Options, MessageId>({
   name: 'sort-variable-declarations',
   defaultOptions: [defaultOptions],
 })
-
-function extractDependencies(init: TSESTree.Expression): string[] {
-  let dependencies: string[] = []
-
-  function checkNode(nodeValue: TSESTree.Node): void {
-    /** No need to check the body of functions and arrow functions. */
-    if (
-      nodeValue.type === AST_NODE_TYPES.ArrowFunctionExpression ||
-      nodeValue.type === AST_NODE_TYPES.FunctionExpression
-    ) {
-      return
-    }
-
-    if (nodeValue.type === AST_NODE_TYPES.Identifier) {
-      dependencies.push(nodeValue.name)
-    }
-
-    if (nodeValue.type === AST_NODE_TYPES.Property) {
-      checkNode(nodeValue.key)
-      checkNode(nodeValue.value)
-    }
-
-    if (nodeValue.type === AST_NODE_TYPES.ConditionalExpression) {
-      checkNode(nodeValue.test)
-      checkNode(nodeValue.consequent)
-      checkNode(nodeValue.alternate)
-    }
-
-    if (
-      'expression' in nodeValue &&
-      typeof nodeValue.expression !== 'boolean'
-    ) {
-      checkNode(nodeValue.expression)
-    }
-
-    if ('object' in nodeValue) {
-      checkNode(nodeValue.object)
-    }
-
-    if ('callee' in nodeValue) {
-      checkNode(nodeValue.callee)
-    }
-
-    if ('left' in nodeValue) {
-      checkNode(nodeValue.left)
-    }
-
-    if ('right' in nodeValue) {
-      checkNode(nodeValue.right)
-    }
-
-    if ('elements' in nodeValue) {
-      let elements = nodeValue.elements.filter(
-        currentNode => currentNode !== null,
-      )
-
-      for (let element of elements) {
-        checkNode(element)
-      }
-    }
-
-    if ('argument' in nodeValue && nodeValue.argument) {
-      checkNode(nodeValue.argument)
-    }
-
-    if ('arguments' in nodeValue) {
-      for (let argument of nodeValue.arguments) {
-        checkNode(argument)
-      }
-    }
-
-    if ('properties' in nodeValue) {
-      for (let property of nodeValue.properties) {
-        checkNode(property)
-      }
-    }
-
-    if ('expressions' in nodeValue) {
-      for (let nodeExpression of nodeValue.expressions) {
-        checkNode(nodeExpression)
-      }
-    }
-  }
-
-  checkNode(init)
-  return dependencies
-}
