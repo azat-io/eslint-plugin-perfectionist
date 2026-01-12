@@ -16,9 +16,15 @@ import {
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import {
+  useExperimentalDependencyDetectionJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
+import { computeDependenciesOutsideFunctionsBySortingNode } from '../utils/compute-dependencies-outside-functions-by-sorting-node'
+import {
   additionalCustomGroupMatchOptionsJsonSchema,
   allSelectors,
 } from './sort-variable-declarations/types'
+import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
@@ -26,7 +32,6 @@ import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-group
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { computeDependencies } from './sort-variable-declarations/compute-dependencies'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { computeNodeName } from './sort-variable-declarations/compute-node-name'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
@@ -62,6 +67,7 @@ type MessageId =
   | typeof ORDER_ERROR_ID
 
 let defaultOptions: Required<Options[number]> = {
+  useExperimentalDependencyDetection: true,
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
   specialCharacters: 'keep',
@@ -79,8 +85,8 @@ let defaultOptions: Required<Options[number]> = {
 
 export default createEslintRule<Options, MessageId>({
   create: context => ({
-    VariableDeclaration: node => {
-      if (!isSortable(node.declarations)) {
+    VariableDeclaration: variableDeclaration => {
+      if (!isSortable(variableDeclaration.declarations)) {
         return
       }
 
@@ -103,7 +109,7 @@ export default createEslintRule<Options, MessageId>({
       let optionsByGroupIndexComputer =
         buildOptionsByGroupIndexComputer(options)
 
-      let formattedMembers = node.declarations.reduce(
+      let sortingNodeGroups = variableDeclaration.declarations.reduce(
         (accumulator: SortVariableDeclarationsSortingNode[][], declaration) => {
           let name = computeNodeName({
             node: declaration,
@@ -136,11 +142,13 @@ export default createEslintRule<Options, MessageId>({
               predefinedGroups,
               options,
             }),
+            dependencies: options.useExperimentalDependencyDetection
+              ? []
+              : computeDependencies(declaration),
             isEslintDisabled: isNodeEslintDisabled(
               declaration,
               eslintDisabledLines,
             ),
-            dependencies: computeDependencies(declaration),
             size: rangeToDiff(declaration, sourceCode),
             dependencyNames: [name],
             node: declaration,
@@ -168,7 +176,18 @@ export default createEslintRule<Options, MessageId>({
         [[]],
       )
 
-      let sortingNodes = formattedMembers.flat()
+      if (options.useExperimentalDependencyDetection) {
+        let dependenciesBySortingNode =
+          computeDependenciesOutsideFunctionsBySortingNode({
+            sortingNodes: sortingNodeGroups.flat(),
+            sourceCode,
+          })
+        sortingNodeGroups = populateSortingNodeGroupsWithDependencies({
+          dependenciesBySortingNode,
+          sortingNodeGroups,
+        })
+      }
+      let sortingNodes = sortingNodeGroups.flat()
 
       reportAllErrors<MessageId>({
         availableMessageIds: {
@@ -187,13 +206,13 @@ export default createEslintRule<Options, MessageId>({
       function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
       ): SortVariableDeclarationsSortingNode[] {
-        let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
+        let nodesSortedByGroups = sortingNodeGroups.flatMap(sortingNodeGroup =>
           sortNodesByGroups({
             comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
             optionsByGroupIndexComputer,
             ignoreEslintDisabledNodes,
+            nodes: sortingNodeGroup,
             groups: options.groups,
-            nodes,
           }),
         )
 
@@ -212,6 +231,8 @@ export default createEslintRule<Options, MessageId>({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
           }),
+          useExperimentalDependencyDetection:
+            useExperimentalDependencyDetectionJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
         },

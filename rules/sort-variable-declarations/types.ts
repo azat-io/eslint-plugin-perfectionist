@@ -14,7 +14,14 @@ import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/com
  * such as `const a = 1, b, c = 3;`.
  */
 export type Options = Partial<
-  AllCommonOptions<TypeOption, AdditionalSortOptions, CustomGroupMatchOptions>
+  {
+    /** Enables experimental dependency detection. */
+    useExperimentalDependencyDetection: boolean
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortOptions,
+    CustomGroupMatchOptions
+  >
 >[]
 
 export type SortVariableDeclarationsSortingNode =
