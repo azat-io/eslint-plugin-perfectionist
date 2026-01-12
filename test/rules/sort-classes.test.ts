@@ -4060,6 +4060,40 @@ describe('sort-classes', () => {
       },
     )
 
+    it('distinguishes between static and non-static overload signatures', async () => {
+      await invalid({
+        output: dedent`
+          class Class {
+            static method(a: string): void
+            static method(a: string | number): void {}
+
+            method(a: string): void
+            method(a: string | number): void {}
+          }
+        `,
+        code: dedent`
+          class Class {
+            static method(a: string): void
+            static method(a: string | number): void {}
+            method(a: string): void
+            method(a: string | number): void {}
+          }
+        `,
+        errors: [
+          {
+            messageId: 'missedSpacingBetweenClassMembers',
+            data: { right: 'method', left: 'method' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            newlinesBetween: 1,
+          },
+        ],
+      })
+    })
+
     it('handles "newlinesBetween" between consecutive groups', async () => {
       await invalid({
         options: [
