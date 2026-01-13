@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-classes'
 
 describe('sort-classes', () => {
@@ -13674,6 +13675,434 @@ describe('sort-classes', () => {
           },
         ],
         options: [options],
+      })
+    })
+  })
+
+  describe('custom', () => {
+    let alphabet = Alphabet.generateRecommendedAlphabet()
+      .sortByLocaleCompare('en-US')
+      .getCharacters()
+
+    let options = {
+      type: 'custom',
+      order: 'asc',
+      alphabet,
+    } as const
+
+    it('sorts class members', async () => {
+      await valid({
+        code: dedent`
+          class Class {
+            a
+          }
+        `,
+        options: [options],
+      })
+
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: [
+              'static-property',
+              'protected-property',
+              'private-property',
+              'property',
+              'constructor',
+              'static-method',
+              'static-protected-method',
+              'protected-method',
+              'private-method',
+              'method',
+              'unknown',
+            ],
+          },
+        ],
+        code: dedent`
+          class Class {
+            static a = 'a'
+
+            protected b = 'b'
+
+            private c = 'c'
+
+            d = 'd'
+
+            e = 'e'
+
+            constructor() {}
+
+            static f() {}
+
+            protected static g() {}
+
+            protected h() {}
+
+            private i() {}
+
+            j() {}
+
+            k() {}
+          }
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: [
+              'static-property',
+              'protected-property',
+              'private-property',
+              'property',
+              'constructor',
+              'static-method',
+              'static-protected-method',
+              'protected-method',
+              'private-method',
+              'method',
+              'unknown',
+            ],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'd', left: 'e' },
+          },
+          {
+            data: {
+              leftGroup: 'static-method',
+              rightGroup: 'constructor',
+              right: 'constructor',
+              left: 'f',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+        ],
+        output: dedent`
+          class Class {
+            static a = 'a'
+
+            protected b = 'b'
+
+            private c = 'c'
+
+            d = 'd'
+
+            e = 'e'
+
+            constructor() {}
+
+            static f() {}
+
+            protected static g() {}
+
+            protected h() {}
+
+            private i() {}
+
+            j() {}
+
+            k() {}
+          }
+        `,
+        code: dedent`
+          class Class {
+            static a = 'a'
+
+            protected b = 'b'
+
+            private c = 'c'
+
+            e = 'e'
+
+            d = 'd'
+
+            static f() {}
+
+            constructor() {}
+
+            protected static g() {}
+
+            protected h() {}
+
+            private i() {}
+
+            j() {}
+
+            k() {}
+          }
+        `,
+      })
+    })
+
+    it('sorts complex official groups', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'public-optional-async-method',
+              rightGroup: 'public-optional-property',
+              right: 'o',
+              left: 'p',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'public-optional-property',
+              rightGroup: 'static-block',
+              right: 'static',
+              left: 'o',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'static-readonly-index-signature',
+              right: 'static readonly [key: string]',
+              leftGroup: 'static-block',
+              left: 'static',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'static-readonly-index-signature',
+              left: 'static readonly [key: string]',
+              rightGroup: 'async-function-property',
+              right: 'n',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'm', left: 'n' },
+          },
+          {
+            data: {
+              rightGroup: 'declare-private-static-readonly-property',
+              leftGroup: 'async-function-property',
+              right: 'l',
+              left: 'm',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'declare-private-static-readonly-property',
+              rightGroup: 'private-property',
+              right: 'k',
+              left: 'l',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'protected-property',
+              leftGroup: 'private-property',
+              right: 'j',
+              left: 'k',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'protected-property',
+              rightGroup: 'public-property',
+              right: 'i',
+              left: 'j',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'private-readonly-property',
+              leftGroup: 'public-property',
+              right: 'h',
+              left: 'i',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'protected-readonly-property',
+              leftGroup: 'private-readonly-property',
+              right: 'g',
+              left: 'h',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'protected-readonly-property',
+              rightGroup: 'public-readonly-property',
+              right: 'f',
+              left: 'g',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'static-private-override-readonly-property',
+              leftGroup: 'public-readonly-property',
+              right: 'e',
+              left: 'f',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'static-protected-override-readonly-property',
+              leftGroup: 'static-private-override-readonly-property',
+              right: 'd',
+              left: 'e',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup: 'static-protected-override-readonly-property',
+              rightGroup: 'static-public-override-readonly-property',
+              right: 'c',
+              left: 'd',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              rightGroup:
+                'protected-abstract-override-readonly-decorated-property',
+              leftGroup: 'static-public-override-readonly-property',
+              right: 'b',
+              left: 'c',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+          {
+            data: {
+              leftGroup:
+                'protected-abstract-override-readonly-decorated-property',
+              rightGroup:
+                'public-abstract-override-readonly-decorated-property',
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: [
+              'unknown',
+              'public-abstract-override-readonly-decorated-property',
+              'protected-abstract-override-readonly-decorated-property',
+              'static-public-override-readonly-property',
+              'static-protected-override-readonly-property',
+              'static-private-override-readonly-property',
+              'public-readonly-property',
+              'protected-readonly-property',
+              'private-readonly-property',
+              'public-property',
+              'protected-property',
+              'private-property',
+              'declare-private-static-readonly-property',
+              'async-function-property',
+              'static-readonly-index-signature',
+              'static-block',
+              'public-optional-property',
+              'public-optional-async-method',
+            ],
+          },
+        ],
+        output: dedent`
+          abstract class Class {
+
+            @Decorator
+            abstract override readonly a;
+
+            @Decorator
+            protected abstract override readonly b;
+
+            static override readonly c = 'c';
+
+            protected static override readonly d = 'd';
+
+            private static override readonly e = 'e';
+
+            public readonly f = 'f';
+
+            protected readonly g = 'g';
+
+            private readonly h = 'h';
+
+            public i = 'i';
+
+            protected j = 'j';
+
+            private k = 'k';
+
+            declare private static readonly l;
+
+            private m = async () => {};
+
+            private n = async function() {};
+
+            static readonly [key: string]: string;
+
+            static {}
+
+            o?;
+
+            async p?(): Promise<void>;
+          }
+        `,
+        code: dedent`
+          abstract class Class {
+
+            async p?(): Promise<void>;
+
+            o?;
+
+            static {}
+
+            static readonly [key: string]: string;
+
+            private n = async function() {};
+
+            private m = async () => {};
+
+            declare private static readonly l;
+
+            private k = 'k';
+
+            protected j = 'j';
+
+            public i = 'i';
+
+            private readonly h = 'h';
+
+            protected readonly g = 'g';
+
+            public readonly f = 'f';
+
+            private static override readonly e = 'e';
+
+            protected static override readonly d = 'd';
+
+            static override readonly c = 'c';
+
+            @Decorator
+            protected abstract override readonly b;
+
+            @Decorator
+            abstract override readonly a;
+          }
+        `,
       })
     })
   })
