@@ -1663,10 +1663,7 @@ describe('sort-classes', () => {
         options: [
           {
             ...options,
-            groups: [
-              ['static-property', 'private-property', 'property'],
-              'constructor',
-            ],
+            groups: ['unknown'],
           },
         ],
       })
@@ -4040,16 +4037,16 @@ describe('sort-classes', () => {
           ],
           output: dedent`
             class Class {
-              method(a: string): void {}
-              method(a: number): void {}
+              method(a: string): void
+              method(a: number): void
               method(a: string | number): void {}
             }
           `,
           code: dedent`
             class Class {
-              method(a: string): void {}
+              method(a: string): void
 
-              method(a: number): void {}
+              method(a: number): void
 
               method(a: string | number): void {}
             }
@@ -6322,10 +6319,7 @@ describe('sort-classes', () => {
         options: [
           {
             ...options,
-            groups: [
-              ['static-property', 'private-property', 'property'],
-              'constructor',
-            ],
+            groups: ['unknown'],
           },
         ],
       })
@@ -8551,16 +8545,16 @@ describe('sort-classes', () => {
           ],
           output: dedent`
             class Class {
-              method(a: string): void {}
-              method(a: number): void {}
+              method(a: string): void
+              method(a: number): void
               method(a: string | number): void {}
             }
           `,
           code: dedent`
             class Class {
-              method(a: string): void {}
+              method(a: string): void
 
-              method(a: number): void {}
+              method(a: number): void
 
               method(a: string | number): void {}
             }
@@ -10821,10 +10815,7 @@ describe('sort-classes', () => {
         options: [
           {
             ...options,
-            groups: [
-              ['static-property', 'private-property', 'property'],
-              'constructor',
-            ],
+            groups: ['unknown'],
           },
         ],
       })
@@ -13002,16 +12993,16 @@ describe('sort-classes', () => {
           ],
           output: dedent`
             class Class {
-              method(a: string): void {}
-              method(a: number): void {}
+              method(a: string): void
+              method(a: number): void
               method(a: string | number): void {}
             }
           `,
           code: dedent`
             class Class {
-              method(a: string): void {}
+              method(a: string): void
 
-              method(a: number): void {}
+              method(a: number): void
 
               method(a: string | number): void {}
             }
@@ -14705,16 +14696,16 @@ describe('sort-classes', () => {
           ],
           output: dedent`
             class Class {
-              method(a: string): void {}
-              method(a: number): void {}
+              method(a: string): void
+              method(a: number): void
               method(a: string | number): void {}
             }
           `,
           code: dedent`
             class Class {
-              method(a: string): void {}
+              method(a: string): void
 
-              method(a: number): void {}
+              method(a: number): void
 
               method(a: string | number): void {}
             }

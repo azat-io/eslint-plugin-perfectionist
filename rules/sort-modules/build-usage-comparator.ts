@@ -92,12 +92,7 @@ function buildOrderByNodeMaps({
   orderBySortedNode: Map<SortModulesNode, number>
 } {
   let sortingNodesWithUpdatedDependencies = sortingNodes.map(
-    ({ isEslintDisabled, dependencyNames, node }) => ({
-      dependencies: computeDependencies(node, { type: 'soft' }),
-      isEslintDisabled,
-      dependencyNames,
-      node,
-    }),
+    computeSortingNodeWithUpdatedDependencies,
   )
   let sortedSortingNodes = sortNodesByDependencies(
     sortingNodesWithUpdatedDependencies,
@@ -110,6 +105,27 @@ function buildOrderByNodeMaps({
     ),
     orderBySortedNode: buildOrderByNodeMap(sortedSortingNodes),
     orderByUnsortedNode: buildOrderByNodeMap(sortingNodes),
+  }
+
+  function computeSortingNodeWithUpdatedDependencies({
+    isEslintDisabled,
+    dependencyNames,
+    node,
+  }: SortModulesSortingNode): Pick<
+    SortModulesSortingNode,
+    'isEslintDisabled' | 'dependencyNames' | 'dependencies' | 'node'
+  > {
+    let dependencies = computeDependencies(node, { type: 'soft' })
+    let dependencyNamesSet = new Set(dependencyNames)
+
+    return {
+      dependencies: dependencies.filter(
+        dependency => !dependencyNamesSet.has(dependency),
+      ),
+      isEslintDisabled,
+      dependencyNames,
+      node,
+    }
   }
 }
 
