@@ -188,6 +188,7 @@ Specifies whether to sort items in ascending or descending order.
       | 'subgroup-order'
       | 'unsorted'
     order?: 'asc' | 'desc'
+    sortBy?: 'name' | 'value'
   }
   ```
 </sub>
@@ -243,6 +244,17 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
 
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
+
+### sortBy
+
+<sub>default: `'name'`</sub>
+
+Specifies whether to sort using object keys or values.
+
+- `name` — Use object keys.
+- `value` — Use object values.
+  - Functions and arrow functions are treated as empty strings.
+  - In destructured objects, only assigned values are considered. Other values are treated as empty strings.
 
 ### partitionByComment
 
@@ -516,7 +528,8 @@ Example configuration:
           group: string | string[];
           type?: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'unsorted';
           order?: 'asc' | 'desc';
-          fallbackSort?: { type: string; order?: 'asc' | 'desc' };
+          fallbackSort?: { type: string; order?: 'asc' | 'desc'; sortBy?: 'name' | 'value' };
+          sortBy?: 'name' | 'value'
           newlinesInside?: number | 'ignore';
         }
     >
@@ -615,6 +628,7 @@ You may directly override options for a specific group by using an object with t
 - `type` — Overrides the [`type`](#type) option for that group.
 - `order` — Overrides the [`order`](#order) option for that group.
 - `fallbackSort` — Overrides the [`fallbackSort`](#fallbacksort) option for that group.
+- `sortBy` — Overrides the [`sortBy`](#sortby) option for that group.
 - `newlinesInside` — Overrides the [`newlinesInside`](#newlinesinside) option for that group.
 
 ```ts
@@ -689,7 +703,8 @@ interface CustomGroupDefinition {
   groupName: string
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
-  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  fallbackSort?: { type: string; order?: 'asc' | 'desc'; sortBy?: 'name' | 'value' }
+  sortBy?: 'name' | 'value'
   newlinesInside?: number | 'ignore'
   selector?: string
   modifiers?: string[]
@@ -707,7 +722,8 @@ interface CustomGroupAnyOfDefinition {
   groupName: string
   type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted'
   order?: 'asc' | 'desc'
-  fallbackSort?: { type: string; order?: 'asc' | 'desc' }
+  fallbackSort?: { type: string; order?: 'asc' | 'desc'; sortBy?: 'name' | 'value' }
+  sortBy?: 'name' | 'value'
   newlinesInside?: number | 'ignore'
   anyOf: Array<{
       selector?: string
@@ -729,6 +745,7 @@ An object will match a `CustomGroupAnyOfDefinition` group if it matches all the 
 - `elementValuePattern` — Only for non-function properties. If entered, will check that the value of the property matches the pattern entered.
 - `type` — Overrides the [`type`](#type) option for that custom group.
 - `order` — Overrides the [`order`](#order) option for that custom group.
+- `sortBy` — Overrides the [`sortBy`](#sortby) option for that custom group.
 - `fallbackSort` — Overrides the [`fallbackSort`](#fallbacksort) option for that custom group.
 - `newlinesInside` — Overrides the [`newlinesInside`](#newlinesinside) option for that custom group.
 
@@ -805,6 +822,7 @@ let user = {
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
+                  sortBy: 'name',
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
@@ -838,6 +856,7 @@ let user = {
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
+                sortBy: 'name',
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
