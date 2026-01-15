@@ -125,110 +125,94 @@ export default createEslintRule<Options, MessageId>({
       let optionsByGroupIndexComputer =
         buildOptionsByGroupIndexComputer(options)
 
-      function formatProperties(
-        props: (
-          | TSESTree.ObjectLiteralElement
-          | TSESTree.RestElement
-          | TSESTree.Property
-        )[],
-      ): SortObjectsSortingNode[][] {
-        return props.reduce(
-          (accumulator: SortObjectsSortingNode[][], property) => {
-            if (
-              property.type === AST_NODE_TYPES.SpreadElement ||
-              property.type === AST_NODE_TYPES.RestElement
-            ) {
-              accumulator.push([])
-              return accumulator
-            }
+      let sortingNodeGroups: SortObjectsSortingNode[][] = [[]]
+      for (let property of nodeObject.properties) {
+        if (
+          property.type === AST_NODE_TYPES.SpreadElement ||
+          property.type === AST_NODE_TYPES.RestElement
+        ) {
+          sortingNodeGroups.push([])
+          continue
+        }
 
-            let lastSortingNode = accumulator.at(-1)?.at(-1)
+        let lastSortingNode = sortingNodeGroups.at(-1)?.at(-1)
 
-            let selectors: Selector[] = []
-            let modifiers: Modifier[] = []
+        let selectors: Selector[] = []
+        let modifiers: Modifier[] = []
 
-            if (
-              property.value.type === AST_NODE_TYPES.ArrowFunctionExpression ||
-              property.value.type === AST_NODE_TYPES.FunctionExpression
-            ) {
-              selectors.push('method')
-            } else {
-              selectors.push('property')
-            }
+        if (
+          property.value.type === AST_NODE_TYPES.ArrowFunctionExpression ||
+          property.value.type === AST_NODE_TYPES.FunctionExpression
+        ) {
+          selectors.push('method')
+        } else {
+          selectors.push('property')
+        }
 
-            selectors.push('member')
+        selectors.push('member')
 
-            if (!isNodeOnSingleLine(property)) {
-              modifiers.push('multiline')
-            }
+        if (!isNodeOnSingleLine(property)) {
+          modifiers.push('multiline')
+        }
 
-            let name = computePropertyOrVariableDeclaratorName({
-              node: property,
-              sourceCode,
-            })
-            let dependencyNames = [name]
-            if (isDestructuredObject) {
-              dependencyNames = [
-                ...new Set(extractNamesFromPattern(property.value)),
-              ]
-            }
-            let predefinedGroups = generatePredefinedGroups({
-              cache: cachedGroupsByModifiersAndSelectors,
+        let name = computePropertyOrVariableDeclaratorName({
+          node: property,
+          sourceCode,
+        })
+        let dependencyNames = [name]
+        if (isDestructuredObject) {
+          dependencyNames = [
+            ...new Set(extractNamesFromPattern(property.value)),
+          ]
+        }
+        let predefinedGroups = generatePredefinedGroups({
+          cache: cachedGroupsByModifiersAndSelectors,
+          selectors,
+          modifiers,
+        })
+        let group = computeGroup({
+          customGroupMatcher: customGroup =>
+            doesCustomGroupMatch({
+              elementValue: getNodeValue({
+                sourceCode,
+                property,
+              }),
+              elementName: name,
+              customGroup,
               selectors,
               modifiers,
-            })
-            let group = computeGroup({
-              customGroupMatcher: customGroup =>
-                doesCustomGroupMatch({
-                  elementValue: getNodeValue({
-                    sourceCode,
-                    property,
-                  }),
-                  elementName: name,
-                  customGroup,
-                  selectors,
-                  modifiers,
-                }),
-              predefinedGroups,
-              options,
-            })
+            }),
+          predefinedGroups,
+          options,
+        })
 
-            let sortingNode: Omit<SortObjectsSortingNode, 'partitionId'> = {
-              isEslintDisabled: isNodeEslintDisabled(
-                property,
-                eslintDisabledLines,
-              ),
-              dependencies: computeDependencies(property),
-              size: rangeToDiff(property, sourceCode),
-              dependencyNames,
-              node: property,
-              group,
-              name,
-            }
+        let sortingNode: Omit<SortObjectsSortingNode, 'partitionId'> = {
+          isEslintDisabled: isNodeEslintDisabled(property, eslintDisabledLines),
+          dependencies: computeDependencies(property),
+          size: rangeToDiff(property, sourceCode),
+          dependencyNames,
+          node: property,
+          group,
+          name,
+        }
 
-            if (
-              shouldPartition({
-                lastSortingNode,
-                sortingNode,
-                sourceCode,
-                options,
-              })
-            ) {
-              accumulator.push([])
-            }
+        if (
+          shouldPartition({
+            lastSortingNode,
+            sortingNode,
+            sourceCode,
+            options,
+          })
+        ) {
+          sortingNodeGroups.push([])
+        }
 
-            accumulator.at(-1)!.push({
-              ...sortingNode,
-              partitionId: accumulator.length,
-            })
-
-            return accumulator
-          },
-          [[]],
-        )
+        sortingNodeGroups.at(-1)!.push({
+          ...sortingNode,
+          partitionId: sortingNodeGroups.length,
+        })
       }
 
-      let sortingNodeGroups = formatProperties(nodeObject.properties)
       let sortingNodes = sortingNodeGroups.flat()
 
       reportAllErrors<MessageId>({
