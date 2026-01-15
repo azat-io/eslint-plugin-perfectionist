@@ -1,6 +1,9 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { CommonGroupsOptions } from '../types/common-groups-options'
+import type {
+  NewlinesBetweenOption,
+  CommonGroupsOptions,
+} from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { getNewlinesBetweenOption } from './get-newlines-between-option'
@@ -21,10 +24,10 @@ import { getLinesBetween } from './get-lines-between'
  * @returns Number of required newlines or 'ignore' to skip checking.
  */
 export type NewlinesBetweenValueGetter<T extends SortingNode> = (props: {
-  computedNewlinesBetween: 'ignore' | number
+  computedNewlinesBetween: NewlinesBetweenOption
   right: T
   left: T
-}) => 'ignore' | number
+}) => NewlinesBetweenOption
 
 /**
  * Parameters for checking newlines between nodes and generating errors.

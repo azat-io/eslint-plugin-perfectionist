@@ -1,11 +1,8 @@
-import type {
-  SortModulesSortingNode,
-  SortModulesOptions,
-  SortModulesNode,
-} from './types'
 import type { Comparator } from '../../utils/compare/default-comparator-by-options-computer'
+import type { SortModulesSortingNode, SortModulesNode, Options } from './types'
 
 import { isNodeDependentOnOtherNode } from '../../utils/is-node-dependent-on-other-node'
+import { buildSortingNodeByNodeMap } from '../../utils/build-sorting-node-by-node-map'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
 import { computeOrderedValue } from '../../utils/compare/compute-ordered-value'
 import { computeDependencies } from './compute-dependencies'
@@ -30,8 +27,8 @@ export function buildUsageComparator({
   sortingNodes,
   options,
 }: {
-  options: Required<SortModulesOptions[number]>
   sortingNodes: SortModulesSortingNode[]
+  options: Required<Options[number]>
   ignoreEslintDisabledNodes: boolean
 }): Comparator<SortModulesSortingNode> {
   let { updatedSortingNodeByNode, orderByUnsortedNode, orderBySortedNode } =
@@ -100,7 +97,7 @@ function buildOrderByNodeMaps({
   )
 
   return {
-    updatedSortingNodeByNode: buildUpdatedSortingNodeByNodeMap(
+    updatedSortingNodeByNode: buildSortingNodeByNodeMap(
       sortingNodesWithUpdatedDependencies,
     ),
     orderBySortedNode: buildOrderByNodeMap(sortedSortingNodes),
@@ -127,19 +124,6 @@ function buildOrderByNodeMaps({
       node,
     }
   }
-}
-
-function buildUpdatedSortingNodeByNodeMap(
-  sortingNodes: Pick<
-    SortModulesSortingNode,
-    'dependencyNames' | 'dependencies' | 'node'
-  >[],
-): Map<SortModulesNode, SortingNodeWithDependencies> {
-  let returnValue = new Map<SortModulesNode, SortingNodeWithDependencies>()
-  for (let sortingNode of sortingNodes) {
-    returnValue.set(sortingNode.node, sortingNode)
-  }
-  return returnValue
 }
 
 function buildOrderByNodeMap(

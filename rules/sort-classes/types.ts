@@ -1,5 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
+import type { TSESTree } from '@typescript-eslint/types'
 
+import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { AllCommonOptions } from '../../types/all-common-options'
 
@@ -15,7 +17,7 @@ import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schem
  * This rule enforces consistent ordering of class members (properties, methods,
  * constructors, etc.) to improve code readability and maintainability.
  */
-export type SortClassesOptions = [
+export type Options = [
   Partial<
     {
       /**
@@ -31,6 +33,13 @@ export type SortClassesOptions = [
     >
   >,
 ]
+
+export interface SortClassesSortingNode extends SortingNodeWithDependencies<TSESTree.ClassElement> {
+  overloadSignatureImplementation:
+    | TSESTree.TSAbstractMethodDefinition
+    | TSESTree.MethodDefinition
+    | null
+}
 
 /**
  * Union type of all available class member selectors. Used to identify and
