@@ -8135,18 +8135,26 @@ describe('sort-object-types', () => {
       })
     })
 
-    it('allows sorting by value', async () => {
+    it('sorts as usual by line-length when using sortBy: value', async () => {
       await invalid({
         errors: [
           {
             messageId: 'unexpectedObjectTypesOrder',
-            data: { right: 'b', left: 'a' },
+            data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
           type Type = {
-            b: 'aa'
-            a: 'b'
+            b: 'aaaa'
+            aa: 'c'
+            c: 'b'
+          }
+        `,
+        code: dedent`
+          type Type = {
+            aa: 'c'
+            c: 'b'
+            b: 'aaaa'
           }
         `,
         options: [
@@ -8155,12 +8163,6 @@ describe('sort-object-types', () => {
             ...options,
           },
         ],
-        code: dedent`
-          type Type = {
-            a: 'b'
-            b: 'aa'
-          }
-        `,
       })
     })
 
