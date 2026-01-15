@@ -3,18 +3,20 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { SortModulesNode, Modifier, Selector } from './types'
+import type {
+  DependencyDetection,
+  SortModulesNode,
+  Modifier,
+  Selector,
+} from './types'
 
-import { isPropertyOrAccessorNode } from './is-property-or-accessor-node'
 import { getNodeDecorators } from '../../utils/get-node-decorators'
 import { getDecoratorName } from '../../utils/get-decorator-name'
-import { isArrowFunctionNode } from './is-arrow-function-node'
-import { computeDependencies } from './compute-dependencies'
 
 interface ParsableNodeDetails {
   nodeDetails: {
+    dependencyDetection: DependencyDetection
     addSafetySemicolonWhenInline: boolean
-    dependencies: string[]
     modifiers: Modifier[]
     decorators: string[]
     selector: Selector
@@ -49,12 +51,12 @@ export function computeNodeDetails({
   let selector: undefined | Selector
   let name: undefined | string
   let modifiers: Modifier[] = []
-  let dependencies: string[] = []
   let decorators: string[] = []
   let addSafetySemicolonWhenInline: boolean = false
   let moduleBlock: TSESTree.TSModuleBlock | null = null
   let shouldPartitionAfterNode: boolean = false
   let ignoredDueToDecoratorBeforeExportClass: boolean = false
+  let dependencyDetection: DependencyDetection = 'soft'
   let exportNode:
     | TSESTree.ExportDefaultDeclaration
     | TSESTree.ExportNamedDeclaration
@@ -72,7 +74,7 @@ export function computeNodeDetails({
   return {
     nodeDetails: {
       addSafetySemicolonWhenInline,
-      dependencies,
+      dependencyDetection,
       decorators,
       modifiers,
       selector,
@@ -132,7 +134,7 @@ export function computeNodeDetails({
       case AST_NODE_TYPES.TSEnumDeclaration:
         selector = 'enum'
         ;({ name } = nodeToParse.id)
-        dependencies = [...dependencies, ...extractDependencies(nodeToParse)]
+        dependencyDetection = 'hard'
         break
       case AST_NODE_TYPES.ClassDeclaration:
         selector = 'class'
@@ -152,36 +154,13 @@ export function computeNodeDetails({
             decorator,
           }),
         )
-        dependencies = [...dependencies, ...extractDependencies(nodeToParse)]
+        dependencyDetection = 'hard'
         break
       /* v8 ignore next 2 -- @preserve Unhandled cases */
       default:
         break
     }
   }
-}
-
-function extractDependencies(
-  expression: TSESTree.TSEnumDeclaration | TSESTree.ClassDeclaration,
-): string[] {
-  /**
-   * Search static methods only if there is a static block or a static property
-   * that is not an arrow function.
-   */
-  let searchStaticMethodsAndFunctionProperties =
-    expression.type === AST_NODE_TYPES.ClassDeclaration &&
-    expression.body.body.some(
-      classElement =>
-        classElement.type === AST_NODE_TYPES.StaticBlock ||
-        (classElement.static &&
-          isPropertyOrAccessorNode(classElement) &&
-          !isArrowFunctionNode(classElement)),
-    )
-
-  return computeDependencies(expression, {
-    searchStaticMethodsAndFunctionProperties,
-    type: 'hard',
-  })
 }
 
 function isExportAfterDecorators({

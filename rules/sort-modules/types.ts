@@ -22,6 +22,12 @@ export type SortModulesNode =
   | TSESTree.TSEnumDeclaration
   | TSESTree.ClassDeclaration
 
+/** Represents a sorting node for a module statement. */
+export type SortModulesSortingNode = {
+  overloadSignatureImplementation: SortModulesNode | null
+  dependencyDetection: DependencyDetection
+} & SortingNodeWithDependencies<SortModulesNode>
+
 /**
  * Configuration options for the sort-modules rule.
  *
@@ -38,11 +44,6 @@ export type Options = [
   >,
 ]
 
-/** Represents a sorting node for a module statement. */
-export type SortModulesSortingNode = {
-  overloadSignatureImplementation: SortModulesNode | null
-} & SortingNodeWithDependencies<SortModulesNode>
-
 /**
  * Union type of all available module member selectors. Used to categorize
  * different types of module-level declarations.
@@ -54,6 +55,8 @@ export type Selector = (typeof allSelectors)[number]
  * specific characteristics of module declarations.
  */
 export type Modifier = (typeof allModifiers)[number]
+
+export type DependencyDetection = 'soft' | 'hard'
 
 /**
  * Additional configuration for a single custom group.

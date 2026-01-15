@@ -13,17 +13,20 @@ export type ShouldIgnoreIdentifierComputer<T> = (parameters: {
 export type AdditionalIdentifierDependenciesComputer<T> = (parameters: {
   identifier: TSESTree.JSXIdentifier | TSESTree.Identifier
 }) => T[]
+export type ShouldIgnoreSortingNodeComputer<T> = (sortingNode: T) => boolean
 
 export function computeDependenciesBySortingNode<
   Node extends TSESTree.Node,
   T extends Pick<SortingNodeWithDependencies<Node>, 'dependencyNames' | 'node'>,
 >({
   additionalIdentifierDependenciesComputer,
+  shouldIgnoreSortingNodeComputer,
   shouldIgnoreIdentifierComputer,
   sortingNodes,
   sourceCode,
 }: {
   additionalIdentifierDependenciesComputer?: AdditionalIdentifierDependenciesComputer<T>
+  shouldIgnoreSortingNodeComputer?: ShouldIgnoreSortingNodeComputer<T>
   shouldIgnoreIdentifierComputer?: ShouldIgnoreIdentifierComputer<T>
   sourceCode: TSESLint.SourceCode
   sortingNodes: T[]
@@ -47,12 +50,16 @@ export function computeDependenciesBySortingNode<
     if (!referencingSortingNode) {
       continue
     }
+    if (shouldIgnoreSortingNodeComputer?.(referencingSortingNode)) {
+      continue
+    }
 
     let referencedNodes = returnValue.get(referencingSortingNode) ?? []
     returnValue.set(referencingSortingNode, referencedNodes)
 
     referencedNodes.push(
       ...computeMainIdentifierDependencies({
+        shouldIgnoreSortingNodeComputer,
         shouldIgnoreIdentifierComputer,
         referencingSortingNode,
         sortingNodes,
@@ -72,12 +79,16 @@ function computeMainIdentifierDependencies<
   Node extends TSESTree.Node,
   T extends Pick<SortingNodeWithDependencies<Node>, 'node'>,
 >({
+  shouldIgnoreSortingNodeComputer,
   shouldIgnoreIdentifierComputer,
   referencingSortingNode,
   sortingNodes,
   identifier,
   resolved,
 }: {
+  shouldIgnoreSortingNodeComputer:
+    | ShouldIgnoreSortingNodeComputer<T>
+    | undefined
   shouldIgnoreIdentifierComputer: ShouldIgnoreIdentifierComputer<T> | undefined
   identifier: TSESTree.JSXIdentifier | TSESTree.Identifier
   resolved: TSESLint.Scope.Variable
@@ -103,6 +114,9 @@ function computeMainIdentifierDependencies<
     firstIdentifier,
   )
   if (!referencedSortingNode) {
+    return []
+  }
+  if (shouldIgnoreSortingNodeComputer?.(referencedSortingNode)) {
     return []
   }
 
