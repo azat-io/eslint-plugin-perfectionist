@@ -2,6 +2,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { SortImportsNode } from './types'
+
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 
 /**
@@ -10,12 +12,7 @@ import { UnreachableCaseError } from '../../utils/unreachable-case-error'
  * @param node - The AST node representing an import-like declaration.
  * @returns The names of the dependencies.
  */
-export function computeDependencies(
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration,
-): string[] {
+export function computeDependencies(node: SortImportsNode): string[] {
   switch (node.type) {
     case AST_NODE_TYPES.TSImportEqualsDeclaration:
       return computeImportEqualsDeclarationDependencies(node)

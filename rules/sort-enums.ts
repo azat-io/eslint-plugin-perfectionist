@@ -15,8 +15,10 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
+import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildComparatorByOptionsComputer } from './sort-enums/build-comparator-by-options-computer'
+import { computeDependenciesBySortingNode } from './sort-enums/compute-dependencies-by-sorting-node'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
@@ -97,47 +99,14 @@ export default createEslintRule<Options, MessageId>({
       let optionsByGroupIndexComputer =
         buildOptionsByGroupIndexComputer(options)
 
-      function extractDependencies(
-        expression: TSESTree.Expression,
-        enumName: string,
-      ): string[] {
-        let dependencies: string[] = []
-        let stack: TSESTree.Node[] = [expression]
-
-        while (stack.length > 0) {
-          let node = stack.pop()!
-          if (
-            node.type === AST_NODE_TYPES.MemberExpression &&
-            node.object.type === AST_NODE_TYPES.Identifier &&
-            node.object.name === enumName &&
-            node.property.type === AST_NODE_TYPES.Identifier
-          ) {
-            dependencies.push(node.property.name)
-          } else if (node.type === AST_NODE_TYPES.Identifier) {
-            dependencies.push(node.name)
-          }
-
-          if ('left' in node) {
-            stack.push(node.left)
-          }
-          if ('right' in node) {
-            stack.push(node.right)
-          }
-          if ('expressions' in node) {
-            stack.push(...node.expressions)
-          }
-        }
-
-        return dependencies
-      }
-
-      let formattedMembers: SortEnumsSortingNode[][] = members.reduce(
-        (accumulator: SortEnumsSortingNode[][], member) => {
-          let dependencies = extractDependencies(
-            member.initializer!,
-            enumDeclaration.id.name,
-          )
-
+      let sortingNodeGroupsWithoutDependencies: Omit<
+        SortEnumsSortingNode,
+        'dependencies'
+      >[][] = members.reduce(
+        (
+          accumulator: Omit<SortEnumsSortingNode, 'dependencies'>[][],
+          member,
+        ) => {
           let name =
             member.id.type === AST_NODE_TYPES.Literal
               ? member.id.value
@@ -157,7 +126,10 @@ export default createEslintRule<Options, MessageId>({
           })
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
-          let sortingNode: Omit<SortEnumsSortingNode, 'partitionId'> = {
+          let sortingNode: Omit<
+            SortEnumsSortingNode,
+            'dependencies' | 'partitionId'
+          > = {
             value:
               member.initializer?.type === AST_NODE_TYPES.Literal
                 ? (member.initializer.value?.toString() ?? null)
@@ -167,7 +139,6 @@ export default createEslintRule<Options, MessageId>({
             size: rangeToDiff(member, sourceCode),
             dependencyNames: [name],
             node: member,
-            dependencies,
             group,
             name,
           }
@@ -192,30 +163,21 @@ export default createEslintRule<Options, MessageId>({
         [[]],
       )
 
-      let nodes = formattedMembers.flat()
+      let dependenciesBySortingNode = computeDependenciesBySortingNode({
+        sortingNodes: sortingNodeGroupsWithoutDependencies.flat(),
+        enumName: enumDeclaration.id.name,
+        sourceCode,
+      })
+      let sortingNodeGroups: SortEnumsSortingNode[][] =
+        populateSortingNodeGroupsWithDependencies({
+          sortingNodeGroups: sortingNodeGroupsWithoutDependencies,
+          dependenciesBySortingNode,
+        })
+      let sortingNodes = sortingNodeGroups.flat()
 
-      let isNumericEnum = nodes.every(
+      let isNumericEnum = sortingNodes.every(
         sortingNode => sortingNode.numericValue !== null,
       )
-
-      function sortNodesExcludingEslintDisabled(
-        ignoreEslintDisabledNodes: boolean,
-      ): SortEnumsSortingNode[] {
-        let nodesSortedByGroups = formattedMembers.flatMap(sortingNodes =>
-          sortNodesByGroups({
-            comparatorByOptionsComputer:
-              buildComparatorByOptionsComputer(isNumericEnum),
-            optionsByGroupIndexComputer,
-            ignoreEslintDisabledNodes,
-            groups: options.groups,
-            nodes: sortingNodes,
-          }),
-        )
-
-        return sortNodesByDependencies(nodesSortedByGroups, {
-          ignoreEslintDisabledNodes,
-        })
-      }
 
       reportAllErrors<MessageId>({
         availableMessageIds: {
@@ -226,10 +188,29 @@ export default createEslintRule<Options, MessageId>({
           unexpectedOrder: ORDER_ERROR_ID,
         },
         sortNodesExcludingEslintDisabled,
+        nodes: sortingNodes,
         options,
         context,
-        nodes,
       })
+
+      function sortNodesExcludingEslintDisabled(
+        ignoreEslintDisabledNodes: boolean,
+      ): SortEnumsSortingNode[] {
+        let nodesSortedByGroups = sortingNodeGroups.flatMap(sortingNodeGroup =>
+          sortNodesByGroups({
+            comparatorByOptionsComputer:
+              buildComparatorByOptionsComputer(isNumericEnum),
+            optionsByGroupIndexComputer,
+            ignoreEslintDisabledNodes,
+            nodes: sortingNodeGroup,
+            groups: options.groups,
+          }),
+        )
+
+        return sortNodesByDependencies(nodesSortedByGroups, {
+          ignoreEslintDisabledNodes,
+        })
+      }
     },
   }),
   meta: {

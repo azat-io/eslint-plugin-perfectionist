@@ -9,12 +9,16 @@ import type { NodeOfType } from '../types/node-of-type'
  * @param options - Options for the search.
  * @param options.allowedTypes - Array of AST node types to match.
  * @param options.node - Starting node to search from.
+ * @param options.maxParent - Optional maximum exclusive parent node to stop the
+ *   search at.
  * @returns List of matching parent nodes.
  */
 export function computeParentNodesWithTypes<NodeType extends AST_NODE_TYPES>({
   allowedTypes,
+  maxParent,
   node,
 }: {
+  maxParent?: TSESTree.Node
   allowedTypes: NodeType[]
   node: TSESTree.Node
 }): NodeOfType<NodeType>[] {
@@ -23,6 +27,9 @@ export function computeParentNodesWithTypes<NodeType extends AST_NODE_TYPES>({
 
   let { parent } = node
   while (parent) {
+    if (parent === maxParent) {
+      break
+    }
     if (allowedTypesSet.has(parent.type)) {
       returnValue.push(parent as NodeOfType<NodeType>)
     }

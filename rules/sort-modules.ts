@@ -1,5 +1,5 @@
-import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
+import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
@@ -24,8 +24,10 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
+import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildComparatorByOptionsComputer } from './sort-modules/build-comparator-by-options-computer'
+import { computeDependenciesBySortingNode } from './sort-modules/compute-dependencies-by-sorting-node'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeOverloadSignatureGroups } from './sort-modules/compute-overload-signature-groups'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
@@ -177,9 +179,9 @@ function analyzeModule({
   let overloadSignatureNewlinesBetweenValueGetter =
     buildOverloadSignatureNewlinesBetweenValueGetter()
 
-  let sortingNodeGroupsWithoutOverloadSignature: Omit<
+  let partialSortingNodeGroups: Omit<
     SortModulesSortingNode,
-    'overloadSignatureImplementation'
+    'overloadSignatureImplementation' | 'dependencies'
   >[][] = [[]]
   for (let node of module.body) {
     switch (node.type) {
@@ -192,7 +194,7 @@ function analyzeModule({
         break
       case AST_NODE_TYPES.VariableDeclaration:
       case AST_NODE_TYPES.ExpressionStatement:
-        sortingNodeGroupsWithoutOverloadSignature.push([])
+        partialSortingNodeGroups.push([])
         continue
       case AST_NODE_TYPES.TSDeclareFunction:
       case AST_NODE_TYPES.TSEnumDeclaration:
@@ -206,7 +208,7 @@ function analyzeModule({
 
     if (!details.nodeDetails) {
       if (details.shouldPartitionAfterNode) {
-        sortingNodeGroupsWithoutOverloadSignature.push([])
+        partialSortingNodeGroups.push([])
       }
       if (details.moduleBlock) {
         analyzeModule({
@@ -222,7 +224,7 @@ function analyzeModule({
 
     let {
       addSafetySemicolonWhenInline,
-      dependencies,
+      dependencyDetection,
       decorators,
       modifiers,
       selector,
@@ -249,21 +251,19 @@ function analyzeModule({
 
     let sortingNode: Omit<
       SortModulesSortingNode,
-      'overloadSignatureImplementation' | 'partitionId'
+      'overloadSignatureImplementation' | 'dependencies' | 'partitionId'
     > = {
       isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
       size: rangeToDiff(node, sourceCode),
       addSafetySemicolonWhenInline,
       dependencyNames: [name],
-      dependencies,
+      dependencyDetection,
       group,
       name,
       node,
     }
 
-    let lastSortingNode = sortingNodeGroupsWithoutOverloadSignature
-      .at(-1)
-      ?.at(-1)
+    let lastSortingNode = partialSortingNodeGroups.at(-1)?.at(-1)
     if (
       shouldPartition({
         lastSortingNode,
@@ -272,22 +272,34 @@ function analyzeModule({
         options,
       })
     ) {
-      sortingNodeGroupsWithoutOverloadSignature.push([])
+      partialSortingNodeGroups.push([])
     }
 
-    sortingNodeGroupsWithoutOverloadSignature.at(-1)?.push({
+    partialSortingNodeGroups.at(-1)?.push({
       ...sortingNode,
-      partitionId: sortingNodeGroupsWithoutOverloadSignature.length,
+      partitionId: partialSortingNodeGroups.length,
     })
   }
 
   let overloadSignatureGroups = computeOverloadSignatureGroups(
-    sortingNodeGroupsWithoutOverloadSignature.flat().map(({ node }) => node),
+    partialSortingNodeGroups.flat().map(({ node }) => node),
   )
-  let sortingNodeGroups = populateSortingNodeGroupsWithOverloadSignature({
-    sortingNodeGroups: sortingNodeGroupsWithoutOverloadSignature,
-    overloadSignatureGroups,
+  let sortingNodeGroupsWithOverloadSignature =
+    populateSortingNodeGroupsWithOverloadSignature({
+      sortingNodeGroups: partialSortingNodeGroups,
+      overloadSignatureGroups,
+    })
+
+  let dependenciesBySortingNode = computeDependenciesBySortingNode({
+    sortingNodes: sortingNodeGroupsWithOverloadSignature.flat(),
+    dependencyDetection: 'hard',
+    sourceCode,
   })
+  let sortingNodeGroups = populateSortingNodeGroupsWithDependencies({
+    sortingNodeGroups: sortingNodeGroupsWithOverloadSignature,
+    dependenciesBySortingNode,
+  })
+
   let sortingNodes = sortingNodeGroups.flat()
 
   reportAllErrors<MessageId, SortModulesSortingNode>({
@@ -308,18 +320,19 @@ function analyzeModule({
   function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
   ): SortModulesSortingNode[] {
-    let nodesSortedByGroups = sortingNodeGroups.flatMap(nodes =>
+    let nodesSortedByGroups = sortingNodeGroups.flatMap(sortingNodeGroup =>
       sortNodesByGroups({
         comparatorByOptionsComputer: buildComparatorByOptionsComputer({
+          sortingNodes: sortingNodeGroup,
           ignoreEslintDisabledNodes,
-          sortingNodes: nodes,
+          sourceCode,
         }),
         isNodeIgnored: sortingNode =>
           getGroupIndex(options.groups, sortingNode) === options.groups.length,
         optionsByGroupIndexComputer,
         ignoreEslintDisabledNodes,
+        nodes: sortingNodeGroup,
         groups: options.groups,
-        nodes,
       }),
     )
 

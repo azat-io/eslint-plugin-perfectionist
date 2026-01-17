@@ -8926,7 +8926,7 @@ describe('sort-modules', () => {
       })
     })
 
-    it('ignores usages in simple arguments', async () => {
+    it('ignores usages in arguments', async () => {
       await valid({
         options: [
           {
@@ -8939,6 +8939,52 @@ describe('sort-modules', () => {
 
           type B = 'b'
         `,
+      })
+
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+        code: dedent`
+          type B = 'b'
+
+          function a(...B) {}
+        `,
+      })
+
+      await valid({
+        code: dedent`
+          type B = 'b'
+
+          class A {
+            a = (...B) => {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
+      })
+
+      await valid({
+        code: dedent`
+          type B = 'b'
+
+          class A {
+            a(...B) {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['unknown'],
+          },
+        ],
       })
     })
 
@@ -9005,124 +9051,24 @@ describe('sort-modules', () => {
       })
     })
 
-    /* Unhandled cases */
-    it("doesn't support the following cases", async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'B', left: 'a' },
-          },
-        ],
+    it('ignores usages in generics', async () => {
+      await valid({
         options: [
           {
             ...options,
             groups: ['unknown'],
           },
         ],
-        output: dedent`
-          type B = 'b'
-
-          function a(...B) {}
-        `,
-        code: dedent`
-          function a(...B) {}
-
-          type B = 'b'
-        `,
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'B', left: 'A' },
-          },
-        ],
-        output: dedent`
-          type B = 'b'
-
-          class A {
-            a = (...B) => {}
-          }
-        `,
-        code: dedent`
-          class A {
-            a = (...B) => {}
-          }
-
-          type B = 'b'
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'B', left: 'A' },
-          },
-        ],
-        output: dedent`
-          type B = 'b'
-
-          class A {
-            a(...B) {}
-          }
-        `,
-        code: dedent`
-          class A {
-            a(...B) {}
-          }
-
-          type B = 'b'
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'B', left: 'A' },
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        output: dedent`
-          type B = 'b'
-
-          type A<B> = void
-        `,
         code: dedent`
           type A<B> = void
 
           type B = 'b'
         `,
       })
+    })
 
-      await invalid({
-        output: dedent`
-          type B = Something;
-
-          type A = {
-            field: typeof B
-          }
-        `,
+    it('ignores usages in typeof', async () => {
+      await valid({
         code: dedent`
           type A = {
             field: typeof B
@@ -9136,21 +9082,11 @@ describe('sort-modules', () => {
             groups: ['unknown'],
           },
         ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
       })
+    })
 
-      await invalid({
-        output: dedent`
-          type B = 'b';
-
-          type A<T> = T extends {
-            (...args: any[]): infer B;
-          } ? Foo : Bar
-        `,
+    it('ignores usages in infer', async () => {
+      await valid({
         code: dedent`
           type A<T> = T extends {
             (...args: any[]): infer B;
@@ -9162,11 +9098,6 @@ describe('sort-modules', () => {
           {
             ...options,
             groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
           },
         ],
       })

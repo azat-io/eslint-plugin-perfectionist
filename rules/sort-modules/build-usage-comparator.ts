@@ -1,13 +1,16 @@
+import type { TSESLint } from '@typescript-eslint/utils'
+
 import type { Comparator } from '../../utils/compare/default-comparator-by-options-computer'
 import type { SortModulesSortingNode, SortModulesNode, Options } from './types'
 
+import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
+import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
 import { isNodeDependentOnOtherNode } from '../../utils/is-node-dependent-on-other-node'
 import { buildSortingNodeByNodeMap } from '../../utils/build-sorting-node-by-node-map'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
 import { computeOrderedValue } from '../../utils/compare/compute-ordered-value'
-import { computeDependencies } from './compute-dependencies'
 
-type SortingNodeWithDependencies = Pick<
+type PartialSortModulesSortingNode = Pick<
   SortModulesSortingNode,
   'dependencyNames' | 'dependencies' | 'node'
 >
@@ -25,17 +28,21 @@ type SortingNodeWithDependencies = Pick<
 export function buildUsageComparator({
   ignoreEslintDisabledNodes,
   sortingNodes,
+  sourceCode,
   options,
 }: {
   sortingNodes: SortModulesSortingNode[]
   options: Required<Options[number]>
   ignoreEslintDisabledNodes: boolean
+  sourceCode: TSESLint.SourceCode
 }): Comparator<SortModulesSortingNode> {
   let { updatedSortingNodeByNode, orderByUnsortedNode, orderBySortedNode } =
     buildOrderByNodeMaps({
       ignoreEslintDisabledNodes,
       sortingNodes,
+      sourceCode,
     })
+
   return (a, b) => {
     let nodeA = a.node
     let nodeB = b.node
@@ -80,17 +87,27 @@ export function buildUsageComparator({
 function buildOrderByNodeMaps({
   ignoreEslintDisabledNodes,
   sortingNodes,
+  sourceCode,
 }: {
   sortingNodes: SortModulesSortingNode[]
   ignoreEslintDisabledNodes: boolean
+  sourceCode: TSESLint.SourceCode
 }): {
-  updatedSortingNodeByNode: Map<SortModulesNode, SortingNodeWithDependencies>
+  updatedSortingNodeByNode: Map<SortModulesNode, PartialSortModulesSortingNode>
   orderByUnsortedNode: Map<SortModulesNode, number>
   orderBySortedNode: Map<SortModulesNode, number>
 } {
-  let sortingNodesWithUpdatedDependencies = sortingNodes.map(
-    computeSortingNodeWithUpdatedDependencies,
-  )
+  let dependenciesBySortingNode = computeDependenciesBySortingNode({
+    dependencyDetection: 'soft',
+    sortingNodes,
+    sourceCode,
+  })
+  let sortingNodesWithUpdatedDependencies =
+    populateSortingNodeGroupsWithDependencies({
+      sortingNodeGroups: [sortingNodes],
+      dependenciesBySortingNode,
+    })[0]!
+
   let sortedSortingNodes = sortNodesByDependencies(
     sortingNodesWithUpdatedDependencies,
     { ignoreEslintDisabledNodes },
@@ -103,31 +120,10 @@ function buildOrderByNodeMaps({
     orderBySortedNode: buildOrderByNodeMap(sortedSortingNodes),
     orderByUnsortedNode: buildOrderByNodeMap(sortingNodes),
   }
-
-  function computeSortingNodeWithUpdatedDependencies({
-    isEslintDisabled,
-    dependencyNames,
-    node,
-  }: SortModulesSortingNode): Pick<
-    SortModulesSortingNode,
-    'isEslintDisabled' | 'dependencyNames' | 'dependencies' | 'node'
-  > {
-    let dependencies = computeDependencies(node, { type: 'soft' })
-    let dependencyNamesSet = new Set(dependencyNames)
-
-    return {
-      dependencies: dependencies.filter(
-        dependency => !dependencyNamesSet.has(dependency),
-      ),
-      isEslintDisabled,
-      dependencyNames,
-      node,
-    }
-  }
 }
 
 function buildOrderByNodeMap(
-  sortingNodes: SortingNodeWithDependencies[],
+  sortingNodes: PartialSortModulesSortingNode[],
 ): Map<SortModulesNode, number> {
   let returnValue = new Map<SortModulesNode, number>()
   for (let [i, { node }] of sortingNodes.entries()) {

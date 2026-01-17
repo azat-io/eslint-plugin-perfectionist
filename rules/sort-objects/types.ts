@@ -79,6 +79,9 @@ export type Options = Partial<
       hasNumericKeysOnly?: boolean
     }
 
+    /** Enables experimental dependency detection. */
+    useExperimentalDependencyDetection: boolean
+
     /**
      * Whether to sort styled-components CSS properties. When true, sorts CSS
      * properties within styled-components template literals.
