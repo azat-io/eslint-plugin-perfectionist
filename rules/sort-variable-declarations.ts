@@ -2,8 +2,11 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { SortingNodeWithDependencies } from '../utils/sort-nodes-by-dependencies'
-import type { Selector, Options } from './sort-variable-declarations/types'
+import type {
+  SortVariableDeclarationsSortingNode,
+  Selector,
+  Options,
+} from './sort-variable-declarations/types'
 
 import {
   DEPENDENCY_ORDER_ERROR,
@@ -103,7 +106,7 @@ export default createEslintRule<Options, MessageId>({
         buildOptionsByGroupIndexComputer(options)
 
       let formattedMembers = node.declarations.reduce(
-        (accumulator: SortingNodeWithDependencies[][], declaration) => {
+        (accumulator: SortVariableDeclarationsSortingNode[][], declaration) => {
           let name
 
           if (
@@ -131,7 +134,10 @@ export default createEslintRule<Options, MessageId>({
           })
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
-          let sortingNode: Omit<SortingNodeWithDependencies, 'partitionId'> = {
+          let sortingNode: Omit<
+            SortVariableDeclarationsSortingNode,
+            'partitionId'
+          > = {
             group: computeGroup({
               customGroupMatcher: customGroup =>
                 doesCustomGroupMatch({
@@ -175,9 +181,25 @@ export default createEslintRule<Options, MessageId>({
         [[]],
       )
 
+      let sortingNodes = formattedMembers.flat()
+
+      reportAllErrors<MessageId>({
+        availableMessageIds: {
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
+        },
+        sortNodesExcludingEslintDisabled,
+        nodes: sortingNodes,
+        options,
+        context,
+      })
+
       function sortNodesExcludingEslintDisabled(
         ignoreEslintDisabledNodes: boolean,
-      ): SortingNodeWithDependencies[] {
+      ): SortVariableDeclarationsSortingNode[] {
         let nodesSortedByGroups = formattedMembers.flatMap(nodes =>
           sortNodesByGroups({
             comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
@@ -192,22 +214,6 @@ export default createEslintRule<Options, MessageId>({
           ignoreEslintDisabledNodes,
         })
       }
-
-      let nodes = formattedMembers.flat()
-
-      reportAllErrors<MessageId>({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-          unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
-          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-          unexpectedOrder: ORDER_ERROR_ID,
-        },
-        sortNodesExcludingEslintDisabled,
-        options,
-        context,
-        nodes,
-      })
     },
   }),
   meta: {

@@ -2,6 +2,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { SortImportsNode } from './types'
+
 type Modifier = 'wildcard' | 'default' | 'named'
 
 /**
@@ -10,12 +12,7 @@ type Modifier = 'wildcard' | 'default' | 'named'
  * @param node - The AST node representing an import-like declaration.
  * @returns A list of specifier modifiers.
  */
-export function computeSpecifierModifiers(
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration,
-): Modifier[] {
+export function computeSpecifierModifiers(node: SortImportsNode): Modifier[] {
   if (node.type !== AST_NODE_TYPES.ImportDeclaration) {
     return []
   }
