@@ -4146,7 +4146,7 @@ describe('sort-objects', () => {
         })
       })
 
-      it('puts functions first', async () => {
+      it('treats functions as empty in non-destructured objects', async () => {
         await invalid({
           errors: [
             {
@@ -4183,6 +4183,33 @@ describe('sort-objects', () => {
           ],
           output: dedent`
             let obj = {
+              b: function b() {},
+              a: 'a',
+            }
+          `,
+          code: dedent`
+            let obj = {
+              a: 'a',
+              b: function b() {},
+            }
+          `,
+          options: [
+            {
+              ...options,
+              sortBy: 'value',
+            },
+          ],
+        })
+
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'b', left: 'a' },
+            },
+          ],
+          output: dedent`
+            let obj = {
               b: () => {},
               a: 'a',
             }
@@ -4193,6 +4220,70 @@ describe('sort-objects', () => {
               b: () => {},
             }
           `,
+          options: [
+            {
+              ...options,
+              sortBy: 'value',
+            },
+          ],
+        })
+      })
+
+      it('treats functions as empty in destructured objects', async () => {
+        await invalid({
+          output: dedent`
+            let Func = ({
+              b = function b() {},
+              a = 'a',
+            }) => {
+              // ...
+            }
+          `,
+          code: dedent`
+            let Func = ({
+              a = 'a',
+              b = function b() {},
+            }) => {
+              // ...
+            }
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'b', left: 'a' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              sortBy: 'value',
+            },
+          ],
+        })
+
+        await invalid({
+          output: dedent`
+            let Func = ({
+              b = () => {},
+              a = 'a',
+            }) => {
+              // ...
+            }
+          `,
+          code: dedent`
+            let Func = ({
+              a = 'a',
+              b = () => {},
+            }) => {
+              // ...
+            }
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'b', left: 'a' },
+            },
+          ],
           options: [
             {
               ...options,
@@ -4228,33 +4319,6 @@ describe('sort-objects', () => {
               data: { right: 'c', left: 'b' },
             },
           ],
-          options: [
-            {
-              ...options,
-              sortBy: 'value',
-            },
-          ],
-        })
-
-        await invalid({
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: { right: 'b', left: 'a' },
-            },
-          ],
-          output: dedent`
-            let obj = {
-              b: () => {},
-              a: 'a',
-            }
-          `,
-          code: dedent`
-            let obj = {
-              a: 'a',
-              b: () => {},
-            }
-          `,
           options: [
             {
               ...options,

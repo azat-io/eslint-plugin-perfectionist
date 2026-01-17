@@ -380,7 +380,13 @@ function computeNodeValue({
     case AST_NODE_TYPES.FunctionExpression:
       return null
     case AST_NODE_TYPES.AssignmentPattern:
-      return sourceCode.getText(property.value.right)
+      switch (property.value.right.type) {
+        case AST_NODE_TYPES.ArrowFunctionExpression:
+        case AST_NODE_TYPES.FunctionExpression:
+          return null
+        default:
+          return sourceCode.getText(property.value.right)
+      }
     default:
       return isDestructuredObject ? null : sourceCode.getText(property.value)
   }
