@@ -181,7 +181,13 @@ Specifies whether to sort items in ascending or descending order.
   type:
   ```ts
   {
-    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'subgroup-order' | 'unsorted'
+    type:
+      | 'alphabetical'
+      | 'natural'
+      | 'line-length'
+      | 'custom'
+      | 'subgroup-order'
+      | 'unsorted'
     order?: 'asc' | 'desc'
   }
   ```
@@ -232,7 +238,7 @@ Specifies whether sorting should be case-sensitive.
 
 ### specialCharacters
 
-<sub>default: `keep`</sub>
+<sub>default: `'keep'`</sub>
 
 Specifies whether to trim, remove, or keep special characters before sorting.
 
@@ -735,6 +741,7 @@ interface CustomGroupDefinition {
   decoratorNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
 }
 ```
+
 A class member will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
 
 or:

@@ -145,7 +145,14 @@ Specifies whether to sort items in ascending or descending order.
   type:
   ```ts
   {
-    type: 'alphabetical' | 'natural' | 'line-length' | 'custom' | 'type-import-first' | 'unsorted'
+    type:
+      | 'alphabetical'
+      | 'natural'
+      | 'line-length'
+      | 'custom'
+      | 'type-import-first'
+      | 'subgroup-order'
+      | 'unsorted'
     order?: 'asc' | 'desc'
   }
   ```
@@ -226,7 +233,7 @@ Specifies whether sorting should be case-sensitive.
 
 ### specialCharacters
 
-<sub>default: `keep`</sub>
+<sub>default: `'keep'`</sub>
 
 Specifies whether to trim, remove, or keep special characters before sorting.
 

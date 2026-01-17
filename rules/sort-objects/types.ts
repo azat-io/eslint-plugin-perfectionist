@@ -1,7 +1,9 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { ScopedRegexOption } from '../../types/scoped-regex-option'
 import type { AllCommonOptions } from '../../types/all-common-options'
@@ -91,7 +93,19 @@ export type Options = Partial<
   >
 >[]
 
-type AdditionalSortOptions = object
+export type SortObjectsSortingNode = {
+  /**
+   * The string representation of the property's value. Used when sorting by
+   * value instead of name.
+   */
+  value: string
+} & SortingNodeWithDependencies<SortObjectsNode>
+
+export type SortObjectsNode = TSESTree.Property
+
+interface AdditionalSortOptions {
+  sortBy: SortByOption
+}
 
 export let objectParentTypes = [
   AST_NODE_TYPES.VariableDeclarator,
@@ -151,6 +165,17 @@ export let allSelectors = ['member', 'method', 'property'] as const
  * Used for validation and configuration in the ESLint rule.
  */
 export let allModifiers = ['multiline'] as const
+
+const SORT_BY_OPTION = ['name', 'value'] as const
+type SortByOption = (typeof SORT_BY_OPTION)[number]
+
+/** Additional sort options JSON schema, Used by ESLint to validate rule options. */
+export let additionalSortOptionsJsonSchema: Record<string, JSONSchema4> = {
+  sortBy: {
+    enum: [...SORT_BY_OPTION],
+    type: 'string',
+  },
+}
 
 /**
  * Additional custom group match options JSON schema. Used by ESLint to validate
