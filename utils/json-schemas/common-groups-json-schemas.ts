@@ -8,28 +8,13 @@ import {
 } from './common-json-schemas'
 
 /**
- * JSON schema for the newlines between option. Validates configuration for
- * adding newlines between different groups.
+ * JSON schema for the newlines-like options
+ * (newlinesBetween/newlinesInside/newlinesAfter).
  */
-export let newlinesBetweenJsonSchema: JSONSchema4 = {
+export let newlinesJsonSchema: JSONSchema4 = {
   oneOf: [
     {
-      description: 'Specifies how to handle newlines between groups.',
-      enum: ['ignore'],
-      type: 'string',
-    },
-    {
-      type: 'number',
-      minimum: 0,
-    },
-  ],
-}
-
-/** JSON schema for the newlines inside option. */
-export let newlinesInsideJsonSchema: JSONSchema4 = {
-  oneOf: [
-    {
-      description: 'Specifies how to handle newlines between groups elements',
+      description: 'Specifies how to handle newlines.',
       enum: ['ignore'],
       type: 'string',
     },
@@ -62,7 +47,7 @@ export function buildGroupsJsonSchema({
         },
         {
           properties: {
-            newlinesBetween: newlinesBetweenJsonSchema,
+            newlinesBetween: newlinesJsonSchema,
           },
           required: ['newlinesBetween'],
           additionalProperties: false,
@@ -95,7 +80,7 @@ export function buildGroupsJsonSchema({
             type: buildTypeJsonSchema({
               allowedAdditionalValues: allowedAdditionalTypeValues,
             }),
-            newlinesInside: newlinesInsideJsonSchema,
+            newlinesInside: newlinesJsonSchema,
             order: orderJsonSchema,
             ...additionalSortProperties,
           },
@@ -213,7 +198,7 @@ export function buildCommonGroupsJsonSchemas({
     }),
     newlinesInside: {
       oneOf: [
-        newlinesInsideJsonSchema,
+        newlinesJsonSchema,
         { enum: ['newlinesBetween'], type: 'string' },
       ],
     },
@@ -221,7 +206,7 @@ export function buildCommonGroupsJsonSchemas({
       allowedAdditionalTypeValues,
       additionalSortProperties,
     }),
-    newlinesBetween: newlinesBetweenJsonSchema,
+    newlinesBetween: newlinesJsonSchema,
   }
 }
 
@@ -303,7 +288,7 @@ function buildCommonCustomGroupJsonSchemas({
       description: 'Custom group name.',
       type: 'string',
     },
-    newlinesInside: newlinesInsideJsonSchema,
+    newlinesInside: newlinesJsonSchema,
     order: orderJsonSchema,
     ...additionalSortProperties,
   }

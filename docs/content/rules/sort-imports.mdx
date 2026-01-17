@@ -337,6 +337,19 @@ or [`customGroups`](#customgroups) options.
 
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
+### newlinesAfter
+
+<sub>
+  type: `number | 'ignore'`
+</sub>
+<sub>default: `ignore`</sub>
+
+Specifies how to handles newlines after the last import statement.
+
+- `'ignore'` — Do not report errors related to newlines.
+- `0` — No newlines are allowed after the last import statement.
+- Any other number — Enforce this number of newlines after the last import statement.
+
 ### maxLineLength
 
 <sub>default: `Infinity`</sub>

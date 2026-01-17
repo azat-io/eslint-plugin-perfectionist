@@ -33,6 +33,9 @@ export type Options = Partial<
       rootDir: string
     }
 
+    /** Number of newlines required after the last sorted element. */
+    newlinesAfter: 'ignore' | number
+
     /**
      * Patterns to identify internal imports. Imports matching these patterns
      * are categorized as 'internal'.
