@@ -396,728 +396,916 @@ describe('sort-objects', () => {
       })
     })
 
-    it('handles complex dependencies between destructured parameters', async () => {
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-          {
-            data: { nodeDependentOnRight: 'b', right: 'd' },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          let Func = ({
-            a,
-            c,
-            d,
-            b = a + c + d,
-          }) => {
-            // ...
-          }
-        `,
-        code: dedent`
-          let Func = ({
-            a,
-            b = a + c + d,
-            c,
-            d,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        output: dedent`
-          let Func = ({
-            a,
-            b,
-            c = 1 === 1 ? 1 === 1 ? a : b : b,
-            d,
-          }) => {
-            // ...
-          }
-        `,
-        code: dedent`
-          let Func = ({
-            a,
-            c = 1 === 1 ? 1 === 1 ? a : b : b,
-            b,
-            d,
-          }) => {
-            // ...
-          }
-        `,
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'c', right: 'b' },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-          {
-            data: { nodeDependentOnRight: 'b', right: 'd' },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          let Func = ({
-            a,
-            c,
-            d,
-            b = ['a', 'b', 'c'].includes(d, c, a),
-          }) => {
-            // ...
-          }
-        `,
-        code: dedent`
-          let Func = ({
-            a,
-            b = ['a', 'b', 'c'].includes(d, c, a),
-            c,
-            d,
-          }) => {
-            // ...
-          }
-        `,
-        options: [
-          {
-            type: 'alphabetical',
-            order: 'asc',
-          },
-        ],
-      })
-
-      await invalid({
-        output: dedent`
-          let Func = ({
-            a,
-            c,
-            b = c || c,
-            d,
-          }) => {
-            // ...
-          }
-        `,
-        code: dedent`
-          let Func = ({
-            a,
-            b = c || c,
-            c,
-            d,
-          }) => {
-            // ...
-          }
-        `,
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        options: [options],
-      })
-
-      await invalid({
-        output: dedent`
-          let Func = ({
-            a,
-            c,
-            b = 1 === 1 ? a : c,
-            d,
-          }) => {
-            // ...
-          }
-        `,
-        code: dedent`
-          let Func = ({
-            a,
-            b = 1 === 1 ? a : c,
-            c,
-            d,
-          }) => {
-            // ...
-          }
-        `,
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        options: [options],
-      })
-
-      await invalid({
-        output: dedent`
-          let Func = ({
-              c = 10,
-              a = c,
-              b = 10,
+    function testDependencyDetection(
+      useExperimentalDependencyDetection: boolean,
+    ): void {
+      describe(`experimental dependency detection: ${useExperimentalDependencyDetection}`, () => {
+        it('handles complex dependencies between destructured parameters', async () => {
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'b', right: 'c' },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+              {
+                data: { nodeDependentOnRight: 'b', right: 'd' },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              let Func = ({
+                a,
+                c,
+                d,
+                b = a + c + d,
               }) => {
-            // ...
-          }
-        `,
-        code: dedent`
-          let Func = ({
-              a = c,
-              b = 10,
-              c = 10,
+                // ...
+              }
+            `,
+            code: dedent`
+              let Func = ({
+                a,
+                b = a + c + d,
+                c,
+                d,
               }) => {
-            // ...
-          }
-        `,
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'a', right: 'c' },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        options: [options],
-      })
-    })
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-    it('detects function expression dependencies', async () => {
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = () => 1,
-            a = b(),
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
+          await invalid({
+            output: dedent`
+              let Func = ({
+                a,
+                b,
+                c = 1 === 1 ? 1 === 1 ? a : b : b,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            code: dedent`
+              let Func = ({
+                a,
+                c = 1 === 1 ? 1 === 1 ? a : b : b,
+                b,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'c', right: 'b' },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = function() { return 1 },
-            a = b(),
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'b', right: 'c' },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+              {
+                data: { nodeDependentOnRight: 'b', right: 'd' },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              let Func = ({
+                a,
+                c,
+                d,
+                b = ['a', 'b', 'c'].includes(d, c, a),
+              }) => {
+                // ...
+              }
+            `,
+            code: dedent`
+              let Func = ({
+                a,
+                b = ['a', 'b', 'c'].includes(d, c, a),
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = () => 1,
-            a = a.map(b),
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
-    })
+          await invalid({
+            output: dedent`
+              let Func = ({
+                a,
+                c,
+                b = c || c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            code: dedent`
+              let Func = ({
+                a,
+                b = c || c,
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'b', right: 'c' },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-    it('detects dependencies in object literals', async () => {
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = 1,
-            a = {x: b},
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
+          await invalid({
+            output: dedent`
+              let Func = ({
+                a,
+                c,
+                b = 1 === 1 ? a : c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            code: dedent`
+              let Func = ({
+                a,
+                b = 1 === 1 ? a : c,
+                c,
+                d,
+              }) => {
+                // ...
+              }
+            `,
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'b', right: 'c' },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = 1,
-            a = {[b]: 0},
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
-    })
+          await invalid({
+            output: dedent`
+              let Func = ({
+                  c = 10,
+                  a = c,
+                  b = 10,
+                  }) => {
+                // ...
+              }
+            `,
+            code: dedent`
+              let Func = ({
+                  a = c,
+                  b = 10,
+                  c = 10,
+                  }) => {
+                // ...
+              }
+            `,
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'a', right: 'c' },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
 
-    it('detects chained member expression dependencies', async () => {
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = {x: 1},
-            a = b.x,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
+        it('detects function expression dependencies', async () => {
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = () => 1,
+                a = b(),
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = new Subject(),
-            a = b.asObservable(),
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
-    })
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = function() { return 1 },
+                a = b(),
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-    it('detects optional chaining dependencies', async () => {
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = {x: 1},
-            a = b?.x,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
-    })
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = () => 1,
+                a = a.map(b),
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
 
-    it('detects non-null assertion dependencies', async () => {
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = 1,
-            a = b!,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
-    })
+        it('detects dependencies in object literals', async () => {
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = 1,
+                a = {x: b},
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-    it('detects unary expression dependencies', async () => {
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = true,
-            a = !b,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
-    })
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = 1,
+                a = {[b]: 0},
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
 
-    it('detects spread element dependencies', async () => {
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = {x: 1},
-            a = {...b},
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
+        it('detects chained member expression dependencies', async () => {
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = {x: 1},
+                a = b.x,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = [1],
-            a = [...b],
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
-    })
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = new Subject(),
+                a = b.asObservable(),
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
 
-    it('detects dependencies in conditional expressions', async () => {
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = 0,
-            a = b ? 1 : 0,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
+        it('detects optional chaining dependencies', async () => {
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = {x: 1},
+                a = b?.x,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
 
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = 0,
-            a = x ? b : 0,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
+        it('detects non-null assertion dependencies', async () => {
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = 1,
+                a = b!,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
 
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = 0,
-            a = x ? 0 : b,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
-    })
+        it('detects unary expression dependencies', async () => {
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = true,
+                a = !b,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
 
-    it('detects dependencies in type assertions', async () => {
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = 'b',
-            a = b as any,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
+        it('detects spread element dependencies', async () => {
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = {x: 1},
+                a = {...b},
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = 'b',
-            a = <any>b,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
-    })
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = [1],
+                a = [...b],
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
 
-    it('detects dependencies in template literals', async () => {
-      await valid({
-        code: dedent`
-          let Func = ({
-            b = 'b',
-            a = \`\${b}\`,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
-    })
+        it('detects dependencies in conditional expressions', async () => {
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = 0,
+                a = b ? 1 : 0,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-    it('ignores function body dependencies', async () => {
-      await valid({
-        code: dedent`
-          let Func = ({
-            a = () => b,
-            b = 1,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = 0,
+                a = x ? b : 0,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-      await valid({
-        code: dedent`
-          let Func = ({
-            a = function() { return b },
-            b = 1,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = 0,
+                a = x ? 0 : b,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
 
-      await valid({
-        code: dedent`
-          let Func = ({
-            a = () => {return b},
-            b = 1,
-          }) => {
-            // ...
-          }
-        `,
-        options: [options],
-      })
-    })
+        it('detects dependencies in type assertions', async () => {
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = 'b',
+                a = b as any,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-    it('detects dependencies in object destructuring patterns', async () => {
-      await invalid({
-        errors: [
-          {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          let {
-            b: bRenamed,
-            a = bRenamed,
-          } = obj;
-        `,
-        code: dedent`
-          let {
-            a = bRenamed,
-            b: bRenamed,
-          } = obj;
-        `,
-        options: [options],
-      })
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = 'b',
+                a = <any>b,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
 
-      await invalid({
-        errors: [
-          {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          let {
-            b: [, nested] = [],
-            a = nested,
-          } = obj;
-        `,
-        code: dedent`
-          let {
-            a = nested,
-            b: [, nested] = [],
-          } = obj;
-        `,
-        options: [options],
-      })
+        it('detects dependencies in template literals', async () => {
+          await valid({
+            code: dedent`
+              let Func = ({
+                b = 'b',
+                a = \`\${b}\`,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
 
-      await valid({
-        code: dedent`
-          let {
-            a,
-            b: {} = {},
-          } = obj;
-        `,
-        options: [options],
-      })
+        it('ignores function body dependencies', async () => {
+          await valid({
+            code: dedent`
+              let Func = ({
+                a = () => b,
+                b = 1,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-      await invalid({
-        errors: [
-          {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          let [{
-            b: bRenamed,
-            a = bRenamed,
-          }] = [obj];
-        `,
-        code: dedent`
-          let [{
-            a = bRenamed,
-            b: bRenamed,
-          }] = [obj];
-        `,
-        options: [options],
-      })
+          await valid({
+            code: dedent`
+              let Func = ({
+                a = function() { return b },
+                b = 1,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
 
-      await invalid({
-        errors: [
-          {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          let {
-            [b]: bRenamed,
-            a = bRenamed,
-          } = obj;
-        `,
-        code: dedent`
-          let {
-            a = bRenamed,
-            [b]: bRenamed,
-          } = obj;
-        `,
-        options: [options],
-      })
+          await valid({
+            code: dedent`
+              let Func = ({
+                a = () => {return b},
+                b = 1,
+              }) => {
+                // ...
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
 
-      await invalid({
-        errors: [
-          {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          let {
-            [b]: bRenamed = something,
-            a = bRenamed,
-          } = obj;
-        `,
-        code: dedent`
-          let {
-            a = bRenamed,
-            [b]: bRenamed = something,
-          } = obj;
-        `,
-        options: [options],
-      })
+        it('detects dependencies in object destructuring patterns', async () => {
+          await invalid({
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'a',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              let {
+                b: bRenamed,
+                a = bRenamed,
+              } = obj;
+            `,
+            code: dedent`
+              let {
+                a = bRenamed,
+                b: bRenamed,
+              } = obj;
+            `,
+          })
 
-      await invalid({
-        errors: [
-          {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          let {
-            b: { nested } = { nested: 'default' },
-            a = nested,
-          } = obj;
-        `,
-        code: dedent`
-          let {
-            a = nested,
-            b: { nested } = { nested: 'default' },
-          } = obj;
-        `,
-        options: [options],
-      })
+          await invalid({
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'a',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              let {
+                b: [, nested] = [],
+                a = nested,
+              } = obj;
+            `,
+            code: dedent`
+              let {
+                a = nested,
+                b: [, nested] = [],
+              } = obj;
+            `,
+          })
 
-      await invalid({
-        errors: [
-          {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          let {
-            b: { nested, ...rest } = { extra: 2, nested: 1 },
-            a = rest,
-          } = obj;
-        `,
-        code: dedent`
-          let {
-            a = rest,
-            b: { nested, ...rest } = { extra: 2, nested: 1 },
-          } = obj;
-        `,
-        options: [options],
-      })
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let {
+                a,
+                b: {} = {},
+              } = obj;
+            `,
+          })
 
-      await invalid({
-        errors: [
-          {
-            data: {
-              nodeDependentOnRight: 'a',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedObjectsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          let {
-            b: [first, ...restArr] = [],
-            a = restArr,
-          } = obj;
-        `,
-        code: dedent`
-          let {
-            a = restArr,
-            b: [first, ...restArr] = [],
-          } = obj;
-        `,
-        options: [options],
-      })
-    })
+          await invalid({
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'a',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              let [{
+                b: bRenamed,
+                a = bRenamed,
+              }] = [obj];
+            `,
+            code: dedent`
+              let [{
+                a = bRenamed,
+                b: bRenamed,
+              }] = [obj];
+            `,
+          })
 
-    it('detects and handles circular dependencies', async () => {
-      await invalid({
-        output: dedent`
-          let Func = ({
-            a,
-            b = f + 1,
-            c,
-            d = b + 1,
-            e,
-            f = d + 1
-          }) => {
-            // ...
-          }
-        `,
-        code: dedent`
-          let Func = ({
-            b = f + 1,
-            a,
-            c,
-            d = b + 1,
-            e,
-            f = d + 1
-          }) => {
-            // ...
-          }
-        `,
-        errors: [
-          {
-            messageId: 'unexpectedObjectsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        options: [options],
+          await invalid({
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'a',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              let {
+                [b]: bRenamed,
+                a = bRenamed,
+              } = obj;
+            `,
+            code: dedent`
+              let {
+                a = bRenamed,
+                [b]: bRenamed,
+              } = obj;
+            `,
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'a',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              let {
+                [b]: bRenamed = something,
+                a = bRenamed,
+              } = obj;
+            `,
+            code: dedent`
+              let {
+                a = bRenamed,
+                [b]: bRenamed = something,
+              } = obj;
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'a',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              let {
+                b: { nested } = { nested: 'default' },
+                a = nested,
+              } = obj;
+            `,
+            code: dedent`
+              let {
+                a = nested,
+                b: { nested } = { nested: 'default' },
+              } = obj;
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'a',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              let {
+                b: { nested, ...rest } = { extra: 2, nested: 1 },
+                a = rest,
+              } = obj;
+            `,
+            code: dedent`
+              let {
+                a = rest,
+                b: { nested, ...rest } = { extra: 2, nested: 1 },
+              } = obj;
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: {
+                  nodeDependentOnRight: 'a',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedObjectsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              let {
+                b: [first, ...restArr] = [],
+                a = restArr,
+              } = obj;
+            `,
+            code: dedent`
+              let {
+                a = restArr,
+                b: [first, ...restArr] = [],
+              } = obj;
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
+
+        it('detects and handles circular dependencies', async () => {
+          await invalid({
+            output: dedent`
+              let Func = ({
+                a,
+                b = f + 1,
+                c,
+                d = b + 1,
+                e,
+                f = d + 1
+              }) => {
+                // ...
+              }
+            `,
+            code: dedent`
+              let Func = ({
+                b = f + 1,
+                a,
+                c,
+                d = b + 1,
+                e,
+                f = d + 1
+              }) => {
+                // ...
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
       })
-    })
+    }
+    testDependencyDetection(true)
+    testDependencyDetection(false)
 
     it('prioritizes dependencies over group configuration', async () => {
       await valid({

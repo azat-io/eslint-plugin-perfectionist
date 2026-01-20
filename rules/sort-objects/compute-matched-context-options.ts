@@ -50,7 +50,9 @@ export function computeMatchedContextOptions({
 
   let parentNodes = computeParentNodesWithTypes({
     allowedTypes: [...objectParentTypes],
+    consecutiveOnly: false,
     node: nodeObject,
+    maxParent: null,
   })
 
   return filteredContextOptions.find(options =>

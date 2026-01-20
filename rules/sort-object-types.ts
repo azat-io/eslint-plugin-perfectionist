@@ -342,6 +342,8 @@ function computeObjectTypeParentNodes(
 ): ObjectTypeParent[] {
   return computeParentNodesWithTypes({
     allowedTypes: [...objectTypeParentTypes],
+    consecutiveOnly: false,
+    maxParent: null,
     node,
   })
 }
