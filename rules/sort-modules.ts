@@ -24,14 +24,19 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
+import {
+  useExperimentalDependencyDetectionJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
+import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildComparatorByOptionsComputer } from './sort-modules/build-comparator-by-options-computer'
+import { computeDependenciesBySortingNode } from './sort-modules/compute-dependencies-by-sorting-node'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeOverloadSignatureGroups } from './sort-modules/compute-overload-signature-groups'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -79,6 +84,7 @@ let defaultOptions: Required<Options[number]> = {
     'export-function',
     'function',
   ],
+  useExperimentalDependencyDetection: true,
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
   partitionByComment: false,
@@ -106,6 +112,8 @@ export default createEslintRule<Options, MessageId>({
               additionalCustomGroupMatchOptionsJsonSchema,
             allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
           }),
+          useExperimentalDependencyDetection:
+            useExperimentalDependencyDetectionJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
         },
@@ -202,7 +210,12 @@ function analyzeModule({
         continue
     }
 
-    let details = computeNodeDetails({ sourceCode, node })
+    let details = computeNodeDetails({
+      useExperimentalDependencyDetection:
+        options.useExperimentalDependencyDetection,
+      sourceCode,
+      node,
+    })
 
     if (!details.nodeDetails) {
       if (details.shouldPartitionAfterNode) {
@@ -222,6 +235,7 @@ function analyzeModule({
 
     let {
       addSafetySemicolonWhenInline,
+      dependencyDetection,
       dependencies,
       decorators,
       modifiers,
@@ -255,6 +269,7 @@ function analyzeModule({
       size: rangeToDiff(node, sourceCode),
       addSafetySemicolonWhenInline,
       dependencyNames: [name],
+      dependencyDetection,
       dependencies,
       group,
       name,
@@ -288,6 +303,19 @@ function analyzeModule({
     sortingNodeGroups: sortingNodeGroupsWithoutOverloadSignature,
     overloadSignatureGroups,
   })
+
+  if (options.useExperimentalDependencyDetection) {
+    let dependenciesBySortingNode = computeDependenciesBySortingNode({
+      sortingNodes: sortingNodeGroups.flat(),
+      dependencyDetection: 'hard',
+      sourceCode,
+    })
+    sortingNodeGroups = populateSortingNodeGroupsWithDependencies({
+      dependenciesBySortingNode,
+      sortingNodeGroups,
+    })
+  }
+
   let sortingNodes = sortingNodeGroups.flat()
 
   reportAllErrors<MessageId, SortModulesSortingNode>({
@@ -308,18 +336,21 @@ function analyzeModule({
   function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
   ): SortModulesSortingNode[] {
-    let nodesSortedByGroups = sortingNodeGroups.flatMap(nodes =>
+    let nodesSortedByGroups = sortingNodeGroups.flatMap(sortingNodeGroup =>
       sortNodesByGroups({
         comparatorByOptionsComputer: buildComparatorByOptionsComputer({
+          useExperimentalDependencyDetection:
+            options.useExperimentalDependencyDetection,
+          sortingNodes: sortingNodeGroup,
           ignoreEslintDisabledNodes,
-          sortingNodes: nodes,
+          sourceCode,
         }),
         isNodeIgnored: sortingNode =>
           getGroupIndex(options.groups, sortingNode) === options.groups.length,
         optionsByGroupIndexComputer,
         ignoreEslintDisabledNodes,
+        nodes: sortingNodeGroup,
         groups: options.groups,
-        nodes,
       }),
     )
 

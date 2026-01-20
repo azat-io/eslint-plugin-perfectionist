@@ -1,13 +1,17 @@
+import type { TSESLint } from '@typescript-eslint/utils'
+
 import type { Comparator } from '../../utils/compare/default-comparator-by-options-computer'
 import type { SortModulesSortingNode, SortModulesNode, Options } from './types'
 
+import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
+import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
 import { isNodeDependentOnOtherNode } from '../../utils/is-node-dependent-on-other-node'
 import { buildSortingNodeByNodeMap } from '../../utils/build-sorting-node-by-node-map'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
 import { computeOrderedValue } from '../../utils/compare/compute-ordered-value'
 import { computeDependencies } from './compute-dependencies'
 
-type SortingNodeWithDependencies = Pick<
+type PartialSortModulesSortingNode = Pick<
   SortModulesSortingNode,
   'dependencyNames' | 'dependencies' | 'node'
 >
@@ -19,23 +23,33 @@ type SortingNodeWithDependencies = Pick<
  * @param params.ignoreEslintDisabledNodes - Whether to ignore ESLint disabled
  *   nodes.
  * @param params.sortingNodes - The module sorting nodes.
+ * @param params.useExperimentalDependencyDetection - Whether to use
+ *   experimental dependency detection.
+ * @param params.sourceCode - The source code object.
  * @param params.options - The sorting options.
  * @returns A comparator function for sorting module nodes by usage.
  */
 export function buildUsageComparator({
+  useExperimentalDependencyDetection,
   ignoreEslintDisabledNodes,
   sortingNodes,
+  sourceCode,
   options,
 }: {
+  useExperimentalDependencyDetection: boolean
   sortingNodes: SortModulesSortingNode[]
   options: Required<Options[number]>
   ignoreEslintDisabledNodes: boolean
+  sourceCode: TSESLint.SourceCode
 }): Comparator<SortModulesSortingNode> {
   let { updatedSortingNodeByNode, orderByUnsortedNode, orderBySortedNode } =
     buildOrderByNodeMaps({
+      useExperimentalDependencyDetection,
       ignoreEslintDisabledNodes,
       sortingNodes,
+      sourceCode,
     })
+
   return (a, b) => {
     let nodeA = a.node
     let nodeB = b.node
@@ -78,19 +92,38 @@ export function buildUsageComparator({
 }
 
 function buildOrderByNodeMaps({
+  useExperimentalDependencyDetection,
   ignoreEslintDisabledNodes,
   sortingNodes,
+  sourceCode,
 }: {
+  useExperimentalDependencyDetection: boolean
   sortingNodes: SortModulesSortingNode[]
   ignoreEslintDisabledNodes: boolean
+  sourceCode: TSESLint.SourceCode
 }): {
-  updatedSortingNodeByNode: Map<SortModulesNode, SortingNodeWithDependencies>
+  updatedSortingNodeByNode: Map<SortModulesNode, PartialSortModulesSortingNode>
   orderByUnsortedNode: Map<SortModulesNode, number>
   orderBySortedNode: Map<SortModulesNode, number>
 } {
-  let sortingNodesWithUpdatedDependencies = sortingNodes.map(
-    computeSortingNodeWithUpdatedDependencies,
-  )
+  let sortingNodesWithUpdatedDependencies
+  if (useExperimentalDependencyDetection) {
+    let dependenciesBySortingNode = computeDependenciesBySortingNode({
+      dependencyDetection: 'soft',
+      sortingNodes,
+      sourceCode,
+    })
+    sortingNodesWithUpdatedDependencies =
+      populateSortingNodeGroupsWithDependencies({
+        sortingNodeGroups: [sortingNodes],
+        dependenciesBySortingNode,
+      })[0]!
+  } else {
+    sortingNodesWithUpdatedDependencies = sortingNodes.map(
+      computeSortingNodeWithUpdatedDependencies,
+    )
+  }
+
   let sortedSortingNodes = sortNodesByDependencies(
     sortingNodesWithUpdatedDependencies,
     { ignoreEslintDisabledNodes },
@@ -127,7 +160,7 @@ function buildOrderByNodeMaps({
 }
 
 function buildOrderByNodeMap(
-  sortingNodes: SortingNodeWithDependencies[],
+  sortingNodes: PartialSortModulesSortingNode[],
 ): Map<SortModulesNode, number> {
   let returnValue = new Map<SortModulesNode, number>()
   for (let [i, { node }] of sortingNodes.entries()) {

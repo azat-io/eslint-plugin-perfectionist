@@ -616,6 +616,15 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 }
 ```
 
+### useExperimentalDependencyDetection
+
+<sub>default: `true`</sub>
+
+Specifies whether to use a new experimental dependency detection logic, with reduced false positives.
+
+- `true` — Use the new experimental dependency detection logic.
+- `false` — Use the legacy dependency detection logic.
+
 ## Usage
 
 <CodeTabs
@@ -658,6 +667,7 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
                     'function'
                   ],
                   customGroups: [],
+                  useExperimentalDependencyDetection: true,
                 },
               ],
             },
@@ -702,6 +712,7 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
                   'function'
                 ],
                 customGroups: [],
+                useExperimentalDependencyDetection: true,
               },
             ],
           },
