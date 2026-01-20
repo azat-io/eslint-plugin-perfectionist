@@ -187,6 +187,16 @@ export function computeNodeDetails({
   }
 }
 
+/**
+ * Extract dependencies from an enum or class declaration.
+ *
+ * @deprecated - To remove when experimental dependency detection is the only
+ *   option.
+ * @param expression - The enum or class declaration node.
+ * @param useExperimentalDependencyDetection - Whether to use experimental
+ *   dependency detection.
+ * @returns The list of dependencies.
+ */
 function extractDependencies(
   expression: TSESTree.TSEnumDeclaration | TSESTree.ClassDeclaration,
   useExperimentalDependencyDetection: boolean,

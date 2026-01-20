@@ -137,6 +137,14 @@ function buildOrderByNodeMaps({
     orderByUnsortedNode: buildOrderByNodeMap(sortingNodes),
   }
 
+  /**
+   * Computes a sorting node with updated dependencies.
+   *
+   * @deprecated - To remove when experimental dependency detection is the only
+   *   option.
+   * @param params - The parameters object.
+   * @returns The sorting node populated with updated dependencies.
+   */
   function computeSortingNodeWithUpdatedDependencies({
     isEslintDisabled,
     dependencyNames,
