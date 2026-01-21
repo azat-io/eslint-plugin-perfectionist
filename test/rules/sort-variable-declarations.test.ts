@@ -483,7 +483,7 @@ describe('sort-variable-declarations', () => {
           })
         })
 
-        it('detects spread element dependencies', async () => {
+        it('detects dependencies in default assignments', async () => {
           await valid({
             options: [
               {
@@ -2398,7 +2398,7 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it('detects spread element dependencies', async () => {
+    it('detects dependencies in default assignments', async () => {
       await valid({
         code: dedent`
           let b = {x: 1},
@@ -4125,7 +4125,7 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it('detects spread element dependencies', async () => {
+    it('detects dependencies in default assignments', async () => {
       await valid({
         code: dedent`
           let b = {x: 1},
