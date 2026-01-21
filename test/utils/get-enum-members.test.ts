@@ -14,7 +14,7 @@ describe('get-enum-members', () => {
     expect(getEnumMembers(enumNode)).toBe(members)
   })
 
-  it('falls back to legacy body.members shape when members is missing', () => {
+  it('falls back to body.members shape when members is missing', () => {
     let legacyMembers = [createEnumMember('LegacyVariant')]
     let enumNode = {
       body: { members: legacyMembers },

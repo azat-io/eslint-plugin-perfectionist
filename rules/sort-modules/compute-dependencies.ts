@@ -6,6 +6,7 @@ import type { SortModulesNode } from './types'
 
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { isArrowFunctionNode } from './is-arrow-function-node'
+import { getEnumMembers } from '../../utils/get-enum-members'
 
 interface HardDependencyDetection {
   searchStaticMethodsAndFunctionProperties: boolean
@@ -77,7 +78,11 @@ export function computeDependencies(
       if ('arguments' in nodeToCheck) {
         traverseNode(nodeToCheck.arguments)
       }
-      if ('body' in nodeToCheck && nodeToCheck.body) {
+      if (
+        'body' in nodeToCheck &&
+        nodeToCheck.body &&
+        nodeToCheck.type !== AST_NODE_TYPES.TSEnumDeclaration
+      ) {
         traverseNode(nodeToCheck.body)
       }
       if ('callee' in nodeToCheck) {
@@ -116,7 +121,9 @@ export function computeDependencies(
       if ('left' in nodeToCheck) {
         checkNode(nodeToCheck.left)
       }
-      if ('members' in nodeToCheck) {
+      if (nodeToCheck.type === AST_NODE_TYPES.TSEnumDeclaration) {
+        traverseNode(getEnumMembers(nodeToCheck))
+      } else if ('members' in nodeToCheck) {
         traverseNode(nodeToCheck.members)
       }
       if ('object' in nodeToCheck) {

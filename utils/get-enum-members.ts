@@ -5,10 +5,10 @@ import type { TSESTree } from '@typescript-eslint/types'
  *
  * Handles AST shape changes in TS-ESTree `@typescript-eslint/types`:
  *
- * - Versions < 8.0.0 store enum members under `body.members`.
- * - Versions ≥ 8.0.0 expose members directly on the enum node as `members`. The
- *   fallback `body?.members` ensures backward compatibility with older parser
- *   releases.
+ * - Newer parser versions wrap enum members in `body.members` and deprecate
+ *   `members` on the enum node.
+ * - Older parser versions expose members directly on the enum node as `members`.
+ *   The fallback keeps backward compatibility with older parser releases.
  *
  * @example
  *   enum Color {
