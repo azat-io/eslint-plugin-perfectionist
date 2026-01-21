@@ -1,5 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
+import type { TSESTree } from '@typescript-eslint/types'
 
+import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { AllCommonOptions } from '../../types/all-common-options'
 import type { TypeOption } from '../../types/common-options'
 
@@ -12,8 +14,21 @@ import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/com
  * such as `const a = 1, b, c = 3;`.
  */
 export type Options = Partial<
-  AllCommonOptions<TypeOption, AdditionalSortOptions, CustomGroupMatchOptions>
+  {
+    /** Enables experimental dependency detection. */
+    useExperimentalDependencyDetection: boolean
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortOptions,
+    CustomGroupMatchOptions
+  >
 >[]
+
+export type SortVariableDeclarationsSortingNode =
+  SortingNodeWithDependencies<SortVariableDeclarationsNode>
+
+export type SortVariableDeclarationsNode =
+  TSESTree.VariableDeclaration['declarations'][number]
 
 /**
  * Union type of all available selectors for variable declarations.

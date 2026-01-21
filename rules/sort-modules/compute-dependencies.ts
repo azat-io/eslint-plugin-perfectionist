@@ -20,6 +20,8 @@ type DependencyDetection = HardDependencyDetection | SoftDependencyDetection
 /**
  * Computes the dependencies of a given AST node.
  *
+ * @deprecated - To remove when experimental dependency detection is the only
+ *   option.
  * @param node - The AST node to analyze.
  * @param dependencyDetection - The dependency detection strategy. Hard
  *   dependencies consider dependencies impacting compilation, while soft

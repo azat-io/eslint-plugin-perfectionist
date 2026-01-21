@@ -1238,929 +1238,990 @@ describe('sort-modules', () => {
       })
     })
 
-    describe('dependency detection', () => {
-      it('ignores non-static class method dependencies', async () => {
-        await valid({
-          code: dedent`
-            class A {
-              f() {
-                return Enum.V
-              }
-            }
-
-            enum Enum {
-              V = 'V'
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('ignores static class method dependencies when no static block or properties exist', async () => {
-        await valid({
-          code: dedent`
-            class A {
-              static f() {
-                return Enum.V
-              }
-            }
-
-            enum Enum {
-              V = 'V'
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('supports function overload names', async () => {
-        await valid({
-          code: dedent`
-            function a(input: string): void;
-            function a(input: number): void;
-            export function a(input: number | string): void {}
-          `,
-          options: [options],
-        })
-      })
-
-      it('detects static class method dependencies when static block is present', async () => {
-        await valid({
-          code: dedent`
-            enum Enum {
-              V = 'V'
-            }
-
-            class A {
-              static {
-                console.log(Enum.V)
-              }
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-
-        await valid({
-          code: dedent`
-            enum Enum {
-              V = 'V'
-            }
-
-            class A {
-              static {
-                console.log(A.f())
+    function testDependencyDetection(
+      useExperimentalDependencyDetection: boolean,
+    ): void {
+      describe(`experimental dependency detection: ${useExperimentalDependencyDetection}`, () => {
+        it('ignores non-static class method dependencies', async () => {
+          await valid({
+            code: dedent`
+              class A {
+                f() {
+                  return Enum.V
+                }
               }
 
-              static f = () => {
-                return Enum.V
+              enum Enum {
+                V = 'V'
               }
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
         })
 
-        await valid({
-          code: dedent`
-            enum Enum {
-              V = 'V'
-            }
-
-            class Class {
-              static {
-                const method = () => {
-                  return Enum.V || true;
-                };
-                method();
+        it('ignores static class method dependencies when no static block or properties exist', async () => {
+          await valid({
+            code: dedent`
+              class A {
+                static f() {
+                  return Enum.V
+                }
               }
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
 
-      it('detects static class method dependencies when static property is present', async () => {
-        await valid({
-          code: dedent`
-            enum Enum {
-              V = 'V'
-            }
-
-            class A {
-              static a = Enum.V
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
+              enum Enum {
+                V = 'V'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
         })
 
-        await valid({
-          code: dedent`
-            enum Enum {
-              V = 'V'
-            }
-
-            class A {
-              static accessor a = Enum.V
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-
-        await valid({
-          code: dedent`
-            enum Enum {
-              V = 'V'
-            }
-
-            class A {
-              static a = Object.values(Enum)
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-
-        await valid({
-          code: dedent`
-            namespace Namespace {
-              export class B {
-                static foo = 'foo'
+        it('detects static class method dependencies when static block is present', async () => {
+          await valid({
+            code: dedent`
+              enum Enum {
+                V = 'V'
               }
 
               class A {
-                static a = Namespace.B.foo
-              }
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('ignores non-static arrow method dependencies', async () => {
-        await valid({
-          code: dedent`
-            class A {
-              f = () => {
-                return Enum.V
-              }
-            }
-
-            enum Enum {
-              V = 'V'
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-
-        await valid({
-          code: dedent`
-            class A {
-              accessor f = () => {
-                return Enum.V
-              }
-            }
-
-            enum Enum {
-              V = 'V'
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('ignores static arrow method dependencies when no static block or properties exist', async () => {
-        await valid({
-          code: dedent`
-            class A {
-              static f = () => {
-                return Enum.V
-              }
-            }
-
-            enum Enum {
-              V = 'V'
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('ignores interface type dependencies', async () => {
-        await valid({
-          code: dedent`
-            interface A {
-              a: Enum.V
-            }
-
-            enum Enum {
-              V = 'V'
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('ignores type alias dependencies', async () => {
-        await valid({
-          code: dedent`
-            type A = {
-              a: Enum.V
-            }
-
-            enum Enum {
-              V = 'V'
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('ignores usages in interface values', async () => {
-        await valid({
-          code: dedent`
-            export default interface A {
-              field?: Record<string, [B | null] & C>;
-            }
-
-            type B = Something;
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('ignores usages in type keys', async () => {
-        await valid({
-          code: dedent`
-            type A = {
-              [B]: string;
-            }
-
-            type B = 'b';
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('ignores usages in type values', async () => {
-        await valid({
-          code: dedent`
-            type A = {
-              field: typeof B
-            }
-
-            type B = Something;
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-
-        await valid({
-          code: dedent`
-            type A = {
-              (...args: B): void;
-            }
-
-            type B = 'b';
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('ignores usages in type generics', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            type A<T extends B> = {}
-
-            type B = 'b';
-          `,
-        })
-      })
-
-      it('ignores usages in type indexes', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            type A = Foo[B]
-
-            type B = 'b';
-          `,
-        })
-
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            type A = B['foo']
-
-            type B = 'b';
-          `,
-        })
-      })
-
-      it('ignores usages in conditional types', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            type A = Foo extends B ? true : false;
-
-            type B = 'b';
-          `,
-        })
-
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            type A = B extends Foo ? true : false;
-
-            type B = 'b';
-          `,
-        })
-
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            type A = Foo extends Bar ? B : false;
-
-            type B = 'b';
-          `,
-        })
-
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            type A = Foo extends Bar ? true : B;
-
-            type B = 'b';
-          `,
-        })
-
-        await valid({
-          code: dedent`
-            type A<T> = T extends {
-              (...args: any[]): infer B;
-            } ? Foo : Bar
-
-            type B = 'b';
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('ignores usages in interface extends', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            interface A extends B {}
-
-            interface B {}
-          `,
-        })
-      })
-
-      it('ignores usages in classes implements', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            class A implements B {}
-
-            interface B {}
-          `,
-        })
-      })
-
-      it('ignores usages in functions', async () => {
-        await valid({
-          code: dedent`
-            function a() {
-              let foo: B;
-            }
-
-            type B = 'b';
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('ignores parameter binding usages that shadow module-level names', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            function a(B: number) {}
-
-            type B = 'b'
-          `,
-        })
-
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            const a = (...B) => {}
-
-            type B = 'b'
-          `,
-        })
-
-        await valid({
-          code: dedent`
-            class A {
-              a = (...B) => {}
-            }
-
-            type B = 'b'
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-
-        await valid({
-          code: dedent`
-            class A {
-              a(...B) {}
-            }
-
-            type B = 'b'
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            function a(...B) {}
-
-            type B = 'b'
-          `,
-        })
-      })
-
-      it('ignores usages in simple object keys', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            const a = {
-              B: 'b'
-            }
-
-            type B = 'b'
-          `,
-        })
-      })
-
-      it('ignores usages in simple object type keys', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            type A = {
-              B: 'b'
-            }
-
-            type B = 'b'
-          `,
-        })
-      })
-
-      it('ignores usages in simple arguments', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            type A = (B: 'b') => void
-
-            type B = 'b'
-          `,
-        })
-      })
-
-      it('ignores usages in simple interface keys', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            interface A {
-              B: 'b'
-            }
-
-            type B = 'b'
-          `,
-        })
-      })
-
-      it('detects enum value dependencies', async () => {
-        await valid({
-          code: dedent`
-            enum B {
-              V = 'V'
-            }
-
-            enum A {
-              V = B.V
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('detects deeply nested dependencies', async () => {
-        await invalid({
-          output: dedent`
-            class B {
-              static b = 1
-            }
-
-            class A {
-              static a = x > y ? new Class([...{...!!method(1 + <any>(B?.b! as any))}]) : null
-            }
-          `,
-          code: dedent`
-            class A {
-              static a = x > y ? new Class([...{...!!method(1 + <any>(B?.b! as any))}]) : null
-            }
-
-            class B {
-              static b = 1
-            }
-          `,
-          errors: [
-            {
-              data: { nodeDependentOnRight: 'A', right: 'B' },
-              messageId: 'unexpectedModulesDependencyOrder',
-            },
-          ],
-          options: [options],
-        })
-      })
-
-      it('detects dependencies in template literal expressions', async () => {
-        await valid({
-          code: dedent`
-            class B {
-              static b = 1
-            }
-
-            class A {
-              static a = \`\${B.b}\`
-            }
-          `,
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-        })
-      })
-
-      it('detects dependencies in class inheritance', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
-          code: dedent`
-            class B {}
-
-            class A extends B {}
-          `,
-        })
-      })
-
-      it('detects dependencies in decorator expressions', async () => {
-        await invalid({
-          output: dedent`
-            enum B {}
-
-            class A {
-              @SomeDecorator({
-                a: {
-                  b: c.concat([B])
+                static {
+                  console.log(Enum.V)
                 }
-              })
-              property
-            }
-          `,
-          code: dedent`
-            class A {
-              @SomeDecorator({
-                a: {
-                  b: c.concat([B])
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              enum Enum {
+                V = 'V'
+              }
+
+              class A {
+                static {
+                  console.log(A.f())
                 }
-              })
-              property
-            }
 
-            enum B {}
-          `,
-          errors: [
-            {
-              data: { nodeDependentOnRight: 'A', right: 'B' },
-              messageId: 'unexpectedModulesDependencyOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              groups: ['unknown'],
-            },
-          ],
+                static f = () => {
+                  return Enum.V
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              enum Enum {
+                V = 'V'
+              }
+
+              class Class {
+                static {
+                  const method = () => {
+                    return Enum.V || true;
+                  };
+                  method();
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
+        })
+
+        it('detects static class method dependencies when static property is present', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                V = 'V'
+              }
+
+              class A {
+                static a = Enum.V
+              }
+            `,
+          })
+
+          await valid({
+            code: dedent`
+              enum Enum {
+                V = 'V'
+              }
+
+              class A {
+                static accessor a = Enum.V
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              enum Enum {
+                V = 'V'
+              }
+
+              class A {
+                static a = Object.values(Enum)
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              namespace Namespace {
+                export class B {
+                  static foo = 'foo'
+                }
+
+                class A {
+                  static a = Namespace.B.foo
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
+        })
+
+        it('ignores non-static arrow method dependencies', async () => {
+          await valid({
+            code: dedent`
+              class A {
+                f = () => {
+                  return Enum.V
+                }
+              }
+
+              enum Enum {
+                V = 'V'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class A {
+                accessor f = () => {
+                  return Enum.V
+                }
+              }
+
+              enum Enum {
+                V = 'V'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
+        })
+
+        it('ignores static arrow method dependencies when no static block or properties exist', async () => {
+          await valid({
+            code: dedent`
+              class A {
+                static f = () => {
+                  return Enum.V
+                }
+              }
+
+              enum Enum {
+                V = 'V'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
+        })
+
+        it('ignores interface type dependencies', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              interface A {
+                a: Enum.V
+              }
+
+              enum Enum {
+                V = 'V'
+              }
+            `,
+          })
+        })
+
+        it('ignores type alias dependencies', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = {
+                a: Enum.V
+              }
+
+              enum Enum {
+                V = 'V'
+              }
+            `,
+          })
+        })
+
+        it('ignores usages in interface values', async () => {
+          await valid({
+            code: dedent`
+              export default interface A {
+                field?: Record<string, [B | null] & C>;
+              }
+
+              type B = Something;
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
+        })
+
+        it('ignores usages in type keys', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = {
+                [B]: string;
+              }
+
+              type B = 'b';
+            `,
+          })
+        })
+
+        it('ignores usages in type values', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = {
+                field: typeof B
+              }
+
+              type B = Something;
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = {
+                (...args: B): void;
+              }
+
+              type B = 'b';
+            `,
+          })
+        })
+
+        it('ignores usages in type generics', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A<T extends B> = {}
+
+              type B = 'b';
+            `,
+          })
+        })
+
+        it('ignores usages in type indexes', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = Foo[B]
+
+              type B = 'b';
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = B['foo']
+
+              type B = 'b';
+            `,
+          })
+        })
+
+        it('ignores usages in conditional types', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = Foo extends B ? true : false;
+
+              type B = 'b';
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = B extends Foo ? true : false;
+
+              type B = 'b';
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = Foo extends Bar ? B : false;
+
+              type B = 'b';
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = Foo extends Bar ? true : B;
+
+              type B = 'b';
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A<T> = T extends {
+                (...args: any[]): infer B;
+              } ? Foo : Bar
+
+              type B = 'b';
+            `,
+          })
+        })
+
+        it('ignores usages in interface extends', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              interface A extends B {}
+
+              interface B {}
+            `,
+          })
+        })
+
+        it('ignores usages in classes implements', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              class A implements B {}
+
+              interface B {}
+            `,
+          })
+        })
+
+        it('ignores usages in functions', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              function a() {
+                let foo: B;
+              }
+
+              type B = 'b';
+            `,
+          })
+        })
+
+        it('ignores parameter binding usages that shadow module-level names', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              function a(B: number) {}
+
+              type B = 'b'
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              const a = (...B) => {}
+
+              type B = 'b'
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              class A {
+                a = (...B) => {}
+              }
+
+              type B = 'b'
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              class A {
+                a(...B) {}
+              }
+
+              type B = 'b'
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              function a(...B) {}
+
+              type B = 'b'
+            `,
+          })
+        })
+
+        it('ignores usages in simple object keys', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              const a = {
+                B: 'b'
+              }
+
+              type B = 'b'
+            `,
+          })
+        })
+
+        it('ignores usages in simple object type keys', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = {
+                B: 'b'
+              }
+
+              type B = 'b'
+            `,
+          })
+        })
+
+        it('ignores usages in simple arguments', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = (B: 'b') => void
+
+              type B = 'b'
+            `,
+          })
+        })
+
+        it('ignores usages in simple interface keys', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              interface A {
+                B: 'b'
+              }
+
+              type B = 'b'
+            `,
+          })
+        })
+
+        it('detects enum value dependencies', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              enum B {
+                V = 'V'
+              }
+
+              enum A {
+                V = B.V
+              }
+            `,
+          })
+        })
+
+        it('detects deeply nested dependencies', async () => {
+          await invalid({
+            output: dedent`
+              class B {
+                static b = 1
+              }
+
+              class A {
+                static a = x > y ? new Class([...{...!!method(1 + <any>(B?.b! as any))}]) : null
+              }
+            `,
+            code: dedent`
+              class A {
+                static a = x > y ? new Class([...{...!!method(1 + <any>(B?.b! as any))}]) : null
+              }
+
+              class B {
+                static b = 1
+              }
+            `,
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'A', right: 'B' },
+                messageId: 'unexpectedModulesDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
+
+        it('detects dependencies in template literal expressions', async () => {
+          await valid({
+            code: dedent`
+              class B {
+                static b = 1
+              }
+
+              class A {
+                static a = \`\${B.b}\`
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
+        })
+
+        it('detects dependencies in class inheritance', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              class B {}
+
+              class A extends B {}
+            `,
+          })
+        })
+
+        it('detects dependencies in decorator expressions', async () => {
+          await invalid({
+            output: dedent`
+              enum B {}
+
+              class A {
+                @SomeDecorator({
+                  a: {
+                    b: c.concat([B])
+                  }
+                })
+                property
+              }
+            `,
+            code: dedent`
+              class A {
+                @SomeDecorator({
+                  a: {
+                    b: c.concat([B])
+                  }
+                })
+                property
+              }
+
+              enum B {}
+            `,
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'A', right: 'B' },
+                messageId: 'unexpectedModulesDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+          })
+        })
+
+        it('detects and handles circular dependencies', async () => {
+          await invalid({
+            output: dedent`
+              class A {
+                static a = B.b
+              }
+
+              class B {
+                static b = C.c
+              }
+
+              class C {
+                static c = A.a
+              }
+            `,
+            code: dedent`
+              class B {
+                static b = C.c
+              }
+
+              class A {
+                static a = B.b
+              }
+
+              class C {
+                static c = A.a
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+                data: { right: 'A', left: 'B' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
+
+        it('prioritizes dependencies over group configuration', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['export-class', 'class'],
+              },
+            ],
+            code: dedent`
+              class B { static b }
+              export class A { static a = B.b }
+            `,
+          })
+        })
+
+        it('prioritizes dependencies over partition by comment', async () => {
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'B', right: 'A' },
+                messageId: 'unexpectedModulesDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                partitionByComment: 'Part',
+              },
+            ],
+            output: dedent`
+              class A { static a }
+              // Part1
+              class B { static b = A.a }
+            `,
+            code: dedent`
+              class B { static b = A.a }
+              // Part1
+              class A { static a }
+            `,
+          })
+        })
+
+        it('prioritizes dependencies over partition by new line', async () => {
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'B', right: 'A' },
+                messageId: 'unexpectedModulesDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                partitionByNewLine: true,
+              },
+            ],
+            output: dedent`
+              class A { static a }
+
+              class B { static = A.a }
+            `,
+            code: dedent`
+              class B { static = A.a }
+
+              class A { static a }
+            `,
+          })
         })
       })
+    }
+    testDependencyDetection(true)
+    testDependencyDetection(false)
 
-      it('detects and handles circular dependencies', async () => {
-        await invalid({
-          output: dedent`
-            class A {
-              static a = B.b
-            }
-
-            class B {
-              static b = C.c
-            }
-
-            class C {
-              static c = A.a
-            }
-          `,
-          code: dedent`
-            class B {
-              static b = C.c
-            }
-
-            class A {
-              static a = B.b
-            }
-
-            class C {
-              static c = A.a
-            }
-          `,
-          errors: [
-            {
-              messageId: 'unexpectedModulesOrder',
-              data: { right: 'A', left: 'B' },
-            },
-          ],
-          options: [options],
-        })
-      })
-
-      it('prioritizes dependencies over group configuration', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              groups: ['export-class', 'class'],
-            },
-          ],
-          code: dedent`
-            class B { static b }
-            export class A { static a = B.b }
-          `,
-        })
-      })
-
-      it('prioritizes dependencies over partition by comment', async () => {
-        await invalid({
-          errors: [
-            {
-              data: { nodeDependentOnRight: 'B', right: 'A' },
-              messageId: 'unexpectedModulesDependencyOrder',
-            },
-          ],
-          output: dedent`
-            class A { static a }
-            // Part1
-            class B { static b = A.a }
-          `,
-          options: [
-            {
-              ...options,
-              partitionByComment: 'Part',
-            },
-          ],
-          code: dedent`
-            class B { static b = A.a }
-            // Part1
-            class A { static a }
-          `,
-        })
-      })
-
-      it('prioritizes dependencies over partition by new line', async () => {
-        await invalid({
-          errors: [
-            {
-              data: { nodeDependentOnRight: 'B', right: 'A' },
-              messageId: 'unexpectedModulesDependencyOrder',
-            },
-          ],
-          options: [
-            {
-              ...options,
-              partitionByNewLine: true,
-            },
-          ],
-          output: dedent`
-            class A { static a }
-
-            class B { static = A.a }
-          `,
-          code: dedent`
-            class B { static = A.a }
-
-            class A { static a }
-          `,
-        })
+    it('supports function overload names', async () => {
+      await valid({
+        code: dedent`
+          function a(input: string): void;
+          function a(input: number): void;
+          export function a(input: number | string): void {}
+        `,
+        options: [],
       })
     })
 
@@ -8481,694 +8542,842 @@ describe('sort-modules', () => {
       })
     })
 
-    it('detects and handles circular dependencies', async () => {
-      await valid({
-        code: dedent`
-          type C = B;
-          type B = A;
-          type A = C;
-        `,
-        options: [options],
+    function testDependencyDetection(
+      useExperimentalDependencyDetection: boolean,
+    ): void {
+      describe('legacy detection', () => {
+        it('detects and handles circular dependencies', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              type C = B;
+              type B = A;
+              type A = C;
+            `,
+          })
+        })
+
+        it('detects usages in interface values', async () => {
+          await invalid({
+            output: dedent`
+              type B = Something;
+
+              export default interface A {
+                field?: Record<string, [B | null] & C>;
+              }
+            `,
+            code: dedent`
+              export default interface A {
+                field?: Record<string, [B | null] & C>;
+              }
+
+              type B = Something;
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+          })
+        })
+
+        it('detects usages in type keys', async () => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            output: dedent`
+              enum B {
+                value = 'b'
+              }
+
+              type A = {
+                [B.value]: string;
+              }
+            `,
+            code: dedent`
+              type A = {
+                [B.value]: string;
+              }
+
+              enum B {
+                value = 'b'
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+          })
+        })
+
+        it('detects usages in type values', async () => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            output: dedent`
+              type B = 'b';
+
+              type A = {
+                (...args: B): void;
+              }
+            `,
+            code: dedent`
+              type A = {
+                (...args: B): void;
+              }
+
+              type B = 'b';
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+          })
+
+          await invalid({
+            output: dedent`
+              namespace Namespace1 {
+                export namespace Namespace2 {
+                  export type B = 'b'
+
+                  type A = Namespace1.Namespace2.B
+                }
+              }
+            `,
+            code: dedent`
+              namespace Namespace1 {
+                export namespace Namespace2 {
+                  type A = Namespace1.Namespace2.B
+
+                  export type B = 'b'
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+          })
+        })
+
+        it('detects usages in type generics', async () => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            output: dedent`
+              type B = 'b';
+
+              type A<T extends B> = {}
+            `,
+            code: dedent`
+              type A<T extends B> = {}
+
+              type B = 'b';
+            `,
+          })
+        })
+
+        it('detects usages in type indexes', async () => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            output: dedent`
+              type B = 'b';
+
+              type A = Foo[B]
+            `,
+            code: dedent`
+              type A = Foo[B]
+
+              type B = 'b';
+            `,
+          })
+
+          await invalid({
+            options: [
+              {
+                ...options,
+                groups: ['unknown'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            output: dedent`
+              type B = 'b';
+
+              type A = B['foo']
+            `,
+            code: dedent`
+              type A = B['foo']
+
+              type B = 'b';
+            `,
+          })
+        })
+
+        it('detects usages in conditional types', async () => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            output: dedent`
+              type B = 'b';
+
+              type A = Foo extends B ? true : false;
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            code: dedent`
+              type A = Foo extends B ? true : false;
+
+              type B = 'b';
+            `,
+          })
+
+          await invalid({
+            options: [
+              {
+                ...options,
+                groups: ['unknown'],
+              },
+            ],
+            output: dedent`
+              type B = 'b';
+
+              type A = B extends Foo ? true : false;
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            code: dedent`
+              type A = B extends Foo ? true : false;
+
+              type B = 'b';
+            `,
+          })
+
+          await invalid({
+            options: [
+              {
+                ...options,
+                groups: ['unknown'],
+              },
+            ],
+            output: dedent`
+              type B = 'b';
+
+              type A = Foo extends Bar ? B : false;
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            code: dedent`
+              type A = Foo extends Bar ? B : false;
+
+              type B = 'b';
+            `,
+          })
+
+          await invalid({
+            options: [
+              {
+                ...options,
+                groups: ['unknown'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            output: dedent`
+              type B = 'b';
+
+              type A = Foo extends Bar ? true : B;
+            `,
+            code: dedent`
+              type A = Foo extends Bar ? true : B;
+
+              type B = 'b';
+            `,
+          })
+        })
+
+        it('detects usages in interface extends', async () => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            output: dedent`
+              interface B {}
+
+              interface A extends B {}
+            `,
+            code: dedent`
+              interface A extends B {}
+
+              interface B {}
+            `,
+          })
+        })
+
+        it('detects usages in classes implements', async () => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            output: dedent`
+              interface B {}
+
+              class A implements B {}
+            `,
+            code: dedent`
+              class A implements B {}
+
+              interface B {}
+            `,
+          })
+        })
+
+        it('detects usages in functions', async () => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            output: dedent`
+              type B = 'b';
+
+              function a() {
+                let foo: B;
+              }
+            `,
+            code: dedent`
+              function a() {
+                let foo: B;
+              }
+
+              type B = 'b';
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+          })
+        })
+
+        it('ignores parameter binding usages that shadow module-level names', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              function a(B: number) {}
+
+              type B = 'b'
+            `,
+          })
+        })
+
+        it('ignores usages in simple object keys', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              const a = {
+                B: 'b'
+              }
+
+              type B = 'b'
+            `,
+          })
+        })
+
+        it('ignores usages in simple object type keys', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = {
+                B: 'b'
+              }
+
+              type B = 'b'
+            `,
+          })
+        })
+
+        it('ignores usages in arguments', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type A = (B: 'b') => void
+
+              type B = 'b'
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type B = 'b'
+
+              class A {
+                a = (...B) => {}
+              }
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              type B = 'b'
+
+              class A {
+                a(...B) {}
+              }
+            `,
+          })
+        })
+
+        it('ignores usages in simple interface keys', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              interface A {
+                B: 'b'
+              }
+
+              type B = 'b'
+            `,
+          })
+        })
+
+        it('supports function overload names', async () => {
+          await valid({
+            code: dedent`
+              function a(input: string): void;
+              function a(input: number): void;
+              export function a(input: number | string): void {}
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: {
+                  leftGroup: 'function',
+                  rightGroup: 'type',
+                  right: 'Type',
+                  left: 'a',
+                },
+                messageId: 'unexpectedModulesGroupOrder',
+              },
+            ],
+            output: dedent`
+              type Type = number;
+
+              function a(input: string): void;
+              function a(input: Type): void;
+              function a(input: Type | string): void {}
+            `,
+            code: dedent`
+              function a(input: string): void;
+              function a(input: Type): void;
+              function a(input: Type | string): void {}
+
+              type Type = number;
+            `,
+            options: [
+              {
+                ...options,
+                newlinesBetween: 1,
+              },
+            ],
+          })
+        })
       })
-    })
+    }
+    testDependencyDetection(true)
+    testDependencyDetection(false)
 
-    it('detects usages in interface values', async () => {
-      await invalid({
-        output: dedent`
-          type B = Something;
-
-          export default interface A {
-            field?: Record<string, [B | null] & C>;
-          }
-        `,
-        code: dedent`
-          export default interface A {
-            field?: Record<string, [B | null] & C>;
-          }
-
-          type B = Something;
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-    })
-
-    it('detects usages in type keys', async () => {
-      await invalid({
-        output: dedent`
-          enum B {
-            value = 'b'
-          }
-
-          type A = {
-            [B.value]: string;
-          }
-        `,
-        code: dedent`
-          type A = {
-            [B.value]: string;
-          }
-
-          enum B {
-            value = 'b'
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-    })
-
-    it('detects usages in type values', async () => {
-      await invalid({
-        output: dedent`
-          type B = 'b';
-
-          type A = {
-            (...args: B): void;
-          }
-        `,
-        code: dedent`
-          type A = {
-            (...args: B): void;
-          }
-
-          type B = 'b';
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-
-      await invalid({
-        output: dedent`
-          namespace Namespace1 {
-            export namespace Namespace2 {
-              export type B = 'b'
-
-              type A = Namespace1.Namespace2.B
-            }
-          }
-        `,
-        code: dedent`
-          namespace Namespace1 {
-            export namespace Namespace2 {
-              type A = Namespace1.Namespace2.B
-
-              export type B = 'b'
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-    })
-
-    it('detects usages in type generics', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-        output: dedent`
-          type B = 'b';
-
-          type A<T extends B> = {}
-        `,
-        code: dedent`
-          type A<T extends B> = {}
-
-          type B = 'b';
-        `,
-      })
-    })
-
-    it('detects usages in type indexes', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-        output: dedent`
-          type B = 'b';
-
-          type A = Foo[B]
-        `,
-        code: dedent`
-          type A = Foo[B]
-
-          type B = 'b';
-        `,
-      })
-
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-        output: dedent`
-          type B = 'b';
-
-          type A = B['foo']
-        `,
-        code: dedent`
-          type A = B['foo']
-
-          type B = 'b';
-        `,
-      })
-    })
-
-    it('detects usages in conditional types', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        output: dedent`
-          type B = 'b';
-
-          type A = Foo extends B ? true : false;
-        `,
-        code: dedent`
-          type A = Foo extends B ? true : false;
-
-          type B = 'b';
-        `,
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        output: dedent`
-          type B = 'b';
-
-          type A = B extends Foo ? true : false;
-        `,
-        code: dedent`
-          type A = B extends Foo ? true : false;
-
-          type B = 'b';
-        `,
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        output: dedent`
-          type B = 'b';
-
-          type A = Foo extends Bar ? B : false;
-        `,
-        code: dedent`
-          type A = Foo extends Bar ? B : false;
-
-          type B = 'b';
-        `,
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        output: dedent`
-          type B = 'b';
-
-          type A = Foo extends Bar ? true : B;
-        `,
-        code: dedent`
-          type A = Foo extends Bar ? true : B;
-
-          type B = 'b';
-        `,
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-    })
-
-    it('detects usages in interface extends', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-        output: dedent`
-          interface B {}
-
-          interface A extends B {}
-        `,
-        code: dedent`
-          interface A extends B {}
-
-          interface B {}
-        `,
-      })
-    })
-
-    it('detects usages in classes implements', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-        output: dedent`
-          interface B {}
-
-          class A implements B {}
-        `,
-        code: dedent`
-          class A implements B {}
-
-          interface B {}
-        `,
-      })
-    })
-
-    it('detects usages in functions', async () => {
-      await invalid({
-        output: dedent`
-          type B = 'b';
-
-          function a() {
-            let foo: B;
-          }
-        `,
-        code: dedent`
-          function a() {
-            let foo: B;
-          }
-
-          type B = 'b';
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-    })
-
-    it('ignores parameter binding usages that shadow module-level names', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        code: dedent`
-          function a(B: number) {}
-
-          type B = 'b'
-        `,
-      })
-    })
-
-    it('ignores usages in simple object keys', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        code: dedent`
-          const a = {
-            B: 'b'
-          }
-
-          type B = 'b'
-        `,
-      })
-    })
-
-    it('ignores usages in simple object type keys', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        code: dedent`
-          type A = {
-            B: 'b'
-          }
-
-          type B = 'b'
-        `,
-      })
-    })
-
-    it('ignores usages in simple arguments', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        code: dedent`
-          type A = (B: 'b') => void
-
-          type B = 'b'
-        `,
-      })
-    })
-
-    it('ignores usages in simple interface keys', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        code: dedent`
-          interface A {
-            B: 'b'
-          }
-
-          type B = 'b'
-        `,
-      })
-    })
-
-    it('supports function overload names', async () => {
-      await valid({
-        code: dedent`
-          function a(input: string): void;
-          function a(input: number): void;
-          export function a(input: number | string): void {}
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              leftGroup: 'function',
-              rightGroup: 'type',
-              right: 'Type',
-              left: 'a',
+    describe('legacy detection specific', () => {
+      /* Unhandled cases */
+      it("doesn't support the following cases", async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+              groups: ['unknown'],
             },
-            messageId: 'unexpectedModulesGroupOrder',
-          },
-        ],
-        output: dedent`
-          type Type = number;
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'B', left: 'a' },
+            },
+          ],
+          output: dedent`
+            type B = 'b'
 
-          function a(input: string): void;
-          function a(input: Type): void;
-          function a(input: Type | string): void {}
-        `,
-        code: dedent`
-          function a(input: string): void;
-          function a(input: Type): void;
-          function a(input: Type | string): void {}
+            function a(...B) {}
+          `,
+          code: dedent`
+            function a(...B) {}
 
-          type Type = number;
-        `,
-        options: [
-          {
-            ...options,
-            newlinesBetween: 1,
-          },
-        ],
+            type B = 'b'
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+              groups: ['unknown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'B', left: 'A' },
+            },
+          ],
+          output: dedent`
+            type B = 'b'
+
+            class A {
+              a = (...B) => {}
+            }
+          `,
+          code: dedent`
+            class A {
+              a = (...B) => {}
+            }
+
+            type B = 'b'
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+              groups: ['unknown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'B', left: 'A' },
+            },
+          ],
+          output: dedent`
+            type B = 'b'
+
+            class A {
+              a(...B) {}
+            }
+          `,
+          code: dedent`
+            class A {
+              a(...B) {}
+            }
+
+            type B = 'b'
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+              groups: ['unknown'],
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'B', left: 'A' },
+            },
+          ],
+          output: dedent`
+            type B = 'b'
+
+            type A<B> = void
+          `,
+          code: dedent`
+            type A<B> = void
+
+            type B = 'b'
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            type B = Something;
+
+            type A = {
+              field: typeof B
+            }
+          `,
+          code: dedent`
+            type A = {
+              field: typeof B
+            }
+
+            type B = Something;
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+            },
+          ],
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            type B = 'b';
+
+            type A<T> = T extends {
+              (...args: any[]): infer B;
+            } ? Foo : Bar
+          `,
+          code: dedent`
+            type A<T> = T extends {
+              (...args: any[]): infer B;
+            } ? Foo : Bar
+
+            type B = 'b';
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+            },
+          ],
+        })
       })
     })
 
-    /* Unhandled cases */
-    it("doesn't support the following cases", async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'B', left: 'a' },
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        output: dedent`
-          type B = 'b'
+    describe('experimental detection specific', () => {
+      it('ignores usages in arguments', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            function a(...B) {}
 
-          function a(...B) {}
-        `,
-        code: dedent`
-          function a(...B) {}
-
-          type B = 'b'
-        `,
+            type B = 'b'
+          `,
+        })
       })
 
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'B', left: 'A' },
-          },
-        ],
-        output: dedent`
-          type B = 'b'
+      it('ignores usages in generics', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            type A<B> = void
 
-          class A {
-            a = (...B) => {}
-          }
-        `,
-        code: dedent`
-          class A {
-            a = (...B) => {}
-          }
-
-          type B = 'b'
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
+            type B = 'b'
+          `,
+        })
       })
 
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'B', left: 'A' },
-          },
-        ],
-        output: dedent`
-          type B = 'b'
+      it('ignores usages in typeof', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            type A = {
+              field: typeof B
+            }
 
-          class A {
-            a(...B) {}
-          }
-        `,
-        code: dedent`
-          class A {
-            a(...B) {}
-          }
-
-          type B = 'b'
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
+            type B = Something;
+          `,
+        })
       })
 
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'B', left: 'A' },
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        output: dedent`
-          type B = 'b'
+      it('ignores usages in infer', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            type A<T> = T extends {
+              (...args: any[]): infer B;
+            } ? Foo : Bar
 
-          type A<B> = void
-        `,
-        code: dedent`
-          type A<B> = void
-
-          type B = 'b'
-        `,
-      })
-
-      await invalid({
-        output: dedent`
-          type B = Something;
-
-          type A = {
-            field: typeof B
-          }
-        `,
-        code: dedent`
-          type A = {
-            field: typeof B
-          }
-
-          type B = Something;
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
-      })
-
-      await invalid({
-        output: dedent`
-          type B = 'b';
-
-          type A<T> = T extends {
-            (...args: any[]): infer B;
-          } ? Foo : Bar
-        `,
-        code: dedent`
-          type A<T> = T extends {
-            (...args: any[]): infer B;
-          } ? Foo : Bar
-
-          type B = 'b';
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-          },
-        ],
+            type B = 'b';
+          `,
+        })
       })
     })
   })

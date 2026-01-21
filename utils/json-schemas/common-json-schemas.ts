@@ -225,3 +225,9 @@ function buildSingleRegexJsonSchema({
     description: 'Regular expression.',
   }
 }
+
+export let useExperimentalDependencyDetectionJsonSchema: JSONSchema4 = {
+  description:
+    'Enables experimental dependency detection for sorting rules that support it.',
+  type: 'boolean',
+}

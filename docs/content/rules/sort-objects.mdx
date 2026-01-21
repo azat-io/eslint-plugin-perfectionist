@@ -799,6 +799,15 @@ let user = {
  }
 ```
 
+### useExperimentalDependencyDetection
+
+<sub>default: `true`</sub>
+
+Specifies whether to use a new experimental dependency detection logic, with reduced false positives.
+
+- `true` — Use the new experimental dependency detection logic.
+- `false` — Use the legacy dependency detection logic.
+
 ## Usage
 
 <CodeTabs
@@ -831,6 +840,7 @@ let user = {
                   useConfigurationIf: {},
                   groups: [],
                   customGroups: [],
+                  useExperimentalDependencyDetection: true,
                 },
               ],
             },
@@ -865,6 +875,7 @@ let user = {
                 useConfigurationIf: {},
                 groups: [],
                 customGroups: [],
+                useExperimentalDependencyDetection: true,
               },
             ],
           },

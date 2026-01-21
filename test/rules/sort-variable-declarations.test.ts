@@ -76,488 +76,703 @@ describe('sort-variable-declarations', () => {
         options: [options],
       })
     })
-
-    it('handles dependencies between variable declarations', async () => {
-      await valid({
-        code: dedent`
-          const bb = 1,
-                aaa = bb + 2,
-                c = aaa + 3
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let a = 1,
-              b = a + 2,
-              c = b + 3,
-              d = [a, b, c];
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          var x = 10,
-              y = x * 2,
-              z = y + 5 - x;
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          const arr = [1, 2, 3],
-                sum = arr.reduce((acc, val) => acc + val, 0),
-                avg = sum / arr.length;
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          const getValue = () => 1,
-                value = getValue(),
-                result = value + 2;
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let position = editor.state.selection.$anchor,
-          depth = position.depth;
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedVariableDeclarationsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          const a,
-                b,
-                c;
-        `,
-        code: dedent`
-          const b,
-                a,
-                c;
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-            data: { nodeDependentOnRight: 'aaa', right: 'bb' },
-          },
-        ],
-        output: dedent`
-          const bb = 1,
-                aaa = bb + 2,
-                c = aaa + 3;
-        `,
-        code: dedent`
-          const aaa = bb + 2,
-                bb = 1,
-                c = aaa + 3;
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-            data: { nodeDependentOnRight: 'b', right: 'a' },
-          },
-        ],
-        output: dedent`
-          let a = 1,
-              b = a + 2,
-              c = b + 3;
-        `,
-        code: dedent`
-          let b = a + 2,
-              a = 1,
-              c = b + 3;
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-            data: { nodeDependentOnRight: 'y', right: 'x' },
-          },
-        ],
-        output: dedent`
-          var x = 10,
-              y = x * 2,
-              z = y + 5;
-        `,
-        code: dedent`
-          var y = x * 2,
-              x = 10,
-              z = y + 5;
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-            data: { nodeDependentOnRight: 'sum', right: 'arr' },
-          },
-        ],
-        output: dedent`
-          const arr = [1, 2, 3],
-                sum = arr.reduce((acc, val) => acc + val, 0),
-                avg = sum / arr.length;
-        `,
-        code: dedent`
-          const sum = arr.reduce((acc, val) => acc + val, 0),
-                arr = [1, 2, 3],
-                avg = sum / arr.length;
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'value', right: 'getValue' },
-            messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-          },
-        ],
-        output: dedent`
-          const getValue = () => 1,
-                value = getValue(),
-                result = value + 2;
-        `,
-        code: dedent`
-          const value = getValue(),
-                getValue = () => 1,
-                result = value + 2;
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-            data: { nodeDependentOnRight: 'a', right: 'c' },
-          },
-        ],
-        output: dedent`
-          const c = 10,
-                a = c,
-                b = 10;
-        `,
-        code: dedent`
-          const a = c,
-                b = 10,
-                c = 10;
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects function expression dependencies', async () => {
-      await valid({
-        code: dedent`
-          let b = () => 1,
-          a = b();
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let b = function() { return 1 },
-          a = b();
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let b = () => 1,
-          a = a.map(b);
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects dependencies in object properties', async () => {
-      await valid({
-        code: dedent`
-          let b = 1,
-          a = {x: b};
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let b = 1,
-          a = {[b]: 0};
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects chained member expression dependencies', async () => {
-      await valid({
-        code: dedent`
-          let b = {x: 1},
-          a = b.x;
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let b = new Subject(),
-          a = b.asObservable();
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects optional chaining dependencies', async () => {
-      await valid({
-        code: dedent`
-          let b = {x: 1},
-          a = b?.x;
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects non-null assertion dependencies', async () => {
-      await valid({
-        code: dedent`
-          let b = 1,
-          a = b!;
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects unary expression dependencies', async () => {
-      await valid({
-        code: dedent`
-          let b = true,
-          a = !b;
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects spread element dependencies', async () => {
-      await valid({
-        code: dedent`
-          let b = {x: 1},
-          a = {b = 'b',};
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let b = [1]
-          a = [b = 'b',];
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects dependencies in conditional expressions', async () => {
-      await valid({
-        code: dedent`
-          let b = 0,
-          a = b ? 1 : 0;
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let b = 0,
-          a = x ? b : 0;
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let b = 0,
-          a = x ? 0 : b;
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects dependencies in type assertions', async () => {
-      await valid({
-        code: dedent`
-          let b = 'b',
-          a = b as any;
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let b = 'b',
-          a = <any>b;
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects dependencies in template literals', async () => {
-      await valid({
-        code: dedent`
-          let b = 'b',
-          a = \`\${b}\`
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects dependencies in destructured assignments', async () => {
-      await valid({
-        code: dedent`
-          let a = "a",
-            [{
-              b = a,
-            }] = {}
-        `,
-        options: [options],
-      })
-    })
-
-    it('ignores dependencies inside function bodies', async () => {
-      await valid({
-        code: dedent`
-          let a = () => b,
-          b = 1;
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let a = function() { return b },
-          b = 1;
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let a = () => {return b},
-          b = 1;
-        `,
-        options: [options],
-      })
-    })
-
-    it('prioritizes dependencies over group configuration', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            customGroups: [
+    function testDependencyDetection(
+      useExperimentalDependencyDetection: boolean,
+    ): void {
+      describe(`experimental dependency detection: ${useExperimentalDependencyDetection}`, () => {
+        it('handles dependencies between variable declarations', async () => {
+          await valid({
+            options: [
               {
-                groupName: 'variablesStartingWithA',
-                elementNamePattern: 'a',
-              },
-              {
-                groupName: 'variablesStartingWithB',
-                elementNamePattern: 'b',
+                ...options,
+                useExperimentalDependencyDetection,
               },
             ],
-            groups: ['variablesStartingWithA', 'variablesStartingWithB'],
-          },
-        ],
-        code: dedent`
-          let
-            b,
-            a = b,
-        `,
+            code: dedent`
+              const bb = 1,
+                    aaa = bb + 2,
+                    c = aaa + 3
+            `,
+          })
+
+          await valid({
+            code: dedent`
+              let a = 1,
+                  b = a + 2,
+                  c = b + 3,
+                  d = [a, b, c];
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              var x = 10,
+                  y = x * 2,
+                  z = y + 5 - x;
+            `,
+          })
+
+          await valid({
+            code: dedent`
+              const arr = [1, 2, 3],
+                    sum = arr.reduce((acc, val) => acc + val, 0),
+                    avg = sum / arr.length;
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              const getValue = () => 1,
+                    value = getValue(),
+                    result = value + 2;
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let position = editor.state.selection.$anchor,
+              depth = position.depth;
+            `,
+          })
+
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              const a,
+                    b,
+                    c;
+            `,
+            code: dedent`
+              const b,
+                    a,
+                    c;
+            `,
+          })
+
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                data: { nodeDependentOnRight: 'aaa', right: 'bb' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              const bb = 1,
+                    aaa = bb + 2,
+                    c = aaa + 3;
+            `,
+            code: dedent`
+              const aaa = bb + 2,
+                    bb = 1,
+                    c = aaa + 3;
+            `,
+          })
+
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                data: { nodeDependentOnRight: 'b', right: 'a' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              let a = 1,
+                  b = a + 2,
+                  c = b + 3;
+            `,
+            code: dedent`
+              let b = a + 2,
+                  a = 1,
+                  c = b + 3;
+            `,
+          })
+
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                data: { nodeDependentOnRight: 'y', right: 'x' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              var x = 10,
+                  y = x * 2,
+                  z = y + 5;
+            `,
+            code: dedent`
+              var y = x * 2,
+                  x = 10,
+                  z = y + 5;
+            `,
+          })
+
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                data: { nodeDependentOnRight: 'sum', right: 'arr' },
+              },
+            ],
+            output: dedent`
+              const arr = [1, 2, 3],
+                    sum = arr.reduce((acc, val) => acc + val, 0),
+                    avg = sum / arr.length;
+            `,
+            code: dedent`
+              const sum = arr.reduce((acc, val) => acc + val, 0),
+                    arr = [1, 2, 3],
+                    avg = sum / arr.length;
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'value', right: 'getValue' },
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+              },
+            ],
+            output: dedent`
+              const getValue = () => 1,
+                    value = getValue(),
+                    result = value + 2;
+            `,
+            code: dedent`
+              const value = getValue(),
+                    getValue = () => 1,
+                    result = value + 2;
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                data: { nodeDependentOnRight: 'a', right: 'c' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              const c = 10,
+                    a = c,
+                    b = 10;
+            `,
+            code: dedent`
+              const a = c,
+                    b = 10,
+                    c = 10;
+            `,
+          })
+        })
+
+        it('detects function expression dependencies', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = () => 1,
+              a = b();
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = function() { return 1 },
+              a = b();
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = () => 1,
+              a = a.map(b);
+            `,
+          })
+        })
+
+        it('detects dependencies in object properties', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = 1,
+              a = {x: b};
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = 1,
+              a = {[b]: 0};
+            `,
+          })
+        })
+
+        it('detects chained member expression dependencies', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = {x: 1},
+              a = b.x;
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = new Subject(),
+              a = b.asObservable();
+            `,
+          })
+        })
+
+        it('detects optional chaining dependencies', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = {x: 1},
+              a = b?.x;
+            `,
+          })
+        })
+
+        it('detects non-null assertion dependencies', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = 1,
+              a = b!;
+            `,
+          })
+        })
+
+        it('detects unary expression dependencies', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = true,
+              a = !b;
+            `,
+          })
+        })
+
+        it('detects dependencies in default assignments', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = {x: 1},
+              a = {b = 'b',};
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = [1]
+              a = [b = 'b',];
+            `,
+          })
+        })
+
+        it('detects dependencies in conditional expressions', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = 0,
+              a = b ? 1 : 0;
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = 0,
+              a = x ? b : 0;
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = 0,
+              a = x ? 0 : b;
+            `,
+          })
+        })
+
+        it('detects dependencies in type assertions', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = 'b',
+              a = b as any;
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = 'b',
+              a = <any>b;
+            `,
+          })
+        })
+
+        it('detects dependencies in template literals', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = 'b',
+              a = \`\${b}\`
+            `,
+          })
+        })
+
+        it('detects dependencies in destructured assignments', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let a = "a",
+                [{
+                  b = a,
+                }] = {}
+            `,
+          })
+        })
+
+        it('ignores dependencies inside function bodies', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let a = () => b,
+              b = 1;
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let a = function() { return b },
+              b = 1;
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let a = () => { return b },
+              b = 1;
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let f = () => {
+                  let b = 1,
+                  a = b;
+              }
+            `,
+          })
+        })
+
+        it('ignores dependencies in non-computed properties', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let { b: foo } = bar,
+              b = 1;
+            `,
+          })
+        })
+
+        it('prioritizes dependencies over group configuration', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                customGroups: [
+                  {
+                    groupName: 'variablesStartingWithA',
+                    elementNamePattern: 'a',
+                  },
+                  {
+                    groupName: 'variablesStartingWithB',
+                    elementNamePattern: 'b',
+                  },
+                ],
+                groups: ['variablesStartingWithA', 'variablesStartingWithB'],
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let
+                b,
+                a = b,
+            `,
+          })
+        })
+
+        it('prioritizes dependencies over partition comments', async () => {
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                data: { nodeDependentOnRight: 'b', right: 'a' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                partitionByComment: '^Part',
+              },
+            ],
+            output: dedent`
+              let
+                a = 0,
+                // Part: 1
+                b = a,
+            `,
+            code: dedent`
+              let
+                b = a,
+                // Part: 1
+                a = 0,
+            `,
+          })
+        })
+
+        it('prioritizes dependencies over newline partitions', async () => {
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                data: { nodeDependentOnRight: 'b', right: 'a' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                partitionByNewLine: true,
+              },
+            ],
+            output: dedent`
+              let
+                a = 0,
+
+                b = a,
+            `,
+            code: dedent`
+              let
+                b = a,
+
+                a = 0,
+            `,
+          })
+        })
       })
-    })
-
-    it('prioritizes dependencies over partition comments', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-            data: { nodeDependentOnRight: 'b', right: 'a' },
-          },
-        ],
-        options: [
-          {
-            ...options,
-            partitionByComment: '^Part',
-          },
-        ],
-        output: dedent`
-          let
-            a = 0,
-            // Part: 1
-            b = a,
-        `,
-        code: dedent`
-          let
-            b = a,
-            // Part: 1
-            a = 0,
-        `,
-      })
-    })
-
-    it('prioritizes dependencies over newline partitions', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedVariableDeclarationsDependencyOrder',
-            data: { nodeDependentOnRight: 'b', right: 'a' },
-          },
-        ],
-        options: [
-          {
-            ...options,
-            partitionByNewLine: true,
-          },
-        ],
-        output: dedent`
-          let
-            a = 0,
-
-            b = a,
-        `,
-        code: dedent`
-          let
-            b = a,
-
-            a = 0,
-        `,
-      })
-    })
+    }
+    testDependencyDetection(true)
+    testDependencyDetection(false)
 
     it('sorts within newline-separated partitions', async () => {
       await invalid({
@@ -2183,7 +2398,7 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it('detects spread element dependencies', async () => {
+    it('detects dependencies in default assignments', async () => {
       await valid({
         code: dedent`
           let b = {x: 1},
@@ -2286,7 +2501,7 @@ describe('sort-variable-declarations', () => {
 
       await valid({
         code: dedent`
-          let a = () => {return b},
+          let a = () => { return b },
           b = 1;
         `,
         options: [options],
@@ -3910,7 +4125,7 @@ describe('sort-variable-declarations', () => {
       })
     })
 
-    it('detects spread element dependencies', async () => {
+    it('detects dependencies in default assignments', async () => {
       await valid({
         code: dedent`
           let b = {x: 1},
@@ -4013,7 +4228,7 @@ describe('sort-variable-declarations', () => {
 
       await valid({
         code: dedent`
-          let a = () => {return b},
+          let a = () => { return b },
           b = 1;
         `,
         options: [options],

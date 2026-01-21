@@ -1,7 +1,8 @@
 import type { TSESLint } from '@typescript-eslint/utils'
-import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
+import type { SortImportsNode } from './types'
 
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 
@@ -17,11 +18,8 @@ export function isSideEffectImport({
   sourceCode,
   node,
 }: {
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration
   sourceCode: TSESLint.SourceCode
+  node: SortImportsNode
 }): boolean {
   switch (node.type) {
     case AST_NODE_TYPES.TSImportEqualsDeclaration:

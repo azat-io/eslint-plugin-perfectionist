@@ -30,7 +30,10 @@ export type SortModulesNode =
  */
 export type Options = [
   Partial<
-    AllCommonOptions<
+    {
+      /** Enables experimental dependency detection. */
+      useExperimentalDependencyDetection: boolean
+    } & AllCommonOptions<
       CustomTypeOption,
       AdditionalSortOptions,
       CustomGroupMatchOptions
@@ -41,6 +44,7 @@ export type Options = [
 /** Represents a sorting node for a module statement. */
 export type SortModulesSortingNode = {
   overloadSignatureImplementation: SortModulesNode | null
+  dependencyDetection: DependencyDetection
 } & SortingNodeWithDependencies<SortModulesNode>
 
 /**
@@ -54,6 +58,8 @@ export type Selector = (typeof allSelectors)[number]
  * specific characteristics of module declarations.
  */
 export type Modifier = (typeof allModifiers)[number]
+
+export type DependencyDetection = 'soft' | 'hard'
 
 /**
  * Additional configuration for a single custom group.

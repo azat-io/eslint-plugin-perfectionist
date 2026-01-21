@@ -3,6 +3,8 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { SortImportsNode } from './types'
+
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 
 /**
@@ -17,11 +19,8 @@ export function computeNodeName({
   sourceCode,
   node,
 }: {
-  node:
-    | TSESTree.TSImportEqualsDeclaration
-    | TSESTree.VariableDeclaration
-    | TSESTree.ImportDeclaration
   sourceCode: TSESLint.SourceCode
+  node: SortImportsNode
 }): string {
   switch (node.type) {
     case AST_NODE_TYPES.TSImportEqualsDeclaration:

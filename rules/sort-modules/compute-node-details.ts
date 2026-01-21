@@ -3,7 +3,12 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { SortModulesNode, Modifier, Selector } from './types'
+import type {
+  DependencyDetection,
+  SortModulesNode,
+  Modifier,
+  Selector,
+} from './types'
 
 import { isPropertyOrAccessorNode } from './is-property-or-accessor-node'
 import { getNodeDecorators } from '../../utils/get-node-decorators'
@@ -13,6 +18,7 @@ import { computeDependencies } from './compute-dependencies'
 
 interface ParsableNodeDetails {
   nodeDetails: {
+    dependencyDetection: DependencyDetection
     addSafetySemicolonWhenInline: boolean
     dependencies: string[]
     modifiers: Modifier[]
@@ -36,13 +42,17 @@ type Details = NonParsableNodeDetails | ParsableNodeDetails
  * @param params - The parameters object.
  * @param params.sourceCode - The source code object.
  * @param params.node - The AST node to compute details for.
+ * @param params.useExperimentalDependencyDetection - Whether to use
+ *   experimental dependency detection.
  * @returns The computed details about the node, such as whether it should be
  *   ignored, if a module block was found, and information about the node.
  */
 export function computeNodeDetails({
+  useExperimentalDependencyDetection,
   sourceCode,
   node,
 }: {
+  useExperimentalDependencyDetection: boolean
   sourceCode: TSESLint.SourceCode
   node: SortModulesNode
 }): Details {
@@ -55,6 +65,7 @@ export function computeNodeDetails({
   let moduleBlock: TSESTree.TSModuleBlock | null = null
   let shouldPartitionAfterNode: boolean = false
   let ignoredDueToDecoratorBeforeExportClass: boolean = false
+  let dependencyDetection: DependencyDetection = 'soft'
   let exportNode:
     | TSESTree.ExportDefaultDeclaration
     | TSESTree.ExportNamedDeclaration
@@ -72,6 +83,7 @@ export function computeNodeDetails({
   return {
     nodeDetails: {
       addSafetySemicolonWhenInline,
+      dependencyDetection,
       dependencies,
       decorators,
       modifiers,
@@ -132,7 +144,14 @@ export function computeNodeDetails({
       case AST_NODE_TYPES.TSEnumDeclaration:
         selector = 'enum'
         ;({ name } = nodeToParse.id)
-        dependencies = [...dependencies, ...extractDependencies(nodeToParse)]
+        dependencyDetection = 'hard'
+        dependencies = [
+          ...dependencies,
+          ...extractDependencies(
+            nodeToParse,
+            useExperimentalDependencyDetection,
+          ),
+        ]
         break
       case AST_NODE_TYPES.ClassDeclaration:
         selector = 'class'
@@ -152,7 +171,14 @@ export function computeNodeDetails({
             decorator,
           }),
         )
-        dependencies = [...dependencies, ...extractDependencies(nodeToParse)]
+        dependencyDetection = 'hard'
+        dependencies = [
+          ...dependencies,
+          ...extractDependencies(
+            nodeToParse,
+            useExperimentalDependencyDetection,
+          ),
+        ]
         break
       /* v8 ignore next 2 -- @preserve Unhandled cases */
       default:
@@ -161,9 +187,24 @@ export function computeNodeDetails({
   }
 }
 
+/**
+ * Extract dependencies from an enum or class declaration.
+ *
+ * @deprecated - To remove when experimental dependency detection is the only
+ *   option.
+ * @param expression - The enum or class declaration node.
+ * @param useExperimentalDependencyDetection - Whether to use experimental
+ *   dependency detection.
+ * @returns The list of dependencies.
+ */
 function extractDependencies(
   expression: TSESTree.TSEnumDeclaration | TSESTree.ClassDeclaration,
+  useExperimentalDependencyDetection: boolean,
 ): string[] {
+  if (useExperimentalDependencyDetection) {
+    return []
+  }
+
   /**
    * Search static methods only if there is a static block or a static property
    * that is not an arrow function.
