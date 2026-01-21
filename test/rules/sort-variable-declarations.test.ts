@@ -668,6 +668,21 @@ describe('sort-variable-declarations', () => {
           })
         })
 
+        it('ignores dependencies in non-computed properties', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let { b: foo } = bar,
+              b = 1;
+            `,
+          })
+        })
+
         it('prioritizes dependencies over group configuration', async () => {
           await valid({
             options: [

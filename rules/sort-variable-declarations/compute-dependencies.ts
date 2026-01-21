@@ -43,7 +43,9 @@ function computeExpressionDependencies(
         dependencies.push(node.name)
         break
       case AST_NODE_TYPES.Property:
-        checkNode(node.key)
+        if (node.computed) {
+          checkNode(node.key)
+        }
         checkNode(node.value)
         break
     }
