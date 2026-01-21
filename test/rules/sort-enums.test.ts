@@ -5185,6 +5185,224 @@ describe('sort-enums', () => {
             ],
           })
         })
+
+        it('detects dependencies in objects', async () => {
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = f({ key: B }),
+              }
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = f({ [B]: 1 }),
+              }
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = f({ ...{ [B]: 1 } }),
+              }
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = f({ key: Enum.B }),
+              }
+            `,
+          })
+        })
+
+        it('detects dependencies in arrays', async () => {
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = [B][0],
+              }
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = [[B]][0][0],
+              }
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = [...[B]][0],
+              }
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = [Enum.B][0],
+              }
+            `,
+          })
+        })
+
+        it('detects dependencies in function calls', async () => {
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = Math.max(B, 0),
+              }
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = Math.max(Enum.B, 0),
+              }
+            `,
+          })
+        })
+
+        it('detects dependencies in conditional expressions', async () => {
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = condition ? B : 0,
+              }
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = condition ? 0 : B,
+              }
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = B ? 1 : 0,
+              }
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = condition ? Enum.B : 0,
+              }
+            `,
+          })
+        })
       })
     }
     testDependencyDetection(true)
