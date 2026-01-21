@@ -62,15 +62,14 @@ export function makeCommentAfterFixes({
       continue
     }
 
-    fixes = [
-      ...fixes,
+    fixes.push(
       ...makeSingleNodeCommentAfterFixes({
         sortedNode,
         sourceCode,
         fixer,
         node,
       }),
-    ]
+    )
   }
   return fixes
 }

@@ -32,24 +32,20 @@ export function generatePredefinedGroups({
   }
   let allModifiersCombinations: string[][] = []
   for (let i = modifiers.length; i > 0; i--) {
-    allModifiersCombinations = [
-      ...allModifiersCombinations,
-      ...getArrayCombinations(modifiers, i),
-    ]
+    allModifiersCombinations.push(...getArrayCombinations(modifiers, i))
   }
   let allModifiersCombinationPermutations = allModifiersCombinations.flatMap(
     result => getPermutations(result),
   )
   let returnValue: string[] = []
   for (let selector of selectors) {
-    returnValue = [
-      ...returnValue,
+    returnValue.push(
       ...allModifiersCombinationPermutations.map(
         modifiersCombinationPermutation =>
           [...modifiersCombinationPermutation, selector].join('-'),
       ),
       selector,
-    ]
+    )
   }
   cache.set(modifiersAndSelectorsKey, returnValue)
   return returnValue

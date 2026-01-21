@@ -145,13 +145,12 @@ export function computeNodeDetails({
         selector = 'enum'
         ;({ name } = nodeToParse.id)
         dependencyDetection = 'hard'
-        dependencies = [
-          ...dependencies,
+        dependencies.push(
           ...extractDependencies(
             nodeToParse,
             useExperimentalDependencyDetection,
           ),
-        ]
+        )
         break
       case AST_NODE_TYPES.ClassDeclaration:
         selector = 'class'
@@ -172,13 +171,12 @@ export function computeNodeDetails({
           }),
         )
         dependencyDetection = 'hard'
-        dependencies = [
-          ...dependencies,
+        dependencies.push(
           ...extractDependencies(
             nodeToParse,
             useExperimentalDependencyDetection,
           ),
-        ]
+        )
         break
       /* v8 ignore next 2 -- @preserve Unhandled cases */
       default:

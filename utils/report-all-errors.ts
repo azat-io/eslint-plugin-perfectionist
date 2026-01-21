@@ -263,8 +263,7 @@ export function reportAllErrors<
       availableMessageIds.missedSpacingBetweenMembers &&
       availableMessageIds.extraSpacingBetweenMembers
     ) {
-      messageIds = [
-        ...messageIds,
+      messageIds.push(
         ...getNewlinesBetweenErrors({
           options: {
             ...options,
@@ -279,7 +278,7 @@ export function reportAllErrors<
           right,
           left,
         }),
-      ]
+      )
     }
 
     let commentAboveMissing: undefined | string
@@ -293,7 +292,7 @@ export function reportAllErrors<
       })
       if (commentAboveThatShouldExist && !commentAboveThatShouldExist.exists) {
         commentAboveMissing = commentAboveThatShouldExist.comment
-        messageIds = [...messageIds, availableMessageIds.missedCommentAbove]
+        messageIds.push(availableMessageIds.missedCommentAbove)
       }
     }
 

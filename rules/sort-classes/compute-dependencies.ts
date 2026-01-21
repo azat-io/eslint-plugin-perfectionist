@@ -40,14 +40,13 @@ export function computeDependencies({
         traverseNode(nodeValue.alternate)
         break
       case AST_NODE_TYPES.MemberExpression:
-        dependencies = [
-          ...dependencies,
+        dependencies.push(
           ...computeMemberExpressionDependencies({
             memberExpression: nodeValue,
             isMemberStatic,
             className,
           }),
-        ]
+        )
         break
       case AST_NODE_TYPES.CallExpression:
         if (!('name' in nodeValue.callee)) {
