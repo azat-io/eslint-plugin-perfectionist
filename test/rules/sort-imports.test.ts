@@ -2311,10 +2311,10 @@ describe('sort-imports', () => {
         errors: [
           {
             data: {
+              leftGroup: 'ts-equals-import',
               rightGroup: 'type-import',
-              leftGroup: 'external',
-              right: 'z',
-              left: 'f',
+              right: './types',
+              left: './z',
             },
             messageId: 'unexpectedImportsGroupOrder',
           },
@@ -2326,14 +2326,14 @@ describe('sort-imports', () => {
           },
         ],
         output: dedent`
-          import type z = z
+          import type { Types } from './types'
 
-          import f from 'f'
+          import z = require('./z')
         `,
         code: dedent`
-          import f from 'f'
+          import z = require('./z')
 
-          import type z = z
+          import type { Types } from './types'
         `,
       })
     })
@@ -5889,10 +5889,10 @@ describe('sort-imports', () => {
         errors: [
           {
             data: {
+              leftGroup: 'ts-equals-import',
               rightGroup: 'type-import',
-              leftGroup: 'external',
-              right: 'z',
-              left: 'f',
+              right: './types',
+              left: './z',
             },
             messageId: 'unexpectedImportsGroupOrder',
           },
@@ -5904,14 +5904,14 @@ describe('sort-imports', () => {
           },
         ],
         output: dedent`
-          import type z = z
+          import type { Types } from './types'
 
-          import f from 'f'
+          import z = require('./z')
         `,
         code: dedent`
-          import f from 'f'
+          import z = require('./z')
 
-          import type z = z
+          import type { Types } from './types'
         `,
       })
     })
@@ -9308,10 +9308,10 @@ describe('sort-imports', () => {
         errors: [
           {
             data: {
+              leftGroup: 'ts-equals-import',
               rightGroup: 'type-import',
-              leftGroup: 'external',
-              right: 'z',
-              left: 'f',
+              right: './types',
+              left: './z',
             },
             messageId: 'unexpectedImportsGroupOrder',
           },
@@ -9323,14 +9323,14 @@ describe('sort-imports', () => {
           },
         ],
         output: dedent`
-          import type z = z
+          import type { Types } from './types'
 
-          import f from 'f'
+          import z = require('./z')
         `,
         code: dedent`
-          import f from 'f'
+          import z = require('./z')
 
-          import type z = z
+          import type { Types } from './types'
         `,
       })
     })
