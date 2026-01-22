@@ -1,5 +1,31 @@
 # Changelog
 
+## v5.4.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.3.1...v5.4.0)
+
+### 🚀 Features
+
+- **sort-objects:** Allow sorting by name and value ([2622a734](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2622a734))
+- Improve dependency detection algorithm ([a80d8105](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a80d8105))
+
+### 🏎 Performance Improvements
+
+- Cache group options and improve subgroup-order coverage ([858076c7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/858076c7))
+- Avoid accumulating spreads in hot paths ([2c964ae0](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2c964ae0))
+
+### 🐞 Bug Fixes
+
+- **sort-modules:** Enable fallback sorting for usage mode ([a2b898e4](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a2b898e4))
+- **sort-modules:** Fix error loop due to overload signatures with sort-usages ([2dcdb687](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2dcdb687))
+- **sort-modules:** Add support for overload signatures ([d760ae7a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d760ae7a))
+- **sort-modules:** Avoid deprecated enum members access ([a0a7d478](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a0a7d478))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](https://github.com/azat-io))
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v5.3.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.3.0...v5.3.1)
