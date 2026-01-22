@@ -39,13 +39,13 @@ function buildAdditionalIdentifierDependenciesComputer({
   sortingNodes: SortingNodeWithoutDependencies[]
   enumName: string
 }): AdditionalIdentifierDependenciesComputer<SortingNodeWithoutDependencies> {
-  return ({ referencingSortingNode, identifier }) => {
-    if (identifier.name !== enumName) {
+  return ({ referencingSortingNode, reference }) => {
+    if (reference.identifier.name !== enumName) {
       return []
     }
 
     let relatedIdentifiers = computeMemberExpressionIdentifiers(
-      identifier,
+      reference.identifier,
       referencingSortingNode,
     )
     return sortingNodes.filter(sortingNode =>
