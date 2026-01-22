@@ -118,8 +118,8 @@ let defaultOptions: Required<Options[number]> = {
 
 export default createEslintRule<Options, MessageId>({
   create: context => ({
-    ClassBody: node => {
-      if (!isSortable(node.body)) {
+    ClassBody: classBody => {
+      if (!isSortable(classBody.body)) {
         return
       }
 
@@ -143,12 +143,12 @@ export default createEslintRule<Options, MessageId>({
       let overloadSignatureNewlinesBetweenValueGetter =
         buildOverloadSignatureNewlinesBetweenValueGetter()
 
-      let className = node.parent.id?.name
+      let className = classBody.parent.id?.name
 
       let sortingNodeGroupsWithoutOverloadSignature: Omit<
         SortClassesSortingNode,
         'overloadSignatureImplementation'
-      >[][] = node.body.reduce(
+      >[][] = classBody.body.reduce(
         (
           accumulator: Omit<
             SortClassesSortingNode,
@@ -200,7 +200,7 @@ export default createEslintRule<Options, MessageId>({
               dependencyNames = []
               ;({ addSafetySemicolonWhenInline, selectors, modifiers, name } =
                 computeMethodDetails({
-                  hasParentDeclare: node.parent.declare,
+                  hasParentDeclare: classBody.parent.declare,
                   method: member,
                   isDecorated,
                   sourceCode,
@@ -298,7 +298,7 @@ export default createEslintRule<Options, MessageId>({
       )
 
       let sortingNodeGroups = populateSortingNodeGroupsWithOverloadSignature({
-        overloadSignatureGroups: computeOverloadSignatureGroups(node.body),
+        overloadSignatureGroups: computeOverloadSignatureGroups(classBody.body),
         sortingNodeGroups: sortingNodeGroupsWithoutOverloadSignature,
       })
       let sortingNodes = sortingNodeGroups.flat()
