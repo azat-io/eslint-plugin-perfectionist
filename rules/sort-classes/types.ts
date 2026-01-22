@@ -39,6 +39,14 @@ export interface SortClassesSortingNode extends SortingNodeWithDependencies<TSES
     | TSESTree.TSAbstractMethodDefinition
     | TSESTree.MethodDefinition
     | null
+
+  nameDetails: NodeNameDetails | null
+}
+
+export interface NodeNameDetails {
+  nameWithoutStartingHash: string
+  hasPrivateHash: boolean
+  name: string
 }
 
 /**

@@ -3,7 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { NodeNameDetails } from '../compute-identifier-name-details'
+import type { NodeNameDetails } from '../types'
 
 import { computeIdentifierNameDetails } from '../compute-identifier-name-details'
 

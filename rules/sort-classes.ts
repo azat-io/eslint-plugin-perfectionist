@@ -2,6 +2,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
   SortClassesSortingNode,
+  NodeNameDetails,
   Modifier,
   Selector,
   Options,
@@ -171,6 +172,7 @@ export default createEslintRule<Options, MessageId>({
           let addSafetySemicolonWhenInline: boolean
           let dependencyNames: string[]
           let name: string
+          let nameDetails: NodeNameDetails | null
           let memberValue: undefined | string
           let modifiers: Modifier[]
           let selectors: Selector[]
@@ -183,9 +185,9 @@ export default createEslintRule<Options, MessageId>({
                 dependencyNames,
                 dependencies,
                 memberValue,
+                nameDetails,
                 modifiers,
                 selectors,
-                name,
               } = computePropertyDetails({
                 ignoreCallbackDependenciesPatterns:
                   options.ignoreCallbackDependenciesPatterns,
@@ -194,31 +196,39 @@ export default createEslintRule<Options, MessageId>({
                 sourceCode,
                 className,
               }))
+              ;({ name } = nameDetails)
               break
             case AST_NODE_TYPES.TSAbstractMethodDefinition:
             case AST_NODE_TYPES.MethodDefinition:
               dependencyNames = []
-              ;({ addSafetySemicolonWhenInline, selectors, modifiers, name } =
-                computeMethodDetails({
-                  hasParentDeclare: classBody.parent.declare,
-                  method: member,
-                  isDecorated,
-                  sourceCode,
-                }))
+              ;({
+                addSafetySemicolonWhenInline,
+                nameDetails,
+                selectors,
+                modifiers,
+              } = computeMethodDetails({
+                hasParentDeclare: classBody.parent.declare,
+                method: member,
+                isDecorated,
+                sourceCode,
+              }))
+              ;({ name } = nameDetails)
               break
             case AST_NODE_TYPES.TSAbstractAccessorProperty:
             case AST_NODE_TYPES.AccessorProperty:
               addSafetySemicolonWhenInline = true
-              ;({ dependencyNames, selectors, modifiers, name } =
+              ;({ dependencyNames, nameDetails, selectors, modifiers } =
                 computeAccessorDetails({
                   accessor: member,
                   isDecorated,
                   sourceCode,
                 }))
+              ;({ name } = nameDetails)
               break
             case AST_NODE_TYPES.TSIndexSignature:
               addSafetySemicolonWhenInline = true
               dependencyNames = []
+              nameDetails = null
               ;({ modifiers, selectors, name } = computeIndexSignatureDetails({
                 indexSignature: member,
                 sourceCode,
@@ -228,6 +238,7 @@ export default createEslintRule<Options, MessageId>({
               addSafetySemicolonWhenInline = false
               dependencyNames = []
               name = 'static'
+              nameDetails = null
               ;({ dependencies, selectors, modifiers } =
                 computeStaticBlockDetails({
                   ignoreCallbackDependenciesPatterns:
@@ -270,6 +281,7 @@ export default createEslintRule<Options, MessageId>({
             dependencyNames,
             node: member,
             dependencies,
+            nameDetails,
             group,
             name,
           }

@@ -1,7 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { Modifier, Selector } from '../types'
+import type { NodeNameDetails, Modifier, Selector } from '../types'
 
 import {
   computeAccessibilityModifier,
@@ -31,15 +31,14 @@ export function computeAccessorDetails({
   sourceCode: TSESLint.SourceCode
   isDecorated: boolean
 }): {
+  nameDetails: NodeNameDetails
   dependencyNames: string[]
   modifiers: Modifier[]
   selectors: Selector[]
-  name: string
 } {
-  let { nameWithoutStartingHash, hasPrivateHash, name } =
-    computeMethodOrPropertyNameDetails(accessor, sourceCode)
+  let nameDetails = computeMethodOrPropertyNameDetails(accessor, sourceCode)
   let modifiers = computeModifiers({
-    hasPrivateHash,
+    hasPrivateHash: nameDetails.hasPrivateHash,
     isDecorated,
     accessor,
   })
@@ -47,14 +46,14 @@ export function computeAccessorDetails({
   return {
     dependencyNames: [
       computeDependencyName({
-        nodeNameWithoutStartingHash: nameWithoutStartingHash,
+        nodeNameWithoutStartingHash: nameDetails.nameWithoutStartingHash,
+        hasPrivateHash: nameDetails.hasPrivateHash,
         isStatic: modifiers.includes('static'),
-        hasPrivateHash,
       }),
     ],
     selectors: ['accessor-property'],
+    nameDetails,
     modifiers,
-    name,
   }
 }
 

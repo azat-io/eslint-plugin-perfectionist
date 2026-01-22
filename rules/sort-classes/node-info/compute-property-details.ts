@@ -3,8 +3,8 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { NodeNameDetails, Modifier, Selector } from '../types'
 import type { RegexOption } from '../../../types/common-options'
-import type { Modifier, Selector } from '../types'
 
 import {
   computeAccessibilityModifier,
@@ -46,16 +46,15 @@ export function computePropertyDetails({
   isDecorated: boolean
 }): {
   memberValue: undefined | string
+  nameDetails: NodeNameDetails
   dependencyNames: string[]
   dependencies: string[]
   modifiers: Modifier[]
   selectors: Selector[]
-  name: string
 } {
-  let { nameWithoutStartingHash, hasPrivateHash, name } =
-    computeMethodOrPropertyNameDetails(property, sourceCode)
+  let nameDetails = computeMethodOrPropertyNameDetails(property, sourceCode)
   let modifiers = computeModifiers({
-    hasPrivateHash,
+    hasPrivateHash: nameDetails.hasPrivateHash,
     isDecorated,
     property,
   })
@@ -63,9 +62,9 @@ export function computePropertyDetails({
   return {
     dependencyNames: [
       computeDependencyName({
-        nodeNameWithoutStartingHash: nameWithoutStartingHash,
+        nodeNameWithoutStartingHash: nameDetails.nameWithoutStartingHash,
+        hasPrivateHash: nameDetails.hasPrivateHash,
         isStatic: modifiers.includes('static'),
-        hasPrivateHash,
       }),
     ],
     memberValue:
@@ -78,8 +77,8 @@ export function computePropertyDetails({
       property,
     }),
     selectors: computeSelectors(property),
+    nameDetails,
     modifiers,
-    name,
   }
 }
 
