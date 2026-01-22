@@ -9,6 +9,11 @@ import type {
 } from './sort-classes/types'
 
 import {
+  useExperimentalDependencyDetectionJsonSchema,
+  buildCommonJsonSchemas,
+  buildRegexJsonSchema,
+} from '../utils/json-schemas/common-json-schemas'
+import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -26,13 +31,11 @@ import {
   allModifiers,
   allSelectors,
 } from './sort-classes/types'
+import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import {
-  buildCommonJsonSchemas,
-  buildRegexJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { computeIndexSignatureDetails } from './sort-classes/node-info/compute-index-signature-details'
+import { computeDependenciesBySortingNode } from './sort-classes/compute-dependencies-by-sorting-node'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeStaticBlockDetails } from './sort-classes/node-info/compute-static-block-details'
 import { computeOverloadSignatureGroups } from './sort-classes/compute-overload-signature-groups'
@@ -102,6 +105,7 @@ let defaultOptions: Required<Options[number]> = {
     ['private-method', 'private-function-property'],
     'unknown',
   ],
+  useExperimentalDependencyDetection: true,
   ignoreCallbackDependenciesPatterns: [],
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
@@ -191,6 +195,8 @@ export default createEslintRule<Options, MessageId>({
               } = computePropertyDetails({
                 ignoreCallbackDependenciesPatterns:
                   options.ignoreCallbackDependenciesPatterns,
+                useExperimentalDependencyDetection:
+                  options.useExperimentalDependencyDetection,
                 property: member,
                 isDecorated,
                 sourceCode,
@@ -241,6 +247,8 @@ export default createEslintRule<Options, MessageId>({
               nameDetails = null
               ;({ dependencies, selectors, modifiers } =
                 computeStaticBlockDetails({
+                  useExperimentalDependencyDetection:
+                    options.useExperimentalDependencyDetection,
                   ignoreCallbackDependenciesPatterns:
                     options.ignoreCallbackDependenciesPatterns,
                   staticBlock: member,
@@ -276,6 +284,7 @@ export default createEslintRule<Options, MessageId>({
             'overloadSignatureImplementation' | 'partitionId'
           > = {
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
+            isStatic: modifiers.includes('static'),
             size: rangeToDiff(member, sourceCode),
             addSafetySemicolonWhenInline,
             dependencyNames,
@@ -313,6 +322,21 @@ export default createEslintRule<Options, MessageId>({
         overloadSignatureGroups: computeOverloadSignatureGroups(classBody.body),
         sortingNodeGroups: sortingNodeGroupsWithoutOverloadSignature,
       })
+
+      if (options.useExperimentalDependencyDetection) {
+        let dependenciesBySortingNode = computeDependenciesBySortingNode({
+          ignoreCallbackDependenciesPatterns:
+            options.ignoreCallbackDependenciesPatterns,
+          sortingNodes: sortingNodeGroups.flat(),
+          sourceCode,
+          classBody,
+        })
+        sortingNodeGroups = populateSortingNodeGroupsWithDependencies({
+          dependenciesBySortingNode,
+          sortingNodeGroups,
+        })
+      }
+
       let sortingNodes = sortingNodeGroups.flat()
 
       reportAllErrors<MessageId, SortClassesSortingNode>({
@@ -361,6 +385,8 @@ export default createEslintRule<Options, MessageId>({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
           }),
+          useExperimentalDependencyDetection:
+            useExperimentalDependencyDetectionJsonSchema,
           ignoreCallbackDependenciesPatterns: buildRegexJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
