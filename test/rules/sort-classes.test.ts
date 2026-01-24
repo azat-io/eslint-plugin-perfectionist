@@ -2694,6 +2694,39 @@ describe('sort-classes', () => {
           await valid({
             code: dedent`
               class Class {
+                static z1;
+                static z2;
+                static z3;
+                static z4;
+                static ['z5'];
+                static ['z6'];
+                static ['z7'];
+                static ['z8'];
+
+                static {
+                  this.z1;
+                  Class.z2;
+                  this['z3'];
+                  Class['z4'];
+                  this.z5
+                  Class.z6
+                  this['z7'];
+                  Class['z8'];
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [['static-block', 'static-property']],
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
                 static z = true;
                 static {
                   const method = () => {

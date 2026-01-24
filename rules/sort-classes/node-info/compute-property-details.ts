@@ -55,6 +55,7 @@ export function computePropertyDetails({
   dependencies: string[]
   modifiers: Modifier[]
   selectors: Selector[]
+  isStatic: boolean
 } {
   let nameDetails = computeMethodOrPropertyNameDetails(property, sourceCode)
   let modifiers = computeModifiers({
@@ -82,6 +83,7 @@ export function computePropertyDetails({
         ? sourceCode.getText(property.value)
         : undefined,
     selectors: computeSelectors(property),
+    isStatic: property.static,
     nameDetails,
     modifiers,
   }

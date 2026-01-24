@@ -35,6 +35,7 @@ export function computeAccessorDetails({
   dependencyNames: string[]
   modifiers: Modifier[]
   selectors: Selector[]
+  isStatic: boolean
 } {
   let nameDetails = computeMethodOrPropertyNameDetails(accessor, sourceCode)
   let modifiers = computeModifiers({
@@ -52,6 +53,7 @@ export function computeAccessorDetails({
       }),
     ],
     selectors: ['accessor-property'],
+    isStatic: accessor.static,
     nameDetails,
     modifiers,
   }

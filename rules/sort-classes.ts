@@ -178,6 +178,7 @@ export default createEslintRule<Options, MessageId>({
           let name: string
           let nameDetails: NodeNameDetails | null
           let memberValue: undefined | string
+          let isStatic: boolean
           let modifiers: Modifier[]
           let selectors: Selector[]
 
@@ -192,6 +193,7 @@ export default createEslintRule<Options, MessageId>({
                 nameDetails,
                 modifiers,
                 selectors,
+                isStatic,
               } = computePropertyDetails({
                 ignoreCallbackDependenciesPatterns:
                   options.ignoreCallbackDependenciesPatterns,
@@ -212,6 +214,7 @@ export default createEslintRule<Options, MessageId>({
                 nameDetails,
                 selectors,
                 modifiers,
+                isStatic,
               } = computeMethodDetails({
                 hasParentDeclare: classBody.parent.declare,
                 method: member,
@@ -223,18 +226,24 @@ export default createEslintRule<Options, MessageId>({
             case AST_NODE_TYPES.TSAbstractAccessorProperty:
             case AST_NODE_TYPES.AccessorProperty:
               addSafetySemicolonWhenInline = true
-              ;({ dependencyNames, nameDetails, selectors, modifiers } =
-                computeAccessorDetails({
-                  accessor: member,
-                  isDecorated,
-                  sourceCode,
-                }))
+              ;({
+                dependencyNames,
+                nameDetails,
+                selectors,
+                modifiers,
+                isStatic,
+              } = computeAccessorDetails({
+                accessor: member,
+                isDecorated,
+                sourceCode,
+              }))
               ;({ name } = nameDetails)
               break
             case AST_NODE_TYPES.TSIndexSignature:
               addSafetySemicolonWhenInline = true
               dependencyNames = []
               nameDetails = null
+              isStatic = false
               ;({ modifiers, selectors, name } = computeIndexSignatureDetails({
                 indexSignature: member,
                 sourceCode,
@@ -245,6 +254,7 @@ export default createEslintRule<Options, MessageId>({
               dependencyNames = []
               name = 'static'
               nameDetails = null
+              isStatic = true
               ;({ dependencies, selectors, modifiers } =
                 computeStaticBlockDetails({
                   useExperimentalDependencyDetection:
@@ -284,13 +294,13 @@ export default createEslintRule<Options, MessageId>({
             'overloadSignatureImplementation' | 'partitionId'
           > = {
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
-            isStatic: modifiers.includes('static'),
             size: rangeToDiff(member, sourceCode),
             addSafetySemicolonWhenInline,
             dependencyNames,
             node: member,
             dependencies,
             nameDetails,
+            isStatic,
             group,
             name,
           }

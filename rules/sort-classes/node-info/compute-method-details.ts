@@ -42,6 +42,7 @@ export function computeMethodDetails({
   nameDetails: NodeNameDetails
   modifiers: Modifier[]
   selectors: Selector[]
+  isStatic: boolean
 } {
   let nameDetails = computeMethodOrPropertyNameDetails(method, sourceCode)
 
@@ -56,6 +57,7 @@ export function computeMethodDetails({
       method,
     }),
     selectors: computeSelectors(method),
+    isStatic: method.static,
     nameDetails,
   }
 }
