@@ -2,11 +2,17 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
   SortClassesSortingNode,
+  NodeNameDetails,
   Modifier,
   Selector,
   Options,
 } from './sort-classes/types'
 
+import {
+  useExperimentalDependencyDetectionJsonSchema,
+  buildCommonJsonSchemas,
+  buildRegexJsonSchema,
+} from '../utils/json-schemas/common-json-schemas'
 import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
@@ -25,13 +31,11 @@ import {
   allModifiers,
   allSelectors,
 } from './sort-classes/types'
+import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import {
-  buildCommonJsonSchemas,
-  buildRegexJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { computeIndexSignatureDetails } from './sort-classes/node-info/compute-index-signature-details'
+import { computeDependenciesBySortingNode } from './sort-classes/compute-dependencies-by-sorting-node'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeStaticBlockDetails } from './sort-classes/node-info/compute-static-block-details'
 import { computeOverloadSignatureGroups } from './sort-classes/compute-overload-signature-groups'
@@ -101,6 +105,7 @@ let defaultOptions: Required<Options[number]> = {
     ['private-method', 'private-function-property'],
     'unknown',
   ],
+  useExperimentalDependencyDetection: true,
   ignoreCallbackDependenciesPatterns: [],
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
@@ -118,8 +123,8 @@ let defaultOptions: Required<Options[number]> = {
 
 export default createEslintRule<Options, MessageId>({
   create: context => ({
-    ClassBody: node => {
-      if (!isSortable(node.body)) {
+    ClassBody: classBody => {
+      if (!isSortable(classBody.body)) {
         return
       }
 
@@ -143,12 +148,12 @@ export default createEslintRule<Options, MessageId>({
       let overloadSignatureNewlinesBetweenValueGetter =
         buildOverloadSignatureNewlinesBetweenValueGetter()
 
-      let className = node.parent.id?.name
+      let className = classBody.parent.id?.name
 
       let sortingNodeGroupsWithoutOverloadSignature: Omit<
         SortClassesSortingNode,
         'overloadSignatureImplementation'
-      >[][] = node.body.reduce(
+      >[][] = classBody.body.reduce(
         (
           accumulator: Omit<
             SortClassesSortingNode,
@@ -171,7 +176,9 @@ export default createEslintRule<Options, MessageId>({
           let addSafetySemicolonWhenInline: boolean
           let dependencyNames: string[]
           let name: string
+          let nameDetails: NodeNameDetails | null
           let memberValue: undefined | string
+          let isStatic: boolean
           let modifiers: Modifier[]
           let selectors: Selector[]
 
@@ -183,42 +190,60 @@ export default createEslintRule<Options, MessageId>({
                 dependencyNames,
                 dependencies,
                 memberValue,
+                nameDetails,
                 modifiers,
                 selectors,
-                name,
+                isStatic,
               } = computePropertyDetails({
                 ignoreCallbackDependenciesPatterns:
                   options.ignoreCallbackDependenciesPatterns,
+                useExperimentalDependencyDetection:
+                  options.useExperimentalDependencyDetection,
                 property: member,
                 isDecorated,
                 sourceCode,
                 className,
               }))
+              ;({ name } = nameDetails)
               break
             case AST_NODE_TYPES.TSAbstractMethodDefinition:
             case AST_NODE_TYPES.MethodDefinition:
               dependencyNames = []
-              ;({ addSafetySemicolonWhenInline, selectors, modifiers, name } =
-                computeMethodDetails({
-                  hasParentDeclare: node.parent.declare,
-                  method: member,
-                  isDecorated,
-                  sourceCode,
-                }))
+              ;({
+                addSafetySemicolonWhenInline,
+                nameDetails,
+                selectors,
+                modifiers,
+                isStatic,
+              } = computeMethodDetails({
+                hasParentDeclare: classBody.parent.declare,
+                method: member,
+                isDecorated,
+                sourceCode,
+              }))
+              ;({ name } = nameDetails)
               break
             case AST_NODE_TYPES.TSAbstractAccessorProperty:
             case AST_NODE_TYPES.AccessorProperty:
               addSafetySemicolonWhenInline = true
-              ;({ dependencyNames, selectors, modifiers, name } =
-                computeAccessorDetails({
-                  accessor: member,
-                  isDecorated,
-                  sourceCode,
-                }))
+              ;({
+                dependencyNames,
+                nameDetails,
+                selectors,
+                modifiers,
+                isStatic,
+              } = computeAccessorDetails({
+                accessor: member,
+                isDecorated,
+                sourceCode,
+              }))
+              ;({ name } = nameDetails)
               break
             case AST_NODE_TYPES.TSIndexSignature:
               addSafetySemicolonWhenInline = true
               dependencyNames = []
+              nameDetails = null
+              isStatic = false
               ;({ modifiers, selectors, name } = computeIndexSignatureDetails({
                 indexSignature: member,
                 sourceCode,
@@ -228,8 +253,12 @@ export default createEslintRule<Options, MessageId>({
               addSafetySemicolonWhenInline = false
               dependencyNames = []
               name = 'static'
+              nameDetails = null
+              isStatic = true
               ;({ dependencies, selectors, modifiers } =
                 computeStaticBlockDetails({
+                  useExperimentalDependencyDetection:
+                    options.useExperimentalDependencyDetection,
                   ignoreCallbackDependenciesPatterns:
                     options.ignoreCallbackDependenciesPatterns,
                   staticBlock: member,
@@ -270,6 +299,8 @@ export default createEslintRule<Options, MessageId>({
             dependencyNames,
             node: member,
             dependencies,
+            nameDetails,
+            isStatic,
             group,
             name,
           }
@@ -298,9 +329,24 @@ export default createEslintRule<Options, MessageId>({
       )
 
       let sortingNodeGroups = populateSortingNodeGroupsWithOverloadSignature({
-        overloadSignatureGroups: computeOverloadSignatureGroups(node.body),
+        overloadSignatureGroups: computeOverloadSignatureGroups(classBody.body),
         sortingNodeGroups: sortingNodeGroupsWithoutOverloadSignature,
       })
+
+      if (options.useExperimentalDependencyDetection) {
+        let dependenciesBySortingNode = computeDependenciesBySortingNode({
+          ignoreCallbackDependenciesPatterns:
+            options.ignoreCallbackDependenciesPatterns,
+          sortingNodes: sortingNodeGroups.flat(),
+          sourceCode,
+          classBody,
+        })
+        sortingNodeGroups = populateSortingNodeGroupsWithDependencies({
+          dependenciesBySortingNode,
+          sortingNodeGroups,
+        })
+      }
+
       let sortingNodes = sortingNodeGroups.flat()
 
       reportAllErrors<MessageId, SortClassesSortingNode>({
@@ -349,6 +395,8 @@ export default createEslintRule<Options, MessageId>({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
           }),
+          useExperimentalDependencyDetection:
+            useExperimentalDependencyDetectionJsonSchema,
           ignoreCallbackDependenciesPatterns: buildRegexJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,

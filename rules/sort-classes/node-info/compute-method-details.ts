@@ -3,7 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { Modifier, Selector } from '../types'
+import type { NodeNameDetails, Modifier, Selector } from '../types'
 
 import {
   computeAccessibilityModifier,
@@ -39,27 +39,26 @@ export function computeMethodDetails({
   isDecorated: boolean
 }): {
   addSafetySemicolonWhenInline: boolean
+  nameDetails: NodeNameDetails
   modifiers: Modifier[]
   selectors: Selector[]
-  name: string
+  isStatic: boolean
 } {
-  let { hasPrivateHash, name } = computeMethodOrPropertyNameDetails(
-    method,
-    sourceCode,
-  )
+  let nameDetails = computeMethodOrPropertyNameDetails(method, sourceCode)
 
   return {
+    modifiers: computeModifiers({
+      hasPrivateHash: nameDetails.hasPrivateHash,
+      isDecorated,
+      method,
+    }),
     addSafetySemicolonWhenInline: shouldAddSafetySemicolonWhenInline({
       hasParentDeclare,
       method,
     }),
-    modifiers: computeModifiers({
-      hasPrivateHash,
-      isDecorated,
-      method,
-    }),
     selectors: computeSelectors(method),
-    name,
+    isStatic: method.static,
+    nameDetails,
   }
 }
 

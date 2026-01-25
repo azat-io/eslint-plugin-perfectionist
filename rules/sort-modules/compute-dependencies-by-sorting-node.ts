@@ -123,7 +123,7 @@ function buildAdditionalIdentifierDependenciesComputer({
 }: {
   sortingNodes: SortingNodeWithoutDependencies[]
 }): AdditionalIdentifierDependenciesComputer<SortingNodeWithoutDependencies> {
-  return ({ identifier }) => {
+  return ({ referencingSortingNode, reference }) => {
     let relatedIdentifiers = [
       ...computeMemberExpressionIdentifiers(),
       ...computeQualifiedNameIdentifiers(),
@@ -135,9 +135,9 @@ function buildAdditionalIdentifierDependenciesComputer({
     function computeMemberExpressionIdentifiers(): string[] {
       return computeParentNodesWithTypes({
         allowedTypes: [AST_NODE_TYPES.MemberExpression],
+        maxParent: referencingSortingNode.node,
+        node: reference.identifier,
         consecutiveOnly: true,
-        node: identifier,
-        maxParent: null,
       })
         .map(node => node.property)
         .filter(property => property.type === AST_NODE_TYPES.Identifier)
@@ -147,9 +147,9 @@ function buildAdditionalIdentifierDependenciesComputer({
     function computeQualifiedNameIdentifiers(): string[] {
       return computeParentNodesWithTypes({
         allowedTypes: [AST_NODE_TYPES.TSQualifiedName],
+        maxParent: referencingSortingNode.node,
+        node: reference.identifier,
         consecutiveOnly: true,
-        node: identifier,
-        maxParent: null,
       }).map(node => node.right.name)
     }
   }

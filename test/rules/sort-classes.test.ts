@@ -2184,1534 +2184,1515 @@ describe('sort-classes', () => {
       })
     })
 
-    it('does not sort properties if the right value depends on the left value', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            b = 'b'
-
-            aaa = [this.b]
-          }
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = 'b'
-
-            getAaa() {
-              return this.b;
-            }
-          }
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            static c = 'c'
-
-            b = Example.c
-          }
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            #b = 'b'
-
-            getAaa() {
-              return this.#b;
-            }
-          }
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            static b = 'b'
-
-            static getAaa() {
-              return this.b;
-            }
-          }
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'aaa', right: 'b' },
-            messageId: 'unexpectedClassesDependencyOrder',
-          },
-        ],
-        output: dedent`
-          class Class {
-            b = 'b'
-
-            aaa = [this.b]
-          }
-        `,
-        code: dedent`
-          class Class {
-            aaa = [this.b]
-
-            b = 'b'
-          }
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'property',
-              leftGroup: 'method',
-              left: 'getAaa',
-              right: 'b',
-            },
-            messageId: 'unexpectedClassesGroupOrder',
-          },
-        ],
-        output: dedent`
-          class Class {
-            b = 'b'
-
-            getAaa() {
-              return this.b;
-            }
-          }
-        `,
-        code: dedent`
-          class Class {
-            getAaa() {
-              return this.b;
-            }
-
-            b = 'b'
-          }
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'static-property',
-              leftGroup: 'property',
-              right: 'c',
-              left: 'b',
-            },
-            messageId: 'unexpectedClassesGroupOrder',
-          },
-        ],
-        output: dedent`
-          class Class {
-            static c = 'c'
-
-            b = Example.c
-          }
-        `,
-        code: dedent`
-          class Class {
-            b = Example.c
-
-            static c = 'c'
-          }
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'private-property',
-              leftGroup: 'method',
-              left: 'getAaa',
-              right: '#b',
-            },
-            messageId: 'unexpectedClassesGroupOrder',
-          },
-        ],
-        output: dedent`
-          class Class {
-            #b = 'b'
-
-            getAaa() {
-              return this.#b;
-            }
-          }
-        `,
-        code: dedent`
-          class Class {
-            getAaa() {
-              return this.#b;
-            }
-
-            #b = 'b'
-          }
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: {
-              rightGroup: 'static-property',
-              leftGroup: 'static-method',
-              left: 'getAaa',
-              right: 'b',
-            },
-            messageId: 'unexpectedClassesGroupOrder',
-          },
-        ],
-        output: dedent`
-          class Class {
-            static b = 'b'
-
-            static getAaa() {
-              return this.b;
-            }
-          }
-        `,
-        code: dedent`
-          class Class {
-            static getAaa() {
-              return this.b;
-            }
-
-            static b = 'b'
-          }
-        `,
-        options: [options],
-      })
-    })
-
-    it('ignores function expression dependencies', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            a = this.b()
-            static a = this.b()
-            b() {
-              return 1
-            }
-            static b() {
-              return 1
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            a = this.b()
-            static a = Class.b()
-            b() {
-              return 1
-            }
-            static b() {
-              return 1
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            a = [1].map(this.b)
-            static a = [1].map(this.b)
-            b() {
-              return 1
-            }
-            static b() {
-              return 1
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            a = [1].map(this.b)
-            static a = [1].map(Class.b)
-            b() {
-              return 1
-            }
-            static b() {
-              return 1
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class MyClass {
-            a = () => this.b()
-            b = () => null
-          }
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          class MyClass {
-            static {
-              MyClass.z()
-            }
-            static z() {}
-          }
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects function property dependencies', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            b = () => {
-              return 1
-            }
-            a = this.b()
-            static b = () => {
-              return 1
-            }
-            static a = this.b()
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = function() {
-              return 1
-            }
-            a = this.b()
-            static b = function() {
-              return 1
-            }
-            static a = this.b()
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = () => {
-              return 1
-            }
-            a = [1].map(this.b)
-            static b = () => {
-              return 1
-            }
-            static a = [1].map(this.b)
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = function() {
-              return 1
-            }
-            a = [1].map(this.b)
-            static b = function() {
-              return 1
-            }
-            static a = [1].map(this.b)
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = () => {
-              return 1
-            }
-            a = [1].map(this.b)
-            static b = () => {
-              return 1
-            }
-            static a = [1].map(Class.b)
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = function() {
-              return 1
-            }
-            a = [1].map(this.b)
-            static b = function() {
-              return 1
-            }
-            static a = [1].map(Class.b)
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = createQueryString();
-            a = createState((set) => {
-                set('query', this.b.value);
-             });
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = function () {
-              return 1
-            }
-            a = [1].map(this["b"]);
-          }
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            ["b"] = function () {
-              return 1
-            }
-            a = [1].map(this.b);
-          }
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            ['b'] = function () {
-              return 1
-            }
-            a = [1].map(this.b);
-          }
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            ["'b'"] = function () {
-              return 1
-            }
-            a = [1].map(this["'b'"]);
-          }
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects static block dependencies', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            static {
-              return true || OtherClass.z;
-            }
-            static z = true;
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['static-block', 'static-property']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            static z = true;
-            static {
-              const method = () => {
-                return (Class.z || true) && (false || this.z);
-              };
-              method();
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['static-block', 'static-property']],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            static z = true;
-            static {
-              const method = () => {
-                return (Class.z || true) && (false || this.z);
-              };
-              method();
-              return (Class.z || true) && (false || this.z);
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['static-block', 'static-property']],
-          },
-        ],
-      })
-    })
-
-    it('detects property expression dependencies', async () => {
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedClassesOrder',
-            data: { right: 'd', left: 'e' },
-          },
-          {
-            messageId: 'unexpectedClassesOrder',
-            data: { right: 'a', left: 'd' },
-          },
-          {
-            data: { nodeDependentOnRight: 'd', right: 'b' },
-            messageId: 'unexpectedClassesDependencyOrder',
-          },
-          {
-            data: { nodeDependentOnRight: 'e', right: 'c' },
-            messageId: 'unexpectedClassesDependencyOrder',
-          },
-          {
-            data: { nodeDependentOnRight: 'b', right: 'z' },
-            messageId: 'unexpectedClassesDependencyOrder',
-          },
-        ],
-        output: dedent`
-          class Class {
-            static a = 10 + OtherClass.z
-
-            static z = 1
-
-            b = 10 + Class.z
-
-            static c = 10 + this.z
-
-            d = this.b
-
-            static e = 10 + this.c
-          }
-        `,
-        code: dedent`
-          class Class {
-            static e = 10 + this.c
-
-            d = this.b
-
-            static a = 10 + OtherClass.z
-
-            b = 10 + Class.z
-
-            static c = 10 + this.z
-
-            static z = 1
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'a', right: 'c' },
-            messageId: 'unexpectedClassesDependencyOrder',
-          },
-        ],
-        output: dedent`
-          class Class {
-            c = 10
-            a = this.c
-            b = 10
-          }
-        `,
-        code: dedent`
-          class Class {
-            a = this.c
-            b = 10
-            c = 10
-          }
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects dependencies in objects', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1
-            a = {
-              b: this.b
-            }
-            static b = 1
-            static a = {
-              b: this.b
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1
-            a = {
-              b: this.b
-            }
-            static b = 1
-            static a = {
-              b: Class.b
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1
-            a = {
-              [this.b]: 1
-            }
-            static b = 1
-            static a = {
-              [this.b]: A
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1
-            a = {
-              [this.b]: 1
-            }
-            static b = 1
-            static a = {
-              [Class.b]: 1
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-    })
-
-    it('detects nested property references', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            b = new Subject()
-            a = this.b.asObservable()
-            static b = new Subject()
-            static a = this.b.asObservable()
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = new Subject()
-            a = this.b.asObservable()
-            static b = new Subject()
-            static a = Class.b.asObservable()
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = new WhateverObject()
-            a = this.b.bProperty
-            static b = new WhateverObject()
-            static a = this.b.bProperty
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = new WhateverObject()
-            a = this.b.bProperty
-            static b = new WhateverObject()
-            static a = Class.b.bProperty
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            static c = 1
-            static b = new WhateverObject(this.c)
-            static a = Class.b.bMethod().anotherNestedMethod(this.c).finalMethod()
-          }
-        `,
-        options: [options],
-      })
-    })
-
-    it('detects optional chained dependencies', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            b = new Subject()
-            a = this.b?.asObservable()
-            static b = new Subject()
-            static a = this.b?.asObservable()
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = new Subject()
-            a = this.b?.asObservable()
-            static b = new Subject()
-            static a = Class.b?.asObservable()
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-    })
-
-    it('detects non-null asserted dependencies', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            b = new Subject()
-            a = this.b!.asObservable()
-            static b = new Subject()
-            static a = this.b!.asObservable()
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = new Subject()
-            a = this.b!.asObservable()
-            static b = new Subject()
-            static a = Class.b!.asObservable()
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-    })
-
-    it('detects unary dependencies', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            b = true
-            a = !this.b
-            static b = true
-            static a = !this.b
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = true
-            a = !this.b
-            static b = true
-            static a = !Class.b
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-    })
-
-    it('detects spread elements dependencies', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            b = {}
-            a = {...this.b}
-            static b = {}
-            static a = {...this.b}
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = {}
-            a = {...this.b}
-            static b = {}
-            static a = {...Class.b}
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = []
-            a = [...this.b]
-            static b = []
-            static a = [...this.b]
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = []
-            a = [...this.b]
-            static b = []
-            static a = [...Class.b]
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-    })
-
-    it('detects dependencies in conditional expressions', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1;
-            a = this.b ? 1 : 0;
-            static b = 1;
-            static a = this.b ? 1 : 0;
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1;
-            a = this.b ? 1 : 0;
-            static b = 1;
-            static a = Class.b ? 1 : 0;
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1;
-            a = someCondition ? this.b : 0;
-            static b = 1;
-            static a = someCondition ? this.b : 0;
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1;
-            a = someCondition ? this.b : 0;
-            static b = 1;
-            static a = someCondition ? Class.b : 0;
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1;
-            a = someCondition ? 0 : this.b;
-            static b = 1;
-            static a = someCondition ? 0 : this.b;
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1;
-            a = someCondition ? 0 : this.b;
-            static b = 1;
-            static a = someCondition ? 0 : Class.b;
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-    })
-
-    it("detects dependencies in 'as' expressions", async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1
-            a = this.b as any
-            static b = 1
-            static a = this.b as any
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1
-            a = this.b as any
-            static b = 1
-            static a = Class.b as any
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-    })
-
-    it('detects dependencies in type assertion expressions', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1
-            a = <any>this.b
-            static b = 1
-            static a = <any>this.b
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = 1
-            a = <any>this.b
-            static b = 1
-            static a = <any>Class.b
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-    })
-
-    it('detects dependencies in template literal expressions', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-           b = 1
-           a = \`\${this.b}\`
-           static b = 1
-           static a = \`\${this.b}\`
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-           b = 1
-           a = \`\${this.b}\`
-           static b = 1
-           static a = \`\${Class.b}\`
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-    })
-
-    it('detects # dependencies', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-           static a = Class.a
-           static b = 1
-           static #b = 1
-           static #a = this.#b
-          }
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-           static #b = () => 1
-           static #a = this.#b()
-          }
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          class Class {
-           static #a = this.#b()
-           static #b() {}
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['unknown'],
-          },
-        ],
-      })
-    })
-
-    it('separates static from non-static dependencies', async () => {
-      await valid({
-        code: dedent`
-          export class Class{
-            b = 1;
-            a = this.b;
-            static b = 1;
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'b', right: 'c' },
-            messageId: 'unexpectedClassesDependencyOrder',
-          },
-          {
-            data: { nodeDependentOnRight: 'a', right: 'c' },
-            messageId: 'unexpectedClassesDependencyOrder',
-          },
-        ],
-        output: dedent`
-          class Class {
-            static c = 10
-            static a = Class.c
-            c = 10
-            b = this.c
-            static b = this.c
-          }
-        `,
-        code: dedent`
-          class Class {
-            static a = Class.c
-            b = this.c
-            static b = this.c
-            c = 10
-            static c = 10
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-    })
-
-    it('detects and ignores circular dependencies', async () => {
-      await invalid({
-        output: dedent`
-          class Class {
-            a
-            b = this.e
-            e = this.g
-            f
-            g = this.b
-          }
-        `,
-        code: dedent`
-          class Class {
-            b = this.e
-            a
-            e = this.g
-            f
-            g = this.b
-          }
-        `,
-        errors: [
-          {
-            messageId: 'unexpectedClassesOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        options: [
-          {
-            ...options,
-            groups: ['property'],
-          },
-        ],
-      })
-    })
-
-    it('ignores function body dependencies', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            static a = true;
-
-            static b() {
-               return this.a || Class.a
-            }
-
-            static c = () => {
-               return this.a || Class.a
-            }
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['method', 'property']],
-          },
-        ],
-      })
-    })
-
-    it('prioritizes dependencies over group configuration', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            groups: ['private-property', 'public-property'],
-          },
-        ],
-        code: dedent`
-          class Class {
-            public b = 1;
-            private a = this.b;
-          }
-        `,
-      })
-    })
-
-    it('prioritizes dependencies over partitionByComment', async () => {
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
-            messageId: 'unexpectedClassesDependencyOrder',
-          },
-        ],
-        output: dedent`
-          class Class {
-            a
-            // Part1
-            b = this.a
-          }
-        `,
-        code: dedent`
-          class Class {
-            b = this.a
-            // Part1
-            a
-          }
-        `,
-        options: [
-          {
-            ...options,
-            partitionByComment: 'Part',
-          },
-        ],
-      })
-    })
-
-    it('prioritizes dependencies over partitionByNewLine', async () => {
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'b', right: 'a' },
-            messageId: 'unexpectedClassesDependencyOrder',
-          },
-        ],
-        options: [
-          {
-            ...options,
-            partitionByNewLine: true,
-          },
-        ],
-        output: dedent`
-          class Class {
-            a
-
-            b = this.a
-          }
-        `,
-        code: dedent`
-          class Class {
-            b = this.a
-
-            a
-          }
-        `,
-      })
-    })
-
-    it('works with left and right dependencies', async () => {
-      await valid({
-        code: dedent`
-          class Class {
-            left = 'left'
-            right = 'right'
-
-            aaa = this.left + this.right
-          }
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            data: { nodeDependentOnRight: 'aaa', right: 'left' },
-            messageId: 'unexpectedClassesDependencyOrder',
-          },
-          {
-            data: { nodeDependentOnRight: 'aaa', right: 'right' },
-            messageId: 'unexpectedClassesDependencyOrder',
-          },
-        ],
-        output: dedent`
-          class Class {
-            left = 'left'
-
-            right = 'right'
-
-            aaa = this.left + this.right
-          }
-        `,
-        code: dedent`
-          class Class {
-            aaa = this.left + this.right
-
-            left = 'left'
-
-            right = 'right'
-          }
-        `,
-        options: [options],
-      })
-    })
-
-    it.each([
-      ['computed function pattern as string', '^computed$'],
-      ['computed function pattern in array', ['noMatch', '^computed$']],
-      [
-        'computed function pattern as object',
-        { pattern: '^COMPUTED$', flags: 'i' },
-      ],
-      [
-        'computed function pattern as object in array',
-        ['noMatch', { pattern: '^COMPUTED$', flags: 'i' }],
-      ],
-    ])(
-      'ignores callback dependencies matching %s',
-      async (_name, ignoreCallbackDependenciesPatterns) => {
-        await valid({
-          code: dedent`
-            class Class {
-              a = computed(() => this.c)
-              c
-              b = notComputed(() => this.c)
-            }
-          `,
-          options: [
-            {
-              ignoreCallbackDependenciesPatterns,
-            },
-          ],
+    function testDependencyDetection(
+      useExperimentalDependencyDetection: boolean,
+    ): void {
+      describe(`experimental dependency detection: ${useExperimentalDependencyDetection}`, () => {
+        it('does not sort properties if the right value depends on the left value', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              class Class {
+                b = 'b'
+
+                aaa = [this.b]
+              }
+            `,
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = 'b'
+
+                getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              class Class {
+                static c = 'c'
+
+                b = Example.c
+              }
+            `,
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                #b = 'b'
+
+                getAaa() {
+                  return this.#b;
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                static b = 'b'
+
+                static getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'aaa', right: 'b' },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              class Class {
+                b = 'b'
+
+                aaa = [this.b]
+              }
+            `,
+            code: dedent`
+              class Class {
+                aaa = [this.b]
+
+                b = 'b'
+              }
+            `,
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: {
+                  rightGroup: 'property',
+                  leftGroup: 'method',
+                  left: 'getAaa',
+                  right: 'b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                b = 'b'
+
+                getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            code: dedent`
+              class Class {
+                getAaa() {
+                  return this.b;
+                }
+
+                b = 'b'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: {
+                  rightGroup: 'static-property',
+                  leftGroup: 'property',
+                  right: 'c',
+                  left: 'b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              class Class {
+                static c = 'c'
+
+                b = Example.c
+              }
+            `,
+            code: dedent`
+              class Class {
+                b = Example.c
+
+                static c = 'c'
+              }
+            `,
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: {
+                  rightGroup: 'private-property',
+                  leftGroup: 'method',
+                  left: 'getAaa',
+                  right: '#b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                #b = 'b'
+
+                getAaa() {
+                  return this.#b;
+                }
+              }
+            `,
+            code: dedent`
+              class Class {
+                getAaa() {
+                  return this.#b;
+                }
+
+                #b = 'b'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: {
+                  rightGroup: 'static-property',
+                  leftGroup: 'static-method',
+                  left: 'getAaa',
+                  right: 'b',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                static b = 'b'
+
+                static getAaa() {
+                  return this.b;
+                }
+              }
+            `,
+            code: dedent`
+              class Class {
+                static getAaa() {
+                  return this.b;
+                }
+
+                static b = 'b'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
         })
-      },
-    )
+
+        it('ignores function expression dependencies', async () => {
+          await valid({
+            code: dedent`
+              class MyClass {
+                a = () => this.b()
+                b = () => null
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
+
+        it('detects function property dependencies', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                b = () => {
+                  return 1
+                }
+                a = this.b()
+                static b = () => {
+                  return 1
+                }
+                static a = this.b()
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: [['property', 'method']],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = function() {
+                  return 1
+                }
+                a = this.b()
+                static b = function() {
+                  return 1
+                }
+                static a = this.b()
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: [['property', 'method']],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = () => {
+                  return 1
+                }
+                a = [1].map(this.b)
+                static b = () => {
+                  return 1
+                }
+                static a = [1].map(this.b)
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: [['property', 'method']],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = function() {
+                  return 1
+                }
+                a = [1].map(this.b)
+                static b = function() {
+                  return 1
+                }
+                static a = [1].map(this.b)
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: [['property', 'method']],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = () => {
+                  return 1
+                }
+                a = [1].map(this.b)
+                static b = () => {
+                  return 1
+                }
+                static a = [1].map(Class.b)
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: [['property', 'method']],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = function() {
+                  return 1
+                }
+                a = [1].map(this.b)
+                static b = function() {
+                  return 1
+                }
+                static a = [1].map(Class.b)
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: [['property', 'method']],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = createQueryString();
+                a = createState((set) => {
+                    set('query', this.b.value);
+                 });
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: [['property', 'method']],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = function () {
+                  return 1
+                }
+                a = [1].map(this["b"]);
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                ["b"] = function () {
+                  return 1
+                }
+                a = [1].map(this.b);
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                ['b'] = function () {
+                  return 1
+                }
+                a = [1].map(this.b);
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                ["'b'"] = function () {
+                  return 1
+                }
+                a = [1].map(this["'b'"]);
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
+
+        it('detects static block dependencies', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                static z1;
+                static z2;
+                static z3;
+                static z4;
+                static ['z5'];
+                static ['z6'];
+                static ['z7'];
+                static ['z8'];
+
+                static {
+                  this.z1;
+                  Class.z2;
+                  this['z3'];
+                  Class['z4'];
+                  this.z5
+                  Class.z6
+                  this['z7'];
+                  Class['z8'];
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [['static-block', 'static-property']],
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                static z = true;
+                static {
+                  const method = () => {
+                    return (Class.z || true) && (false || this.z);
+                  };
+                  method();
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [['static-block', 'static-property']],
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
+
+        it('detects property expression dependencies', async () => {
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: { right: 'd', left: 'e' },
+              },
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: { right: 'a', left: 'd' },
+              },
+              {
+                data: { nodeDependentOnRight: 'd', right: 'b' },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+              {
+                data: { nodeDependentOnRight: 'e', right: 'c' },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+              {
+                data: { nodeDependentOnRight: 'b', right: 'z' },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                static a = 10 + OtherClass.z
+
+                static z = 1
+
+                b = 10 + Class.z
+
+                static c = 10 + this.z
+
+                d = this.b
+
+                static e = 10 + this.c
+              }
+            `,
+            code: dedent`
+              class Class {
+                static e = 10 + this.c
+
+                d = this.b
+
+                static a = 10 + OtherClass.z
+
+                b = 10 + Class.z
+
+                static c = 10 + this.z
+
+                static z = 1
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+        })
+
+        it('detects dependencies in objects', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                b = 1
+                a = {
+                  b: this.b
+                }
+                static b = 1
+                static a = {
+                  b: Class.b
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+        })
+
+        it('detects nested property references', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                b = new Subject()
+                a = this.b.asObservable()
+                static b = new Subject()
+                static a = this.b.asObservable()
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = new Subject()
+                a = this.b.asObservable()
+                static b = new Subject()
+                static a = Class.b.asObservable()
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = new WhateverObject()
+                a = this.b.bProperty
+                static b = new WhateverObject()
+                static a = this.b.bProperty
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = new WhateverObject()
+                a = this.b.bProperty
+                static b = new WhateverObject()
+                static a = Class.b.bProperty
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                static c = 1
+                static b = new WhateverObject(this.c)
+                static a = Class.b.bMethod().anotherNestedMethod(this.c).finalMethod()
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
+
+        it('detects optional chained dependencies', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                b = new Subject()
+                a = this.b?.asObservable()
+                static b = new Subject()
+                static a = this.b?.asObservable()
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = new Subject()
+                a = this.b?.asObservable()
+                static b = new Subject()
+                static a = Class.b?.asObservable()
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+        })
+
+        it('detects non-null asserted dependencies', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                b = new Subject()
+                a = this.b!.asObservable()
+                static b = new Subject()
+                static a = this.b!.asObservable()
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = new Subject()
+                a = this.b!.asObservable()
+                static b = new Subject()
+                static a = Class.b!.asObservable()
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+        })
+
+        it('detects unary dependencies', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                b = true
+                a = !this.b
+                static b = true
+                static a = !this.b
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = true
+                a = !this.b
+                static b = true
+                static a = !Class.b
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+        })
+
+        it('detects spread elements dependencies', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                b = {}
+                a = {...this.b}
+                static b = {}
+                static a = {...this.b}
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = {}
+                a = {...this.b}
+                static b = {}
+                static a = {...Class.b}
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = []
+                a = [...this.b]
+                static b = []
+                static a = [...this.b]
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = []
+                a = [...this.b]
+                static b = []
+                static a = [...Class.b]
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+        })
+
+        it('detects dependencies in conditional expressions', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                b = 1;
+                a = this.b ? 1 : 0;
+                static b = 1;
+                static a = this.b ? 1 : 0;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = 1;
+                a = this.b ? 1 : 0;
+                static b = 1;
+                static a = Class.b ? 1 : 0;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = 1;
+                a = someCondition ? this.b : 0;
+                static b = 1;
+                static a = someCondition ? this.b : 0;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = 1;
+                a = someCondition ? this.b : 0;
+                static b = 1;
+                static a = someCondition ? Class.b : 0;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = 1;
+                a = someCondition ? 0 : this.b;
+                static b = 1;
+                static a = someCondition ? 0 : this.b;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = 1;
+                a = someCondition ? 0 : this.b;
+                static b = 1;
+                static a = someCondition ? 0 : Class.b;
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+        })
+
+        it("detects dependencies in 'as' expressions", async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                b = 1
+                a = this.b as any
+                static b = 1
+                static a = this.b as any
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = 1
+                a = this.b as any
+                static b = 1
+                static a = Class.b as any
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+        })
+
+        it('detects dependencies in type assertion expressions', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                b = 1
+                a = <any>this.b
+                static b = 1
+                static a = <any>this.b
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+                b = 1
+                a = <any>this.b
+                static b = 1
+                static a = <any>Class.b
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+        })
+
+        it('detects dependencies in template literal expressions', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+               b = 1
+               a = \`\${this.b}\`
+               static b = 1
+               static a = \`\${this.b}\`
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+               b = 1
+               a = \`\${this.b}\`
+               static b = 1
+               static a = \`\${Class.b}\`
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+        })
+
+        it('detects # dependencies', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+               static a = Class.a
+               static b = 1
+               static #b = 1
+               static #a = this.#b
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await valid({
+            code: dedent`
+              class Class {
+               static #b = () => 1
+               static #a = this.#b()
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            code: dedent`
+              class Class {
+               static #a = this.#b()
+               static #b() {}
+              }
+            `,
+          })
+        })
+
+        it('separates static from non-static dependencies', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+            code: dedent`
+              export class Class{
+                b = 1;
+                a = this.b;
+                static b = 1;
+              }
+            `,
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'b', right: 'c' },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+              {
+                data: { nodeDependentOnRight: 'a', right: 'c' },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                static c = 10
+                static a = Class.c
+                c = 10
+                b = this.c
+                static b = this.c
+              }
+            `,
+            code: dedent`
+              class Class {
+                static a = Class.c
+                b = this.c
+                static b = this.c
+                c = 10
+                static c = 10
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+          })
+        })
+
+        it('detects and ignores circular dependencies', async () => {
+          await invalid({
+            output: dedent`
+              class Class {
+                a
+                b = this.e
+                e = this.g
+                f
+                g = this.b
+              }
+            `,
+            code: dedent`
+              class Class {
+                b = this.e
+                a
+                e = this.g
+                f
+                g = this.b
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['property'],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+          })
+        })
+
+        it('ignores function body dependencies', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                static a = true;
+
+                static b() {
+                   return this.a || Class.a
+                }
+
+                static c = () => {
+                   return this.a || Class.a
+                }
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: [['method', 'property']],
+              },
+            ],
+          })
+        })
+
+        it('prioritizes dependencies over group configuration', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                groups: ['private-property', 'public-property'],
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              class Class {
+                public b = 1;
+                private a = this.b;
+              }
+            `,
+          })
+        })
+
+        it('prioritizes dependencies over partitionByComment', async () => {
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'b', right: 'a' },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                partitionByComment: 'Part',
+              },
+            ],
+            output: dedent`
+              class Class {
+                a
+                // Part1
+                b = this.a
+              }
+            `,
+            code: dedent`
+              class Class {
+                b = this.a
+                // Part1
+                a
+              }
+            `,
+          })
+        })
+
+        it('prioritizes dependencies over partitionByNewLine', async () => {
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'b', right: 'a' },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                partitionByNewLine: true,
+              },
+            ],
+            output: dedent`
+              class Class {
+                a
+
+                b = this.a
+              }
+            `,
+            code: dedent`
+              class Class {
+                b = this.a
+
+                a
+              }
+            `,
+          })
+        })
+
+        it('works with left and right dependencies', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                left = 'left'
+                right = 'right'
+
+                aaa = this.left + this.right
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'aaa', right: 'left' },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+              {
+                data: { nodeDependentOnRight: 'aaa', right: 'right' },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+            ],
+            output: dedent`
+              class Class {
+                left = 'left'
+
+                right = 'right'
+
+                aaa = this.left + this.right
+              }
+            `,
+            code: dedent`
+              class Class {
+                aaa = this.left + this.right
+
+                left = 'left'
+
+                right = 'right'
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
+
+        it.each([
+          ['computed function pattern as string', '^computed$'],
+          ['computed function pattern in array', ['noMatch', '^computed$']],
+          [
+            'computed function pattern as object',
+            { pattern: '^COMPUTED$', flags: 'i' },
+          ],
+          [
+            'computed function pattern as object in array',
+            ['noMatch', { pattern: '^COMPUTED$', flags: 'i' }],
+          ],
+        ])(
+          'ignores callback dependencies matching %s',
+          async (_name, ignoreCallbackDependenciesPatterns) => {
+            await valid({
+              code: dedent`
+                class Class {
+                  a = computed(() => this.c)
+                  c
+                  b = notComputed(() => this.c)
+                }
+              `,
+              options: [
+                {
+                  ignoreCallbackDependenciesPatterns,
+                  useExperimentalDependencyDetection,
+                },
+              ],
+            })
+
+            await valid({
+              code: dedent`
+                class Class {
+                  static a = computed(() => Class.c)
+                  static c
+                  static b = notComputed(() => Class.c)
+                }
+              `,
+              options: [
+                {
+                  ignoreCallbackDependenciesPatterns,
+                  useExperimentalDependencyDetection,
+                },
+              ],
+            })
+          },
+        )
+      })
+    }
+    testDependencyDetection(true)
+    testDependencyDetection(false)
 
     it('ignores unknown group', async () => {
       await invalid({

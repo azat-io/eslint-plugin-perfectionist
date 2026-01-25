@@ -11,9 +11,12 @@ import { matches } from '../../utils/matches'
 /**
  * Computes the dependencies of a class member AST node.
  *
+ * @deprecated - To remove when experimental dependency detection is the only.
  * @param params - Parameters object.
  * @param params.ignoreCallbackDependenciesPatterns - Patterns to ignore
  *   callback dependencies.
+ * @param params.useExperimentalDependencyDetection - Whether to use
+ *   experimental dependency detection.
  * @param params.isMemberStatic - Indicates if the member is static.
  * @param params.expression - The AST node expression to analyze.
  * @param params.className - The name of the class, if available.
@@ -21,16 +24,24 @@ import { matches } from '../../utils/matches'
  */
 export function computeDependencies({
   ignoreCallbackDependenciesPatterns,
+  useExperimentalDependencyDetection,
   isMemberStatic,
   expression,
   className,
 }: {
   expression: TSESTree.StaticBlock | TSESTree.Expression
   ignoreCallbackDependenciesPatterns: RegexOption
+  useExperimentalDependencyDetection: boolean
   className: undefined | string
   isMemberStatic: boolean
 }): string[] {
+  if (useExperimentalDependencyDetection) {
+    return []
+  }
+
   let dependencies: string[] = []
+  traverseNode(expression)
+  return dependencies
 
   function checkNode(nodeValue: TSESTree.Node): void {
     switch (nodeValue.type) {
@@ -124,9 +135,6 @@ export function computeDependencies({
       checkNode(nodeValue)
     }
   }
-
-  traverseNode(expression)
-  return dependencies
 }
 
 function computeMemberExpressionDependencies({

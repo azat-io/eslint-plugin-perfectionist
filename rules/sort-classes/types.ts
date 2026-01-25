@@ -26,6 +26,9 @@ export type Options = [
        * callbacks won't influence the ordering.
        */
       ignoreCallbackDependenciesPatterns: RegexOption
+
+      /** Enables experimental dependency detection. */
+      useExperimentalDependencyDetection: boolean
     } & AllCommonOptions<
       TypeOption,
       AdditionalSortOptions,
@@ -39,6 +42,16 @@ export interface SortClassesSortingNode extends SortingNodeWithDependencies<TSES
     | TSESTree.TSAbstractMethodDefinition
     | TSESTree.MethodDefinition
     | null
+
+  nameDetails: NodeNameDetails | null
+
+  isStatic: boolean
+}
+
+export interface NodeNameDetails {
+  nameWithoutStartingHash: string
+  hasPrivateHash: boolean
+  name: string
 }
 
 /**

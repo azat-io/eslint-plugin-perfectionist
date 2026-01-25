@@ -3,8 +3,8 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { NodeNameDetails, Modifier, Selector } from '../types'
 import type { RegexOption } from '../../../types/common-options'
-import type { Modifier, Selector } from '../types'
 
 import {
   computeAccessibilityModifier,
@@ -28,12 +28,15 @@ import { computeDependencies } from '../compute-dependencies'
  * @param params.property - The property node to compute information for.
  * @param params.ignoreCallbackDependenciesPatterns - Patterns to ignore when
  *   computing dependencies.
+ * @param params.useExperimentalDependencyDetection - Whether to use
+ *   experimental dependency detection.
  * @param params.sourceCode - The source code object.
  * @param params.className - The name of the class containing the property.
  * @returns An object containing various details about the property.
  */
 export function computePropertyDetails({
   ignoreCallbackDependenciesPatterns,
+  useExperimentalDependencyDetection,
   isDecorated,
   sourceCode,
   className,
@@ -41,21 +44,22 @@ export function computePropertyDetails({
 }: {
   property: TSESTree.TSAbstractPropertyDefinition | TSESTree.PropertyDefinition
   ignoreCallbackDependenciesPatterns: RegexOption
+  useExperimentalDependencyDetection: boolean
   sourceCode: TSESLint.SourceCode
   className: undefined | string
   isDecorated: boolean
 }): {
   memberValue: undefined | string
+  nameDetails: NodeNameDetails
   dependencyNames: string[]
   dependencies: string[]
   modifiers: Modifier[]
   selectors: Selector[]
-  name: string
+  isStatic: boolean
 } {
-  let { nameWithoutStartingHash, hasPrivateHash, name } =
-    computeMethodOrPropertyNameDetails(property, sourceCode)
+  let nameDetails = computeMethodOrPropertyNameDetails(property, sourceCode)
   let modifiers = computeModifiers({
-    hasPrivateHash,
+    hasPrivateHash: nameDetails.hasPrivateHash,
     isDecorated,
     property,
   })
@@ -63,23 +67,25 @@ export function computePropertyDetails({
   return {
     dependencyNames: [
       computeDependencyName({
-        nodeNameWithoutStartingHash: nameWithoutStartingHash,
+        nodeNameWithoutStartingHash: nameDetails.nameWithoutStartingHash,
+        hasPrivateHash: nameDetails.hasPrivateHash,
         isStatic: modifiers.includes('static'),
-        hasPrivateHash,
       }),
     ],
+    dependencies: computePropertyDependencies({
+      ignoreCallbackDependenciesPatterns,
+      useExperimentalDependencyDetection,
+      className,
+      property,
+    }),
     memberValue:
       !isFunctionExpression(property.value) && property.value
         ? sourceCode.getText(property.value)
         : undefined,
-    dependencies: computePropertyDependencies({
-      ignoreCallbackDependenciesPatterns,
-      className,
-      property,
-    }),
     selectors: computeSelectors(property),
+    isStatic: property.static,
+    nameDetails,
     modifiers,
-    name,
   }
 }
 
@@ -121,11 +127,13 @@ function computeModifiers({
 
 function computePropertyDependencies({
   ignoreCallbackDependenciesPatterns,
+  useExperimentalDependencyDetection,
   className,
   property,
 }: {
   property: TSESTree.TSAbstractPropertyDefinition | TSESTree.PropertyDefinition
   ignoreCallbackDependenciesPatterns: RegexOption
+  useExperimentalDependencyDetection: boolean
   className: undefined | string
 }): string[] {
   if (isFunctionExpression(property.value)) {
@@ -137,6 +145,7 @@ function computePropertyDependencies({
 
   return computeDependencies({
     ignoreCallbackDependenciesPatterns,
+    useExperimentalDependencyDetection,
     isMemberStatic: property.static,
     expression: property.value,
     className,

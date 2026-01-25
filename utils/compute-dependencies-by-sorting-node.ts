@@ -6,14 +6,14 @@ import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 import { computeDeepScopeReferences } from './compute-deep-scope-references'
 import { rangeContainsRange } from './range-contains-range'
 
-export type AdditionalIdentifierDependenciesComputer<T> = (parameters: {
-  identifier: TSESTree.JSXIdentifier | TSESTree.Identifier
-  referencingSortingNode: T
-}) => T[]
 export type ShouldIgnoreIdentifierComputer<T> = (parameters: {
   identifier: TSESTree.JSXIdentifier | TSESTree.Identifier
   referencingSortingNode: T
 }) => boolean
+export type AdditionalIdentifierDependenciesComputer<T> = (parameters: {
+  reference: TSESLint.Scope.Reference
+  referencingSortingNode: T
+}) => T[]
 export type ShouldIgnoreSortingNodeComputer<T> = (sortingNode: T) => boolean
 
 /**
@@ -83,7 +83,7 @@ export function computeDependenciesBySortingNode<
       }),
       ...(additionalIdentifierDependenciesComputer?.({
         referencingSortingNode,
-        identifier,
+        reference,
       }) ?? []),
     )
   }

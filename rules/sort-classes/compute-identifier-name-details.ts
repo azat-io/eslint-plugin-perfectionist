@@ -2,13 +2,9 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import { UnreachableCaseError } from '../../utils/unreachable-case-error'
+import type { NodeNameDetails } from './types'
 
-export interface NodeNameDetails {
-  nameWithoutStartingHash: string
-  hasPrivateHash: boolean
-  name: string
-}
+import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 
 /**
  * Computes the name details of an identifier.
