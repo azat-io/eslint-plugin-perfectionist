@@ -6,6 +6,7 @@ import type { CommonGroupsOptions } from '../types/common-groups-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { makeNewlinesBetweenFixes } from './make-newlines-between-fixes'
+import { makeNewlinesAfterFixes } from './make-newlines-after-fixes'
 import { makeCommentAfterFixes } from './make-comment-after-fixes'
 import { makeCommentAboveFixes } from './make-comment-above-fixes'
 import { makeOrderFixes } from './make-order-fixes'
@@ -18,7 +19,9 @@ import { makeOrderFixes } from './make-order-fixes'
 interface MakeFixesParameters<T extends SortingNode> {
   /** Optional configuration for various sorting behaviors. */
   options?: Pick<CommonPartitionOptions, 'partitionByComment'> &
-    CommonGroupsOptions<string, unknown, unknown>
+    {
+      newlinesAfter?: 'ignore' | number
+    } & CommonGroupsOptions<string, unknown, unknown>
 
   /** Optional function to customize newlines between specific nodes. */
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
@@ -120,7 +123,7 @@ export function makeFixes<T extends SortingNode>({
     return [...orderFixes, ...commentAfterFixes]
   }
 
-  if (options?.groups) {
+  if (options) {
     let newlinesFixes = makeNewlinesBetweenFixes({
       options: {
         ...options,
@@ -142,7 +145,26 @@ export function makeFixes<T extends SortingNode>({
     return orderFixes
   }
 
-  if (!hasCommentAboveMissing || !options?.groups) {
+  if (!options) {
+    return []
+  }
+
+  if (options.newlinesAfter !== undefined) {
+    let newlinesAfterFixes = makeNewlinesAfterFixes({
+      options: {
+        ...options,
+        newlinesAfter: options.newlinesAfter,
+      },
+      lastSortedSortingNode: sortedNodes.at(-1)!,
+      sourceCode,
+      fixer,
+    })
+    if (newlinesAfterFixes.length > 0) {
+      return newlinesAfterFixes
+    }
+  }
+
+  if (!hasCommentAboveMissing) {
     return []
   }
 

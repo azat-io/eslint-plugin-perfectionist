@@ -20,6 +20,64 @@ describe('sort-exports', () => {
       order: 'asc',
     } as const
 
+    it('aaaa', async () => {
+      await invalid({
+        output: dedent`
+          export { a1 } from 'a'
+          export { b1 } from 'b'
+
+          const a = 4
+        `,
+        code: dedent`
+          export { a1 } from 'a'
+          export { b1 } from 'b'
+          const a = 4
+        `,
+        options: [
+          {
+            ...options,
+            newlinesAfter: 1,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'missedSpacingAfterExports',
+          },
+        ],
+      })
+    })
+
+    it('bbb', async () => {
+      await invalid({
+        output: dedent`
+          export { a1 } from 'a'
+          export { b1 } from 'b'
+
+          // a
+          const a = 4
+        `,
+        code: dedent`
+          export { a1 } from 'a'
+          export { b1 } from 'b'
+
+
+          // a
+          const a = 4
+        `,
+        options: [
+          {
+            ...options,
+            newlinesAfter: 1,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'extraSpacingAfterExports',
+          },
+        ],
+      })
+    })
+
     it('sorts exports', async () => {
       await valid({
         code: dedent`

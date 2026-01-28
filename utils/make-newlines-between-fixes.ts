@@ -6,6 +6,7 @@ import type { SortingNode } from '../types/sorting-node'
 
 import { getNewlinesBetweenOption } from './get-newlines-between-option'
 import { getLinesBetween } from './get-lines-between'
+import { makeNewlinesFix } from './make-newlines-fix'
 import { getGroupIndex } from './get-group-index'
 import { getNodeRange } from './get-node-range'
 
@@ -121,10 +122,6 @@ export function makeNewlinesBetweenFixes<T extends SortingNode>({
       continue
     }
 
-    let currentNodeRange = getNodeRange({
-      node: sortingNode.node,
-      sourceCode,
-    })
     let nextNodeRangeStart = getNodeRange({
       node: nextSortingNode.node,
       sourceCode,
@@ -139,98 +136,16 @@ export function makeNewlinesBetweenFixes<T extends SortingNode>({
       continue
     }
 
-    let rangeToReplace: [number, number] = [
-      currentNodeRange.at(1)!,
+    let fix = makeNewlinesFix({
+      newlinesOption: newlinesBetween,
+      nextNode: nextSortingNode.node,
+      node: sortingNode.node,
       nextNodeRangeStart,
-    ]
-    let textBetweenNodes = sourceCode.text.slice(
-      currentNodeRange.at(1),
-      nextNodeRangeStart,
-    )
-
-    let rangeReplacement = computeRangeReplacement({
-      isOnSameLine:
-        sortingNode.node.loc.end.line === nextSortingNode.node.loc.start.line,
-      textBetweenNodes,
-      newlinesBetween,
-    })!
-
-    fixes.push(fixer.replaceTextRange(rangeToReplace, rangeReplacement))
+      sourceCode,
+      fixer,
+    })
+    fixes.push(fix)
   }
 
   return fixes
-}
-
-/**
- * Computes the replacement text for adjusting newlines between nodes.
- *
- * Handles the logic of adding or removing newlines while preserving necessary
- * content like comments and semicolons. Special handling for:
- *
- * - Removing excessive newlines when fewer are needed
- * - Adding newlines when more are needed
- * - Preserving inline placement when nodes are on the same line.
- *
- * @param params - Parameters for computing replacement.
- * @param params.textBetweenNodes - Original text between the two nodes.
- * @param params.newlinesBetween - Number of newlines required (0 or more).
- * @param params.isOnSameLine - Whether nodes are currently on the same line.
- * @returns Replacement text with correct newlines, or undefined if no change
- *   needed.
- */
-function computeRangeReplacement({
-  textBetweenNodes,
-  newlinesBetween,
-  isOnSameLine,
-}: {
-  textBetweenNodes: string
-  newlinesBetween: number
-  isOnSameLine: boolean
-}): undefined | string {
-  let textBetweenNodesWithoutInvalidNewlines =
-    getStringWithoutInvalidNewlines(textBetweenNodes)
-
-  if (newlinesBetween === 0) {
-    return textBetweenNodesWithoutInvalidNewlines
-  }
-
-  let rangeReplacement = textBetweenNodesWithoutInvalidNewlines
-  for (let index = 0; index < newlinesBetween; index++) {
-    rangeReplacement = addNewlineBeforeFirstNewline(rangeReplacement)
-  }
-  if (!isOnSameLine) {
-    return rangeReplacement
-  }
-  return addNewlineBeforeFirstNewline(rangeReplacement)
-}
-
-/**
- * Adds a newline before the first existing newline or at the end of string.
- *
- * Used to incrementally add newlines while preserving existing content. If no
- * newline exists, appends one at the end. Otherwise, inserts before the first
- * newline to maintain proper spacing.
- *
- * @param value - String to add a newline to.
- * @returns String with an additional newline.
- */
-function addNewlineBeforeFirstNewline(value: string): string {
-  let firstNewlineIndex = value.indexOf('\n')
-  if (firstNewlineIndex === -1) {
-    return `${value}\n`
-  }
-  return `${value.slice(0, firstNewlineIndex)}\n${value.slice(firstNewlineIndex)}`
-}
-
-/**
- * Removes excessive newlines from a string.
- *
- * Normalizes spacing by collapsing multiple consecutive newlines into single
- * newlines and removing empty lines that contain only whitespace.
- *
- * @param value - String potentially containing excessive newlines.
- * @returns String with normalized newlines.
- */
-function getStringWithoutInvalidNewlines(value: string): string {
-  return value.replaceAll(/\n\s*\n/gu, '\n').replaceAll(/\n+/gu, '\n')
 }
