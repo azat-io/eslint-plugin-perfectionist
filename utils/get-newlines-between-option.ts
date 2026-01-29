@@ -16,13 +16,19 @@ import { computeGroupName } from './compute-group-name'
  * required number of newlines between two nodes.
  */
 export interface GetNewlinesBetweenOptionParameters {
-  /** Configuration options for newlines and groups. */
+  /**
+   * Configuration options for newlines and groups.
+   */
   options: CommonGroupsOptions<string, unknown, unknown>
 
-  /** Group index of the next/second node. */
+  /**
+   * Group index of the next/second node.
+   */
   nextNodeGroupIndex: number
 
-  /** Group index of the current/first node. */
+  /**
+   * Group index of the current/first node.
+   */
   nodeGroupIndex: number
 }
 
@@ -130,9 +136,8 @@ function computeNewlinesInsideOption({
     customGroup => customGroup.groupName === groupName,
   )
 
-  let groupOverrideNewlinesInside = isGroupWithOverridesOption(group)
-    ? group.newlinesInside
-    : null
+  let groupOverrideNewlinesInside =
+    isGroupWithOverridesOption(group) ? group.newlinesInside : null
   return (
     nodeCustomGroup?.newlinesInside ??
     groupOverrideNewlinesInside ??
@@ -159,17 +164,20 @@ function computeNewlinesInsideOption({
  * newlines setting for consistent calculation.
  *
  * @example
- *   buildGroupsWithAllNewlinesBetween(
- *     ['imports', 'types', { newlinesBetween: 2 }, 'functions'],
- *     1,
- *   )
- *   // Returns: [
- *   //   'imports',
- *   //   { newlinesBetween: 1 },  // Added
- *   //   'types',
- *   //   { newlinesBetween: 2 },  // Already existed
- *   //   'functions'
- *   // ]
+ *
+ * ```ts
+ * buildGroupsWithAllNewlinesBetween(
+ *   ['imports', 'types', { newlinesBetween: 2 }, 'functions'],
+ *   1,
+ * )
+ * // Returns: [
+ * //   'imports',
+ * //   { newlinesBetween: 1 },  // Added
+ * //   'types',
+ * //   { newlinesBetween: 2 },  // Already existed
+ * //   'functions'
+ * // ]
+ * ```
  *
  * @param groups - Array of groups with optional inline newlines settings.
  * @param globalNewlinesBetweenOption - Default newlines to use for missing

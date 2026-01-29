@@ -5,7 +5,9 @@ export interface CommonGroupsOptions<
   AdditionalSortOptions,
   AdditionalCustomGroupMatchOptions,
 > {
-  /** Specify the exact number of newlines required between elements of groups. */
+  /**
+   * Specify the exact number of newlines required between elements of groups.
+   */
   newlinesInside:
     | NewlinesInsideOption
     /**
@@ -14,7 +16,9 @@ export interface CommonGroupsOptions<
      */
     | 'newlinesBetween'
 
-  /** Custom groups for organizing nodes. */
+  /**
+   * Custom groups for organizing nodes.
+   */
   customGroups: CustomGroupsOption<
     CustomTypeOption,
     AdditionalSortOptions,
@@ -27,7 +31,9 @@ export interface CommonGroupsOptions<
    */
   groups: GroupsOptions<CustomTypeOption, AdditionalSortOptions>
 
-  /** Specify the exact number of newlines required between groups. */
+  /**
+   * Specify the exact number of newlines required between groups.
+   */
   newlinesBetween: NewlinesBetweenOption
 }
 
@@ -39,20 +45,23 @@ export interface CommonGroupsOptions<
  * algorithm, order, and newline handling behavior.
  *
  * @example
- *   const customGroups: CustomGroupsOption = [
- *     {
- *       groupName: 'react',
- *       anyOf: ['react', 'react-*'],
- *       type: 'alphabetical',
- *       order: 'asc',
- *       newlinesInside: 1,
- *     },
- *     {
- *       groupName: 'lodash',
- *       anyOf: ['lodash', 'lodash/*'],
- *       fallbackSort: { type: 'natural' },
- *     },
- *   ]
+ *
+ * ```ts
+ * const customGroups: CustomGroupsOption = [
+ *   {
+ *     groupName: 'react',
+ *     anyOf: ['react', 'react-*'],
+ *     type: 'alphabetical',
+ *     order: 'asc',
+ *     newlinesInside: 1,
+ *   },
+ *   {
+ *     groupName: 'lodash',
+ *     anyOf: ['lodash', 'lodash/*'],
+ *     fallbackSort: { type: 'natural' },
+ *   },
+ * ]
+ * ```
  *
  * @template AdditionalMatchOptions - Options for matching elements to the
  *   custom group.
@@ -64,7 +73,9 @@ export type CustomGroupsOption<
   AdditionalSortOptions,
   AdditionalMatchOptions,
 > = ({
-  /** Specify the exact number of newlines required between elements of groups. */
+  /**
+   * Specify the exact number of newlines required between elements of groups.
+   */
   newlinesInside?: NewlinesInsideOption
 
   /**
@@ -91,20 +102,27 @@ export type CustomGroupsOption<
  * Configuration for groups with overriding settings.
  *
  * @example
- *   const groups = [
- *     'imports',
- *     { group: 'group', commentAbove: '// Component Definitions' },
- *     'components',
- *   ]
+ *
+ * ```ts
+ * const groups = [
+ *   'imports',
+ *   { group: 'group', commentAbove: '// Component Definitions' },
+ *   'components',
+ * ]
+ * ```
  */
 export type GroupWithOverridesOption<
   CustomTypeOption extends string,
   AdditionalSortOptions,
 > = {
-  /** Specify the exact number of newlines required inside the group. */
+  /**
+   * Specify the exact number of newlines required inside the group.
+   */
   newlinesInside?: NewlinesInsideOption
 
-  /** Name of the group or array of group names for subgroups. */
+  /**
+   * Name of the group or array of group names for subgroups.
+   */
   group: string[] | string
 
   /**
@@ -127,9 +145,12 @@ export type GroupWithOverridesOption<
  * providing flexibility in how elements are categorized.
  *
  * @example
- *   const customGroup: AnyOfCustomGroup<string> = {
- *     anyOf: ['react', 'react-*', '@react/*'],
- *   }
+ *
+ * ```ts
+ * const customGroup: AnyOfCustomGroup<string> = {
+ *   anyOf: ['react', 'react-*', '@react/*'],
+ * }
+ * ```
  *
  * @template MatchOptions - Options for matching elements to the custom group.
  */
@@ -154,12 +175,18 @@ export interface AnyOfCustomGroup<MatchOptions> {
  * enforcing, or removing them based on the configuration.
  *
  * @example
- *   // Always require one blank line between elements
- *   const newlines: NewlinesBetweenOption = 1
+ *
+ * ```ts
+ * // Always require one blank line between elements
+ * const newlines: NewlinesBetweenOption = 1
+ * ```
  *
  * @example
- *   // Require exactly 2 blank lines
- *   const newlines: NewlinesBetweenOption = 2
+ *
+ * ```ts
+ * // Require exactly 2 blank lines
+ * const newlines: NewlinesBetweenOption = 2
+ * ```
  */
 export type NewlinesBetweenOption =
   /**
@@ -182,15 +209,18 @@ export type NewlinesBetweenOption =
  * newlines and comments between groups.
  *
  * @example
- *   const groups: GroupsOptions<'imports' | 'types' | 'components'> = [
- *     'imports',
- *     { newlinesBetween: 1 },
- *     'types',
- *     { group: 'components', commentAbove: '// Components' }, // Object-based group
- *     ['services', 'hooks'], // Subgroup
- *     { newlinesBetween: 2 },
- *     'utils',
- *   ]
+ *
+ * ```ts
+ * const groups: GroupsOptions<'imports' | 'types' | 'components'> = [
+ *   'imports',
+ *   { newlinesBetween: 1 },
+ *   'types',
+ *   { group: 'components', commentAbove: '// Components' }, // Object-based group
+ *   ['services', 'hooks'], // Subgroup
+ *   { newlinesBetween: 2 },
+ *   'utils',
+ * ]
+ * ```
  */
 export type GroupsOptions<
   CustomTypeOption extends string = string,
@@ -209,11 +239,14 @@ export type GroupsOptions<
  * lines should separate adjacent groups in the sorted output.
  *
  * @example
- *   const groups = [
- *     'imports',
- *     { newlinesBetween: 1 }, // One newline after imports
- *     'types',
- *   ]
+ *
+ * ```ts
+ * const groups = [
+ *   'imports',
+ *   { newlinesBetween: 1 }, // One newline after imports
+ *   'types',
+ * ]
+ * ```
  */
 export interface GroupNewlinesBetweenOption {
   /**
@@ -224,8 +257,12 @@ export interface GroupNewlinesBetweenOption {
 }
 
 export type NewlinesInsideOption =
-  /** Preserve existing newlines without modification. */
+  /**
+   * Preserve existing newlines without modification.
+   */
   | 'ignore'
 
-  /** Require exactly this number of blank lines between elements of a group. */
+  /**
+   * Require exactly this number of blank lines between elements of a group.
+   */
   | number

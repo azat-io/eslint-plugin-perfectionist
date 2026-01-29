@@ -131,8 +131,9 @@ export default createEslintRule<Options, MessageId>({
 
       let sortingNodes: SortSwitchCaseSortingNode[] = switchNode.cases.map(
         (caseNode: TSESTree.SwitchCase) => ({
-          size: caseNode.test
-            ? rangeToDiff(caseNode.test, sourceCode)
+          size:
+            caseNode.test ?
+              rangeToDiff(caseNode.test, sourceCode)
             : 'default'.length,
           name: getCaseName(sourceCode, caseNode),
           addSafetySemicolonWhenInline: true,
@@ -252,15 +253,15 @@ export default createEslintRule<Options, MessageId>({
         }
         context.report({
           fix: fixer =>
-            hasUnsortedNodes
-              ? [] /* Raise errors but only sort on second iteration. */
-              : makeFixes({
-                  sortedNodes: sortedSortingNodeGroupsForBlockSort,
-                  nodes: sortingNodeGroupsForBlockSortFlat,
-                  hasCommentAboveMissing: false,
-                  sourceCode,
-                  fixer,
-                }),
+            hasUnsortedNodes ?
+              [] /* Raise errors but only sort on second iteration. */
+            : makeFixes({
+                sortedNodes: sortedSortingNodeGroupsForBlockSort,
+                nodes: sortingNodeGroupsForBlockSortFlat,
+                hasCommentAboveMissing: false,
+                sourceCode,
+                fixer,
+              }),
           data: {
             [RIGHT]: right.name,
             [LEFT]: left.name,
@@ -359,9 +360,9 @@ function getCaseName(
  */
 function caseHasBreakOrReturn(caseNode: TSESTree.SwitchCase): boolean {
   let statements =
-    caseNode.consequent[0]?.type === AST_NODE_TYPES.BlockStatement
-      ? caseNode.consequent[0].body
-      : caseNode.consequent
+    caseNode.consequent[0]?.type === AST_NODE_TYPES.BlockStatement ?
+      caseNode.consequent[0].body
+    : caseNode.consequent
 
   return statements.some(statementIsBreakOrReturn)
 }

@@ -44,7 +44,12 @@ let toc = buildToc(headings)
 {
   toc.length > 0 && (
     <div class="table-of-content">
-      <Typography class="title" tag="h2" size="m" mbs="s">
+      <Typography
+        class="title"
+        tag="h2"
+        size="m"
+        mbs="s"
+      >
         {' '}
         Table of Contents{' '}
       </Typography>
@@ -57,7 +62,11 @@ let toc = buildToc(headings)
   )
 }
 
-<script src={tocScript} type="module" is:inline></script>
+<script
+  src={tocScript}
+  type="module"
+  is:inline
+></script>
 
 <style>
   .table-of-content {

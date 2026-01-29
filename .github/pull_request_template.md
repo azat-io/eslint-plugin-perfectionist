@@ -19,7 +19,11 @@
 
 ### Before submitting the PR, please make sure you do the following
 
-- [ ] Check that there isn't already a PR that solves the problem the same way to avoid creating a duplicate.
-- [ ] Provide a description in this PR that addresses **what** the PR is solving, or reference the issue that it solves (e.g. `fixes #123`).
-- [ ] Ideally, include relevant tests that fail without this PR but pass with it.
-- [ ] Read [contribution guidelines](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/contributing.md).
+- [ ] Check that there isn't already a PR that solves the problem the same way
+      to avoid creating a duplicate.
+- [ ] Provide a description in this PR that addresses **what** the PR is
+      solving, or reference the issue that it solves (e.g. `fixes #123`).
+- [ ] Ideally, include relevant tests that fail without this PR but pass with
+      it.
+- [ ] Read
+      [contribution guidelines](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/contributing.md).

@@ -11,8 +11,14 @@ let { url } = Astro.props
 
 {
   url && (
-    <ContentFooterLink id="edit-page-link" url={url}>
-      <PencilIcon class="icon" slot="icon" />
+    <ContentFooterLink
+      id="edit-page-link"
+      url={url}
+    >
+      <PencilIcon
+        class="icon"
+        slot="icon"
+      />
       Edit this page
     </ContentFooterLink>
   )

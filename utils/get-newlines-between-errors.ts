@@ -39,31 +39,49 @@ interface GetNewlinesBetweenErrorsParameters<
   MessageIds extends string,
   T extends SortingNode,
 > {
-  /** Optional function to customize newlines between specific nodes. */
+  /**
+   * Optional function to customize newlines between specific nodes.
+   */
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
 
-  /** Configuration options for newlines and groups. */
+  /**
+   * Configuration options for newlines and groups.
+   */
   options: CommonGroupsOptions<string, unknown, unknown>
 
-  /** ESLint source code object for accessing lines. */
+  /**
+   * ESLint source code object for accessing lines.
+   */
   sourceCode: TSESLint.SourceCode
 
-  /** Error message ID for missing required newlines. */
+  /**
+   * Error message ID for missing required newlines.
+   */
   missedSpacingError: MessageIds
 
-  /** Error message ID for extra unwanted newlines. */
+  /**
+   * Error message ID for extra unwanted newlines.
+   */
   extraSpacingError: MessageIds
 
-  /** Group index of the right/second node. */
+  /**
+   * Group index of the right/second node.
+   */
   rightGroupIndex: number
 
-  /** Group index of the left/first node. */
+  /**
+   * Group index of the left/first node.
+   */
   leftGroupIndex: number
 
-  /** Right/second node in the comparison. */
+  /**
+   * Right/second node in the comparison.
+   */
   right: T
 
-  /** Left/first node in the comparison. */
+  /**
+   * Left/first node in the comparison.
+   */
   left: T
 }
 
@@ -83,20 +101,23 @@ interface GetNewlinesBetweenErrorsParameters<
  * - The actual newlines match the expected newlines.
  *
  * @example
- *   // Configuration requires 1 newline between different groups
- *   const errors = getNewlinesBetweenErrors({
- *     options: { newlinesBetween: 1, groups: ['imports', 'types'] },
- *     leftGroupIndex: 0, // imports group
- *     rightGroupIndex: 1, // types group
- *     left: importNode,
- *     right: typeNode,
- *     sourceCode,
- *     missedSpacingError: 'missedNewline',
- *     extraSpacingError: 'extraNewline',
- *   })
- *   // If no newline between nodes: Returns ['missedNewline']
- *   // If 2+ newlines between nodes: Returns ['extraNewline']
- *   // If exactly 1 newline: Returns []
+ *
+ * ```ts
+ * // Configuration requires 1 newline between different groups
+ * const errors = getNewlinesBetweenErrors({
+ *   options: { newlinesBetween: 1, groups: ['imports', 'types'] },
+ *   leftGroupIndex: 0, // imports group
+ *   rightGroupIndex: 1, // types group
+ *   left: importNode,
+ *   right: typeNode,
+ *   sourceCode,
+ *   missedSpacingError: 'missedNewline',
+ *   extraSpacingError: 'extraNewline',
+ * })
+ * // If no newline between nodes: Returns ['missedNewline']
+ * // If 2+ newlines between nodes: Returns ['extraNewline']
+ * // If exactly 1 newline: Returns []
+ * ```
  *
  * @template MessageIds - Type of error message identifiers.
  * @template T - Type of the sorting node.

@@ -215,8 +215,9 @@ describe('compute-common-selector', () => {
     name: string
   }): Parameters<typeof computeCommonSelectors>[0] {
     return {
-      tsConfigOutput: tsConfig
-        ? ({
+      tsConfigOutput:
+        tsConfig ?
+          ({
             compilerOptions: {
               paths: Object.fromEntries(
                 (tsConfig.paths ?? []).map(path => [path, ['*']]),

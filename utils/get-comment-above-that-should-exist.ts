@@ -12,13 +12,17 @@ import { getCommentsBefore } from './get-comments-before'
  * @template T - Type of the sorting node.
  */
 interface GetCommentAboveMissingParameters<T extends SortingNode> {
-  /** Configuration options for grouping. */
+  /**
+   * Configuration options for grouping.
+   */
   options: Pick<
     CommonGroupsOptions<string, unknown, unknown>,
     'customGroups' | 'groups'
   >
 
-  /** ESLint source code object for accessing comments. */
+  /**
+   * ESLint source code object for accessing comments.
+   */
   sourceCode: TSESLint.SourceCode
 
   /**
@@ -27,10 +31,14 @@ interface GetCommentAboveMissingParameters<T extends SortingNode> {
    */
   leftGroupIndex: number | null
 
-  /** Index of the group on the right side (current element). */
+  /**
+   * Index of the group on the right side (current element).
+   */
   rightGroupIndex: number
 
-  /** The sorting node to check for required comments above. */
+  /**
+   * The sorting node to check for required comments above.
+   */
   sortingNode: T
 }
 
@@ -49,20 +57,23 @@ interface GetCommentAboveMissingParameters<T extends SortingNode> {
  * - The group configuration doesn't require a comment above.
  *
  * @example
- *   const result = getCommentAboveThatShouldExist({
- *     options: {
- *       groups: [
- *         'external',
- *         { commentAbove: 'Internal imports' },
- *         'internal',
- *       ],
- *     },
- *     leftGroupIndex: 0, // 'external' group
- *     rightGroupIndex: 2, // 'internal' group
- *     sortingNode: internalImportNode,
- *     sourceCode,
- *   })
- *   // Returns: { comment: 'Internal imports', exists: false }
+ *
+ * ```ts
+ * const result = getCommentAboveThatShouldExist({
+ *   options: {
+ *     groups: [
+ *       'external',
+ *       { commentAbove: 'Internal imports' },
+ *       'internal',
+ *     ],
+ *   },
+ *   leftGroupIndex: 0, // 'external' group
+ *   rightGroupIndex: 2, // 'internal' group
+ *   sortingNode: internalImportNode,
+ *   sourceCode,
+ * })
+ * // Returns: { comment: 'Internal imports', exists: false }
+ * ```
  *
  * @template T - Type of the sorting node.
  * @param params - Parameters for checking comment requirements.

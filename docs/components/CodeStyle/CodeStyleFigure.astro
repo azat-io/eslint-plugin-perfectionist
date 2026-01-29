@@ -7,7 +7,10 @@ interface Props {
 let { class: className, title, ...props } = Astro.props
 ---
 
-<figure class:list={['wrapper', className]} {...props}>
+<figure
+  class:list={['wrapper', className]}
+  {...props}
+>
   <figcaption class="caption">{title}</figcaption>
   <slot />
 </figure>

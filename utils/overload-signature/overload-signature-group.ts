@@ -10,7 +10,9 @@ export interface OverloadSignatureImplementation<T extends TSESTree.Node> {
   overloadSignatureImplementation: null | T
 }
 
-/** Represents a group of overload signatures along with their implementation. */
+/**
+ * Represents a group of overload signatures along with their implementation.
+ */
 export class OverloadSignatureGroup<T extends TSESTree.Node> {
   public readonly implementation: T
   private readonly _overloadSignatures: Set<T>

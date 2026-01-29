@@ -9,23 +9,35 @@ import type { RegexOption } from './common-options'
  * preserves logical groupings and intentional code organization.
  *
  * @example
- *   // Boolean: Enable/disable partition comments
- *   const partitionOption: PartitionByCommentOption = true
+ *
+ * ```ts
+ * // Boolean: Enable/disable partition comments
+ * const partitionOption: PartitionByCommentOption = true
+ * ```
  *
  * @example
- *   // String pattern: Comments matching this pattern create partitions
- *   const partitionOption: PartitionByCommentOption = 'Section:'
+ *
+ * ```ts
+ * // String pattern: Comments matching this pattern create partitions
+ * const partitionOption: PartitionByCommentOption = 'Section:'
+ * ```
  *
  * @example
- *   // Array of patterns: Any matching pattern creates a partition
- *   const partitionOption: PartitionByCommentOption = ['Section:', 'Part:']
+ *
+ * ```ts
+ * // Array of patterns: Any matching pattern creates a partition
+ * const partitionOption: PartitionByCommentOption = ['Section:', 'Part:']
+ * ```
  *
  * @example
- *   // Object: Different patterns for block and line comments
- *   const partitionOption: PartitionByCommentOption = {
- *     block: ['Section:', 'Chapter:'],
- *     line: 'Part:',
- *   }
+ *
+ * ```ts
+ * // Object: Different patterns for block and line comments
+ * const partitionOption: PartitionByCommentOption = {
+ *   block: ['Section:', 'Chapter:'],
+ *   line: 'Part:',
+ * }
+ * ```
  */
 export type PartitionByCommentOption =
   | {

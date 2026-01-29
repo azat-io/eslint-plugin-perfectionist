@@ -13,21 +13,28 @@ let { path } = Astro.props
 ---
 
 {
-  path.length > 0 ? (
+  path.length > 0 ?
     <div class="breadcrumbs">
-      <a aria-label="Homepage" class="link" href="/">
+      <a
+        aria-label="Homepage"
+        class="link"
+        href="/"
+      >
         <IconHome class="home" />
       </a>
       {path.map(({ href, name }) => (
         <>
           <IconChevronRight class="chevron" />
-          <a class="link" href={href}>
+          <a
+            class="link"
+            href={href}
+          >
             {name}
           </a>
         </>
       ))}
     </div>
-  ) : null
+  : null
 }
 
 <style>

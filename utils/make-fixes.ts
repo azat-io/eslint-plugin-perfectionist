@@ -16,11 +16,15 @@ import { makeOrderFixes } from './make-order-fixes'
  * @template T - Type of sorting node extending the base SortingNode.
  */
 interface MakeFixesParameters<T extends SortingNode> {
-  /** Optional configuration for various sorting behaviors. */
+  /**
+   * Optional configuration for various sorting behaviors.
+   */
   options?: Pick<CommonPartitionOptions, 'partitionByComment'> &
     CommonGroupsOptions<string, unknown, unknown>
 
-  /** Optional function to customize newlines between specific nodes. */
+  /**
+   * Optional function to customize newlines between specific nodes.
+   */
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
 
   /**
@@ -29,19 +33,29 @@ interface MakeFixesParameters<T extends SortingNode> {
    */
   ignoreFirstNodeHighestBlockComment?: boolean
 
-  /** ESLint source code object for accessing comments and tokens. */
+  /**
+   * ESLint source code object for accessing comments and tokens.
+   */
   sourceCode: TSESLint.SourceCode
 
-  /** Whether any comment-above configuration is missing its comment. */
+  /**
+   * Whether any comment-above configuration is missing its comment.
+   */
   hasCommentAboveMissing: boolean
 
-  /** ESLint fixer object for creating fix operations. */
+  /**
+   * ESLint fixer object for creating fix operations.
+   */
   fixer: TSESLint.RuleFixer
 
-  /** Array of nodes in their sorted order. */
+  /**
+   * Array of nodes in their sorted order.
+   */
   sortedNodes: T[]
 
-  /** Array of nodes in their original order. */
+  /**
+   * Array of nodes in their original order.
+   */
   nodes: T[]
 }
 
@@ -71,21 +85,24 @@ interface MakeFixesParameters<T extends SortingNode> {
  *   changes; they are applied only when nothing else is pending.
  *
  * @example
- *   // Configuration with groups and newlines
- *   const fixes = makeFixes({
- *     nodes: originalNodes,
- *     sortedNodes: sortedNodes,
- *     options: {
- *       groups: ['imports', 'types', 'functions'],
- *       newlinesBetween: 1,
- *     },
- *     sourceCode,
- *     fixer,
- *     hasCommentAboveMissing: false,
- *   })
- *   // Returns order fixes if nodes need reordering
- *   // Otherwise returns newlines fixes if spacing needs adjustment
- *   // Otherwise returns empty array
+ *
+ * ```ts
+ * // Configuration with groups and newlines
+ * const fixes = makeFixes({
+ *   nodes: originalNodes,
+ *   sortedNodes: sortedNodes,
+ *   options: {
+ *     groups: ['imports', 'types', 'functions'],
+ *     newlinesBetween: 1,
+ *   },
+ *   sourceCode,
+ *   fixer,
+ *   hasCommentAboveMissing: false,
+ * })
+ * // Returns order fixes if nodes need reordering
+ * // Otherwise returns newlines fixes if spacing needs adjustment
+ * // Otherwise returns empty array
+ * ```
  *
  * @template T - Type of sorting node.
  * @param params - Parameters for generating fixes.

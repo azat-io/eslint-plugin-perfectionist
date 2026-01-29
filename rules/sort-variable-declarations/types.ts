@@ -15,7 +15,9 @@ import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/com
  */
 export type Options = Partial<
   {
-    /** Enables experimental dependency detection. */
+    /**
+     * Enables experimental dependency detection.
+     */
     useExperimentalDependencyDetection: boolean
   } & AllCommonOptions<
     TypeOption,
@@ -37,7 +39,9 @@ export type SortVariableDeclarationsNode =
  */
 export type Selector = (typeof allSelectors)[number]
 
-/** Match options for a custom group. */
+/**
+ * Match options for a custom group.
+ */
 interface CustomGroupMatchOptions {
   /**
    * The selector type this group matches. Can be 'initialized' for variables

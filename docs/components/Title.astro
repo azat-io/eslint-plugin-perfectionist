@@ -15,6 +15,13 @@ let {
 } = Astro.props
 ---
 
-<Typography class:list={className} size="3xl" tag="h2" {align} {mbe} {...props}>
+<Typography
+  class:list={className}
+  size="3xl"
+  tag="h2"
+  {align}
+  {mbe}
+  {...props}
+>
   <slot />
 </Typography>

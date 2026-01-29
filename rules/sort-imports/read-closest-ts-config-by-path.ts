@@ -20,7 +20,9 @@ export interface ReadClosestTsConfigByPathValue {
    * settings.
    */
   compilerOptions: ts.CompilerOptions
-  /** Module resolution cache for efficient repeated resolutions. */
+  /**
+   * Module resolution cache for efficient repeated resolutions.
+   */
   cache: ts.ModuleResolutionCache
 }
 

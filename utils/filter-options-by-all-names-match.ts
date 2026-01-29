@@ -9,7 +9,9 @@ import { matches } from './matches'
  * applied to a set of nodes.
  */
 interface Options {
-  /** Conditions that must be met for this configuration to apply. */
+  /**
+   * Conditions that must be met for this configuration to apply.
+   */
   useConfigurationIf?: {
     /**
      * Pattern that all node names must match for this configuration to apply.
@@ -33,42 +35,48 @@ interface Options {
  * - All node names match the specified pattern.
  *
  * @example
- *   const contextOptions = [
- *     {
- *       type: 'natural',
- *       useConfigurationIf: { allNamesMatchPattern: '^get' },
- *     },
- *     {
- *       type: 'alphabetical',
- *       useConfigurationIf: { allNamesMatchPattern: '^set' },
- *     },
- *     { type: 'line-length' }, // No condition, always matches
- *   ]
  *
- *   const nodeNames = ['getName', 'getAge', 'getEmail']
- *   filterOptionsByAllNamesMatch({ contextOptions, nodeNames })
- *   // Returns: [
- *   //   {
- *   //     type: 'natural',
- *   //     useConfigurationIf: { allNamesMatchPattern: '^get' },
- *   //   },
- *   //   {
- *   //     type: 'line-length'
- *   //   }
- *   // ]
+ * ```ts
+ * const contextOptions = [
+ *   {
+ *     type: 'natural',
+ *     useConfigurationIf: { allNamesMatchPattern: '^get' },
+ *   },
+ *   {
+ *     type: 'alphabetical',
+ *     useConfigurationIf: { allNamesMatchPattern: '^set' },
+ *   },
+ *   { type: 'line-length' }, // No condition, always matches
+ * ]
+ *
+ * const nodeNames = ['getName', 'getAge', 'getEmail']
+ * filterOptionsByAllNamesMatch({ contextOptions, nodeNames })
+ * // Returns: [
+ * //   {
+ * //     type: 'natural',
+ * //     useConfigurationIf: { allNamesMatchPattern: '^get' },
+ * //   },
+ * //   {
+ * //     type: 'line-length'
+ * //   }
+ * // ]
+ * ```
  *
  * @example
- *   const nodeNames = ['setName', 'setAge']
- *   filterOptionsByAllNamesMatch({ contextOptions, nodeNames })
- *   // Returns: [
- *   //   {
- *   //     type: 'alphabetical',
- *   //     useConfigurationIf: { allNamesMatchPattern: '^set' },
- *   //   },
- *   //   {
- *   //     type: 'line-length'
- *   //   }
- *   // ]
+ *
+ * ```ts
+ * const nodeNames = ['setName', 'setAge']
+ * filterOptionsByAllNamesMatch({ contextOptions, nodeNames })
+ * // Returns: [
+ * //   {
+ * //     type: 'alphabetical',
+ * //     useConfigurationIf: { allNamesMatchPattern: '^set' },
+ * //   },
+ * //   {
+ * //     type: 'line-length'
+ * //   }
+ * // ]
+ * ```
  *
  * @template T - Type of the options object extending the base Options
  *   interface.

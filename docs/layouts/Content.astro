@@ -38,12 +38,21 @@ let {
 ---
 
 <Html>
-  <Head type="article" {description} {keywords} {title} />
+  <Head
+    type="article"
+    {description}
+    {keywords}
+    {title}
+  />
   <Body class="app">
     <Header border />
     <div class="wrapper">
       <Sidebar />
-      <Container class="container" tag="article" size="s">
+      <Container
+        class="container"
+        tag="article"
+        size="s"
+      >
         <Breadcrumbs {path} />
         <main class="main">
           <slot />

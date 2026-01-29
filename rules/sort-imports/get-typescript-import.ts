@@ -2,7 +2,9 @@ import type ts from 'typescript'
 
 import { createRequire } from 'node:module'
 
-/** Cached reference to the TypeScript module. */
+/**
+ * Cached reference to the TypeScript module.
+ */
 let cachedImport: typeof ts | undefined
 
 /**

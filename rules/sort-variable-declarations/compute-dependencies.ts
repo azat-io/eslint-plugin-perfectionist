@@ -32,7 +32,9 @@ function computeExpressionDependencies(
 
   function checkNode(node: TSESTree.Node): void {
     switch (node.type) {
-      /** No need to check the body of functions and arrow functions. */
+      /**
+       * No need to check the body of functions and arrow functions.
+       */
       case AST_NODE_TYPES.ArrowFunctionExpression:
       case AST_NODE_TYPES.FunctionExpression:
         return

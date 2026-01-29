@@ -14,16 +14,25 @@ import type { TSESLint } from '@typescript-eslint/utils'
  * syntactic punctuation.
  *
  * @example
- *   // Node text: "const foo = 'bar';"
- *   rangeToDiff(node, sourceCode) // Returns: 17 (18 - 1 for semicolon)
+ *
+ * ```ts
+ * // Node text: "const foo = 'bar';"
+ * rangeToDiff(node, sourceCode) // Returns: 17 (18 - 1 for semicolon)
+ * ```
  *
  * @example
- *   // Node text: "{ name: 'John', age: 30 },"
- *   rangeToDiff(node, sourceCode) // Returns: 26 (27 - 1 for comma)
+ *
+ * ```ts
+ * // Node text: "{ name: 'John', age: 30 },"
+ * rangeToDiff(node, sourceCode) // Returns: 26 (27 - 1 for comma)
+ * ```
  *
  * @example
- *   // Node text: "const value = 42"
- *   rangeToDiff(node, sourceCode) // Returns: 16 (no trailing punctuation)
+ *
+ * ```ts
+ * // Node text: "const value = 42"
+ * rangeToDiff(node, sourceCode) // Returns: 16 (no trailing punctuation)
+ * ```
  *
  * @param node - AST node to measure.
  * @param sourceCode - ESLint source code object for text extraction.

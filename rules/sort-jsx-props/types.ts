@@ -60,10 +60,13 @@ export type Selector = (typeof allSelectors)[number]
  * Additional configuration for a single custom group.
  *
  * @example
- *   {
- *     "selector": "prop",
- *     "modifiers": ["shorthand"]
- *   }
+ *
+ * ```ts
+ * {
+ *   "selector": "prop",
+ *   "modifiers": ["shorthand"]
+ * }
+ * ```
  */
 interface CustomGroupMatchOptions {
   /**

@@ -9,16 +9,19 @@ import type { TSESTree } from '@typescript-eslint/types'
  * sorting operations to respect user's explicit disable directives.
  *
  * @example
- *   const eslintDisabledLines = [5, 10, 11, 12] // Lines where ESLint is disabled
  *
- *   const nodeOnLine5 = { loc: { start: { line: 5 } } }
- *   const nodeOnLine6 = { loc: { start: { line: 6 } } }
+ * ```ts
+ * const eslintDisabledLines = [5, 10, 11, 12] // Lines where ESLint is disabled
  *
- *   isNodeEslintDisabled(nodeOnLine5, eslintDisabledLines)
- *   // Returns: true (line 5 is in disabled lines)
+ * const nodeOnLine5 = { loc: { start: { line: 5 } } }
+ * const nodeOnLine6 = { loc: { start: { line: 6 } } }
  *
- *   isNodeEslintDisabled(nodeOnLine6, eslintDisabledLines)
- *   // Returns: false (line 6 is not in disabled lines)
+ * isNodeEslintDisabled(nodeOnLine5, eslintDisabledLines)
+ * // Returns: true (line 5 is in disabled lines)
+ *
+ * isNodeEslintDisabled(nodeOnLine6, eslintDisabledLines)
+ * // Returns: false (line 6 is not in disabled lines)
+ * ```
  *
  * @param node - AST node to check for ESLint disable status.
  * @param eslintDisabledLines - Array of line numbers where ESLint is disabled.

@@ -16,7 +16,9 @@ import { getCommentsBefore } from './get-comments-before'
  * and parentheses.
  */
 interface GetNodeRangeParameters {
-  /** Optional configuration for comment handling. */
+  /**
+   * Optional configuration for comment handling.
+   */
   options?: Pick<CommonPartitionOptions, 'partitionByComment'>
 
   /**
@@ -26,10 +28,14 @@ interface GetNodeRangeParameters {
    */
   ignoreHighestBlockComment?: boolean
 
-  /** ESLint source code object for accessing comments and tokens. */
+  /**
+   * ESLint source code object for accessing comments and tokens.
+   */
   sourceCode: TSESLint.SourceCode
 
-  /** AST node to get the range for. */
+  /**
+   * AST node to get the range for.
+   */
   node: TSESTree.Node
 }
 
@@ -51,26 +57,32 @@ interface GetNodeRangeParameters {
  * - Optionally excluding the highest block comment (e.g., file headers).
  *
  * @example
- *   // Source code:
- *   // This comment belongs to the function
- *   // So does this one
- *   function foo() {}
  *
- *   const range = getNodeRange({ node: functionNode, sourceCode })
- *   // Returns range including both comments
+ * ```ts
+ * // Source code:
+ * // This comment belongs to the function
+ * // So does this one
+ * function foo() {}
+ *
+ * const range = getNodeRange({ node: functionNode, sourceCode })
+ * // Returns range including both comments
+ * ```
  *
  * @example
- *   // Source code:
- *   /* File header comment *\/
- *   // Function comment
- *   function bar() { }
  *
- *   const range = getNodeRange({
- *   node: functionNode,
- *   sourceCode,
- *   ignoreHighestBlockComment: true
- *   });
- *   // Returns range including line comment but not block comment
+ * ```ts
+ * // Source code:
+ * /* File header comment *\/
+ * // Function comment
+ * function bar() { }
+ *
+ * const range = getNodeRange({
+ * node: functionNode,
+ * sourceCode,
+ * ignoreHighestBlockComment: true
+ * });
+ * // Returns range including line comment but not block comment
+ * ```
  *
  * @param params - Parameters for range calculation.
  * @returns Tuple of [start, end] positions including relevant comments.
@@ -131,9 +143,9 @@ export function getNodeRange({
      * node.
      */
     let previousCommentOrNodeStartLine =
-      i === comments.length - 1
-        ? node.loc.start.line
-        : comments[i + 1]!.loc.start.line
+      i === comments.length - 1 ?
+        node.loc.start.line
+      : comments[i + 1]!.loc.start.line
     if (comment.loc.end.line !== previousCommentOrNodeStartLine - 1) {
       break
     }

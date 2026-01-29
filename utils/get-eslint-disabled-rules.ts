@@ -25,19 +25,28 @@ export type EslintDisableDirective = (typeof eslintDisableDirectives)[number]
  * ESLint disable directive.
  *
  * @example
- *   getEslintDisabledRules('eslint-disable')
- *   // Returns: { eslintDisableDirective: 'eslint-disable', rules: 'all' }
+ *
+ * ```ts
+ * getEslintDisabledRules('eslint-disable')
+ * // Returns: { eslintDisableDirective: 'eslint-disable', rules: 'all' }
+ * ```
  *
  * @example
- *   getEslintDisabledRules('eslint-disable-next-line no-console, no-alert')
- *   // Returns: {
- *   //   eslintDisableDirective: 'eslint-disable-next-line',
- *   //   rules: ['no-console', 'no-alert']
- *   // }
+ *
+ * ```ts
+ * getEslintDisabledRules('eslint-disable-next-line no-console, no-alert')
+ * // Returns: {
+ * //   eslintDisableDirective: 'eslint-disable-next-line',
+ * //   rules: ['no-console', 'no-alert']
+ * // }
+ * ```
  *
  * @example
- *   getEslintDisabledRules('regular comment')
- *   // Returns: null
+ *
+ * ```ts
+ * getEslintDisabledRules('regular comment')
+ * // Returns: null
+ * ```
  *
  * @param comment - Comment text to parse (without comment delimiters).
  * @returns Object containing directive type and affected rules, or null if not
@@ -71,22 +80,31 @@ export function getEslintDisabledRules(comment: string): {
  * comment doesn't match the directive pattern.
  *
  * @example
- *   getEslintDisabledRulesByType('eslint-disable', 'eslint-disable')
- *   // Returns: 'all'
+ *
+ * ```ts
+ * getEslintDisabledRulesByType('eslint-disable', 'eslint-disable')
+ * // Returns: 'all'
+ * ```
  *
  * @example
- *   getEslintDisabledRulesByType(
- *     'eslint-disable-line rule1, rule2',
- *     'eslint-disable-line',
- *   )
- *   // Returns: ['rule1', 'rule2']
+ *
+ * ```ts
+ * getEslintDisabledRulesByType(
+ *   'eslint-disable-line rule1, rule2',
+ *   'eslint-disable-line',
+ * )
+ * // Returns: ['rule1', 'rule2']
+ * ```
  *
  * @example
- *   getEslintDisabledRulesByType(
- *     'eslint-disable-line rule1',
- *     'eslint-disable-next-line',
- *   )
- *   // Returns: null (wrong directive type)
+ *
+ * ```ts
+ * getEslintDisabledRulesByType(
+ *   'eslint-disable-line rule1',
+ *   'eslint-disable-next-line',
+ * )
+ * // Returns: null (wrong directive type)
+ * ```
  *
  * @param comment - Comment text to parse.
  * @param eslintDisableDirective - Specific directive type to match against.

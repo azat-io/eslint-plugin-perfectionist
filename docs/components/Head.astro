@@ -31,13 +31,33 @@ let isProduction = import.meta.env.PROD
 
 <head>
   <meta charset="utf-8" />
-  <meta content="width=device-width,initial-scale=1" name="viewport" />
-  <meta name="theme-color" content="#232428" />
+  <meta
+    content="width=device-width,initial-scale=1"
+    name="viewport"
+  />
+  <meta
+    name="theme-color"
+    content="#232428"
+  />
 
-  <link href="/favicon.ico" sizes="any" rel="icon" />
-  <link type="image/svg+xml" href="/favicon.svg" rel="icon" />
-  <link href="/apple-touch-icon.png" rel="apple-touch-icon" />
-  <link href="/manifest.webmanifest" rel="manifest" />
+  <link
+    href="/favicon.ico"
+    sizes="any"
+    rel="icon"
+  />
+  <link
+    type="image/svg+xml"
+    href="/favicon.svg"
+    rel="icon"
+  />
+  <link
+    href="/apple-touch-icon.png"
+    rel="apple-touch-icon"
+  />
+  <link
+    href="/manifest.webmanifest"
+    rel="manifest"
+  />
 
   <link
     href="/fonts/space-grotesk-medium.woff2"
@@ -75,52 +95,127 @@ let isProduction = import.meta.env.PROD
     as="font"
   />
 
-  <link href="/sitemap-index.xml" rel="sitemap" />
-  <link href={canonicalURL} rel="canonical" />
+  <link
+    href="/sitemap-index.xml"
+    rel="sitemap"
+  />
+  <link
+    href={canonicalURL}
+    rel="canonical"
+  />
 
   <title>{pageTitle}</title>
-  <meta content={pageTitle} name="title" />
-  <meta content={description} name="description" />
+  <meta
+    content={pageTitle}
+    name="title"
+  />
+  <meta
+    content={description}
+    name="description"
+  />
   {
     keywords && keywords.length > 0 && (
-      <meta content={keywords.join(', ')} name="keywords" />
+      <meta
+        content={keywords.join(', ')}
+        name="keywords"
+      />
     )
   }
-  <meta content={author} name="author" />
+  <meta
+    content={author}
+    name="author"
+  />
 
-  <meta property="og:locale" content="en" />
-  <meta property="og:type" content={type} />
+  <meta
+    property="og:locale"
+    content="en"
+  />
+  <meta
+    property="og:type"
+    content={type}
+  />
   <meta
     content={Astro.url.toString().replace(/\.html/u, '')}
     property="og:url"
   />
-  <meta property="og:title" content={pageTitle} />
-  <meta property="og:description" content={description} />
-  <meta property="og:image" content={image} />
-  <meta property="og:image:type" content="image/png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta content={`Cover for ${title}`} property="og:image:alt" />
+  <meta
+    property="og:title"
+    content={pageTitle}
+  />
+  <meta
+    property="og:description"
+    content={description}
+  />
+  <meta
+    property="og:image"
+    content={image}
+  />
+  <meta
+    property="og:image:type"
+    content="image/png"
+  />
+  <meta
+    property="og:image:width"
+    content="1200"
+  />
+  <meta
+    property="og:image:height"
+    content="630"
+  />
+  <meta
+    content={`Cover for ${title}`}
+    property="og:image:alt"
+  />
 
   {
     type === 'article' && (
       <>
-        <meta property="article:author" content={author} />
+        <meta
+          property="article:author"
+          content={author}
+        />
         {keywords?.map(keyword => (
-          <meta property="article:tag" content={keyword} />
+          <meta
+            property="article:tag"
+            content={keyword}
+          />
         ))}
-        <meta property="article:section" content="Technology" />
-        <meta property="article:opinion" content="true" />
+        <meta
+          property="article:section"
+          content="Technology"
+        />
+        <meta
+          property="article:opinion"
+          content="true"
+        />
       </>
     )
   }
 
-  <meta content="summary_large_image" property="twitter:card" />
-  <meta property="twitter:url" content={Astro.url} />
-  <meta name="twitter:creator" content="@azat_io_en" />
-  <meta property="twitter:title" content={pageTitle} />
-  <meta property="twitter:description" content={description} />
-  <meta property="twitter:image" content={image} />
+  <meta
+    content="summary_large_image"
+    property="twitter:card"
+  />
+  <meta
+    property="twitter:url"
+    content={Astro.url}
+  />
+  <meta
+    name="twitter:creator"
+    content="@azat_io_en"
+  />
+  <meta
+    property="twitter:title"
+    content={pageTitle}
+  />
+  <meta
+    property="twitter:description"
+    content={description}
+  />
+  <meta
+    property="twitter:image"
+    content={image}
+  />
 
   <script is:inline>
     let getTheme = () => {
@@ -128,8 +223,8 @@ let isProduction = import.meta.env.PROD
       if (stored === 'light' || stored === 'dark') {
         return stored
       }
-      return globalThis.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
+      return globalThis.matchMedia('(prefers-color-scheme: dark)').matches ?
+          'dark'
         : 'light'
     }
 

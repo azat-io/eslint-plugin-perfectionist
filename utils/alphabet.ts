@@ -9,16 +9,24 @@ import { convertBooleanToSign } from './convert-boolean-to-sign'
  * and lowercase variations for case-sensitive operations.
  */
 interface Character {
-  /** The Unicode code point of the uppercase variant of the character. */
+  /**
+   * The Unicode code point of the uppercase variant of the character.
+   */
   uppercaseCharacterCodePoint?: number
 
-  /** The Unicode code point of the lowercase variant of the character. */
+  /**
+   * The Unicode code point of the lowercase variant of the character.
+   */
   lowercaseCharacterCodePoint?: number
 
-  /** The Unicode code point of the character. */
+  /**
+   * The Unicode code point of the character.
+   */
   codePoint: number
 
-  /** The character itself. */
+  /**
+   * The character itself.
+   */
   value: string
 }
 
@@ -37,11 +45,14 @@ interface Character {
  * - Multiple sorting strategies (natural, locale, char code).
  *
  * @example
- *   // Create a custom alphabet with specific character order
- *   const alphabet = Alphabet.generateFrom('aAbBcC')
- *     .prioritizeCase('uppercase')
- *     .getCharacters()
- *   // Returns: 'AaBbCc'
+ *
+ * ```ts
+ * // Create a custom alphabet with specific character order
+ * const alphabet = Alphabet.generateFrom('aAbBcC')
+ *   .prioritizeCase('uppercase')
+ *   .getCharacters()
+ * // Returns: 'AaBbCc'
+ * ```
  */
 export class Alphabet {
   private characters: Character[] = []
@@ -99,16 +110,16 @@ export class Alphabet {
     return {
       value: character,
       codePoint,
-      ...(lowercaseCharacter === character
-        ? null
-        : {
-            lowercaseCharacterCodePoint: lowercaseCharacter.codePointAt(0)!,
-          }),
-      ...(uppercaseCharacter === character
-        ? null
-        : {
-            uppercaseCharacterCodePoint: uppercaseCharacter.codePointAt(0)!,
-          }),
+      ...(lowercaseCharacter === character ? null : (
+        {
+          lowercaseCharacterCodePoint: lowercaseCharacter.codePointAt(0)!,
+        }
+      )),
+      ...(uppercaseCharacter === character ? null : (
+        {
+          uppercaseCharacterCodePoint: uppercaseCharacter.codePointAt(0)!,
+        }
+      )),
     }
   }
 
@@ -132,7 +143,10 @@ export class Alphabet {
    * that the alphabet is ordered by the case priority entered.
    *
    * @example
-   *   Alphabet.generateFrom('aAbBcdCD').prioritizeCase('uppercase') // Returns 'AaBbCDcd'.
+   *
+   * ```ts
+   * Alphabet.generateFrom('aAbBcdCD').prioritizeCase('uppercase') // Returns 'AaBbCDcd'.
+   * ```
    *
    * @param casePriority - The case to prioritize.
    * @returns - The same alphabet instance with the cases prioritized.
@@ -188,8 +202,11 @@ export class Alphabet {
    * Adds specific characters to the end of the alphabet.
    *
    * @example
-   *   Alphabet.generateFrom('ab').pushCharacters('cd')
-   *   // Returns 'abcd'
+   *
+   * ```ts
+   * Alphabet.generateFrom('ab').pushCharacters('cd')
+   * // Returns 'abcd'
+   * ```
    *
    * @param values - The characters to push to the alphabet.
    * @returns - The same alphabet instance without the specified characters.
@@ -233,14 +250,14 @@ export class Alphabet {
     let charactersWithCase = this.getCharactersWithCase()
     let orderedCharacters = [
       ...charactersWithCase.filter(character =>
-        caseToComeFirst === 'uppercase'
-          ? !character.character.uppercaseCharacterCodePoint
-          : character.character.uppercaseCharacterCodePoint,
+        caseToComeFirst === 'uppercase' ?
+          !character.character.uppercaseCharacterCodePoint
+        : character.character.uppercaseCharacterCodePoint,
       ),
       ...charactersWithCase.filter(character =>
-        caseToComeFirst === 'uppercase'
-          ? character.character.uppercaseCharacterCodePoint
-          : !character.character.uppercaseCharacterCodePoint,
+        caseToComeFirst === 'uppercase' ?
+          character.character.uppercaseCharacterCodePoint
+        : !character.character.uppercaseCharacterCodePoint,
       ),
     ]
     for (let [i, element] of charactersWithCase.entries()) {
@@ -253,11 +270,14 @@ export class Alphabet {
    * Places a specific character right before another character in the alphabet.
    *
    * @example
-   *   Alphabet.generateFrom('ab-cd/').placeCharacterBefore({
-   *     characterBefore: '/',
-   *     characterAfter: '-',
-   *   })
-   *   // Returns 'ab/-cd'
+   *
+   * ```ts
+   * Alphabet.generateFrom('ab-cd/').placeCharacterBefore({
+   *   characterBefore: '/',
+   *   characterAfter: '-',
+   * })
+   * // Returns 'ab/-cd'
+   * ```
    *
    * @param params - The parameters for the operation.
    * @param params.characterBefore - The character to come before
@@ -284,11 +304,14 @@ export class Alphabet {
    * Places a specific character right after another character in the alphabet.
    *
    * @example
-   *   Alphabet.generateFrom('ab-cd/').placeCharacterAfter({
-   *     characterBefore: '/',
-   *     characterAfter: '-',
-   *   })
-   *   // Returns 'abcd/-'
+   *
+   * ```ts
+   * Alphabet.generateFrom('ab-cd/').placeCharacterAfter({
+   *   characterBefore: '/',
+   *   characterAfter: '-',
+   * })
+   * // Returns 'abcd/-'
+   * ```
    *
    * @param params - The parameters for the operation.
    * @param params.characterBefore - The target character.
@@ -365,8 +388,11 @@ export class Alphabet {
    * Removes specific characters from the alphabet.
    *
    * @example
-   *   Alphabet.generateFrom('abcd').removeCharacters('dcc')
-   *   // Returns 'ab'
+   *
+   * ```ts
+   * Alphabet.generateFrom('abcd').removeCharacters('dcc')
+   * // Returns 'ab'
+   * ```
    *
    * @param values - The characters to remove from the alphabet.
    * @returns - The same alphabet instance without the specified characters.

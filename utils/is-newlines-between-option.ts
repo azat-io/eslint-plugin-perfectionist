@@ -15,20 +15,23 @@ import type {
  * output.
  *
  * @example
- *   const groups = [
- *     'imports',
- *     { newlinesBetween: 1 }, // Add 1 newline between imports and types
- *     'types',
- *     { newlinesBetween: 2 }, // Add 2 newlines between types and components
- *     'components',
- *     { commentAbove: '// Utils' }, // Not a newlines option
- *     'utils',
- *   ]
  *
- *   isNewlinesBetweenOption(groups[0]) // false (string)
- *   isNewlinesBetweenOption(groups[1]) // true (has newlinesBetween)
- *   isNewlinesBetweenOption(groups[3]) // true (has newlinesBetween)
- *   isNewlinesBetweenOption(groups[5]) // false (comment option)
+ * ```ts
+ * const groups = [
+ *   'imports',
+ *   { newlinesBetween: 1 }, // Add 1 newline between imports and types
+ *   'types',
+ *   { newlinesBetween: 2 }, // Add 2 newlines between types and components
+ *   'components',
+ *   { commentAbove: '// Utils' }, // Not a newlines option
+ *   'utils',
+ * ]
+ *
+ * isNewlinesBetweenOption(groups[0]) // false (string)
+ * isNewlinesBetweenOption(groups[1]) // true (has newlinesBetween)
+ * isNewlinesBetweenOption(groups[3]) // true (has newlinesBetween)
+ * isNewlinesBetweenOption(groups[5]) // false (comment option)
+ * ```
  *
  * @param groupOption - A single element from the groups configuration array.
  * @returns True if the element is a newlines-between configuration object.

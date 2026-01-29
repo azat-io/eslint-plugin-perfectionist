@@ -25,7 +25,9 @@ export let newlinesBetweenJsonSchema: JSONSchema4 = {
   ],
 }
 
-/** JSON schema for the newlines inside option. */
+/**
+ * JSON schema for the newlines inside option.
+ */
 export let newlinesInsideJsonSchema: JSONSchema4 = {
   oneOf: [
     {
@@ -120,17 +122,20 @@ export function buildGroupsJsonSchema({
  * criteria.
  *
  * @example
- *   // Valid configuration:
- *   ;[
- *     {
- *       groupName: 'react',
- *       anyOf: [{ elementNamePattern: 'use*' }, { selector: 'hook' }],
- *     },
- *     {
- *       groupName: 'utils',
- *       elementNamePattern: '*Utils',
- *     },
- *   ]
+ *
+ * ```ts
+ * // Valid configuration:
+ * ;[
+ *   {
+ *     groupName: 'react',
+ *     anyOf: [{ elementNamePattern: 'use*' }, { selector: 'hook' }],
+ *   },
+ *   {
+ *     groupName: 'utils',
+ *     elementNamePattern: '*Utils',
+ *   },
+ * ]
+ * ```
  *
  * @param options - Configuration options.
  * @param options.additionalSortProperties - Extra properties for sorting.
@@ -232,13 +237,16 @@ export function buildCommonGroupsJsonSchemas({
  * an element for it to match a custom group.
  *
  * @example
- *   // For TypeScript class members:
- *   buildCustomGroupModifiersJsonSchema([
- *     'static',
- *     'private',
- *     'readonly',
- *     'async',
- *   ])
+ *
+ * ```ts
+ * // For TypeScript class members:
+ * buildCustomGroupModifiersJsonSchema([
+ *   'static',
+ *   'private',
+ *   'readonly',
+ *   'async',
+ * ])
+ * ```
  *
  * @param modifiers - Array of valid modifier names.
  * @returns JSON schema for modifiers array validation.
@@ -263,13 +271,16 @@ export function buildCustomGroupModifiersJsonSchema(
  * types of elements in a custom group.
  *
  * @example
- *   // For class members:
- *   buildCustomGroupSelectorJsonSchema([
- *     'property',
- *     'method',
- *     'constructor',
- *     'accessor',
- *   ])
+ *
+ * ```ts
+ * // For class members:
+ * buildCustomGroupSelectorJsonSchema([
+ *   'property',
+ *   'method',
+ *   'constructor',
+ *   'accessor',
+ * ])
+ * ```
  *
  * @param selectors - Array of valid selector names.
  * @returns JSON schema for selector validation.

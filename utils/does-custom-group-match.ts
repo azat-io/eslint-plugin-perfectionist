@@ -73,7 +73,9 @@ interface BaseCustomGroupMatchOptions {
    */
   modifiers?: string[]
 
-  /** Required selector type. Element must have this exact selector to match. */
+  /**
+   * Required selector type. Element must have this exact selector to match.
+   */
   selector?: string
 }
 
@@ -85,36 +87,42 @@ interface BaseCustomGroupMatchOptions {
  * match. For "anyOf" groups, at least one subgroup must match.
  *
  * @example
- *   // Single custom group
- *   doesCustomGroupMatch({
- *     customGroup: {
- *       selector: 'property',
- *       modifiers: ['static'],
- *       elementNamePattern: 'on*',
- *     },
- *     elementName: 'onClick',
- *     selectors: ['property'],
- *     modifiers: ['static', 'readonly'],
- *     elementValue: null,
- *     decorators: [],
- *   })
- *   // Returns: true
+ *
+ * ```ts
+ * // Single custom group
+ * doesCustomGroupMatch({
+ *   customGroup: {
+ *     selector: 'property',
+ *     modifiers: ['static'],
+ *     elementNamePattern: 'on*',
+ *   },
+ *   elementName: 'onClick',
+ *   selectors: ['property'],
+ *   modifiers: ['static', 'readonly'],
+ *   elementValue: null,
+ *   decorators: [],
+ * })
+ * // Returns: true
+ * ```
  *
  * @example
- *   // AnyOf custom group
- *   doesCustomGroupMatch({
- *     customGroup: {
- *       anyOf: [
- *         { selector: 'method' },
- *         { selector: 'property', modifiers: ['static'] },
- *       ],
- *     },
- *     elementName: 'foo',
- *     selectors: ['method'],
- *     modifiers: [],
- *     elementValue: null,
- *   })
- *   // Returns: true (matches first subgroup)
+ *
+ * ```ts
+ * // AnyOf custom group
+ * doesCustomGroupMatch({
+ *   customGroup: {
+ *     anyOf: [
+ *       { selector: 'method' },
+ *       { selector: 'property', modifiers: ['static'] },
+ *     ],
+ *   },
+ *   elementName: 'foo',
+ *   selectors: ['method'],
+ *   modifiers: [],
+ *   elementValue: null,
+ * })
+ * // Returns: true (matches first subgroup)
+ * ```
  *
  * @template CustomGroupMatchOptions - Type of custom group match options.
  * @param props - Combined parameters including the custom group and element

@@ -1,18 +1,28 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
 
-/** Parameters for generating comment-after fixes for a single node. */
+/**
+ * Parameters for generating comment-after fixes for a single node.
+ */
 interface MakeSingleNodeCommentAfterFixesParameters {
-  /** The node in its sorted position. */
+  /**
+   * The node in its sorted position.
+   */
   sortedNode: TSESTree.Token | TSESTree.Node
 
-  /** The node in its original position. */
+  /**
+   * The node in its original position.
+   */
   node: TSESTree.Token | TSESTree.Node
 
-  /** ESLint source code object for accessing comments and tokens. */
+  /**
+   * ESLint source code object for accessing comments and tokens.
+   */
   sourceCode: TSESLint.SourceCode
 
-  /** ESLint fixer object for creating fix operations. */
+  /**
+   * ESLint fixer object for creating fix operations.
+   */
   fixer: TSESLint.RuleFixer
 }
 
@@ -31,13 +41,16 @@ interface MakeSingleNodeCommentAfterFixesParameters {
  * - Inserts it after the node's new position.
  *
  * @example
- *   // Original:
- *   const b = 2 // second value
- *   const a = 1 // first value
  *
- *   // After sorting (with comment fixes):
- *   const a = 1 // first value
- *   const b = 2 // second value
+ * ```ts
+ * // Original:
+ * const b = 2 // second value
+ * const a = 1 // first value
+ *
+ * // After sorting (with comment fixes):
+ * const a = 1 // first value
+ * const b = 2 // second value
+ * ```
  *
  * @param params - Parameters for generating comment fixes.
  * @returns Array of ESLint fix operations, empty if no inline comment exists.
@@ -67,9 +80,9 @@ export function makeSingleNodeCommentAfterFixes({
   let tokenAfterNode = sourceCode.getTokenAfter(node)
   fixes.push(
     fixer.insertTextAfter(
-      tokenAfterNode?.loc.end.line === node.loc.end.line
-        ? tokenAfterNode
-        : node,
+      tokenAfterNode?.loc.end.line === node.loc.end.line ?
+        tokenAfterNode
+      : node,
       sourceCode.text.slice(...range),
     ),
   )

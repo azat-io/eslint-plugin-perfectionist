@@ -107,9 +107,9 @@ export default createEslintRule<Options, MessageId>({
       let sortingNodeGroups: SortEnumsSortingNode[][] = members.reduce(
         (accumulator: SortEnumsSortingNode[][], member) => {
           let name =
-            member.id.type === AST_NODE_TYPES.Literal
-              ? member.id.value
-              : sourceCode.getText(member.id)
+            member.id.type === AST_NODE_TYPES.Literal ?
+              member.id.value
+            : sourceCode.getText(member.id)
 
           let group = computeGroup({
             customGroupMatcher: customGroup =>
@@ -126,16 +126,17 @@ export default createEslintRule<Options, MessageId>({
 
           let lastSortingNode = accumulator.at(-1)?.at(-1)
           let sortingNode: Omit<SortEnumsSortingNode, 'partitionId'> = {
-            dependencies: options.useExperimentalDependencyDetection
-              ? []
+            dependencies:
+              options.useExperimentalDependencyDetection ?
+                []
               : computeDependencies(
                   member.initializer!,
                   enumDeclaration.id.name,
                 ),
             value:
-              member.initializer?.type === AST_NODE_TYPES.Literal
-                ? (member.initializer.value?.toString() ?? null)
-                : null,
+              member.initializer?.type === AST_NODE_TYPES.Literal ?
+                (member.initializer.value?.toString() ?? null)
+              : null,
             isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
             numericValue: getExpressionNumberValue(member.initializer!),
             size: rangeToDiff(member, sourceCode),

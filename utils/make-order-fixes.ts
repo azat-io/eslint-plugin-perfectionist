@@ -5,9 +5,13 @@ import type { SortingNode } from '../types/sorting-node'
 
 import { getNodeRange } from './get-node-range'
 
-/** Parameters for generating order fixes. */
+/**
+ * Parameters for generating order fixes.
+ */
 interface MakeOrderFixesParameters {
-  /** Optional configuration options. */
+  /**
+   * Optional configuration options.
+   */
   options?: Pick<CommonPartitionOptions, 'partitionByComment'>
 
   /**
@@ -16,16 +20,24 @@ interface MakeOrderFixesParameters {
    */
   ignoreFirstNodeHighestBlockComment?: boolean
 
-  /** ESLint source code object for accessing text and ranges. */
+  /**
+   * ESLint source code object for accessing text and ranges.
+   */
   sourceCode: TSESLint.SourceCode
 
-  /** Array of nodes in their sorted order. */
+  /**
+   * Array of nodes in their sorted order.
+   */
   sortedNodes: SortingNode[]
 
-  /** ESLint fixer object for creating fix operations. */
+  /**
+   * ESLint fixer object for creating fix operations.
+   */
   fixer: TSESLint.RuleFixer
 
-  /** Array of nodes in their original order. */
+  /**
+   * Array of nodes in their original order.
+   */
   nodes: SortingNode[]
 }
 
@@ -45,23 +57,29 @@ interface MakeOrderFixesParameters {
  * according to the sorted order.
  *
  * @example
- *   // Original order:
- *   const b = 2
- *   const a = 1
  *
- *   // After applying order fixes:
- *   const a = 1
- *   const b = 2
+ * ```ts
+ * // Original order:
+ * const b = 2
+ * const a = 1
+ *
+ * // After applying order fixes:
+ * const a = 1
+ * const b = 2
+ * ```
  *
  * @example
- *   // Safety semicolon example
- *   // Original:
- *   const b = 2
- *   const a = 1 // 'a' will move to first position
  *
- *   // After fix (semicolon added to prevent ASI issues):
- *   const a = 1
- *   const b = 2
+ * ```ts
+ * // Safety semicolon example
+ * // Original:
+ * const b = 2
+ * const a = 1 // 'a' will move to first position
+ *
+ * // After fix (semicolon added to prevent ASI issues):
+ * const a = 1
+ * const b = 2
+ * ```
  *
  * @param params - Parameters for generating order fixes.
  * @returns Array of ESLint fix operations to reorder nodes.

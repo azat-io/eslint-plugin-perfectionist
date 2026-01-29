@@ -61,13 +61,14 @@ export function computeCommonSelectors({
     return options.internalPattern.some(pattern => matches(value, pattern))
   }
 
-  let internalExternalGroup = matchesInternalPattern(name)
-    ? 'internal'
-    : getInternalOrExternalGroup({
+  let internalExternalGroup =
+    matchesInternalPattern(name) ? 'internal' : (
+      getInternalOrExternalGroup({
         tsConfigOutput,
         filename,
         name,
       })
+    )
 
   let commonSelectors: CommonSelector[] = []
 
@@ -177,8 +178,8 @@ function getInternalOrExternalGroup({
     return 'external'
   }
 
-  return resolution.resolvedModule.isExternalLibraryImport
-    ? 'external'
+  return resolution.resolvedModule.isExternalLibraryImport ?
+      'external'
     : 'internal'
 }
 

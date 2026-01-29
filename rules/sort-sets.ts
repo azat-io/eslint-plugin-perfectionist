@@ -35,9 +35,9 @@ export default createEslintRule<Options, MessageId>({
             node.arguments[0].callee.name === 'Array'))
       ) {
         let elements =
-          node.arguments[0].type === AST_NODE_TYPES.ArrayExpression
-            ? node.arguments[0].elements
-            : node.arguments[0].arguments
+          node.arguments[0].type === AST_NODE_TYPES.ArrayExpression ?
+            node.arguments[0].elements
+          : node.arguments[0].arguments
         sortArray<MessageId>({
           availableMessageIds: {
             missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,

@@ -29,11 +29,15 @@ export type Options = Partial<
        */
       filename?: string
 
-      /** Root directory where to search for the TypeScript config file. */
+      /**
+       * Root directory where to search for the TypeScript config file.
+       */
       rootDir: string
     }
 
-    /** Enables experimental dependency detection. */
+    /**
+     * Enables experimental dependency detection.
+     */
     useExperimentalDependencyDetection: boolean
 
     /**
@@ -75,10 +79,14 @@ export type Options = Partial<
  * node with dependency information and ignore flag.
  */
 export interface SortImportsSortingNode extends SortingNodeWithDependencies<SortImportsNode> {
-  /** The name of the import specifier for sorting purposes. */
+  /**
+   * The name of the import specifier for sorting purposes.
+   */
   specifierName: string | null
 
-  /** Whether this import is a type-only import. */
+  /**
+   * Whether this import is a type-only import.
+   */
   isTypeImport: boolean
 
   /**
@@ -111,16 +119,23 @@ export type Modifier = (typeof allModifiers)[number]
  * Additional configuration for a single custom group.
  *
  * @example
- *   {
- *     "modifiers": ["type"],
- *     "selector": "external"
- *   }
+ *
+ * ```ts
+ * {
+ *   "modifiers": ["type"],
+ *   "selector": "external"
+ * }
+ * ```
  */
 interface CustomGroupMatchOptions {
-  /** List of modifiers that imports must have to be included in this group. */
+  /**
+   * List of modifiers that imports must have to be included in this group.
+   */
   modifiers?: Modifier[]
 
-  /** The selector type that imports must match to be included in this group. */
+  /**
+   * The selector type that imports must match to be included in this group.
+   */
   selector?: Selector
 }
 

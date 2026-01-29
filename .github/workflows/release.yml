@@ -23,11 +23,8 @@ jobs:
         with:
           egress-policy: block
           allowed-endpoints: >
-            api.github.com:443
-            fulcio.sigstore.dev:443
-            github.com:443
-            registry.npmjs.org:443
-            rekor.sigstore.dev:443
+            api.github.com:443 fulcio.sigstore.dev:443 github.com:443
+            registry.npmjs.org:443 rekor.sigstore.dev:443
             release-assets.githubusercontent.com:443
 
       - name: Checkout
@@ -76,9 +73,11 @@ jobs:
             --file social-post.txt
         env:
           TWITTER_API_CONSUMER_KEY: ${{ secrets.TWITTER_API_CONSUMER_KEY }}
-          TWITTER_API_CONSUMER_SECRET: ${{ secrets.TWITTER_API_CONSUMER_SECRET }}
+          TWITTER_API_CONSUMER_SECRET:
+            ${{ secrets.TWITTER_API_CONSUMER_SECRET }}
           TWITTER_ACCESS_TOKEN_KEY: ${{ secrets.TWITTER_ACCESS_TOKEN_KEY }}
-          TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+          TWITTER_ACCESS_TOKEN_SECRET:
+            ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
           BLUESKY_HOST: ${{ secrets.BLUESKY_HOST }}
           BLUESKY_IDENTIFIER: ${{ secrets.BLUESKY_IDENTIFIER }}
           BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}

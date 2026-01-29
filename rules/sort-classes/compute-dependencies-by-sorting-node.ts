@@ -177,9 +177,8 @@ function computeThisExpressionDependenciesBySortingNode({
     let dependencies = thisExpressions
       .map(thisExpression =>
         computeIdentifierOrThisExpressionDependency({
-          sortingNodes: sortingNode.isStatic
-            ? staticSortingNodes
-            : nonStaticSortingNodes,
+          sortingNodes:
+            sortingNode.isStatic ? staticSortingNodes : nonStaticSortingNodes,
           ignoreCallbackDependenciesPatterns,
           classElement: sortingNode.node,
           node: thisExpression,

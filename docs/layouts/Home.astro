@@ -21,7 +21,11 @@ let { keywords = [], description } = Astro.props
 ---
 
 <Html>
-  <Head type="website" {description} {keywords} />
+  <Head
+    type="website"
+    {description}
+    {keywords}
+  />
   <Body>
     <Header />
     <Sidebar isMobileOnly />

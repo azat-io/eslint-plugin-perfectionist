@@ -17,9 +17,9 @@
   $effect(() => {
     if (isOpen) {
       previouslyFocused =
-        document.activeElement instanceof HTMLElement
-          ? document.activeElement
-          : null
+        document.activeElement instanceof HTMLElement ?
+          document.activeElement
+        : null
       dialog.showModal()
     } else if (dialog.open) {
       dialog.close()
@@ -248,8 +248,8 @@
     }
 
     if (highlightTermsLower.length === 0) {
-      return value.length > SNIPPET_RADIUS * 2
-        ? `${value.slice(0, SNIPPET_RADIUS * 2).trim()}…`
+      return value.length > SNIPPET_RADIUS * 2 ?
+          `${value.slice(0, SNIPPET_RADIUS * 2).trim()}…`
         : value
     }
 
@@ -266,8 +266,8 @@
     }
 
     if (matchIndex === -1) {
-      return value.length > SNIPPET_RADIUS * 2
-        ? `${value.slice(0, SNIPPET_RADIUS * 2).trim()}…`
+      return value.length > SNIPPET_RADIUS * 2 ?
+          `${value.slice(0, SNIPPET_RADIUS * 2).trim()}…`
         : value
     }
 
@@ -305,9 +305,9 @@
     if (event.key === 'ArrowDown') {
       event.preventDefault()
       activeIndex =
-        activeIndex < parsedResults.length - 1
-          ? activeIndex + 1
-          : parsedResults.length - 1
+        activeIndex < parsedResults.length - 1 ?
+          activeIndex + 1
+        : parsedResults.length - 1
       return
     }
 
@@ -358,7 +358,10 @@
 >
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="modal-inner" onclick={event => event.stopPropagation()}>
+  <div
+    class="modal-inner"
+    onclick={event => event.stopPropagation()}
+  >
     <!-- svelte-ignore a11y_autofocus -->
     <input
       type="search"
@@ -367,9 +370,9 @@
       aria-autocomplete="list"
       aria-expanded={parsedResults.length > 0}
       aria-controls={parsedResults.length > 0 ? LISTBOX_ID : undefined}
-      aria-activedescendant={activeIndex >= 0
-        ? parsedResults[activeIndex]?.id
-        : undefined}
+      aria-activedescendant={activeIndex >= 0 ?
+        parsedResults[activeIndex]?.id
+      : undefined}
       placeholder="Type to search..."
       aria-label="Search"
       bind:value={query}
@@ -378,7 +381,11 @@
       autofocus
     />
 
-    <div class="results" aria-live="polite" aria-busy={isLoading}>
+    <div
+      class="results"
+      aria-live="polite"
+      aria-busy={isLoading}
+    >
       {#if errorMessage}
         <p class="message error">{errorMessage}</p>
       {:else if isLoading}
@@ -388,7 +395,11 @@
       {:else if parsedResults.length === 0}
         <p class="message">No results found. Try a different query.</p>
       {:else}
-        <ul class="list" role="listbox" id={LISTBOX_ID}>
+        <ul
+          class="list"
+          role="listbox"
+          id={LISTBOX_ID}
+        >
           {#each parsedResults as result, index (result.data.slug)}
             <li
               class:item-active={activeIndex === index}
@@ -416,7 +427,10 @@
                     {COLLECTION_LABELS[result.data.collection]}
                   </span>
                   {#if result.heading}
-                    <IconChevronRight aria-hidden="true" class="chevron" />
+                    <IconChevronRight
+                      aria-hidden="true"
+                      class="chevron"
+                    />
                     <span class="link-heading">
                       <HighlightText
                         text={result.heading}

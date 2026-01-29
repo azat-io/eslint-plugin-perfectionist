@@ -44,50 +44,59 @@ interface SortNodesByGroupsParameters<Node extends SortingNode, Options> {
  * positions to preserve intentional code organization.
  *
  * @example
- *   // React component with grouped imports
- *   const nodes = [
- *     { name: './Button', group: 'internal' },
- *     { name: 'react', group: 'external' },
- *     { name: '@mui/material', group: 'external' },
- *     { name: './utils', group: 'internal' },
- *   ]
  *
- *   sortNodesByGroups({
- *     groups: ['external', 'internal'],
- *     nodes,
- *     optionsByGroupIndexComputer: index => ({
- *       options: { type: 'alphabetical', order: 'asc' },
- *     }),
- *   })
- *   // Returns: ['@mui/material', 'react', './Button', './utils']
- *   // External group sorted first, then internal group
+ * ```ts
+ * // React component with grouped imports
+ * const nodes = [
+ *   { name: './Button', group: 'internal' },
+ *   { name: 'react', group: 'external' },
+ *   { name: '@mui/material', group: 'external' },
+ *   { name: './utils', group: 'internal' },
+ * ]
  *
- * @example
- *   // Class members with different sorting for each group
- *   class UserService {
- *   // Static members group - sorted alphabetically
- *   static VERSION = '1.0.0';
- *   static API_URL = 'https://api.example.com';
- *
- *   // Properties group - sorted by line length
- *   id: string;
- *   cache: Map<string, User>;
- *
- *   // Methods group - sorted naturally
- *   async getUser() { ... }
- *   async updateUser() { ... }
- *   }
+ * sortNodesByGroups({
+ *   groups: ['external', 'internal'],
+ *   nodes,
+ *   optionsByGroupIndexComputer: index => ({
+ *     options: { type: 'alphabetical', order: 'asc' },
+ *   }),
+ * })
+ * // Returns: ['@mui/material', 'react', './Button', './utils']
+ * // External group sorted first, then internal group
+ * ```
  *
  * @example
- *   // Object with ignored properties
- *   const config = {
- *     apiUrl: 'https://api.example.com',
- *     timeout: 5000,
- *     // eslint-disable-next-line
- *     DEBUG_MODE: true, // This stays in place due to ESLint disable
- *     retries: 3,
- *   }
- *   // DEBUG_MODE maintains its position despite sorting
+ *
+ * ```ts
+ * // Class members with different sorting for each group
+ * class UserService {
+ * // Static members group - sorted alphabetically
+ * static VERSION = '1.0.0';
+ * static API_URL = 'https://api.example.com';
+ *
+ * // Properties group - sorted by line length
+ * id: string;
+ * cache: Map<string, User>;
+ *
+ * // Methods group - sorted naturally
+ * async getUser() { ... }
+ * async updateUser() { ... }
+ * }
+ * ```
+ *
+ * @example
+ *
+ * ```ts
+ * // Object with ignored properties
+ * const config = {
+ *   apiUrl: 'https://api.example.com',
+ *   timeout: 5000,
+ *   // eslint-disable-next-line
+ *   DEBUG_MODE: true, // This stays in place due to ESLint disable
+ *   retries: 3,
+ * }
+ * // DEBUG_MODE maintains its position despite sorting
+ * ```
  *
  * @template T - Type of sorting node.
  * @template Options - Type of sorting options.

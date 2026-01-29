@@ -48,7 +48,9 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-/** Cache computed groups by modifiers and selectors for performance. */
+/**
+ * Cache computed groups by modifiers and selectors for performance.
+ */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 const ORDER_ERROR_ID = 'unexpectedVariableDeclarationsOrder'
@@ -116,9 +118,8 @@ export default createEslintRule<Options, MessageId>({
             sourceCode,
           })
 
-          let selector: Selector = declaration.init
-            ? 'initialized'
-            : 'uninitialized'
+          let selector: Selector =
+            declaration.init ? 'initialized' : 'uninitialized'
 
           let predefinedGroups = generatePredefinedGroups({
             cache: cachedGroupsByModifiersAndSelectors,
@@ -142,8 +143,9 @@ export default createEslintRule<Options, MessageId>({
               predefinedGroups,
               options,
             }),
-            dependencies: options.useExperimentalDependencyDetection
-              ? []
+            dependencies:
+              options.useExperimentalDependencyDetection ?
+                []
               : computeDependencies(declaration),
             isEslintDisabled: isNodeEslintDisabled(
               declaration,

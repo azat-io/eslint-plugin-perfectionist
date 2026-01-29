@@ -14,7 +14,9 @@ export function computeDependencies(node: SortObjectsNode): string[] {
   return dependencies
 
   function checkNode(nodeValue: TSESTree.Node): void {
-    /** No need to check the body of functions and arrow functions. */
+    /**
+     * No need to check the body of functions and arrow functions.
+     */
     if (
       nodeValue.type === AST_NODE_TYPES.ArrowFunctionExpression ||
       nodeValue.type === AST_NODE_TYPES.FunctionExpression

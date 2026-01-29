@@ -58,7 +58,9 @@ type MessageId =
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
 
-/** Cache computed groups by modifiers and selectors for performance. */
+/**
+ * Cache computed groups by modifiers and selectors for performance.
+ */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 let defaultOptions: Required<Options[number]> = {

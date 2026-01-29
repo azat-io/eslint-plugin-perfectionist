@@ -27,7 +27,9 @@ export type Options = Partial<
   >
 >[]
 
-/** Match options for a custom group. */
+/**
+ * Match options for a custom group.
+ */
 type CustomGroupMatchOptions = object
 
 type AdditionalSortOptions = object

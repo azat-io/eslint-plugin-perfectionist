@@ -46,7 +46,9 @@ import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 import { matches } from '../utils/matches'
 
-/** Cache computed groups by modifiers and selectors for performance. */
+/**
+ * Cache computed groups by modifiers and selectors for performance.
+ */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 const ORDER_ERROR_ID = 'unexpectedJSXPropsOrder'
@@ -139,8 +141,9 @@ export default createEslintRule<Options, MessageId>({
             let group = computeGroup({
               customGroupMatcher: customGroup =>
                 doesCustomGroupMatch({
-                  elementValue: attribute.value
-                    ? sourceCode.getText(attribute.value)
+                  elementValue:
+                    attribute.value ?
+                      sourceCode.getText(attribute.value)
                     : null,
                   elementName: name,
                   customGroup,
@@ -289,7 +292,7 @@ function getNodeName({
 }: {
   attribute: TSESTree.JSXAttribute
 }): string {
-  return attribute.name.type === AST_NODE_TYPES.JSXNamespacedName
-    ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
+  return attribute.name.type === AST_NODE_TYPES.JSXNamespacedName ?
+      `${attribute.name.namespace.name}:${attribute.name.name.name}`
     : attribute.name.name
 }

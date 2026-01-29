@@ -20,9 +20,13 @@ export interface SortingNodeWithDependencies<
   dependencies: string[]
 }
 
-/** Additional options for dependency-based sorting. */
+/**
+ * Additional options for dependency-based sorting.
+ */
 interface ExtraOptions {
-  /** Whether to exclude ESLint-disabled nodes from dependency resolution. */
+  /**
+   * Whether to exclude ESLint-disabled nodes from dependency resolution.
+   */
   ignoreEslintDisabledNodes: boolean
 }
 
@@ -44,56 +48,65 @@ interface ExtraOptions {
  * ordering and retain their original relative positions.
  *
  * @example
- *   // TypeScript interfaces with inheritance
- *   const nodes = [
- *     {
- *       name: 'AdminUser',
- *       dependencies: ['AdminUser'],
- *       dependencyNames: ['User'],
- *     },
- *     { name: 'User', dependencies: ['User'], dependencyNames: [] },
- *     {
- *       name: 'GuestUser',
- *       dependencies: ['GuestUser'],
- *       dependencyNames: ['User'],
- *     },
- *   ]
- *   sortNodesByDependencies(nodes)
- *   // Returns: [User, AdminUser, GuestUser]
- *   // User must come first as others depend on it
+ *
+ * ```ts
+ * // TypeScript interfaces with inheritance
+ * const nodes = [
+ *   {
+ *     name: 'AdminUser',
+ *     dependencies: ['AdminUser'],
+ *     dependencyNames: ['User'],
+ *   },
+ *   { name: 'User', dependencies: ['User'], dependencyNames: [] },
+ *   {
+ *     name: 'GuestUser',
+ *     dependencies: ['GuestUser'],
+ *     dependencyNames: ['User'],
+ *   },
+ * ]
+ * sortNodesByDependencies(nodes)
+ * // Returns: [User, AdminUser, GuestUser]
+ * // User must come first as others depend on it
+ * ```
  *
  * @example
- *   // React components with hook dependencies
- *   const nodes = [
- *     {
- *       name: 'MyComponent',
- *       dependencies: ['MyComponent'],
- *       dependencyNames: ['useAuth', 'useData'],
- *     },
- *     {
- *       name: 'useData',
- *       dependencies: ['useData'],
- *       dependencyNames: ['useApi'],
- *     },
- *     { name: 'useApi', dependencies: ['useApi'], dependencyNames: [] },
- *     { name: 'useAuth', dependencies: ['useAuth'], dependencyNames: [] },
- *   ]
- *   sortNodesByDependencies(nodes)
- *   // Returns: [useApi, useData, useAuth, MyComponent]
- *   // Hooks are ordered by their dependency chain
+ *
+ * ```ts
+ * // React components with hook dependencies
+ * const nodes = [
+ *   {
+ *     name: 'MyComponent',
+ *     dependencies: ['MyComponent'],
+ *     dependencyNames: ['useAuth', 'useData'],
+ *   },
+ *   {
+ *     name: 'useData',
+ *     dependencies: ['useData'],
+ *     dependencyNames: ['useApi'],
+ *   },
+ *   { name: 'useApi', dependencies: ['useApi'], dependencyNames: [] },
+ *   { name: 'useAuth', dependencies: ['useAuth'], dependencyNames: [] },
+ * ]
+ * sortNodesByDependencies(nodes)
+ * // Returns: [useApi, useData, useAuth, MyComponent]
+ * // Hooks are ordered by their dependency chain
+ * ```
  *
  * @example
- *   // Object properties with computed values
- *   const config = {
- *     baseUrl: 'https://api.example.com',
- *     apiUrl: `${this.baseUrl}/v1`, // Depends on baseUrl
- *     authUrl: `${this.apiUrl}/auth`, // Depends on apiUrl
- *     headers: {
- *       'API-Key': this.apiKey, // Depends on apiKey
- *     },
- *     apiKey: process.env.API_KEY,
- *   }
- *   // After sorting: baseUrl, apiKey, apiUrl, authUrl, headers
+ *
+ * ```ts
+ * // Object properties with computed values
+ * const config = {
+ *   baseUrl: 'https://api.example.com',
+ *   apiUrl: `${this.baseUrl}/v1`, // Depends on baseUrl
+ *   authUrl: `${this.apiUrl}/auth`, // Depends on apiUrl
+ *   headers: {
+ *     'API-Key': this.apiKey, // Depends on apiKey
+ *   },
+ *   apiKey: process.env.API_KEY,
+ * }
+ * // After sorting: baseUrl, apiKey, apiUrl, authUrl, headers
+ * ```
  *
  * @template T - Type of sorting node with dependencies.
  * @param nodes - Array of nodes to sort by dependencies.

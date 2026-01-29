@@ -9,7 +9,13 @@ let { title = 'Important' } = Astro.props
 ---
 
 <div class="important">
-  <Typography class="title" size="l" bold>{title}</Typography>
+  <Typography
+    class="title"
+    size="l"
+    bold
+  >
+    {title}
+  </Typography>
   <slot />
 </div>
 

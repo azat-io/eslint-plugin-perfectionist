@@ -34,9 +34,8 @@ export function computeOverloadSignatureGroups(
     }
 
     let { name } = method.key
-    let mapToUse = method.static
-      ? staticOverloadSignaturesByName
-      : overloadSignaturesByName
+    let mapToUse =
+      method.static ? staticOverloadSignaturesByName : overloadSignaturesByName
     let overloadSignaturesArray = mapToUse.get(name)
 
     if (!overloadSignaturesArray) {

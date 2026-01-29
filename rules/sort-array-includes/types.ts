@@ -45,9 +45,12 @@ export type Selector = (typeof allSelectors)[number]
  * and sorted based on their names and types.
  *
  * @example
- *   {
- *     "selector": "literal"
- *   }
+ *
+ * ```ts
+ * {
+ *   "selector": "literal"
+ * }
+ * ```
  */
 interface CustomGroupMatchOptions {
   /**

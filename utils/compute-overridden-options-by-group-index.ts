@@ -25,21 +25,24 @@ type Options = Pick<
  * - Fallback sort configuration.
  *
  * @example
- *   const options = {
- *     type: 'alphabetical',
- *     order: 'asc',
- *     fallbackSort: { type: 'natural' },
- *     groups: ['custom-group', 'other'],
- *     customGroups: [
- *       {
- *         groupName: 'custom-group',
- *         type: 'natural',
- *         order: 'desc',
- *       },
- *     ],
- *   }
- *   const overridden = computeOverriddenOptionsByGroupIndex(options, 0)
- *   // Returns: { type: 'natural', order: 'desc', fallbackSort: { type: 'natural' } }
+ *
+ * ```ts
+ * const options = {
+ *   type: 'alphabetical',
+ *   order: 'asc',
+ *   fallbackSort: { type: 'natural' },
+ *   groups: ['custom-group', 'other'],
+ *   customGroups: [
+ *     {
+ *       groupName: 'custom-group',
+ *       type: 'natural',
+ *       order: 'desc',
+ *     },
+ *   ],
+ * }
+ * const overridden = computeOverriddenOptionsByGroupIndex(options, 0)
+ * // Returns: { type: 'natural', order: 'desc', fallbackSort: { type: 'natural' } }
+ * ```
  *
  * @param options - Combined group and sorting options.
  * @param groupIndex - Index of the group to check for overrides.

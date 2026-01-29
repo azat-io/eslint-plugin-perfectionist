@@ -17,8 +17,14 @@ let { heading } = Astro.props
 ---
 
 <li class="item">
-  <a href={`#${heading.slug}`} class="link">
-    <Typography tag="span" size="xs">
+  <a
+    href={`#${heading.slug}`}
+    class="link"
+  >
+    <Typography
+      tag="span"
+      size="xs"
+    >
       {heading.text}
     </Typography>
   </a>
