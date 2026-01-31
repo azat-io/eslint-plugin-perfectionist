@@ -104,18 +104,9 @@ export function buildGroupsJsonSchema({
  * subgroups. Each group must have a groupName and can include various matching
  * criteria.
  *
- * @example
- *   // Valid configuration:
- *   ;[
- *     {
- *       groupName: 'react',
- *       anyOf: [{ elementNamePattern: 'use*' }, { selector: 'hook' }],
- *     },
- *     {
- *       groupName: 'utils',
- *       elementNamePattern: '*Utils',
- *     },
- *   ]
+ * @example // Valid configuration: ;[ { groupName: 'react', anyOf: [{
+ * elementNamePattern: 'use*' }, { selector: 'hook' }], }, { groupName: 'utils',
+ * elementNamePattern: '*Utils', }, ]
  *
  * @param options - Configuration options.
  * @param options.additionalSortProperties - Extra properties for sorting.
@@ -216,14 +207,9 @@ export function buildCommonGroupsJsonSchemas({
  * Creates a schema that validates an array of modifiers that must be present on
  * an element for it to match a custom group.
  *
- * @example
- *   // For TypeScript class members:
- *   buildCustomGroupModifiersJsonSchema([
- *     'static',
- *     'private',
- *     'readonly',
- *     'async',
- *   ])
+ * @example // For TypeScript class members:
+ * buildCustomGroupModifiersJsonSchema([ 'static', 'private', 'readonly',
+ * 'async', ])
  *
  * @param modifiers - Array of valid modifier names.
  * @returns JSON schema for modifiers array validation.
@@ -247,14 +233,8 @@ export function buildCustomGroupModifiersJsonSchema(
  * Creates a schema that validates a selector string used to match specific
  * types of elements in a custom group.
  *
- * @example
- *   // For class members:
- *   buildCustomGroupSelectorJsonSchema([
- *     'property',
- *     'method',
- *     'constructor',
- *     'accessor',
- *   ])
+ * @example // For class members: buildCustomGroupSelectorJsonSchema([
+ * 'property', 'method', 'constructor', 'accessor', ])
  *
  * @param selectors - Array of valid selector names.
  * @returns JSON schema for selector validation.

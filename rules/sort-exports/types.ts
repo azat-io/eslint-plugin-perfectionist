@@ -16,7 +16,9 @@ import {
  */
 export type Options = Partial<
   {
-    /** Number of newlines required after the last sorted element. */
+    /**
+     * Number of newlines required after the last sorted element.
+     */
     newlinesAfter: 'ignore' | number
   } & AllCommonOptions<
     TypeOption,

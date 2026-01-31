@@ -33,28 +33,33 @@ interface ReportAllErrorsParameters<
    * descriptions. Not all message types are required - only provide those
    * relevant to the specific rule.
    *
-   * @example
-   *   // Class members rule with all message types
-   *   availableMessageIds: {
-   *   unexpectedOrder: 'unexpectedClassesOrder',
-   *   unexpectedGroupOrder: 'unexpectedClassesGroupOrder',
-   *   unexpectedDependencyOrder: 'unexpectedClassesDependencyOrder',
-   *   missedSpacingBetweenMembers: 'missedSpacingBetweenClassMembers',
-   *   extraSpacingBetweenMembers: 'extraSpacingBetweenClassMembers',
-   *   missedCommentAbove: 'missedCommentAboveClassMember'
-   *   }
+   * @example // Class members rule with all message types availableMessageIds:
+   * { unexpectedOrder: 'unexpectedClassesOrder', unexpectedGroupOrder:
+   * 'unexpectedClassesGroupOrder', unexpectedDependencyOrder:
+   * 'unexpectedClassesDependencyOrder', missedSpacingBetweenMembers:
+   * 'missedSpacingBetweenClassMembers', extraSpacingBetweenMembers:
+   * 'extraSpacingBetweenClassMembers', missedCommentAbove:
+   * 'missedCommentAboveClassMember' }
    */
   availableMessageIds: {
-    /** Message when required spacing between members is missing. */
+    /**
+     * Message when required spacing between members is missing.
+     */
     missedSpacingBetweenMembers?: MessageIds
 
-    /** Message when there's extra spacing where it shouldn't be. */
+    /**
+     * Message when there's extra spacing where it shouldn't be.
+     */
     extraSpacingBetweenMembers?: MessageIds
 
-    /** Message when a dependency order is violated. */
+    /**
+     * Message when a dependency order is violated.
+     */
     unexpectedDependencyOrder?: MessageIds
 
-    /** Message when required spacing after all members is missing. */
+    /**
+     * Message when required spacing after all members is missing.
+     */
     missedSpacingAfterMembers?: MessageIds
 
     /**
@@ -63,13 +68,19 @@ interface ReportAllErrorsParameters<
      */
     extraSpacingAfterMembers?: MessageIds
 
-    /** Message when elements are in wrong groups. */
+    /**
+     * Message when elements are in wrong groups.
+     */
     unexpectedGroupOrder: MessageIds
 
-    /** Message when a required comment above a group is missing. */
+    /**
+     * Message when a required comment above a group is missing.
+     */
     missedCommentAbove?: MessageIds
 
-    /** Message for general ordering violations within a group. */
+    /**
+     * Message for general ordering violations within a group.
+     */
     unexpectedOrder: MessageIds
   }
 
@@ -80,19 +91,13 @@ interface ReportAllErrorsParameters<
    * sorting preferences, partition settings, newlines configuration, and custom
    * group definitions.
    *
-   * @example
-   *   options: {
-   *   type: 'alphabetical',
-   *   order: 'asc',
-   *   groups: ['static-property', 'property', 'constructor', 'method'],
-   *   newlinesBetween: 1,
-   *   partitionByComment: true
-   *   }
+   * @example options: { type: 'alphabetical', order: 'asc', groups:
+   * ['static-property', 'property', 'constructor', 'method'], newlinesBetween:
+   * 1, partitionByComment: true }
    */
-  options: Pick<CommonPartitionOptions, 'partitionByComment'> &
-    {
-      newlinesAfter?: 'ignore' | number
-    } & CommonGroupsOptions<string, unknown, unknown>
+  options: Pick<CommonPartitionOptions, 'partitionByComment'> & {
+    newlinesAfter?: 'ignore' | number
+  } & CommonGroupsOptions<string, unknown, unknown>
 
   /**
    * Function to get sorted nodes with or without ESLint-disabled nodes.
@@ -117,20 +122,11 @@ interface ReportAllErrorsParameters<
    * Allows rules to customize spacing logic for special cases, such as overload
    * signatures in TypeScript or getter/setter pairs.
    *
-   * @example
-   *   // Classes: Keep overload signatures together
-   *   newlinesBetweenValueGetter: ({
-   *     left,
-   *     right,
-   *     computedNewlinesBetween,
-   *   }) => {
-   *     if (
-   *       left.overloadSignaturesGroupId === right.overloadSignaturesGroupId
-   *     ) {
-   *       return 0 // No newlines between overloads
-   *     }
-   *     return computedNewlinesBetween
-   *   }
+   * @example // Classes: Keep overload signatures together
+   * newlinesBetweenValueGetter: ({ left, right, computedNewlinesBetween, }) =>
+   * { if ( left.overloadSignaturesGroupId === right.overloadSignaturesGroupId )
+   * { return 0 // No newlines between overloads } return
+   * computedNewlinesBetween }
    *
    * @param params - Context for determining newlines.
    * @returns Number of required newlines or 'ignore'.
@@ -179,23 +175,15 @@ interface ReportAllErrorsParameters<
  * The function uses pairwise comparison to check each adjacent pair of nodes
  * and accumulates all applicable error messages for each violation.
  *
- * @example
- *   // Import statements with violations
- *   import { useState } from 'react' // Should be after React import
- *   import React from 'react' // Group order violation
- *   import type { User } from './types' // Missing newline between groups
+ * @example // Import statements with violations import { useState } from
+ * 'react' // Should be after React import import React from 'react' // Group
+ * order violation import type { User } from './types' // Missing newline
+ * between groups
  *
- * @example
- *   // Object properties with dependency violation
- *   const config = {
- *     apiUrl: process.env.API_URL,
- *     baseUrl: this.apiUrl + '/v1', // Depends on apiUrl
- *     timeout: 5000,
- *     headers: {
- *       Authorization: this.token, // Should be after token definition
- *     },
- *     token: getAuthToken(),
- *   }
+ * @example // Object properties with dependency violation const config = {
+ * apiUrl: process.env.API_URL, baseUrl: this.apiUrl + '/v1', // Depends on
+ * apiUrl timeout: 5000, headers: { Authorization: this.token, // Should be
+ * after token definition }, token: getAuthToken(), }
  *
  * @template MessageIds - Union of available message IDs.
  * @template T - Type of sorting node.
@@ -220,15 +208,16 @@ export function reportAllErrors<
     sortNodesExcludingEslintDisabled(true)
   let nodeIndexMap = createNodeIndexMap(sortedNodes)
   let nodesInCircularDependencies =
-    availableMessageIds.unexpectedDependencyOrder
-      ? computeNodesInCircularDependencies(
-          nodes as unknown as SortingNodeWithDependencies[],
-        )
-      : new Set<SortingNodeWithDependencies>()
+    availableMessageIds.unexpectedDependencyOrder ?
+      computeNodesInCircularDependencies(
+        nodes as unknown as SortingNodeWithDependencies[],
+      )
+    : new Set<SortingNodeWithDependencies>()
 
   pairwise(nodes, (left, right) => {
-    let leftInfo = left
-      ? {
+    let leftInfo =
+      left ?
+        {
           groupIndex: getGroupIndex(options.groups, left),
           index: nodeIndexMap.get(left)!,
         }
@@ -262,10 +251,12 @@ export function reportAllErrors<
         messageIds.push(availableMessageIds.unexpectedDependencyOrder!)
       } else {
         messageIds.push(
-          leftInfo.groupIndex === rightGroupIndex ||
-            !availableMessageIds.unexpectedGroupOrder
-            ? availableMessageIds.unexpectedOrder
-            : availableMessageIds.unexpectedGroupOrder,
+          (
+            leftInfo.groupIndex === rightGroupIndex ||
+              !availableMessageIds.unexpectedGroupOrder
+          ) ?
+            availableMessageIds.unexpectedOrder
+          : availableMessageIds.unexpectedGroupOrder,
         )
       }
     }
@@ -356,18 +347,10 @@ export function reportAllErrors<
  * Nodes in circular dependencies are excluded from this check as they cannot be
  * properly ordered.
  *
- * @example
- *   // TypeScript interface extending another
- *   interface AdminUser extends User {
- *     // This depends on User
- *     permissions: string[]
- *   }
- *   interface User {
- *     // But User appears after AdminUser
- *     id: string
- *     name: string
- *   }
- *   // Returns: AdminUser node (appears before its dependency).
+ * @example // TypeScript interface extending another interface AdminUser
+ * extends User { // This depends on User permissions: string[] } interface User
+ * { // But User appears after AdminUser id: string name: string } // Returns:
+ * AdminUser node (appears before its dependency).
  *
  * @template T - Type of sorting node with dependencies.
  * @param params - Parameters for finding dependent nodes.

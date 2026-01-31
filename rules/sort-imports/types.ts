@@ -40,7 +40,9 @@ export type Options = Partial<
      */
     useExperimentalDependencyDetection: boolean
 
-    /** Number of newlines required after the last sorted element. */
+    /**
+     * Number of newlines required after the last sorted element.
+     */
     newlinesAfter: 'ignore' | number
 
     /**

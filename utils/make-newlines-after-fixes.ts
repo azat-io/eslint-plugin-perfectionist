@@ -5,18 +5,28 @@ import type { SortingNode } from '../types/sorting-node'
 import { makeNewlinesFix } from './make-newlines-fix'
 import { getLinesAfter } from './get-lines-after'
 
-/** Parameters for generating newlines-after fixes. */
+/**
+ * Parameters for generating newlines-after fixes.
+ */
 interface MakeNewlinesAfterFixesParameters {
-  /** Configuration options for groups and newlines. */
+  /**
+   * Configuration options for groups and newlines.
+   */
   options: { newlinesAfter: 'ignore' | number }
 
-  /** Last sorted sorting node. */
+  /**
+   * Last sorted sorting node.
+   */
   lastSortedSortingNode: SortingNode
 
-  /** ESLint source code object for accessing text and locations. */
+  /**
+   * ESLint source code object for accessing text and locations.
+   */
   sourceCode: TSESLint.SourceCode
 
-  /** ESLint fixer object for creating fix operations. */
+  /**
+   * ESLint fixer object for creating fix operations.
+   */
   fixer: TSESLint.RuleFixer
 }
 

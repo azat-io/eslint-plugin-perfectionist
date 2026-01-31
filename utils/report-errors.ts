@@ -53,10 +53,9 @@ interface ReportErrorsParameters<
   MessageIds extends string,
   T extends SortingNode,
 > {
-  options?: Pick<CommonPartitionOptions, 'partitionByComment'> &
-    {
-      newlinesAfter?: 'ignore' | number
-    } & CommonGroupsOptions<string, unknown, unknown>
+  options?: Pick<CommonPartitionOptions, 'partitionByComment'> & {
+    newlinesAfter?: 'ignore' | number
+  } & CommonGroupsOptions<string, unknown, unknown>
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
   context: TSESLint.RuleContext<MessageIds, unknown[]>
   ignoreFirstNodeHighestBlockComment?: boolean

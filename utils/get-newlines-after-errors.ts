@@ -14,19 +14,29 @@ interface GetNewlinesBetweenErrorsParameters<
   MessageIds extends string,
   T extends SortingNode,
 > {
-  /** Configuration options for newlines. */
+  /**
+   * Configuration options for newlines.
+   */
   options: { newlinesAfter: 'ignore' | number }
 
-  /** ESLint source code object for accessing lines. */
+  /**
+   * ESLint source code object for accessing lines.
+   */
   sourceCode: TSESLint.SourceCode
 
-  /** Error message ID for missing required newlines. */
+  /**
+   * Error message ID for missing required newlines.
+   */
   missedSpacingError: MessageIds
 
-  /** Error message ID for extra unwanted newlines. */
+  /**
+   * Error message ID for extra unwanted newlines.
+   */
   extraSpacingError: MessageIds
 
-  /** Sorting node in the comparison. */
+  /**
+   * Sorting node in the comparison.
+   */
   sortingNode: T
 }
 

@@ -20,10 +20,9 @@ interface MakeFixesParameters<T extends SortingNode> {
   /**
    * Optional configuration for various sorting behaviors.
    */
-  options?: Pick<CommonPartitionOptions, 'partitionByComment'> &
-    {
-      newlinesAfter?: 'ignore' | number
-    } & CommonGroupsOptions<string, unknown, unknown>
+  options?: Pick<CommonPartitionOptions, 'partitionByComment'> & {
+    newlinesAfter?: 'ignore' | number
+  } & CommonGroupsOptions<string, unknown, unknown>
 
   /**
    * Optional function to customize newlines between specific nodes.
