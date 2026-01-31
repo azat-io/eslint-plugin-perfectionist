@@ -9,19 +9,28 @@ import type { TSESLint } from '@typescript-eslint/utils'
  * This is useful for sorting and matching decorators by their base name.
  *
  * @example
- *   // Simple decorator
- *   getDecoratorName({ sourceCode, decorator: @Component });
- *   // Returns: 'Component'
+ *
+ * ```ts
+ * // Simple decorator
+ * getDecoratorName({ sourceCode, decorator: @Component });
+ * // Returns: 'Component'
+ * ```
  *
  * @example
- *   // Decorator with parameters
- *   getDecoratorName({ sourceCode, decorator: @Injectable({ providedIn: 'root' }) });
- *   // Returns: 'Injectable'
+ *
+ * ```ts
+ * // Decorator with parameters
+ * getDecoratorName({ sourceCode, decorator: @Injectable({ providedIn: 'root' }) });
+ * // Returns: 'Injectable'
+ * ```
  *
  * @example
- *   // Namespaced decorator
- *   getDecoratorName({ sourceCode, decorator: @angular.Component() });
- *   // Returns: 'angular.Component'
+ *
+ * ```ts
+ * // Namespaced decorator
+ * getDecoratorName({ sourceCode, decorator: @angular.Component() });
+ * // Returns: 'angular.Component'
+ * ```
  *
  * @param params - Parameters object.
  * @param params.sourceCode - ESLint source code object for text extraction.

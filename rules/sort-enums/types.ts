@@ -24,7 +24,9 @@ export type Options = Partial<
      */
     sortByValue: 'ifNumericEnum' | 'always' | 'never'
 
-    /** Enables experimental dependency detection. */
+    /**
+     * Enables experimental dependency detection.
+     */
     useExperimentalDependencyDetection: boolean
   } & AllCommonOptions<
     TypeOption,
@@ -38,7 +40,9 @@ export interface SortEnumsSortingNode extends SortingNodeWithDependencies<TSESTr
   value: string | null
 }
 
-/** Match options for a custom group. */
+/**
+ * Match options for a custom group.
+ */
 interface CustomGroupMatchOptions {
   /**
    * Regular expression pattern to match enum member values. Members with values

@@ -53,7 +53,11 @@
   })
 </script>
 
-<ul aria-orientation="horizontal" role="tablist" class="tabs">
+<ul
+  aria-orientation="horizontal"
+  role="tablist"
+  class="tabs"
+>
   {#each code as codeValue (codeValue)}
     <button
       on:click={() => {

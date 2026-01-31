@@ -150,8 +150,8 @@ function computeMemberExpressionDependencies({
     case AST_NODE_TYPES.ThisExpression:
       return computeIdentifierOrThisExpressionDependencies()
     case AST_NODE_TYPES.Identifier:
-      return memberExpression.object.name === className
-        ? computeIdentifierOrThisExpressionDependencies()
+      return memberExpression.object.name === className ?
+          computeIdentifierOrThisExpressionDependencies()
         : []
     default:
       return []

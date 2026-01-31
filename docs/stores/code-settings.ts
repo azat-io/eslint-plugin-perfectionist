@@ -8,6 +8,7 @@ let initialCodeSettings: Record<string, string> = {
   'config-type': 'legacy',
 }
 
-export let codeSettings: MapStore<Record<string, string>> = import.meta.env.SSR
-  ? map<Record<string, string>>(initialCodeSettings)
+export let codeSettings: MapStore<Record<string, string>> =
+  import.meta.env.SSR ?
+    map<Record<string, string>>(initialCodeSettings)
   : persistentMap<Record<string, string>>('code:', initialCodeSettings)

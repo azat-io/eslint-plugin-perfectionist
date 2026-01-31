@@ -61,8 +61,9 @@ function stripJsx(tree: Node): void {
 
       let parentNode = parent as Parent
       let nodeWithChildren = node as Parent
-      let children = Array.isArray(nodeWithChildren.children)
-        ? nodeWithChildren.children
+      let children =
+        Array.isArray(nodeWithChildren.children) ?
+          nodeWithChildren.children
         : []
 
       parentNode.children.splice(index, 1, ...children)

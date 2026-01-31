@@ -31,7 +31,9 @@ export type Options = Partial<
   >
 >[]
 
-/** Extended sorting node for named import specifiers. */
+/**
+ * Extended sorting node for named import specifiers.
+ */
 export type SortNamedImportsSortingNode = SortingNode<TSESTree.ImportClause>
 
 /**
@@ -48,7 +50,9 @@ export type Modifier = (typeof allModifiers)[number]
  */
 export type Selector = (typeof allSelectors)[number]
 
-/** Match options for a custom group. */
+/**
+ * Match options for a custom group.
+ */
 interface CustomGroupMatchOptions {
   /**
    * Array of modifiers that imports must have to match this group. Can include

@@ -4,7 +4,9 @@ import { validateObjectsInsideGroups } from './validate-objects-inside-groups'
 import { validateNoDuplicatedGroups } from './validate-no-duplicated-groups'
 import { computeGroupsNames } from './compute-groups-names'
 
-/** Parameters for validating generated groups configuration. */
+/**
+ * Parameters for validating generated groups configuration.
+ */
 interface ValidateGenerateGroupsConfigurationParameters {
   options: Pick<
     CommonGroupsOptions<string, unknown, unknown>,
@@ -26,48 +28,57 @@ interface ValidateGenerateGroupsConfigurationParameters {
  * Also validates that there are no duplicate groups.
  *
  * @example
- *   // Valid predefined groups for React imports
- *   validateGeneratedGroupsConfiguration({
- *     options: {
- *       groups: ['react', 'external', 'internal', 'side-effect-import'],
- *       customGroups: [],
- *     },
- *     selectors: ['import', 'export'],
- *     modifiers: ['side-effect', 'type', 'value'],
- *   })
- *   // All groups are valid predefined groups
+ *
+ * ```ts
+ * // Valid predefined groups for React imports
+ * validateGeneratedGroupsConfiguration({
+ *   options: {
+ *     groups: ['react', 'external', 'internal', 'side-effect-import'],
+ *     customGroups: [],
+ *   },
+ *   selectors: ['import', 'export'],
+ *   modifiers: ['side-effect', 'type', 'value'],
+ * })
+ * // All groups are valid predefined groups
+ * ```
  *
  * @example
- *   // Invalid group that doesn't exist
- *   validateGeneratedGroupsConfiguration({
- *     options: {
- *       groups: ['my-special-group'], // Not predefined, not in customGroups
- *       customGroups: [],
- *     },
- *     selectors: ['property', 'method'],
- *     modifiers: ['static', 'private'],
- *   })
- *   // Throws: Error: Invalid group(s): my-special-group
+ *
+ * ```ts
+ * // Invalid group that doesn't exist
+ * validateGeneratedGroupsConfiguration({
+ *   options: {
+ *     groups: ['my-special-group'], // Not predefined, not in customGroups
+ *     customGroups: [],
+ *   },
+ *   selectors: ['property', 'method'],
+ *   modifiers: ['static', 'private'],
+ * })
+ * // Throws: Error: Invalid group(s): my-special-group
+ * ```
  *
  * @example
- *   // Valid with custom groups for class members
- *   validateGeneratedGroupsConfiguration({
- *     options: {
- *       groups: ['static-property', 'constructor', 'lifecycle-methods'],
- *       customGroups: [
- *         {
- *           groupName: 'lifecycle-methods',
- *           elementNamePattern: [
- *             /^componentDidMount$/,
- *             /^componentWillUnmount$/,
- *           ],
- *         },
- *       ],
- *     },
- *     selectors: ['property', 'method', 'constructor'],
- *     modifiers: ['static', 'private', 'public'],
- *   })
- *   // 'static-property' is predefined, 'lifecycle-methods' is custom
+ *
+ * ```ts
+ * // Valid with custom groups for class members
+ * validateGeneratedGroupsConfiguration({
+ *   options: {
+ *     groups: ['static-property', 'constructor', 'lifecycle-methods'],
+ *     customGroups: [
+ *       {
+ *         groupName: 'lifecycle-methods',
+ *         elementNamePattern: [
+ *           /^componentDidMount$/,
+ *           /^componentWillUnmount$/,
+ *         ],
+ *       },
+ *     ],
+ *   },
+ *   selectors: ['property', 'method', 'constructor'],
+ *   modifiers: ['static', 'private', 'public'],
+ * })
+ * // 'static-property' is predefined, 'lifecycle-methods' is custom
+ * ```
  *
  * @param params - Configuration parameters to validate.
  * @throws {Error} If any group is neither predefined nor custom.
@@ -100,27 +111,36 @@ export function validateGroupsConfiguration({
  * extracting the selector (which can be up to 3 words), then the modifiers.
  *
  * @example
- *   // Valid predefined groups
- *   isPredefinedGroup(
- *     ['property', 'method'],
- *     ['static', 'private'],
- *     'static-private-property',
- *   )
- *   // Returns: true (static + private + property)
+ *
+ * ```ts
+ * // Valid predefined groups
+ * isPredefinedGroup(
+ *   ['property', 'method'],
+ *   ['static', 'private'],
+ *   'static-private-property',
+ * )
+ * // Returns: true (static + private + property)
+ * ```
  *
  * @example
- *   // Special 'unknown' group
- *   isPredefinedGroup([], [], 'unknown')
- *   // Returns: true (always valid)
+ *
+ * ```ts
+ * // Special 'unknown' group
+ * isPredefinedGroup([], [], 'unknown')
+ * // Returns: true (always valid)
+ * ```
  *
  * @example
- *   // Invalid group - not matching selectors
- *   isPredefinedGroup(
- *     ['import', 'export'],
- *     ['type', 'value'],
- *     'custom-group',
- *   )
- *   // Returns: false ('group' is not a valid selector)
+ *
+ * ```ts
+ * // Invalid group - not matching selectors
+ * isPredefinedGroup(
+ *   ['import', 'export'],
+ *   ['type', 'value'],
+ *   'custom-group',
+ * )
+ * // Returns: false ('group' is not a valid selector)
+ * ```
  *
  * @param allSelectors - Available selectors for the rule.
  * @param allModifiers - Available modifiers for the rule.
@@ -180,20 +200,26 @@ function isPredefinedGroup(
  * modifiers from group names.
  *
  * @example
- *   // Matching a multi-word selector
- *   computeLongestAllowedWord({
- *     elementsSeparatedWithDash: ['static', 'get', 'accessor'],
- *     allowedValues: ['accessor', 'get-accessor', 'property'],
- *   })
- *   // Returns: { word: 'get-accessor', wordCount: 2 }
+ *
+ * ```ts
+ * // Matching a multi-word selector
+ * computeLongestAllowedWord({
+ *   elementsSeparatedWithDash: ['static', 'get', 'accessor'],
+ *   allowedValues: ['accessor', 'get-accessor', 'property'],
+ * })
+ * // Returns: { word: 'get-accessor', wordCount: 2 }
+ * ```
  *
  * @example
- *   // Matching a single-word modifier
- *   computeLongestAllowedWord({
- *     elementsSeparatedWithDash: ['private', 'static'],
- *     allowedValues: ['static', 'private', 'public'],
- *   })
- *   // Returns: { word: 'static', wordCount: 1 }
+ *
+ * ```ts
+ * // Matching a single-word modifier
+ * computeLongestAllowedWord({
+ *   elementsSeparatedWithDash: ['private', 'static'],
+ *   allowedValues: ['static', 'private', 'public'],
+ * })
+ * // Returns: { word: 'static', wordCount: 1 }
+ * ```
  *
  * @param params - Parameters for word matching.
  * @returns Matched word with its word count, or null if no match.

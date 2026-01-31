@@ -32,7 +32,6 @@ interface Fathom {
 }
 
 declare global {
-  // eslint-disable-next-line prefer-let/prefer-let
   var fathom: undefined | Fathom
 }
 

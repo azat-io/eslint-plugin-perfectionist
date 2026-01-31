@@ -11,7 +11,9 @@ export type Options = Partial<
 export type SortExportAttributesSortingNode =
   SortingNode<TSESTree.ImportAttribute>
 
-/** Match options for a custom group. */
+/**
+ * Match options for a custom group.
+ */
 type CustomGroupMatchOptions = object
 
 type AdditionalSortOptions = object

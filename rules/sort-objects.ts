@@ -68,7 +68,9 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-/** Cache computed groups by modifiers and selectors for performance. */
+/**
+ * Cache computed groups by modifiers and selectors for performance.
+ */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 let defaultOptions: Required<Options[number]> = {
@@ -197,8 +199,9 @@ export default createEslintRule<Options, MessageId>({
         })
 
         let sortingNode: Omit<SortObjectsSortingNode, 'partitionId'> = {
-          dependencies: options.useExperimentalDependencyDetection
-            ? []
+          dependencies:
+            options.useExperimentalDependencyDetection ?
+              []
             : computeDependencies(property),
           isEslintDisabled: isNodeEslintDisabled(property, eslintDisabledLines),
           size: rangeToDiff(property, sourceCode),

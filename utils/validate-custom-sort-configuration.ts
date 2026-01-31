@@ -6,7 +6,9 @@ import type { CommonOptions } from '../types/common-options'
 
 import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 
-/** Options for custom sort configuration validation. */
+/**
+ * Options for custom sort configuration validation.
+ */
 type Options = {
   groups?: CommonGroupsOptions<string, unknown, unknown>['groups']
 } & Pick<CommonOptions, 'alphabet' | 'type'>

@@ -22,19 +22,29 @@ interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
    */
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
 
-  /** Configuration options for groups and newlines. */
+  /**
+   * Configuration options for groups and newlines.
+   */
   options: CommonGroupsOptions<string, unknown, unknown>
 
-  /** ESLint source code object for accessing text and locations. */
+  /**
+   * ESLint source code object for accessing text and locations.
+   */
   sourceCode: TSESLint.SourceCode
 
-  /** ESLint fixer object for creating fix operations. */
+  /**
+   * ESLint fixer object for creating fix operations.
+   */
   fixer: TSESLint.RuleFixer
 
-  /** Array of nodes in their sorted order. */
+  /**
+   * Array of nodes in their sorted order.
+   */
   sortedNodes: T[]
 
-  /** Array of nodes in their original order. */
+  /**
+   * Array of nodes in their original order.
+   */
   nodes: T[]
 }
 
@@ -52,26 +62,34 @@ interface MakeNewlinesBetweenFixesParameters<T extends SortingNode> {
  * - Applies custom newlines getter if provided.
  *
  * @example
- *   // Configuration with newlines between groups
- *   const options = {
- *     groups: ['imports', 'types', 'functions'],
- *     newlinesBetween: 1, // 1 newline between groups
- *   }
  *
- *   // Original: imports and types with no separation
- *   // After fix: adds 1 blank line between import and type groups
+ * ```ts
+ * // Configuration with newlines between groups
+ * const options = {
+ *   groups: ['imports', 'types', 'functions'],
+ *   newlinesBetween: 1, // 1 newline between groups
+ * }
+ *
+ * // Original: imports and types with no separation
+ * // After fix: adds 1 blank line between import and type groups
+ * ```
  *
  * @example
- *   // Custom newlines getter
- *   const newlinesBetweenValueGetter = ({
- *     left,
- *     right,
- *     computedNewlinesBetween,
- *   }) => {
- *     // Add extra newline before main function
- *     if (right.name === 'main') return computedNewlinesBetween + 1
- *     return computedNewlinesBetween
+ *
+ * ```ts
+ * // Custom newlines getter
+ * const newlinesBetweenValueGetter = ({
+ *   left,
+ *   right,
+ *   computedNewlinesBetween,
+ * }) => {
+ *   // Add extra newline before main function
+ *   if (right.name === 'main') {
+ *     return computedNewlinesBetween + 1
  *   }
+ *   return computedNewlinesBetween
+ * }
+ * ```
  *
  * @template T - Type of sorting node.
  * @param params - Parameters for generating newlines fixes.

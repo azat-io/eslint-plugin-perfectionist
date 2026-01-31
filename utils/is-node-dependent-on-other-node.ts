@@ -12,26 +12,29 @@ import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
  * circular dependency issues.
  *
  * @example
- *   const nodeA = {
- *     name: 'userService',
- *     dependencies: ['userService'],
- *     dependencyNames: ['logger', 'database'],
- *   }
  *
- *   const nodeB = {
- *     name: 'logger',
- *     dependencies: ['logger'],
- *     dependencyNames: [],
- *   }
+ * ```ts
+ * const nodeA = {
+ *   name: 'userService',
+ *   dependencies: ['userService'],
+ *   dependencyNames: ['logger', 'database'],
+ * }
  *
- *   isNodeDependentOnOtherNode(nodeA, nodeB)
- *   // Returns: true (userService depends on logger)
+ * const nodeB = {
+ *   name: 'logger',
+ *   dependencies: ['logger'],
+ *   dependencyNames: [],
+ * }
  *
- *   isNodeDependentOnOtherNode(nodeB, nodeA)
- *   // Returns: false (logger doesn't depend on userService)
+ * isNodeDependentOnOtherNode(nodeA, nodeB)
+ * // Returns: true (userService depends on logger)
  *
- *   isNodeDependentOnOtherNode(nodeA, nodeA)
- *   // Returns: false (self-dependency check)
+ * isNodeDependentOnOtherNode(nodeB, nodeA)
+ * // Returns: false (logger doesn't depend on userService)
+ *
+ * isNodeDependentOnOtherNode(nodeA, nodeA)
+ * // Returns: false (self-dependency check)
+ * ```
  *
  * @param sortingNode1 - The node to check for dependencies.
  * @param sortingNode2 - The potential dependency node.

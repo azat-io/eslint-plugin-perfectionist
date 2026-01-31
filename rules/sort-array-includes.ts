@@ -47,7 +47,9 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-/** Cache computed groups by modifiers and selectors for performance. */
+/**
+ * Cache computed groups by modifiers and selectors for performance.
+ */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 const ORDER_ERROR_ID = 'unexpectedArrayIncludesOrder'
@@ -111,9 +113,9 @@ export default createEslintRule<Options, MessageId>({
         node.property.name === 'includes'
       ) {
         let elements =
-          node.object.type === AST_NODE_TYPES.ArrayExpression
-            ? node.object.elements
-            : node.object.arguments
+          node.object.type === AST_NODE_TYPES.ArrayExpression ?
+            node.object.elements
+          : node.object.arguments
         sortArray<MessageId>({
           availableMessageIds: {
             missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
@@ -280,7 +282,7 @@ function getNodeName({
   element: TSESTree.SpreadElement | TSESTree.Expression
   sourceCode: TSESLint.SourceCode
 }): string {
-  return element.type === AST_NODE_TYPES.Literal
-    ? `${element.value}`
+  return element.type === AST_NODE_TYPES.Literal ?
+      `${element.value}`
     : sourceCode.getText(element)
 }

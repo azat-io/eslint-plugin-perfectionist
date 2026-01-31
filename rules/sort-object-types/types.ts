@@ -104,7 +104,9 @@ export type Selector = (typeof allSelectors)[number]
  */
 export type Modifier = (typeof allModifiers)[number]
 
-/** Match options for a custom group. */
+/**
+ * Match options for a custom group.
+ */
 interface CustomGroupMatchOptions {
   /**
    * Regular expression pattern to match against the member's type annotation
@@ -147,7 +149,9 @@ export let allModifiers = ['optional', 'required', 'multiline'] as const
 const SORT_BY_OPTION = ['name', 'value'] as const
 type SortByOption = (typeof SORT_BY_OPTION)[number]
 
-/** Additional sort options JSON schema, used by ESLint to validate rule options. */
+/**
+ * Additional sort options JSON schema, used by ESLint to validate rule options.
+ */
 export let additionalSortOptionsJsonSchema: Record<string, JSONSchema4> = {
   sortBy: {
     enum: [...SORT_BY_OPTION],

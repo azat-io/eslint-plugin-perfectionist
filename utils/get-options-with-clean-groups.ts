@@ -26,23 +26,26 @@ interface GetOptionsWithCleanGroupsParameters<CustomTypeOption extends string> {
  * unnecessary complexity in the configuration.
  *
  * @example
- *   getOptionsWithCleanGroups({
- *     groups: [
- *       'imports',
- *       ['types'], // Single element - will become 'types'
- *       ['hooks', 'utils'], // Multiple elements - preserved as array
- *       [], // Empty - will be removed
- *       'components',
- *     ],
- *   })
- *   // Returns: {
- *   //   groups: [
- *   //     'imports',
- *   //     'types',
- *   //     ['hooks', 'utils'],
- *   //     'components'
- *   //   ]
- *   // }
+ *
+ * ```ts
+ * getOptionsWithCleanGroups({
+ *   groups: [
+ *     'imports',
+ *     ['types'], // Single element - will become 'types'
+ *     ['hooks', 'utils'], // Multiple elements - preserved as array
+ *     [], // Empty - will be removed
+ *     'components',
+ *   ],
+ * })
+ * // Returns: {
+ * //   groups: [
+ * //     'imports',
+ * //     'types',
+ * //     ['hooks', 'utils'],
+ * //     'components'
+ * //   ]
+ * // }
+ * ```
  *
  * @template CustomTypeOption - Custom type option string for GroupsOptions.
  * @template Options - Type of options extending
@@ -75,16 +78,19 @@ export function getOptionsWithCleanGroups<
  * - Empty single-element arrays remain as arrays.
  *
  * @example
- *   getCleanedNestedGroups(['types']) // Returns: 'types'
- *   getCleanedNestedGroups(['a', 'b']) // Returns: ['a', 'b']
- *   getCleanedNestedGroups(['']) // Returns: ['']
+ *
+ * ```ts
+ * getCleanedNestedGroups(['types']) // Returns: 'types'
+ * getCleanedNestedGroups(['a', 'b']) // Returns: ['a', 'b']
+ * getCleanedNestedGroups(['']) // Returns: ['']
+ * ```
  *
  * @param nestedGroup - Array of group names to potentially simplify.
  * @returns Simplified string if single non-empty element, otherwise the
  *   original array.
  */
 function getCleanedNestedGroups(nestedGroup: string[]): string[] | string {
-  return nestedGroup.length === 1 && nestedGroup[0]
-    ? nestedGroup[0]
+  return nestedGroup.length === 1 && nestedGroup[0] ?
+      nestedGroup[0]
     : nestedGroup
 }

@@ -79,9 +79,9 @@ export function computePropertyDetails({
       property,
     }),
     memberValue:
-      !isFunctionExpression(property.value) && property.value
-        ? sourceCode.getText(property.value)
-        : undefined,
+      !isFunctionExpression(property.value) && property.value ?
+        sourceCode.getText(property.value)
+      : undefined,
     selectors: computeSelectors(property),
     isStatic: property.static,
     nameDetails,

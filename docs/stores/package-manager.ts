@@ -9,6 +9,7 @@ type PackageManager = (typeof packageManagers)[number]
 
 let defaultPackageManager: PackageManager = 'npm'
 
-export let packageManager: WritableAtom<PackageManager> = import.meta.env.SSR
-  ? atom<PackageManager>(defaultPackageManager)
+export let packageManager: WritableAtom<PackageManager> =
+  import.meta.env.SSR ?
+    atom<PackageManager>(defaultPackageManager)
   : persistentAtom<PackageManager>('package-manager', defaultPackageManager)

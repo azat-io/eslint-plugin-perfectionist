@@ -11,16 +11,19 @@
  * predecessor to ensure correct ordering.
  *
  * @example
- *   // Common use case: checking sort order
- *   const numbers = [1, 3, 2, 4]
- *   const errors: string[] = []
  *
- *   pairwise(numbers, (left, right) => {
- *     if (left !== null && left > right) {
- *       errors.push(`${left} should come after ${right}`)
- *     }
- *   })
- *   // errors = ['3 should come after 2']
+ * ```ts
+ * // Common use case: checking sort order
+ * const numbers = [1, 3, 2, 4]
+ * const errors: string[] = []
+ *
+ * pairwise(numbers, (left, right) => {
+ *   if (left !== null && left > right) {
+ *     errors.push(`${left} should come after ${right}`)
+ *   }
+ * })
+ * // errors = ['3 should come after 2']
+ * ```
  *
  * @template T - Type of array elements.
  * @param nodes - Array to iterate through.

@@ -11,12 +11,15 @@ import type { TSESTree } from '@typescript-eslint/types'
  *   The fallback keeps backward compatibility with older parser releases.
  *
  * @example
- *   enum Color {
- *     Red = 'RED',
- *     Green = 'GREEN',
- *     Blue = 'BLUE',
- *   }
- *   // Returns array of three TSEnumMember nodes
+ *
+ * ```ts
+ * enum Color {
+ *   Red = 'RED',
+ *   Green = 'GREEN',
+ *   Blue = 'BLUE',
+ * }
+ * // Returns array of three TSEnumMember nodes
+ * ```
  *
  * @param value - TypeScript enum declaration AST node.
  * @returns Array of enum member nodes.

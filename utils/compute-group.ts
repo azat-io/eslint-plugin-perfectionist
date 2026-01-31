@@ -11,7 +11,9 @@ import { computeGroupsNames } from './compute-groups-names'
  * @template CustomGroupMatchOptions - Type of custom group match options.
  */
 interface ComputeGroupParameters<CustomGroupMatchOptions> {
-  /** Configuration options for grouping. */
+  /**
+   * Configuration options for grouping.
+   */
   options: Pick<
     CommonGroupsOptions<string, unknown, CustomGroupMatchOptions>,
     'customGroups' | 'groups'
@@ -48,16 +50,19 @@ type CustomGroupMatcher<MatchOptions> = (
  * Only groups that exist in options.groups are considered valid.
  *
  * @example
- *   const group = computeGroup({
- *     options: {
- *       groups: ['react', 'external', 'internal'],
- *       customGroups: [{ groupName: 'react', anyOf: ['react', 'react-*'] }],
- *     },
- *     customGroupMatcher: customGroup => customGroup.anyOf.includes('react'),
- *     predefinedGroups: ['external'],
- *     name: 'react-dom',
- *   })
- *   // Returns: 'react'
+ *
+ * ```ts
+ * const group = computeGroup({
+ *   options: {
+ *     groups: ['react', 'external', 'internal'],
+ *     customGroups: [{ groupName: 'react', anyOf: ['react', 'react-*'] }],
+ *   },
+ *   customGroupMatcher: customGroup => customGroup.anyOf.includes('react'),
+ *   predefinedGroups: ['external'],
+ *   name: 'react-dom',
+ * })
+ * // Returns: 'react'
+ * ```
  *
  * @template CustomGroupMatchOptions - Type of custom group match options.
  * @param params - Parameters for group computation.

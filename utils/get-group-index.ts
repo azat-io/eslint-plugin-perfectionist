@@ -24,14 +24,17 @@ type Group = GroupsOptions[number]
  * "unknown" group and ensures such nodes are sorted last.
  *
  * @example
- *   const groups = ['imports', ['types', 'interfaces'], 'functions']
- *   const node1 = { group: 'imports', name: 'lodash' }
- *   const node2 = { group: 'types', name: 'User' }
- *   const node3 = { group: 'unknown-group', name: 'misc' }
  *
- *   getGroupIndex(groups, node1) // Returns: 0
- *   getGroupIndex(groups, node2) // Returns: 1 (matches subgroup)
- *   getGroupIndex(groups, node3) // Returns: 3 (groups.length, unknown group)
+ * ```ts
+ * const groups = ['imports', ['types', 'interfaces'], 'functions']
+ * const node1 = { group: 'imports', name: 'lodash' }
+ * const node2 = { group: 'types', name: 'User' }
+ * const node3 = { group: 'unknown-group', name: 'misc' }
+ *
+ * getGroupIndex(groups, node1) // Returns: 0
+ * getGroupIndex(groups, node2) // Returns: 1 (matches subgroup)
+ * getGroupIndex(groups, node3) // Returns: 3 (groups.length, unknown group)
+ * ```
  *
  * @param groups - Array of group configurations (strings or arrays of strings).
  * @param node - Sorting node with a group property to match.

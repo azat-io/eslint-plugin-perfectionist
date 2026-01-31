@@ -9,7 +9,11 @@ interface Props {
 let { class: className, title, url, ...props } = Astro.props
 ---
 
-<a class:list={['link', className]} href={url} {...props}>
+<a
+  class:list={['link', className]}
+  href={url}
+  {...props}
+>
   <slot name="icon" />
   <div class="content">
     {title && <span class="title">{title}</span>}

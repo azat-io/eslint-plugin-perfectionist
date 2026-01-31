@@ -32,29 +32,40 @@ let currentPageIndex = flatPages.findIndex(page => page.url === activeLink)
 let previousPage =
   currentPageIndex === 0 ? null : flatPages[currentPageIndex - 1]
 let nextPage =
-  currentPageIndex === flatPages.length - 1
-    ? null
-    : flatPages[currentPageIndex + 1]
+  currentPageIndex === flatPages.length - 1 ?
+    null
+  : flatPages[currentPageIndex + 1]
 ---
 
 <div class="additional">
   {
-    previousPage ? (
+    previousPage ?
       <div class="previous-wrapper">
-        <ContentFooterLink url={previousPage.url} title="Previous page">
-          <IconArrowLeft class="icon" slot="icon" />
+        <ContentFooterLink
+          url={previousPage.url}
+          title="Previous page"
+        >
+          <IconArrowLeft
+            class="icon"
+            slot="icon"
+          />
           {previousPage.title}
         </ContentFooterLink>
       </div>
-    ) : (
-      <div class="previous-empty" />
-    )
+    : <div class="previous-empty" />
   }
   {
     nextPage && (
       <div class="next-wrapper">
-        <ContentFooterLink url={nextPage.url} title="Next page" class="next">
-          <IconArrowRight class="icon" slot="icon" />
+        <ContentFooterLink
+          url={nextPage.url}
+          title="Next page"
+          class="next"
+        >
+          <IconArrowRight
+            class="icon"
+            slot="icon"
+          />
           {nextPage.title}
         </ContentFooterLink>
       </div>

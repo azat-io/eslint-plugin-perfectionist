@@ -18,7 +18,9 @@ body:
     id: code-example
     attributes:
       label: Code example
-      description: Please show the code with which you have a bug when using the current plugin.
+      description:
+        Please show the code with which you have a bug when using the current
+        plugin.
     validations:
       required: true
 
@@ -49,9 +51,13 @@ body:
     id: checkboxes
     attributes:
       label: Validations
-      description: Before submitting the issue, please make sure you do the following
+      description:
+        Before submitting the issue, please make sure you do the following
       options:
         - label: Read the [docs](https://perfectionist.dev).
           required: true
-        - label: Check that there isn't [already an issue](https://github.com/azat-io/eslint-plugin-perfectionist/issues) that reports the same bug to avoid creating a duplicate.
+        - label:
+            Check that there isn't [already an
+            issue](https://github.com/azat-io/eslint-plugin-perfectionist/issues)
+            that reports the same bug to avoid creating a duplicate.
           required: true

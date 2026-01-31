@@ -8,8 +8,15 @@ interface Props {
 let { class: className, ...props } = Astro.props
 ---
 
-<CodeStyleFigure class:list={[className]} title="Input" {...props}>
-  <svg viewBox="0 0 333 308" class="image">
+<CodeStyleFigure
+  class:list={[className]}
+  title="Input"
+  {...props}
+>
+  <svg
+    viewBox="0 0 333 308"
+    class="image"
+  >
     <rect
       fill="var(--color-content-brand)"
       width="101"
@@ -142,7 +149,8 @@ let { class: className, ...props } = Astro.props
       height="10"
       x="116"
       y="188"
-      rx="3"></rect>
+      rx="3"
+    ></rect>
     <rect
       fill="var(--color-content-tertiary)"
       height="10"
@@ -203,7 +211,8 @@ let { class: className, ...props } = Astro.props
       height="10"
       x="140"
       y="248"
-      rx="3"></rect>
+      rx="3"
+    ></rect>
     <rect
       fill="var(--color-content-brand)"
       height="10"
@@ -228,7 +237,8 @@ let { class: className, ...props } = Astro.props
       width="20"
       x="129"
       y="108"
-      rx="3"></rect>
+      rx="3"
+    ></rect>
     <rect
       fill="var(--color-content-tertiary)"
       height="10"

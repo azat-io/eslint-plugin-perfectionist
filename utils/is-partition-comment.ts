@@ -6,7 +6,9 @@ import type { RegexOption } from '../types/common-options'
 import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 import { matches } from './matches'
 
-/** Parameters for checking if a comment is a partition comment. */
+/**
+ * Parameters for checking if a comment is a partition comment.
+ */
 interface IsPartitionCommentParameters {
   /**
    * Configuration for partition comments. Can be boolean, string/regex pattern,
@@ -14,7 +16,9 @@ interface IsPartitionCommentParameters {
    */
   partitionByComment: PartitionByCommentOption
 
-  /** The comment node to check. */
+  /**
+   * The comment node to check.
+   */
   comment: TSESTree.Comment
 }
 
@@ -37,30 +41,39 @@ interface IsPartitionCommentParameters {
  * interfering with ESLint's functionality.
  *
  * @example
- *   // Configuration: partitionByComment: true
- *   isPartitionComment({ partitionByComment: true, comment })
- *   // Returns: true for any non-ESLint-disable comment
+ *
+ * ```ts
+ * // Configuration: partitionByComment: true
+ * isPartitionComment({ partitionByComment: true, comment })
+ * // Returns: true for any non-ESLint-disable comment
+ * ```
  *
  * @example
- *   // Configuration: partitionByComment: 'Section:'
- *   const comment = { value: ' Section: Utils ', type: 'Line' }
- *   isPartitionComment({ partitionByComment: 'Section:', comment })
- *   // Returns: true (comment contains 'Section:')
+ *
+ * ```ts
+ * // Configuration: partitionByComment: 'Section:'
+ * const comment = { value: ' Section: Utils ', type: 'Line' }
+ * isPartitionComment({ partitionByComment: 'Section:', comment })
+ * // Returns: true (comment contains 'Section:')
+ * ```
  *
  * @example
- *   // Configuration: partitionByComment: { block: true, line: '^-' }
- *   const blockComment = { value: ' Helper functions ', type: 'Block' }
- *   const lineComment = { value: '--- Utils ---', type: 'Line' }
- *   isPartitionComment({
- *     partitionByComment: { block: true, line: '^-' },
- *     comment: blockComment,
- *   })
- *   // Returns: true (all block comments are partitions)
- *   isPartitionComment({
- *     partitionByComment: { block: true, line: '^-' },
- *     comment: lineComment,
- *   })
- *   // Returns: true (line comment starts with '-')
+ *
+ * ```ts
+ * // Configuration: partitionByComment: { block: true, line: '^-' }
+ * const blockComment = { value: ' Helper functions ', type: 'Block' }
+ * const lineComment = { value: '--- Utils ---', type: 'Line' }
+ * isPartitionComment({
+ *   partitionByComment: { block: true, line: '^-' },
+ *   comment: blockComment,
+ * })
+ * // Returns: true (all block comments are partitions)
+ * isPartitionComment({
+ *   partitionByComment: { block: true, line: '^-' },
+ *   comment: lineComment,
+ * })
+ * // Returns: true (line comment starts with '-')
+ * ```
  *
  * @param params - Parameters for partition check.
  * @returns True if the comment is a partition separator, false otherwise.

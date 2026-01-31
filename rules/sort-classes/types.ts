@@ -27,7 +27,9 @@ export type Options = [
        */
       ignoreCallbackDependenciesPatterns: RegexOption
 
-      /** Enables experimental dependency detection. */
+      /**
+       * Enables experimental dependency detection.
+       */
       useExperimentalDependencyDetection: boolean
     } & AllCommonOptions<
       TypeOption,
@@ -74,7 +76,9 @@ export type Modifier = (typeof allModifiers)[number]
  * decorators.
  */
 interface CustomGroupMatchOptions {
-  /** Pattern to match decorator names (e.g., '@Component'). */
+  /**
+   * Pattern to match decorator names (e.g., '@Component').
+   */
   decoratorNamePattern?: RegexOption
 
   /**
@@ -83,10 +87,14 @@ interface CustomGroupMatchOptions {
    */
   elementValuePattern?: RegexOption
 
-  /** List of modifiers that members must have to be included in this group. */
+  /**
+   * List of modifiers that members must have to be included in this group.
+   */
   modifiers?: Modifier[]
 
-  /** The type of class member this group applies to. */
+  /**
+   * The type of class member this group applies to.
+   */
   selector?: Selector
 }
 

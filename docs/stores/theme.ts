@@ -13,8 +13,9 @@ if (
   systemTheme = 'dark'
 }
 
-export let theme: WritableAtom<Theme> = import.meta.env.SSR
-  ? atom<Theme>(systemTheme)
+export let theme: WritableAtom<Theme> =
+  import.meta.env.SSR ?
+    atom<Theme>(systemTheme)
   : persistentAtom<Theme>('theme', systemTheme)
 
 export function toggleTheme(): void {

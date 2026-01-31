@@ -44,10 +44,13 @@ export type Selector = (typeof allSelectors)[number]
  * grouped and sorted based on their module names, selectors, and modifiers.
  *
  * @example
- *   {
- *     "modifiers": ["type"],
- *     "selector": "export"
- *   }
+ *
+ * ```ts
+ * {
+ *   "modifiers": ["type"],
+ *   "selector": "export"
+ * }
+ * ```
  */
 interface CustomGroupMatchOptions {
   /**

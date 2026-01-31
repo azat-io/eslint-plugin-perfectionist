@@ -32,19 +32,25 @@ export type Settings = Partial<
  * configuration settings.
  *
  * @example
- *   // Valid usage:
- *   const settings = getSettings(context.settings)
- *   // Returns: { type: 'natural', order: 'asc', ignoreCase: true }
+ *
+ * ```ts
+ * // Valid usage:
+ * const settings = getSettings(context.settings)
+ * // Returns: { type: 'natural', order: 'asc', ignoreCase: true }
+ * ```
  *
  * @example
- *   // Invalid setting throws error:
- *   getSettings({
- *     perfectionist: {
- *       type: 'natural',
- *       invalidOption: true, // This will throw
- *     },
- *   })
- *   // Throws: Error: Invalid Perfectionist setting(s): invalidOption
+ *
+ * ```ts
+ * // Invalid setting throws error:
+ * getSettings({
+ *   perfectionist: {
+ *     type: 'natural',
+ *     invalidOption: true, // This will throw
+ *   },
+ * })
+ * // Throws: Error: Invalid Perfectionist setting(s): invalidOption
+ * ```
  *
  * @param settings - ESLint shared configuration settings object.
  * @returns Validated Perfectionist settings or empty object if none configured.

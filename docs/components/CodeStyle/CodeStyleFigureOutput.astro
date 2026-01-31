@@ -8,8 +8,15 @@ interface Props {
 let { class: className, ...props } = Astro.props
 ---
 
-<CodeStyleFigure class:list={className} title="Output" {...props}>
-  <svg viewBox="0 0 333 308" class="image">
+<CodeStyleFigure
+  class:list={className}
+  title="Output"
+  {...props}
+>
+  <svg
+    viewBox="0 0 333 308"
+    class="image"
+  >
     <rect
       fill="var(--color-content-brand)"
       width="101"

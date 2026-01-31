@@ -22,7 +22,9 @@ export type Options = Partial<
  */
 export type Selector = (typeof allSelectors)[number]
 
-/** Match options for a custom group. */
+/**
+ * Match options for a custom group.
+ */
 interface CustomGroupMatchOptions {
   /**
    * The selector type this group matches. Determines what kind of type members

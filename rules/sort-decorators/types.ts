@@ -20,7 +20,9 @@ export type Options = Partial<
 
 export type SortDecoratorsSortingNode = SortingNode<TSESTree.Decorator>
 
-/** Match options for a custom group. */
+/**
+ * Match options for a custom group.
+ */
 type CustomGroupMatchOptions = object
 
 type AdditionalSortOptions = object

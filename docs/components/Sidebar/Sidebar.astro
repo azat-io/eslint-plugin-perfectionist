@@ -10,7 +10,10 @@ interface Props {
 let { isMobileOnly = false } = Astro.props
 ---
 
-<aside class:list={['sidebar', isMobileOnly && 'menu-mobile-only']} id="menu">
+<aside
+  class:list={['sidebar', isMobileOnly && 'menu-mobile-only']}
+  id="menu"
+>
   <header class="header">
     <button
       aria-label="Toggle navigation"
@@ -23,7 +26,10 @@ let { isMobileOnly = false } = Astro.props
   </header>
   {
     pages.map(linkBlock => (
-      <SidebarLinkBlock class="menu-item" {...linkBlock} />
+      <SidebarLinkBlock
+        class="menu-item"
+        {...linkBlock}
+      />
     ))
   }
 </aside>

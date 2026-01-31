@@ -12,17 +12,20 @@ import type {
  * option.
  *
  * @example
- *   const groups = [
- *     'imports',
- *     { group: 'foo', commentAbove: '// Components' },
- *     'components',
- *     { newlinesBetween: 1 },
- *     'utils',
- *   ]
  *
- *   isGroupWithOverridesOption(groups[0]) // false (string)
- *   isGroupWithOverridesOption(groups[1]) // true
- *   isGroupWithOverridesOption(groups[3]) // false (newlines option)
+ * ```ts
+ * const groups = [
+ *   'imports',
+ *   { group: 'foo', commentAbove: '// Components' },
+ *   'components',
+ *   { newlinesBetween: 1 },
+ *   'utils',
+ * ]
+ *
+ * isGroupWithOverridesOption(groups[0]) // false (string)
+ * isGroupWithOverridesOption(groups[1]) // true
+ * isGroupWithOverridesOption(groups[3]) // false (newlines option)
+ * ```
  *
  * @param groupOption - A single element from the groups configuration array.
  * @returns True if the element is a group with overrides configuration object.

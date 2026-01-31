@@ -13,12 +13,15 @@ import type { Settings } from './get-settings'
  * settings always override defaults.
  *
  * @example
- *   const finalOptions = complete(
- *     { type: 'natural' }, // User options (highest priority)
- *     { order: 'asc' }, // Global settings
- *     { type: 'alphabetical', order: 'desc' }, // Defaults (lowest priority)
- *   )
- *   // Returns: { type: 'natural', order: 'asc' }
+ *
+ * ```ts
+ * const finalOptions = complete(
+ *   { type: 'natural' }, // User options (highest priority)
+ *   { order: 'asc' }, // Global settings
+ *   { type: 'alphabetical', order: 'desc' }, // Defaults (lowest priority)
+ * )
+ * // Returns: { type: 'natural', order: 'asc' }
+ * ```
  *
  * @template T - Type of the configuration object.
  * @param options - Rule-specific options provided by the user (highest

@@ -26,15 +26,15 @@ function computeImportDeclarationModifiers(
   let importClauses = node.specifiers
 
   return [
-    ...(hasSpecifier(importClauses, AST_NODE_TYPES.ImportDefaultSpecifier)
-      ? ['default' as const]
-      : []),
-    ...(hasSpecifier(importClauses, AST_NODE_TYPES.ImportNamespaceSpecifier)
-      ? ['wildcard' as const]
-      : []),
-    ...(hasSpecifier(importClauses, AST_NODE_TYPES.ImportSpecifier)
-      ? ['named' as const]
-      : []),
+    ...(hasSpecifier(importClauses, AST_NODE_TYPES.ImportDefaultSpecifier) ?
+      ['default' as const]
+    : []),
+    ...(hasSpecifier(importClauses, AST_NODE_TYPES.ImportNamespaceSpecifier) ?
+      ['wildcard' as const]
+    : []),
+    ...(hasSpecifier(importClauses, AST_NODE_TYPES.ImportSpecifier) ?
+      ['named' as const]
+    : []),
   ]
 }
 

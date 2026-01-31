@@ -75,7 +75,9 @@ import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
 
-/** Cache computed groups by modifiers and selectors for performance. */
+/**
+ * Cache computed groups by modifiers and selectors for performance.
+ */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 const ORDER_ERROR_ID = 'unexpectedImportsOrder'
@@ -149,8 +151,9 @@ export default createEslintRule<Options, MessageId>({
     validateSideEffectsConfiguration(options)
 
     let tsconfigRootDirectory = options.tsconfig.rootDir
-    let tsConfigOutput = tsconfigRootDirectory
-      ? readClosestTsConfigByPath({
+    let tsConfigOutput =
+      tsconfigRootDirectory ?
+        readClosestTsConfigByPath({
           tsconfigFilename: options.tsconfig.filename ?? 'tsconfig.json',
           tsconfigRootDir: tsconfigRootDirectory,
           filePath: context.physicalFilename,
@@ -267,8 +270,9 @@ export default createEslintRule<Options, MessageId>({
           isSideEffect &&
           !shouldRegroupSideEffectNodes &&
           (!isStyleSideEffect || !shouldRegroupSideEffectStyleNodes),
-        dependencies: options.useExperimentalDependencyDetection
-          ? []
+        dependencies:
+          options.useExperimentalDependencyDetection ?
+            []
           : computeDependencies(node),
         isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
         dependencyNames: computeDependencyNames({ sourceCode, node }),

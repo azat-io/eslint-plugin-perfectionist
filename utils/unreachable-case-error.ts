@@ -11,22 +11,25 @@
  * to existing types - TypeScript will error if a new case isn't handled.
  *
  * @example
- *   // Exhaustive handling of sorting types
- *   function getSortingAlgorithm(
- *     type: 'alphabetical' | 'natural' | 'custom',
- *   ) {
- *     switch (type) {
- *       case 'alphabetical':
- *         return alphabeticalSort
- *       case 'natural':
- *         return naturalSort
- *       case 'custom':
- *         return customSort
- *       default:
- *         throw new UnreachableCaseError(type)
- *       // TypeScript ensures 'type' is 'never' here
- *     }
+ *
+ * ```ts
+ * // Exhaustive handling of sorting types
+ * function getSortingAlgorithm(
+ *   type: 'alphabetical' | 'natural' | 'custom',
+ * ) {
+ *   switch (type) {
+ *     case 'alphabetical':
+ *       return alphabeticalSort
+ *     case 'natural':
+ *       return naturalSort
+ *     case 'custom':
+ *       return customSort
+ *     default:
+ *       throw new UnreachableCaseError(type)
+ *     // TypeScript ensures 'type' is 'never' here
  *   }
+ * }
+ * ```
  */
 export class UnreachableCaseError extends Error {
   /**

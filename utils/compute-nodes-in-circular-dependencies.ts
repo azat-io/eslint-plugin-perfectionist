@@ -17,13 +17,16 @@ import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
  * "visiting" state, meaning we've found a back edge in the graph.
  *
  * @example
- *   const nodes = [
- *     { name: 'A', dependencies: ['B'], dependencyNames: ['A'] },
- *     { name: 'B', dependencies: ['C'], dependencyNames: ['B'] },
- *     { name: 'C', dependencies: ['A'], dependencyNames: ['C'] },
- *   ]
- *   const circularNodes = computeNodesInCircularDependencies(nodes)
- *   // Returns: Set containing all three nodes (A, B, C)
+ *
+ * ```ts
+ * const nodes = [
+ *   { name: 'A', dependencies: ['B'], dependencyNames: ['A'] },
+ *   { name: 'B', dependencies: ['C'], dependencyNames: ['B'] },
+ *   { name: 'C', dependencies: ['A'], dependencyNames: ['C'] },
+ * ]
+ * const circularNodes = computeNodesInCircularDependencies(nodes)
+ * // Returns: Set containing all three nodes (A, B, C)
+ * ```
  *
  * @template T - Type of sorting node with dependencies.
  * @param elements - Array of nodes with dependency information.

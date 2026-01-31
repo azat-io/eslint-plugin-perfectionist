@@ -7,18 +7,21 @@
  * in the plugin.
  *
  * @example
- *   const options: CommonOptions = {
- *     type: 'natural',
+ *
+ * ```ts
+ * const options: CommonOptions = {
+ *   type: 'natural',
+ *   order: 'asc',
+ *   ignoreCase: true,
+ *   alphabet: '',
+ *   locales: 'en-US',
+ *   specialCharacters: 'keep',
+ *   fallbackSort: {
+ *     type: 'alphabetical',
  *     order: 'asc',
- *     ignoreCase: true,
- *     alphabet: '',
- *     locales: 'en-US',
- *     specialCharacters: 'keep',
- *     fallbackSort: {
- *       type: 'alphabetical',
- *       order: 'asc',
- *     },
- *   }
+ *   },
+ * }
+ * ```
  */
 export type CommonOptions<
   CustomTypeOption extends string = string,
@@ -82,14 +85,20 @@ export type CommonOptions<
  * content and use cases.
  *
  * @example
- *   // Natural sorting for version numbers
- *   const type: TypeOption = 'natural'
- *   // Sorts: ['v1.0', 'v2.0', 'v10.0'] (not ['v1.0', 'v10.0', 'v2.0'])
+ *
+ * ```ts
+ * // Natural sorting for version numbers
+ * const type: TypeOption = 'natural'
+ * // Sorts: ['v1.0', 'v2.0', 'v10.0'] (not ['v1.0', 'v10.0', 'v2.0'])
+ * ```
  *
  * @example
- *   // Line length for visual hierarchy
- *   const type: TypeOption = 'line-length'
- *   // Shorter lines appear before longer lines
+ *
+ * ```ts
+ * // Line length for visual hierarchy
+ * const type: TypeOption = 'line-length'
+ * // Shorter lines appear before longer lines
+ * ```
  */
 export type TypeOption =
   /**
@@ -135,22 +144,31 @@ export type TypeOption =
  * string patterns to complex regular expressions with flags.
  *
  * @example
- *   // Simple string pattern
- *   const pattern: RegexOption = '^TODO:'
+ *
+ * ```ts
+ * // Simple string pattern
+ * const pattern: RegexOption = '^TODO:'
+ * ```
  *
  * @example
- *   // Pattern with flags
- *   const pattern: RegexOption = {
- *     pattern: '^(TODO|FIXME):',
- *     flags: 'i',
- *   }
+ *
+ * ```ts
+ * // Pattern with flags
+ * const pattern: RegexOption = {
+ *   pattern: '^(TODO|FIXME):',
+ *   flags: 'i',
+ * }
+ * ```
  *
  * @example
- *   // Multiple patterns (OR logic)
- *   const patterns: RegexOption = [
- *     '^TODO:',
- *     { pattern: '^FIXME:', flags: 'i' },
- *   ]
+ *
+ * ```ts
+ * // Multiple patterns (OR logic)
+ * const patterns: RegexOption = [
+ *   '^TODO:',
+ *   { pattern: '^FIXME:', flags: 'i' },
+ * ]
+ * ```
  */
 export type RegexOption<AdditionalProperties extends object = object> =
   | SingleRegexOption<AdditionalProperties>[]
@@ -163,12 +181,18 @@ export type RegexOption<AdditionalProperties extends object = object> =
  * allowing control over whether special characters affect sort order.
  *
  * @example
- *   // With 'remove': '_abc' and 'abc' are treated as identical
- *   const option: SpecialCharactersOption = 'remove'
+ *
+ * ```ts
+ * // With 'remove': '_abc' and 'abc' are treated as identical
+ * const option: SpecialCharactersOption = 'remove'
+ * ```
  *
  * @example
- *   // With 'trim': '_abc' becomes 'abc', but 'a_bc' stays 'a_bc'
- *   const option: SpecialCharactersOption = 'trim'
+ *
+ * ```ts
+ * // With 'trim': '_abc' becomes 'abc', but 'a_bc' stays 'a_bc'
+ * const option: SpecialCharactersOption = 'trim'
+ * ```
  */
 type SpecialCharactersOption =
   /**
@@ -222,10 +246,13 @@ type SingleRegexOption<AdditionalProperties> =
  * tiebreaker.
  *
  * @example
- *   const fallback: FallbackSortOption = {
- *     type: 'alphabetical',
- *     order: 'asc',
- *   }
+ *
+ * ```ts
+ * const fallback: FallbackSortOption = {
+ *   type: 'alphabetical',
+ *   order: 'asc',
+ * }
+ * ```
  */
 type FallbackSortOption<
   CustomTypeOption extends string,
@@ -252,12 +279,18 @@ type FallbackSortOption<
  * algorithm.
  *
  * @example
- *   // Ascending: A → Z, 0 → 9
- *   const order: OrderOption = 'asc'
+ *
+ * ```ts
+ * // Ascending: A → Z, 0 → 9
+ * const order: OrderOption = 'asc'
+ * ```
  *
  * @example
- *   // Descending: Z → A, 9 → 0
- *   const order: OrderOption = 'desc'
+ *
+ * ```ts
+ * // Descending: Z → A, 9 → 0
+ * const order: OrderOption = 'desc'
+ * ```
  */
 type OrderOption =
   /**

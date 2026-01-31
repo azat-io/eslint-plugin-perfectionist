@@ -18,13 +18,13 @@ type NodeWithDecorator = {
  * are undefined, ensuring consistent behavior across different AST structures.
  *
  * @example
- *   // Class with decorators
  *
- * @example
- *   // Node without decorators
- *   const plainMethod = { type: 'MethodDefinition', ... };
- *   getNodeDecorators(plainMethod);
- *   // Returns: []
+ * ```ts
+ * // Node without decorators
+ * const plainMethod = { type: 'MethodDefinition', ... };
+ * getNodeDecorators(plainMethod);
+ * // Returns: []
+ * ```
  *
  * @param node - AST node that may contain decorators.
  * @returns Array of decorator nodes, empty array if none exist.

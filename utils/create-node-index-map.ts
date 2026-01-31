@@ -11,14 +11,17 @@ import type { SortingNode } from '../types/sorting-node'
  * messages for incorrectly sorted elements.
  *
  * @example
- *   const nodes = [
- *     { name: 'foo', node: fooNode },
- *     { name: 'bar', node: barNode },
- *     { name: 'baz', node: bazNode },
- *   ]
- *   const indexMap = createNodeIndexMap(nodes)
- *   indexMap.get(nodes[0]) // Returns: 0
- *   indexMap.get(nodes[2]) // Returns: 2
+ *
+ * ```ts
+ * const nodes = [
+ *   { name: 'foo', node: fooNode },
+ *   { name: 'bar', node: barNode },
+ *   { name: 'baz', node: bazNode },
+ * ]
+ * const indexMap = createNodeIndexMap(nodes)
+ * indexMap.get(nodes[0]) // Returns: 0
+ * indexMap.get(nodes[2]) // Returns: 2
+ * ```
  *
  * @template Node - Type of the AST node.
  * @param nodes - Array of sorting nodes in their sorted order.

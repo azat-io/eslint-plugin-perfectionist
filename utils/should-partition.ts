@@ -11,7 +11,9 @@ import { isPartitionComment } from './is-partition-comment'
 import { getCommentsBefore } from './get-comments-before'
 import { getLinesBetween } from './get-lines-between'
 
-/** Parameters for determining if a new partition should start. */
+/**
+ * Parameters for determining if a new partition should start.
+ */
 interface ShouldPartitionParameters {
   lastSortingNode: Pick<SortingNode, 'node'> | undefined
   sortingNode: Pick<SortingNode, 'node'>
@@ -33,35 +35,44 @@ interface ShouldPartitionParameters {
  * - An empty line exists between nodes (when partitionByNewLine is enabled).
  *
  * @example
- *   // React component with partition comments
- *   import React from 'react'
- *   import { useState, useEffect } from 'react'
- *   // --- Utils ---  <- This comment creates a partition
- *   import { formatDate } from './utils/date'
- *   import { apiClient } from './utils/api'
+ *
+ * ```ts
+ * // React component with partition comments
+ * import React from 'react'
+ * import { useState, useEffect } from 'react'
+ * // --- Utils ---  <- This comment creates a partition
+ * import { formatDate } from './utils/date'
+ * import { apiClient } from './utils/api'
+ * ```
  *
  * @example
- *   // Object with newline partitions
- *   const config = {
- *     // API settings
- *     apiUrl: 'https://api.example.com',
- *     timeout: 5000,
- *     // <- Empty line creates partition
- *     // UI settings
- *     theme: 'dark',
- *     language: 'en',
- *   }
+ *
+ * ```ts
+ * // Object with newline partitions
+ * const config = {
+ *   // API settings
+ *   apiUrl: 'https://api.example.com',
+ *   timeout: 5000,
+ *   // <- Empty line creates partition
+ *   // UI settings
+ *   theme: 'dark',
+ *   language: 'en',
+ * }
+ * ```
  *
  * @example
- *   // Class members with sections
- *   class UserService {
- *   private cache: Map<string, User>;
- *   private logger: Logger;
  *
- *   // Public methods section
- *   async getUser(id: string) { ... }
- *   async updateUser(id: string, data: Partial<User>) { ... }
- *   }
+ * ```ts
+ * // Class members with sections
+ * class UserService {
+ * private cache: Map<string, User>;
+ * private logger: Logger;
+ *
+ * // Public methods section
+ * async getUser(id: string) { ... }
+ * async updateUser(id: string, data: Partial<User>) { ... }
+ * }
+ * ```
  *
  * @param params - Parameters for partition detection.
  * @returns True if a new partition should start at the current node.
@@ -101,15 +112,18 @@ export function shouldPartition({
  * partition comment criteria defined in options.
  *
  * @example
- *   // Comments that create partitions
- *   const comments = [
- *     { value: ' --- Components --- ', type: 'Line' },
- *     { value: ' Section: Utils ', type: 'Line' },
- *   ]
- *   hasPartitionComment({
- *     partitionByComment: '---',
- *     comments,
- *   }) // Returns: true
+ *
+ * ```ts
+ * // Comments that create partitions
+ * const comments = [
+ *   { value: ' --- Components --- ', type: 'Line' },
+ *   { value: ' Section: Utils ', type: 'Line' },
+ * ]
+ * hasPartitionComment({
+ *   partitionByComment: '---',
+ *   comments,
+ * }) // Returns: true
+ * ```
  *
  * @param params - Parameters for checking partition comments.
  * @param params.partitionByComment - Configuration for partition comments.

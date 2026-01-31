@@ -4,18 +4,28 @@ import type { SortingNode } from '../types/sorting-node'
 
 import { makeSingleNodeCommentAfterFixes } from './make-single-node-comment-after-fixes'
 
-/** Parameters for generating comment-after fixes. */
+/**
+ * Parameters for generating comment-after fixes.
+ */
 interface MakeCommentAfterFixesParameters {
-  /** ESLint source code object for accessing comments and tokens. */
+  /**
+   * ESLint source code object for accessing comments and tokens.
+   */
   sourceCode: TSESLint.SourceCode
 
-  /** Array of nodes in their sorted order. */
+  /**
+   * Array of nodes in their sorted order.
+   */
   sortedNodes: SortingNode[]
 
-  /** ESLint fixer object for creating fix operations. */
+  /**
+   * ESLint fixer object for creating fix operations.
+   */
   fixer: TSESLint.RuleFixer
 
-  /** Array of nodes in their original order. */
+  /**
+   * Array of nodes in their original order.
+   */
   nodes: SortingNode[]
 }
 
@@ -32,15 +42,18 @@ interface MakeCommentAfterFixesParameters {
  * specific comment adjustments.
  *
  * @example
- *   // Original code:
- *   const b = 2 // second value
- *   const a = 1 // first value
  *
- *   // After sorting (with comment fixes):
- *   const a = 1 // first value
- *   const b = 2 // second value
+ * ```ts
+ * // Original code:
+ * const b = 2 // second value
+ * const a = 1 // first value
  *
- *   // Comments stay with their associated nodes
+ * // After sorting (with comment fixes):
+ * const a = 1 // first value
+ * const b = 2 // second value
+ *
+ * // Comments stay with their associated nodes
+ * ```
  *
  * @param params - Parameters for generating fixes.
  * @returns Array of ESLint fix operations to apply.

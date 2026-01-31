@@ -9,21 +9,31 @@ import { isGroupWithOverridesOption } from './is-group-with-overrides-option'
 import { getCommentsBefore } from './get-comments-before'
 import { getGroupIndex } from './get-group-index'
 
-/** Parameters for generating comment-above fixes. */
+/**
+ * Parameters for generating comment-above fixes.
+ */
 interface MakeCommentAboveFixesParameters {
-  /** Configuration options containing groups and custom groups. */
+  /**
+   * Configuration options containing groups and custom groups.
+   */
   options: Pick<
     CommonGroupsOptions<string, unknown, unknown>,
     'customGroups' | 'groups'
   >
 
-  /** ESLint source code object for accessing comments and tokens. */
+  /**
+   * ESLint source code object for accessing comments and tokens.
+   */
   sourceCode: TSESLint.SourceCode
 
-  /** Sorted array of nodes to process for comment fixes. */
+  /**
+   * Sorted array of nodes to process for comment fixes.
+   */
   sortedNodes: SortingNode[]
 
-  /** ESLint fixer object for creating fix operations. */
+  /**
+   * ESLint fixer object for creating fix operations.
+   */
   fixer: TSESLint.RuleFixer
 }
 
@@ -42,11 +52,14 @@ interface MakeCommentAboveFixesParameters {
  * placement.
  *
  * @example
- *   // Configuration with commentAbove
- *   const groups = ['imports', { commentAbove: 'Components' }, 'components']
  *
- *   // Will add '// Components' comment above the components group
- *   // Will remove any misplaced auto-generated comments
+ * ```ts
+ * // Configuration with commentAbove
+ * const groups = ['imports', { commentAbove: 'Components' }, 'components']
+ *
+ * // Will add '// Components' comment above the components group
+ * // Will remove any misplaced auto-generated comments
+ * ```
  *
  * @param params - Parameters for generating fixes.
  * @returns Array of ESLint fix operations to apply.
@@ -134,9 +147,8 @@ function makeCommentAboveFix({
   MakeCommentAboveFixesParameters,
   'sourceCode' | 'options' | 'fixer'
 >): TSESLint.RuleFix[] {
-  let leftGroupIndex = sortedSortingNode
-    ? getGroupIndex(options.groups, sortedSortingNode)
-    : -1
+  let leftGroupIndex =
+    sortedSortingNode ? getGroupIndex(options.groups, sortedSortingNode) : -1
   let rightGroupIndex = getGroupIndex(options.groups, nextSortedSortingNode)
 
   let commentAboveThatShouldExist = getCommentAboveThatShouldExist({

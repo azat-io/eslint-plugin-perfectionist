@@ -88,31 +88,40 @@ interface ReportErrorsParameters<
  * - {{missedCommentAbove}} - Missing comment text.
  *
  * @example
- *   // Reporting import order violation
- *   reportErrors({
- *     messageIds: ['unexpectedOrder'],
- *     left: { name: 'useState', group: 'react' },
- *     right: { name: 'React', group: 'react' },
- *     // Error: "Expected 'React' to come before 'useState'"
- *   })
+ *
+ * ```ts
+ * // Reporting import order violation
+ * reportErrors({
+ *   messageIds: ['unexpectedOrder'],
+ *   left: { name: 'useState', group: 'react' },
+ *   right: { name: 'React', group: 'react' },
+ *   // Error: "Expected 'React' to come before 'useState'"
+ * })
+ * ```
  *
  * @example
- *   // Reporting dependency violation in TypeScript interfaces
- *   reportErrors({
- *   messageIds: ['unexpectedDependencyOrder'],
- *   right: { name: 'User', ... },
- *   firstUnorderedNodeDependentOnRight: { name: 'AdminUser extends User', ... },
- *   // Error: "Expected 'User' to come before 'AdminUser extends User' due to dependency"
- *   });
+ *
+ * ```ts
+ * // Reporting dependency violation in TypeScript interfaces
+ * reportErrors({
+ * messageIds: ['unexpectedDependencyOrder'],
+ * right: { name: 'User', ... },
+ * firstUnorderedNodeDependentOnRight: { name: 'AdminUser extends User', ... },
+ * // Error: "Expected 'User' to come before 'AdminUser extends User' due to dependency"
+ * });
+ * ```
  *
  * @example
- *   // Reporting missing newlines between import groups
- *   reportErrors({
- *     messageIds: ['missedSpacingBetweenMembers'],
- *     left: { name: 'React', group: 'external' },
- *     right: { name: './utils', group: 'internal' },
- *     // Error: "Expected newline between external and internal imports"
- *   })
+ *
+ * ```ts
+ * // Reporting missing newlines between import groups
+ * reportErrors({
+ *   messageIds: ['missedSpacingBetweenMembers'],
+ *   left: { name: 'React', group: 'external' },
+ *   right: { name: './utils', group: 'internal' },
+ *   // Error: "Expected newline between external and internal imports"
+ * })
+ * ```
  *
  * @template MessageIds - Union of message IDs.
  * @template T - Type of sorting node.
@@ -167,12 +176,15 @@ export function reportErrors<MessageIds extends string, T extends SortingNode>({
  * format suitable for error messages.
  *
  * @example
- *   toSingleLine(`
- *     import {
- *       Component
- *     } from 'react'
- *   `)
- *   // Returns: "import { Component } from 'react'"
+ *
+ * ```ts
+ * toSingleLine(`
+ * import {
+ * Component
+ * } from 'react'
+ * `)
+ * // Returns: "import { Component } from 'react'"
+ * ```
  *
  * @param string - Multi-line string to normalize.
  * @returns Single-line string with normalized whitespace.

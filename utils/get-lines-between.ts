@@ -11,22 +11,28 @@ import type { SortingNode } from '../types/sorting-node'
  * to enforce newline formatting rules.
  *
  * @example
- *   // Source code:
- *   // const a = 1;
- *   //
- *   // const b = 2;
  *
- *   getLinesBetween(sourceCode, nodeA, nodeB)
- *   // Returns: 1 (one empty line between nodes)
+ * ```ts
+ * // Source code:
+ * // const a = 1;
+ * //
+ * // const b = 2;
+ *
+ * getLinesBetween(sourceCode, nodeA, nodeB)
+ * // Returns: 1 (one empty line between nodes)
+ * ```
  *
  * @example
- *   // Source code:
- *   // const a = 1;
- *   // // comment
- *   // const b = 2;
  *
- *   getLinesBetween(sourceCode, nodeA, nodeB)
- *   // Returns: 0 (no empty lines, comment line is not empty)
+ * ```ts
+ * // Source code:
+ * // const a = 1;
+ * // // comment
+ * // const b = 2;
+ *
+ * getLinesBetween(sourceCode, nodeA, nodeB)
+ * // Returns: 0 (no empty lines, comment line is not empty)
+ * ```
  *
  * @param source - ESLint source code object containing the lines array.
  * @param left - Node or object containing the left/first node.

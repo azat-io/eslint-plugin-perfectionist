@@ -20,30 +20,39 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
  * from regular properties.
  *
  * @example
- *   // Method signature
- *   const methodNode = { type: 'TSMethodSignature', ... };
- *   isNodeFunctionType(methodNode); // Returns: true
+ *
+ * ```ts
+ * // Method signature
+ * const methodNode = { type: 'TSMethodSignature', ... };
+ * isNodeFunctionType(methodNode); // Returns: true
+ * ```
  *
  * @example
- *   // Property with function type
- *   const propNode = {
- *   type: 'TSPropertySignature',
- *   typeAnnotation: {
- *   typeAnnotation: { type: 'TSFunctionType', ... }
- *   }
- *   };
- *   isNodeFunctionType(propNode); // Returns: true
+ *
+ * ```ts
+ * // Property with function type
+ * const propNode = {
+ * type: 'TSPropertySignature',
+ * typeAnnotation: {
+ * typeAnnotation: { type: 'TSFunctionType', ... }
+ * }
+ * };
+ * isNodeFunctionType(propNode); // Returns: true
+ * ```
  *
  * @example
- *   // Union of function types
- *   const unionNode = {
- *   type: 'TSUnionType',
- *   types: [
- *   { type: 'TSFunctionType', ... },
- *   { type: 'TSFunctionType', ... }
- *   ]
- *   };
- *   isNodeFunctionType(unionNode); // Returns: true
+ *
+ * ```ts
+ * // Union of function types
+ * const unionNode = {
+ * type: 'TSUnionType',
+ * types: [
+ * { type: 'TSFunctionType', ... },
+ * { type: 'TSFunctionType', ... }
+ * ]
+ * };
+ * isNodeFunctionType(unionNode); // Returns: true
+ * ```
  *
  * @param node - TypeScript AST node to check.
  * @returns True if the node represents a function type, false otherwise.

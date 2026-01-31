@@ -14,22 +14,31 @@ import type { RegexOption } from '../types/common-options'
  * instead of strings).
  *
  * @example
- *   // String pattern
- *   matches('foo', '^foo$') // Returns: true
- *   matches('foobar', '^foo$') // Returns: false
+ *
+ * ```ts
+ * // String pattern
+ * matches('foo', '^foo$') // Returns: true
+ * matches('foobar', '^foo$') // Returns: false
+ * ```
  *
  * @example
- *   // Array of patterns (OR logic)
- *   matches('foo', ['bar', '^foo$']) // Returns: true (matches second pattern)
- *   matches('baz', ['bar', '^foo$']) // Returns: false (matches neither)
+ *
+ * ```ts
+ * // Array of patterns (OR logic)
+ * matches('foo', ['bar', '^foo$']) // Returns: true (matches second pattern)
+ * matches('baz', ['bar', '^foo$']) // Returns: false (matches neither)
+ * ```
  *
  * @example
- *   // Pattern with flags
- *   matches('FOO', {
- *     pattern: '^foo$',
- *     flags: 'i',
- *   }) // Returns: true (case-insensitive)
- *   matches('FOO', '^foo$') // Returns: false (case-sensitive)
+ *
+ * ```ts
+ * // Pattern with flags
+ * matches('FOO', {
+ *   pattern: '^foo$',
+ *   flags: 'i',
+ * }) // Returns: true (case-insensitive)
+ * matches('FOO', '^foo$') // Returns: false (case-sensitive)
+ * ```
  *
  * @param value - The string to test against the pattern(s).
  * @param regexOption - The regex pattern(s) to match against.

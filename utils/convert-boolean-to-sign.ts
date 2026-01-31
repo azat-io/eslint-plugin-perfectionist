@@ -6,14 +6,20 @@
  * direction logic.
  *
  * @example
- *   // In ascending sort
- *   convertBooleanToSign(true) // Returns: 1
- *   convertBooleanToSign(false) // Returns: -1
+ *
+ * ```ts
+ * // In ascending sort
+ * convertBooleanToSign(true) // Returns: 1
+ * convertBooleanToSign(false) // Returns: -1
+ * ```
  *
  * @example
- *   // Usage in sorting
- *   const sortMultiplier = convertBooleanToSign(order === 'asc')
- *   return sortMultiplier * (a - b)
+ *
+ * ```ts
+ * // Usage in sorting
+ * const sortMultiplier = convertBooleanToSign(order === 'asc')
+ * return sortMultiplier * (a - b)
+ * ```
  *
  * @param value - Boolean value to convert to a sign.
  * @returns 1 if value is true, -1 if value is false.

@@ -21,21 +21,24 @@ import { UnreachableCaseError } from './unreachable-case-error'
  * - Nested disable/enable pairs.
  *
  * @example
- *   // Source code with disable comments:
- *   // eslint-disable-next-line perfectionist/sort-imports
- *   import { z } from 'zod'
- *   import { a } from 'a'
  *
- *   // eslint-disable perfectionist/sort-imports
- *   import { y } from 'y'
- *   import { b } from 'b'
- *   // eslint-enable perfectionist/sort-imports
+ * ```ts
+ * // Source code with disable comments:
+ * // eslint-disable-next-line perfectionist/sort-imports
+ * import { z } from 'zod'
+ * import { a } from 'a'
  *
- *   getEslintDisabledLines({
- *     sourceCode,
- *     ruleName: 'perfectionist/sort-imports',
- *   })
- *   // Returns: [2, 5, 6] (lines where the rule is disabled)
+ * // eslint-disable perfectionist/sort-imports
+ * import { y } from 'y'
+ * import { b } from 'b'
+ * // eslint-enable perfectionist/sort-imports
+ *
+ * getEslintDisabledLines({
+ *   sourceCode,
+ *   ruleName: 'perfectionist/sort-imports',
+ * })
+ * // Returns: [2, 5, 6] (lines where the rule is disabled)
+ * ```
  *
  * @param props - Configuration object.
  * @param props.sourceCode - ESLint source code object containing comments.
@@ -104,8 +107,11 @@ export function getEslintDisabledLines(props: {
  * eslint-disable/eslint-enable comment pairs.
  *
  * @example
- *   createArrayFromTo(5, 8)
- *   // Returns: [5, 6, 7, 8]
+ *
+ * ```ts
+ * createArrayFromTo(5, 8)
+ * // Returns: [5, 6, 7, 8]
+ * ```
  *
  * @param i - Starting number (inclusive).
  * @param index - Ending number (inclusive).

@@ -20,7 +20,12 @@ let { class: className, title, url, ...props } = Astro.props
   href={url}
   {...props}
 >
-  <Typography tag="span" size="xs">{title}</Typography>
+  <Typography
+    tag="span"
+    size="xs"
+  >
+    {title}
+  </Typography>
 </a>
 
 <style>
