@@ -10,6 +10,16 @@ import { makeCommentAfterFixes } from './make-comment-after-fixes'
 import { makeCommentAboveFixes } from './make-comment-above-fixes'
 import { makeOrderFixes } from './make-order-fixes'
 
+export interface CustomOrderFixesParameters<T extends SortingNode> {
+  options?: Pick<CommonPartitionOptions, 'partitionByComment'> &
+    CommonGroupsOptions<string, unknown, unknown>
+  ignoreFirstNodeHighestBlockComment?: boolean
+  sourceCode: TSESLint.SourceCode
+  fixer: TSESLint.RuleFixer
+  sortedNodes: T[]
+  nodes: T[]
+}
+
 /**
  * Parameters for generating all types of fixes during sorting.
  *
@@ -23,6 +33,11 @@ interface MakeFixesParameters<T extends SortingNode> {
     CommonGroupsOptions<string, unknown, unknown>
 
   /**
+   * Optional custom order fixes builder.
+   */
+  customOrderFixes?(parameters: CustomOrderFixesParameters<T>): TSESLint.RuleFix[]
+
+  /**
    * Optional function to customize newlines between specific nodes.
    */
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
@@ -32,6 +47,11 @@ interface MakeFixesParameters<T extends SortingNode> {
    * preserving file-level documentation comments.
    */
   ignoreFirstNodeHighestBlockComment?: boolean
+
+  /**
+   * Whether custom order fixes replace the full range.
+   */
+  customOrderFixesAreSingleRange?: boolean
 
   /**
    * ESLint source code object for accessing comments and tokens.
@@ -58,7 +78,6 @@ interface MakeFixesParameters<T extends SortingNode> {
    */
   nodes: T[]
 }
-
 /**
  * Orchestrates the generation of all necessary fixes for sorting operations.
  *
@@ -110,22 +129,37 @@ interface MakeFixesParameters<T extends SortingNode> {
  */
 export function makeFixes<T extends SortingNode>({
   ignoreFirstNodeHighestBlockComment,
+  customOrderFixesAreSingleRange,
   newlinesBetweenValueGetter,
   hasCommentAboveMissing,
+  customOrderFixes,
   sortedNodes,
   sourceCode,
   options,
   fixer,
   nodes,
 }: MakeFixesParameters<T>): TSESLint.RuleFix[] {
-  let orderFixes = makeOrderFixes({
-    ignoreFirstNodeHighestBlockComment,
-    sortedNodes,
-    sourceCode,
-    options,
-    nodes,
-    fixer,
-  })
+  let orderFixes = customOrderFixes ?
+    customOrderFixes({
+      ignoreFirstNodeHighestBlockComment,
+      sortedNodes,
+      sourceCode,
+      options,
+      fixer,
+      nodes,
+    })
+  : makeOrderFixes({
+      ignoreFirstNodeHighestBlockComment,
+      sortedNodes,
+      sourceCode,
+      options,
+      nodes,
+      fixer,
+    })
+
+  if (customOrderFixesAreSingleRange && orderFixes.length > 0) {
+    return orderFixes
+  }
 
   let commentAfterFixes = makeCommentAfterFixes({
     sortedNodes,

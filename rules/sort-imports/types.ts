@@ -41,6 +41,20 @@ export type Options = Partial<
     useExperimentalDependencyDetection: boolean
 
     /**
+     * Controls partition reordering when partitionByNewLine is enabled.
+     *
+     * @default 'off'
+     */
+    partitionSorting: 'type-first' | 'off'
+
+    /**
+     * Whether to keep partition order stable within the same category.
+     *
+     * @default true
+     */
+    partitionSortingStable: boolean
+
+    /**
      * Patterns to identify internal imports. Imports matching these patterns
      * are categorized as 'internal'.
      */

@@ -1,8 +1,9 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { CommonPartitionOptions } from '../types/common-partition-options'
+import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { CommonGroupsOptions } from '../types/common-groups-options'
+import type { CustomOrderFixesParameters } from './make-fixes'
 import type { SortingNode } from '../types/sorting-node'
 
 import { makeFixes } from './make-fixes'
@@ -49,9 +50,11 @@ interface ReportErrorsParameters<
 > {
   options?: Pick<CommonPartitionOptions, 'partitionByComment'> &
     CommonGroupsOptions<string, unknown, unknown>
+  customOrderFixes?(parameters: CustomOrderFixesParameters<T>): TSESLint.RuleFix[]
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
   context: TSESLint.RuleContext<MessageIds, unknown[]>
   ignoreFirstNodeHighestBlockComment?: boolean
+  customOrderFixesAreSingleRange?: boolean
   firstUnorderedNodeDependentOnRight?: T
   sourceCode: TSESLint.SourceCode
   commentAboveMissing?: string
@@ -122,8 +125,10 @@ interface ReportErrorsParameters<
 export function reportErrors<MessageIds extends string, T extends SortingNode>({
   firstUnorderedNodeDependentOnRight,
   ignoreFirstNodeHighestBlockComment,
+  customOrderFixesAreSingleRange,
   newlinesBetweenValueGetter,
   commentAboveMissing,
+  customOrderFixes,
   sortedNodes,
   messageIds,
   sourceCode,
@@ -135,6 +140,19 @@ export function reportErrors<MessageIds extends string, T extends SortingNode>({
 }: ReportErrorsParameters<MessageIds, T>): void {
   for (let messageId of messageIds) {
     context.report({
+      fix: (fixer: TSESLint.RuleFixer) =>
+        makeFixes({
+          hasCommentAboveMissing: !!commentAboveMissing,
+          ignoreFirstNodeHighestBlockComment,
+          customOrderFixesAreSingleRange,
+          newlinesBetweenValueGetter,
+          customOrderFixes,
+          sortedNodes,
+          sourceCode,
+          options,
+          fixer,
+          nodes,
+        }),
       data: {
         [NODE_DEPENDENT_ON_RIGHT]: firstUnorderedNodeDependentOnRight?.name,
         [MISSED_COMMENT_ABOVE]: commentAboveMissing,
@@ -143,17 +161,6 @@ export function reportErrors<MessageIds extends string, T extends SortingNode>({
         [RIGHT_GROUP]: right.group,
         [LEFT_GROUP]: left?.group,
       },
-      fix: (fixer: TSESLint.RuleFixer) =>
-        makeFixes({
-          hasCommentAboveMissing: !!commentAboveMissing,
-          ignoreFirstNodeHighestBlockComment,
-          newlinesBetweenValueGetter,
-          sortedNodes,
-          sourceCode,
-          options,
-          fixer,
-          nodes,
-        }),
       node: right.node,
       messageId,
     })

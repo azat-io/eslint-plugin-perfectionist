@@ -1741,6 +1741,286 @@ describe('sort-imports', () => {
       })
     })
 
+    it('reorders type-only partitions before value partitions', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionSorting: 'type-first',
+            newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
+            partitionByNewLine: true,
+          },
+        ],
+        output: dedent`
+          import type { A } from './a'
+
+          import type { C } from './c'
+
+          import { b } from './b'
+        `,
+        code: dedent`
+          import type { A } from './a'
+
+          import { b } from './b'
+
+          import type { C } from './c'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsGroupOrder',
+          },
+        ],
+      })
+    })
+
+    it('keeps inline comments when reordering with unstable partition sorting', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionSorting: 'type-first',
+            partitionSortingStable: false,
+            newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
+            partitionByNewLine: true,
+          },
+        ],
+        output: dedent`
+          import type { A } from './a' // type A
+
+          import type { C } from './c'
+
+          import { b } from './b'
+        `,
+        code: dedent`
+          import { b } from './b'
+
+          import type { A } from './a' // type A
+
+          import type { C } from './c'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsGroupOrder',
+          },
+        ],
+      })
+    })
+
+    it('adds a safety semicolon when reordering inline imports', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionSorting: 'type-first',
+            newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
+            partitionByNewLine: true,
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import type { A } from "a"; import type { B } from "b";
+
+          import { c } from "c";
+        `,
+        code: dedent`
+          import type { B } from "b"; import type { A } from "a"
+
+          import { c } from "c";
+        `,
+      })
+    })
+
+    it('handles inline comments after extra semicolons with partition sorting', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            partitionSorting: 'type-first',
+            newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
+            partitionByNewLine: true,
+          },
+        ],
+        code: dedent`
+          import type { A } from "a";; // comment
+
+          import { b } from "b";
+        `,
+      })
+    })
+
+    it('does not rewrite partition order when only comment fixes are needed', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: [
+              { commentAbove: 'Comment above a', group: ['external'] },
+              { commentAbove: 'Comment above b', group: 'unknown' },
+            ],
+            partitionSorting: 'type-first',
+            newlinesBetween: 'ignore',
+            partitionByNewLine: true,
+            newlinesInside: 'ignore',
+          },
+        ],
+        errors: [
+          {
+            data: { missedCommentAbove: 'Comment above a', right: 'a' },
+            messageId: 'missedCommentAboveImport',
+          },
+          {
+            data: { missedCommentAbove: 'Comment above b', right: './b' },
+            messageId: 'missedCommentAboveImport',
+          },
+        ],
+        output: dedent`
+          // Comment above a
+          import { a } from "a";
+
+          // Comment above b
+          import { b } from "./b";
+        `,
+        code: dedent`
+          import { a } from "a";
+
+          import { b } from "./b";
+        `,
+      })
+    })
+
+    it('keeps mixed partitions in value order', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionSorting: 'type-first',
+            newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
+            partitionByNewLine: true,
+          },
+        ],
+        output: dedent`
+          import type { C } from './c'
+
+          import { b } from './b'
+
+          import type { A } from './a'
+          import { a } from './a'
+        `,
+        code: dedent`
+          import { b } from './b'
+
+          import type { A } from './a'
+          import { a } from './a'
+
+          import type { C } from './c'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsGroupOrder',
+          },
+        ],
+      })
+    })
+
+    it('keeps comments with their partition', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionSorting: 'type-first',
+            newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
+            partitionByNewLine: true,
+          },
+        ],
+        output: dedent`
+          import type { A } from './a'
+
+          /* types */
+          import type { C } from './c'
+
+          import { b } from './b'
+        `,
+        code: dedent`
+          import type { A } from './a'
+
+          import { b } from './b'
+
+          /* types */
+          import type { C } from './c'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsGroupOrder',
+          },
+        ],
+      })
+    })
+
+    it('treats side-effect imports as value partitions', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionSorting: 'type-first',
+            newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
+            partitionByNewLine: true,
+          },
+        ],
+        output: dedent`
+          import type { A } from './a'
+
+          import type { C } from './c'
+
+          import './side-effect'
+        `,
+        code: dedent`
+          import type { A } from './a'
+
+          import './side-effect'
+
+          import type { C } from './c'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsGroupOrder',
+          },
+        ],
+      })
+    })
+
+    it('is idempotent with partitionSorting enabled', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            partitionSorting: 'type-first',
+            newlinesBetween: 'ignore',
+            newlinesInside: 'ignore',
+            partitionByNewLine: true,
+          },
+        ],
+        code: dedent`
+          import type { A } from './a'
+
+          import type { C } from './c'
+
+          import { b } from './b'
+        `,
+      })
+    })
+
     it('allows partitioning by comment patterns', async () => {
       await invalid({
         output: dedent`

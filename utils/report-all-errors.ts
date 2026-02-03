@@ -1,9 +1,10 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
+import type { CommonPartitionOptions } from '../types/common-partition-options'
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
-import type { CommonPartitionOptions } from '../types/common-partition-options'
 import type { CommonGroupsOptions } from '../types/common-groups-options'
+import type { CustomOrderFixesParameters } from './make-fixes'
 import type { SortingNode } from '../types/sorting-node'
 
 import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
@@ -101,6 +102,15 @@ interface ReportAllErrorsParameters<
     CommonGroupsOptions<string, unknown, unknown>
 
   /**
+   * Array of all nodes to check for ordering violations.
+   *
+   * These are the nodes in their current order in the source code. The function
+   * will compare this order against the sorted order to identify and report all
+   * violations.
+   */
+  customOrderFixes?(parameters: CustomOrderFixesParameters<T>): TSESLint.RuleFix[]
+
+  /**
    * Function to get sorted nodes with or without ESLint-disabled nodes.
    *
    * This function is called twice by reportAllErrors:
@@ -165,6 +175,11 @@ interface ReportAllErrorsParameters<
   ignoreFirstNodeHighestBlockComment?: boolean
 
   /**
+   * Whether custom order fixes replace the full range.
+   */
+  customOrderFixesAreSingleRange?: boolean
+
+  /**
    * Array of all nodes to check for ordering violations.
    *
    * These are the nodes in their current order in the source code. The function
@@ -222,8 +237,10 @@ export function reportAllErrors<
 >({
   ignoreFirstNodeHighestBlockComment,
   sortNodesExcludingEslintDisabled,
+  customOrderFixesAreSingleRange,
   newlinesBetweenValueGetter,
   availableMessageIds,
+  customOrderFixes,
   context,
   options,
   nodes,
@@ -330,8 +347,10 @@ export function reportAllErrors<
       sortedNodes: sortedNodesExcludingEslintDisabled,
       ignoreFirstNodeHighestBlockComment,
       firstUnorderedNodeDependentOnRight,
+      customOrderFixesAreSingleRange,
       newlinesBetweenValueGetter,
       commentAboveMissing,
+      customOrderFixes,
       messageIds,
       sourceCode,
       options,
