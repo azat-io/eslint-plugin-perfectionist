@@ -6,6 +6,7 @@ import sortIntersectionTypes from './rules/sort-intersection-types'
 import sortImportAttributes from './rules/sort-import-attributes'
 import sortExportAttributes from './rules/sort-export-attributes'
 import sortHeritageClauses from './rules/sort-heritage-clauses'
+import separateTypeImports from './rules/separate-type-imports'
 import sortArrayIncludes from './rules/sort-array-includes'
 import sortNamedImports from './rules/sort-named-imports'
 import sortNamedExports from './rules/sort-named-exports'
@@ -51,6 +52,7 @@ export let rules = {
   'sort-import-attributes': sortImportAttributes,
   'sort-export-attributes': sortExportAttributes,
   'sort-heritage-clauses': sortHeritageClauses,
+  'separate-type-imports': separateTypeImports,
   'sort-array-includes': sortArrayIncludes,
   'sort-named-imports': sortNamedImports,
   'sort-named-exports': sortNamedExports,
