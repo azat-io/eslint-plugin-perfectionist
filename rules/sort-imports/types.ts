@@ -81,6 +81,13 @@ export type Options = Partial<
      * sorting instead of the entire line.
      */
     maxLineLength: number
+
+    /**
+     * Whether to split import declarations when specifier sorting interleaves sources.
+     *
+     * @default false
+     */
+    partitionImportsSplitOnSort: boolean
   } & AllCommonOptions<
     CustomTypeOption,
     AdditionalSortOptions,

@@ -3933,6 +3933,520 @@ describe('sort-imports', () => {
         ],
       })
     })
+
+    it('splits imports when specifier order interleaves sources', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { a } from 'alphabet'
+          import { m } from 'middle'
+          import { z } from 'alphabet'
+        `,
+        code: dedent`
+          import { a, z } from 'alphabet'
+          import { m } from 'middle'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import alpha from 'alpha'
+          import { beta } from 'beta'
+          import { gamma } from 'alpha'
+        `,
+        code: dedent`
+          import alpha, { gamma } from 'alpha'
+          import { beta } from 'beta'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            groups: ['type-import'],
+            sortBy: 'specifier',
+          },
+        ],
+        output: dedent`
+          import type { alpha } from 'alpha'
+          import type { beta } from 'beta'
+          import type { gamma } from 'alpha'
+        `,
+        code: dedent`
+          import type { alpha, gamma } from 'alpha'
+          import type { beta } from 'beta'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+        output: dedent`
+          import { a } from 'source'
+          import { b } from 'other'
+          import { c, d } from 'source'
+        `,
+        code: dedent`
+          import { d, a, c } from 'source'
+          import { b } from 'other'
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { a } from 'alpha'
+          const b = require('beta')
+          import { c } from 'alpha'
+        `,
+        code: dedent`
+          import { a, c } from 'alpha'
+          const b = require('beta')
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { a } from 'alpha'
+          import { b } from 'beta'
+          import { c } from 'alpha'
+          const z = require('zeta')
+        `,
+        code: dedent`
+          import { a, c } from 'alpha'
+          import { b } from 'beta'
+          const z = require('zeta')
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { Admin } from 'models'
+          import { API } from 'services'
+          import { type User } from 'models'
+        `,
+        code: dedent`
+          import { type User, Admin } from 'models'
+          import { API } from 'services'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        output: dedent`
+          import {
+            a /* block */
+          } from 'alpha'
+          import { m } from 'beta'
+          import { z // line
+          } from 'alpha'
+        `,
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        code: dedent`
+          import {
+            a /* block */, z // line
+          } from 'alpha'
+          import { m } from 'beta'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import adam, { beta } from 'alpha';
+          import { gamma } from 'other';
+          import { zeta } from 'alpha';
+        `,
+        code: dedent`
+          import adam, { beta, zeta } from 'alpha';
+          import { gamma } from 'other';
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { a } from 'alpha'
+          import { m } from 'beta'
+          import { z } from 'alpha' // trailing
+        `,
+        code: dedent`
+          import { a, z } from 'alpha' // trailing
+          import { m } from 'beta'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { a } from 'beta'
+          import { b } from 'alpha'
+          import { c, d } from 'gamma'
+          import { z } from 'alpha'
+        `,
+        code: dedent`
+          import { b, z } from 'alpha'
+          import { a } from 'beta'
+          import { c, d } from 'gamma'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { a } from 'alpha'
+          import { b } from 'beta'
+        `,
+        code: dedent`
+          import { b } from 'beta'
+          import { a } from 'alpha'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { a } from 'beta'
+          import { b, c } from 'alpha'
+        `,
+        code: dedent`
+          import { b, c } from 'alpha'
+          import { a } from 'beta'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { a } from 'alpha'
+          import { b } from 'beta'
+          import { c } from 'alpha'
+          import { d } from 'beta'
+        `,
+        code: dedent`
+          import { a, c } from 'alpha'
+          import { b, d } from 'beta'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            newlinesBetween: 'ignore',
+            partitionByNewLine: true,
+            newlinesInside: 'ignore',
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { a } from 'beta'
+          import { b, c } from 'alpha'
+
+          import { c } from 'charlie'
+          import { d } from 'delta'
+        `,
+        code: dedent`
+          import { b, c } from 'alpha'
+          import { a } from 'beta'
+
+          import { d } from 'delta'
+          import { c } from 'charlie'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            newlinesBetween: 'ignore',
+            partitionByNewLine: true,
+            newlinesInside: 'ignore',
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { b } from 'alpha'
+          import { c } from 'beta'
+          import { d } from 'alpha'
+
+          import { f } from 'delta'
+          import { g } from 'charlie'
+          import { h } from 'delta'
+        `,
+        code: dedent`
+          import { b, d } from 'alpha'
+          import { c } from 'beta'
+
+          import { f, h } from 'delta'
+          import { g } from 'charlie'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            newlinesInside: 'newlinesBetween',
+            newlinesBetween: 'ignore',
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { a } from 'alpha'
+          import { m } from 'beta'
+          import { z } from 'alpha'
+        `,
+        code: dedent`
+          import { a, z } from 'alpha'
+          import { m } from 'beta'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import foo from 'alpha'
+          import { mid } from 'beta'
+          import * as zed from 'alpha'
+        `,
+        code: dedent`
+          import foo, * as zed from 'alpha'
+          import { mid } from 'beta'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { a, } from 'alpha'
+          import { m } from 'beta'
+          import { z, } from 'alpha'
+        `,
+        code: dedent`
+          import { a, z, } from 'alpha'
+          import { m } from 'beta'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+    })
   })
 
   describe('natural', () => {
