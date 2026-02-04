@@ -201,9 +201,13 @@ export function sortArray<MessageIds extends string>({
         return accumulator
       }
 
+      if (element.type === AST_NODE_TYPES.SpreadElement) {
+        accumulator.push([])
+        return accumulator
+      }
+
       let name = getNodeName({ sourceCode, element })
-      let selector: Selector =
-        element.type === AST_NODE_TYPES.SpreadElement ? 'spread' : 'literal'
+      let selector: Selector = 'literal'
       let predefinedGroups = generatePredefinedGroups({
         cache: cachedGroupsByModifiersAndSelectors,
         selectors: [selector],
