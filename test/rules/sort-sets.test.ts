@@ -977,12 +977,10 @@ describe('sort-sets', () => {
             {
               anyOf: [
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'literal',
+                  elementNamePattern: 'foo',
                 },
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'spread',
+                  elementNamePattern: 'Foo',
                 },
               ],
               groupName: 'elementsIncludingFoo',
@@ -998,7 +996,7 @@ describe('sort-sets', () => {
             data: {
               rightGroup: 'elementsIncludingFoo',
               leftGroup: 'unknown',
-              right: '...foo',
+              right: 'bFoo',
               left: 'a',
             },
             messageId: 'unexpectedSetsGroupOrder',
@@ -1006,7 +1004,7 @@ describe('sort-sets', () => {
         ],
         output: dedent`
           new Set([
-            '...foo',
+            'bFoo',
             'cFoo',
             'a',
           ])
@@ -1014,7 +1012,7 @@ describe('sort-sets', () => {
         code: dedent`
           new Set([
             'a',
-            '...foo',
+            'bFoo',
             'cFoo',
           ])
         `,
@@ -2529,12 +2527,10 @@ describe('sort-sets', () => {
             {
               anyOf: [
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'literal',
+                  elementNamePattern: 'foo',
                 },
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'spread',
+                  elementNamePattern: 'Foo',
                 },
               ],
               groupName: 'elementsIncludingFoo',
@@ -2550,7 +2546,7 @@ describe('sort-sets', () => {
             data: {
               rightGroup: 'elementsIncludingFoo',
               leftGroup: 'unknown',
-              right: '...foo',
+              right: 'bFoo',
               left: 'a',
             },
             messageId: 'unexpectedSetsGroupOrder',
@@ -2558,7 +2554,7 @@ describe('sort-sets', () => {
         ],
         output: dedent`
           new Set([
-            '...foo',
+            'bFoo',
             'cFoo',
             'a',
           ])
@@ -2566,7 +2562,7 @@ describe('sort-sets', () => {
         code: dedent`
           new Set([
             'a',
-            '...foo',
+            'bFoo',
             'cFoo',
           ])
         `,
@@ -3977,12 +3973,10 @@ describe('sort-sets', () => {
             {
               anyOf: [
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'literal',
+                  elementNamePattern: 'foo',
                 },
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'spread',
+                  elementNamePattern: 'Foo',
                 },
               ],
               groupName: 'elementsIncludingFoo',
@@ -3998,7 +3992,7 @@ describe('sort-sets', () => {
             data: {
               rightGroup: 'elementsIncludingFoo',
               leftGroup: 'unknown',
-              right: '...foo',
+              right: 'bFoo',
               left: 'a',
             },
             messageId: 'unexpectedSetsGroupOrder',
@@ -4006,7 +4000,7 @@ describe('sort-sets', () => {
         ],
         output: dedent`
           new Set([
-            '...foo',
+            'bFoo',
             'cFoo',
             'a',
           ])
@@ -4014,7 +4008,7 @@ describe('sort-sets', () => {
         code: dedent`
           new Set([
             'a',
-            '...foo',
+            'bFoo',
             'cFoo',
           ])
         `,

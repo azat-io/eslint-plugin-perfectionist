@@ -33,8 +33,8 @@ export type Options = Partial<
 >[]
 
 /**
- * Represents the type of array element selector. Used to distinguish between
- * literal values and spread elements in arrays.
+ * Represents the type of array element selector. Note: Spread elements are not
+ * sorted and act as partition boundaries.
  */
 export type Selector = (typeof allSelectors)[number]
 
@@ -54,8 +54,9 @@ export type Selector = (typeof allSelectors)[number]
  */
 interface CustomGroupMatchOptions {
   /**
-   * Specifies the type of array elements to include in this group. Can be
-   * 'literal' for literal values or 'spread' for spread elements.
+   * Specifies the type of array elements to include in this group. Only
+   * 'literal' is available since spread elements create partition boundaries
+   * and are not sorted.
    */
   selector?: Selector
 }
@@ -66,7 +67,7 @@ type AdditionalSortOptions = object
  * Complete list of available selectors for array elements. Used for validation
  * and JSON schema generation.
  */
-export let allSelectors = ['literal', 'spread'] as const
+export let allSelectors = ['literal'] as const
 
 /**
  * Additional custom group match options JSON schema. Used by ESLint to validate

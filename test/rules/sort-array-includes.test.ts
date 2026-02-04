@@ -323,20 +323,17 @@ describe('sort-array-includes', () => {
         {
           ...options,
           partitionByNewLine: true,
-          groups: ['spread'],
         },
       ]
 
       await valid({
         code: dedent`
           [
-            ...a,
-            ...b,
+            'a',
+            'b',
+
             'c',
             'd',
-
-            ...e,
-            'f',
           ].includes(value)
         `,
         options: partitionWithGroupOptions,
@@ -1171,12 +1168,10 @@ describe('sort-array-includes', () => {
             {
               anyOf: [
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'literal',
+                  elementNamePattern: 'foo',
                 },
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'spread',
+                  elementNamePattern: 'Foo',
                 },
               ],
               groupName: 'elementsIncludingFoo',
@@ -1192,7 +1187,7 @@ describe('sort-array-includes', () => {
             data: {
               rightGroup: 'elementsIncludingFoo',
               leftGroup: 'unknown',
-              right: '...foo',
+              right: 'bFoo',
               left: 'a',
             },
             messageId: 'unexpectedArrayIncludesGroupOrder',
@@ -1200,7 +1195,7 @@ describe('sort-array-includes', () => {
         ],
         output: dedent`
           [
-            '...foo',
+            'bFoo',
             'cFoo',
             'a',
           ].includes(value)
@@ -1208,7 +1203,7 @@ describe('sort-array-includes', () => {
         code: dedent`
           [
             'a',
-            '...foo',
+            'bFoo',
             'cFoo',
           ].includes(value)
         `,
@@ -2176,20 +2171,17 @@ describe('sort-array-includes', () => {
         {
           ...options,
           partitionByNewLine: true,
-          groups: ['spread'],
         },
       ]
 
       await valid({
         code: dedent`
           [
-            ...a,
-            ...b,
+            'a',
+            'b',
+
             'c',
             'd',
-
-            ...e,
-            'f',
           ].includes(value)
         `,
         options: partitionWithGroupOptions,
@@ -2982,12 +2974,10 @@ describe('sort-array-includes', () => {
             {
               anyOf: [
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'literal',
+                  elementNamePattern: 'foo',
                 },
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'spread',
+                  elementNamePattern: 'Foo',
                 },
               ],
               groupName: 'elementsIncludingFoo',
@@ -3003,7 +2993,7 @@ describe('sort-array-includes', () => {
             data: {
               rightGroup: 'elementsIncludingFoo',
               leftGroup: 'unknown',
-              right: '...foo',
+              right: 'bFoo',
               left: 'a',
             },
             messageId: 'unexpectedArrayIncludesGroupOrder',
@@ -3011,7 +3001,7 @@ describe('sort-array-includes', () => {
         ],
         output: dedent`
           [
-            '...foo',
+            'bFoo',
             'cFoo',
             'a',
           ].includes(value)
@@ -3019,7 +3009,7 @@ describe('sort-array-includes', () => {
         code: dedent`
           [
             'a',
-            '...foo',
+            'bFoo',
             'cFoo',
           ].includes(value)
         `,
@@ -3873,20 +3863,17 @@ describe('sort-array-includes', () => {
         {
           ...options,
           partitionByNewLine: true,
-          groups: ['spread'],
         },
       ]
 
       await valid({
         code: dedent`
           [
-            ...a,
-            ...b,
+            'a',
+            'b',
+
             'c',
             'd',
-
-            ...e,
-            'f',
           ].includes(value)
         `,
         options: partitionWithGroupOptions,
@@ -4679,12 +4666,10 @@ describe('sort-array-includes', () => {
             {
               anyOf: [
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'literal',
+                  elementNamePattern: 'foo',
                 },
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'spread',
+                  elementNamePattern: 'Foo',
                 },
               ],
               groupName: 'elementsIncludingFoo',
@@ -4700,7 +4685,7 @@ describe('sort-array-includes', () => {
             data: {
               rightGroup: 'elementsIncludingFoo',
               leftGroup: 'unknown',
-              right: '...foo',
+              right: 'bFoo',
               left: 'a',
             },
             messageId: 'unexpectedArrayIncludesGroupOrder',
@@ -4708,7 +4693,7 @@ describe('sort-array-includes', () => {
         ],
         output: dedent`
           [
-            '...foo',
+            'bFoo',
             'cFoo',
             'a',
           ].includes(value)
@@ -4716,7 +4701,7 @@ describe('sort-array-includes', () => {
         code: dedent`
           [
             'a',
-            '...foo',
+            'bFoo',
             'cFoo',
           ].includes(value)
         `,
