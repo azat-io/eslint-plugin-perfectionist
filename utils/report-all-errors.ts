@@ -157,6 +157,11 @@ interface ReportAllErrorsParameters<
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
 
   /**
+   * Optional predicate to ignore ordering errors for specific node pairs.
+   */
+  shouldIgnoreOrder?(left: null | T, right: T): boolean
+
+  /**
    * ESLint rule context for reporting errors.
    *
    * Used to access rule configuration, report violations, and provide fixes.
@@ -240,6 +245,7 @@ export function reportAllErrors<
   customOrderFixesAreSingleRange,
   newlinesBetweenValueGetter,
   availableMessageIds,
+  shouldIgnoreOrder,
   customOrderFixes,
   context,
   options,
@@ -293,7 +299,7 @@ export function reportAllErrors<
     ) {
       if (firstUnorderedNodeDependentOnRight) {
         messageIds.push(availableMessageIds.unexpectedDependencyOrder!)
-      } else {
+      } else if (!shouldIgnoreOrder?.(left, right)) {
         messageIds.push(
           (
             leftInfo.groupIndex === rightGroupIndex ||

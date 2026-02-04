@@ -510,6 +510,19 @@ function sortImportNodes({
       options.partitionImportsSplitOnSort &&
       expandedSortingNodes.some(node => node.specifier)
 
+    let sortedNodesForIgnore =
+      usesSpecifierSorting ?
+        createSortNodesExcludingEslintDisabled(
+          expandedSortingNodeGroupsForSorting,
+        )(false)
+      : null
+    let sortedNodeIndexForIgnore =
+      sortedNodesForIgnore ?
+        new Map(
+          sortedNodesForIgnore.map((node, index) => [node, index]),
+        )
+      : null
+
     let partitionInfo =
       usesSpecifierSorting ?
         partitionSortingInfo ??
@@ -538,6 +551,15 @@ function sortImportNodes({
         unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
         unexpectedOrder: ORDER_ERROR_ID,
       },
+      shouldIgnoreOrder: usesSpecifierSorting ?
+        (left, right) =>
+          shouldIgnoreSpecifierOrder({
+            sortedNodeIndex: sortedNodeIndexForIgnore!,
+            sortedNodes: sortedNodesForIgnore!,
+            right,
+            left,
+          })
+      : undefined,
       newlinesBetweenValueGetter:
         usesSpecifierSorting ?
           ({ computedNewlinesBetween, right, left }) =>
@@ -603,6 +625,42 @@ function sortImportNodes({
       }).length > 0
     )
   }
+}
+
+function shouldIgnoreSpecifierOrder({
+  sortedNodeIndex,
+  sortedNodes,
+  right,
+  left,
+}: {
+  sortedNodeIndex: Map<SortImportsSpecifierSortingNode, number>
+  sortedNodes: SortImportsSpecifierSortingNode[]
+  left: SortImportsSpecifierSortingNode | null
+  right: SortImportsSpecifierSortingNode
+}): boolean {
+  if (!left?.parentImportNode || !right.parentImportNode) {
+    return false
+  }
+  if (left.parentImportNode !== right.parentImportNode) {
+    return false
+  }
+
+  let leftIndex = sortedNodeIndex.get(left)
+  let rightIndex = sortedNodeIndex.get(right)
+  /* v8 ignore next 2 -- @preserve Defensive guard for unexpected index lookups. */
+  if (leftIndex === undefined || rightIndex === undefined) {
+    return false
+  }
+
+  let start = Math.min(leftIndex, rightIndex)
+  let end = Math.max(leftIndex, rightIndex)
+  for (let i = start + 1; i < end; i++) {
+    if (sortedNodes[i]!.parentImportNode !== left.parentImportNode) {
+      return false
+    }
+  }
+
+  return true
 }
 
 let namedSpecifierSegmentsCache = new WeakMap<

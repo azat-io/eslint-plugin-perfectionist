@@ -4222,6 +4222,70 @@ describe('sort-imports', () => {
         ],
       })
 
+      await valid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        code: dedent`
+          import { c, a, b } from 'alpha'
+        `,
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        output: dedent`
+          import { alpha } from 'framework'
+          import { beta } from 'plugin'
+          import { gamma } from 'framework'
+        `,
+        code: dedent`
+          import { alpha, gamma } from 'framework'
+          import { beta } from 'plugin'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: ['type-import', 'value-external'],
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+          },
+        ],
+        output: dedent`
+          import { Bar } from 'models'
+          import { Baz } from 'services'
+          import { type Foo } from 'models'
+        `,
+        code: dedent`
+          import { type Foo, Bar } from 'models'
+          import { Baz } from 'services'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+      })
+
       await invalid({
         options: [
           {
@@ -4445,6 +4509,22 @@ describe('sort-imports', () => {
             messageId: 'unexpectedImportsOrder',
           },
         ],
+      })
+    })
+
+    it('ignores specifier order within a single import when splitting', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            partitionImportsSplitOnSort: true,
+            sortBy: 'specifier',
+            groups: ['unknown'],
+          },
+        ],
+        code: dedent`
+          import { zed, alpha } from 'alpha'
+        `,
       })
     })
   })
