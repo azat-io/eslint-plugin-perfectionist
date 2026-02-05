@@ -108,7 +108,9 @@ interface ReportAllErrorsParameters<
    * will compare this order against the sorted order to identify and report all
    * violations.
    */
-  customOrderFixes?(parameters: CustomOrderFixesParameters<T>): TSESLint.RuleFix[]
+  customOrderFixes?(
+    parameters: CustomOrderFixesParameters<T>,
+  ): TSESLint.RuleFix[]
 
   /**
    * Function to get sorted nodes with or without ESLint-disabled nodes.

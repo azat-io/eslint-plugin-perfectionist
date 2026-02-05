@@ -3,7 +3,12 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { SortImportsSortingNode, Modifier, Selector, Options, } from './sort-imports/types'
+import type {
+  SortImportsSortingNode,
+  Modifier,
+  Selector,
+  Options,
+} from './sort-imports/types'
 import type { CustomOrderFixesParameters } from '../utils/make-fixes'
 
 import {
@@ -465,12 +470,12 @@ function sortImportNodes({
     let sortingNodes = sortingNodeGroups.flat()
     let partitionSortingInfo =
       shouldSortPartitions(options) && sortingNodes.length > 0 ?
-      buildPartitionSortingInfo({
-        sortingNodeGroups,
-        sourceCode,
-        options,
-      })
-    : null
+        buildPartitionSortingInfo({
+          sortingNodeGroups,
+          sourceCode,
+          options,
+        })
+      : null
 
     if (options.useExperimentalDependencyDetection) {
       let allSortingNodes = sortingNodeGroups.flat()
@@ -486,15 +491,16 @@ function sortImportNodes({
       }
     }
 
-    let expandedSortingNodeGroups = options.partitionImportsSplitOnSort ?
-      sortingNodeGroups.map(nodes =>
-        expandSortingNodesBySpecifier({
-          sourceCode,
-          options,
-          nodes,
-        }),
-      )
-    : (sortingNodeGroups as SortImportsSpecifierSortingNode[][])
+    let expandedSortingNodeGroups =
+      options.partitionImportsSplitOnSort ?
+        sortingNodeGroups.map(nodes =>
+          expandSortingNodesBySpecifier({
+            sourceCode,
+            options,
+            nodes,
+          }),
+        )
+      : (sortingNodeGroups as SortImportsSpecifierSortingNode[][])
     let expandedSortingNodeGroupsForSorting =
       partitionSortingInfo ?
         partitionSortingInfo.sortedPartitions.map(({ nodes }) => {
@@ -503,9 +509,10 @@ function sortImportNodes({
         })
       : expandedSortingNodeGroups
 
-    let expandedSortingNodes = options.partitionImportsSplitOnSort ?
-      expandedSortingNodeGroups.flat()
-    : (sortingNodes as SortImportsSpecifierSortingNode[])
+    let expandedSortingNodes =
+      options.partitionImportsSplitOnSort ?
+        expandedSortingNodeGroups.flat()
+      : (sortingNodes as SortImportsSpecifierSortingNode[])
     let usesSpecifierSorting =
       options.partitionImportsSplitOnSort &&
       expandedSortingNodes.some(node => node.specifier)
@@ -518,19 +525,17 @@ function sortImportNodes({
       : null
     let sortedNodeIndexForIgnore =
       sortedNodesForIgnore ?
-        new Map(
-          sortedNodesForIgnore.map((node, index) => [node, index]),
-        )
+        new Map(sortedNodesForIgnore.map((node, index) => [node, index]))
       : null
 
     let partitionInfo =
       usesSpecifierSorting ?
-        partitionSortingInfo ??
+        (partitionSortingInfo ??
         buildPartitionInfo({
           sortingNodeGroups,
           sourceCode,
           options,
-        })
+        }))
       : null
 
     let partitionOrderFixes =
@@ -551,15 +556,16 @@ function sortImportNodes({
         unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
         unexpectedOrder: ORDER_ERROR_ID,
       },
-      shouldIgnoreOrder: usesSpecifierSorting ?
-        (left, right) =>
-          shouldIgnoreSpecifierOrder({
-            sortedNodeIndex: sortedNodeIndexForIgnore!,
-            sortedNodes: sortedNodesForIgnore!,
-            right,
-            left,
-          })
-      : undefined,
+      shouldIgnoreOrder:
+        usesSpecifierSorting ?
+          (left, right) =>
+            shouldIgnoreSpecifierOrder({
+              sortedNodeIndex: sortedNodeIndexForIgnore!,
+              sortedNodes: sortedNodesForIgnore!,
+              right,
+              left,
+            })
+        : undefined,
       newlinesBetweenValueGetter:
         usesSpecifierSorting ?
           ({ computedNewlinesBetween, right, left }) =>
@@ -793,16 +799,16 @@ function buildSplitImportDeclarationText({
     specifier => specifier.type === AST_NODE_TYPES.ImportSpecifier,
   )
 
-  let importKeyword = importNode.importKind === 'type' ? 'import type' : 'import'
+  let importKeyword =
+    importNode.importKind === 'type' ? 'import type' : 'import'
   let sourceText = sourceCode.getText(importNode.source)
 
   let namedText = ''
   if (namedSpecifiers.length > 0) {
     let segmentInfo = getNamedSpecifierSegments(importNode, sourceCode)
     namedText = namedSpecifiers
-      .map(
-        specifier =>
-          segmentInfo.segmentsBySpecifier.get(specifier)!.trimEnd(),
+      .map(specifier =>
+        segmentInfo.segmentsBySpecifier.get(specifier)!.trimEnd(),
       )
       .join(',')
     if (segmentInfo.hasTrailingComma) {
@@ -948,7 +954,12 @@ function buildOutputNodeText({
     )
   }
 
-  let { includeTrailingComment, includeLeadingComments, parentImportNode, specifiers } = outputNode
+  let {
+    includeTrailingComment,
+    includeLeadingComments,
+    parentImportNode,
+    specifiers,
+  } = outputNode
   let leadingText = ''
   if (includeLeadingComments) {
     let [start] = getNodeRange({
@@ -1104,7 +1115,9 @@ function expandSortingNodesBySpecifier({
 
     return importNode.specifiers.map(specifier => ({
       ...node,
-      dependencyNames: [computeImportSpecifierDependencyName(specifier, sourceCode)],
+      dependencyNames: [
+        computeImportSpecifierDependencyName(specifier, sourceCode),
+      ],
       specifierName: computeImportSpecifierName(specifier),
       specifierKind: getSpecifierKind(specifier),
       size: rangeToDiff(specifier, sourceCode),

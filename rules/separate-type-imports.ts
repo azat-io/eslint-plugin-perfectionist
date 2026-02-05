@@ -115,8 +115,7 @@ export default createEslintRule<Options, MessageId>({
       useImportType: 'Use "import type" for type-only named imports.',
     },
     docs: {
-      description:
-        'Require separating inline type imports from value imports.',
+      description: 'Require separating inline type imports from value imports.',
       recommended: true,
     },
     type: 'suggestion',
@@ -188,8 +187,7 @@ function buildSeparatedImportsFix({
     namespaceText:
       /* v8 ignore next -- @preserve Namespace specifiers cannot coexist with named specifiers in valid syntax. */
       namespaceSpecifier ? sourceCode.getText(namespaceSpecifier) : null,
-    defaultText:
-      defaultSpecifier ? sourceCode.getText(defaultSpecifier) : null,
+    defaultText: defaultSpecifier ? sourceCode.getText(defaultSpecifier) : null,
     namedText: valueNamedText,
     importKind: 'value',
     attributesText,
@@ -240,9 +238,7 @@ function buildTypeOnlyImport({
 
   let segments = buildNamedSpecifierSegments(namedSpecifiers, sourceCode)
 
-  let typeSegments = segments.map(segment =>
-    stripTypeKeyword(segment.text),
-  )
+  let typeSegments = segments.map(segment => stripTypeKeyword(segment.text))
   let typeNamedText = buildNamedListText(typeSegments)
 
   let sourceText = sourceCode.getText(node.source)
@@ -261,7 +257,7 @@ function getPartitionStart(
   node: TSESTree.ImportDeclaration,
   sourceCode: TSESLintSourceCode,
 ): TSESTree.ImportDeclaration | null {
-  let {parent} = node
+  let { parent } = node
   /* v8 ignore next 2 -- @preserve ImportDeclaration nodes belong to Program. */
   if (parent.type !== AST_NODE_TYPES.Program) {
     return null
@@ -362,12 +358,9 @@ function getClosingBraceToken(
   sourceCode: TSESLintSourceCode,
   specifier: TSESTree.ImportSpecifier,
 ): TSESTree.Token {
-  let token = sourceCode.getTokenAfter(
-    specifier,
-    {
-      includeComments: false,
-    },
-  )!
+  let token = sourceCode.getTokenAfter(specifier, {
+    includeComments: false,
+  })!
   if (token.value === ',') {
     return sourceCode.getTokenAfter(specifier, {
       filter: nextToken => nextToken.value === '}',
@@ -380,10 +373,7 @@ function getClosingBraceToken(
 function buildNamedListText(segments: string[]): string {
   let combined = segments.join('').trim()
   combined = combined.replace(/,\s*$/u, '')
-  if (
-    /\r?\n/u.test(combined) &&
-    !/\/\*|\/\//u.test(combined)
-  ) {
+  if (/\r?\n/u.test(combined) && !/\/\*|\/\//u.test(combined)) {
     combined = combined
       .replaceAll(/\s*\n\s*/gu, ' ')
       .replaceAll(/\s+/gu, ' ')

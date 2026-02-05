@@ -35,7 +35,9 @@ interface MakeFixesParameters<T extends SortingNode> {
   /**
    * Optional custom order fixes builder.
    */
-  customOrderFixes?(parameters: CustomOrderFixesParameters<T>): TSESLint.RuleFix[]
+  customOrderFixes?(
+    parameters: CustomOrderFixesParameters<T>,
+  ): TSESLint.RuleFix[]
 
   /**
    * Optional function to customize newlines between specific nodes.
@@ -139,23 +141,24 @@ export function makeFixes<T extends SortingNode>({
   fixer,
   nodes,
 }: MakeFixesParameters<T>): TSESLint.RuleFix[] {
-  let orderFixes = customOrderFixes ?
-    customOrderFixes({
-      ignoreFirstNodeHighestBlockComment,
-      sortedNodes,
-      sourceCode,
-      options,
-      fixer,
-      nodes,
-    })
-  : makeOrderFixes({
-      ignoreFirstNodeHighestBlockComment,
-      sortedNodes,
-      sourceCode,
-      options,
-      nodes,
-      fixer,
-    })
+  let orderFixes =
+    customOrderFixes ?
+      customOrderFixes({
+        ignoreFirstNodeHighestBlockComment,
+        sortedNodes,
+        sourceCode,
+        options,
+        fixer,
+        nodes,
+      })
+    : makeOrderFixes({
+        ignoreFirstNodeHighestBlockComment,
+        sortedNodes,
+        sourceCode,
+        options,
+        nodes,
+        fixer,
+      })
 
   if (customOrderFixesAreSingleRange && orderFixes.length > 0) {
     return orderFixes

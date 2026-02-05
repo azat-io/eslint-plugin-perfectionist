@@ -50,7 +50,9 @@ interface ReportErrorsParameters<
 > {
   options?: Pick<CommonPartitionOptions, 'partitionByComment'> &
     CommonGroupsOptions<string, unknown, unknown>
-  customOrderFixes?(parameters: CustomOrderFixesParameters<T>): TSESLint.RuleFix[]
+  customOrderFixes?(
+    parameters: CustomOrderFixesParameters<T>,
+  ): TSESLint.RuleFix[]
   newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
   context: TSESLint.RuleContext<MessageIds, unknown[]>
   ignoreFirstNodeHighestBlockComment?: boolean
