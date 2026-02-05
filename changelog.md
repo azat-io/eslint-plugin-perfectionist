@@ -1,5 +1,24 @@
 # Changelog
 
+## v5.5.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.4.0...v5.5.0)
+
+### 🚀 Features
+
+- **sort-classes:** Improve dependency detection algorithm
+  ([8bcbc88a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8bcbc88a))
+
+### 🐞 Bug Fixes
+
+- Prevent spread operator reordering in sort-sets and sort-array-includes
+  ([06b0f73e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/06b0f73e))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](https://github.com/azat-io))
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v5.4.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.3.1...v5.4.0)
