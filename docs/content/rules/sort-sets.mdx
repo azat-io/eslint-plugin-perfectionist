@@ -382,7 +382,8 @@ Predefined groups are characterized by a selector.
 ##### Selectors
 
 - `'literal'` — Set elements that are not spread values.
-- `'spread'` — Set elements that are spread values.
+
+**Note:** Spread elements (`...array`) are not sorted and act as partition boundaries. This ensures the original order of spread elements is preserved, which is important because reordering spread elements can change the iteration order of the resulting Set.
 
 #### Group with overridden settings
 

@@ -378,7 +378,8 @@ Predefined groups are characterized by a selector.
 ##### Selectors
 
 - `'literal'` — Array elements that are not spread values.
-- `'spread'` — Array elements that are spread values.
+
+**Note:** Spread elements (`...array`) are not sorted and act as partition boundaries. This ensures the original order of spread elements is preserved, which is important because reordering spread elements can change the resulting array values.
 
 #### Group with overridden settings
 
@@ -393,7 +394,6 @@ You may directly override options for a specific group by using an object with t
 {
   groups: [
     'literal',
-    { group: 'spread', type: 'unsorted' }, // Elements from this group will not be sorted
   ]
 }
 ```

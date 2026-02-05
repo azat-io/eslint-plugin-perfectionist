@@ -66,38 +66,71 @@ describe('sort-sets', () => {
       })
     })
 
-    it('sorts spread elements in sets', async () => {
+    it('does not sort spread elements', async () => {
       await valid({
         code: dedent`
           new Set([
             ...aaa,
-            ...bbbb,
             ...ccc,
+            ...bbbb,
+          ])
+        `,
+        options: [options],
+      })
+    })
+
+    it('treats spread elements as partition boundaries', async () => {
+      await valid({
+        code: dedent`
+          new Set([
+            'a',
+            'b',
+            ...spread1,
+            'd',
+            'e',
+            ...spread2,
+            'g',
+            'h',
           ])
         `,
         options: [options],
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: '...bbbb', left: '...ccc' },
-            messageId: 'unexpectedSetsOrder',
-          },
-        ],
         output: dedent`
           new Set([
-            ...aaa,
-            ...bbbb,
-            ...ccc,
+            'a',
+            'b',
+            ...spread,
+            'c',
+            'd',
           ])
         `,
         code: dedent`
           new Set([
-            ...aaa,
-            ...ccc,
-            ...bbbb,
+            'b',
+            'a',
+            ...spread,
+            'c',
+            'd',
           ])
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedSetsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [options],
+      })
+    })
+
+    it('does not reorder spread operators to preserve Set iteration order', async () => {
+      await valid({
+        code: dedent`
+          const l = [1, 3]
+          const k = [2, 4]
+          const list = [...new Set([...l, ...k])]
         `,
         options: [options],
       })
@@ -217,8 +250,14 @@ describe('sort-sets', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
+          customGroups: [
+            {
+              elementNamePattern: '^top',
+              groupName: 'top',
+            },
+          ],
+          groups: ['top', 'unknown'],
           partitionByNewLine: true,
-          groups: ['spread'],
         },
       ]
 
@@ -226,18 +265,18 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
-              right: '...d',
+              rightGroup: 'top',
+              right: 'top2',
               left: 'c',
             },
             messageId: 'unexpectedSetsGroupOrder',
           },
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
-              right: '...b',
+              rightGroup: 'top',
+              right: 'top1',
               left: 'a',
             },
             messageId: 'unexpectedSetsGroupOrder',
@@ -245,20 +284,20 @@ describe('sort-sets', () => {
         ],
         output: dedent`
           new Set([
-            ...d,
+            'top2',
             'c',
 
-            ...b,
+            'top1',
             'a',
           ])
         `,
         code: dedent`
           new Set([
             'c',
-            ...d,
+            'top2',
 
             'a',
-            ...b,
+            'top1',
           ])
         `,
         options: partitionWithGroupOptions,
@@ -640,26 +679,32 @@ describe('sort-sets', () => {
 
     it('enforces custom group ordering', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: '^top',
+                groupName: 'top',
+              },
+            ],
+            groups: ['top', 'literal'],
+          },
+        ],
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'literal',
-              right: '...b',
+              rightGroup: 'top',
+              right: 'top1',
               left: 'c',
             },
             messageId: 'unexpectedSetsGroupOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: ['spread', 'literal'],
-          },
-        ],
         output: dedent`
           new Set([
-            ...b,
+            'top1',
             'a',
             'c'
           ])
@@ -667,7 +712,7 @@ describe('sort-sets', () => {
         code: dedent`
           new Set([
             'c',
-            ...b,
+            'top1',
             'a'
           ])
         `,
@@ -679,11 +724,11 @@ describe('sort-sets', () => {
         {
           customGroups: [
             {
-              groupName: 'literalElements',
-              selector: 'literal',
+              elementNamePattern: '^top',
+              groupName: 'topElements',
             },
           ],
-          groups: ['literalElements', 'unknown'],
+          groups: ['topElements', 'unknown'],
         },
       ]
 
@@ -691,24 +736,24 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'literalElements',
+              rightGroup: 'topElements',
               leftGroup: 'unknown',
-              left: '...b',
-              right: 'a',
+              right: 'top1',
+              left: 'b',
             },
             messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
           new Set([
-            'a',
-            ...b,
+            'top1',
+            'b',
           ])
         `,
         code: dedent`
           new Set([
-            ...b,
-            'a',
+            'b',
+            'top1',
           ])
         `,
         options: customGroupOptions,
@@ -798,26 +843,17 @@ describe('sort-sets', () => {
             data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedSetsOrder',
           },
-          {
-            data: {
-              rightGroup: 'reversedLiteralsByLineLength',
-              leftGroup: 'unknown',
-              left: '...m',
-              right: 'eee',
-            },
-            messageId: 'unexpectedSetsGroupOrder',
-          },
         ],
         output: dedent`
           new Set([
             'dddd',
             'ccc',
-            'eee',
             'bb',
-            'ff',
             'a',
-            'g',
             ...m,
+            'eee',
+            'ff',
+            'g',
             ...o,
             ...p,
           ])
@@ -889,12 +925,12 @@ describe('sort-sets', () => {
         {
           customGroups: [
             {
-              groupName: 'unsortedLiterals',
-              selector: 'literal',
+              elementNamePattern: '^top',
+              groupName: 'unsortedTop',
               type: 'unsorted',
             },
           ],
-          groups: ['unsortedLiterals', 'unknown'],
+          groups: ['unsortedTop', 'unknown'],
         },
       ]
 
@@ -902,32 +938,32 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'unsortedLiterals',
+              rightGroup: 'unsortedTop',
               leftGroup: 'unknown',
-              left: '...m',
-              right: 'c',
+              right: 'top3',
+              left: 'm',
             },
             messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
           new Set([
-            'b',
-            'a',
-            'd',
-            'e',
-            'c',
-            ...m,
+            'top2',
+            'top1',
+            'top4',
+            'top5',
+            'top3',
+            'm',
           ])
         `,
         code: dedent`
           new Set([
-            'b',
-            'a',
-            'd',
-            'e',
-            ...m,
-            'c',
+            'top2',
+            'top1',
+            'top4',
+            'top5',
+            'm',
+            'top3',
           ])
         `,
         options: unsortedGroupOptions,
@@ -941,12 +977,10 @@ describe('sort-sets', () => {
             {
               anyOf: [
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'literal',
+                  elementNamePattern: 'foo',
                 },
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'spread',
+                  elementNamePattern: 'Foo',
                 },
               ],
               groupName: 'elementsIncludingFoo',
@@ -962,7 +996,7 @@ describe('sort-sets', () => {
             data: {
               rightGroup: 'elementsIncludingFoo',
               leftGroup: 'unknown',
-              right: '...foo',
+              right: 'bFoo',
               left: 'a',
             },
             messageId: 'unexpectedSetsGroupOrder',
@@ -970,7 +1004,7 @@ describe('sort-sets', () => {
         ],
         output: dedent`
           new Set([
-            '...foo',
+            'bFoo',
             'cFoo',
             'a',
           ])
@@ -978,7 +1012,7 @@ describe('sort-sets', () => {
         code: dedent`
           new Set([
             'a',
-            '...foo',
+            'bFoo',
             'cFoo',
           ])
         `,
@@ -1635,39 +1669,61 @@ describe('sort-sets', () => {
       })
     })
 
-    it('sorts spread elements in sets', async () => {
+    it('does not sort spread elements', async () => {
       await valid({
         code: dedent`
           new Set([
             ...aaa,
-            ...bbbb,
             ...ccc,
+            ...bbbb,
+          ])
+        `,
+        options: [options],
+      })
+    })
+
+    it('treats spread elements as partition boundaries', async () => {
+      await valid({
+        code: dedent`
+          new Set([
+            'a',
+            'b',
+            ...spread1,
+            'd',
+            'e',
+            ...spread2,
+            'g',
+            'h',
           ])
         `,
         options: [options],
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: '...bbbb', left: '...ccc' },
-            messageId: 'unexpectedSetsOrder',
-          },
-        ],
         output: dedent`
           new Set([
-            ...aaa,
-            ...bbbb,
-            ...ccc,
+            'a',
+            'b',
+            ...spread,
+            'c',
+            'd',
           ])
         `,
         code: dedent`
           new Set([
-            ...aaa,
-            ...ccc,
-            ...bbbb,
+            'b',
+            'a',
+            ...spread,
+            'c',
+            'd',
           ])
         `,
+        errors: [
+          {
+            messageId: 'unexpectedSetsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: [options],
       })
     })
@@ -1786,8 +1842,14 @@ describe('sort-sets', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
+          customGroups: [
+            {
+              elementNamePattern: '^top',
+              groupName: 'top',
+            },
+          ],
+          groups: ['top', 'unknown'],
           partitionByNewLine: true,
-          groups: ['spread'],
         },
       ]
 
@@ -1795,18 +1857,18 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
-              right: '...d',
+              rightGroup: 'top',
+              right: 'top2',
               left: 'c',
             },
             messageId: 'unexpectedSetsGroupOrder',
           },
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
-              right: '...b',
+              rightGroup: 'top',
+              right: 'top1',
               left: 'a',
             },
             messageId: 'unexpectedSetsGroupOrder',
@@ -1814,20 +1876,20 @@ describe('sort-sets', () => {
         ],
         output: dedent`
           new Set([
-            ...d,
+            'top2',
             'c',
 
-            ...b,
+            'top1',
             'a',
           ])
         `,
         code: dedent`
           new Set([
             'c',
-            ...d,
+            'top2',
 
             'a',
-            ...b,
+            'top1',
           ])
         `,
         options: partitionWithGroupOptions,
@@ -2167,26 +2229,32 @@ describe('sort-sets', () => {
 
     it('enforces custom group ordering', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: '^top',
+                groupName: 'top',
+              },
+            ],
+            groups: ['top', 'literal'],
+          },
+        ],
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'literal',
-              right: '...b',
+              rightGroup: 'top',
+              right: 'top1',
               left: 'c',
             },
             messageId: 'unexpectedSetsGroupOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: ['spread', 'literal'],
-          },
-        ],
         output: dedent`
           new Set([
-            ...b,
+            'top1',
             'a',
             'c'
           ])
@@ -2194,7 +2262,7 @@ describe('sort-sets', () => {
         code: dedent`
           new Set([
             'c',
-            ...b,
+            'top1',
             'a'
           ])
         `,
@@ -2206,11 +2274,11 @@ describe('sort-sets', () => {
         {
           customGroups: [
             {
-              groupName: 'literalElements',
-              selector: 'literal',
+              elementNamePattern: '^top',
+              groupName: 'topElements',
             },
           ],
-          groups: ['literalElements', 'unknown'],
+          groups: ['topElements', 'unknown'],
         },
       ]
 
@@ -2218,24 +2286,24 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'literalElements',
+              rightGroup: 'topElements',
               leftGroup: 'unknown',
-              left: '...b',
-              right: 'a',
+              right: 'top1',
+              left: 'b',
             },
             messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
           new Set([
-            'a',
-            ...b,
+            'top1',
+            'b',
           ])
         `,
         code: dedent`
           new Set([
-            ...b,
-            'a',
+            'b',
+            'top1',
           ])
         `,
         options: customGroupOptions,
@@ -2325,26 +2393,17 @@ describe('sort-sets', () => {
             data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedSetsOrder',
           },
-          {
-            data: {
-              rightGroup: 'reversedLiteralsByLineLength',
-              leftGroup: 'unknown',
-              left: '...m',
-              right: 'eee',
-            },
-            messageId: 'unexpectedSetsGroupOrder',
-          },
         ],
         output: dedent`
           new Set([
             'dddd',
             'ccc',
-            'eee',
             'bb',
-            'ff',
             'a',
-            'g',
             ...m,
+            'eee',
+            'ff',
+            'g',
             ...o,
             ...p,
           ])
@@ -2416,12 +2475,12 @@ describe('sort-sets', () => {
         {
           customGroups: [
             {
-              groupName: 'unsortedLiterals',
-              selector: 'literal',
+              elementNamePattern: '^top',
+              groupName: 'unsortedTop',
               type: 'unsorted',
             },
           ],
-          groups: ['unsortedLiterals', 'unknown'],
+          groups: ['unsortedTop', 'unknown'],
         },
       ]
 
@@ -2429,32 +2488,32 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'unsortedLiterals',
+              rightGroup: 'unsortedTop',
               leftGroup: 'unknown',
-              left: '...m',
-              right: 'c',
+              right: 'top3',
+              left: 'm',
             },
             messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
           new Set([
-            'b',
-            'a',
-            'd',
-            'e',
-            'c',
-            ...m,
+            'top2',
+            'top1',
+            'top4',
+            'top5',
+            'top3',
+            'm',
           ])
         `,
         code: dedent`
           new Set([
-            'b',
-            'a',
-            'd',
-            'e',
-            ...m,
-            'c',
+            'top2',
+            'top1',
+            'top4',
+            'top5',
+            'm',
+            'top3',
           ])
         `,
         options: unsortedGroupOptions,
@@ -2468,12 +2527,10 @@ describe('sort-sets', () => {
             {
               anyOf: [
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'literal',
+                  elementNamePattern: 'foo',
                 },
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'spread',
+                  elementNamePattern: 'Foo',
                 },
               ],
               groupName: 'elementsIncludingFoo',
@@ -2489,7 +2546,7 @@ describe('sort-sets', () => {
             data: {
               rightGroup: 'elementsIncludingFoo',
               leftGroup: 'unknown',
-              right: '...foo',
+              right: 'bFoo',
               left: 'a',
             },
             messageId: 'unexpectedSetsGroupOrder',
@@ -2497,7 +2554,7 @@ describe('sort-sets', () => {
         ],
         output: dedent`
           new Set([
-            '...foo',
+            'bFoo',
             'cFoo',
             'a',
           ])
@@ -2505,7 +2562,7 @@ describe('sort-sets', () => {
         code: dedent`
           new Set([
             'a',
-            '...foo',
+            'bFoo',
             'cFoo',
           ])
         `,
@@ -3058,39 +3115,61 @@ describe('sort-sets', () => {
       })
     })
 
-    it('sorts spread elements in sets', async () => {
+    it('does not sort spread elements', async () => {
       await valid({
         code: dedent`
           new Set([
             ...aaa,
-            ...bb,
             ...c,
+            ...bb,
+          ])
+        `,
+        options: [options],
+      })
+    })
+
+    it('treats spread elements as partition boundaries', async () => {
+      await valid({
+        code: dedent`
+          new Set([
+            'aa',
+            'b',
+            ...spread1,
+            'dd',
+            'e',
+            ...spread2,
+            'gg',
+            'h',
           ])
         `,
         options: [options],
       })
 
       await invalid({
-        errors: [
-          {
-            data: { right: '...bb', left: '...c' },
-            messageId: 'unexpectedSetsOrder',
-          },
-        ],
         output: dedent`
           new Set([
-            ...aaa,
-            ...bb,
-            ...c,
+            'aa',
+            'b',
+            ...spread,
+            'cc',
+            'd',
           ])
         `,
         code: dedent`
           new Set([
-            ...aaa,
-            ...c,
-            ...bb,
+            'b',
+            'aa',
+            ...spread,
+            'cc',
+            'd',
           ])
         `,
+        errors: [
+          {
+            data: { right: 'aa', left: 'b' },
+            messageId: 'unexpectedSetsOrder',
+          },
+        ],
         options: [options],
       })
     })
@@ -3209,8 +3288,14 @@ describe('sort-sets', () => {
       let partitionWithGroupOptions = [
         {
           ...options,
+          customGroups: [
+            {
+              elementNamePattern: '^top',
+              groupName: 'top',
+            },
+          ],
+          groups: ['top', 'unknown'],
           partitionByNewLine: true,
-          groups: ['spread'],
         },
       ]
 
@@ -3218,18 +3303,18 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
-              right: '...d',
+              rightGroup: 'top',
+              right: 'top2',
               left: 'c',
             },
             messageId: 'unexpectedSetsGroupOrder',
           },
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'unknown',
-              right: '...b',
+              rightGroup: 'top',
+              right: 'top1',
               left: 'a',
             },
             messageId: 'unexpectedSetsGroupOrder',
@@ -3237,20 +3322,20 @@ describe('sort-sets', () => {
         ],
         output: dedent`
           new Set([
-            ...d,
+            'top2',
             'c',
 
-            ...b,
+            'top1',
             'a',
           ])
         `,
         code: dedent`
           new Set([
             'c',
-            ...d,
+            'top2',
 
             'a',
-            ...b,
+            'top1',
           ])
         `,
         options: partitionWithGroupOptions,
@@ -3590,26 +3675,32 @@ describe('sort-sets', () => {
 
     it('enforces custom group ordering', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: '^top',
+                groupName: 'top',
+              },
+            ],
+            groups: ['top', 'literal'],
+          },
+        ],
         errors: [
           {
             data: {
-              rightGroup: 'spread',
               leftGroup: 'literal',
-              right: '...b',
+              rightGroup: 'top',
+              right: 'top1',
               left: 'c',
             },
             messageId: 'unexpectedSetsGroupOrder',
           },
         ],
-        options: [
-          {
-            ...options,
-            groups: ['spread', 'literal'],
-          },
-        ],
         output: dedent`
           new Set([
-            ...b,
+            'top1',
             'c',
             'a'
           ])
@@ -3617,7 +3708,7 @@ describe('sort-sets', () => {
         code: dedent`
           new Set([
             'c',
-            ...b,
+            'top1',
             'a'
           ])
         `,
@@ -3629,11 +3720,11 @@ describe('sort-sets', () => {
         {
           customGroups: [
             {
-              groupName: 'literalElements',
-              selector: 'literal',
+              elementNamePattern: '^top',
+              groupName: 'topElements',
             },
           ],
-          groups: ['literalElements', 'unknown'],
+          groups: ['topElements', 'unknown'],
         },
       ]
 
@@ -3641,24 +3732,24 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'literalElements',
+              rightGroup: 'topElements',
               leftGroup: 'unknown',
-              left: '...b',
-              right: 'a',
+              right: 'top1',
+              left: 'b',
             },
             messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
           new Set([
-            'a',
-            ...b,
+            'top1',
+            'b',
           ])
         `,
         code: dedent`
           new Set([
-            ...b,
-            'a',
+            'b',
+            'top1',
           ])
         `,
         options: customGroupOptions,
@@ -3748,26 +3839,17 @@ describe('sort-sets', () => {
             data: { right: 'dddd', left: 'ccc' },
             messageId: 'unexpectedSetsOrder',
           },
-          {
-            data: {
-              rightGroup: 'reversedLiteralsByLineLength',
-              leftGroup: 'unknown',
-              left: '...m',
-              right: 'eee',
-            },
-            messageId: 'unexpectedSetsGroupOrder',
-          },
         ],
         output: dedent`
           new Set([
             'dddd',
             'ccc',
-            'eee',
             'bb',
-            'ff',
             'a',
-            'g',
             ...m,
+            'eee',
+            'ff',
+            'g',
             ...o,
             ...p,
           ])
@@ -3839,12 +3921,12 @@ describe('sort-sets', () => {
         {
           customGroups: [
             {
-              groupName: 'unsortedLiterals',
-              selector: 'literal',
+              elementNamePattern: '^top',
+              groupName: 'unsortedTop',
               type: 'unsorted',
             },
           ],
-          groups: ['unsortedLiterals', 'unknown'],
+          groups: ['unsortedTop', 'unknown'],
         },
       ]
 
@@ -3852,32 +3934,32 @@ describe('sort-sets', () => {
         errors: [
           {
             data: {
-              rightGroup: 'unsortedLiterals',
+              rightGroup: 'unsortedTop',
               leftGroup: 'unknown',
-              left: '...m',
-              right: 'c',
+              right: 'top3',
+              left: 'm',
             },
             messageId: 'unexpectedSetsGroupOrder',
           },
         ],
         output: dedent`
           new Set([
-            'b',
-            'a',
-            'd',
-            'e',
-            'c',
-            ...m,
+            'top2',
+            'top1',
+            'top4',
+            'top5',
+            'top3',
+            'm',
           ])
         `,
         code: dedent`
           new Set([
-            'b',
-            'a',
-            'd',
-            'e',
-            ...m,
-            'c',
+            'top2',
+            'top1',
+            'top4',
+            'top5',
+            'm',
+            'top3',
           ])
         `,
         options: unsortedGroupOptions,
@@ -3891,12 +3973,10 @@ describe('sort-sets', () => {
             {
               anyOf: [
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'literal',
+                  elementNamePattern: 'foo',
                 },
                 {
-                  elementNamePattern: 'foo|Foo',
-                  selector: 'spread',
+                  elementNamePattern: 'Foo',
                 },
               ],
               groupName: 'elementsIncludingFoo',
@@ -3912,7 +3992,7 @@ describe('sort-sets', () => {
             data: {
               rightGroup: 'elementsIncludingFoo',
               leftGroup: 'unknown',
-              right: '...foo',
+              right: 'bFoo',
               left: 'a',
             },
             messageId: 'unexpectedSetsGroupOrder',
@@ -3920,7 +4000,7 @@ describe('sort-sets', () => {
         ],
         output: dedent`
           new Set([
-            '...foo',
+            'bFoo',
             'cFoo',
             'a',
           ])
@@ -3928,7 +4008,7 @@ describe('sort-sets', () => {
         code: dedent`
           new Set([
             'a',
-            '...foo',
+            'bFoo',
             'cFoo',
           ])
         `,
