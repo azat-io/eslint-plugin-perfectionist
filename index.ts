@@ -2,6 +2,7 @@ import type { ESLint, Linter } from 'eslint'
 
 import { version as packageVersion, name as packageName } from './package.json'
 import sortVariableDeclarations from './rules/sort-variable-declarations'
+import separateTypePartitions from './rules/separate-type-partitions'
 import sortIntersectionTypes from './rules/sort-intersection-types'
 import sortImportAttributes from './rules/sort-import-attributes'
 import sortExportAttributes from './rules/sort-export-attributes'
@@ -48,6 +49,7 @@ let pluginName = 'perfectionist'
 
 export let rules = {
   'sort-variable-declarations': sortVariableDeclarations,
+  'separate-type-partitions': separateTypePartitions,
   'sort-intersection-types': sortIntersectionTypes,
   'sort-import-attributes': sortImportAttributes,
   'sort-export-attributes': sortExportAttributes,
