@@ -165,9 +165,6 @@ export default createEslintRule<Options, MessageId>({
           member,
         ) => {
           if (!isKnownClassElement(member)) {
-            if (accumulator.at(-1)?.length) {
-              accumulator.push([])
-            }
             return accumulator
           }
 

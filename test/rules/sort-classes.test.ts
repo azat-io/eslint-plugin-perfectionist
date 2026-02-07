@@ -7,46 +7,54 @@ import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-classes'
 
+type ParsedProgram = ReturnType<typeof typescriptParser.parseForESLint>['ast']
+
 function injectUnknownClassElement({
-  insertIndex,
+  elementToMarkAsUnknown,
+  code,
   ast,
 }: {
-  ast: { body: unknown[] }
-  insertIndex: number
+  elementToMarkAsUnknown: string
+  ast: ParsedProgram
+  code: string
 }): void {
-  let classDeclaration = ast.body.find(
-    node =>
-      !!node &&
-      typeof node === 'object' &&
-      (node as { type?: string }).type === 'ClassDeclaration',
-  ) as { body: { body: unknown[] } }
-  let classBody = classDeclaration.body
-
-  let baseNode =
-    classBody.body.find(
-      node =>
-        !!node &&
-        typeof node === 'object' &&
-        (node as { type?: string }).type === 'StaticBlock',
-    ) ?? classBody.body[0]
-  let unknownNode = {
-    ...(baseNode as Record<string, unknown>),
-    type: 'GlimmerTemplate',
+  let classDeclaration = ast.body.find(node => node.type === 'ClassDeclaration')
+  if (!classDeclaration) {
+    throw new Error('No class declaration found')
   }
-  delete (unknownNode as Record<string, unknown>)['key']
 
-  classBody.body.splice(insertIndex, 0, unknownNode)
+  let { body: classBody } = classDeclaration
+  let matchingNodeIndex = classBody.body.findIndex(
+    node => code.slice(node.range[0], node.range[1]) === elementToMarkAsUnknown,
+  )
+  if (matchingNodeIndex < 0) {
+    throw new Error(
+      `No class element found with content "${elementToMarkAsUnknown}".`,
+    )
+  }
+
+  classBody.body[matchingNodeIndex] = {
+    type: 'GlimmerTemplate',
+  } as unknown as (typeof classBody.body)[number]
 }
 
 let unknownClassElementParser = {
   ...typescriptParser,
   parseForESLint(
     code: string,
-    parserOptions?: Parameters<typeof typescriptParser.parseForESLint>[1],
+    parserOptions?: Parameters<typeof typescriptParser.parseForESLint>[1] & {
+      elementToMarkAsUnknown: string
+    },
   ) {
+    if (!parserOptions?.elementToMarkAsUnknown) {
+      throw new Error('parserOptions.elementToMarkAsUnknown option is required')
+    }
     let result = typescriptParser.parseForESLint(code, parserOptions)
-    let insertIndex = code.includes('unknown-first') ? 0 : 1
-    injectUnknownClassElement({ ast: result.ast, insertIndex })
+    injectUnknownClassElement({
+      elementToMarkAsUnknown: parserOptions.elementToMarkAsUnknown,
+      ast: result.ast,
+      code,
+    })
     return result
   },
 }
@@ -61,7 +69,10 @@ describe('sort-classes', () => {
     name: 'sort-classes',
     rule,
   })
-  let { valid: validWithUnknownClassElement } = createRuleTester({
+  let {
+    invalid: invalidWithUnknownClassElement,
+    valid: validWithUnknownClassElement,
+  } = createRuleTester({
     name: 'sort-classes (unknown class element)',
     parser: unknownClassElementParser,
     rule,
@@ -14366,25 +14377,44 @@ describe('sort-classes', () => {
     it('does not crash when class body contains unknown elements', async () => {
       await validWithUnknownClassElement({
         code: dedent`
-          // unknown-first
           class Example {
-            static {}
             a() {}
+            anUnknownElement
             b() {}
           }
         `,
+        parserOptions: {
+          elementToMarkAsUnknown: 'anUnknownElement',
+        },
         options: [{}],
       })
     })
 
-    it('does not reorder members across unknown elements', async () => {
-      await validWithUnknownClassElement({
+    it('does not take into account unknown elements', async () => {
+      await invalidWithUnknownClassElement({
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          class Example {
+            a() {}
+            anUnknownElement
+            b() {}
+          }
+        `,
         code: dedent`
           class Example {
             b() {}
+            anUnknownElement
             a() {}
           }
         `,
+        parserOptions: {
+          elementToMarkAsUnknown: 'anUnknownElement',
+        },
         options: [{}],
       })
     })
