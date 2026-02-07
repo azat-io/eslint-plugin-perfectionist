@@ -7,6 +7,50 @@ import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-classes'
 
+function injectUnknownClassElement({
+  insertIndex,
+  ast,
+}: {
+  ast: { body: unknown[] }
+  insertIndex: number
+}): void {
+  let classDeclaration = ast.body.find(
+    node =>
+      !!node &&
+      typeof node === 'object' &&
+      (node as { type?: string }).type === 'ClassDeclaration',
+  ) as { body: { body: unknown[] } }
+  let classBody = classDeclaration.body
+
+  let baseNode =
+    classBody.body.find(
+      node =>
+        !!node &&
+        typeof node === 'object' &&
+        (node as { type?: string }).type === 'StaticBlock',
+    ) ?? classBody.body[0]
+  let unknownNode = {
+    ...(baseNode as Record<string, unknown>),
+    type: 'GlimmerTemplate',
+  }
+  delete (unknownNode as Record<string, unknown>)['key']
+
+  classBody.body.splice(insertIndex, 0, unknownNode)
+}
+
+let unknownClassElementParser = {
+  ...typescriptParser,
+  parseForESLint(
+    code: string,
+    parserOptions?: Parameters<typeof typescriptParser.parseForESLint>[1],
+  ) {
+    let result = typescriptParser.parseForESLint(code, parserOptions)
+    let insertIndex = code.includes('unknown-first') ? 0 : 1
+    injectUnknownClassElement({ ast: result.ast, insertIndex })
+    return result
+  },
+}
+
 describe('sort-classes', () => {
   let { valid: validEspree } = createRuleTester({
     name: 'sort-classes (espree)',
@@ -15,6 +59,11 @@ describe('sort-classes', () => {
   let { invalid, valid } = createRuleTester({
     parser: typescriptParser,
     name: 'sort-classes',
+    rule,
+  })
+  let { valid: validWithUnknownClassElement } = createRuleTester({
+    name: 'sort-classes (unknown class element)',
+    parser: unknownClassElementParser,
     rule,
   })
 
@@ -14312,6 +14361,32 @@ describe('sort-classes', () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
       ).resolves.not.toThrowError()
+    })
+
+    it('does not crash when class body contains unknown elements', async () => {
+      await validWithUnknownClassElement({
+        code: dedent`
+          // unknown-first
+          class Example {
+            static {}
+            a() {}
+            b() {}
+          }
+        `,
+        options: [{}],
+      })
+    })
+
+    it('does not reorder members across unknown elements', async () => {
+      await validWithUnknownClassElement({
+        code: dedent`
+          class Example {
+            b() {}
+            a() {}
+          }
+        `,
+        options: [{}],
+      })
     })
 
     it('allows overriding options in groups', async () => {

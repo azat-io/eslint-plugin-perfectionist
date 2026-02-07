@@ -48,6 +48,7 @@ import { validateGroupsConfiguration } from '../utils/validate-groups-configurat
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isKnownClassElement } from './sort-classes/is-known-class-element'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
@@ -163,6 +164,13 @@ export default createEslintRule<Options, MessageId>({
           >[][],
           member,
         ) => {
+          if (!isKnownClassElement(member)) {
+            if (accumulator.at(-1)?.length) {
+              accumulator.push([])
+            }
+            return accumulator
+          }
+
           let dependencies: string[] = []
 
           let isDecorated = false
@@ -290,7 +298,6 @@ export default createEslintRule<Options, MessageId>({
             predefinedGroups,
             options,
           })
-
           let sortingNode: Omit<
             SortClassesSortingNode,
             'overloadSignatureImplementation' | 'partitionId'
