@@ -7,6 +7,58 @@ import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-classes'
 
+type ParsedProgram = ReturnType<typeof typescriptParser.parseForESLint>['ast']
+
+function injectUnknownClassElement({
+  elementToMarkAsUnknown,
+  code,
+  ast,
+}: {
+  elementToMarkAsUnknown: string
+  ast: ParsedProgram
+  code: string
+}): void {
+  let classDeclaration = ast.body.find(node => node.type === 'ClassDeclaration')
+  if (!classDeclaration) {
+    throw new Error('No class declaration found')
+  }
+
+  let { body: classBody } = classDeclaration
+  let matchingNodeIndex = classBody.body.findIndex(
+    node => code.slice(node.range[0], node.range[1]) === elementToMarkAsUnknown,
+  )
+  if (matchingNodeIndex < 0) {
+    throw new Error(
+      `No class element found with content "${elementToMarkAsUnknown}".`,
+    )
+  }
+
+  classBody.body[matchingNodeIndex] = {
+    type: 'GlimmerTemplate',
+  } as unknown as (typeof classBody.body)[number]
+}
+
+let unknownClassElementParser = {
+  ...typescriptParser,
+  parseForESLint(
+    code: string,
+    parserOptions?: Parameters<typeof typescriptParser.parseForESLint>[1] & {
+      elementToMarkAsUnknown: string
+    },
+  ) {
+    if (!parserOptions?.elementToMarkAsUnknown) {
+      throw new Error('parserOptions.elementToMarkAsUnknown option is required')
+    }
+    let result = typescriptParser.parseForESLint(code, parserOptions)
+    injectUnknownClassElement({
+      elementToMarkAsUnknown: parserOptions.elementToMarkAsUnknown,
+      ast: result.ast,
+      code,
+    })
+    return result
+  },
+}
+
 describe('sort-classes', () => {
   let { valid: validEspree } = createRuleTester({
     name: 'sort-classes (espree)',
@@ -15,6 +67,14 @@ describe('sort-classes', () => {
   let { invalid, valid } = createRuleTester({
     parser: typescriptParser,
     name: 'sort-classes',
+    rule,
+  })
+  let {
+    invalid: invalidWithUnknownClassElement,
+    valid: validWithUnknownClassElement,
+  } = createRuleTester({
+    name: 'sort-classes (unknown class element)',
+    parser: unknownClassElementParser,
     rule,
   })
 
@@ -14312,6 +14372,51 @@ describe('sort-classes', () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
       ).resolves.not.toThrowError()
+    })
+
+    it('does not crash when class body contains unknown elements', async () => {
+      await validWithUnknownClassElement({
+        code: dedent`
+          class Example {
+            a() {}
+            anUnknownElement
+            b() {}
+          }
+        `,
+        parserOptions: {
+          elementToMarkAsUnknown: 'anUnknownElement',
+        },
+        options: [{}],
+      })
+    })
+
+    it('does not take into account unknown elements', async () => {
+      await invalidWithUnknownClassElement({
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          class Example {
+            a() {}
+            anUnknownElement
+            b() {}
+          }
+        `,
+        code: dedent`
+          class Example {
+            b() {}
+            anUnknownElement
+            a() {}
+          }
+        `,
+        parserOptions: {
+          elementToMarkAsUnknown: 'anUnknownElement',
+        },
+        options: [{}],
+      })
     })
 
     it('allows overriding options in groups', async () => {
