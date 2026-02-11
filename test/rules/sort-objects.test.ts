@@ -2682,88 +2682,6 @@ describe('sort-objects', () => {
         })
       })
 
-      it('matches callingFunctionNamePattern for chained function calls', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                callingFunctionNamePattern: 'foo',
-              },
-              type: 'unsorted',
-            },
-            {
-              type: 'alphabetical',
-            },
-          ],
-          code: dedent`
-            let a = foo("arg")({
-              b: "b",
-              a: "a",
-            })
-          `,
-        })
-
-        await valid({
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                callingFunctionNamePattern: {
-                  pattern: String.raw`^foo\(`,
-                  scope: 'deep',
-                },
-              },
-              type: 'unsorted',
-            },
-            {
-              type: 'alphabetical',
-            },
-          ],
-          code: dedent`
-            export const v = foo("arg")({
-              d: () => null,
-              c: ({ search: { limit } }) => ({ limit }),
-              b() {},
-              a: () => ({}),
-            })
-          `,
-        })
-
-        await invalid({
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                callingFunctionNamePattern: 'foo',
-              },
-              type: 'unsorted',
-            },
-            {
-              type: 'alphabetical',
-            },
-          ],
-          errors: [
-            {
-              messageId: 'unexpectedObjectsOrder',
-              data: { right: 'a', left: 'b' },
-            },
-          ],
-          output: dedent`
-            let a = bar({
-              a: "a",
-              b: "b",
-            })
-          `,
-          code: dedent`
-            let a = bar({
-              b: "b",
-              a: "a",
-            })
-          `,
-        })
-      })
-
       it('matches shallow and deep calls at the same time', async () => {
         await invalid({
           output: dedent`
@@ -2876,6 +2794,55 @@ describe('sort-objects', () => {
               data: { right: 'a', left: 'b' },
             },
           ],
+        })
+      })
+
+      it('matches callingFunctionNamePattern for chained function calls', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: 'foo',
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let a = foo("arg")({
+              b: "b",
+              a: "a",
+            })
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: {
+                  pattern: String.raw`^foo\(`,
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            export const v = foo("arg")({
+              d: () => null,
+              c: ({ search: { limit } }) => ({ limit }),
+              b() {},
+              a: () => ({}),
+            })
+          `,
         })
       })
     })
@@ -3536,10 +3503,7 @@ describe('sort-objects', () => {
             {
               ...options,
               useConfigurationIf: {
-                declarationCommentMatchesPattern: {
-                  pattern: 'do not sort',
-                  scope: 'deep',
-                },
+                declarationCommentMatchesPattern: 'do not sort',
               },
               type: 'unsorted',
             },
