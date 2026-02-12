@@ -42,8 +42,16 @@ function computeRelevantNodeForComment(
 ): TSESTree.Node {
   let objectParentType = objectParent.type
   switch (objectParentType) {
-    case AST_NODE_TYPES.VariableDeclarator:
-      return objectParent.parent
+    case AST_NODE_TYPES.VariableDeclarator: {
+      let variableDeclaration = objectParent.parent
+      if (
+        variableDeclaration.parent?.type ===
+        AST_NODE_TYPES.ExportNamedDeclaration
+      ) {
+        return variableDeclaration.parent
+      }
+      return variableDeclaration
+    }
     case AST_NODE_TYPES.CallExpression:
     case AST_NODE_TYPES.Property:
       return objectParent

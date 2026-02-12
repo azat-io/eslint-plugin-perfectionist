@@ -2796,6 +2796,55 @@ describe('sort-objects', () => {
           ],
         })
       })
+
+      it('matches callingFunctionNamePattern for chained function calls', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: 'foo',
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let a = foo("arg")({
+              b: "b",
+              a: "a",
+            })
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                callingFunctionNamePattern: {
+                  pattern: String.raw`^foo\(`,
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            export const v = foo("arg")({
+              d: () => null,
+              c: ({ search: { limit } }) => ({ limit }),
+              b() {},
+              a: () => ({}),
+            })
+          `,
+        })
+      })
     })
 
     describe('useConfigurationIf.declarationMatchesPattern', () => {
@@ -3445,6 +3494,96 @@ describe('sort-objects', () => {
               data: { right: 'a', left: 'b' },
             },
           ],
+        })
+      })
+
+      it('matches declarationCommentMatchesPattern with exported declarations', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: 'do not sort',
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            /* do not sort */
+            export const obj = {
+              b,
+              c,
+              a,
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: {
+                  pattern: 'do not sort',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            /* do not sort */
+            export const v = foo("arg")({
+              d: () => null,
+              c: ({ search: { limit } }) => ({ limit }),
+              b() {},
+              a: () => ({}),
+            })
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                declarationCommentMatchesPattern: {
+                  pattern: 'do not sort',
+                  scope: 'deep',
+                },
+              },
+              type: 'unsorted',
+            },
+            {
+              type: 'alphabetical',
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            /* sort this */
+            export const obj = {
+              a,
+              b,
+            }
+          `,
+          code: dedent`
+            /* sort this */
+            export const obj = {
+              b,
+              a,
+            }
+          `,
         })
       })
 
