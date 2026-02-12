@@ -1,0 +1,33 @@
+name: Dependency Diff
+
+on:
+  pull_request_target:
+    paths:
+      - 'pnpm-lock.yaml'
+
+jobs:
+  dependency-diff:
+    name: Dependency Diff
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e3f713f2d8f53843e71c69a996d56f51aa9adfb9 # v2.14.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443 github.com:443 registry.npmjs.org:443
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Dependency Diff
+        uses: e18e/action-dependency-diff@d995338f3b229fe7b2cd82048df5da930f70c7c3 # v1.4.4
+        continue-on-error: true
+        with:
+          size-threshold: -1
