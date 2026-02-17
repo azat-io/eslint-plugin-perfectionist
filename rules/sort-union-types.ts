@@ -26,6 +26,7 @@ import {
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
+import { normalizeTypeMemberName } from './sort-union-types/normalize-type-member-name'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -223,7 +224,10 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
           break
       }
 
-      let name = sourceCode.getText(type)
+      let name = normalizeTypeMemberName({
+        name: sourceCode.getText(type),
+        type,
+      })
 
       let predefinedGroups = generatePredefinedGroups({
         cache: cachedGroupsByModifiersAndSelectors,

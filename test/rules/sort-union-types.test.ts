@@ -3231,6 +3231,41 @@ describe('sort-union-types', () => {
         `,
       })
     })
+
+    it('handles parenthesized intersections consistently with prettier', async () => {
+      await valid({
+        code: dedent`
+          type CombinedType =
+            | A
+            | (
+                & B
+                & C
+              )
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        output: dedent`
+          type CombinedType =
+            | A
+            | (
+                & B
+                & C
+              )
+        `,
+        code: dedent`
+          type CombinedType =
+            | (
+                & B
+                & C
+              )
+            | A
+        `,
+        errors: [{ messageId: 'unexpectedUnionTypesOrder' }],
+        options: [options],
+      })
+    })
   })
 
   describe('line-length', () => {

@@ -3222,6 +3222,41 @@ describe('sort-intersection-types', () => {
         `,
       })
     })
+
+    it('handles parenthesized unions consistently with prettier', async () => {
+      await valid({
+        code: dedent`
+          type ImportExportType = (
+            | ts.ExportDeclaration
+            | ts.ImportDeclaration
+          ) & {
+            moduleSpecifier: ts.StringLiteral;
+          };
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        output: dedent`
+          type ImportExportType = (
+            | ts.ExportDeclaration
+            | ts.ImportDeclaration
+          ) & {
+            moduleSpecifier: ts.StringLiteral;
+          };
+        `,
+        code: dedent`
+          type ImportExportType = {
+            moduleSpecifier: ts.StringLiteral;
+          } & (
+            | ts.ExportDeclaration
+            | ts.ImportDeclaration
+          );
+        `,
+        errors: [{ messageId: 'unexpectedIntersectionTypesOrder' }],
+        options: [options],
+      })
+    })
   })
 
   describe('line-length', () => {
