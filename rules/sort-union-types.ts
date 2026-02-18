@@ -26,13 +26,13 @@ import {
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { normalizeTypeMemberName } from './sort-union-types/normalize-type-member-name'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { computeNodeName } from './sort-union-types/compute-node-name'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
@@ -224,8 +224,8 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
           break
       }
 
-      let name = normalizeTypeMemberName({
-        name: sourceCode.getText(type),
+      let name = computeNodeName({
+        sourceCode,
         type,
       })
 
