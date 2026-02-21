@@ -16,7 +16,7 @@ export function computeArrayElements(
     case AST_NODE_TYPES.ArrayExpression:
       return expression.elements
     case AST_NODE_TYPES.NewExpression:
-      if (!('name' in expression.callee)) {
+      if (expression.callee.type !== AST_NODE_TYPES.Identifier) {
         return null
       }
       if (expression.callee.name !== 'Array') {
