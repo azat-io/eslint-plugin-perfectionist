@@ -77,18 +77,6 @@ function computeSetElements(
   if (!newExpression.arguments[0]) {
     return null
   }
-  switch (newExpression.arguments[0].type) {
-    case AST_NODE_TYPES.ArrayExpression:
-      break
-    case AST_NODE_TYPES.NewExpression:
-      if (!('name' in newExpression.arguments[0].callee)) {
-        return null
-      }
-      if (newExpression.arguments[0].callee.name !== 'Array') {
-        return null
-      }
-      break
-  }
 
   return computeArrayElements(newExpression.arguments[0])
 }

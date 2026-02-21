@@ -18,6 +18,28 @@ describe('sort-array-includes', () => {
       order: 'asc',
     } as const
 
+    it('ignores invalid array includes expressions', async () => {
+      await valid({
+        code: dedent`
+          new Array[0]([
+            b,
+            a,
+          ]).includes(value)
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          new NotAnArray(
+            b,
+            a,
+          ).includes(value)
+        `,
+        options: [options],
+      })
+    })
+
     it('accepts sorted arrays in includes() calls', async () => {
       await valid({
         code: dedent`

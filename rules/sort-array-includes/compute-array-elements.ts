@@ -16,6 +16,12 @@ export function computeArrayElements(
     case AST_NODE_TYPES.ArrayExpression:
       return expression.elements
     case AST_NODE_TYPES.NewExpression:
+      if (!('name' in expression.callee)) {
+        return null
+      }
+      if (expression.callee.name !== 'Array') {
+        return null
+      }
       return expression.arguments
     default:
       return null
