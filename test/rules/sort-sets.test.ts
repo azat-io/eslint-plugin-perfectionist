@@ -20,6 +20,45 @@ describe('sort-sets', () => {
       order: 'asc',
     } as const
 
+    it('ignores invalid set expressions', async () => {
+      await valid({
+        code: dedent`
+          new Set[0]([
+            b,
+            a,
+          ])
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          new NotASet([
+            b,
+            a,
+          ])
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          new Set()
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          new Set(new NotAnArray(
+            b,
+            a,
+          ))
+        `,
+        options: [options],
+      })
+    })
+
     it('preserves set structure when fixing sort order', async () => {
       await valid({
         code: dedent`

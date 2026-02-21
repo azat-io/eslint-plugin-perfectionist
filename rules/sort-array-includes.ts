@@ -33,6 +33,7 @@ import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-group
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { filterOptionsByAllNamesMatch } from '../utils/filter-options-by-all-names-match'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { computeArrayElements } from './sort-array-includes/compute-array-elements'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
@@ -106,27 +107,21 @@ export let jsonSchema: JSONSchema4 = {
 export default createEslintRule<Options, MessageId>({
   create: context => ({
     MemberExpression: node => {
-      if (
-        (node.object.type === AST_NODE_TYPES.ArrayExpression ||
-          node.object.type === AST_NODE_TYPES.NewExpression) &&
-        node.property.type === AST_NODE_TYPES.Identifier &&
-        node.property.name === 'includes'
-      ) {
-        let elements =
-          node.object.type === AST_NODE_TYPES.ArrayExpression ?
-            node.object.elements
-          : node.object.arguments
-        sortArray<MessageId>({
-          availableMessageIds: {
-            missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-            extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-            unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-            unexpectedOrder: ORDER_ERROR_ID,
-          },
-          elements,
-          context,
-        })
+      let arrayElements = computeArrayIncludesElements(node)
+      if (!arrayElements) {
+        return
       }
+
+      sortArray<MessageId>({
+        availableMessageIds: {
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
+        },
+        elements: arrayElements,
+        context,
+      })
     },
   }),
   meta: {
@@ -277,6 +272,19 @@ export function sortArray<MessageIds extends string>({
     context,
     nodes,
   })
+}
+
+function computeArrayIncludesElements(
+  memberExpression: TSESTree.MemberExpression,
+): (TSESTree.SpreadElement | TSESTree.Expression | null)[] | null {
+  if (memberExpression.property.type !== AST_NODE_TYPES.Identifier) {
+    return null
+  }
+  if (memberExpression.property.name !== 'includes') {
+    return null
+  }
+
+  return computeArrayElements(memberExpression.object)
 }
 
 function getNodeName({

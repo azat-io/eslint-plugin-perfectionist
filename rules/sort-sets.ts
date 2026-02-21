@@ -1,3 +1,5 @@
+import type { TSESTree } from '@typescript-eslint/types'
+
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { Options } from './sort-array-includes/types'
@@ -8,6 +10,7 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import { computeArrayElements } from './sort-array-includes/compute-array-elements'
 import { defaultOptions, jsonSchema, sortArray } from './sort-array-includes'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
@@ -25,30 +28,21 @@ type MessageId =
 export default createEslintRule<Options, MessageId>({
   create: context => ({
     NewExpression: node => {
-      if (
-        node.callee.type === AST_NODE_TYPES.Identifier &&
-        node.callee.name === 'Set' &&
-        node.arguments.length > 0 &&
-        (node.arguments[0]?.type === AST_NODE_TYPES.ArrayExpression ||
-          (node.arguments[0]?.type === AST_NODE_TYPES.NewExpression &&
-            'name' in node.arguments[0].callee &&
-            node.arguments[0].callee.name === 'Array'))
-      ) {
-        let elements =
-          node.arguments[0].type === AST_NODE_TYPES.ArrayExpression ?
-            node.arguments[0].elements
-          : node.arguments[0].arguments
-        sortArray<MessageId>({
-          availableMessageIds: {
-            missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-            extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-            unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-            unexpectedOrder: ORDER_ERROR_ID,
-          },
-          elements,
-          context,
-        })
+      let setElements = computeSetElements(node)
+      if (!setElements) {
+        return
       }
+
+      sortArray<MessageId>({
+        availableMessageIds: {
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
+        },
+        elements: setElements,
+        context,
+      })
     },
   }),
   meta: {
@@ -70,3 +64,31 @@ export default createEslintRule<Options, MessageId>({
   defaultOptions: [defaultOptions],
   name: 'sort-sets',
 })
+
+function computeSetElements(
+  newExpression: TSESTree.NewExpression,
+): (TSESTree.SpreadElement | TSESTree.Expression | null)[] | null {
+  if (newExpression.callee.type !== AST_NODE_TYPES.Identifier) {
+    return null
+  }
+  if (newExpression.callee.name !== 'Set') {
+    return null
+  }
+  if (!newExpression.arguments[0]) {
+    return null
+  }
+  switch (newExpression.arguments[0].type) {
+    case AST_NODE_TYPES.ArrayExpression:
+      break
+    case AST_NODE_TYPES.NewExpression:
+      if (!('name' in newExpression.arguments[0].callee)) {
+        return null
+      }
+      if (newExpression.arguments[0].callee.name !== 'Array') {
+        return null
+      }
+      break
+  }
+
+  return computeArrayElements(newExpression.arguments[0])
+}
