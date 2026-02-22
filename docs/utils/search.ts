@@ -12,15 +12,15 @@ import remarkMdx from 'remark-mdx'
 import remarkGfm from 'remark-gfm'
 import { unified } from 'unified'
 
-export interface SearchIndexItem {
+export type SearchCollection = 'configs' | 'guide' | 'rules'
+
+interface SearchIndexItem {
   collection: SearchCollection
   headings: string[]
   title: string
   body: string
   slug: string
 }
-
-export type SearchCollection = 'configs' | 'guide' | 'rules'
 
 let slugPrefix: Record<SearchCollection, string> = {
   configs: '/configs',

@@ -9,7 +9,7 @@ import { matches } from './matches'
  * Contains all the properties of an element that can be used for matching
  * against custom group criteria.
  */
-export interface DoesCustomGroupMatchParameters {
+interface DoesCustomGroupMatchParameters {
   /**
    * Optional value of the element. Used for matching against
    * elementValuePattern in custom groups.

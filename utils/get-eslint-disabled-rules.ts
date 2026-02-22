@@ -14,7 +14,7 @@ let eslintDisableDirectives = [
  * 'eslint-disable', 'eslint-enable', 'eslint-disable-line', or
  * 'eslint-disable-next-line'.
  */
-export type EslintDisableDirective = (typeof eslintDisableDirectives)[number]
+type EslintDisableDirective = (typeof eslintDisableDirectives)[number]
 
 /**
  * Parses an ESLint disable comment to extract the directive type and affected
