@@ -19,6 +19,7 @@ import { objectParentTypes } from './types'
  *
  * @param params - Parameters.
  * @param params.isDestructuredObject - Whether the object is destructured.
+ * @param params.astSelector - The AST selector string currently evaluated.
  * @param params.sourceCode - The source code object.
  * @param params.nodeObject - The object node to evaluate.
  * @param params.context - The rule context.
@@ -26,6 +27,7 @@ import { objectParentTypes } from './types'
  */
 export function computeMatchedContextOptions({
   isDestructuredObject,
+  astSelector,
   sourceCode,
   nodeObject,
   context,
@@ -34,6 +36,7 @@ export function computeMatchedContextOptions({
   context: TSESLint.RuleContext<MessageId, Options>
   sourceCode: TSESLint.SourceCode
   isDestructuredObject: boolean
+  astSelector: string | null
 }): Options[number] | undefined {
   let filteredContextOptions = filterOptionsByAllNamesMatch({
     nodeNames: nodeObject.properties
@@ -58,6 +61,7 @@ export function computeMatchedContextOptions({
   return filteredContextOptions.find(options =>
     isContextOptionMatching({
       isDestructuredObject,
+      astSelector,
       parentNodes,
       sourceCode,
       nodeObject,
@@ -69,6 +73,7 @@ export function computeMatchedContextOptions({
 function isContextOptionMatching({
   isDestructuredObject,
   parentNodes,
+  astSelector,
   sourceCode,
   nodeObject,
   options,
@@ -77,8 +82,18 @@ function isContextOptionMatching({
   sourceCode: TSESLint.SourceCode
   isDestructuredObject: boolean
   parentNodes: ObjectParent[]
+  astSelector: string | null
   options: Options[number]
 }): boolean {
+  if (
+    !passesAstSelectorFilter({
+      matchesAstSelector: options.useConfigurationIf?.matchesAstSelector,
+      astSelector,
+    })
+  ) {
+    return false
+  }
+
   if (!options.useConfigurationIf) {
     return true
   }
@@ -169,4 +184,18 @@ function passesObjectTypeFilter({
     default:
       throw new UnreachableCaseError(objectType)
   }
+}
+
+function passesAstSelectorFilter({
+  matchesAstSelector,
+  astSelector,
+}: {
+  matchesAstSelector: undefined | string
+  astSelector: string | null
+}): boolean {
+  if (!matchesAstSelector) {
+    return astSelector === null
+  }
+
+  return matchesAstSelector === astSelector
 }

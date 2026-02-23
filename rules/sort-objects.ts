@@ -1,3 +1,8 @@
+import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
+import type { TSESTree } from '@typescript-eslint/types'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { MessageId, Options } from './sort-objects/types'
 
 import {
@@ -93,18 +98,72 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => ({
-    ObjectExpression: objectExpression =>
-      sortObject({
-        node: objectExpression,
-        context,
-      }),
-    ObjectPattern: objectPattern =>
-      sortObject({
-        node: objectPattern,
-        context,
-      }),
-  }),
+  create: context => {
+    let alreadyParsedNodes = new Set<
+      TSESTree.ObjectExpression | TSESTree.ObjectPattern
+    >()
+
+    let allAstSelectors = context.options
+      .map(option => option.useConfigurationIf?.matchesAstSelector)
+      .filter(matchesAstSelector => matchesAstSelector !== undefined)
+    let allAstSelectorMatchers = allAstSelectors.map(
+      astSelector =>
+        [
+          astSelector,
+          buildPotentialObjectSorter({
+            alreadyParsedNodes,
+            astSelector,
+            context,
+          }),
+        ] as const,
+    )
+
+    return {
+      ...Object.fromEntries(allAstSelectorMatchers),
+      'ObjectExpression:exit': node =>
+        sortObject({
+          alreadyParsedNodes,
+          astSelector: null,
+          context,
+          node,
+        }),
+      'ObjectPattern:exit': node =>
+        sortObject({
+          alreadyParsedNodes,
+          astSelector: null,
+          context,
+          node,
+        }),
+    }
+  },
   defaultOptions: [defaultOptions],
   name: 'sort-objects',
 })
+
+function buildPotentialObjectSorter({
+  alreadyParsedNodes,
+  astSelector,
+  context,
+}: {
+  alreadyParsedNodes: Set<TSESTree.ObjectExpression | TSESTree.ObjectPattern>
+  context: Readonly<RuleContext<MessageId, Options>>
+  astSelector: string
+}): (node: TSESTree.Node) => void {
+  return sorter
+
+  function sorter(node: TSESTree.Node): void {
+    switch (node.type) {
+      case AST_NODE_TYPES.ObjectExpression:
+      case AST_NODE_TYPES.ObjectPattern:
+        sortObject({
+          alreadyParsedNodes,
+          astSelector,
+          context,
+          node,
+        })
+        break
+      default:
+        break
+    }
+  }
+}

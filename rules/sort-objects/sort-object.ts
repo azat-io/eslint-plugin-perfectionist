@@ -74,11 +74,15 @@ export let defaultOptions: Required<Options[number]> = {
 }
 
 export function sortObject({
+  alreadyParsedNodes,
+  astSelector,
   context,
   node,
 }: {
+  alreadyParsedNodes: Set<TSESTree.ObjectExpression | TSESTree.ObjectPattern>
   context: Readonly<TSESLint.RuleContext<MessageId, Options>>
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  astSelector: string | null
 }): void {
   if (!isSortable(node.properties)) {
     return
@@ -91,9 +95,19 @@ export function sortObject({
   let matchedContextOptions = computeMatchedContextOptions({
     isDestructuredObject,
     nodeObject: node,
+    astSelector,
     sourceCode,
     context,
   })
+  if (!matchedContextOptions && astSelector) {
+    return
+  }
+
+  if (alreadyParsedNodes.has(node)) {
+    return
+  }
+  alreadyParsedNodes.add(node)
+
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
