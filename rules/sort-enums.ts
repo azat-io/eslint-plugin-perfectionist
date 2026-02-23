@@ -28,13 +28,6 @@ import { defaultOptions, sortEnum } from './sort-enums/sort-enum'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
 export default createEslintRule<Options, MessageId>({
-  create: context => ({
-    TSEnumDeclaration: node =>
-      sortEnum({
-        context,
-        node,
-      }),
-  }),
   meta: {
     schema: [
       {
@@ -73,6 +66,13 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
+  create: context => ({
+    TSEnumDeclaration: node =>
+      sortEnum({
+        context,
+        node,
+      }),
+  }),
   defaultOptions: [defaultOptions],
   name: 'sort-enums',
 })
