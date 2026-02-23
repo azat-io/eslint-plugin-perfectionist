@@ -155,6 +155,7 @@ function sortArrayFromMemberExpression({
     cachedGroupsByModifiersAndSelectors,
     expression: arrayExpression,
     alreadyParsedExpressions,
+    defaultOptions,
     astSelector,
     context,
   })
@@ -180,9 +181,9 @@ function buildPotentialArraySorter({
   context: Readonly<RuleContext<MessageId, Options>>
   astSelector: string
 }): (node: TSESTree.Node) => void {
-  return sortPotentialArray
+  return sorter
 
-  function sortPotentialArray(node: TSESTree.Node): void {
+  function sorter(node: TSESTree.Node): void {
     if (node.type !== AST_NODE_TYPES.ArrayExpression) {
       return
     }

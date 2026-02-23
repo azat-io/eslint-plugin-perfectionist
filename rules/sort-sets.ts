@@ -105,6 +105,7 @@ function sortSetFromNewExpression({
     cachedGroupsByModifiersAndSelectors,
     expression: setExpression,
     alreadyParsedExpressions,
+    defaultOptions,
     astSelector,
     context,
   })

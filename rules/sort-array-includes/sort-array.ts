@@ -22,7 +22,6 @@ import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
-import { defaultOptions } from '../sort-array-includes'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
@@ -37,6 +36,7 @@ export function sortArray<MessageIds extends string>({
   cachedGroupsByModifiersAndSelectors,
   alreadyParsedExpressions,
   availableMessageIds,
+  defaultOptions,
   astSelector,
   expression,
   context,
@@ -51,6 +51,7 @@ export function sortArray<MessageIds extends string>({
   cachedGroupsByModifiersAndSelectors: Map<string, string[]>
   context: Readonly<RuleContext<MessageIds, Options>>
   expression: TSESTree.CallExpressionArgument
+  defaultOptions: Required<Options[number]>
   astSelector: string | null
 }): void {
   let elements = computeArrayElements(expression)
