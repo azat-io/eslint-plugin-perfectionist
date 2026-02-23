@@ -60,6 +60,12 @@ let specialCharactersJsonSchema: JSONSchema4 = {
   type: 'string',
 }
 
+export let matchesAstSelectorJsonSchema: JSONSchema4 = {
+  description:
+    'Specifies an AST selector to match elements for conditional configuration.',
+  type: 'string',
+}
+
 /**
  * Builds a collection of common JSON schemas used across sorting rules.
  *

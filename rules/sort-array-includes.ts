@@ -7,6 +7,11 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { Options } from './sort-array-includes/types'
 
 import {
+  buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
+import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
@@ -16,10 +21,6 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import {
-  buildUseConfigurationIfJsonSchema,
-  buildCommonJsonSchemas,
-} from '../utils/json-schemas/common-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-array-includes/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -68,7 +69,7 @@ export let jsonSchema: JSONSchema4 = {
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {
-          matchesAstSelector: { type: 'string' },
+          matchesAstSelector: matchesAstSelectorJsonSchema,
         },
       }),
       partitionByComment: partitionByCommentJsonSchema,
