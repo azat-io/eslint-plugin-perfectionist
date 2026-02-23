@@ -1258,83 +1258,290 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it.each([
-      ['string pattern', 'foo'],
-      ['array of patterns', ['noMatch', 'foo']],
-      ['case-insensitive regex', { pattern: 'FOO', flags: 'i' }],
-      ['regex in array', ['noMatch', { pattern: 'foo', flags: 'i' }]],
-    ])(
-      'applies configuration when all names match pattern - %s',
-      async (_, allNamesMatchPattern) => {
-        let conditionalOptions = [
-          {
-            ...options,
-            useConfigurationIf: {
-              allNamesMatchPattern,
+    describe('useConfigurationIf.allNamesMatchPattern', () => {
+      it.each([
+        ['string pattern', 'foo'],
+        ['array of patterns', ['noMatch', 'foo']],
+        ['case-insensitive regex', { pattern: 'FOO', flags: 'i' }],
+        ['regex in array', ['noMatch', { pattern: 'foo', flags: 'i' }]],
+      ])(
+        'applies configuration when all names match pattern - %s',
+        async (_, allNamesMatchPattern) => {
+          let conditionalOptions = [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern,
+              },
             },
-          },
-          {
-            ...options,
-            customGroups: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^r$',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: '^g$',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: '^b$',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: '^r|g|b$',
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ]
+
+          await invalid({
+            errors: [
               {
-                elementNamePattern: '^r$',
-                groupName: 'r',
+                data: {
+                  rightGroup: 'g',
+                  leftGroup: 'b',
+                  right: 'g',
+                  left: 'b',
+                },
+                messageId: 'unexpectedArrayIncludesGroupOrder',
               },
               {
-                elementNamePattern: '^g$',
-                groupName: 'g',
-              },
-              {
-                elementNamePattern: '^b$',
-                groupName: 'b',
+                data: {
+                  rightGroup: 'r',
+                  leftGroup: 'g',
+                  right: 'r',
+                  left: 'g',
+                },
+                messageId: 'unexpectedArrayIncludesGroupOrder',
               },
             ],
-            useConfigurationIf: {
-              allNamesMatchPattern: '^r|g|b$',
-            },
-            groups: ['r', 'g', 'b'],
-          },
-        ]
+            output: dedent`
+              [
+                'r',
+                'g',
+                'b',
+              ].includes(value)
+            `,
+            code: dedent`
+              [
+                'b',
+                'g',
+                'r',
+              ].includes(value)
+            `,
+            options: conditionalOptions,
+          })
+        },
+      )
+    })
 
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('matches configuration based off matchesAstSelector', async () => {
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclarator',
+              },
+              type: 'unsorted',
+            },
+          ],
           errors: [
             {
               data: {
-                rightGroup: 'g',
-                leftGroup: 'b',
-                right: 'g',
+                right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedArrayIncludesGroupOrder',
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            const array = [
+              a,
+              b,
+            ].includes(value)
+          `,
+          code: dedent`
+            const array = [
+              b,
+              a,
+            ].includes(value)
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ArrayExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            [
+              b,
+              a,
+            ]
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ArrayExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            [
+              b,
+              a,
+            ].includes(value)
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > ArrayExpression',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
             },
             {
-              data: {
-                rightGroup: 'r',
-                leftGroup: 'g',
-                right: 'r',
-                left: 'g',
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ArrayExpression',
               },
-              messageId: 'unexpectedArrayIncludesGroupOrder',
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
             },
           ],
           output: dedent`
             [
-              'r',
-              'g',
-              'b',
+              a,
+              b,
             ].includes(value)
           `,
           code: dedent`
             [
-              'b',
-              'g',
-              'r',
+              b,
+              a,
             ].includes(value)
           `,
-          options: conditionalOptions,
         })
-      },
-    )
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ArrayExpression',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ArrayExpression',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            [
+              a,
+              b,
+            ].includes(value)
+          `,
+          code: dedent`
+            [
+              b,
+              a,
+            ].includes(value)
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ArrayExpression',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            const a = [
+              a,
+              b,
+            ].includes(value)
+          `,
+          code: dedent`
+            const a = [
+              b,
+              a,
+            ].includes(value)
+          `,
+        })
+      })
+    })
 
     it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
@@ -1389,6 +1596,19 @@ describe('sort-array-includes', () => {
 
     it('removes newlines inside groups when newlinesInside is 0', async () => {
       await invalid({
+        options: [
+          {
+            ...options,
+            customGroups: [
+              {
+                elementNamePattern: 'a',
+                groupName: 'a',
+              },
+            ],
+            groups: ['a', 'unknown'],
+            newlinesInside: 0,
+          },
+        ],
         errors: [
           {
             messageId: 'unexpectedArrayIncludesOrder',
@@ -1399,17 +1619,6 @@ describe('sort-array-includes', () => {
             data: { right: 'b', left: 'z' },
           },
         ],
-        options: {
-          ...options,
-          customGroups: [
-            {
-              elementNamePattern: 'a',
-              groupName: 'a',
-            },
-          ],
-          groups: ['a', 'unknown'],
-          newlinesInside: 0,
-        },
         output: dedent`
           [
             'a',
@@ -3064,83 +3273,85 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it.each([
-      ['string pattern', 'foo'],
-      ['array of patterns', ['noMatch', 'foo']],
-      ['case-insensitive regex', { pattern: 'FOO', flags: 'i' }],
-      ['regex in array', ['noMatch', { pattern: 'foo', flags: 'i' }]],
-    ])(
-      'applies configuration when all names match pattern - %s',
-      async (_, allNamesMatchPattern) => {
-        let conditionalOptions = [
-          {
-            ...options,
-            useConfigurationIf: {
-              allNamesMatchPattern,
+    describe('useConfigurationIf.allNamesMatchPattern', () => {
+      it.each([
+        ['string pattern', 'foo'],
+        ['array of patterns', ['noMatch', 'foo']],
+        ['case-insensitive regex', { pattern: 'FOO', flags: 'i' }],
+        ['regex in array', ['noMatch', { pattern: 'foo', flags: 'i' }]],
+      ])(
+        'applies configuration when all names match pattern - %s',
+        async (_, allNamesMatchPattern) => {
+          let conditionalOptions = [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern,
+              },
             },
-          },
-          {
-            ...options,
-            customGroups: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^r$',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: '^g$',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: '^b$',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: '^r|g|b$',
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ]
+
+          await invalid({
+            errors: [
               {
-                elementNamePattern: '^r$',
-                groupName: 'r',
+                data: {
+                  rightGroup: 'g',
+                  leftGroup: 'b',
+                  right: 'g',
+                  left: 'b',
+                },
+                messageId: 'unexpectedArrayIncludesGroupOrder',
               },
               {
-                elementNamePattern: '^g$',
-                groupName: 'g',
-              },
-              {
-                elementNamePattern: '^b$',
-                groupName: 'b',
+                data: {
+                  rightGroup: 'r',
+                  leftGroup: 'g',
+                  right: 'r',
+                  left: 'g',
+                },
+                messageId: 'unexpectedArrayIncludesGroupOrder',
               },
             ],
-            useConfigurationIf: {
-              allNamesMatchPattern: '^r|g|b$',
-            },
-            groups: ['r', 'g', 'b'],
-          },
-        ]
-
-        await invalid({
-          errors: [
-            {
-              data: {
-                rightGroup: 'g',
-                leftGroup: 'b',
-                right: 'g',
-                left: 'b',
-              },
-              messageId: 'unexpectedArrayIncludesGroupOrder',
-            },
-            {
-              data: {
-                rightGroup: 'r',
-                leftGroup: 'g',
-                right: 'r',
-                left: 'g',
-              },
-              messageId: 'unexpectedArrayIncludesGroupOrder',
-            },
-          ],
-          output: dedent`
-            [
-              'r',
-              'g',
-              'b',
-            ].includes(value)
-          `,
-          code: dedent`
-            [
-              'b',
-              'g',
-              'r',
-            ].includes(value)
-          `,
-          options: conditionalOptions,
-        })
-      },
-    )
+            output: dedent`
+              [
+                'r',
+                'g',
+                'b',
+              ].includes(value)
+            `,
+            code: dedent`
+              [
+                'b',
+                'g',
+                'r',
+              ].includes(value)
+            `,
+            options: conditionalOptions,
+          })
+        },
+      )
+    })
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       let newlinesOptions = [
@@ -4756,83 +4967,85 @@ describe('sort-array-includes', () => {
       })
     })
 
-    it.each([
-      ['string pattern', 'foo'],
-      ['array of patterns', ['noMatch', 'foo']],
-      ['case-insensitive regex', { pattern: 'FOO', flags: 'i' }],
-      ['regex in array', ['noMatch', { pattern: 'foo', flags: 'i' }]],
-    ])(
-      'applies configuration when all names match pattern - %s',
-      async (_, allNamesMatchPattern) => {
-        let conditionalOptions = [
-          {
-            ...options,
-            useConfigurationIf: {
-              allNamesMatchPattern,
+    describe('useConfigurationIf.allNamesMatchPattern', () => {
+      it.each([
+        ['string pattern', 'foo'],
+        ['array of patterns', ['noMatch', 'foo']],
+        ['case-insensitive regex', { pattern: 'FOO', flags: 'i' }],
+        ['regex in array', ['noMatch', { pattern: 'foo', flags: 'i' }]],
+      ])(
+        'applies configuration when all names match pattern - %s',
+        async (_, allNamesMatchPattern) => {
+          let conditionalOptions = [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern,
+              },
             },
-          },
-          {
-            ...options,
-            customGroups: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^r$',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: '^g$',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: '^b$',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: '^r|g|b$',
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ]
+
+          await invalid({
+            errors: [
               {
-                elementNamePattern: '^r$',
-                groupName: 'r',
+                data: {
+                  rightGroup: 'g',
+                  leftGroup: 'b',
+                  right: 'g',
+                  left: 'b',
+                },
+                messageId: 'unexpectedArrayIncludesGroupOrder',
               },
               {
-                elementNamePattern: '^g$',
-                groupName: 'g',
-              },
-              {
-                elementNamePattern: '^b$',
-                groupName: 'b',
+                data: {
+                  rightGroup: 'r',
+                  leftGroup: 'g',
+                  right: 'r',
+                  left: 'g',
+                },
+                messageId: 'unexpectedArrayIncludesGroupOrder',
               },
             ],
-            useConfigurationIf: {
-              allNamesMatchPattern: '^r|g|b$',
-            },
-            groups: ['r', 'g', 'b'],
-          },
-        ]
-
-        await invalid({
-          errors: [
-            {
-              data: {
-                rightGroup: 'g',
-                leftGroup: 'b',
-                right: 'g',
-                left: 'b',
-              },
-              messageId: 'unexpectedArrayIncludesGroupOrder',
-            },
-            {
-              data: {
-                rightGroup: 'r',
-                leftGroup: 'g',
-                right: 'r',
-                left: 'g',
-              },
-              messageId: 'unexpectedArrayIncludesGroupOrder',
-            },
-          ],
-          output: dedent`
-            [
-              'r',
-              'g',
-              'b',
-            ].includes(value)
-          `,
-          code: dedent`
-            [
-              'b',
-              'g',
-              'r',
-            ].includes(value)
-          `,
-          options: conditionalOptions,
-        })
-      },
-    )
+            output: dedent`
+              [
+                'r',
+                'g',
+                'b',
+              ].includes(value)
+            `,
+            code: dedent`
+              [
+                'b',
+                'g',
+                'r',
+              ].includes(value)
+            `,
+            options: conditionalOptions,
+          })
+        },
+      )
+    })
 
     it('removes newlines between groups when newlinesBetween is 0', async () => {
       let newlinesOptions = [

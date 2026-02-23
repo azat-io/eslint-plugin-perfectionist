@@ -299,6 +299,7 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
       | string[]
       | { pattern: string; flags: string }
       | { pattern: string; flags: string }[]
+    matchesAstSelector?: string
   }
   ```
 </sub>
@@ -334,6 +335,26 @@ Example configuration:
       useConfigurationIf: {
         allNamesMatchPattern: '^r|g|b$',
       },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching an `ArrayExpression` node.
+
+Example configuration: don't sort array-include elements that are declared as `const` variables.
+```ts
+{
+  'perfectionist/sort-array-includes': [
+    'error',
+    {
+      useConfigurationIf: {
+        matchesAstSelector: 'VariableDeclaration[kind="const"] ArrayExpression',
+      },
+      type: 'unsorted'
     },
     {
       type: 'alphabetical' // Fallback configuration
