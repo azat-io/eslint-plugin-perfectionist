@@ -77,6 +77,11 @@ export type Options = Partial<
        * keys.
        */
       hasNumericKeysOnly?: boolean
+
+      /**
+       * AST selector to match against ArrayExpression nodes.
+       */
+      matchesAstSelector?: string
     }
 
     /**

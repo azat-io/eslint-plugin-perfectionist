@@ -12,6 +12,7 @@ import {
 import {
   useExperimentalDependencyDetectionJsonSchema,
   buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -58,6 +59,7 @@ export default createEslintRule<Options, MessageId>({
               },
               declarationCommentMatchesPattern: scopedRegexJsonSchema,
               callingFunctionNamePattern: scopedRegexJsonSchema,
+              matchesAstSelector: matchesAstSelectorJsonSchema,
               declarationMatchesPattern: scopedRegexJsonSchema,
             },
           }),
