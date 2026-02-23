@@ -29,6 +29,18 @@ export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedEnumsDependencyOrder'
 export type Options = Partial<
   {
     /**
+     * Conditional configuration based on pattern matching. When specified, the
+     * rule applies only if all enum members names match the given pattern.
+     */
+    useConfigurationIf: {
+      /**
+       * Regular expression pattern to match against all enum element names. The
+       * rule is only applied when all names match this pattern.
+       */
+      allNamesMatchPattern?: RegexOption
+    }
+
+    /**
      * Whether to sort enum members by their values instead of names. When
      * "always", compares enum values; when "never", compares enum member
      * names.

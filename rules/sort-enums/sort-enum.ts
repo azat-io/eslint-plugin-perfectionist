@@ -21,6 +21,7 @@ import { buildComparatorByOptionsComputer } from './build-comparator-by-options-
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
 import { computeExpressionNumberValue } from './compute-expression-number-value'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
+import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
@@ -32,6 +33,7 @@ import { computeDependencies } from './compute-dependencies'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
+import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
 
@@ -44,6 +46,7 @@ export let defaultOptions: Required<Options[number]> = {
   partitionByNewLine: false,
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
+  useConfigurationIf: {},
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',
@@ -69,7 +72,13 @@ export function sortEnum({
   }
 
   let settings = getSettings(context.settings)
-  let options = complete(context.options.at(0), settings, defaultOptions)
+
+  let matchedContextOptions = computeMatchedContextOptions({
+    enumMembers: members,
+    context,
+  })
+
+  let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
     selectors: [],
@@ -87,10 +96,7 @@ export function sortEnum({
 
   let sortingNodeGroups: SortEnumsSortingNode[][] = members.reduce(
     (accumulator: SortEnumsSortingNode[][], member) => {
-      let name =
-        member.id.type === AST_NODE_TYPES.Literal ?
-          member.id.value
-        : sourceCode.getText(member.id)
+      let name = computeNodeName({ node: member, sourceCode })
 
       let group = computeGroup({
         customGroupMatcher: customGroup =>
