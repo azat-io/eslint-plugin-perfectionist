@@ -60,27 +60,6 @@ export function computeDependenciesBySortingNode({
   return dependenciesBySortingNode
 }
 
-export function computeThisExpressionsInsideClassElement({
-  classElement,
-  sourceCode,
-}: {
-  classElement: TSESTree.ClassElement
-  sourceCode: TSESLint.SourceCode
-}): TSESTree.ThisExpression[] {
-  let thisTokens = sourceCode.getTokens(classElement).filter(isThisToken)
-
-  return thisTokens
-    .map(computeTokenNode)
-    .filter(node => node?.type === AST_NODE_TYPES.ThisExpression)
-
-  function computeTokenNode(token: TSESTree.Token): TSESTree.Node | null {
-    return sourceCode.getNodeByRangeIndex(token.range[0])
-  }
-  function isThisToken(token: TSESTree.Token): boolean {
-    return token.type === AST_TOKEN_TYPES.Keyword && token.value === 'this'
-  }
-}
-
 function computeIdentifierOrThisExpressionDependency({
   ignoreCallbackDependenciesPatterns,
   sortingNodes,
@@ -245,5 +224,26 @@ function shouldIgnoreDependencyComputation(
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
       throw new UnreachableCaseError(node)
+  }
+}
+
+function computeThisExpressionsInsideClassElement({
+  classElement,
+  sourceCode,
+}: {
+  classElement: TSESTree.ClassElement
+  sourceCode: TSESLint.SourceCode
+}): TSESTree.ThisExpression[] {
+  let thisTokens = sourceCode.getTokens(classElement).filter(isThisToken)
+
+  return thisTokens
+    .map(computeTokenNode)
+    .filter(node => node?.type === AST_NODE_TYPES.ThisExpression)
+
+  function computeTokenNode(token: TSESTree.Token): TSESTree.Node | null {
+    return sourceCode.getNodeByRangeIndex(token.range[0])
+  }
+  function isThisToken(token: TSESTree.Token): boolean {
+    return token.type === AST_TOKEN_TYPES.Keyword && token.value === 'this'
   }
 }

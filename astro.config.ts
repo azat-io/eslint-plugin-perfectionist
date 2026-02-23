@@ -4,17 +4,14 @@ import { browserslistToTargets } from 'lightningcss'
 import svelteSvg from '@poppanator/sveltekit-svg'
 import remarkSectionize from 'remark-sectionize'
 import { defineConfig } from 'astro/config'
-import { fileURLToPath } from 'node:url'
 import browserslist from 'browserslist'
 import sitemap from '@astrojs/sitemap'
 import svelte from '@astrojs/svelte'
 import mdx from '@astrojs/mdx'
-import path from 'node:path'
 
 import { remarkHeadings } from './docs/plugins/remark-headings'
 import { colorTheme } from './docs/utils/shiki-theme'
 
-let dirname = fileURLToPath(path.dirname(import.meta.url))
 let site = 'https://perfectionist.dev'
 
 export default defineConfig({
@@ -69,7 +66,6 @@ export default defineConfig({
     clientPrerender: true,
     svgo: true,
   },
-  publicDir: path.join(dirname, './docs/public'),
   prefetch: {
     defaultStrategy: 'hover',
   },
@@ -77,8 +73,9 @@ export default defineConfig({
     port: 3000,
     host: true,
   },
-  srcDir: path.join(dirname, './docs'),
-  root: path.join(dirname, './docs'),
+  publicDir: './docs/public',
   compressHTML: true,
+  srcDir: './docs',
+  root: './docs',
   site,
 })

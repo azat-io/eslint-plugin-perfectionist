@@ -88,7 +88,7 @@ function scheduleNext(): void {
 
 let marker = '__perfectionistTocInitialized__'
 
-export function setupTableOfContents(): void {
+function setupTableOfContents(): void {
   if (typeof document === 'undefined') {
     return
   }

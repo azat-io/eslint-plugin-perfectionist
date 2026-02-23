@@ -6,7 +6,7 @@ import { ESLintUtils } from '@typescript-eslint/utils'
  * Provides additional information about the rule that can be used by ESLint
  * configurations and documentation generators.
  */
-export interface ESLintPluginDocumentation {
+interface ESLintPluginDocumentation {
   /**
    * Indicates whether the rule is part of the recommended configuration. Rules
    * marked as recommended are typically enabled by default in the plugin's
