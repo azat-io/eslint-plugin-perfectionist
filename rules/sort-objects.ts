@@ -31,18 +31,6 @@ import { defaultOptions, sortObject } from './sort-objects/sort-object'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
 export default createEslintRule<Options, MessageId>({
-  create: context => ({
-    ObjectExpression: objectExpression =>
-      sortObject({
-        node: objectExpression,
-        context,
-      }),
-    ObjectPattern: objectPattern =>
-      sortObject({
-        node: objectPattern,
-        context,
-      }),
-  }),
   meta: {
     schema: {
       items: {
@@ -103,6 +91,18 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
+  create: context => ({
+    ObjectExpression: objectExpression =>
+      sortObject({
+        node: objectExpression,
+        context,
+      }),
+    ObjectPattern: objectPattern =>
+      sortObject({
+        node: objectPattern,
+        context,
+      }),
+  }),
   defaultOptions: [defaultOptions],
   name: 'sort-objects',
 })
