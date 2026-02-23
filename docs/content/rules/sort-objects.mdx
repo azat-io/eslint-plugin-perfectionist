@@ -366,6 +366,7 @@ Specifies whether this rule should be applied to styled-components like librarie
       | { pattern: string; flags?: string; scope?: 'shallow' | 'deep' }[]
     objectType?: 'destructured' | 'non-destructured'
     hasNumericKeysOnly?: boolean
+    matchesAstSelector?: string
   }
   ```
 </sub>
@@ -507,6 +508,26 @@ Example configuration:
       useConfigurationIf: {
         hasNumericKeysOnly: true,
       },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching an `ObjectExpression` or `ObjectPattern` node.
+
+Example configuration: don't sort objects that are declared as `const` variables.
+```ts
+{
+  'perfectionist/sort-objects': [
+    'error',
+    {
+      useConfigurationIf: {
+        matchesAstSelector: 'VariableDeclaration[kind="const"] ObjectExpression',
+      },
+      type: 'unsorted'
     },
     {
       type: 'alphabetical' // Fallback configuration
