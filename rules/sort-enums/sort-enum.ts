@@ -57,11 +57,15 @@ export let defaultOptions: Required<Options[number]> = {
 }
 
 export function sortEnum({
+  alreadyParsedNodes,
+  astSelector,
   context,
   node,
 }: {
+  alreadyParsedNodes: Set<TSESTree.TSEnumDeclaration>
   context: Readonly<RuleContext<MessageId, Options>>
   node: TSESTree.TSEnumDeclaration
+  astSelector: string | null
 }): void {
   let members = getEnumMembers(node)
   if (
@@ -75,8 +79,17 @@ export function sortEnum({
 
   let matchedContextOptions = computeMatchedContextOptions({
     enumMembers: members,
+    astSelector,
     context,
   })
+  if (!matchedContextOptions && astSelector) {
+    return
+  }
+
+  if (alreadyParsedNodes.has(node)) {
+    return
+  }
+  alreadyParsedNodes.add(node)
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)

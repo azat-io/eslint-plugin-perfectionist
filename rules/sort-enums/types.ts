@@ -38,6 +38,11 @@ export type Options = Partial<
        * rule is only applied when all names match this pattern.
        */
       allNamesMatchPattern?: RegexOption
+
+      /**
+       * AST selector to match against TSEnumDeclaration nodes.
+       */
+      matchesAstSelector?: string
     }
 
     /**

@@ -1,3 +1,8 @@
+import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
+import type { TSESTree } from '@typescript-eslint/types'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { MessageId, Options } from './sort-enums/types'
 
 import {
@@ -11,6 +16,7 @@ import {
 import {
   useExperimentalDependencyDetectionJsonSchema,
   buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -38,6 +44,11 @@ export default createEslintRule<Options, MessageId>({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
           }),
+          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+            additionalProperties: {
+              matchesAstSelector: matchesAstSelectorJsonSchema,
+            },
+          }),
           sortByValue: {
             description: 'Specifies whether to sort enums by value.',
             enum: ['always', 'ifNumericEnum', 'never'],
@@ -45,7 +56,6 @@ export default createEslintRule<Options, MessageId>({
           },
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
-          useConfigurationIf: buildUseConfigurationIfJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
         },
@@ -70,13 +80,60 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => ({
-    TSEnumDeclaration: node =>
-      sortEnum({
-        context,
-        node,
-      }),
-  }),
+  create: context => {
+    let alreadyParsedNodes = new Set<TSESTree.TSEnumDeclaration>()
+
+    let allAstSelectors = context.options
+      .map(option => option.useConfigurationIf?.matchesAstSelector)
+      .filter(matchesAstSelector => matchesAstSelector !== undefined)
+    let allAstSelectorMatchers = allAstSelectors.map(
+      astSelector =>
+        [
+          astSelector,
+          buildPotentialEnumSorter({
+            alreadyParsedNodes,
+            astSelector,
+            context,
+          }),
+        ] as const,
+    )
+
+    return {
+      ...Object.fromEntries(allAstSelectorMatchers),
+      'TSEnumDeclaration:exit': node =>
+        sortEnum({
+          alreadyParsedNodes,
+          astSelector: null,
+          context,
+          node,
+        }),
+    }
+  },
   defaultOptions: [defaultOptions],
   name: 'sort-enums',
 })
+
+function buildPotentialEnumSorter({
+  alreadyParsedNodes,
+  astSelector,
+  context,
+}: {
+  alreadyParsedNodes: Set<TSESTree.TSEnumDeclaration>
+  context: Readonly<RuleContext<MessageId, Options>>
+  astSelector: string
+}): (node: TSESTree.Node) => void {
+  return sorter
+
+  function sorter(node: TSESTree.Node): void {
+    if (node.type !== AST_NODE_TYPES.TSEnumDeclaration) {
+      return
+    }
+
+    sortEnum({
+      alreadyParsedNodes,
+      astSelector,
+      context,
+      node,
+    })
+  }
+}
