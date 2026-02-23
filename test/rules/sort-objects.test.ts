@@ -3224,7 +3224,7 @@ describe('sort-objects', () => {
       })
     })
 
-    describe('declarationCommentMatchesPattern', () => {
+    describe('useConfigurationIf.declarationCommentMatchesPattern', () => {
       it('matches deep declarations', async () => {
         await valid({
           code: dedent`
