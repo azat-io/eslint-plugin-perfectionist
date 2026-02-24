@@ -1,5 +1,16 @@
-import type { MessageId, Options } from './sort-maps/types'
+import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
+import type { TSESTree } from '@typescript-eslint/types'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
+import type { MessageId, Options } from './sort-maps/types'
+import type { Settings } from '../utils/get-settings'
+
+import {
+  buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
@@ -16,10 +27,6 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import {
-  buildUseConfigurationIfJsonSchema,
-  buildCommonJsonSchemas,
-} from '../utils/json-schemas/common-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import {
   sortPotentialMap,
@@ -35,7 +42,11 @@ export default createEslintRule<Options, MessageId>({
         properties: {
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas(),
-          useConfigurationIf: buildUseConfigurationIfJsonSchema(),
+          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+            additionalProperties: {
+              matchesAstSelector: matchesAstSelectorJsonSchema,
+            },
+          }),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
         },
@@ -62,9 +73,30 @@ export default createEslintRule<Options, MessageId>({
   create: context => {
     let settings = getSettings(context.settings)
 
+    let alreadyParsedNodes = new Set<TSESTree.NewExpression>()
+
+    let allAstSelectors = context.options
+      .map(option => option.useConfigurationIf?.matchesAstSelector)
+      .filter(matchesAstSelector => matchesAstSelector !== undefined)
+    let allAstSelectorMatchers = allAstSelectors.map(
+      astSelector =>
+        [
+          astSelector,
+          buildPotentialEnumSorter({
+            alreadyParsedNodes,
+            astSelector,
+            settings,
+            context,
+          }),
+        ] as const,
+    )
+
     return {
-      NewExpression: node =>
+      ...Object.fromEntries(allAstSelectorMatchers),
+      'NewExpression:exit': node =>
         sortPotentialMap({
+          alreadyParsedNodes,
+          astSelector: null,
           settings,
           context,
           node,
@@ -74,3 +106,31 @@ export default createEslintRule<Options, MessageId>({
   defaultOptions: [defaultOptions],
   name: 'sort-maps',
 })
+
+function buildPotentialEnumSorter({
+  alreadyParsedNodes,
+  astSelector,
+  settings,
+  context,
+}: {
+  context: Readonly<RuleContext<MessageId, Options>>
+  alreadyParsedNodes: Set<TSESTree.NewExpression>
+  astSelector: string
+  settings: Settings
+}): (node: TSESTree.Node) => void {
+  return sorter
+
+  function sorter(node: TSESTree.Node): void {
+    if (node.type !== AST_NODE_TYPES.NewExpression) {
+      return
+    }
+
+    sortPotentialMap({
+      alreadyParsedNodes,
+      astSelector,
+      settings,
+      context,
+      node,
+    })
+  }
+}

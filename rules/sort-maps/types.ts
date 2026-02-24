@@ -30,6 +30,12 @@ export type Options = Partial<
        * rule is only applied when all keys match this pattern.
        */
       allNamesMatchPattern?: RegexOption
+
+      /**
+       * AST selector to match against NewExpression nodes targeting Map
+       * constructions.
+       */
+      matchesAstSelector?: string
     }
   } & AllCommonOptions<
     TypeOption,

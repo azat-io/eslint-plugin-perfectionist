@@ -1497,6 +1497,193 @@ describe('sort-maps', () => {
         },
       )
     })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('matches configuration based off matchesAstSelector', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclarator',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            const map = new Map([
+              [a, 'a'],
+              [b, 'b'],
+            ])
+          `,
+          code: dedent`
+            const map = new Map([
+              [b, 'b'],
+              [a, 'a'],
+            ])
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            new Map([
+              [b, 'b'],
+              [a, 'a'],
+            ])
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > NewExpression',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            new Map([
+              [a, 'a'],
+              [b, 'b'],
+            ])
+          `,
+          code: dedent`
+            new Map([
+              [b, 'b'],
+              [a, 'a'],
+            ])
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            new Map([
+              [a, 'a'],
+              [b, 'b'],
+            ])
+          `,
+          code: dedent`
+            new Map([
+              [b, 'b'],
+              [a, 'a'],
+            ])
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            const map = new Map([
+              [a, 'a'],
+              [b, 'b'],
+            ])
+          `,
+          code: dedent`
+            const map = new Map([
+              [b, 'b'],
+              [a, 'a'],
+            ])
+          `,
+        })
+      })
+    })
   })
 
   describe('natural', () => {

@@ -12,16 +12,19 @@ import { computeNodeName } from './compute-node-name'
  * Computes the matched context options for a given map node.
  *
  * @param params - Parameters.
+ * @param params.astSelector - The AST selector string currently evaluated.
  * @param params.elements - The map elements to compute the context options for.
  * @param params.context - The rule context.
  * @returns The matched context options or undefined if none match.
  */
 export function computeMatchedContextOptions<MessageIds extends string>({
+  astSelector,
   elements,
   context,
 }: {
   elements: (TSESTree.SpreadElement | TSESTree.Expression | null)[]
   context: Readonly<RuleContext<MessageIds, Options>>
+  astSelector: string | null
 }): Options[number] | undefined {
   let nodeNames = elements
     .filter(
@@ -37,5 +40,26 @@ export function computeMatchedContextOptions<MessageIds extends string>({
     nodeNames,
   })
 
-  return matchedContextOptions[0]
+  return matchedContextOptions.find(isContextOptionMatching)
+
+  function isContextOptionMatching(options: Options[number]): boolean {
+    return passesAstSelectorFilter({
+      matchesAstSelector: options.useConfigurationIf?.matchesAstSelector,
+      astSelector,
+    })
+  }
+}
+
+function passesAstSelectorFilter({
+  matchesAstSelector,
+  astSelector,
+}: {
+  matchesAstSelector: undefined | string
+  astSelector: string | null
+}): boolean {
+  if (!matchesAstSelector) {
+    return astSelector === null
+  }
+
+  return matchesAstSelector === astSelector
 }
