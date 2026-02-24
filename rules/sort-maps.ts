@@ -29,18 +29,6 @@ import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSettings } from '../utils/get-settings'
 
 export default createEslintRule<Options, MessageId>({
-  create: context => {
-    let settings = getSettings(context.settings)
-
-    return {
-      NewExpression: node =>
-        sortPotentialMap({
-          settings,
-          context,
-          node,
-        }),
-    }
-  },
   meta: {
     schema: {
       items: {
@@ -70,6 +58,18 @@ export default createEslintRule<Options, MessageId>({
     },
     type: 'suggestion',
     fixable: 'code',
+  },
+  create: context => {
+    let settings = getSettings(context.settings)
+
+    return {
+      NewExpression: node =>
+        sortPotentialMap({
+          settings,
+          context,
+          node,
+        }),
+    }
   },
   defaultOptions: [defaultOptions],
   name: 'sort-maps',
