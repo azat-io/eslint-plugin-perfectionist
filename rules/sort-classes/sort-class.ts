@@ -110,7 +110,8 @@ export function sortClass({
   node: TSESTree.ClassBody
   settings: Settings
 }): void {
-  if (!isSortable(node.body)) {
+  let classElements = node.body.filter(isKnownClassElement)
+  if (!isSortable(classElements)) {
     return
   }
 
@@ -137,7 +138,7 @@ export function sortClass({
   let sortingNodeGroupsWithoutOverloadSignature: Omit<
     SortClassesSortingNode,
     'overloadSignatureImplementation'
-  >[][] = node.body.reduce(
+  >[][] = classElements.reduce(
     (
       accumulator: Omit<
         SortClassesSortingNode,
@@ -145,10 +146,6 @@ export function sortClass({
       >[][],
       member,
     ) => {
-      if (!isKnownClassElement(member)) {
-        return accumulator
-      }
-
       let dependencies: string[] = []
 
       let isDecorated = false
@@ -310,7 +307,7 @@ export function sortClass({
   )
 
   let sortingNodeGroups = populateSortingNodeGroupsWithOverloadSignature({
-    overloadSignatureGroups: computeOverloadSignatureGroups(node.body),
+    overloadSignatureGroups: computeOverloadSignatureGroups(classElements),
     sortingNodeGroups: sortingNodeGroupsWithoutOverloadSignature,
   })
 
