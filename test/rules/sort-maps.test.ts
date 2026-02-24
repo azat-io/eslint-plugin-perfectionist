@@ -1417,84 +1417,86 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['string pattern', 'foo'],
-      ['array with string patterns', ['noMatch', 'foo']],
-      ['regex pattern object', { pattern: 'FOO', flags: 'i' }],
-      [
-        'array with regex pattern object',
-        ['noMatch', { pattern: 'FOO', flags: 'i' }],
-      ],
-    ])(
-      'applies conditional configuration when all names match %s',
-      async (_description, allNamesMatchPattern) => {
-        await invalid({
-          options: [
-            {
-              ...options,
-              useConfigurationIf: {
-                allNamesMatchPattern,
-              },
-            },
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: '^r$',
-                  groupName: 'r',
+    describe('useConfigurationIf.allNamesMatchPattern', () => {
+      it.each([
+        ['string pattern', 'foo'],
+        ['array with string patterns', ['noMatch', 'foo']],
+        ['regex pattern object', { pattern: 'FOO', flags: 'i' }],
+        [
+          'array with regex pattern object',
+          ['noMatch', { pattern: 'FOO', flags: 'i' }],
+        ],
+      ])(
+        'applies conditional configuration when all names match %s',
+        async (_description, allNamesMatchPattern) => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  allNamesMatchPattern,
                 },
-                {
-                  elementNamePattern: '^g$',
-                  groupName: 'g',
+              },
+              {
+                ...options,
+                customGroups: [
+                  {
+                    elementNamePattern: '^r$',
+                    groupName: 'r',
+                  },
+                  {
+                    elementNamePattern: '^g$',
+                    groupName: 'g',
+                  },
+                  {
+                    elementNamePattern: '^b$',
+                    groupName: 'b',
+                  },
+                ],
+                useConfigurationIf: {
+                  allNamesMatchPattern: '^[rgb]$',
                 },
-                {
-                  elementNamePattern: '^b$',
-                  groupName: 'b',
+                groups: ['r', 'g', 'b'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'g',
+                  leftGroup: 'b',
+                  right: 'g',
+                  left: 'b',
                 },
-              ],
-              useConfigurationIf: {
-                allNamesMatchPattern: '^[rgb]$',
+                messageId: 'unexpectedMapElementsGroupOrder',
               },
-              groups: ['r', 'g', 'b'],
-            },
-          ],
-          errors: [
-            {
-              data: {
-                rightGroup: 'g',
-                leftGroup: 'b',
-                right: 'g',
-                left: 'b',
+              {
+                data: {
+                  rightGroup: 'r',
+                  leftGroup: 'g',
+                  right: 'r',
+                  left: 'g',
+                },
+                messageId: 'unexpectedMapElementsGroupOrder',
               },
-              messageId: 'unexpectedMapElementsGroupOrder',
-            },
-            {
-              data: {
-                rightGroup: 'r',
-                leftGroup: 'g',
-                right: 'r',
-                left: 'g',
-              },
-              messageId: 'unexpectedMapElementsGroupOrder',
-            },
-          ],
-          output: dedent`
-            new Map([
-              [r, null],
-              [g, null],
-              [b, null]
-            ])
-          `,
-          code: dedent`
-            new Map([
-              [b, null],
-              [g, null],
-              [r, null]
-            ])
-          `,
-        })
-      },
-    )
+            ],
+            output: dedent`
+              new Map([
+                [r, null],
+                [g, null],
+                [b, null]
+              ])
+            `,
+            code: dedent`
+              new Map([
+                [b, null],
+                [g, null],
+                [r, null]
+              ])
+            `,
+          })
+        },
+      )
+    })
   })
 
   describe('natural', () => {
