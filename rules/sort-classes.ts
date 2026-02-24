@@ -1,10 +1,6 @@
-import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
-import type { TSESTree } from '@typescript-eslint/types'
-
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { MessageId, Options } from './sort-classes/types'
-import type { Settings } from '../utils/get-settings'
 
 import {
   useExperimentalDependencyDetectionJsonSchema,
@@ -34,8 +30,8 @@ import {
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { defaultOptions, sortClass } from './sort-classes/sort-class'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getSettings } from '../utils/get-settings'
 
 export default createEslintRule<Options, MessageId>({
   meta: {
@@ -79,67 +75,12 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => {
-    let settings = getSettings(context.settings)
-
-    let alreadyParsedNodes = new Set<TSESTree.ClassBody>()
-
-    let allAstSelectors = context.options
-      .map(option => option.useConfigurationIf?.matchesAstSelector)
-      .filter(matchesAstSelector => matchesAstSelector !== undefined)
-    let allAstSelectorMatchers = allAstSelectors.map(
-      astSelector =>
-        [
-          astSelector,
-          buildPotentialClassSorter({
-            alreadyParsedNodes,
-            astSelector,
-            settings,
-            context,
-          }),
-        ] as const,
-    )
-
-    return {
-      ...Object.fromEntries(allAstSelectorMatchers),
-      'ClassBody:exit': classBody =>
-        sortClass({
-          alreadyParsedNodes,
-          astSelector: null,
-          node: classBody,
-          settings,
-          context,
-        }),
-    }
-  },
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [AST_NODE_TYPES.ClassBody],
+      sorter: sortClass,
+      context,
+    }),
   defaultOptions: [defaultOptions],
   name: 'sort-classes',
 })
-
-function buildPotentialClassSorter({
-  alreadyParsedNodes,
-  astSelector,
-  settings,
-  context,
-}: {
-  context: Readonly<RuleContext<MessageId, Options>>
-  alreadyParsedNodes: Set<TSESTree.ClassBody>
-  astSelector: string
-  settings: Settings
-}): (node: TSESTree.Node) => void {
-  return sorter
-
-  function sorter(node: TSESTree.Node): void {
-    if (node.type !== AST_NODE_TYPES.ClassBody) {
-      return
-    }
-
-    sortClass({
-      alreadyParsedNodes,
-      astSelector,
-      settings,
-      context,
-      node,
-    })
-  }
-}
