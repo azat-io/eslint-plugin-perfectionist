@@ -3224,7 +3224,7 @@ describe('sort-objects', () => {
       })
     })
 
-    describe('declarationCommentMatchesPattern', () => {
+    describe('useConfigurationIf.declarationCommentMatchesPattern', () => {
       it('matches deep declarations', async () => {
         await valid({
           code: dedent`
@@ -3656,6 +3656,226 @@ describe('sort-objects', () => {
             const obj = {
               b,
               a,
+            }
+          `,
+        })
+      })
+    })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('matches configuration based off matchesAstSelector', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclarator',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: "a",
+              b: "b",
+            }
+          `,
+          code: dedent`
+            let obj = {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ObjectExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            let obj = {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ObjectExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            f({
+              b: "b",
+              a: "a",
+            })
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ObjectPattern',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            let { b, a } = obj
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > ObjectExpression',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ObjectExpression',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: "a",
+              b: "b",
+            }
+          `,
+          code: dedent`
+            let obj = {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ObjectExpression',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ObjectExpression',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: "a",
+              b: "b",
+            }
+          `,
+          code: dedent`
+            let obj = {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ObjectExpression',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: "a",
+              b: "b",
+            }
+          `,
+          code: dedent`
+            let obj = {
+              b: "b",
+              a: "a",
             }
           `,
         })

@@ -7,6 +7,11 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { Options } from './sort-array-includes/types'
 
 import {
+  buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
+import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
@@ -16,10 +21,6 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import {
-  buildUseConfigurationIfJsonSchema,
-  buildCommonJsonSchemas,
-} from '../utils/json-schemas/common-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-array-includes/types'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -68,7 +69,7 @@ export let jsonSchema: JSONSchema4 = {
       }),
       useConfigurationIf: buildUseConfigurationIfJsonSchema({
         additionalProperties: {
-          matchesAstSelector: { type: 'string' },
+          matchesAstSelector: matchesAstSelectorJsonSchema,
         },
       }),
       partitionByComment: partitionByCommentJsonSchema,
@@ -83,7 +84,7 @@ export let jsonSchema: JSONSchema4 = {
 
 export default createEslintRule<Options, MessageId>({
   create: context => {
-    let alreadyParsedExpressions = new Set<TSESTree.Expression>()
+    let alreadyParsedNodes = new Set<TSESTree.Expression>()
 
     let allAstSelectors = context.options
       .map(option => option.useConfigurationIf?.matchesAstSelector)
@@ -93,7 +94,7 @@ export default createEslintRule<Options, MessageId>({
         [
           astSelector,
           buildPotentialArraySorter({
-            alreadyParsedExpressions,
+            alreadyParsedNodes,
             astSelector,
             context,
           }),
@@ -103,7 +104,7 @@ export default createEslintRule<Options, MessageId>({
     return {
       ...Object.fromEntries(allAstSelectorMatchers),
       'MemberExpression:exit': buildFromMemberExpressionArraySorter({
-        alreadyParsedExpressions,
+        alreadyParsedNodes,
         astSelector: null,
         context,
       }),
@@ -130,13 +131,13 @@ export default createEslintRule<Options, MessageId>({
 })
 
 function sortArrayFromMemberExpression({
-  alreadyParsedExpressions,
+  alreadyParsedNodes,
   astSelector,
   context,
   node,
 }: {
-  alreadyParsedExpressions: Set<TSESTree.Expression>
   context: Readonly<RuleContext<MessageId, Options>>
+  alreadyParsedNodes: Set<TSESTree.Expression>
   node: TSESTree.MemberExpression
   astSelector: string | null
 }): void {
@@ -154,7 +155,8 @@ function sortArrayFromMemberExpression({
     },
     cachedGroupsByModifiersAndSelectors,
     expression: arrayExpression,
-    alreadyParsedExpressions,
+    alreadyParsedNodes,
+    defaultOptions,
     astSelector,
     context,
   })
@@ -172,17 +174,17 @@ function sortArrayFromMemberExpression({
 }
 
 function buildPotentialArraySorter({
-  alreadyParsedExpressions,
+  alreadyParsedNodes,
   astSelector,
   context,
 }: {
-  alreadyParsedExpressions: Set<TSESTree.Expression>
   context: Readonly<RuleContext<MessageId, Options>>
+  alreadyParsedNodes: Set<TSESTree.Expression>
   astSelector: string
 }): (node: TSESTree.Node) => void {
-  return sortPotentialArray
+  return sorter
 
-  function sortPotentialArray(node: TSESTree.Node): void {
+  function sorter(node: TSESTree.Node): void {
     if (node.type !== AST_NODE_TYPES.ArrayExpression) {
       return
     }
@@ -191,7 +193,7 @@ function buildPotentialArraySorter({
     }
 
     sortArrayFromMemberExpression({
-      alreadyParsedExpressions,
+      alreadyParsedNodes,
       node: node.parent,
       astSelector,
       context,
@@ -200,19 +202,19 @@ function buildPotentialArraySorter({
 }
 
 function buildFromMemberExpressionArraySorter({
-  alreadyParsedExpressions,
+  alreadyParsedNodes,
   astSelector,
   context,
 }: {
-  alreadyParsedExpressions: Set<TSESTree.Expression>
   context: Readonly<RuleContext<MessageId, Options>>
+  alreadyParsedNodes: Set<TSESTree.Expression>
   astSelector: string | null
 }): (node: TSESTree.MemberExpression) => void {
   return sorter
 
   function sorter(node: TSESTree.MemberExpression): void {
     return sortArrayFromMemberExpression({
-      alreadyParsedExpressions,
+      alreadyParsedNodes,
       astSelector,
       context,
       node,

@@ -22,7 +22,6 @@ import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
-import { defaultOptions } from '../sort-array-includes'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
@@ -35,8 +34,9 @@ type SortArraySortingNode = SortingNode<
 
 export function sortArray<MessageIds extends string>({
   cachedGroupsByModifiersAndSelectors,
-  alreadyParsedExpressions,
   availableMessageIds,
+  alreadyParsedNodes,
+  defaultOptions,
   astSelector,
   expression,
   context,
@@ -47,10 +47,11 @@ export function sortArray<MessageIds extends string>({
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
-  alreadyParsedExpressions: Set<TSESTree.CallExpressionArgument>
   cachedGroupsByModifiersAndSelectors: Map<string, string[]>
+  alreadyParsedNodes: Set<TSESTree.CallExpressionArgument>
   context: Readonly<RuleContext<MessageIds, Options>>
   expression: TSESTree.CallExpressionArgument
+  defaultOptions: Required<Options[number]>
   astSelector: string | null
 }): void {
   let elements = computeArrayElements(expression)
@@ -74,10 +75,10 @@ export function sortArray<MessageIds extends string>({
     return
   }
 
-  if (alreadyParsedExpressions.has(expression)) {
+  if (alreadyParsedNodes.has(expression)) {
     return
   }
-  alreadyParsedExpressions.add(expression)
+  alreadyParsedNodes.add(expression)
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
