@@ -10,6 +10,7 @@ import type {
   Selector,
   Options,
 } from './types'
+import type { Settings } from '../../utils/get-settings'
 
 import {
   DEPENDENCY_ORDER_ERROR_ID,
@@ -44,7 +45,6 @@ import { computeGroup } from '../../utils/compute-group'
 import { isStyleComponent } from './is-style-component'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { computeNodeValue } from './compute-node-value'
-import { getSettings } from '../../utils/get-settings'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
 
@@ -76,6 +76,7 @@ export let defaultOptions: Required<Options[number]> = {
 export function sortObject({
   alreadyParsedNodes,
   astSelector,
+  settings,
   context,
   node,
 }: {
@@ -83,12 +84,12 @@ export function sortObject({
   context: Readonly<TSESLint.RuleContext<MessageId, Options>>
   node: TSESTree.ObjectExpression | TSESTree.ObjectPattern
   astSelector: string | null
+  settings: Settings
 }): void {
   if (!isSortable(node.properties)) {
     return
   }
 
-  let settings = getSettings(context.settings)
   let { sourceCode, id } = context
 
   let isDestructuredObject = node.type === AST_NODE_TYPES.ObjectPattern

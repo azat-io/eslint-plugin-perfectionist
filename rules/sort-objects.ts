@@ -4,6 +4,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { MessageId, Options } from './sort-objects/types'
+import type { Settings } from '../utils/get-settings'
 
 import {
   additionalCustomGroupMatchOptionsJsonSchema,
@@ -35,6 +36,7 @@ import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-group
 import { scopedRegexJsonSchema } from '../utils/json-schemas/scoped-regex-json-schema'
 import { defaultOptions, sortObject } from './sort-objects/sort-object'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getSettings } from '../utils/get-settings'
 
 export default createEslintRule<Options, MessageId>({
   meta: {
@@ -99,6 +101,8 @@ export default createEslintRule<Options, MessageId>({
     fixable: 'code',
   },
   create: context => {
+    let settings = getSettings(context.settings)
+
     let alreadyParsedNodes = new Set<
       TSESTree.ObjectExpression | TSESTree.ObjectPattern
     >()
@@ -113,6 +117,7 @@ export default createEslintRule<Options, MessageId>({
           buildPotentialObjectSorter({
             alreadyParsedNodes,
             astSelector,
+            settings,
             context,
           }),
         ] as const,
@@ -124,6 +129,7 @@ export default createEslintRule<Options, MessageId>({
         sortObject({
           alreadyParsedNodes,
           astSelector: null,
+          settings,
           context,
           node,
         }),
@@ -131,6 +137,7 @@ export default createEslintRule<Options, MessageId>({
         sortObject({
           alreadyParsedNodes,
           astSelector: null,
+          settings,
           context,
           node,
         }),
@@ -143,11 +150,13 @@ export default createEslintRule<Options, MessageId>({
 function buildPotentialObjectSorter({
   alreadyParsedNodes,
   astSelector,
+  settings,
   context,
 }: {
   alreadyParsedNodes: Set<TSESTree.ObjectExpression | TSESTree.ObjectPattern>
   context: Readonly<RuleContext<MessageId, Options>>
   astSelector: string
+  settings: Settings
 }): (node: TSESTree.Node) => void {
   return sorter
 
@@ -158,6 +167,7 @@ function buildPotentialObjectSorter({
         sortObject({
           alreadyParsedNodes,
           astSelector,
+          settings,
           context,
           node,
         })
