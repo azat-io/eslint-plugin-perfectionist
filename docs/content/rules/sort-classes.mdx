@@ -358,6 +358,81 @@ class User {
 
 Without `ignoreCallbackDependenciesPatterns: ['^computed$']`, `role` and `username` would be sorted before `fullName` as it depends on them.
 
+### useConfigurationIf
+
+<sub>
+  type:
+  ```ts
+  {
+    allNamesMatchPattern?:
+      | string
+      | string[]
+      | { pattern: string; flags: string }
+      | { pattern: string; flags: string }[]
+    matchesAstSelector?: string
+  }
+  ```
+</sub>
+<sub>default: `{}`</sub>
+
+Specifies filters to match a particular options configuration for a given object.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all class keys must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-classes': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort colors by RGB
+      customGroups: [
+        {
+          groupName: 'r',
+          elementNamePattern: '^r$',
+        },
+        {
+          groupName: 'g',
+          elementNamePattern: '^g$',
+        },
+        {
+          groupName: 'b',
+          elementNamePattern: '^b$',
+        },
+      ],
+      useConfigurationIf: {
+        allNamesMatchPattern: '^[r|g|b]$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching a `ClassBody` node.
+
+Example configuration: don't sort classes that are exported.
+```ts
+{
+  'perfectionist/sort-classes': [
+    'error',
+    {
+      useConfigurationIf: {
+        matchesAstSelector: 'ExportNamedDeclaration ClassBody',
+      },
+      type: 'unsorted'
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
 ### groups
 
 <sub>
@@ -898,6 +973,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                     'unknown',
                   ],
                   customGroups: [],
+                  useConfigurationIf: {},
                   useExperimentalDependencyDetection: true,
                 },
               ],
@@ -954,6 +1030,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                   'unknown',
                 ],
                 customGroups: [],
+                useConfigurationIf: {},
                 useExperimentalDependencyDetection: true,
               },
             ],
