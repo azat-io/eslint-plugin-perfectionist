@@ -30,27 +30,40 @@ export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedClassesDependencyOrder'
  * This rule enforces consistent ordering of class members (properties, methods,
  * constructors, etc.) to improve code readability and maintainability.
  */
-export type Options = [
-  Partial<
-    {
+export type Options = Partial<
+  {
+    /**
+     * Conditional configuration based on pattern matching.
+     */
+    useConfigurationIf: {
       /**
-       * Regex patterns for function names whose callback argument dependencies
-       * are ignored during class-member sorting. Dependencies inside these
-       * callbacks won't influence the ordering.
+       * Regular expression pattern to match against all class element names.
        */
-      ignoreCallbackDependenciesPatterns: RegexOption
+      allNamesMatchPattern?: RegexOption
 
       /**
-       * Enables experimental dependency detection.
+       * AST selector to match against ClassBody nodes.
        */
-      useExperimentalDependencyDetection: boolean
-    } & AllCommonOptions<
-      TypeOption,
-      AdditionalSortOptions,
-      CustomGroupMatchOptions
-    >
-  >,
-]
+      matchesAstSelector?: string
+    }
+
+    /**
+     * Regex patterns for function names whose callback argument dependencies
+     * are ignored during class-member sorting. Dependencies inside these
+     * callbacks won't influence the ordering.
+     */
+    ignoreCallbackDependenciesPatterns: RegexOption
+
+    /**
+     * Enables experimental dependency detection.
+     */
+    useExperimentalDependencyDetection: boolean
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortOptions,
+    CustomGroupMatchOptions
+  >
+>[]
 
 export interface SortClassesSortingNode extends SortingNodeWithDependencies<TSESTree.ClassElement> {
   overloadSignatureImplementation:

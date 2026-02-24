@@ -36,6 +36,7 @@ import { computeStaticBlockDetails } from './node-info/compute-static-block-deta
 import { computeOverloadSignatureGroups } from './compute-overload-signature-groups'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
+import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { computePropertyDetails } from './node-info/compute-property-details'
 import { computeAccessorDetails } from './node-info/compute-accessor-details'
@@ -93,6 +94,7 @@ export let defaultOptions: Required<Options[number]> = {
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
   specialCharacters: 'keep',
+  useConfigurationIf: {},
   type: 'alphabetical',
   ignoreCase: true,
   customGroups: [],
@@ -102,11 +104,15 @@ export let defaultOptions: Required<Options[number]> = {
 }
 
 export function sortClass({
+  alreadyParsedNodes,
+  astSelector,
   settings,
   context,
   node,
 }: {
   context: Readonly<TSESLint.RuleContext<MessageId, Options>>
+  alreadyParsedNodes: Set<TSESTree.ClassBody>
+  astSelector: string | null
   node: TSESTree.ClassBody
   settings: Settings
 }): void {
@@ -115,7 +121,21 @@ export function sortClass({
     return
   }
 
-  let options = complete(context.options.at(0), settings, defaultOptions)
+  let matchedContextOptions = computeMatchedContextOptions({
+    classElements,
+    astSelector,
+    context,
+  })
+  if (!matchedContextOptions && astSelector) {
+    return
+  }
+
+  if (alreadyParsedNodes.has(node)) {
+    return
+  }
+  alreadyParsedNodes.add(node)
+
+  let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
     modifiers: allModifiers,
