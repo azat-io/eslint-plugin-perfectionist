@@ -4,6 +4,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { MessageId, Options } from './sort-enums/types'
+import type { Settings } from '../utils/get-settings'
 
 import {
   additionalCustomGroupMatchOptionsJsonSchema,
@@ -33,6 +34,7 @@ import {
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { defaultOptions, sortEnum } from './sort-enums/sort-enum'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getSettings } from '../utils/get-settings'
 
 export default createEslintRule<Options, MessageId>({
   meta: {
@@ -81,6 +83,8 @@ export default createEslintRule<Options, MessageId>({
     fixable: 'code',
   },
   create: context => {
+    let settings = getSettings(context.settings)
+
     let alreadyParsedNodes = new Set<TSESTree.TSEnumDeclaration>()
 
     let allAstSelectors = context.options
@@ -93,6 +97,7 @@ export default createEslintRule<Options, MessageId>({
           buildPotentialEnumSorter({
             alreadyParsedNodes,
             astSelector,
+            settings,
             context,
           }),
         ] as const,
@@ -104,6 +109,7 @@ export default createEslintRule<Options, MessageId>({
         sortEnum({
           alreadyParsedNodes,
           astSelector: null,
+          settings,
           context,
           node,
         }),
@@ -116,11 +122,13 @@ export default createEslintRule<Options, MessageId>({
 function buildPotentialEnumSorter({
   alreadyParsedNodes,
   astSelector,
+  settings,
   context,
 }: {
   alreadyParsedNodes: Set<TSESTree.TSEnumDeclaration>
   context: Readonly<RuleContext<MessageId, Options>>
   astSelector: string
+  settings: Settings
 }): (node: TSESTree.Node) => void {
   return sorter
 
@@ -132,6 +140,7 @@ function buildPotentialEnumSorter({
     sortEnum({
       alreadyParsedNodes,
       astSelector,
+      settings,
       context,
       node,
     })
