@@ -33,7 +33,7 @@ type MessageId =
 
 export default createEslintRule<Options, MessageId>({
   create: context => {
-    let alreadyParsedExpressions = new Set<TSESTree.CallExpressionArgument>()
+    let alreadyParsedNodes = new Set<TSESTree.CallExpressionArgument>()
 
     let allAstSelectors = context.options
       .map(option => option.useConfigurationIf?.matchesAstSelector)
@@ -43,7 +43,7 @@ export default createEslintRule<Options, MessageId>({
         [
           astSelector,
           buildPotentialSetSorter({
-            alreadyParsedExpressions,
+            alreadyParsedNodes,
             astSelector,
             context,
           }),
@@ -53,7 +53,7 @@ export default createEslintRule<Options, MessageId>({
     return {
       ...Object.fromEntries(allAstSelectorMatchers),
       'NewExpression:exit': buildFromNewExpressionSetSorter({
-        alreadyParsedExpressions,
+        alreadyParsedNodes,
         astSelector: null,
         context,
       }),
@@ -80,12 +80,12 @@ export default createEslintRule<Options, MessageId>({
 })
 
 function sortSetFromNewExpression({
-  alreadyParsedExpressions,
+  alreadyParsedNodes,
   astSelector,
   context,
   node,
 }: {
-  alreadyParsedExpressions: Set<TSESTree.CallExpressionArgument>
+  alreadyParsedNodes: Set<TSESTree.CallExpressionArgument>
   context: Readonly<RuleContext<MessageId, Options>>
   node: TSESTree.NewExpression
   astSelector: string | null
@@ -104,7 +104,7 @@ function sortSetFromNewExpression({
     },
     cachedGroupsByModifiersAndSelectors,
     expression: setExpression,
-    alreadyParsedExpressions,
+    alreadyParsedNodes,
     defaultOptions,
     astSelector,
     context,
@@ -126,11 +126,11 @@ function sortSetFromNewExpression({
 }
 
 function buildPotentialSetSorter({
-  alreadyParsedExpressions,
+  alreadyParsedNodes,
   astSelector,
   context,
 }: {
-  alreadyParsedExpressions: Set<TSESTree.CallExpressionArgument>
+  alreadyParsedNodes: Set<TSESTree.CallExpressionArgument>
   context: Readonly<RuleContext<MessageId, Options>>
   astSelector: string
 }): (node: TSESTree.Node) => void {
@@ -145,7 +145,7 @@ function buildPotentialSetSorter({
     }
 
     sortSetFromNewExpression({
-      alreadyParsedExpressions,
+      alreadyParsedNodes,
       node: node.parent,
       astSelector,
       context,
@@ -154,11 +154,11 @@ function buildPotentialSetSorter({
 }
 
 function buildFromNewExpressionSetSorter({
-  alreadyParsedExpressions,
+  alreadyParsedNodes,
   astSelector,
   context,
 }: {
-  alreadyParsedExpressions: Set<TSESTree.CallExpressionArgument>
+  alreadyParsedNodes: Set<TSESTree.CallExpressionArgument>
   context: Readonly<RuleContext<MessageId, Options>>
   astSelector: string | null
 }): (node: TSESTree.NewExpression) => void {
@@ -166,7 +166,7 @@ function buildFromNewExpressionSetSorter({
 
   function sorter(node: TSESTree.NewExpression): void {
     return sortSetFromNewExpression({
-      alreadyParsedExpressions,
+      alreadyParsedNodes,
       astSelector,
       context,
       node,
