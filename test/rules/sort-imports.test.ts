@@ -11372,6 +11372,7 @@ describe('sort-imports', () => {
               groups,
             },
           ],
+          settings: {},
         } as Readonly<RuleContext<MessageId, Options>>)
       }
 
