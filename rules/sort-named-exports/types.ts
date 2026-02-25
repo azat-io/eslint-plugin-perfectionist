@@ -10,6 +10,17 @@ import {
   buildCustomGroupSelectorJsonSchema,
 } from '../../utils/json-schemas/common-groups-json-schemas'
 
+export type MessageId =
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
+
+export const ORDER_ERROR_ID = 'unexpectedNamedExportsOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedNamedExportsGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenNamedExports'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenNamedExports'
+
 /**
  * Configuration options for the sort-named-exports rule.
  *
