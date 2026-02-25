@@ -15,8 +15,7 @@ import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/com
 export type Options = Partial<
   {
     /**
-     * Conditional configuration based on pattern matching. When specified, the
-     * rule applies only if all array element names match the given pattern.
+     * Conditional configuration based on pattern matching.
      */
     useConfigurationIf: {
       /**
