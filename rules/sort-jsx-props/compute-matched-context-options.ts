@@ -3,6 +3,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { RegexOption } from '../../types/common-options'
 import type { Options } from './types'
 
 import { filterOptionsByAllNamesMatch } from '../../utils/context-matching/filter-options-by-all-names-match'
@@ -27,18 +28,44 @@ export function computeMatchedContextOptions({
   sourceCode: TSESLint.SourceCode
   node: TSESTree.JSXElement
 }): Options[number] | undefined {
-  return filterOptionsByAllNamesMatch({
-    nodeNames: node.openingElement.attributes
-      .filter(attribute => attribute.type !== AST_NODE_TYPES.JSXSpreadAttribute)
-      .map(attribute => computeNodeName(attribute)),
+  let nodeNames = node.openingElement.attributes
+    .filter(attribute => attribute.type !== AST_NODE_TYPES.JSXSpreadAttribute)
+    .map(attribute => computeNodeName(attribute))
+
+  let matchedContextOptions = filterOptionsByAllNamesMatch({
     contextOptions: context.options,
-  }).find(options => {
-    if (!options.useConfigurationIf?.tagMatchesPattern) {
+    nodeNames,
+  })
+
+  return matchedContextOptions.find(isContextOptionMatching)
+
+  function isContextOptionMatching(options: Options[number]): boolean {
+    if (!options.useConfigurationIf) {
       return true
     }
-    return matches(
-      sourceCode.getText(node.openingElement.name),
-      options.useConfigurationIf.tagMatchesPattern,
-    )
-  })
+
+    return passesTagMatchesPatternFilter({
+      tagMatchesPattern: options.useConfigurationIf.tagMatchesPattern,
+      sourceCode,
+      node,
+    })
+  }
+}
+
+function passesTagMatchesPatternFilter({
+  tagMatchesPattern,
+  sourceCode,
+  node,
+}: {
+  tagMatchesPattern: RegexOption | undefined
+  sourceCode: TSESLint.SourceCode
+  node: TSESTree.JSXElement
+}): boolean {
+  if (!tagMatchesPattern) {
+    return true
+  }
+  return matches(
+    sourceCode.getText(node.openingElement.name),
+    tagMatchesPattern,
+  )
 }
