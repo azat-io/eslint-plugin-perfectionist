@@ -1,11 +1,12 @@
-import type { TSESTree } from '@typescript-eslint/types'
-import type { TSESLint } from '@typescript-eslint/utils'
+import type { MessageId, Options } from './sort-jsx-props/types'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
-
-import type { Modifier, Selector, Options } from './sort-jsx-props/types'
-import type { SortingNode } from '../types/sorting-node'
-
+import {
+  additionalCustomGroupMatchOptionsJsonSchema,
+  MISSED_SPACING_ERROR_ID,
+  EXTRA_SPACING_ERROR_ID,
+  GROUP_ORDER_ERROR_ID,
+  ORDER_ERROR_ID,
+} from './sort-jsx-props/types'
 import {
   buildUseConfigurationIfJsonSchema,
   buildCommonJsonSchemas,
@@ -17,211 +18,13 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import {
-  additionalCustomGroupMatchOptionsJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-jsx-props/types'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
-import { filterOptionsByAllNamesMatch } from '../utils/context-matching/filter-options-by-all-names-match'
 import { partitionByNewLineJsonSchema } from '../utils/json-schemas/common-partition-json-schemas'
-import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
-import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
-import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
-import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
-import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
+import { defaultOptions, sortJsxObject } from './sort-jsx-props/sort-jsx-object'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { reportAllErrors } from '../utils/report-all-errors'
-import { shouldPartition } from '../utils/should-partition'
-import { computeGroup } from '../utils/compute-group'
-import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isSortable } from '../utils/is-sortable'
-import { complete } from '../utils/complete'
-import { matches } from '../utils/matches'
-
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
-
-const ORDER_ERROR_ID = 'unexpectedJSXPropsOrder'
-const GROUP_ORDER_ERROR_ID = 'unexpectedJSXPropsGroupOrder'
-const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenJSXPropsMembers'
-const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenJSXPropsMembers'
-
-type MessageId =
-  | typeof MISSED_SPACING_ERROR_ID
-  | typeof EXTRA_SPACING_ERROR_ID
-  | typeof GROUP_ORDER_ERROR_ID
-  | typeof ORDER_ERROR_ID
-
-let defaultOptions: Required<Options[number]> = {
-  fallbackSort: { type: 'unsorted' },
-  newlinesInside: 'newlinesBetween',
-  specialCharacters: 'keep',
-  newlinesBetween: 'ignore',
-  partitionByNewLine: false,
-  useConfigurationIf: {},
-  type: 'alphabetical',
-  ignoreCase: true,
-  customGroups: [],
-  locales: 'en-US',
-  alphabet: '',
-  order: 'asc',
-  groups: [],
-}
 
 export default createEslintRule<Options, MessageId>({
-  create: context => ({
-    JSXElement: node => {
-      if (!isSortable(node.openingElement.attributes)) {
-        return
-      }
-
-      let settings = getSettings(context.settings)
-      let { sourceCode, id } = context
-
-      let matchedContextOptions = computeMatchedContextOptions({
-        sourceCode,
-        context,
-        node,
-      })
-      let options = complete(matchedContextOptions, settings, defaultOptions)
-      validateCustomSortConfiguration(options)
-      validateGroupsConfiguration({
-        selectors: allSelectors,
-        modifiers: allModifiers,
-        options,
-      })
-      validateNewlinesAndPartitionConfiguration(options)
-
-      let eslintDisabledLines = getEslintDisabledLines({
-        ruleName: id,
-        sourceCode,
-      })
-      let optionsByGroupIndexComputer =
-        buildOptionsByGroupIndexComputer(options)
-
-      let formattedMembers: SortingNode[][] =
-        node.openingElement.attributes.reduce(
-          (
-            accumulator: SortingNode[][],
-            attribute: TSESTree.JSXSpreadAttribute | TSESTree.JSXAttribute,
-          ) => {
-            if (attribute.type === AST_NODE_TYPES.JSXSpreadAttribute) {
-              accumulator.push([])
-              return accumulator
-            }
-
-            let name = getNodeName({ attribute })
-
-            let selectors: Selector[] = []
-            let modifiers: Modifier[] = []
-
-            if (attribute.value === null) {
-              modifiers.push('shorthand')
-            }
-            if (!isNodeOnSingleLine(attribute)) {
-              modifiers.push('multiline')
-            }
-            selectors.push('prop')
-
-            let predefinedGroups = generatePredefinedGroups({
-              cache: cachedGroupsByModifiersAndSelectors,
-              selectors,
-              modifiers,
-            })
-            let group = computeGroup({
-              customGroupMatcher: customGroup =>
-                doesCustomGroupMatch({
-                  elementValue:
-                    attribute.value ?
-                      sourceCode.getText(attribute.value)
-                    : null,
-                  elementName: name,
-                  customGroup,
-                  selectors,
-                  modifiers,
-                }),
-              predefinedGroups,
-              options,
-            })
-
-            let sortingNode: Omit<SortingNode, 'partitionId'> = {
-              isEslintDisabled: isNodeEslintDisabled(
-                attribute,
-                eslintDisabledLines,
-              ),
-              size: rangeToDiff(attribute, sourceCode),
-              node: attribute,
-              group,
-              name,
-            }
-
-            let lastSortingNode = accumulator.at(-1)?.at(-1)
-            if (
-              shouldPartition({
-                options: {
-                  partitionByNewLine: options.partitionByNewLine,
-                  partitionByComment: false,
-                },
-                lastSortingNode,
-                sortingNode,
-                sourceCode,
-              })
-            ) {
-              accumulator.push([])
-            }
-
-            accumulator.at(-1)!.push({
-              ...sortingNode,
-              partitionId: accumulator.length,
-            })
-
-            return accumulator
-          },
-          [[]],
-        )
-
-      for (let currentNodes of formattedMembers) {
-        function createSortNodesExcludingEslintDisabled(nodes: SortingNode[]) {
-          return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
-            return sortNodesByGroups({
-              comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
-              optionsByGroupIndexComputer,
-              ignoreEslintDisabledNodes,
-              groups: options.groups,
-              nodes,
-            })
-          }
-        }
-
-        reportAllErrors<MessageId>({
-          availableMessageIds: {
-            missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-            extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-            unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-            unexpectedOrder: ORDER_ERROR_ID,
-          },
-          sortNodesExcludingEslintDisabled:
-            createSortNodesExcludingEslintDisabled(currentNodes),
-          options: {
-            ...options,
-            partitionByComment: false,
-          },
-          nodes: currentNodes,
-          context,
-        })
-      }
-    },
-  }),
   meta: {
     schema: {
       items: {
@@ -258,41 +61,18 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
+  create: context => {
+    let settings = getSettings(context.settings)
+
+    return {
+      JSXElement: node =>
+        sortJsxObject({
+          settings,
+          context,
+          node,
+        }),
+    }
+  },
   defaultOptions: [defaultOptions],
   name: 'sort-jsx-props',
 })
-
-function computeMatchedContextOptions({
-  sourceCode,
-  context,
-  node,
-}: {
-  context: TSESLint.RuleContext<string, Options>
-  sourceCode: TSESLint.SourceCode
-  node: TSESTree.JSXElement
-}): Options[number] | undefined {
-  return filterOptionsByAllNamesMatch({
-    nodeNames: node.openingElement.attributes
-      .filter(attribute => attribute.type !== AST_NODE_TYPES.JSXSpreadAttribute)
-      .map(attribute => getNodeName({ attribute })),
-    contextOptions: context.options,
-  }).find(options => {
-    if (!options.useConfigurationIf?.tagMatchesPattern) {
-      return true
-    }
-    return matches(
-      sourceCode.getText(node.openingElement.name),
-      options.useConfigurationIf.tagMatchesPattern,
-    )
-  })
-}
-
-function getNodeName({
-  attribute,
-}: {
-  attribute: TSESTree.JSXAttribute
-}): string {
-  return attribute.name.type === AST_NODE_TYPES.JSXNamespacedName ?
-      `${attribute.name.namespace.name}:${attribute.name.name.name}`
-    : attribute.name.name
-}
