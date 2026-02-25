@@ -2707,6 +2707,79 @@ describe('sort-named-exports', () => {
         ],
       })
     })
+
+    describe('useConfigurationIf.allNamesMatchPattern', () => {
+      it.each([
+        ['string pattern', 'foo'],
+        ['array with string patterns', ['noMatch', 'foo']],
+        ['regex pattern object', { pattern: 'FOO', flags: 'i' }],
+        [
+          'array with regex pattern object',
+          ['noMatch', { pattern: 'FOO', flags: 'i' }],
+        ],
+      ])(
+        'applies conditional configuration when all names match %s',
+        async (_description, allNamesMatchPattern) => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  allNamesMatchPattern,
+                },
+              },
+              {
+                ...options,
+                customGroups: [
+                  {
+                    elementNamePattern: '^r$',
+                    groupName: 'r',
+                  },
+                  {
+                    elementNamePattern: '^g$',
+                    groupName: 'g',
+                  },
+                  {
+                    elementNamePattern: '^b$',
+                    groupName: 'b',
+                  },
+                ],
+                useConfigurationIf: {
+                  allNamesMatchPattern: '^[rgb]$',
+                },
+                groups: ['r', 'g', 'b'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'g',
+                  leftGroup: 'b',
+                  right: 'g',
+                  left: 'b',
+                },
+                messageId: 'unexpectedNamedExportsGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'r',
+                  leftGroup: 'g',
+                  right: 'r',
+                  left: 'g',
+                },
+                messageId: 'unexpectedNamedExportsGroupOrder',
+              },
+            ],
+            output: dedent`
+              export { r, g, b }
+            `,
+            code: dedent`
+              export { b, g, r }
+            `,
+          })
+        },
+      )
+    })
   })
 
   describe('line-length', () => {

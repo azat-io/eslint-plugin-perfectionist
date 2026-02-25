@@ -17,12 +17,15 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  buildUseConfigurationIfJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import {
   sortNamedExport,
   defaultOptions,
 } from './sort-named-exports/sort-named-export'
-import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSettings } from '../utils/get-settings'
 
@@ -40,6 +43,7 @@ export default createEslintRule<Options, MessageId>({
             description: 'Controls whether to ignore alias names.',
             type: 'boolean',
           },
+          useConfigurationIf: buildUseConfigurationIfJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
         },
