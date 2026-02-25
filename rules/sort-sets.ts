@@ -12,6 +12,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { defaultOptions, jsonSchema } from './sort-array-includes'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { sortArray } from './sort-array-includes/sort-array'
 
@@ -32,33 +33,6 @@ type MessageId =
   | typeof ORDER_ERROR_ID
 
 export default createEslintRule<Options, MessageId>({
-  create: context => {
-    let alreadyParsedNodes = new Set<TSESTree.CallExpressionArgument>()
-
-    let allAstSelectors = context.options
-      .map(option => option.useConfigurationIf?.matchesAstSelector)
-      .filter(matchesAstSelector => matchesAstSelector !== undefined)
-    let allAstSelectorMatchers = allAstSelectors.map(
-      astSelector =>
-        [
-          astSelector,
-          buildPotentialSetSorter({
-            alreadyParsedNodes,
-            astSelector,
-            context,
-          }),
-        ] as const,
-    )
-
-    return {
-      ...Object.fromEntries(allAstSelectorMatchers),
-      'NewExpression:exit': buildFromNewExpressionSetSorter({
-        alreadyParsedNodes,
-        astSelector: null,
-        context,
-      }),
-    }
-  },
   meta: {
     messages: {
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
@@ -75,23 +49,28 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [AST_NODE_TYPES.NewExpression, AST_NODE_TYPES.ArrayExpression],
+      sorter: sortPotentiallyValidArray,
+      context,
+    }),
   defaultOptions: [defaultOptions],
   name: 'sort-sets',
 })
 
-function sortSetFromNewExpression({
+function sortPotentiallyValidArray({
   alreadyParsedNodes,
   astSelector,
   context,
   node,
 }: {
-  alreadyParsedNodes: Set<TSESTree.CallExpressionArgument>
+  alreadyParsedNodes: Set<TSESTree.ArrayExpression | TSESTree.NewExpression>
+  node: TSESTree.ArrayExpression | TSESTree.NewExpression
   context: Readonly<RuleContext<MessageId, Options>>
-  node: TSESTree.NewExpression
   astSelector: string | null
 }): void {
-  let setExpression = extractSetExpression()
-  if (!setExpression) {
+  if (!isValidArray()) {
     return
   }
 
@@ -103,73 +82,25 @@ function sortSetFromNewExpression({
       unexpectedOrder: ORDER_ERROR_ID,
     },
     cachedGroupsByModifiersAndSelectors,
-    expression: setExpression,
     alreadyParsedNodes,
     defaultOptions,
     astSelector,
     context,
+    node,
   })
 
-  function extractSetExpression(): TSESTree.CallExpressionArgument | null {
-    if (node.callee.type !== AST_NODE_TYPES.Identifier) {
-      return null
-    }
-    if (node.callee.name !== 'Set') {
-      return null
-    }
-    if (!node.arguments[0]) {
-      return null
-    }
-
-    return node.arguments[0]
-  }
-}
-
-function buildPotentialSetSorter({
-  alreadyParsedNodes,
-  astSelector,
-  context,
-}: {
-  alreadyParsedNodes: Set<TSESTree.CallExpressionArgument>
-  context: Readonly<RuleContext<MessageId, Options>>
-  astSelector: string
-}): (node: TSESTree.Node) => void {
-  return sortPotentialSet
-
-  function sortPotentialSet(node: TSESTree.Node): void {
-    if (node.type !== AST_NODE_TYPES.ArrayExpression) {
-      return
-    }
+  function isValidArray(): boolean {
     if (node.parent.type !== AST_NODE_TYPES.NewExpression) {
-      return
+      return false
     }
 
-    sortSetFromNewExpression({
-      alreadyParsedNodes,
-      node: node.parent,
-      astSelector,
-      context,
-    })
-  }
-}
+    if (node.parent.callee.type !== AST_NODE_TYPES.Identifier) {
+      return false
+    }
+    if (node.parent.callee.name !== 'Set') {
+      return false
+    }
 
-function buildFromNewExpressionSetSorter({
-  alreadyParsedNodes,
-  astSelector,
-  context,
-}: {
-  alreadyParsedNodes: Set<TSESTree.CallExpressionArgument>
-  context: Readonly<RuleContext<MessageId, Options>>
-  astSelector: string | null
-}): (node: TSESTree.NewExpression) => void {
-  return sorter
-
-  function sorter(node: TSESTree.NewExpression): void {
-    return sortSetFromNewExpression({
-      alreadyParsedNodes,
-      astSelector,
-      context,
-      node,
-    })
+    return true
   }
 }

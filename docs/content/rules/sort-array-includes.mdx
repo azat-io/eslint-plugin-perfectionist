@@ -343,7 +343,8 @@ Example configuration:
 }
 ```
 
-- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching an `ArrayExpression` node.
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching an `ArrayExpression`
+ (`[a, b]`) or `NewExpression` (`new Array(a, b)`) node.
 
 Example configuration: don't sort array-include elements that are declared as `const` variables.
 ```ts
