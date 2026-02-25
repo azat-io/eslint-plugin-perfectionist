@@ -1419,6 +1419,211 @@ describe('sort-jsx-props', () => {
         },
       )
     })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('matches configuration based off matchesAstSelector', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclarator',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          output: dedent`
+            let Component = () => (
+              <Element
+                a="a"
+                b="b"
+              />
+            )
+          `,
+          code: dedent`
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > JSXElement',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          output: dedent`
+            let Component = () => (
+              <Element
+                a="a"
+                b="b"
+              />
+            )
+          `,
+          code: dedent`
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          output: dedent`
+            let Component = () => (
+              <Element
+                a="a"
+                b="b"
+              />
+            )
+          `,
+          code: dedent`
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          output: dedent`
+            let Component = () => (
+              <Element
+                a="a"
+                b="b"
+              />
+            )
+          `,
+          code: dedent`
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
+          `,
+        })
+      })
+    })
   })
 
   describe('natural', () => {

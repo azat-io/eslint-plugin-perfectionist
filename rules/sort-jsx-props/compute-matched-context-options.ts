@@ -7,6 +7,7 @@ import type { RegexOption } from '../../types/common-options'
 import type { Options } from './types'
 
 import { filterOptionsByAllNamesMatch } from '../../utils/context-matching/filter-options-by-all-names-match'
+import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast-selector-filter'
 import { computeNodeName } from './compute-node-name'
 import { matches } from '../../utils/matches'
 
@@ -14,18 +15,21 @@ import { matches } from '../../utils/matches'
  * Computes the matched context options for a given JSX element node.
  *
  * @param params - Parameters.
+ * @param params.astSelector - The AST selector string currently evaluated.
  * @param params.sourceCode - The source code object.
  * @param params.node - The JSX element node to evaluate.
  * @param params.context - The rule context.
  * @returns The matched context options or undefined if none match.
  */
 export function computeMatchedContextOptions({
+  astSelector,
   sourceCode,
   context,
   node,
 }: {
   context: TSESLint.RuleContext<string, Options>
   sourceCode: TSESLint.SourceCode
+  astSelector: string | null
   node: TSESTree.JSXElement
 }): Options[number] | undefined {
   let nodeNames = node.openingElement.attributes
@@ -40,6 +44,15 @@ export function computeMatchedContextOptions({
   return matchedContextOptions.find(isContextOptionMatching)
 
   function isContextOptionMatching(options: Options[number]): boolean {
+    if (
+      !passesAstSelectorFilter({
+        matchesAstSelector: options.useConfigurationIf?.matchesAstSelector,
+        astSelector,
+      })
+    ) {
+      return false
+    }
+
     if (!options.useConfigurationIf) {
       return true
     }

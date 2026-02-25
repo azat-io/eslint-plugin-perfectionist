@@ -1,3 +1,5 @@
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { MessageId, Options } from './sort-jsx-props/types'
 
 import {
@@ -9,6 +11,7 @@ import {
 } from './sort-jsx-props/types'
 import {
   buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
   buildCommonJsonSchemas,
   buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
@@ -21,8 +24,8 @@ import {
 import { partitionByNewLineJsonSchema } from '../utils/json-schemas/common-partition-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { defaultOptions, sortJsxObject } from './sort-jsx-props/sort-jsx-object'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getSettings } from '../utils/get-settings'
 
 export default createEslintRule<Options, MessageId>({
   meta: {
@@ -36,6 +39,7 @@ export default createEslintRule<Options, MessageId>({
           }),
           useConfigurationIf: buildUseConfigurationIfJsonSchema({
             additionalProperties: {
+              matchesAstSelector: matchesAstSelectorJsonSchema,
               tagMatchesPattern: buildRegexJsonSchema(),
             },
           }),
@@ -61,18 +65,12 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => {
-    let settings = getSettings(context.settings)
-
-    return {
-      JSXElement: node =>
-        sortJsxObject({
-          settings,
-          context,
-          node,
-        }),
-    }
-  },
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [AST_NODE_TYPES.JSXElement],
+      sorter: sortJsxObject,
+      context,
+    }),
   defaultOptions: [defaultOptions],
   name: 'sort-jsx-props',
 })

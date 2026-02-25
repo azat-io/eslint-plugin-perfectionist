@@ -44,6 +44,11 @@ export type Options = Partial<
        * rule is only applied to elements with matching tag names.
        */
       tagMatchesPattern?: RegexOption
+
+      /**
+       * AST selector to match against JSXElement nodes.
+       */
+      matchesAstSelector?: string
     }
   } & Omit<
     AllCommonOptions<
