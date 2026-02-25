@@ -1124,7 +1124,7 @@ describe('sort-enums', () => {
                 },
               ],
               useConfigurationIf: {
-                allNamesMatchPattern: '^r|g|b$',
+                allNamesMatchPattern: '^[rgb]$',
               },
               groups: ['r', 'g', 'b'],
             },

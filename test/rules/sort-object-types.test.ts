@@ -2365,12 +2365,12 @@ describe('sort-object-types', () => {
     })
 
     it.each([
-      ['string pattern', '^r|g|b$'],
-      ['array with string pattern', ['noMatch', '^r|g|b$']],
-      ['regex pattern', { pattern: '^R|G|B$', flags: 'i' }],
+      ['string pattern', '^[rgb]$'],
+      ['array with string pattern', ['noMatch', '^[rgb]$']],
+      ['regex pattern', { pattern: '^[RGB]$', flags: 'i' }],
       [
         'array with regex pattern',
-        ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+        ['noMatch', { pattern: '^[RGB]$', flags: 'i' }],
       ],
     ])(
       'allows to use allNamesMatchPattern with %s',
@@ -5609,12 +5609,12 @@ describe('sort-object-types', () => {
     })
 
     it.each([
-      ['string pattern', '^r|g|b$'],
-      ['array with string pattern', ['noMatch', '^r|g|b$']],
-      ['regex pattern', { pattern: '^R|G|B$', flags: 'i' }],
+      ['string pattern', '^[rgb]$'],
+      ['array with string pattern', ['noMatch', '^[rgb]$']],
+      ['regex pattern', { pattern: '^[RGB]$', flags: 'i' }],
       [
         'array with regex pattern',
-        ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+        ['noMatch', { pattern: '^[RGB]$', flags: 'i' }],
       ],
     ])(
       'allows to use allNamesMatchPattern with %s',
@@ -7970,12 +7970,12 @@ describe('sort-object-types', () => {
     })
 
     it.each([
-      ['string pattern', '^r|g|b$'],
-      ['array with string pattern', ['noMatch', '^r|g|b$']],
-      ['regex pattern', { pattern: '^R|G|B$', flags: 'i' }],
+      ['string pattern', '^[rgb]$'],
+      ['array with string pattern', ['noMatch', '^[rgb]$']],
+      ['regex pattern', { pattern: '^[RGB]$', flags: 'i' }],
       [
         'array with regex pattern',
-        ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+        ['noMatch', { pattern: '^[RGB]$', flags: 'i' }],
       ],
     ])(
       'allows to use allNamesMatchPattern with %s',

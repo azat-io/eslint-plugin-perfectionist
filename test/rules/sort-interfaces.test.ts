@@ -2461,12 +2461,12 @@ describe('sort-interfaces', () => {
     })
 
     it.each([
-      ['^r|g|b$', '^r|g|b$'],
-      ['array with ^r|g|b$', ['noMatch', '^r|g|b$']],
-      ['pattern with flags', { pattern: '^R|G|B$', flags: 'i' }],
+      ['^[rgb]$', '^[rgb]$'],
+      ['array with ^[rgb]$', ['noMatch', '^[rgb]$']],
+      ['pattern with flags', { pattern: '^[RGB]$', flags: 'i' }],
       [
         'array with pattern and flags',
-        ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+        ['noMatch', { pattern: '^[RGB]$', flags: 'i' }],
       ],
     ])(
       'allows to use allNamesMatchPattern with %s',
@@ -5002,12 +5002,12 @@ describe('sort-interfaces', () => {
     })
 
     it.each([
-      ['^r|g|b$', '^r|g|b$'],
-      ['array with ^r|g|b$', ['noMatch', '^r|g|b$']],
-      ['pattern with flags', { pattern: '^R|G|B$', flags: 'i' }],
+      ['^[rgb]$', '^[rgb]$'],
+      ['array with ^[rgb]$', ['noMatch', '^[rgb]$']],
+      ['pattern with flags', { pattern: '^[RGB]$', flags: 'i' }],
       [
         'array with pattern and flags',
-        ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+        ['noMatch', { pattern: '^[RGB]$', flags: 'i' }],
       ],
     ])(
       'allows to use allNamesMatchPattern with %s',
@@ -7404,12 +7404,12 @@ describe('sort-interfaces', () => {
     })
 
     it.each([
-      ['^r|g|b$', '^r|g|b$'],
-      ['array with ^r|g|b$', ['noMatch', '^r|g|b$']],
-      ['pattern with flags', { pattern: '^R|G|B$', flags: 'i' }],
+      ['^[rgb]$', '^[rgb]$'],
+      ['array with ^[rgb]$', ['noMatch', '^[rgb]$']],
+      ['pattern with flags', { pattern: '^[RGB]$', flags: 'i' }],
       [
         'array with pattern and flags',
-        ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+        ['noMatch', { pattern: '^[RGB]$', flags: 'i' }],
       ],
     ])(
       'allows to use allNamesMatchPattern with %s',
