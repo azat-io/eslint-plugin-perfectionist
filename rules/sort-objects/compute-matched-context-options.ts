@@ -10,6 +10,7 @@ import { computePropertyOrVariableDeclaratorName } from './compute-property-or-v
 import { passesCallingFunctionNamePatternFilter } from './passes-calling-function-name-pattern-filter'
 import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
 import { passesDeclarationCommentMatchesFilter } from './passes-declaration-comment-matches-filter'
+import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast-selector-filter'
 import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { objectParentTypes } from './types'
@@ -184,18 +185,4 @@ function passesObjectTypeFilter({
     default:
       throw new UnreachableCaseError(objectType)
   }
-}
-
-function passesAstSelectorFilter({
-  matchesAstSelector,
-  astSelector,
-}: {
-  matchesAstSelector: undefined | string
-  astSelector: string | null
-}): boolean {
-  if (!matchesAstSelector) {
-    return astSelector === null
-  }
-
-  return matchesAstSelector === astSelector
 }

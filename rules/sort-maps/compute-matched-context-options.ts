@@ -6,6 +6,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { Options } from './types'
 
 import { filterOptionsByAllNamesMatch } from '../../utils/context-matching/filter-options-by-all-names-match'
+import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast-selector-filter'
 import { computeNodeName } from './compute-node-name'
 
 /**
@@ -48,18 +49,4 @@ export function computeMatchedContextOptions<MessageIds extends string>({
       astSelector,
     })
   }
-}
-
-function passesAstSelectorFilter({
-  matchesAstSelector,
-  astSelector,
-}: {
-  matchesAstSelector: undefined | string
-  astSelector: string | null
-}): boolean {
-  if (!matchesAstSelector) {
-    return astSelector === null
-  }
-
-  return matchesAstSelector === astSelector
 }
