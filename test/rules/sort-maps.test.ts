@@ -1453,7 +1453,7 @@ describe('sort-maps', () => {
                 },
               ],
               useConfigurationIf: {
-                allNamesMatchPattern: '^r|g|b$',
+                allNamesMatchPattern: '^[rgb]$',
               },
               groups: ['r', 'g', 'b'],
             },
@@ -2795,7 +2795,7 @@ describe('sort-maps', () => {
                 },
               ],
               useConfigurationIf: {
-                allNamesMatchPattern: '^r|g|b$',
+                allNamesMatchPattern: '^[rgb]$',
               },
               groups: ['r', 'g', 'b'],
             },
@@ -4140,7 +4140,7 @@ describe('sort-maps', () => {
                 },
               ],
               useConfigurationIf: {
-                allNamesMatchPattern: '^r|g|b$',
+                allNamesMatchPattern: '^[rgb]$',
               },
               groups: ['r', 'g', 'b'],
             },

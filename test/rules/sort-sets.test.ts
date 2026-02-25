@@ -1117,7 +1117,7 @@ describe('sort-sets', () => {
                 },
               ],
               useConfigurationIf: {
-                allNamesMatchPattern: '^r|g|b$',
+                allNamesMatchPattern: '^[rgb]$',
               },
               groups: ['r', 'g', 'b'],
             },
@@ -2874,7 +2874,7 @@ describe('sort-sets', () => {
                 },
               ],
               useConfigurationIf: {
-                allNamesMatchPattern: '^r|g|b$',
+                allNamesMatchPattern: '^[rgb]$',
               },
               groups: ['r', 'g', 'b'],
             },
@@ -4322,7 +4322,7 @@ describe('sort-sets', () => {
                 },
               ],
               useConfigurationIf: {
-                allNamesMatchPattern: '^r|g|b$',
+                allNamesMatchPattern: '^[rgb]$',
               },
               groups: ['r', 'g', 'b'],
             },

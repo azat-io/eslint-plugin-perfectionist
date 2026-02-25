@@ -1291,7 +1291,7 @@ describe('sort-array-includes', () => {
                 },
               ],
               useConfigurationIf: {
-                allNamesMatchPattern: '^r|g|b$',
+                allNamesMatchPattern: '^[rgb]$',
               },
               groups: ['r', 'g', 'b'],
             },
@@ -3306,7 +3306,7 @@ describe('sort-array-includes', () => {
                 },
               ],
               useConfigurationIf: {
-                allNamesMatchPattern: '^r|g|b$',
+                allNamesMatchPattern: '^[rgb]$',
               },
               groups: ['r', 'g', 'b'],
             },
@@ -5000,7 +5000,7 @@ describe('sort-array-includes', () => {
                 },
               ],
               useConfigurationIf: {
-                allNamesMatchPattern: '^r|g|b$',
+                allNamesMatchPattern: '^[rgb]$',
               },
               groups: ['r', 'g', 'b'],
             },

@@ -257,6 +257,81 @@ or [`customGroups`](#customgroups) options.
 
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
+### useConfigurationIf
+
+<sub>
+  type:
+  ```ts
+  {
+    allNamesMatchPattern?:
+      | string
+      | string[]
+      | { pattern: string; flags: string }
+      | { pattern: string; flags: string }[]
+    matchesAstSelector?: string
+  }
+  ```
+</sub>
+<sub>default: `{}`</sub>
+
+Specifies filters to match a particular options configuration for a given enum.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all enum keys must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-enums': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort colors by RGB
+      customGroups: [
+        {
+          elementNamePattern: '^r$',
+          groupName: 'r',
+        },
+        {
+          elementNamePattern: '^g$',
+          groupName: 'g',
+        },
+        {
+          elementNamePattern: '^b$',
+          groupName: 'b',
+        },
+      ],
+      useConfigurationIf: {
+        allNamesMatchPattern: '^[rgb]$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching a `TSEnumDeclaration` node.
+
+Example configuration: don't sort enums elements that are exported.
+```ts
+{
+  'perfectionist/sort-enums': [
+    'error',
+    {
+      useConfigurationIf: {
+        matchesAstSelector: 'ExportNamedDeclaration TSEnumDeclaration',
+      },
+      type: 'unsorted'
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
 ### groups
 
 <sub>
@@ -420,6 +495,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                   newlinesBetween: 'ignore',
                   newlinesInside: 'ignore',
                   sortByValue: "ifNumericEnum",
+                  useConfigurationIf: {},
                   groups: [],
                   customGroups: [],
                   useExperimentalDependencyDetection: true,
@@ -453,6 +529,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                 newlinesBetween: 'ignore',
                 newlinesInside: 'ignore',
                 sortByValue: "ifNumericEnum",
+                useConfigurationIf: {},
                 groups: [],
                 customGroups: [],
                 useExperimentalDependencyDetection: true,

@@ -7,6 +7,19 @@ import type { AllCommonOptions } from '../../types/all-common-options'
 
 import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
+export type MessageId =
+  | typeof DEPENDENCY_ORDER_ERROR_ID
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
+
+export const ORDER_ERROR_ID = 'unexpectedEnumsOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedEnumsGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenEnumsMembers'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenEnumsMembers'
+export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedEnumsDependencyOrder'
+
 /**
  * Configuration options for the sort-enums rule.
  *
@@ -15,6 +28,23 @@ import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schem
  */
 export type Options = Partial<
   {
+    /**
+     * Conditional configuration based on pattern matching. When specified, the
+     * rule applies only if all enum members names match the given pattern.
+     */
+    useConfigurationIf: {
+      /**
+       * Regular expression pattern to match against all enum element names. The
+       * rule is only applied when all names match this pattern.
+       */
+      allNamesMatchPattern?: RegexOption
+
+      /**
+       * AST selector to match against TSEnumDeclaration nodes.
+       */
+      matchesAstSelector?: string
+    }
+
     /**
      * Whether to sort enum members by their values instead of names. When
      * "always", compares enum values; when "never", compares enum member

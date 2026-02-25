@@ -1091,6 +1091,273 @@ describe('sort-enums', () => {
       })
     })
 
+    describe('useConfigurationIf.allNamesMatchPattern', () => {
+      it.each([
+        ['string pattern', 'foo'],
+        ['array of patterns', ['noMatch', 'foo']],
+        ['case-insensitive regex', { pattern: 'FOO', flags: 'i' }],
+        ['regex in array', ['noMatch', { pattern: 'foo', flags: 'i' }]],
+      ])(
+        'applies configuration when all names match pattern - %s',
+        async (_, allNamesMatchPattern) => {
+          let conditionalOptions = [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern,
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^r$',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: '^g$',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: '^b$',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[rgb]$',
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ]
+
+          await invalid({
+            errors: [
+              {
+                data: {
+                  rightGroup: 'g',
+                  leftGroup: 'b',
+                  right: 'g',
+                  left: 'b',
+                },
+                messageId: 'unexpectedEnumsGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'r',
+                  leftGroup: 'g',
+                  right: 'r',
+                  left: 'g',
+                },
+                messageId: 'unexpectedEnumsGroupOrder',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                r = 'r',
+                g = 'g',
+                b = 'b',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                b = 'b',
+                g = 'g',
+                r = 'r',
+              }
+            `,
+            options: conditionalOptions,
+          })
+        },
+      )
+    })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('matches configuration based off matchesAstSelector', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          output: dedent`
+            export enum Enum {
+              a = 'a',
+              b = 'b',
+            }
+          `,
+          code: dedent`
+            export enum Enum {
+              b = 'b',
+              a = 'a',
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSEnumDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            enum Enum {
+              b = 'b',
+              a = 'a',
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > TSEnumDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSEnumDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          output: dedent`
+            enum Enum {
+              a = 'a',
+              b = 'b',
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              b = 'b',
+              a = 'a',
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSEnumDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSEnumDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          output: dedent`
+            enum Enum {
+              a = 'a',
+              b = 'b',
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              b = 'b',
+              a = 'a',
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSEnumDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          output: dedent`
+            enum Enum {
+              a = 'a',
+              b = 'b',
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              b = 'b',
+              a = 'a',
+            }
+          `,
+        })
+      })
+    })
+
     it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
       await invalid({
         errors: [

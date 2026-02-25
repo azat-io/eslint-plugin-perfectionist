@@ -1288,10 +1288,10 @@ describe('sort-jsx-props', () => {
     })
 
     it.each([
-      ['string pattern', '^r|g|b$'],
-      ['array of patterns', ['noMatch', '^r|g|b$']],
-      ['case-insensitive regex', { pattern: '^R|G|B$', flags: 'i' }],
-      ['regex in array', ['noMatch', { pattern: '^R|G|B$', flags: 'i' }]],
+      ['string pattern', '^[rgb]$'],
+      ['array of patterns', ['noMatch', '^[rgb]$']],
+      ['case-insensitive regex', { pattern: '^[RGB]$', flags: 'i' }],
+      ['regex in array', ['noMatch', { pattern: '^[RGB]$', flags: 'i' }]],
     ])(
       'applies configuration when all names match pattern - %s',
       async (_description, allNamesMatchPattern) => {
@@ -2539,10 +2539,10 @@ describe('sort-jsx-props', () => {
     })
 
     it.each([
-      ['string pattern', '^r|g|b$'],
-      ['array of patterns', ['noMatch', '^r|g|b$']],
-      ['case-insensitive regex', { pattern: '^R|G|B$', flags: 'i' }],
-      ['regex in array', ['noMatch', { pattern: '^R|G|B$', flags: 'i' }]],
+      ['string pattern', '^[rgb]$'],
+      ['array of patterns', ['noMatch', '^[rgb]$']],
+      ['case-insensitive regex', { pattern: '^[RGB]$', flags: 'i' }],
+      ['regex in array', ['noMatch', { pattern: '^[RGB]$', flags: 'i' }]],
     ])(
       'applies configuration when all names match pattern - %s',
       async (_description, allNamesMatchPattern) => {
@@ -3793,10 +3793,10 @@ describe('sort-jsx-props', () => {
     })
 
     it.each([
-      ['string pattern', '^r|g|b$'],
-      ['array of patterns', ['noMatch', '^r|g|b$']],
-      ['case-insensitive regex', { pattern: '^R|G|B$', flags: 'i' }],
-      ['regex in array', ['noMatch', { pattern: '^R|G|B$', flags: 'i' }]],
+      ['string pattern', '^[rgb]$'],
+      ['array of patterns', ['noMatch', '^[rgb]$']],
+      ['case-insensitive regex', { pattern: '^[RGB]$', flags: 'i' }],
+      ['regex in array', ['noMatch', { pattern: '^[RGB]$', flags: 'i' }]],
     ])(
       'applies configuration when all names match pattern - %s',
       async (_description, allNamesMatchPattern) => {

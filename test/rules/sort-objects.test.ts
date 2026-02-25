@@ -2417,10 +2417,10 @@ describe('sort-objects', () => {
     })
 
     it.each([
-      '^r|g|b$',
-      ['noMatch', '^r|g|b$'],
-      { pattern: '^R|G|B$', flags: 'i' },
-      ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+      '^[rgb]$',
+      ['noMatch', '^[rgb]$'],
+      { pattern: '^[RGB]$', flags: 'i' },
+      ['noMatch', { pattern: '^[RGB]$', flags: 'i' }],
     ])(
       'applies configuration when allNamesMatchPattern matches (pattern: %s)',
       async rgbAllNamesMatchPattern => {
@@ -6995,10 +6995,10 @@ describe('sort-objects', () => {
     })
 
     it.each([
-      '^r|g|b$',
-      ['noMatch', '^r|g|b$'],
-      { pattern: '^R|G|B$', flags: 'i' },
-      ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+      '^[rgb]$',
+      ['noMatch', '^[rgb]$'],
+      { pattern: '^[RGB]$', flags: 'i' },
+      ['noMatch', { pattern: '^[RGB]$', flags: 'i' }],
     ])(
       'applies configuration when allNamesMatchPattern matches (pattern: %s)',
       async rgbAllNamesMatchPattern => {
@@ -9847,10 +9847,10 @@ describe('sort-objects', () => {
     })
 
     it.each([
-      '^r|g|b$',
-      ['noMatch', '^r|g|b$'],
-      { pattern: '^R|G|B$', flags: 'i' },
-      ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+      '^[rgb]$',
+      ['noMatch', '^[rgb]$'],
+      { pattern: '^[RGB]$', flags: 'i' },
+      ['noMatch', { pattern: '^[RGB]$', flags: 'i' }],
     ])(
       'applies configuration when allNamesMatchPattern matches (pattern: %s)',
       async rgbAllNamesMatchPattern => {
