@@ -5,8 +5,8 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { Options } from './types'
 
+import { filterOptionsByAllNamesMatch } from '../../utils/context-matching/filter-options-by-all-names-match'
 import { computeMethodOrPropertyNameDetails } from './node-info/compute-method-or-property-name-details'
-import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
 
 /**
  * Computes the matched context options for a given class node.

@@ -1,6 +1,6 @@
-import type { RegexOption } from '../types/common-options'
+import type { RegexOption } from '../../types/common-options'
 
-import { matches } from './matches'
+import { matches } from '../matches'
 
 /**
  * Configuration options with conditional application criteria.

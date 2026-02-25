@@ -5,7 +5,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { Options } from './types'
 
-import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
+import { filterOptionsByAllNamesMatch } from '../../utils/context-matching/filter-options-by-all-names-match'
 import { computeNodeName } from './compute-node-name'
 
 /**
