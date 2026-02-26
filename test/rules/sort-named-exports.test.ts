@@ -2780,6 +2780,128 @@ describe('sort-named-exports', () => {
         },
       )
     })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('matches configuration based off matchesAstSelector', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { a, b }
+          `,
+          code: dedent`
+            export { b, a }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            export { b, a }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { a, b }
+          `,
+          code: dedent`
+            export { b, a }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export { a, b }
+          `,
+          code: dedent`
+            export { b, a }
+          `,
+        })
+      })
+    })
   })
 
   describe('line-length', () => {

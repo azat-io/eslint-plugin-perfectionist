@@ -208,6 +208,7 @@ Specifies whether to use the export alias as the name for sorting instead of the
       | string[]
       | { pattern: string; flags: string }
       | { pattern: string; flags: string }[]
+    matchesAstSelector?: string
   }
   ```
 </sub>
@@ -250,6 +251,8 @@ Example configuration:
   ],
 }
 ```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching an `ExportNamedDeclaration` node.
 
 ### partitionByComment
 

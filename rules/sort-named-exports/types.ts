@@ -37,6 +37,11 @@ export type Options = Partial<
        * names. The rule is only applied when all names match this pattern.
        */
       allNamesMatchPattern?: RegexOption
+
+      /**
+       * AST selector to match against ExportNamedDeclaration nodes.
+       */
+      matchesAstSelector?: string
     }
 
     /**
