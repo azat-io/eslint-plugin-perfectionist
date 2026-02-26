@@ -4746,10 +4746,10 @@ describe('sort-classes', () => {
     })
 
     it.each([
-      '^r|g|b$',
-      ['noMatch', '^r|g|b$'],
-      { pattern: '^R|G|B$', flags: 'i' },
-      ['noMatch', { pattern: '^R|G|B$', flags: 'i' }],
+      '^[rgb]$',
+      ['noMatch', '^[rgb]$'],
+      { pattern: '^[rgb]$', flags: 'i' },
+      ['noMatch', { pattern: '^[rgb]$', flags: 'i' }],
     ])(
       'applies configuration when allNamesMatchPattern matches (pattern: %s)',
       async rgbAllNamesMatchPattern => {
