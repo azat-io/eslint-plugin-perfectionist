@@ -209,6 +209,52 @@ describe('sort-maps', () => {
       })
     })
 
+    it('matches undefined keys as undefined', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedMapElementsOrder',
+            data: { left: 'undefined', right: 'b' },
+          },
+        ],
+        output: dedent`
+          new Map([
+            [b, 'b'],
+            [, 'a'],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [, 'a'],
+            [b, 'b'],
+          ])
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedMapElementsOrder',
+            data: { left: 'undefined', right: 'b' },
+          },
+        ],
+        output: dedent`
+          new Map([
+            [b, 'b'],
+            [],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [],
+            [b, 'b'],
+          ])
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts entries within newline-separated groups independently', async () => {
       await invalid({
         errors: [

@@ -29,7 +29,7 @@ export function computeNodeName({
   let [left] = node.elements
 
   if (!left) {
-    return `${left}`
+    return 'undefined'
   }
 
   return left.type === AST_NODE_TYPES.Literal ?
