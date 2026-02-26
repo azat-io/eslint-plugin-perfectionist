@@ -82,7 +82,7 @@ export default createEslintRule<Options, MessageId>({
       astSelector =>
         [
           astSelector,
-          buildPotentialEnumSorter({
+          buildPotentialMapSorter({
             alreadyParsedNodes,
             astSelector,
             settings,
@@ -107,7 +107,7 @@ export default createEslintRule<Options, MessageId>({
   name: 'sort-maps',
 })
 
-function buildPotentialEnumSorter({
+function buildPotentialMapSorter({
   alreadyParsedNodes,
   astSelector,
   settings,
