@@ -1,3 +1,5 @@
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { MessageId, Options } from './sort-named-imports/types'
 
 import {
@@ -8,6 +10,11 @@ import {
   ORDER_ERROR_ID,
 } from './sort-named-imports/types'
 import {
+  buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
+import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
@@ -17,17 +24,13 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import {
-  buildUseConfigurationIfJsonSchema,
-  buildCommonJsonSchemas,
-} from '../utils/json-schemas/common-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import {
   sortNamedImport,
   defaultOptions,
 } from './sort-named-imports/sort-named-import'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getSettings } from '../utils/get-settings'
 
 export default createEslintRule<Options, MessageId>({
   meta: {
@@ -39,11 +42,15 @@ export default createEslintRule<Options, MessageId>({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
           }),
+          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+            additionalProperties: {
+              matchesAstSelector: matchesAstSelectorJsonSchema,
+            },
+          }),
           ignoreAlias: {
             description: 'Controls whether to ignore alias names.',
             type: 'boolean',
           },
-          useConfigurationIf: buildUseConfigurationIfJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
         },
@@ -67,18 +74,12 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => {
-    let settings = getSettings(context.settings)
-
-    return {
-      ImportDeclaration: node =>
-        sortNamedImport({
-          settings,
-          context,
-          node,
-        }),
-    }
-  },
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [AST_NODE_TYPES.ImportDeclaration],
+      sorter: sortNamedImport,
+      context,
+    }),
   defaultOptions: [defaultOptions],
   name: 'sort-named-imports',
 })

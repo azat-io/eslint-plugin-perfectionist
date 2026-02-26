@@ -64,11 +64,13 @@ export let defaultOptions: Required<Options[number]> = {
 }
 
 export function sortNamedImport({
+  matchedAstSelectors,
   settings,
   context,
   node,
 }: {
   context: TSESLint.RuleContext<MessageId, Options>
+  matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.ImportDeclaration
   settings: Settings
 }): void {
@@ -81,6 +83,7 @@ export function sortNamedImport({
   }
 
   let matchedContextOptions = computeMatchedContextOptions({
+    matchedAstSelectors,
     context,
     node,
   })

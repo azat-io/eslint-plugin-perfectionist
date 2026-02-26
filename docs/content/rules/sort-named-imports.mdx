@@ -209,6 +209,7 @@ Specifies whether to use the import alias as the name for sorting instead of the
       | string[]
       | { pattern: string; flags: string }
       | { pattern: string; flags: string }[]
+    matchesAstSelector?: string
   }
   ```
 </sub>
@@ -251,6 +252,9 @@ Example configuration:
   ],
 }
 ```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching an `ImportDeclaration` node.
+To avoid unexpected behavior, do not use `:exit` or `:enter` pseudo-selectors.
 
 ### partitionByComment
 
