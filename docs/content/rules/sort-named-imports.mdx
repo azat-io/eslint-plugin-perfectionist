@@ -198,6 +198,60 @@ Specifies whether to use the import alias as the name for sorting instead of the
 - `true` — Use the import alias for sorting.
 - `false` — Use the exported name for sorting.
 
+### useConfigurationIf
+
+<sub>
+  type:
+  ```ts
+  {
+    allNamesMatchPattern?:
+      | string
+      | string[]
+      | { pattern: string; flags: string }
+      | { pattern: string; flags: string }[]
+  }
+  ```
+</sub>
+<sub>default: `{}`</sub>
+
+Specifies filters to match a particular options configuration for a given named import declaration.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all named import names must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-named-imports': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort colors by RGB
+      customGroups: [
+        {
+          elementNamePattern: '^r$',
+          groupName: 'r',
+        },
+        {
+          elementNamePattern: '^g$',
+          groupName: 'g',
+        },
+        {
+          elementNamePattern: '^b$',
+          groupName: 'b',
+        },
+      ],
+      useConfigurationIf: {
+        allNamesMatchPattern: '^[rgb]$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
 ### partitionByComment
 
 <sub>default: `false`</sub>

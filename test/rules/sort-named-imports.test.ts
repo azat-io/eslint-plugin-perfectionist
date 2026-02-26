@@ -1561,6 +1561,77 @@ describe('sort-named-imports', () => {
         ],
       })
     })
+
+    it.each([
+      ['string pattern', 'foo'],
+      ['array with string patterns', ['noMatch', 'foo']],
+      ['regex pattern object', { pattern: 'FOO', flags: 'i' }],
+      [
+        'array with regex pattern object',
+        ['noMatch', { pattern: 'FOO', flags: 'i' }],
+      ],
+    ])(
+      'applies conditional configuration when all names match %s',
+      async (_description, allNamesMatchPattern) => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern,
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: '^r$',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: '^g$',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: '^b$',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[rgb]$',
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'g',
+                leftGroup: 'b',
+                right: 'g',
+                left: 'b',
+              },
+              messageId: 'unexpectedNamedImportsGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'r',
+                leftGroup: 'g',
+                right: 'r',
+                left: 'g',
+              },
+              messageId: 'unexpectedNamedImportsGroupOrder',
+            },
+          ],
+          output: dedent`
+            import { r, g, b } from 'module'
+          `,
+          code: dedent`
+            import { b, g, r } from 'module'
+          `,
+        })
+      },
+    )
   })
 
   describe('natural', () => {
