@@ -38,6 +38,26 @@ describe('sort-array-includes', () => {
         `,
         options: [options],
       })
+
+      await valid({
+        code: dedent`
+          [
+            b,
+            a,
+          ].includes
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          someFunction([
+            b,
+            a,
+          ].includes)
+        `,
+        options: [options],
+      })
     })
 
     it('accepts sorted arrays in includes() calls', async () => {

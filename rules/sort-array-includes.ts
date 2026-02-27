@@ -152,6 +152,14 @@ function sortPotentiallyValidArray({
       return false
     }
 
+    if (node.parent.parent.type !== AST_NODE_TYPES.CallExpression) {
+      return false
+    }
+
+    if (node.parent.parent.callee !== node.parent) {
+      return false
+    }
+
     return true
   }
 }
