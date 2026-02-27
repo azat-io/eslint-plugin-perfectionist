@@ -4744,6 +4744,277 @@ describe('sort-classes', () => {
         options: [options],
       })
     })
+
+    it.each([
+      '^[rgb]$',
+      ['noMatch', '^[rgb]$'],
+      { pattern: '^[rgb]$', flags: 'i' },
+      ['noMatch', { pattern: '^[rgb]$', flags: 'i' }],
+    ])(
+      'applies configuration when allNamesMatchPattern matches (pattern: %s)',
+      async rgbAllNamesMatchPattern => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: 'foo',
+              },
+            },
+            {
+              ...options,
+              customGroups: [
+                {
+                  elementNamePattern: 'r',
+                  groupName: 'r',
+                },
+                {
+                  elementNamePattern: 'g',
+                  groupName: 'g',
+                },
+                {
+                  elementNamePattern: 'b',
+                  groupName: 'b',
+                },
+              ],
+              useConfigurationIf: {
+                allNamesMatchPattern: rgbAllNamesMatchPattern,
+              },
+              groups: ['r', 'g', 'b'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'g',
+                leftGroup: 'b',
+                right: 'g',
+                left: 'b',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+            {
+              data: {
+                rightGroup: 'r',
+                leftGroup: 'g',
+                right: 'r',
+                left: 'g',
+              },
+              messageId: 'unexpectedClassesGroupOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              [key: string]: any
+
+              r: string
+              g: string
+              b: string
+
+              static {}
+            }
+          `,
+          code: dedent`
+            class Class {
+              [key: string]: any
+
+              b: string
+              g: string
+              r: string
+
+              static {}
+            }
+          `,
+        })
+      },
+    )
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('matches configuration based off matchesAstSelector', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
+          output: dedent`
+            export class Class {
+              a
+              b
+            }
+          `,
+          code: dedent`
+            export class Class {
+              b
+              a
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ClassBody',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            class Class {
+              b
+              a
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > ClassBody',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ClassBody',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              a
+              b
+            }
+          `,
+          code: dedent`
+            class Class {
+              b
+              a
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ClassBody',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ClassBody',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              a
+              b
+            }
+          `,
+          code: dedent`
+            class Class {
+              b
+              a
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ClassBody',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              a
+              b
+            }
+          `,
+          code: dedent`
+            class Class {
+              b
+              a
+            }
+          `,
+        })
+      })
+    })
   })
 
   describe('natural', () => {

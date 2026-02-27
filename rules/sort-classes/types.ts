@@ -11,33 +11,59 @@ import {
 } from '../../utils/json-schemas/common-groups-json-schemas'
 import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
+export type MessageId =
+  | typeof DEPENDENCY_ORDER_ERROR_ID
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
+
+export const ORDER_ERROR_ID = 'unexpectedClassesOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedClassesGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenClassMembers'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenClassMembers'
+export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedClassesDependencyOrder'
+
 /**
  * Configuration options for the sort-classes rule.
  *
  * This rule enforces consistent ordering of class members (properties, methods,
  * constructors, etc.) to improve code readability and maintainability.
  */
-export type Options = [
-  Partial<
-    {
+export type Options = Partial<
+  {
+    /**
+     * Conditional configuration based on pattern matching.
+     */
+    useConfigurationIf: {
       /**
-       * Regex patterns for function names whose callback argument dependencies
-       * are ignored during class-member sorting. Dependencies inside these
-       * callbacks won't influence the ordering.
+       * Regular expression pattern to match against all class element names.
        */
-      ignoreCallbackDependenciesPatterns: RegexOption
+      allNamesMatchPattern?: RegexOption
 
       /**
-       * Enables experimental dependency detection.
+       * AST selector to match against ClassBody nodes.
        */
-      useExperimentalDependencyDetection: boolean
-    } & AllCommonOptions<
-      TypeOption,
-      AdditionalSortOptions,
-      CustomGroupMatchOptions
-    >
-  >,
-]
+      matchesAstSelector?: string
+    }
+
+    /**
+     * Regex patterns for function names whose callback argument dependencies
+     * are ignored during class-member sorting. Dependencies inside these
+     * callbacks won't influence the ordering.
+     */
+    ignoreCallbackDependenciesPatterns: RegexOption
+
+    /**
+     * Enables experimental dependency detection.
+     */
+    useExperimentalDependencyDetection: boolean
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortOptions,
+    CustomGroupMatchOptions
+  >
+>[]
 
 export interface SortClassesSortingNode extends SortingNodeWithDependencies<TSESTree.ClassElement> {
   overloadSignatureImplementation:

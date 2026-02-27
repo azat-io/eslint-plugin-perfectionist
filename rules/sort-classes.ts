@@ -1,18 +1,26 @@
+import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
+import type { TSESTree } from '@typescript-eslint/types'
+
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type {
-  SortClassesSortingNode,
-  NodeNameDetails,
-  Modifier,
-  Selector,
-  Options,
-} from './sort-classes/types'
+import type { MessageId, Options } from './sort-classes/types'
+import type { Settings } from '../utils/get-settings'
 
 import {
   useExperimentalDependencyDetectionJsonSchema,
+  buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
   buildCommonJsonSchemas,
   buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
+import {
+  additionalCustomGroupMatchOptionsJsonSchema,
+  DEPENDENCY_ORDER_ERROR_ID,
+  MISSED_SPACING_ERROR_ID,
+  EXTRA_SPACING_ERROR_ID,
+  GROUP_ORDER_ERROR_ID,
+  ORDER_ERROR_ID,
+} from './sort-classes/types'
 import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
@@ -20,386 +28,29 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { buildOverloadSignatureNewlinesBetweenValueGetter } from '../utils/overload-signature/build-overload-signature-newlines-between-value-getter'
-import { populateSortingNodeGroupsWithOverloadSignature } from '../utils/overload-signature/populate-sorting-node-groups-with-overload-signature'
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
-import {
-  additionalCustomGroupMatchOptionsJsonSchema,
-  allModifiers,
-  allSelectors,
-} from './sort-classes/types'
-import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
-import { computeIndexSignatureDetails } from './sort-classes/node-info/compute-index-signature-details'
-import { computeDependenciesBySortingNode } from './sort-classes/compute-dependencies-by-sorting-node'
-import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
-import { computeStaticBlockDetails } from './sort-classes/node-info/compute-static-block-details'
-import { computeOverloadSignatureGroups } from './sort-classes/compute-overload-signature-groups'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
-import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { computePropertyDetails } from './sort-classes/node-info/compute-property-details'
-import { computeAccessorDetails } from './sort-classes/node-info/compute-accessor-details'
-import { computeMethodDetails } from './sort-classes/node-info/compute-method-details'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
-import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
-import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isKnownClassElement } from './sort-classes/is-known-class-element'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
-import { UnreachableCaseError } from '../utils/unreachable-case-error'
-import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
-import { getNodeDecorators } from '../utils/get-node-decorators'
+import { defaultOptions, sortClass } from './sort-classes/sort-class'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getDecoratorName } from '../utils/get-decorator-name'
-import { reportAllErrors } from '../utils/report-all-errors'
-import { shouldPartition } from '../utils/should-partition'
-import { getGroupIndex } from '../utils/get-group-index'
-import { computeGroup } from '../utils/compute-group'
-import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
-import { isSortable } from '../utils/is-sortable'
-import { complete } from '../utils/complete'
-
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
-
-const ORDER_ERROR_ID = 'unexpectedClassesOrder'
-const GROUP_ORDER_ERROR_ID = 'unexpectedClassesGroupOrder'
-const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenClassMembers'
-const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenClassMembers'
-const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedClassesDependencyOrder'
-
-type MessageId =
-  | typeof DEPENDENCY_ORDER_ERROR_ID
-  | typeof MISSED_SPACING_ERROR_ID
-  | typeof EXTRA_SPACING_ERROR_ID
-  | typeof GROUP_ORDER_ERROR_ID
-  | typeof ORDER_ERROR_ID
-
-let defaultOptions: Required<Options[number]> = {
-  groups: [
-    'index-signature',
-    ['static-property', 'static-accessor-property'],
-    ['static-get-method', 'static-set-method'],
-    ['protected-static-property', 'protected-static-accessor-property'],
-    ['protected-static-get-method', 'protected-static-set-method'],
-    ['private-static-property', 'private-static-accessor-property'],
-    ['private-static-get-method', 'private-static-set-method'],
-    'static-block',
-    ['property', 'accessor-property'],
-    ['get-method', 'set-method'],
-    ['protected-property', 'protected-accessor-property'],
-    ['protected-get-method', 'protected-set-method'],
-    ['private-property', 'private-accessor-property'],
-    ['private-get-method', 'private-set-method'],
-    'constructor',
-    ['static-method', 'static-function-property'],
-    ['protected-static-method', 'protected-static-function-property'],
-    ['private-static-method', 'private-static-function-property'],
-    ['method', 'function-property'],
-    ['protected-method', 'protected-function-property'],
-    ['private-method', 'private-function-property'],
-    'unknown',
-  ],
-  useExperimentalDependencyDetection: true,
-  ignoreCallbackDependenciesPatterns: [],
-  fallbackSort: { type: 'unsorted' },
-  newlinesInside: 'newlinesBetween',
-  partitionByComment: false,
-  partitionByNewLine: false,
-  newlinesBetween: 'ignore',
-  specialCharacters: 'keep',
-  type: 'alphabetical',
-  ignoreCase: true,
-  customGroups: [],
-  locales: 'en-US',
-  alphabet: '',
-  order: 'asc',
-}
 
 export default createEslintRule<Options, MessageId>({
-  create: context => ({
-    ClassBody: classBody => {
-      if (!isSortable(classBody.body)) {
-        return
-      }
-
-      let settings = getSettings(context.settings)
-      let options = complete(context.options.at(0), settings, defaultOptions)
-      validateCustomSortConfiguration(options)
-      validateGroupsConfiguration({
-        modifiers: allModifiers,
-        selectors: allSelectors,
-        options,
-      })
-      validateNewlinesAndPartitionConfiguration(options)
-
-      let { sourceCode, id } = context
-      let eslintDisabledLines = getEslintDisabledLines({
-        ruleName: id,
-        sourceCode,
-      })
-      let optionsByGroupIndexComputer =
-        buildOptionsByGroupIndexComputer(options)
-      let overloadSignatureNewlinesBetweenValueGetter =
-        buildOverloadSignatureNewlinesBetweenValueGetter()
-
-      let className = classBody.parent.id?.name
-
-      let sortingNodeGroupsWithoutOverloadSignature: Omit<
-        SortClassesSortingNode,
-        'overloadSignatureImplementation'
-      >[][] = classBody.body.reduce(
-        (
-          accumulator: Omit<
-            SortClassesSortingNode,
-            'overloadSignatureImplementation'
-          >[][],
-          member,
-        ) => {
-          if (!isKnownClassElement(member)) {
-            return accumulator
-          }
-
-          let dependencies: string[] = []
-
-          let isDecorated = false
-          let decorators: string[] = []
-
-          if ('decorators' in member) {
-            decorators = getNodeDecorators(member).map(decorator =>
-              getDecoratorName({ sourceCode, decorator }),
-            )
-            isDecorated = decorators.length > 0
-          }
-
-          let addSafetySemicolonWhenInline: boolean
-          let dependencyNames: string[]
-          let name: string
-          let nameDetails: NodeNameDetails | null
-          let memberValue: undefined | string
-          let isStatic: boolean
-          let modifiers: Modifier[]
-          let selectors: Selector[]
-
-          switch (member.type) {
-            case AST_NODE_TYPES.TSAbstractPropertyDefinition:
-            case AST_NODE_TYPES.PropertyDefinition:
-              addSafetySemicolonWhenInline = true
-              ;({
-                dependencyNames,
-                dependencies,
-                memberValue,
-                nameDetails,
-                modifiers,
-                selectors,
-                isStatic,
-              } = computePropertyDetails({
-                ignoreCallbackDependenciesPatterns:
-                  options.ignoreCallbackDependenciesPatterns,
-                useExperimentalDependencyDetection:
-                  options.useExperimentalDependencyDetection,
-                property: member,
-                isDecorated,
-                sourceCode,
-                className,
-              }))
-              ;({ name } = nameDetails)
-              break
-            case AST_NODE_TYPES.TSAbstractMethodDefinition:
-            case AST_NODE_TYPES.MethodDefinition:
-              dependencyNames = []
-              ;({
-                addSafetySemicolonWhenInline,
-                nameDetails,
-                selectors,
-                modifiers,
-                isStatic,
-              } = computeMethodDetails({
-                hasParentDeclare: classBody.parent.declare,
-                method: member,
-                isDecorated,
-                sourceCode,
-              }))
-              ;({ name } = nameDetails)
-              break
-            case AST_NODE_TYPES.TSAbstractAccessorProperty:
-            case AST_NODE_TYPES.AccessorProperty:
-              addSafetySemicolonWhenInline = true
-              ;({
-                dependencyNames,
-                nameDetails,
-                selectors,
-                modifiers,
-                isStatic,
-              } = computeAccessorDetails({
-                accessor: member,
-                isDecorated,
-                sourceCode,
-              }))
-              ;({ name } = nameDetails)
-              break
-            case AST_NODE_TYPES.TSIndexSignature:
-              addSafetySemicolonWhenInline = true
-              dependencyNames = []
-              nameDetails = null
-              isStatic = false
-              ;({ modifiers, selectors, name } = computeIndexSignatureDetails({
-                indexSignature: member,
-                sourceCode,
-              }))
-              break
-            case AST_NODE_TYPES.StaticBlock:
-              addSafetySemicolonWhenInline = false
-              dependencyNames = []
-              name = 'static'
-              nameDetails = null
-              isStatic = true
-              ;({ dependencies, selectors, modifiers } =
-                computeStaticBlockDetails({
-                  useExperimentalDependencyDetection:
-                    options.useExperimentalDependencyDetection,
-                  ignoreCallbackDependenciesPatterns:
-                    options.ignoreCallbackDependenciesPatterns,
-                  staticBlock: member,
-                  className,
-                }))
-              break
-            /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-            default:
-              throw new UnreachableCaseError(member)
-          }
-
-          let predefinedGroups = generatePredefinedGroups({
-            cache: cachedGroupsByModifiersAndSelectors,
-            selectors,
-            modifiers,
-          })
-          let group = computeGroup({
-            customGroupMatcher: customGroup =>
-              doesCustomGroupMatch({
-                elementValue: memberValue,
-                elementName: name,
-                customGroup,
-                decorators,
-                modifiers,
-                selectors,
-              }),
-            predefinedGroups,
-            options,
-          })
-          let sortingNode: Omit<
-            SortClassesSortingNode,
-            'overloadSignatureImplementation' | 'partitionId'
-          > = {
-            isEslintDisabled: isNodeEslintDisabled(member, eslintDisabledLines),
-            size: rangeToDiff(member, sourceCode),
-            addSafetySemicolonWhenInline,
-            dependencyNames,
-            node: member,
-            dependencies,
-            nameDetails,
-            isStatic,
-            group,
-            name,
-          }
-
-          let lastSortingNode = accumulator.at(-1)?.at(-1)
-
-          if (
-            shouldPartition({
-              lastSortingNode,
-              sortingNode,
-              sourceCode,
-              options,
-            })
-          ) {
-            accumulator.push([])
-          }
-
-          accumulator.at(-1)!.push({
-            ...sortingNode,
-            partitionId: accumulator.length,
-          })
-
-          return accumulator
-        },
-        [[]],
-      )
-
-      let sortingNodeGroups = populateSortingNodeGroupsWithOverloadSignature({
-        overloadSignatureGroups: computeOverloadSignatureGroups(classBody.body),
-        sortingNodeGroups: sortingNodeGroupsWithoutOverloadSignature,
-      })
-
-      if (options.useExperimentalDependencyDetection) {
-        let dependenciesBySortingNode = computeDependenciesBySortingNode({
-          ignoreCallbackDependenciesPatterns:
-            options.ignoreCallbackDependenciesPatterns,
-          sortingNodes: sortingNodeGroups.flat(),
-          sourceCode,
-          classBody,
-        })
-        sortingNodeGroups = populateSortingNodeGroupsWithDependencies({
-          dependenciesBySortingNode,
-          sortingNodeGroups,
-        })
-      }
-
-      let sortingNodes = sortingNodeGroups.flat()
-
-      reportAllErrors<MessageId, SortClassesSortingNode>({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-          unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
-          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-          unexpectedOrder: ORDER_ERROR_ID,
-        },
-        newlinesBetweenValueGetter: overloadSignatureNewlinesBetweenValueGetter,
-        sortNodesExcludingEslintDisabled,
-        nodes: sortingNodes,
-        options,
-        context,
-      })
-
-      function sortNodesExcludingEslintDisabled(
-        ignoreEslintDisabledNodes: boolean,
-      ): SortClassesSortingNode[] {
-        let nodesSortedByGroups = sortingNodeGroups.flatMap(sortingNodeGroup =>
-          sortNodesByGroups({
-            isNodeIgnored: sortingNode =>
-              getGroupIndex(options.groups, sortingNode) ===
-              options.groups.length,
-            comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
-            optionsByGroupIndexComputer,
-            ignoreEslintDisabledNodes,
-            nodes: sortingNodeGroup,
-            groups: options.groups,
-          }),
-        )
-
-        return sortNodesByDependencies(nodesSortedByGroups, {
-          ignoreEslintDisabledNodes,
-        })
-      }
-    },
-  }),
   meta: {
-    schema: [
-      {
+    schema: {
+      items: {
         properties: {
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
+          }),
+          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+            additionalProperties: {
+              matchesAstSelector: matchesAstSelectorJsonSchema,
+            },
           }),
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
@@ -410,7 +61,9 @@ export default createEslintRule<Options, MessageId>({
         additionalProperties: false,
         type: 'object',
       },
-    ],
+      uniqueItems: true,
+      type: 'array',
+    },
     messages: {
       [DEPENDENCY_ORDER_ERROR_ID]: DEPENDENCY_ORDER_ERROR,
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
@@ -426,6 +79,67 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
+  create: context => {
+    let settings = getSettings(context.settings)
+
+    let alreadyParsedNodes = new Set<TSESTree.ClassBody>()
+
+    let allAstSelectors = context.options
+      .map(option => option.useConfigurationIf?.matchesAstSelector)
+      .filter(matchesAstSelector => matchesAstSelector !== undefined)
+    let allAstSelectorMatchers = allAstSelectors.map(
+      astSelector =>
+        [
+          astSelector,
+          buildPotentialClassSorter({
+            alreadyParsedNodes,
+            astSelector,
+            settings,
+            context,
+          }),
+        ] as const,
+    )
+
+    return {
+      ...Object.fromEntries(allAstSelectorMatchers),
+      'ClassBody:exit': classBody =>
+        sortClass({
+          alreadyParsedNodes,
+          astSelector: null,
+          node: classBody,
+          settings,
+          context,
+        }),
+    }
+  },
   defaultOptions: [defaultOptions],
   name: 'sort-classes',
 })
+
+function buildPotentialClassSorter({
+  alreadyParsedNodes,
+  astSelector,
+  settings,
+  context,
+}: {
+  context: Readonly<RuleContext<MessageId, Options>>
+  alreadyParsedNodes: Set<TSESTree.ClassBody>
+  astSelector: string
+  settings: Settings
+}): (node: TSESTree.Node) => void {
+  return sorter
+
+  function sorter(node: TSESTree.Node): void {
+    if (node.type !== AST_NODE_TYPES.ClassBody) {
+      return
+    }
+
+    sortClass({
+      alreadyParsedNodes,
+      astSelector,
+      settings,
+      context,
+      node,
+    })
+  }
+}
