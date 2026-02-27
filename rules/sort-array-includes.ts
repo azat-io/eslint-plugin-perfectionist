@@ -4,7 +4,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { Options } from './sort-array-includes/types'
+import type { Options } from './sort-arrays/types'
 
 import {
   buildUseConfigurationIfJsonSchema,
@@ -22,10 +22,10 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
-import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-array-includes/types'
+import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-arrays/types'
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { sortArray } from './sort-array-includes/sort-array'
+import { sortArray } from './sort-arrays/sort-array'
 
 /**
  * Cache computed groups by modifiers and selectors for performance.
