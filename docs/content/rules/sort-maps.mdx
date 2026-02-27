@@ -258,6 +258,7 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
       | string[]
       | { pattern: string; flags: string }
       | { pattern: string; flags: string }[]
+    matchesAstSelector?: string
   }
   ```
 </sub>
@@ -293,6 +294,26 @@ Example configuration:
       useConfigurationIf: {
         allNamesMatchPattern: '^[rgb]$',
       },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching a `NewExpression` node.
+
+Example configuration: don't sort maps that are declared as `const` variables.
+```ts
+{
+  'perfectionist/sort-maps': [
+    'error',
+    {
+      useConfigurationIf: {
+        matchesAstSelector: 'VariableDeclaration[kind="const"] NewExpression',
+      },
+      type: 'unsorted'
     },
     {
       type: 'alphabetical' // Fallback configuration

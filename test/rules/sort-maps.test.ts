@@ -209,6 +209,52 @@ describe('sort-maps', () => {
       })
     })
 
+    it('matches undefined keys as undefined', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedMapElementsOrder',
+            data: { left: 'undefined', right: 'b' },
+          },
+        ],
+        output: dedent`
+          new Map([
+            [b, 'b'],
+            [, 'a'],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [, 'a'],
+            [b, 'b'],
+          ])
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedMapElementsOrder',
+            data: { left: 'undefined', right: 'b' },
+          },
+        ],
+        output: dedent`
+          new Map([
+            [b, 'b'],
+            [],
+          ])
+        `,
+        code: dedent`
+          new Map([
+            [],
+            [b, 'b'],
+          ])
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts entries within newline-separated groups independently', async () => {
       await invalid({
         errors: [
@@ -1417,84 +1463,273 @@ describe('sort-maps', () => {
       })
     })
 
-    it.each([
-      ['string pattern', 'foo'],
-      ['array with string patterns', ['noMatch', 'foo']],
-      ['regex pattern object', { pattern: 'FOO', flags: 'i' }],
-      [
-        'array with regex pattern object',
-        ['noMatch', { pattern: 'FOO', flags: 'i' }],
-      ],
-    ])(
-      'applies conditional configuration when all names match %s',
-      async (_description, allNamesMatchPattern) => {
+    describe('useConfigurationIf.allNamesMatchPattern', () => {
+      it.each([
+        ['string pattern', 'foo'],
+        ['array with string patterns', ['noMatch', 'foo']],
+        ['regex pattern object', { pattern: 'FOO', flags: 'i' }],
+        [
+          'array with regex pattern object',
+          ['noMatch', { pattern: 'FOO', flags: 'i' }],
+        ],
+      ])(
+        'applies conditional configuration when all names match %s',
+        async (_description, allNamesMatchPattern) => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  allNamesMatchPattern,
+                },
+              },
+              {
+                ...options,
+                customGroups: [
+                  {
+                    elementNamePattern: '^r$',
+                    groupName: 'r',
+                  },
+                  {
+                    elementNamePattern: '^g$',
+                    groupName: 'g',
+                  },
+                  {
+                    elementNamePattern: '^b$',
+                    groupName: 'b',
+                  },
+                ],
+                useConfigurationIf: {
+                  allNamesMatchPattern: '^[rgb]$',
+                },
+                groups: ['r', 'g', 'b'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'g',
+                  leftGroup: 'b',
+                  right: 'g',
+                  left: 'b',
+                },
+                messageId: 'unexpectedMapElementsGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'r',
+                  leftGroup: 'g',
+                  right: 'r',
+                  left: 'g',
+                },
+                messageId: 'unexpectedMapElementsGroupOrder',
+              },
+            ],
+            output: dedent`
+              new Map([
+                [r, null],
+                [g, null],
+                [b, null]
+              ])
+            `,
+            code: dedent`
+              new Map([
+                [b, null],
+                [g, null],
+                [r, null]
+              ])
+            `,
+          })
+        },
+      )
+    })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('matches configuration based off matchesAstSelector', async () => {
         await invalid({
           options: [
             {
               ...options,
               useConfigurationIf: {
-                allNamesMatchPattern,
+                matchesAstSelector: 'VariableDeclarator',
               },
-            },
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: '^r$',
-                  groupName: 'r',
-                },
-                {
-                  elementNamePattern: '^g$',
-                  groupName: 'g',
-                },
-                {
-                  elementNamePattern: '^b$',
-                  groupName: 'b',
-                },
-              ],
-              useConfigurationIf: {
-                allNamesMatchPattern: '^[rgb]$',
-              },
-              groups: ['r', 'g', 'b'],
+              type: 'unsorted',
             },
           ],
           errors: [
             {
               data: {
-                rightGroup: 'g',
-                leftGroup: 'b',
-                right: 'g',
+                right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedMapElementsGroupOrder',
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            const map = new Map([
+              [a, 'a'],
+              [b, 'b'],
+            ])
+          `,
+          code: dedent`
+            const map = new Map([
+              [b, 'b'],
+              [a, 'a'],
+            ])
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            new Map([
+              [b, 'b'],
+              [a, 'a'],
+            ])
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > NewExpression',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
             },
             {
-              data: {
-                rightGroup: 'r',
-                leftGroup: 'g',
-                right: 'r',
-                left: 'g',
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
               },
-              messageId: 'unexpectedMapElementsGroupOrder',
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
             },
           ],
           output: dedent`
             new Map([
-              [r, null],
-              [g, null],
-              [b, null]
+              [a, 'a'],
+              [b, 'b'],
             ])
           `,
           code: dedent`
             new Map([
-              [b, null],
-              [g, null],
-              [r, null]
+              [b, 'b'],
+              [a, 'a'],
             ])
           `,
         })
-      },
-    )
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            new Map([
+              [a, 'a'],
+              [b, 'b'],
+            ])
+          `,
+          code: dedent`
+            new Map([
+              [b, 'b'],
+              [a, 'a'],
+            ])
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            const map = new Map([
+              [a, 'a'],
+              [b, 'b'],
+            ])
+          `,
+          code: dedent`
+            const map = new Map([
+              [b, 'b'],
+              [a, 'a'],
+            ])
+          `,
+        })
+      })
+    })
   })
 
   describe('natural', () => {
