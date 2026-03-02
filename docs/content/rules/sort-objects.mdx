@@ -290,7 +290,20 @@ const user = {
 };
 ```
 
-Each group of keys (separated by empty lines) is treated independently, and the order within each group is preserved.
+### partitionByComputedKey
+
+<sub>default: `false`</sub>
+
+Enables the use of computed keys to separate the keys of objects into logical groups.
+
+```ts
+const someObject = {
+  c: 1,
+  d: 2,
+  [computedProperty]: 3,
+  a: 4
+}
+```
 
 ### newlinesBetween
 
@@ -855,6 +868,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                   sortBy: 'name',
                   partitionByComment: false,
                   partitionByNewLine: false,
+                  partitionByComputedKey: false,
                   newlinesBetween: 'ignore',
                   newlinesInside: 'ignore',
                   styledComponents: true,
@@ -890,6 +904,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                 sortBy: 'name',
                 partitionByComment: false,
                 partitionByNewLine: false,
+                partitionByComputedKey: false,
                 newlinesBetween: 'ignore',
                 newlinesInside: 'ignore',
                 styledComponents: true,
