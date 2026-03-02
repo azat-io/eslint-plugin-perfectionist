@@ -139,6 +139,15 @@ export function sortObject({
       continue
     }
 
+    if (
+      options.partitionByComputedKey &&
+      !isDestructuredObject &&
+      property.computed
+    ) {
+      sortingNodeGroups.push([])
+      continue
+    }
+
     let lastSortingNode = sortingNodeGroups.at(-1)?.at(-1)
 
     let selectors: Selector[] = []
