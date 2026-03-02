@@ -57,6 +57,7 @@ export let defaultOptions: Required<Options[number]> = {
   useExperimentalDependencyDetection: true,
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
+  partitionByComputedKey: false,
   partitionByNewLine: false,
   partitionByComment: false,
   newlinesBetween: 'ignore',
