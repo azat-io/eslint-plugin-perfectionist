@@ -7,6 +7,22 @@ import type { TypeOption } from '../../types/common-options'
 
 import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/common-groups-json-schemas'
 
+export type MessageId =
+  | typeof DEPENDENCY_ORDER_ERROR_ID
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
+
+export const ORDER_ERROR_ID = 'unexpectedVariableDeclarationsOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedVariableDeclarationsGroupOrder'
+export const EXTRA_SPACING_ERROR_ID =
+  'extraSpacingBetweenVariableDeclarationsMembers'
+export const MISSED_SPACING_ERROR_ID =
+  'missedSpacingBetweenVariableDeclarationsMembers'
+export const DEPENDENCY_ORDER_ERROR_ID =
+  'unexpectedVariableDeclarationsDependencyOrder'
+
 /**
  * Configuration options for the sort-variable-declarations rule.
  *
