@@ -163,6 +163,7 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
       | string[]
       | { pattern: string; flags: string }
       | { pattern: string; flags: string }[]
+    matchesAstSelector?: string
   }
   ```
 </sub>
@@ -198,6 +199,27 @@ Example configuration:
       useConfigurationIf: {
         allNamesMatchPattern: '^[rgb]$',
       },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching a `ClassDeclaration` or `TSInterfaceDeclaration` node.
+To avoid unexpected behavior, do not use `:exit` or `:enter` pseudo-selectors.
+
+Example configuration: don't sort heritage clauses of classes (only interfaces).
+```ts
+{
+  'perfectionist/sort-heritage-clauses': [
+    'error',
+    {
+      useConfigurationIf: {
+        matchesAstSelector: 'ClassDeclaration',
+      },
+      type: 'unsorted'
     },
     {
       type: 'alphabetical' // Fallback configuration

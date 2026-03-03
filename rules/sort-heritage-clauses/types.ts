@@ -23,6 +23,12 @@ export type Options = Partial<
        * The rule is only applied when all names match this pattern.
        */
       allNamesMatchPattern?: RegexOption
+
+      /**
+       * AST selector to match against ClassDeclaration or
+       * TSInterfaceDeclaration nodes.
+       */
+      matchesAstSelector?: string
     }
   } & AllCommonOptions<
     TypeOption,

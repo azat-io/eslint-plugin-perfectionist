@@ -49,12 +49,14 @@ export let defaultOptions: Required<Options[number]> = {
 }
 
 export function sortHeritageClause({
+  matchedAstSelectors,
   settings,
   context,
   node,
 }: {
   node: TSESTree.TSInterfaceDeclaration | TSESTree.ClassDeclaration
   context: TSESLint.RuleContext<MessageId, Options>
+  matchedAstSelectors: ReadonlySet<string>
   settings: Settings
 }): void {
   let heritageClauses =
@@ -67,6 +69,7 @@ export function sortHeritageClause({
   }
 
   let matchedContextOptions = computeMatchedContextOptions({
+    matchedAstSelectors,
     heritageClauses,
     context,
   })

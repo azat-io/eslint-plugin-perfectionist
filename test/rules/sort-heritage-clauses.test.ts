@@ -1560,6 +1560,436 @@ describe('sort-heritage-clauses', () => {
         },
       )
     })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      describe('interfaces', () => {
+        it('matches configuration based off matchesAstSelector', async () => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'ClassDeclaration',
+                },
+                type: 'unsorted',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface extends a, b {}
+            `,
+            code: dedent`
+              interface Interface extends b, a {}
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'TSInterfaceDeclaration',
+                },
+                type: 'unsorted',
+              },
+            ],
+            code: dedent`
+              interface Interface extends b, a {}
+            `,
+          })
+
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'TSInterfaceDeclaration',
+                  allNamesMatchPattern: '^[ac]$',
+                },
+                type: 'unsorted',
+              },
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'TSInterfaceDeclaration',
+                },
+                type: 'alphabetical',
+              },
+              {
+                type: 'unsorted',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface extends a, b {}
+            `,
+            code: dedent`
+              interface Interface extends b, a {}
+            `,
+          })
+
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'TSInterfaceDeclaration',
+                  allNamesMatchPattern: '^[ac]$',
+                },
+                type: 'unsorted',
+              },
+              {
+                ...options,
+                useConfigurationIf: {
+                  allNamesMatchPattern: '^[ab]$',
+                },
+                type: 'alphabetical',
+                order: 'desc',
+              },
+              {
+                type: 'unsorted',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface extends b, a {}
+            `,
+            code: dedent`
+              interface Interface extends a, b {}
+            `,
+          })
+        })
+
+        it('applies first matching option when selectors overlap', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'TSInterfaceDeclaration',
+                },
+                type: 'unsorted',
+              },
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: '* > TSInterfaceDeclaration',
+                },
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              interface Interface extends b, a {}
+            `,
+          })
+
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'TSInterfaceDeclaration',
+                },
+                type: 'alphabetical',
+              },
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: '* > TSInterfaceDeclaration',
+                },
+                type: 'unsorted',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface extends a, b {}
+            `,
+            code: dedent`
+              interface Interface extends b, a {}
+            `,
+          })
+        })
+
+        it('picks the first matching option when multiple options match', async () => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                type: 'alphabetical',
+              },
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'TSInterfaceDeclaration',
+                },
+                type: 'unsorted',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              interface Interface extends a, b {}
+            `,
+            code: dedent`
+              interface Interface extends b, a {}
+            `,
+          })
+        })
+      })
+
+      describe('classes', () => {
+        it('matches configuration based off matchesAstSelector', async () => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'TSInterfaceDeclaration',
+                },
+                type: 'unsorted',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              class Class implements a, b {}
+            `,
+            code: dedent`
+              class Class implements b, a {}
+            `,
+          })
+
+          await valid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'ClassDeclaration',
+                },
+                type: 'unsorted',
+              },
+            ],
+            code: dedent`
+              class Class implements b, a {}
+            `,
+          })
+
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'ClassDeclaration',
+                  allNamesMatchPattern: '^[ac]$',
+                },
+                type: 'unsorted',
+              },
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'ClassDeclaration',
+                },
+                type: 'alphabetical',
+              },
+              {
+                type: 'unsorted',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              class Class implements a, b {}
+            `,
+            code: dedent`
+              class Class implements b, a {}
+            `,
+          })
+
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'ClassDeclaration',
+                  allNamesMatchPattern: '^[ac]$',
+                },
+                type: 'unsorted',
+              },
+              {
+                ...options,
+                useConfigurationIf: {
+                  allNamesMatchPattern: '^[ab]$',
+                },
+                type: 'alphabetical',
+                order: 'desc',
+              },
+              {
+                type: 'unsorted',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              class Class implements b, a {}
+            `,
+            code: dedent`
+              class Class implements a, b {}
+            `,
+          })
+        })
+
+        it('applies first matching option when selectors overlap', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'ClassDeclaration',
+                },
+                type: 'unsorted',
+              },
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: '* > ClassDeclaration',
+                },
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              class Class implements b, a {}
+            `,
+          })
+
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'ClassDeclaration',
+                },
+                type: 'alphabetical',
+              },
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: '* > ClassDeclaration',
+                },
+                type: 'unsorted',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              class Class implements a, b {}
+            `,
+            code: dedent`
+              class Class implements b, a {}
+            `,
+          })
+        })
+
+        it('picks the first matching option when multiple options match', async () => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                type: 'alphabetical',
+              },
+              {
+                ...options,
+                useConfigurationIf: {
+                  matchesAstSelector: 'ClassDeclaration',
+                },
+                type: 'unsorted',
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  right: 'a',
+                  left: 'b',
+                },
+                messageId: 'unexpectedHeritageClausesOrder',
+              },
+            ],
+            output: dedent`
+              class Class implements a, b {}
+            `,
+            code: dedent`
+              class Class implements b, a {}
+            `,
+          })
+        })
+      })
+    })
   })
 
   describe('natural', () => {
