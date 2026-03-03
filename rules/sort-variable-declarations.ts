@@ -9,6 +9,11 @@ import {
   ORDER_ERROR_ID,
 } from './sort-variable-declarations/types'
 import {
+  useExperimentalDependencyDetectionJsonSchema,
+  buildUseConfigurationIfJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
+import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -20,10 +25,6 @@ import {
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import {
-  useExperimentalDependencyDetectionJsonSchema,
-  buildCommonJsonSchemas,
-} from '../utils/json-schemas/common-json-schemas'
-import {
   sortVariableDeclaration,
   defaultOptions,
 } from './sort-variable-declarations/sort-variable-declaration'
@@ -33,8 +34,8 @@ import { getSettings } from '../utils/get-settings'
 
 export default createEslintRule<Options, MessageId>({
   meta: {
-    schema: [
-      {
+    schema: {
+      items: {
         properties: {
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
@@ -43,13 +44,16 @@ export default createEslintRule<Options, MessageId>({
           }),
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
+          useConfigurationIf: buildUseConfigurationIfJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
       },
-    ],
+      uniqueItems: true,
+      type: 'array',
+    },
     messages: {
       [DEPENDENCY_ORDER_ERROR_ID]: DEPENDENCY_ORDER_ERROR,
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,

@@ -25,6 +25,7 @@ import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-g
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
+import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
@@ -52,6 +53,7 @@ export let defaultOptions: Required<Options[number]> = {
   partitionByNewLine: false,
   partitionByComment: false,
   newlinesBetween: 'ignore',
+  useConfigurationIf: {},
   type: 'alphabetical',
   customGroups: [],
   ignoreCase: true,
@@ -74,7 +76,15 @@ export function sortVariableDeclaration({
     return
   }
 
-  let options = complete(context.options.at(0), settings, defaultOptions)
+  let { sourceCode, id } = context
+
+  let matchedContextOptions = computeMatchedContextOptions({
+    sourceCode,
+    context,
+    node,
+  })
+
+  let options = complete(matchedContextOptions, settings, defaultOptions)
 
   validateCustomSortConfiguration(options)
   validateNewlinesAndPartitionConfiguration(options)
@@ -84,7 +94,6 @@ export function sortVariableDeclaration({
     options,
   })
 
-  let { sourceCode, id } = context
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,

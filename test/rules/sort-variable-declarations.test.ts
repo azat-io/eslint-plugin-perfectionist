@@ -2049,6 +2049,79 @@ describe('sort-variable-declarations', () => {
         `,
       })
     })
+
+    describe('useConfigurationIf.allNamesMatchPattern', () => {
+      it.each([
+        ['string pattern', 'foo'],
+        ['array with string patterns', ['noMatch', 'foo']],
+        ['regex pattern object', { pattern: 'FOO', flags: 'i' }],
+        [
+          'array with regex pattern object',
+          ['noMatch', { pattern: 'FOO', flags: 'i' }],
+        ],
+      ])(
+        'applies conditional configuration when all names match %s',
+        async (_description, allNamesMatchPattern) => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  allNamesMatchPattern,
+                },
+              },
+              {
+                ...options,
+                customGroups: [
+                  {
+                    elementNamePattern: '^r$',
+                    groupName: 'r',
+                  },
+                  {
+                    elementNamePattern: '^g$',
+                    groupName: 'g',
+                  },
+                  {
+                    elementNamePattern: '^b$',
+                    groupName: 'b',
+                  },
+                ],
+                useConfigurationIf: {
+                  allNamesMatchPattern: '^[rgb]$',
+                },
+                groups: ['r', 'g', 'b'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'g',
+                  leftGroup: 'b',
+                  right: 'g',
+                  left: 'b',
+                },
+                messageId: 'unexpectedVariableDeclarationsGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'r',
+                  leftGroup: 'g',
+                  right: 'r',
+                  left: 'g',
+                },
+                messageId: 'unexpectedVariableDeclarationsGroupOrder',
+              },
+            ],
+            output: dedent`
+              let r = 1, g = 2, b = 3
+            `,
+            code: dedent`
+              let b = 3, g = 2, r = 1
+            `,
+          })
+        },
+      )
+    })
   })
 
   describe('natural', () => {

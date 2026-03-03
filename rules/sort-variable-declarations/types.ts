@@ -2,8 +2,8 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
+import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { AllCommonOptions } from '../../types/all-common-options'
-import type { TypeOption } from '../../types/common-options'
 
 import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/common-groups-json-schemas'
 
@@ -31,6 +31,17 @@ export const DEPENDENCY_ORDER_ERROR_ID =
  */
 export type Options = Partial<
   {
+    /**
+     * Conditional configuration based on pattern matching.
+     */
+    useConfigurationIf: {
+      /**
+       * Regular expression pattern to match against all variable declarator
+       * names. The rule is only applied when all names match this pattern.
+       */
+      allNamesMatchPattern?: RegexOption
+    }
+
     /**
      * Enables experimental dependency detection.
      */
