@@ -17,11 +17,14 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import {
+  buildUseConfigurationIfJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
+import {
   sortHeritageClause,
   defaultOptions,
 } from './sort-heritage-clauses/sort-heritage-clause'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
-import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getSettings } from '../utils/get-settings'
 
@@ -32,6 +35,7 @@ export default createEslintRule<Options, MessageId>({
         properties: {
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas(),
+          useConfigurationIf: buildUseConfigurationIfJsonSchema(),
           partitionByNewLine: partitionByNewLineJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
         },

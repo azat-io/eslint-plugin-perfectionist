@@ -18,6 +18,7 @@ import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
+import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
@@ -37,6 +38,7 @@ export let defaultOptions: Required<Options[number]> = {
   newlinesBetween: 'ignore',
   partitionByNewLine: false,
   partitionByComment: false,
+  useConfigurationIf: {},
   type: 'alphabetical',
   ignoreCase: true,
   customGroups: [],
@@ -64,7 +66,12 @@ export function sortHeritageClause({
     return
   }
 
-  let options = complete(context.options.at(0), settings, defaultOptions)
+  let matchedContextOptions = computeMatchedContextOptions({
+    heritageClauses,
+    context,
+  })
+
+  let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
     modifiers: [],
