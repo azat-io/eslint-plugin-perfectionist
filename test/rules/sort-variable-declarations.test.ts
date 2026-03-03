@@ -2122,6 +2122,220 @@ describe('sort-variable-declarations', () => {
         },
       )
     })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('matches configuration based off matchesAstSelector', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
+          output: dedent`
+            let a, b
+          `,
+          code: dedent`
+            let b, a
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            let b, a
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
+          output: dedent`
+            let a, b
+          `,
+          code: dedent`
+            let b, a
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+              order: 'desc',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
+          output: dedent`
+            let b, a
+          `,
+          code: dedent`
+            let a, b
+          `,
+        })
+      })
+
+      it('applies first matching option when selectors overlap', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclaration',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > VariableDeclaration',
+              },
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let b, a
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > VariableDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
+          output: dedent`
+            let a, b
+          `,
+          code: dedent`
+            let b, a
+          `,
+        })
+      })
+
+      it('picks the first matching option when multiple options match', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedVariableDeclarationsOrder',
+            },
+          ],
+          output: dedent`
+            let a, b
+          `,
+          code: dedent`
+            let b, a
+          `,
+        })
+      })
+    })
   })
 
   describe('natural', () => {

@@ -1,3 +1,5 @@
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { MessageId, Options } from './sort-variable-declarations/types'
 
 import {
@@ -11,6 +13,7 @@ import {
 import {
   useExperimentalDependencyDetectionJsonSchema,
   buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -29,8 +32,8 @@ import {
   defaultOptions,
 } from './sort-variable-declarations/sort-variable-declaration'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getSettings } from '../utils/get-settings'
 
 export default createEslintRule<Options, MessageId>({
   meta: {
@@ -42,9 +45,13 @@ export default createEslintRule<Options, MessageId>({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
           }),
+          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+            additionalProperties: {
+              matchesAstSelector: matchesAstSelectorJsonSchema,
+            },
+          }),
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
-          useConfigurationIf: buildUseConfigurationIfJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
         },
@@ -69,18 +76,12 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => {
-    let settings = getSettings(context.settings)
-
-    return {
-      VariableDeclaration: node =>
-        sortVariableDeclaration({
-          settings,
-          context,
-          node,
-        }),
-    }
-  },
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [AST_NODE_TYPES.VariableDeclaration],
+      sorter: sortVariableDeclaration,
+      context,
+    }),
   name: 'sort-variable-declarations',
   defaultOptions: [defaultOptions],
 })

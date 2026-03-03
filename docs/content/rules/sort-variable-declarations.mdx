@@ -180,6 +180,7 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
       | string[]
       | { pattern: string; flags: string }
       | { pattern: string; flags: string }[]
+    matchesAstSelector?: string
   }
   ```
 </sub>
@@ -215,6 +216,27 @@ Example configuration:
       useConfigurationIf: {
         allNamesMatchPattern: '^[rgb]$',
       },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching a `VariableDeclaration` node.
+To avoid unexpected behavior, do not use `:exit` or `:enter` pseudo-selectors.
+
+Example configuration: don't sort `let` variable declarations.
+```ts
+{
+  'perfectionist/sort-variable-declarations': [
+    'error',
+    {
+      useConfigurationIf: {
+        matchesAstSelector: 'VariableDeclaration[kind="let"]',
+      },
+      type: 'unsorted'
     },
     {
       type: 'alphabetical' // Fallback configuration
