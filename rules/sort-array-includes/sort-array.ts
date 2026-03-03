@@ -38,8 +38,8 @@ export function sortArray<MessageIds extends string>({
   alreadyParsedNodes,
   defaultOptions,
   astSelector,
-  expression,
   context,
+  node,
 }: {
   availableMessageIds: {
     missedSpacingBetweenMembers: MessageIds
@@ -47,14 +47,14 @@ export function sortArray<MessageIds extends string>({
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
+  alreadyParsedNodes: Set<TSESTree.ArrayExpression | TSESTree.NewExpression>
   cachedGroupsByModifiersAndSelectors: Map<string, string[]>
-  alreadyParsedNodes: Set<TSESTree.CallExpressionArgument>
+  node: TSESTree.ArrayExpression | TSESTree.NewExpression
   context: Readonly<RuleContext<MessageIds, Options>>
-  expression: TSESTree.CallExpressionArgument
   defaultOptions: Required<Options[number]>
   astSelector: string | null
 }): void {
-  let elements = computeArrayElements(expression)
+  let elements = computeArrayElements(node)
   if (!elements) {
     return
   }
@@ -75,10 +75,10 @@ export function sortArray<MessageIds extends string>({
     return
   }
 
-  if (alreadyParsedNodes.has(expression)) {
+  if (alreadyParsedNodes.has(node)) {
     return
   }
-  alreadyParsedNodes.add(expression)
+  alreadyParsedNodes.add(node)
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)

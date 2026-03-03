@@ -5,11 +5,12 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { ObjectParent, MessageId, Options } from './types'
 
+import { filterOptionsByAllNamesMatch } from '../../utils/context-matching/filter-options-by-all-names-match'
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
 import { passesCallingFunctionNamePatternFilter } from './passes-calling-function-name-pattern-filter'
 import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
 import { passesDeclarationCommentMatchesFilter } from './passes-declaration-comment-matches-filter'
-import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
+import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast-selector-filter'
 import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { objectParentTypes } from './types'
@@ -184,18 +185,4 @@ function passesObjectTypeFilter({
     default:
       throw new UnreachableCaseError(objectType)
   }
-}
-
-function passesAstSelectorFilter({
-  matchesAstSelector,
-  astSelector,
-}: {
-  matchesAstSelector: undefined | string
-  astSelector: string | null
-}): boolean {
-  if (!matchesAstSelector) {
-    return astSelector === null
-  }
-
-  return matchesAstSelector === astSelector
 }

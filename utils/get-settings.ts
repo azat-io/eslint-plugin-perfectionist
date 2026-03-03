@@ -57,7 +57,7 @@ export type Settings = Partial<
  * @throws {Error} If invalid settings are provided.
  */
 export function getSettings(
-  settings: TSESLint.SharedConfigurationSettings = {},
+  settings: TSESLint.SharedConfigurationSettings,
 ): Settings {
   if (!settings['perfectionist']) {
     return {}

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { RegexOption } from '../../types/common-options'
 
-import { filterOptionsByAllNamesMatch } from '../../utils/filter-options-by-all-names-match'
+import { filterOptionsByAllNamesMatch } from '../../utils/context-matching/filter-options-by-all-names-match'
 
 describe('filter-options-by-all-names-match', () => {
   it('returns options with `allNamesMatchPattern` undefined or empty', () => {

@@ -1,10 +1,6 @@
-import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
-import type { TSESTree } from '@typescript-eslint/types'
-
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { MessageId, Options } from './sort-objects/types'
-import type { Settings } from '../utils/get-settings'
 
 import {
   additionalCustomGroupMatchOptionsJsonSchema,
@@ -35,8 +31,8 @@ import {
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { scopedRegexJsonSchema } from '../utils/json-schemas/scoped-regex-json-schema'
 import { defaultOptions, sortObject } from './sort-objects/sort-object'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { getSettings } from '../utils/get-settings'
 
 export default createEslintRule<Options, MessageId>({
   meta: {
@@ -100,80 +96,15 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => {
-    let settings = getSettings(context.settings)
-
-    let alreadyParsedNodes = new Set<
-      TSESTree.ObjectExpression | TSESTree.ObjectPattern
-    >()
-
-    let allAstSelectors = context.options
-      .map(option => option.useConfigurationIf?.matchesAstSelector)
-      .filter(matchesAstSelector => matchesAstSelector !== undefined)
-    let allAstSelectorMatchers = allAstSelectors.map(
-      astSelector =>
-        [
-          astSelector,
-          buildPotentialObjectSorter({
-            alreadyParsedNodes,
-            astSelector,
-            settings,
-            context,
-          }),
-        ] as const,
-    )
-
-    return {
-      ...Object.fromEntries(allAstSelectorMatchers),
-      'ObjectExpression:exit': node =>
-        sortObject({
-          alreadyParsedNodes,
-          astSelector: null,
-          settings,
-          context,
-          node,
-        }),
-      'ObjectPattern:exit': node =>
-        sortObject({
-          alreadyParsedNodes,
-          astSelector: null,
-          settings,
-          context,
-          node,
-        }),
-    }
-  },
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [
+        AST_NODE_TYPES.ObjectPattern,
+        AST_NODE_TYPES.ObjectExpression,
+      ],
+      sorter: sortObject,
+      context,
+    }),
   defaultOptions: [defaultOptions],
   name: 'sort-objects',
 })
-
-function buildPotentialObjectSorter({
-  alreadyParsedNodes,
-  astSelector,
-  settings,
-  context,
-}: {
-  alreadyParsedNodes: Set<TSESTree.ObjectExpression | TSESTree.ObjectPattern>
-  context: Readonly<RuleContext<MessageId, Options>>
-  astSelector: string
-  settings: Settings
-}): (node: TSESTree.Node) => void {
-  return sorter
-
-  function sorter(node: TSESTree.Node): void {
-    switch (node.type) {
-      case AST_NODE_TYPES.ObjectExpression:
-      case AST_NODE_TYPES.ObjectPattern:
-        sortObject({
-          alreadyParsedNodes,
-          astSelector,
-          settings,
-          context,
-          node,
-        })
-        break
-      default:
-        break
-    }
-  }
-}

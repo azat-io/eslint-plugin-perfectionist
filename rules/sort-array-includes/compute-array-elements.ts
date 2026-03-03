@@ -2,6 +2,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import { UnreachableCaseError } from '../../utils/unreachable-case-error'
+
 /**
  * Computes array elements for the given expression.
  *
@@ -10,7 +12,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
  *   expression, otherwise null.
  */
 export function computeArrayElements(
-  expression: TSESTree.CallExpressionArgument,
+  expression: TSESTree.ArrayExpression | TSESTree.NewExpression,
 ): (TSESTree.SpreadElement | TSESTree.Expression | null)[] | null {
   switch (expression.type) {
     case AST_NODE_TYPES.ArrayExpression:
@@ -23,7 +25,8 @@ export function computeArrayElements(
         return null
       }
       return expression.arguments
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
-      return null
+      throw new UnreachableCaseError(expression)
   }
 }

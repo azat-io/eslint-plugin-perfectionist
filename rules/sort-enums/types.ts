@@ -29,8 +29,7 @@ export const DEPENDENCY_ORDER_ERROR_ID = 'unexpectedEnumsDependencyOrder'
 export type Options = Partial<
   {
     /**
-     * Conditional configuration based on pattern matching. When specified, the
-     * rule applies only if all enum members names match the given pattern.
+     * Conditional configuration based on pattern matching.
      */
     useConfigurationIf: {
       /**

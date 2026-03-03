@@ -23,6 +23,7 @@ import {
 } from '../utils/report-errors'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-array-includes/types'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { sortArray } from './sort-array-includes/sort-array'
 
@@ -83,33 +84,6 @@ export let jsonSchema: JSONSchema4 = {
 }
 
 export default createEslintRule<Options, MessageId>({
-  create: context => {
-    let alreadyParsedNodes = new Set<TSESTree.Expression>()
-
-    let allAstSelectors = context.options
-      .map(option => option.useConfigurationIf?.matchesAstSelector)
-      .filter(matchesAstSelector => matchesAstSelector !== undefined)
-    let allAstSelectorMatchers = allAstSelectors.map(
-      astSelector =>
-        [
-          astSelector,
-          buildPotentialArraySorter({
-            alreadyParsedNodes,
-            astSelector,
-            context,
-          }),
-        ] as const,
-    )
-
-    return {
-      ...Object.fromEntries(allAstSelectorMatchers),
-      'MemberExpression:exit': buildFromMemberExpressionArraySorter({
-        alreadyParsedNodes,
-        astSelector: null,
-        context,
-      }),
-    }
-  },
   meta: {
     messages: {
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
@@ -126,23 +100,28 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [AST_NODE_TYPES.NewExpression, AST_NODE_TYPES.ArrayExpression],
+      sorter: sortPotentiallyValidArray,
+      context,
+    }),
   defaultOptions: [defaultOptions],
   name: 'sort-array-includes',
 })
 
-function sortArrayFromMemberExpression({
+function sortPotentiallyValidArray({
   alreadyParsedNodes,
   astSelector,
   context,
   node,
 }: {
+  alreadyParsedNodes: Set<TSESTree.ArrayExpression | TSESTree.NewExpression>
+  node: TSESTree.ArrayExpression | TSESTree.NewExpression
   context: Readonly<RuleContext<MessageId, Options>>
-  alreadyParsedNodes: Set<TSESTree.Expression>
-  node: TSESTree.MemberExpression
   astSelector: string | null
 }): void {
-  let arrayExpression = extractArrayIncludesExpression()
-  if (!arrayExpression) {
+  if (!isValidArray()) {
     return
   }
 
@@ -154,70 +133,33 @@ function sortArrayFromMemberExpression({
       unexpectedOrder: ORDER_ERROR_ID,
     },
     cachedGroupsByModifiersAndSelectors,
-    expression: arrayExpression,
     alreadyParsedNodes,
     defaultOptions,
     astSelector,
     context,
+    node,
   })
 
-  function extractArrayIncludesExpression(): TSESTree.Expression | null {
-    if (node.property.type !== AST_NODE_TYPES.Identifier) {
-      return null
-    }
-    if (node.property.name !== 'includes') {
-      return null
-    }
-
-    return node.object
-  }
-}
-
-function buildPotentialArraySorter({
-  alreadyParsedNodes,
-  astSelector,
-  context,
-}: {
-  context: Readonly<RuleContext<MessageId, Options>>
-  alreadyParsedNodes: Set<TSESTree.Expression>
-  astSelector: string
-}): (node: TSESTree.Node) => void {
-  return sorter
-
-  function sorter(node: TSESTree.Node): void {
-    if (node.type !== AST_NODE_TYPES.ArrayExpression) {
-      return
-    }
+  function isValidArray(): boolean {
     if (node.parent.type !== AST_NODE_TYPES.MemberExpression) {
-      return
+      return false
     }
 
-    sortArrayFromMemberExpression({
-      alreadyParsedNodes,
-      node: node.parent,
-      astSelector,
-      context,
-    })
-  }
-}
+    if (node.parent.property.type !== AST_NODE_TYPES.Identifier) {
+      return false
+    }
+    if (node.parent.property.name !== 'includes') {
+      return false
+    }
 
-function buildFromMemberExpressionArraySorter({
-  alreadyParsedNodes,
-  astSelector,
-  context,
-}: {
-  context: Readonly<RuleContext<MessageId, Options>>
-  alreadyParsedNodes: Set<TSESTree.Expression>
-  astSelector: string | null
-}): (node: TSESTree.MemberExpression) => void {
-  return sorter
+    if (node.parent.parent.type !== AST_NODE_TYPES.CallExpression) {
+      return false
+    }
 
-  function sorter(node: TSESTree.MemberExpression): void {
-    return sortArrayFromMemberExpression({
-      alreadyParsedNodes,
-      astSelector,
-      context,
-      node,
-    })
+    if (node.parent.parent.callee !== node.parent) {
+      return false
+    }
+
+    return true
   }
 }

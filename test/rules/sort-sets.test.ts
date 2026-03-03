@@ -59,6 +59,34 @@ describe('sort-sets', () => {
       })
     })
 
+    it('ignores arrays that are not the first Set argument', async () => {
+      await valid({
+        code: dedent`
+          new Set(
+            foo,
+            [
+              b,
+              a,
+            ],
+          )
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          new Set(
+            foo,
+            new Array(
+              b,
+              a,
+            ),
+          )
+        `,
+        options: [options],
+      })
+    })
+
     it('preserves set structure when fixing sort order', async () => {
       await valid({
         code: dedent`
