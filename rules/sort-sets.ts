@@ -101,6 +101,10 @@ function sortPotentiallyValidArray({
       return false
     }
 
+    if (node.parent.arguments[0] !== node) {
+      return false
+    }
+
     return true
   }
 }
