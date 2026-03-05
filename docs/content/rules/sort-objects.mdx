@@ -517,6 +517,7 @@ Example configuration:
 ```
 
 - `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching an `ObjectExpression` or `ObjectPattern` node.
+To avoid unexpected behavior, do not use `:exit` or `:enter` pseudo-selectors.
 
 Example configuration: don't sort objects that are declared as `const` variables.
 ```ts
