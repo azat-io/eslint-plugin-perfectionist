@@ -1562,6 +1562,73 @@ describe('sort-array-includes', () => {
           `,
         })
       })
+
+      it('applies first matching option when selectors overlap', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ArrayExpression',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > ArrayExpression',
+              },
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            [
+              b,
+              a,
+            ].includes(value)
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ArrayExpression',
+              },
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > ArrayExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            [
+              a,
+              b,
+            ].includes(value)
+          `,
+          code: dedent`
+            [
+              b,
+              a,
+            ].includes(value)
+          `,
+        })
+      })
     })
 
     it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {

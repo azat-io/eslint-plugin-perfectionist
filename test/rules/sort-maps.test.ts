@@ -1730,6 +1730,73 @@ describe('sort-maps', () => {
           `,
         })
       })
+
+      it('applies first matching option when selectors overlap', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > NewExpression',
+              },
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            new Map([
+              [b, 'b'],
+              [a, 'a'],
+            ])
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
+              },
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > NewExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            new Map([
+              [a, 'a'],
+              [b, 'b'],
+            ])
+          `,
+          code: dedent`
+            new Map([
+              [b, 'b'],
+              [a, 'a'],
+            ])
+          `,
+        })
+      })
     })
   })
 

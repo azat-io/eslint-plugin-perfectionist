@@ -48,16 +48,14 @@ export let defaultOptions: Required<Options[number]> = {
 }
 
 export function sortPotentialMap({
-  alreadyParsedNodes,
-  astSelector,
+  matchedAstSelectors,
   settings,
   context,
   node,
 }: {
   context: TSESLint.RuleContext<MessageId, Options>
-  alreadyParsedNodes: Set<TSESTree.NewExpression>
+  matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.NewExpression
-  astSelector: string | null
   settings: Settings
 }): void {
   if (
@@ -76,18 +74,10 @@ export function sortPotentialMap({
   let { sourceCode, id } = context
 
   let matchedContextOptions = computeMatchedContextOptions({
-    astSelector,
+    matchedAstSelectors,
     elements,
     context,
   })
-  if (!matchedContextOptions && astSelector) {
-    return
-  }
-
-  if (alreadyParsedNodes.has(node)) {
-    return
-  }
-  alreadyParsedNodes.add(node)
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)

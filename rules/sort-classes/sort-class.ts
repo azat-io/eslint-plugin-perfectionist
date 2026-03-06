@@ -104,15 +104,13 @@ export let defaultOptions: Required<Options[number]> = {
 }
 
 export function sortClass({
-  alreadyParsedNodes,
-  astSelector,
+  matchedAstSelectors,
   settings,
   context,
   node,
 }: {
   context: Readonly<TSESLint.RuleContext<MessageId, Options>>
-  alreadyParsedNodes: Set<TSESTree.ClassBody>
-  astSelector: string | null
+  matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.ClassBody
   settings: Settings
 }): void {
@@ -122,18 +120,10 @@ export function sortClass({
   }
 
   let matchedContextOptions = computeMatchedContextOptions({
+    matchedAstSelectors,
     classElements,
-    astSelector,
     context,
   })
-  if (!matchedContextOptions && astSelector) {
-    return
-  }
-
-  if (alreadyParsedNodes.has(node)) {
-    return
-  }
-  alreadyParsedNodes.add(node)
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)

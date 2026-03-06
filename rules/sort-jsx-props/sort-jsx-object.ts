@@ -57,15 +57,13 @@ export let defaultOptions: Required<Options[number]> = {
 }
 
 export function sortJsxObject({
-  alreadyParsedNodes,
-  astSelector,
+  matchedAstSelectors,
   settings,
   context,
   node,
 }: {
   context: Readonly<TSESLint.RuleContext<MessageId, Options>>
-  alreadyParsedNodes: Set<TSESTree.JSXElement>
-  astSelector: string | null
+  matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.JSXElement
   settings: Settings
 }): void {
@@ -76,19 +74,11 @@ export function sortJsxObject({
   let { sourceCode, id } = context
 
   let matchedContextOptions = computeMatchedContextOptions({
-    astSelector,
+    matchedAstSelectors,
     sourceCode,
     context,
     node,
   })
-  if (!matchedContextOptions && astSelector) {
-    return
-  }
-
-  if (alreadyParsedNodes.has(node)) {
-    return
-  }
-  alreadyParsedNodes.add(node)
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)

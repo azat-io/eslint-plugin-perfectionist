@@ -111,15 +111,13 @@ export default createEslintRule<Options, MessageId>({
 })
 
 function sortPotentiallyValidArray({
-  alreadyParsedNodes,
-  astSelector,
+  matchedAstSelectors,
   context,
   node,
 }: {
-  alreadyParsedNodes: Set<TSESTree.ArrayExpression | TSESTree.NewExpression>
   node: TSESTree.ArrayExpression | TSESTree.NewExpression
   context: Readonly<RuleContext<MessageId, Options>>
-  astSelector: string | null
+  matchedAstSelectors: ReadonlySet<string>
 }): void {
   if (!isValidArray()) {
     return
@@ -133,9 +131,8 @@ function sortPotentiallyValidArray({
       unexpectedOrder: ORDER_ERROR_ID,
     },
     cachedGroupsByModifiersAndSelectors,
-    alreadyParsedNodes,
+    matchedAstSelectors,
     defaultOptions,
-    astSelector,
     context,
     node,
   })

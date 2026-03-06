@@ -15,21 +15,21 @@ import { matches } from '../../utils/matches'
  * Computes the matched context options for a given JSX element node.
  *
  * @param params - Parameters.
- * @param params.astSelector - The AST selector string currently evaluated.
+ * @param params.matchedAstSelectors - The matched AST selectors for a JSX node.
  * @param params.sourceCode - The source code object.
  * @param params.node - The JSX element node to evaluate.
  * @param params.context - The rule context.
  * @returns The matched context options or undefined if none match.
  */
 export function computeMatchedContextOptions({
-  astSelector,
+  matchedAstSelectors,
   sourceCode,
   context,
   node,
 }: {
   context: TSESLint.RuleContext<string, Options>
+  matchedAstSelectors: ReadonlySet<string>
   sourceCode: TSESLint.SourceCode
-  astSelector: string | null
   node: TSESTree.JSXElement
 }): Options[number] | undefined {
   let nodeNames = node.openingElement.attributes
@@ -41,18 +41,35 @@ export function computeMatchedContextOptions({
     nodeNames,
   })
 
-  return matchedContextOptions.find(isContextOptionMatching)
+  return (
+    matchedContextOptions.find(isSelectorBasedContextOptionMatching) ??
+    matchedContextOptions.find(isFallbackContextOptionMatching)
+  )
 
-  function isContextOptionMatching(options: Options[number]): boolean {
+  function isSelectorBasedContextOptionMatching(
+    options: Options[number],
+  ): boolean {
     if (
       !passesAstSelectorFilter({
         matchesAstSelector: options.useConfigurationIf?.matchesAstSelector,
-        astSelector,
+        matchedAstSelectors,
       })
     ) {
       return false
     }
 
+    return passesUseConfigurationIfFilters(options)
+  }
+
+  function isFallbackContextOptionMatching(options: Options[number]): boolean {
+    if (options.useConfigurationIf?.matchesAstSelector !== undefined) {
+      return false
+    }
+
+    return passesUseConfigurationIfFilters(options)
+  }
+
+  function passesUseConfigurationIfFilters(options: Options[number]): boolean {
     if (!options.useConfigurationIf) {
       return true
     }

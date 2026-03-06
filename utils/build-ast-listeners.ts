@@ -13,9 +13,8 @@ type Sorter<
   NodeTypes extends AST_NODE_TYPES,
 > = (parameters: {
   context: Readonly<RuleContext<MessageId, Options>>
-  alreadyParsedNodes: Set<NodeOfType<NodeTypes>>
+  matchedAstSelectors: ReadonlySet<string>
   node: NodeOfType<NodeTypes>
-  astSelector: string | null
   settings: Settings
 }) => void
 
@@ -55,23 +54,27 @@ export function buildAstListeners<
   nodeTypes: NodeTypes[]
 }): AstListeners<NodeTypes> {
   let settings = getSettings(context.settings)
+  let emptyMatchedAstSelectors = new Set<string>()
+  let matchedAstSelectorsByNode = new WeakMap<
+    NodeOfType<NodeTypes>,
+    Set<string>
+  >()
 
-  let alreadyParsedNodes = new Set<NodeOfType<NodeTypes>>()
-
-  let allAstSelectors = context.options
-    .map(option => option.useConfigurationIf?.matchesAstSelector)
-    .filter(matchesAstSelector => matchesAstSelector !== undefined)
+  let allAstSelectors = [
+    ...new Set(
+      context.options
+        .map(option => option.useConfigurationIf?.matchesAstSelector)
+        .filter(matchesAstSelector => matchesAstSelector !== undefined),
+    ),
+  ]
   let allAstSelectorMatchers = allAstSelectors.map(
     astSelector =>
       [
         astSelector,
-        buildPotentialNodeSorter({
-          alreadyParsedNodes,
+        buildMatchedAstSelectorsCollector({
+          matchedAstSelectorsByNode,
           astSelector,
           nodeTypes,
-          settings,
-          context,
-          sorter,
         }),
       ] as const,
   )
@@ -88,8 +91,8 @@ export function buildAstListeners<
       `${nodeType}:exit`,
       (node: NodeOfType<NodeTypes>) =>
         sorter({
-          alreadyParsedNodes,
-          astSelector: null,
+          matchedAstSelectors:
+            matchedAstSelectorsByNode.get(node) ?? emptyMatchedAstSelectors,
           settings,
           context,
           node,
@@ -98,40 +101,31 @@ export function buildAstListeners<
   }
 }
 
-function buildPotentialNodeSorter<
-  MessageId extends string,
-  Options extends BaseOptions[],
-  NodeTypes extends AST_NODE_TYPES,
->({
-  alreadyParsedNodes,
+function buildMatchedAstSelectorsCollector<NodeTypes extends AST_NODE_TYPES>({
+  matchedAstSelectorsByNode,
   astSelector,
   nodeTypes,
-  settings,
-  context,
-  sorter,
 }: {
-  context: Readonly<RuleContext<MessageId, Options>>
-  alreadyParsedNodes: Set<NodeOfType<NodeTypes>>
-  sorter: Sorter<MessageId, Options, NodeTypes>
+  matchedAstSelectorsByNode: WeakMap<NodeOfType<NodeTypes>, Set<string>>
   nodeTypes: NodeTypes[]
   astSelector: string
-  settings: Settings
 }): (node: TSESTree.Node) => void {
-  return potentialNodeSorter
+  return collectMatchedAstSelectors
 
-  function potentialNodeSorter(node: TSESTree.Node): void {
+  function collectMatchedAstSelectors(node: TSESTree.Node): void {
     if (!isNodeOfType(node)) {
       return
     }
 
-    sorter({
-      alreadyParsedNodes,
-      astSelector,
-      settings,
-      context,
-      node,
-    })
+    let matchedAstSelectors = matchedAstSelectorsByNode.get(node)
+    if (!matchedAstSelectors) {
+      matchedAstSelectors = new Set()
+      matchedAstSelectorsByNode.set(node, matchedAstSelectors)
+    }
+
+    matchedAstSelectors.add(astSelector)
   }
+
   function isNodeOfType(node: TSESTree.Node): node is NodeOfType<NodeTypes> {
     return (nodeTypes as string[]).includes(node.type)
   }

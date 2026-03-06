@@ -20,7 +20,8 @@ import { objectParentTypes } from './types'
  *
  * @param params - Parameters.
  * @param params.isDestructuredObject - Whether the object is destructured.
- * @param params.astSelector - The AST selector string currently evaluated.
+ * @param params.matchedAstSelectors - The matched AST selectors for an object
+ *   node.
  * @param params.sourceCode - The source code object.
  * @param params.nodeObject - The object node to evaluate.
  * @param params.context - The rule context.
@@ -28,16 +29,16 @@ import { objectParentTypes } from './types'
  */
 export function computeMatchedContextOptions({
   isDestructuredObject,
-  astSelector,
+  matchedAstSelectors,
   sourceCode,
   nodeObject,
   context,
 }: {
   nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
   context: TSESLint.RuleContext<MessageId, Options>
+  matchedAstSelectors: ReadonlySet<string>
   sourceCode: TSESLint.SourceCode
   isDestructuredObject: boolean
-  astSelector: string | null
 }): Options[number] | undefined {
   let filteredContextOptions = filterOptionsByAllNamesMatch({
     nodeNames: nodeObject.properties
@@ -59,22 +60,32 @@ export function computeMatchedContextOptions({
     maxParent: null,
   })
 
-  return filteredContextOptions.find(options =>
-    isContextOptionMatching({
-      isDestructuredObject,
-      astSelector,
-      parentNodes,
-      sourceCode,
-      nodeObject,
-      options,
-    }),
+  return (
+    filteredContextOptions.find(options =>
+      isSelectorBasedContextOptionMatching({
+        isDestructuredObject,
+        matchedAstSelectors,
+        parentNodes,
+        sourceCode,
+        nodeObject,
+        options,
+      }),
+    ) ??
+    filteredContextOptions.find(options =>
+      isFallbackContextOptionMatching({
+        isDestructuredObject,
+        parentNodes,
+        sourceCode,
+        nodeObject,
+        options,
+      }),
+    )
   )
 }
 
-function isContextOptionMatching({
+function passesUseConfigurationIfFilters({
   isDestructuredObject,
   parentNodes,
-  astSelector,
   sourceCode,
   nodeObject,
   options,
@@ -83,18 +94,8 @@ function isContextOptionMatching({
   sourceCode: TSESLint.SourceCode
   isDestructuredObject: boolean
   parentNodes: ObjectParent[]
-  astSelector: string | null
   options: Options[number]
 }): boolean {
-  if (
-    !passesAstSelectorFilter({
-      matchesAstSelector: options.useConfigurationIf?.matchesAstSelector,
-      astSelector,
-    })
-  ) {
-    return false
-  }
-
   if (!options.useConfigurationIf) {
     return true
   }
@@ -165,6 +166,65 @@ function passesHasNumericKeysOnlyFilter({
         throw new UnreachableCaseError(object)
     }
   }
+}
+
+function isSelectorBasedContextOptionMatching({
+  isDestructuredObject,
+  matchedAstSelectors,
+  parentNodes,
+  sourceCode,
+  nodeObject,
+  options,
+}: {
+  nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  matchedAstSelectors: ReadonlySet<string>
+  sourceCode: TSESLint.SourceCode
+  isDestructuredObject: boolean
+  parentNodes: ObjectParent[]
+  options: Options[number]
+}): boolean {
+  if (
+    !passesAstSelectorFilter({
+      matchesAstSelector: options.useConfigurationIf?.matchesAstSelector,
+      matchedAstSelectors,
+    })
+  ) {
+    return false
+  }
+
+  return passesUseConfigurationIfFilters({
+    isDestructuredObject,
+    parentNodes,
+    sourceCode,
+    nodeObject,
+    options,
+  })
+}
+
+function isFallbackContextOptionMatching({
+  isDestructuredObject,
+  parentNodes,
+  sourceCode,
+  nodeObject,
+  options,
+}: {
+  nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  sourceCode: TSESLint.SourceCode
+  isDestructuredObject: boolean
+  parentNodes: ObjectParent[]
+  options: Options[number]
+}): boolean {
+  if (options.useConfigurationIf?.matchesAstSelector !== undefined) {
+    return false
+  }
+
+  return passesUseConfigurationIfFilters({
+    isDestructuredObject,
+    parentNodes,
+    sourceCode,
+    nodeObject,
+    options,
+  })
 }
 
 function passesObjectTypeFilter({

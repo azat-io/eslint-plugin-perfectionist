@@ -5015,6 +5015,73 @@ describe('sort-classes', () => {
           `,
         })
       })
+
+      it('applies first matching option when selectors overlap', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ClassBody',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > ClassBody',
+              },
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            class Class {
+              b
+              a
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ClassBody',
+              },
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > ClassBody',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              a
+              b
+            }
+          `,
+          code: dedent`
+            class Class {
+              b
+              a
+            }
+          `,
+        })
+      })
     })
   })
 
