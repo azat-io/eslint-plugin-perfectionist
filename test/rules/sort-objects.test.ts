@@ -1790,6 +1790,94 @@ describe('sort-objects', () => {
       })
     })
 
+    it('allows using computed keys as partitions', async () => {
+      await valid({
+        code: dedent`
+          const key = 'propertyName'
+          const obj = {
+            propertyName: 1,
+            [key]: 2,
+          }
+        `,
+        options: [
+          {
+            ...options,
+            partitionByComputedKey: true,
+          },
+        ],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: { left: 'propertyName', right: 'key' },
+            messageId: 'unexpectedObjectsOrder',
+          },
+        ],
+        output: dedent`
+          const key = 'propertyName'
+          const obj = {
+            [key]: 2,
+            propertyName: 1,
+          }
+        `,
+        code: dedent`
+          const key = 'propertyName'
+          const obj = {
+            propertyName: 1,
+            [key]: 2,
+          }
+        `,
+        options: [
+          {
+            ...options,
+            partitionByComputedKey: false,
+          },
+        ],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'd', left: 'e' },
+          },
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'a', left: 'c' },
+          },
+        ],
+        output: dedent`
+          let Obj = {
+            d: 'd',
+            e: 'e',
+
+            [b]: 'b',
+
+            a: 'a',
+            c: 'c',
+          }
+        `,
+        code: dedent`
+          let Obj = {
+            e: 'e',
+            d: 'd',
+
+            [b]: 'b',
+
+            c: 'c',
+            a: 'a',
+          }
+        `,
+        options: [
+          {
+            ...options,
+            partitionByComputedKey: true,
+          },
+        ],
+      })
+    })
+
     it('allows trimming special characters', async () => {
       await valid({
         code: dedent`

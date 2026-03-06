@@ -90,6 +90,11 @@ export type Options = Partial<
     useExperimentalDependencyDetection: boolean
 
     /**
+     * Whether to partition object members by computed keys.
+     */
+    partitionByComputedKey: boolean
+
+    /**
      * Whether to sort styled-components CSS properties. When true, sorts CSS
      * properties within styled-components template literals.
      *

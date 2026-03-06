@@ -284,6 +284,7 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
       | string[]
       | { pattern: string; flags: string }
       | { pattern: string; flags: string }[]
+    matchesAstSelector?: string
   }
   ```
 </sub>
@@ -339,6 +340,26 @@ Example configuration:
       useConfigurationIf: {
         tagMatchesPattern: '*Component$',
       },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching a `JSXElement` node.
+
+Example configuration: don't sort JSX objects that are declared as `const` variables.
+```ts
+{
+  'perfectionist/sort-jsx-props': [
+    'error',
+    {
+      useConfigurationIf: {
+        matchesAstSelector: 'VariableDeclaration[kind="const"] JSXElement',
+      },
+      type: 'unsorted'
     },
     {
       type: 'alphabetical' // Fallback configuration

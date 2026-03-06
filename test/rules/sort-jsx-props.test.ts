@@ -1287,134 +1287,343 @@ describe('sort-jsx-props', () => {
       })
     })
 
-    it.each([
-      ['string pattern', '^[rgb]$'],
-      ['array of patterns', ['noMatch', '^[rgb]$']],
-      ['case-insensitive regex', { pattern: '^[RGB]$', flags: 'i' }],
-      ['regex in array', ['noMatch', { pattern: '^[RGB]$', flags: 'i' }]],
-    ])(
-      'applies configuration when all names match pattern - %s',
-      async (_description, allNamesMatchPattern) => {
+    describe('useConfigurationIf.allNamesMatchPattern', () => {
+      it.each([
+        ['string pattern', '^[rgb]$'],
+        ['array of patterns', ['noMatch', '^[rgb]$']],
+        ['case-insensitive regex', { pattern: '^[RGB]$', flags: 'i' }],
+        ['regex in array', ['noMatch', { pattern: '^[RGB]$', flags: 'i' }]],
+      ])(
+        'applies configuration when all names match pattern - %s',
+        async (_description, allNamesMatchPattern) => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  allNamesMatchPattern: 'foo',
+                },
+              },
+              {
+                ...options,
+                customGroups: [
+                  {
+                    elementNamePattern: 'r',
+                    groupName: 'r',
+                  },
+                  {
+                    elementNamePattern: 'g',
+                    groupName: 'g',
+                  },
+                  {
+                    elementNamePattern: 'b',
+                    groupName: 'b',
+                  },
+                ],
+                useConfigurationIf: {
+                  allNamesMatchPattern,
+                },
+                groups: ['r', 'g', 'b'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'g',
+                  leftGroup: 'b',
+                  right: 'g',
+                  left: 'b',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'r',
+                  leftGroup: 'g',
+                  right: 'r',
+                  left: 'g',
+                },
+                messageId: 'unexpectedJSXPropsGroupOrder',
+              },
+            ],
+            output: dedent`
+              <Component
+                r
+                g
+                b
+              />
+            `,
+            code: dedent`
+              <Component
+                b
+                g
+                r
+              />
+            `,
+          })
+        },
+      )
+    })
+
+    describe('useConfigurationIf.tagMatchesPattern', () => {
+      it.each([
+        ['string pattern', '^Component$'],
+        ['array of patterns', ['noMatch', '^Component']],
+        ['case-insensitive regex', { pattern: '^COMPONENT$', flags: 'i' }],
+        ['regex in array', ['noMatch', { pattern: '^COMPONENT', flags: 'i' }]],
+      ])(
+        'applies different configuration based on tag name pattern - %s',
+        async (_description, tagMatchesPattern) => {
+          let conditionalOptions = [
+            {
+              useConfigurationIf: {
+                tagMatchesPattern,
+              },
+              type: 'unsorted',
+            },
+            options,
+          ]
+
+          await valid({
+            code: dedent`
+              <Component
+                b
+                c
+                a
+              />
+            `,
+            options: conditionalOptions,
+          })
+
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              <OtherComponent
+                a
+                b
+              />
+            `,
+            code: dedent`
+              <OtherComponent
+                b
+                a
+              />
+            `,
+            options: conditionalOptions,
+          })
+        },
+      )
+    })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('matches configuration based off matchesAstSelector', async () => {
         await invalid({
           options: [
             {
               ...options,
               useConfigurationIf: {
-                allNamesMatchPattern: 'foo',
+                matchesAstSelector: 'VariableDeclarator',
               },
-            },
-            {
-              ...options,
-              customGroups: [
-                {
-                  elementNamePattern: 'r',
-                  groupName: 'r',
-                },
-                {
-                  elementNamePattern: 'g',
-                  groupName: 'g',
-                },
-                {
-                  elementNamePattern: 'b',
-                  groupName: 'b',
-                },
-              ],
-              useConfigurationIf: {
-                allNamesMatchPattern,
-              },
-              groups: ['r', 'g', 'b'],
+              type: 'unsorted',
             },
           ],
           errors: [
             {
               data: {
-                rightGroup: 'g',
-                leftGroup: 'b',
-                right: 'g',
+                right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedJSXPropsGroupOrder',
-            },
-            {
-              data: {
-                rightGroup: 'r',
-                leftGroup: 'g',
-                right: 'r',
-                left: 'g',
-              },
-              messageId: 'unexpectedJSXPropsGroupOrder',
+              messageId: 'unexpectedJSXPropsOrder',
             },
           ],
           output: dedent`
-            <Component
-              r
-              g
-              b
-            />
+            let Component = () => (
+              <Element
+                a="a"
+                b="b"
+              />
+            )
           `,
           code: dedent`
-            <Component
-              b
-              g
-              r
-            />
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
           `,
         })
-      },
-    )
-
-    it.each([
-      ['string pattern', '^Component$'],
-      ['array of patterns', ['noMatch', '^Component']],
-      ['case-insensitive regex', { pattern: '^COMPONENT$', flags: 'i' }],
-      ['regex in array', ['noMatch', { pattern: '^COMPONENT', flags: 'i' }]],
-    ])(
-      'applies different configuration based on tag name pattern - %s',
-      async (_description, tagMatchesPattern) => {
-        let conditionalOptions = [
-          {
-            useConfigurationIf: {
-              tagMatchesPattern,
-            },
-            type: 'unsorted',
-          },
-          options,
-        ]
 
         await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+              },
+              type: 'unsorted',
+            },
+          ],
           code: dedent`
-            <Component
-              b
-              c
-              a
-            />
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
           `,
-          options: conditionalOptions,
         })
 
         await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > JSXElement',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
           errors: [
             {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
               messageId: 'unexpectedJSXPropsOrder',
-              data: { right: 'a', left: 'b' },
             },
           ],
           output: dedent`
-            <OtherComponent
-              a
-              b
-            />
+            let Component = () => (
+              <Element
+                a="a"
+                b="b"
+              />
+            )
           `,
           code: dedent`
-            <OtherComponent
-              b
-              a
-            />
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
           `,
-          options: conditionalOptions,
         })
-      },
-    )
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          output: dedent`
+            let Component = () => (
+              <Element
+                a="a"
+                b="b"
+              />
+            )
+          `,
+          code: dedent`
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          output: dedent`
+            let Component = () => (
+              <Element
+                a="a"
+                b="b"
+              />
+            )
+          `,
+          code: dedent`
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
+          `,
+        })
+      })
+    })
   })
 
   describe('natural', () => {

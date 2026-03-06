@@ -57,6 +57,7 @@ export let defaultOptions: Required<Options[number]> = {
   useExperimentalDependencyDetection: true,
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
+  partitionByComputedKey: false,
   partitionByNewLine: false,
   partitionByComment: false,
   newlinesBetween: 'ignore',
@@ -133,6 +134,15 @@ export function sortObject({
     if (
       property.type === AST_NODE_TYPES.SpreadElement ||
       property.type === AST_NODE_TYPES.RestElement
+    ) {
+      sortingNodeGroups.push([])
+      continue
+    }
+
+    if (
+      options.partitionByComputedKey &&
+      !isDestructuredObject &&
+      property.computed
     ) {
       sortingNodeGroups.push([])
       continue
