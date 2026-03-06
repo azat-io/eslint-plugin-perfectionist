@@ -12,18 +12,19 @@ import { computeNodeName } from './compute-node-name'
  *
  * @param params - Parameters.
  * @param params.enumMembers - The enum members of the enum declaration node.
- * @param params.astSelector - The AST selector string currently evaluated.
+ * @param params.matchedAstSelectors - The matched AST selectors for an enum
+ *   node.
  * @param params.context - The rule context.
  * @returns The matched context options or undefined if none match.
  */
 export function computeMatchedContextOptions<MessageIds extends string>({
+  matchedAstSelectors,
   enumMembers,
-  astSelector,
   context,
 }: {
   context: Readonly<RuleContext<MessageIds, Options>>
+  matchedAstSelectors: ReadonlySet<string>
   enumMembers: TSESTree.TSEnumMember[]
-  astSelector: string | null
 }): Options[number] | undefined {
   let nodeNames = enumMembers.map(enumMember =>
     computeNodeName({ sourceCode: context.sourceCode, node: enumMember }),
@@ -34,12 +35,21 @@ export function computeMatchedContextOptions<MessageIds extends string>({
     nodeNames,
   })
 
-  return matchedContextOptions.find(isContextOptionMatching)
+  return (
+    matchedContextOptions.find(isSelectorBasedContextOptionMatching) ??
+    matchedContextOptions.find(isFallbackContextOptionMatching)
+  )
 
-  function isContextOptionMatching(options: Options[number]): boolean {
+  function isSelectorBasedContextOptionMatching(
+    options: Options[number],
+  ): boolean {
     return passesAstSelectorFilter({
       matchesAstSelector: options.useConfigurationIf?.matchesAstSelector,
-      astSelector,
+      matchedAstSelectors,
     })
+  }
+
+  function isFallbackContextOptionMatching(options: Options[number]): boolean {
+    return options.useConfigurationIf?.matchesAstSelector === undefined
   }
 }

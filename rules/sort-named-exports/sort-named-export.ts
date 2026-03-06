@@ -62,16 +62,14 @@ export let defaultOptions: Required<Options[number]> = {
 }
 
 export function sortNamedExport({
-  alreadyParsedNodes,
-  astSelector,
+  matchedAstSelectors,
   settings,
   context,
   node,
 }: {
-  alreadyParsedNodes: Set<TSESTree.ExportNamedDeclaration>
   context: TSESLint.RuleContext<MessageId, Options>
+  matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.ExportNamedDeclaration
-  astSelector: string | null
   settings: Settings
 }): void {
   if (!isSortable(node.specifiers)) {
@@ -79,18 +77,10 @@ export function sortNamedExport({
   }
 
   let matchedContextOptions = computeMatchedContextOptions({
-    astSelector,
+    matchedAstSelectors,
     context,
     node,
   })
-  if (!matchedContextOptions && astSelector) {
-    return
-  }
-
-  if (alreadyParsedNodes.has(node)) {
-    return
-  }
-  alreadyParsedNodes.add(node)
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)

@@ -3969,6 +3969,73 @@ describe('sort-objects', () => {
           `,
         })
       })
+
+      it('applies first matching option when selectors overlap', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ObjectExpression',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > ObjectExpression',
+              },
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let obj = {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ObjectExpression',
+              },
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > ObjectExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: "a",
+              b: "b",
+            }
+          `,
+          code: dedent`
+            let obj = {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+      })
     })
 
     it('applies configuration when object only has numeric keys', async () => {

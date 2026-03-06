@@ -11,20 +11,21 @@ import { computeNodeName } from './compute-node-name'
  * Computes the matched context options for a given array node.
  *
  * @param params - Parameters.
- * @param params.astSelector - The AST selector string currently evaluated.
+ * @param params.matchedAstSelectors - The matched AST selectors for an array
+ *   node.
  * @param params.elements - The array elements to compute the context options
  *   for.
  * @param params.context - The rule context.
  * @returns The matched context options or undefined if none match.
  */
 export function computeMatchedContextOptions<MessageIds extends string>({
-  astSelector,
+  matchedAstSelectors,
   elements,
   context,
 }: {
   elements: (TSESTree.SpreadElement | TSESTree.Expression | null)[]
   context: Readonly<RuleContext<MessageIds, Options>>
-  astSelector: string | null
+  matchedAstSelectors: ReadonlySet<string>
 }): Options[number] | undefined {
   let nodeNames = elements
     .filter(element => element !== null)
@@ -37,12 +38,21 @@ export function computeMatchedContextOptions<MessageIds extends string>({
     nodeNames,
   })
 
-  return matchedContextOptions.find(isContextOptionMatching)
+  return (
+    matchedContextOptions.find(isSelectorBasedContextOptionMatching) ??
+    matchedContextOptions.find(isFallbackContextOptionMatching)
+  )
 
-  function isContextOptionMatching(options: Options[number]): boolean {
+  function isSelectorBasedContextOptionMatching(
+    options: Options[number],
+  ): boolean {
     return passesAstSelectorFilter({
       matchesAstSelector: options.useConfigurationIf?.matchesAstSelector,
-      astSelector,
+      matchedAstSelectors,
     })
+  }
+
+  function isFallbackContextOptionMatching(options: Options[number]): boolean {
+    return options.useConfigurationIf?.matchesAstSelector === undefined
   }
 }

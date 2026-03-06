@@ -1624,6 +1624,79 @@ describe('sort-jsx-props', () => {
           `,
         })
       })
+
+      it('applies first matching option when selectors overlap', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > JSXElement',
+              },
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+              },
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > JSXElement',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          output: dedent`
+            let Component = () => (
+              <Element
+                a="a"
+                b="b"
+              />
+            )
+          `,
+          code: dedent`
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
+          `,
+        })
+      })
     })
   })
 
