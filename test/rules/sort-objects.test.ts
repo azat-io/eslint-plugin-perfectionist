@@ -3940,6 +3940,7 @@ describe('sort-objects', () => {
                 allNamesMatchPattern: '^[ab]$',
               },
               type: 'alphabetical',
+              order: 'desc',
             },
             {
               type: 'unsorted',
@@ -3948,22 +3949,22 @@ describe('sort-objects', () => {
           errors: [
             {
               data: {
-                right: 'a',
-                left: 'b',
+                right: 'b',
+                left: 'a',
               },
               messageId: 'unexpectedObjectsOrder',
             },
           ],
           output: dedent`
             let obj = {
-              a: "a",
               b: "b",
+              a: "a",
             }
           `,
           code: dedent`
             let obj = {
-              b: "b",
               a: "a",
+              b: "b",
             }
           `,
         })

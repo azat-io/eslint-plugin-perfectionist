@@ -1533,6 +1533,7 @@ describe('sort-array-includes', () => {
                 allNamesMatchPattern: '^[ab]$',
               },
               type: 'alphabetical',
+              order: 'desc',
             },
             {
               type: 'unsorted',
@@ -1541,22 +1542,22 @@ describe('sort-array-includes', () => {
           errors: [
             {
               data: {
-                right: 'a',
-                left: 'b',
+                right: 'b',
+                left: 'a',
               },
               messageId: 'unexpectedArrayIncludesOrder',
             },
           ],
           output: dedent`
             const a = [
-              a,
               b,
+              a,
             ].includes(value)
           `,
           code: dedent`
             const a = [
-              b,
               a,
+              b,
             ].includes(value)
           `,
         })

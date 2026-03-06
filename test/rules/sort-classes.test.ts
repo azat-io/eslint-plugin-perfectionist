@@ -4986,6 +4986,7 @@ describe('sort-classes', () => {
                 allNamesMatchPattern: '^[ab]$',
               },
               type: 'alphabetical',
+              order: 'desc',
             },
             {
               type: 'unsorted',
@@ -4994,22 +4995,22 @@ describe('sort-classes', () => {
           errors: [
             {
               data: {
-                right: 'a',
-                left: 'b',
+                right: 'b',
+                left: 'a',
               },
               messageId: 'unexpectedClassesOrder',
             },
           ],
           output: dedent`
             class Class {
-              a
               b
+              a
             }
           `,
           code: dedent`
             class Class {
-              b
               a
+              b
             }
           `,
         })

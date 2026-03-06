@@ -1701,6 +1701,7 @@ describe('sort-maps', () => {
                 allNamesMatchPattern: '^[ab]$',
               },
               type: 'alphabetical',
+              order: 'desc',
             },
             {
               type: 'unsorted',
@@ -1709,22 +1710,22 @@ describe('sort-maps', () => {
           errors: [
             {
               data: {
-                right: 'a',
-                left: 'b',
+                right: 'b',
+                left: 'a',
               },
               messageId: 'unexpectedMapElementsOrder',
             },
           ],
           output: dedent`
             const map = new Map([
-              [a, 'a'],
               [b, 'b'],
+              [a, 'a'],
             ])
           `,
           code: dedent`
             const map = new Map([
-              [b, 'b'],
               [a, 'a'],
+              [b, 'b'],
             ])
           `,
         })
