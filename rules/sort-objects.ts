@@ -66,6 +66,11 @@ export default createEslintRule<Options, MessageId>({
               declarationMatchesPattern: scopedRegexJsonSchema,
             },
           }),
+          partitionByComputedKey: {
+            description:
+              'Controls whether to partition objects by computed keys.',
+            type: 'boolean',
+          },
           styledComponents: {
             description: 'Controls whether to sort styled components.',
             type: 'boolean',
