@@ -2879,6 +2879,7 @@ describe('sort-named-exports', () => {
                 allNamesMatchPattern: '^[ab]$',
               },
               type: 'alphabetical',
+              order: 'desc',
             },
             {
               type: 'unsorted',
@@ -2887,17 +2888,17 @@ describe('sort-named-exports', () => {
           errors: [
             {
               data: {
-                right: 'a',
-                left: 'b',
+                right: 'b',
+                left: 'a',
               },
               messageId: 'unexpectedNamedExportsOrder',
             },
           ],
           output: dedent`
-            export { a, b }
+            export { b, a }
           `,
           code: dedent`
-            export { b, a }
+            export { a, b }
           `,
         })
       })

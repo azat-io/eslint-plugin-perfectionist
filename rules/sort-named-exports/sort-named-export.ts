@@ -78,16 +78,19 @@ export function sortNamedExport({
     return
   }
 
-  if (alreadyParsedNodes.has(node)) {
-    return
-  }
-  alreadyParsedNodes.add(node)
-
   let matchedContextOptions = computeMatchedContextOptions({
     astSelector,
     context,
     node,
   })
+  if (!matchedContextOptions && astSelector) {
+    return
+  }
+
+  if (alreadyParsedNodes.has(node)) {
+    return
+  }
+  alreadyParsedNodes.add(node)
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
