@@ -1,3 +1,4 @@
+import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
@@ -6,12 +7,22 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { Options } from './sort-arrays/types'
 
 import {
+  buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewLineJsonSchema,
+} from '../utils/json-schemas/common-partition-json-schemas'
+import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { defaultOptions, jsonSchema } from './sort-array-includes'
+import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
+import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-arrays/types'
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { sortArray } from './sort-arrays/sort-array'
@@ -21,16 +32,56 @@ import { sortArray } from './sort-arrays/sort-array'
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-const ORDER_ERROR_ID = 'unexpectedSetsOrder'
-const GROUP_ORDER_ERROR_ID = 'unexpectedSetsGroupOrder'
-const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenSetsMembers'
-const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenSetsMembers'
+const ORDER_ERROR_ID = 'unexpectedArraysOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedArraysGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenArraysMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenArraysMembers'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID
   | typeof EXTRA_SPACING_ERROR_ID
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
+
+export let defaultOptions: Required<Options[number]> = {
+  fallbackSort: { type: 'unsorted' },
+  newlinesInside: 'newlinesBetween',
+  specialCharacters: 'keep',
+  partitionByComment: false,
+  partitionByNewLine: false,
+  newlinesBetween: 'ignore',
+  useConfigurationIf: {},
+  type: 'alphabetical',
+  groups: ['literal'],
+  ignoreCase: true,
+  locales: 'en-US',
+  customGroups: [],
+  alphabet: '',
+  order: 'asc',
+}
+
+export let jsonSchema: JSONSchema4 = {
+  items: {
+    properties: {
+      ...buildCommonJsonSchemas(),
+      ...buildCommonGroupsJsonSchemas({
+        additionalCustomGroupMatchProperties:
+          additionalCustomGroupMatchOptionsJsonSchema,
+      }),
+      useConfigurationIf: buildUseConfigurationIfJsonSchema({
+        additionalProperties: {
+          matchesAstSelector: matchesAstSelectorJsonSchema,
+        },
+      }),
+      partitionByComment: partitionByCommentJsonSchema,
+      partitionByNewLine: partitionByNewLineJsonSchema,
+    },
+    additionalProperties: false,
+    type: 'object',
+  },
+  uniqueItems: true,
+  type: 'array',
+}
 
 export default createEslintRule<Options, MessageId>({
   meta: {
@@ -41,8 +92,8 @@ export default createEslintRule<Options, MessageId>({
       [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
-      url: 'https://perfectionist.dev/rules/sort-sets',
-      description: 'Enforce sorted sets.',
+      url: 'https://perfectionist.dev/rules/sort-arrays',
+      description: 'Enforce sorted arrays.',
       recommended: true,
     },
     schema: jsonSchema,
@@ -52,14 +103,14 @@ export default createEslintRule<Options, MessageId>({
   create: context =>
     buildAstListeners({
       nodeTypes: [AST_NODE_TYPES.NewExpression, AST_NODE_TYPES.ArrayExpression],
-      sorter: sortPotentiallyValidArray,
+      sorter: sortValidArray,
       context,
     }),
   defaultOptions: [defaultOptions],
-  name: 'sort-sets',
+  name: 'sort-arrays',
 })
 
-function sortPotentiallyValidArray({
+function sortValidArray({
   alreadyParsedNodes,
   astSelector,
   context,
@@ -70,10 +121,6 @@ function sortPotentiallyValidArray({
   context: Readonly<RuleContext<MessageId, Options>>
   astSelector: string | null
 }): void {
-  if (!isValidArray()) {
-    return
-  }
-
   sortArray<MessageId>({
     availableMessageIds: {
       missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
@@ -88,23 +135,4 @@ function sortPotentiallyValidArray({
     context,
     node,
   })
-
-  function isValidArray(): boolean {
-    if (node.parent.type !== AST_NODE_TYPES.NewExpression) {
-      return false
-    }
-
-    if (node.parent.callee.type !== AST_NODE_TYPES.Identifier) {
-      return false
-    }
-    if (node.parent.callee.name !== 'Set') {
-      return false
-    }
-
-    if (node.parent.arguments[0] !== node) {
-      return false
-    }
-
-    return true
-  }
 }
