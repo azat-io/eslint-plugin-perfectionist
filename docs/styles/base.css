@@ -12,9 +12,12 @@
 }
 
 html {
-  scroll-behavior: smooth;
   scroll-padding-block-start: var(--header-block-size);
   background: var(--color-background-primary);
+
+  @media (prefers-reduced-motion: no-preference) {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
