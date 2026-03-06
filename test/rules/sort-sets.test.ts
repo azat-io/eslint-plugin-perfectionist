@@ -1367,6 +1367,7 @@ describe('sort-sets', () => {
                 allNamesMatchPattern: '^[ab]$',
               },
               type: 'alphabetical',
+              order: 'desc',
             },
             {
               type: 'unsorted',
@@ -1375,22 +1376,22 @@ describe('sort-sets', () => {
           errors: [
             {
               data: {
-                right: 'a',
-                left: 'b',
+                right: 'b',
+                left: 'a',
               },
               messageId: 'unexpectedSetsOrder',
             },
           ],
           output: dedent`
             new Set([
-              a,
               b,
+              a,
             ])
           `,
           code: dedent`
             new Set([
-              b,
               a,
+              b,
             ])
           `,
         })

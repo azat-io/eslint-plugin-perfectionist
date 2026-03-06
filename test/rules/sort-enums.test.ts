@@ -1328,6 +1328,7 @@ describe('sort-enums', () => {
                 allNamesMatchPattern: '^[ab]$',
               },
               type: 'alphabetical',
+              order: 'desc',
             },
             {
               type: 'unsorted',
@@ -1336,22 +1337,22 @@ describe('sort-enums', () => {
           errors: [
             {
               data: {
-                right: 'a',
-                left: 'b',
+                right: 'b',
+                left: 'a',
               },
               messageId: 'unexpectedEnumsOrder',
             },
           ],
           output: dedent`
             enum Enum {
-              a = 'a',
               b = 'b',
+              a = 'a',
             }
           `,
           code: dedent`
             enum Enum {
-              b = 'b',
               a = 'a',
+              b = 'b',
             }
           `,
         })

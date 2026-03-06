@@ -1591,6 +1591,7 @@ describe('sort-jsx-props', () => {
                 allNamesMatchPattern: '^[ab]$',
               },
               type: 'alphabetical',
+              order: 'desc',
             },
             {
               type: 'unsorted',
@@ -1599,8 +1600,8 @@ describe('sort-jsx-props', () => {
           errors: [
             {
               data: {
-                right: 'a',
-                left: 'b',
+                right: 'b',
+                left: 'a',
               },
               messageId: 'unexpectedJSXPropsOrder',
             },
@@ -1608,16 +1609,16 @@ describe('sort-jsx-props', () => {
           output: dedent`
             let Component = () => (
               <Element
-                a="a"
                 b="b"
+                a="a"
               />
             )
           `,
           code: dedent`
             let Component = () => (
               <Element
-                b="b"
                 a="a"
+                b="b"
               />
             )
           `,
