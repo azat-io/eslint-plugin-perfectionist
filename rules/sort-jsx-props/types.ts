@@ -9,6 +9,17 @@ import {
 } from '../../utils/json-schemas/common-groups-json-schemas'
 import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
+export type MessageId =
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
+
+export const ORDER_ERROR_ID = 'unexpectedJSXPropsOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedJSXPropsGroupOrder'
+export const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenJSXPropsMembers'
+export const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenJSXPropsMembers'
+
 /**
  * Configuration options for the sort-jsx-props rule.
  *
@@ -33,6 +44,11 @@ export type Options = Partial<
        * rule is only applied to elements with matching tag names.
        */
       tagMatchesPattern?: RegexOption
+
+      /**
+       * AST selector to match against JSXElement nodes.
+       */
+      matchesAstSelector?: string
     }
   } & Omit<
     AllCommonOptions<
