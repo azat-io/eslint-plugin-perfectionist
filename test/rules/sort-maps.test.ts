@@ -1797,6 +1797,45 @@ describe('sort-maps', () => {
           `,
         })
       })
+
+      it('picks the first matching option when multiple options match', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'NewExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedMapElementsOrder',
+            },
+          ],
+          output: dedent`
+            new Map([
+              [a, 'a'],
+              [b, 'b'],
+            ])
+          `,
+          code: dedent`
+            new Map([
+              [b, 'b'],
+              [a, 'a'],
+            ])
+          `,
+        })
+      })
     })
   })
 

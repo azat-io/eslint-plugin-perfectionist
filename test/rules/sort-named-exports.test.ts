@@ -1684,38 +1684,19 @@ describe('sort-named-exports', () => {
         })
       })
 
-      it('prioritizes selector-based options over fallback options', async () => {
-        await valid({
-          options: [
-            {
-              ...options,
-              type: 'alphabetical',
-            },
-            {
-              ...options,
-              useConfigurationIf: {
-                matchesAstSelector: 'ExportNamedDeclaration',
-              },
-              type: 'unsorted',
-            },
-          ],
-          code: dedent`
-            export { b, a }
-          `,
-        })
-
+      it('picks the first matching option when multiple options match', async () => {
         await invalid({
           options: [
             {
               ...options,
-              type: 'unsorted',
+              type: 'alphabetical',
             },
             {
               ...options,
               useConfigurationIf: {
                 matchesAstSelector: 'ExportNamedDeclaration',
               },
-              type: 'alphabetical',
+              type: 'unsorted',
             },
           ],
           errors: [

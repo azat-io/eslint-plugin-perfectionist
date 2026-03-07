@@ -1629,6 +1629,45 @@ describe('sort-array-includes', () => {
           `,
         })
       })
+
+      it('picks the first matching option when multiple options match', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ArrayExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedArrayIncludesOrder',
+            },
+          ],
+          output: dedent`
+            [
+              a,
+              b,
+            ].includes(value)
+          `,
+          code: dedent`
+            [
+              b,
+              a,
+            ].includes(value)
+          `,
+        })
+      })
     })
 
     it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {

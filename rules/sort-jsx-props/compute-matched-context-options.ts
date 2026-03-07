@@ -41,44 +41,24 @@ export function computeMatchedContextOptions({
     nodeNames,
   })
 
-  return (
-    matchedContextOptions.find(isSelectorBasedContextOptionMatching) ??
-    matchedContextOptions.find(isFallbackContextOptionMatching)
-  )
+  return matchedContextOptions.find(isContextOptionMatching)
 
-  function isSelectorBasedContextOptionMatching(
-    options: Options[number],
-  ): boolean {
-    if (
-      !passesAstSelectorFilter({
-        matchesAstSelector: options.useConfigurationIf?.matchesAstSelector,
-        matchedAstSelectors,
-      })
-    ) {
-      return false
-    }
-
-    return passesUseConfigurationIfFilters(options)
-  }
-
-  function isFallbackContextOptionMatching(options: Options[number]): boolean {
-    if (options.useConfigurationIf?.matchesAstSelector !== undefined) {
-      return false
-    }
-
-    return passesUseConfigurationIfFilters(options)
-  }
-
-  function passesUseConfigurationIfFilters(options: Options[number]): boolean {
+  function isContextOptionMatching(options: Options[number]): boolean {
     if (!options.useConfigurationIf) {
       return true
     }
 
-    return passesTagMatchesPatternFilter({
-      tagMatchesPattern: options.useConfigurationIf.tagMatchesPattern,
-      sourceCode,
-      node,
-    })
+    return (
+      passesAstSelectorFilter({
+        matchesAstSelector: options.useConfigurationIf.matchesAstSelector,
+        matchedAstSelectors,
+      }) &&
+      passesTagMatchesPatternFilter({
+        tagMatchesPattern: options.useConfigurationIf.tagMatchesPattern,
+        sourceCode,
+        node,
+      })
+    )
   }
 }
 

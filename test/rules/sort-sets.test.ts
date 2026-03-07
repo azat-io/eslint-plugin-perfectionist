@@ -1463,6 +1463,45 @@ describe('sort-sets', () => {
           `,
         })
       })
+
+      it('picks the first matching option when multiple options match', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ArrayExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedSetsOrder',
+            },
+          ],
+          output: dedent`
+            new Set([
+              a,
+              b,
+            ])
+          `,
+          code: dedent`
+            new Set([
+              b,
+              a,
+            ])
+          `,
+        })
+      })
     })
 
     it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {
