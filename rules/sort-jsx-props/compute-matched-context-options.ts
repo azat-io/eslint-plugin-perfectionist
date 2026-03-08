@@ -6,7 +6,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { RegexOption } from '../../types/common-options'
 import type { Options } from './types'
 
-import { filterOptionsByAllNamesMatch } from '../../utils/context-matching/filter-options-by-all-names-match'
+import { passesAllNamesMatchPatternFilter } from '../../utils/context-matching/passes-all-names-match-pattern-filter'
 import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast-selector-filter'
 import { computeNodeName } from './compute-node-name'
 import { matches } from '../../utils/matches'
@@ -36,30 +36,49 @@ export function computeMatchedContextOptions({
     .filter(attribute => attribute.type !== AST_NODE_TYPES.JSXSpreadAttribute)
     .map(attribute => computeNodeName(attribute))
 
-  let matchedContextOptions = filterOptionsByAllNamesMatch({
-    contextOptions: context.options,
-    nodeNames,
-  })
+  return context.options.find(options =>
+    isContextOptionMatching({
+      matchedAstSelectors,
+      sourceCode,
+      nodeNames,
+      options,
+      node,
+    }),
+  )
+}
 
-  return matchedContextOptions.find(isContextOptionMatching)
-
-  function isContextOptionMatching(options: Options[number]): boolean {
-    if (!options.useConfigurationIf) {
-      return true
-    }
-
-    return (
-      passesAstSelectorFilter({
-        matchesAstSelector: options.useConfigurationIf.matchesAstSelector,
-        matchedAstSelectors,
-      }) &&
-      passesTagMatchesPatternFilter({
-        tagMatchesPattern: options.useConfigurationIf.tagMatchesPattern,
-        sourceCode,
-        node,
-      })
-    )
+function isContextOptionMatching({
+  matchedAstSelectors,
+  sourceCode,
+  nodeNames,
+  options,
+  node,
+}: {
+  matchedAstSelectors: ReadonlySet<string>
+  sourceCode: TSESLint.SourceCode
+  node: TSESTree.JSXElement
+  options: Options[number]
+  nodeNames: string[]
+}): boolean {
+  if (!options.useConfigurationIf) {
+    return true
   }
+
+  return (
+    passesAllNamesMatchPatternFilter({
+      allNamesMatchPattern: options.useConfigurationIf.allNamesMatchPattern,
+      nodeNames,
+    }) &&
+    passesTagMatchesPatternFilter({
+      tagMatchesPattern: options.useConfigurationIf.tagMatchesPattern,
+      sourceCode,
+      node,
+    }) &&
+    passesAstSelectorFilter({
+      matchesAstSelector: options.useConfigurationIf.matchesAstSelector,
+      matchedAstSelectors,
+    })
+  )
 }
 
 function passesTagMatchesPatternFilter({
