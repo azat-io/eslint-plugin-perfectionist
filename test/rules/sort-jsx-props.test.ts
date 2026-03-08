@@ -1697,6 +1697,49 @@ describe('sort-jsx-props', () => {
           `,
         })
       })
+
+      it('picks the first matching option when multiple options match', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'JSXElement',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedJSXPropsOrder',
+            },
+          ],
+          output: dedent`
+            let Component = () => (
+              <Element
+                a="a"
+                b="b"
+              />
+            )
+          `,
+          code: dedent`
+            let Component = () => (
+              <Element
+                b="b"
+                a="a"
+              />
+            )
+          `,
+        })
+      })
     })
   })
 

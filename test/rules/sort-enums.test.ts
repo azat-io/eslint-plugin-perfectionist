@@ -1424,6 +1424,45 @@ describe('sort-enums', () => {
           `,
         })
       })
+
+      it('picks the first matching option when multiple options match', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSEnumDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedEnumsOrder',
+            },
+          ],
+          output: dedent`
+            enum Enum {
+              a = 'a',
+              b = 'b',
+            }
+          `,
+          code: dedent`
+            enum Enum {
+              b = 'b',
+              a = 'a',
+            }
+          `,
+        })
+      })
     })
 
     it('removes newlines between and inside groups by default when "newlinesBetween" is 0', async () => {

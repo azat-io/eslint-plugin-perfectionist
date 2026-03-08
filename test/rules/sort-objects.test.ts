@@ -4036,6 +4036,45 @@ describe('sort-objects', () => {
           `,
         })
       })
+
+      it('picks the first matching option when multiple options match', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ObjectExpression',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsOrder',
+            },
+          ],
+          output: dedent`
+            let obj = {
+              a: "a",
+              b: "b",
+            }
+          `,
+          code: dedent`
+            let obj = {
+              b: "b",
+              a: "a",
+            }
+          `,
+        })
+      })
     })
 
     it('applies configuration when object only has numeric keys', async () => {

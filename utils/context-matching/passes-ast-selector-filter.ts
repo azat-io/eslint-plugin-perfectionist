@@ -5,8 +5,8 @@
  * @param params.matchesAstSelector - The AST selector to match against, or
  *   undefined if no selector is specified.
  * @param params.matchedAstSelectors - The matched AST selectors for a node.
- * @returns True if the given AST selector matches the expected AST selector,
- *   false otherwise.
+ * @returns True if the given AST selector matches the expected AST selector, or
+ *   if no selector is specified; otherwise, false.
  */
 export function passesAstSelectorFilter({
   matchedAstSelectors,
@@ -16,7 +16,7 @@ export function passesAstSelectorFilter({
   matchesAstSelector: undefined | string
 }): boolean {
   if (!matchesAstSelector) {
-    return false
+    return true
   }
 
   return matchedAstSelectors.has(matchesAstSelector)

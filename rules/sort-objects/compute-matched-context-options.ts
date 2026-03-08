@@ -60,37 +60,28 @@ export function computeMatchedContextOptions({
     maxParent: null,
   })
 
-  return (
-    filteredContextOptions.find(options =>
-      isSelectorBasedContextOptionMatching({
-        isDestructuredObject,
-        matchedAstSelectors,
-        parentNodes,
-        sourceCode,
-        nodeObject,
-        options,
-      }),
-    ) ??
-    filteredContextOptions.find(options =>
-      isFallbackContextOptionMatching({
-        isDestructuredObject,
-        parentNodes,
-        sourceCode,
-        nodeObject,
-        options,
-      }),
-    )
+  return filteredContextOptions.find(options =>
+    isContextOptionMatching({
+      isDestructuredObject,
+      matchedAstSelectors,
+      parentNodes,
+      sourceCode,
+      nodeObject,
+      options,
+    }),
   )
 }
 
-function passesUseConfigurationIfFilters({
+function isContextOptionMatching({
   isDestructuredObject,
+  matchedAstSelectors,
   parentNodes,
   sourceCode,
   nodeObject,
   options,
 }: {
   nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  matchedAstSelectors: ReadonlySet<string>
   sourceCode: TSESLint.SourceCode
   isDestructuredObject: boolean
   parentNodes: ObjectParent[]
@@ -126,6 +117,10 @@ function passesUseConfigurationIfFilters({
         options.useConfigurationIf.declarationCommentMatchesPattern,
       parentNodes,
       sourceCode,
+    }) &&
+    passesAstSelectorFilter({
+      matchesAstSelector: options.useConfigurationIf.matchesAstSelector,
+      matchedAstSelectors,
     })
   )
 }
@@ -166,65 +161,6 @@ function passesHasNumericKeysOnlyFilter({
         throw new UnreachableCaseError(object)
     }
   }
-}
-
-function isSelectorBasedContextOptionMatching({
-  isDestructuredObject,
-  matchedAstSelectors,
-  parentNodes,
-  sourceCode,
-  nodeObject,
-  options,
-}: {
-  nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
-  matchedAstSelectors: ReadonlySet<string>
-  sourceCode: TSESLint.SourceCode
-  isDestructuredObject: boolean
-  parentNodes: ObjectParent[]
-  options: Options[number]
-}): boolean {
-  if (
-    !passesAstSelectorFilter({
-      matchesAstSelector: options.useConfigurationIf?.matchesAstSelector,
-      matchedAstSelectors,
-    })
-  ) {
-    return false
-  }
-
-  return passesUseConfigurationIfFilters({
-    isDestructuredObject,
-    parentNodes,
-    sourceCode,
-    nodeObject,
-    options,
-  })
-}
-
-function isFallbackContextOptionMatching({
-  isDestructuredObject,
-  parentNodes,
-  sourceCode,
-  nodeObject,
-  options,
-}: {
-  nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
-  sourceCode: TSESLint.SourceCode
-  isDestructuredObject: boolean
-  parentNodes: ObjectParent[]
-  options: Options[number]
-}): boolean {
-  if (options.useConfigurationIf?.matchesAstSelector !== undefined) {
-    return false
-  }
-
-  return passesUseConfigurationIfFilters({
-    isDestructuredObject,
-    parentNodes,
-    sourceCode,
-    nodeObject,
-    options,
-  })
 }
 
 function passesObjectTypeFilter({

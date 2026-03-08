@@ -5082,6 +5082,45 @@ describe('sort-classes', () => {
           `,
         })
       })
+
+      it('picks the first matching option when multiple options match', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ClassBody',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedClassesOrder',
+            },
+          ],
+          output: dedent`
+            class Class {
+              a
+              b
+            }
+          `,
+          code: dedent`
+            class Class {
+              b
+              a
+            }
+          `,
+        })
+      })
     })
   })
 
