@@ -152,6 +152,82 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
+### useConfigurationIf
+
+<sub>
+  type:
+  ```ts
+  {
+    allNamesMatchPattern?:
+      | string
+      | string[]
+      | { pattern: string; flags: string }
+      | { pattern: string; flags: string }[]
+    matchesAstSelector?: string
+  }
+  ```
+</sub>
+<sub>default: `{}`</sub>
+
+Specifies filters to match a particular options configuration for a given heritage clause declaration.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all heritage clause names must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-heritage-clauses': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort colors by RGB
+      customGroups: [
+        {
+          elementNamePattern: '^r$',
+          groupName: 'r',
+        },
+        {
+          elementNamePattern: '^g$',
+          groupName: 'g',
+        },
+        {
+          elementNamePattern: '^b$',
+          groupName: 'b',
+        },
+      ],
+      useConfigurationIf: {
+        allNamesMatchPattern: '^[rgb]$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching a `ClassDeclaration` or `TSInterfaceDeclaration` node.
+To avoid unexpected behavior, do not use `:exit` or `:enter` pseudo-selectors.
+
+Example configuration: don't sort heritage clauses of classes (only interfaces).
+```ts
+{
+  'perfectionist/sort-heritage-clauses': [
+    'error',
+    {
+      useConfigurationIf: {
+        matchesAstSelector: 'ClassDeclaration',
+      },
+      type: 'unsorted'
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
 ### partitionByComment
 
 <sub>default: `false`</sub>
@@ -387,7 +463,7 @@ interface Interface extends WithId, Logged, StartupService {
    ],
 +  customGroups: [                    // [!code ++]
 +    {                                // [!code ++]
-+       groupName: 'withIdInterface'  // [!code ++]
++       groupName: 'withIdInterface', // [!code ++]
 +       elementNamePattern: '^WithId' // [!code ++]
 +    }                                // [!code ++]
 +  ]                                  // [!code ++]
