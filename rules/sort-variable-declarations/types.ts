@@ -2,10 +2,26 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
+import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { AllCommonOptions } from '../../types/all-common-options'
-import type { TypeOption } from '../../types/common-options'
 
 import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/common-groups-json-schemas'
+
+export type MessageId =
+  | typeof DEPENDENCY_ORDER_ERROR_ID
+  | typeof MISSED_SPACING_ERROR_ID
+  | typeof EXTRA_SPACING_ERROR_ID
+  | typeof GROUP_ORDER_ERROR_ID
+  | typeof ORDER_ERROR_ID
+
+export const ORDER_ERROR_ID = 'unexpectedVariableDeclarationsOrder'
+export const GROUP_ORDER_ERROR_ID = 'unexpectedVariableDeclarationsGroupOrder'
+export const EXTRA_SPACING_ERROR_ID =
+  'extraSpacingBetweenVariableDeclarationsMembers'
+export const MISSED_SPACING_ERROR_ID =
+  'missedSpacingBetweenVariableDeclarationsMembers'
+export const DEPENDENCY_ORDER_ERROR_ID =
+  'unexpectedVariableDeclarationsDependencyOrder'
 
 /**
  * Configuration options for the sort-variable-declarations rule.
@@ -15,6 +31,22 @@ import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/com
  */
 export type Options = Partial<
   {
+    /**
+     * Conditional configuration based on pattern matching.
+     */
+    useConfigurationIf: {
+      /**
+       * Regular expression pattern to match against all variable declarator
+       * names. The rule is only applied when all names match this pattern.
+       */
+      allNamesMatchPattern?: RegexOption
+
+      /**
+       * AST selector to match against VariableDeclaration nodes.
+       */
+      matchesAstSelector?: string
+    }
+
     /**
      * Enables experimental dependency detection.
      */

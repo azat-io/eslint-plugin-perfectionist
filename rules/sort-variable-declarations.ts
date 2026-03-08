@@ -1,9 +1,21 @@
-import type {
-  SortVariableDeclarationsSortingNode,
-  Selector,
-  Options,
-} from './sort-variable-declarations/types'
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { MessageId, Options } from './sort-variable-declarations/types'
+
+import {
+  additionalCustomGroupMatchOptionsJsonSchema,
+  DEPENDENCY_ORDER_ERROR_ID,
+  MISSED_SPACING_ERROR_ID,
+  EXTRA_SPACING_ERROR_ID,
+  GROUP_ORDER_ERROR_ID,
+  ORDER_ERROR_ID,
+} from './sort-variable-declarations/types'
+import {
+  useExperimentalDependencyDetectionJsonSchema,
+  buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
@@ -16,222 +28,27 @@ import {
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import {
-  useExperimentalDependencyDetectionJsonSchema,
-  buildCommonJsonSchemas,
-} from '../utils/json-schemas/common-json-schemas'
-import { computeDependenciesOutsideFunctionsBySortingNode } from '../utils/compute-dependencies-outside-functions-by-sorting-node'
-import {
-  additionalCustomGroupMatchOptionsJsonSchema,
-  allSelectors,
-} from './sort-variable-declarations/types'
-import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
-import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
+  sortVariableDeclaration,
+  defaultOptions,
+} from './sort-variable-declarations/sort-variable-declaration'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
-import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { computeDependencies } from './sort-variable-declarations/compute-dependencies'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { computeNodeName } from './sort-variable-declarations/compute-node-name'
-import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
-import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
-import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { reportAllErrors } from '../utils/report-all-errors'
-import { shouldPartition } from '../utils/should-partition'
-import { computeGroup } from '../utils/compute-group'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { getSettings } from '../utils/get-settings'
-import { isSortable } from '../utils/is-sortable'
-import { complete } from '../utils/complete'
-
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
-
-const ORDER_ERROR_ID = 'unexpectedVariableDeclarationsOrder'
-const GROUP_ORDER_ERROR_ID = 'unexpectedVariableDeclarationsGroupOrder'
-const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenVariableDeclarationsMembers'
-const MISSED_SPACING_ERROR_ID =
-  'missedSpacingBetweenVariableDeclarationsMembers'
-const DEPENDENCY_ORDER_ERROR_ID =
-  'unexpectedVariableDeclarationsDependencyOrder'
-
-type MessageId =
-  | typeof DEPENDENCY_ORDER_ERROR_ID
-  | typeof MISSED_SPACING_ERROR_ID
-  | typeof EXTRA_SPACING_ERROR_ID
-  | typeof GROUP_ORDER_ERROR_ID
-  | typeof ORDER_ERROR_ID
-
-let defaultOptions: Required<Options[number]> = {
-  useExperimentalDependencyDetection: true,
-  fallbackSort: { type: 'unsorted' },
-  newlinesInside: 'newlinesBetween',
-  specialCharacters: 'keep',
-  partitionByNewLine: false,
-  partitionByComment: false,
-  newlinesBetween: 'ignore',
-  type: 'alphabetical',
-  customGroups: [],
-  ignoreCase: true,
-  locales: 'en-US',
-  alphabet: '',
-  order: 'asc',
-  groups: [],
-}
 
 export default createEslintRule<Options, MessageId>({
-  create: context => ({
-    VariableDeclaration: variableDeclaration => {
-      if (!isSortable(variableDeclaration.declarations)) {
-        return
-      }
-
-      let settings = getSettings(context.settings)
-      let options = complete(context.options.at(0), settings, defaultOptions)
-
-      validateCustomSortConfiguration(options)
-      validateNewlinesAndPartitionConfiguration(options)
-      validateGroupsConfiguration({
-        selectors: allSelectors,
-        modifiers: [],
-        options,
-      })
-
-      let { sourceCode, id } = context
-      let eslintDisabledLines = getEslintDisabledLines({
-        ruleName: id,
-        sourceCode,
-      })
-      let optionsByGroupIndexComputer =
-        buildOptionsByGroupIndexComputer(options)
-
-      let sortingNodeGroups = variableDeclaration.declarations.reduce(
-        (accumulator: SortVariableDeclarationsSortingNode[][], declaration) => {
-          let name = computeNodeName({
-            node: declaration,
-            sourceCode,
-          })
-
-          let selector: Selector =
-            declaration.init ? 'initialized' : 'uninitialized'
-
-          let predefinedGroups = generatePredefinedGroups({
-            cache: cachedGroupsByModifiersAndSelectors,
-            selectors: [selector],
-            modifiers: [],
-          })
-
-          let lastSortingNode = accumulator.at(-1)?.at(-1)
-          let sortingNode: Omit<
-            SortVariableDeclarationsSortingNode,
-            'partitionId'
-          > = {
-            group: computeGroup({
-              customGroupMatcher: customGroup =>
-                doesCustomGroupMatch({
-                  selectors: [selector],
-                  elementName: name,
-                  modifiers: [],
-                  customGroup,
-                }),
-              predefinedGroups,
-              options,
-            }),
-            dependencies:
-              options.useExperimentalDependencyDetection ?
-                []
-              : computeDependencies(declaration),
-            isEslintDisabled: isNodeEslintDisabled(
-              declaration,
-              eslintDisabledLines,
-            ),
-            size: rangeToDiff(declaration, sourceCode),
-            dependencyNames: [name],
-            node: declaration,
-            name,
-          }
-
-          if (
-            shouldPartition({
-              lastSortingNode,
-              sortingNode,
-              sourceCode,
-              options,
-            })
-          ) {
-            accumulator.push([])
-          }
-
-          accumulator.at(-1)?.push({
-            ...sortingNode,
-            partitionId: accumulator.length,
-          })
-
-          return accumulator
-        },
-        [[]],
-      )
-
-      if (options.useExperimentalDependencyDetection) {
-        let dependenciesBySortingNode =
-          computeDependenciesOutsideFunctionsBySortingNode({
-            sortingNodes: sortingNodeGroups.flat(),
-            sourceCode,
-          })
-        sortingNodeGroups = populateSortingNodeGroupsWithDependencies({
-          dependenciesBySortingNode,
-          sortingNodeGroups,
-        })
-      }
-      let sortingNodes = sortingNodeGroups.flat()
-
-      reportAllErrors<MessageId>({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-          unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
-          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-          unexpectedOrder: ORDER_ERROR_ID,
-        },
-        sortNodesExcludingEslintDisabled,
-        nodes: sortingNodes,
-        options,
-        context,
-      })
-
-      function sortNodesExcludingEslintDisabled(
-        ignoreEslintDisabledNodes: boolean,
-      ): SortVariableDeclarationsSortingNode[] {
-        let nodesSortedByGroups = sortingNodeGroups.flatMap(sortingNodeGroup =>
-          sortNodesByGroups({
-            comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
-            optionsByGroupIndexComputer,
-            ignoreEslintDisabledNodes,
-            nodes: sortingNodeGroup,
-            groups: options.groups,
-          }),
-        )
-
-        return sortNodesByDependencies(nodesSortedByGroups, {
-          ignoreEslintDisabledNodes,
-        })
-      }
-    },
-  }),
   meta: {
-    schema: [
-      {
+    schema: {
+      items: {
         properties: {
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
+          }),
+          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+            additionalProperties: {
+              matchesAstSelector: matchesAstSelectorJsonSchema,
+            },
           }),
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
@@ -241,7 +58,9 @@ export default createEslintRule<Options, MessageId>({
         additionalProperties: false,
         type: 'object',
       },
-    ],
+      uniqueItems: true,
+      type: 'array',
+    },
     messages: {
       [DEPENDENCY_ORDER_ERROR_ID]: DEPENDENCY_ORDER_ERROR,
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
@@ -257,6 +76,12 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [AST_NODE_TYPES.VariableDeclaration],
+      sorter: sortVariableDeclaration,
+      context,
+    }),
   name: 'sort-variable-declarations',
   defaultOptions: [defaultOptions],
 })
