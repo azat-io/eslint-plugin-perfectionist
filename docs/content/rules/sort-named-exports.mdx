@@ -218,7 +218,8 @@ Specifies filters to match a particular options configuration for a given named 
 
 The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
 
-- `allNamesMatchPattern` — A regexp pattern that all named export names must match.
+- `allNamesMatchPattern` — A regexp pattern that all named export names must match. If [`ignoreAlias`](#ignorealias)
+is `true`, the pattern will be tested against the export aliases, otherwise against the local names.
 
 Example configuration:
 ```ts

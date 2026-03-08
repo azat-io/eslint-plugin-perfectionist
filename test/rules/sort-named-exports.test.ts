@@ -1502,6 +1502,78 @@ describe('sort-named-exports', () => {
           })
         },
       )
+
+      it('does not take the alias into account when ignoreAlias is true', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              ignoreAlias: true,
+            },
+            { type: 'unsorted' },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export {
+              a as z,
+              b as y,
+            }
+          `,
+          code: dedent`
+            export {
+              b as y,
+              a as z,
+            }
+          `,
+        })
+      })
+
+      it('takes the alias into account when ignoreAlias is false', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[yz]$',
+              },
+              ignoreAlias: false,
+            },
+            { type: 'unsorted' },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'y',
+                left: 'z',
+              },
+              messageId: 'unexpectedNamedExportsOrder',
+            },
+          ],
+          output: dedent`
+            export {
+              b as y,
+              a as z,
+            }
+          `,
+          code: dedent`
+            export {
+              a as z,
+              b as y,
+            }
+          `,
+        })
+      })
     })
 
     describe('useConfigurationIf.matchesAstSelector', () => {

@@ -3,7 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import type { Options } from './types'
 
-import { filterOptionsByAllNamesMatch } from '../../utils/context-matching/filter-options-by-all-names-match'
+import { passesAllNamesMatchPatternFilter } from '../../utils/context-matching/passes-all-names-match-pattern-filter'
 import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast-selector-filter'
 import { computeNodeName } from './compute-node-name'
 
@@ -27,31 +27,36 @@ export function computeMatchedContextOptions<MessageIds extends string>({
   matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.ExportNamedDeclaration
 }): Options[number] | undefined {
-  let nodeNames = node.specifiers.map(specifier =>
-    computeNodeName(specifier, true),
+  return context.options.find(options =>
+    isContextOptionMatching({ matchedAstSelectors, options, node }),
   )
+}
 
-  let matchedContextOptions = filterOptionsByAllNamesMatch({
-    contextOptions: context.options,
-    nodeNames,
-  })
-
-  return matchedContextOptions.find(isContextOptionMatching)
-
-  function isContextOptionMatching(options: Options[number]): boolean {
-    if (!options.useConfigurationIf) {
-      return true
-    }
-
-    if (
-      !passesAstSelectorFilter({
-        matchesAstSelector: options.useConfigurationIf.matchesAstSelector,
-        matchedAstSelectors,
-      })
-    ) {
-      return false
-    }
-
+function isContextOptionMatching({
+  matchedAstSelectors,
+  options,
+  node,
+}: {
+  matchedAstSelectors: ReadonlySet<string>
+  node: TSESTree.ExportNamedDeclaration
+  options: Options[number]
+}): boolean {
+  if (!options.useConfigurationIf) {
     return true
   }
+
+  let nodeNames = node.specifiers.map(specifier =>
+    computeNodeName(specifier, !!options.ignoreAlias),
+  )
+
+  return (
+    passesAllNamesMatchPatternFilter({
+      allNamesMatchPattern: options.useConfigurationIf.allNamesMatchPattern,
+      nodeNames,
+    }) &&
+    passesAstSelectorFilter({
+      matchesAstSelector: options.useConfigurationIf.matchesAstSelector,
+      matchedAstSelectors,
+    })
+  )
 }
