@@ -1,9 +1,11 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { Options } from './types'
 
-import { filterOptionsByAllNamesMatch } from '../../utils/context-matching/filter-options-by-all-names-match'
+import { passesAllNamesMatchPatternFilter } from '../../utils/context-matching/passes-all-names-match-pattern-filter'
 import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast-selector-filter'
 import { computeNodeName } from './compute-node-name'
 
@@ -27,34 +29,39 @@ export function computeMatchedContextOptions<MessageIds extends string>({
   matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.ImportDeclaration
 }): Options[number] | undefined {
+  return context.options.find(options =>
+    isContextOptionMatching({ matchedAstSelectors, options, node }),
+  )
+}
+
+function isContextOptionMatching({
+  matchedAstSelectors,
+  options,
+  node,
+}: {
+  matchedAstSelectors: ReadonlySet<string>
+  node: TSESTree.ImportDeclaration
+  options: Options[number]
+}): boolean {
+  if (!options.useConfigurationIf) {
+    return true
+  }
+
   let nodeNames = node.specifiers
     .filter(
       (specifier): specifier is TSESTree.ImportSpecifier =>
-        specifier.type === 'ImportSpecifier',
+        specifier.type === AST_NODE_TYPES.ImportSpecifier,
     )
-    .map(specifier => computeNodeName(specifier, true))
+    .map(specifier => computeNodeName(specifier, !!options.ignoreAlias))
 
-  let matchedContextOptions = filterOptionsByAllNamesMatch({
-    contextOptions: context.options,
-    nodeNames,
-  })
-
-  return matchedContextOptions.find(isContextOptionMatching)
-
-  function isContextOptionMatching(options: Options[number]): boolean {
-    if (!options.useConfigurationIf) {
-      return true
-    }
-
-    if (
-      !passesAstSelectorFilter({
-        matchesAstSelector: options.useConfigurationIf.matchesAstSelector,
-        matchedAstSelectors,
-      })
-    ) {
-      return false
-    }
-
-    return true
-  }
+  return (
+    passesAllNamesMatchPatternFilter({
+      allNamesMatchPattern: options.useConfigurationIf.allNamesMatchPattern,
+      nodeNames,
+    }) &&
+    passesAstSelectorFilter({
+      matchesAstSelector: options.useConfigurationIf.matchesAstSelector,
+      matchedAstSelectors,
+    })
+  )
 }

@@ -1633,6 +1633,78 @@ describe('sort-named-imports', () => {
           })
         },
       )
+
+      it('does not take the alias into account when ignoreAlias is true', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              ignoreAlias: true,
+            },
+            { type: 'unsorted' },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import {
+              a as z,
+              b as y,
+            } from 'module'
+          `,
+          code: dedent`
+            import {
+              b as y,
+              a as z,
+            } from 'module'
+          `,
+        })
+      })
+
+      it('takes the alias into account when ignoreAlias is false', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[yz]$',
+              },
+              ignoreAlias: false,
+            },
+            { type: 'unsorted' },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'y',
+                left: 'z',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import {
+              b as y,
+              a as z,
+            } from 'module'
+          `,
+          code: dedent`
+            import {
+              a as z,
+              b as y,
+            } from 'module'
+          `,
+        })
+      })
     })
 
     describe('useConfigurationIf.matchesAstSelector', () => {
