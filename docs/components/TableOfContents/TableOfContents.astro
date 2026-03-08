@@ -1,6 +1,5 @@
 ---
 import TableOfContentsHeading from './TableOfContentsHeading.astro'
-import tocScript from './table-of-contents.client.ts?url'
 import Typography from '../Typography.astro'
 
 interface Heading {
@@ -62,11 +61,9 @@ let toc = buildToc(headings)
   )
 }
 
-<script
-  src={tocScript}
-  type="module"
-  is:inline
-></script>
+<script>
+  import './table-of-contents.client.ts'
+</script>
 
 <style>
   .table-of-content {
