@@ -5,7 +5,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { Options } from './types'
 
-import { filterOptionsByAllNamesMatch } from '../../utils/context-matching/filter-options-by-all-names-match'
+import { passesAllNamesMatchPatternFilter } from '../../utils/context-matching/passes-all-names-match-pattern-filter'
 import { computeMethodOrPropertyNameDetails } from './node-info/compute-method-or-property-name-details'
 import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast-selector-filter'
 
@@ -38,27 +38,32 @@ export function computeMatchedContextOptions<MessageIds extends string>({
         computeMethodOrPropertyNameDetails(element, context.sourceCode).name,
     )
 
-  let matchedContextOptions = filterOptionsByAllNamesMatch({
-    contextOptions: context.options,
-    nodeNames,
-  })
+  return context.options.find(options =>
+    isContextOptionMatching({ matchedAstSelectors, nodeNames, options }),
+  )
+}
 
-  return matchedContextOptions.find(isContextOptionMatching)
-
-  function isContextOptionMatching(options: Options[number]): boolean {
-    if (!options.useConfigurationIf) {
-      return true
-    }
-
-    if (
-      !passesAstSelectorFilter({
-        matchesAstSelector: options.useConfigurationIf.matchesAstSelector,
-        matchedAstSelectors,
-      })
-    ) {
-      return false
-    }
-
+function isContextOptionMatching({
+  matchedAstSelectors,
+  nodeNames,
+  options,
+}: {
+  matchedAstSelectors: ReadonlySet<string>
+  options: Options[number]
+  nodeNames: string[]
+}): boolean {
+  if (!options.useConfigurationIf) {
     return true
   }
+
+  return (
+    passesAllNamesMatchPatternFilter({
+      allNamesMatchPattern: options.useConfigurationIf.allNamesMatchPattern,
+      nodeNames,
+    }) &&
+    passesAstSelectorFilter({
+      matchesAstSelector: options.useConfigurationIf.matchesAstSelector,
+      matchedAstSelectors,
+    })
+  )
 }

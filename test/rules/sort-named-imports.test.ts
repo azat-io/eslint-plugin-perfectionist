@@ -1561,6 +1561,365 @@ describe('sort-named-imports', () => {
         ],
       })
     })
+
+    describe('useConfigurationIf.allNamesMatchPattern', () => {
+      it.each([
+        ['string pattern', 'foo'],
+        ['array with string patterns', ['noMatch', 'foo']],
+        ['regex pattern object', { pattern: 'FOO', flags: 'i' }],
+        [
+          'array with regex pattern object',
+          ['noMatch', { pattern: 'FOO', flags: 'i' }],
+        ],
+      ])(
+        'applies conditional configuration when all names match %s',
+        async (_description, allNamesMatchPattern) => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  allNamesMatchPattern,
+                },
+              },
+              {
+                ...options,
+                customGroups: [
+                  {
+                    elementNamePattern: '^r$',
+                    groupName: 'r',
+                  },
+                  {
+                    elementNamePattern: '^g$',
+                    groupName: 'g',
+                  },
+                  {
+                    elementNamePattern: '^b$',
+                    groupName: 'b',
+                  },
+                ],
+                useConfigurationIf: {
+                  allNamesMatchPattern: '^[rgb]$',
+                },
+                groups: ['r', 'g', 'b'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'g',
+                  leftGroup: 'b',
+                  right: 'g',
+                  left: 'b',
+                },
+                messageId: 'unexpectedNamedImportsGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'r',
+                  leftGroup: 'g',
+                  right: 'r',
+                  left: 'g',
+                },
+                messageId: 'unexpectedNamedImportsGroupOrder',
+              },
+            ],
+            output: dedent`
+              import { r, g, b } from 'module'
+            `,
+            code: dedent`
+              import { b, g, r } from 'module'
+            `,
+          })
+        },
+      )
+
+      it('does not take the alias into account when ignoreAlias is true', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              ignoreAlias: true,
+            },
+            { type: 'unsorted' },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import {
+              a as z,
+              b as y,
+            } from 'module'
+          `,
+          code: dedent`
+            import {
+              b as y,
+              a as z,
+            } from 'module'
+          `,
+        })
+      })
+
+      it('takes the alias into account when ignoreAlias is false', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[yz]$',
+              },
+              ignoreAlias: false,
+            },
+            { type: 'unsorted' },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'y',
+                left: 'z',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import {
+              b as y,
+              a as z,
+            } from 'module'
+          `,
+          code: dedent`
+            import {
+              a as z,
+              b as y,
+            } from 'module'
+          `,
+        })
+      })
+    })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('matches configuration based off matchesAstSelector', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'VariableDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import { a, b } from 'module'
+          `,
+          code: dedent`
+            import { b, a } from 'module'
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ImportDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            import { b, a } from 'module'
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ImportDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ImportDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import { a, b } from 'module'
+          `,
+          code: dedent`
+            import { b, a } from 'module'
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ImportDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+              order: 'desc',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import { b, a } from 'module'
+          `,
+          code: dedent`
+            import { a, b } from 'module'
+          `,
+        })
+      })
+
+      it('applies first matching option when selectors overlap', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ImportDeclaration',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > ImportDeclaration',
+              },
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            import { b, a } from 'module'
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ImportDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > ImportDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import { a, b } from 'module'
+          `,
+          code: dedent`
+            import { b, a } from 'module'
+          `,
+        })
+      })
+
+      it('picks the first matching option when multiple options match', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ImportDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedNamedImportsOrder',
+            },
+          ],
+          output: dedent`
+            import { a, b } from 'module'
+          `,
+          code: dedent`
+            import { b, a } from 'module'
+          `,
+        })
+      })
+    })
   })
 
   describe('natural', () => {

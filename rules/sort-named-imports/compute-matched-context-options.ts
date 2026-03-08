@@ -1,6 +1,8 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { Options } from './types'
 
 import { passesAllNamesMatchPatternFilter } from '../../utils/context-matching/passes-all-names-match-pattern-filter'
@@ -8,45 +10,49 @@ import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast
 import { computeNodeName } from './compute-node-name'
 
 /**
- * Computes the matched context options for a given heritage clause parent node.
+ * Computes the matched context options for a given named import node.
  *
  * @param params - Parameters.
- * @param params.heritageClauses - The heritage clauses of the parent node.
- * @param params.matchedAstSelectors - The matched AST selectors for an object
- *   node.
+ * @param params.node - The named import node to compute the context options
+ *   for.
+ * @param params.matchedAstSelectors - The matched AST selectors for a named
+ *   export node.
  * @param params.context - The rule context.
  * @returns The matched context options or undefined if none match.
  */
 export function computeMatchedContextOptions<MessageIds extends string>({
   matchedAstSelectors,
-  heritageClauses,
   context,
+  node,
 }: {
-  heritageClauses: TSESTree.TSInterfaceHeritage[] | TSESTree.TSClassImplements[]
   context: Readonly<RuleContext<MessageIds, Options>>
   matchedAstSelectors: ReadonlySet<string>
+  node: TSESTree.ImportDeclaration
 }): Options[number] | undefined {
-  let nodeNames = heritageClauses.map(clause =>
-    computeNodeName(clause.expression),
-  )
-
   return context.options.find(options =>
-    isContextOptionMatching({ matchedAstSelectors, nodeNames, options }),
+    isContextOptionMatching({ matchedAstSelectors, options, node }),
   )
 }
 
 function isContextOptionMatching({
   matchedAstSelectors,
-  nodeNames,
   options,
+  node,
 }: {
   matchedAstSelectors: ReadonlySet<string>
+  node: TSESTree.ImportDeclaration
   options: Options[number]
-  nodeNames: string[]
 }): boolean {
   if (!options.useConfigurationIf) {
     return true
   }
+
+  let nodeNames = node.specifiers
+    .filter(
+      (specifier): specifier is TSESTree.ImportSpecifier =>
+        specifier.type === AST_NODE_TYPES.ImportSpecifier,
+    )
+    .map(specifier => computeNodeName(specifier, !!options.ignoreAlias))
 
   return (
     passesAllNamesMatchPatternFilter({

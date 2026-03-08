@@ -5,7 +5,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { ObjectParent, MessageId, Options } from './types'
 
-import { filterOptionsByAllNamesMatch } from '../../utils/context-matching/filter-options-by-all-names-match'
+import { passesAllNamesMatchPatternFilter } from '../../utils/context-matching/passes-all-names-match-pattern-filter'
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
 import { passesCallingFunctionNamePatternFilter } from './passes-calling-function-name-pattern-filter'
 import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
@@ -40,18 +40,15 @@ export function computeMatchedContextOptions({
   sourceCode: TSESLint.SourceCode
   isDestructuredObject: boolean
 }): Options[number] | undefined {
-  let filteredContextOptions = filterOptionsByAllNamesMatch({
-    nodeNames: nodeObject.properties
-      .filter(
-        property =>
-          property.type !== AST_NODE_TYPES.SpreadElement &&
-          property.type !== AST_NODE_TYPES.RestElement,
-      )
-      .map(property =>
-        computePropertyOrVariableDeclaratorName({ node: property, sourceCode }),
-      ),
-    contextOptions: context.options,
-  })
+  let nodeNames = nodeObject.properties
+    .filter(
+      property =>
+        property.type !== AST_NODE_TYPES.SpreadElement &&
+        property.type !== AST_NODE_TYPES.RestElement,
+    )
+    .map(property =>
+      computePropertyOrVariableDeclaratorName({ node: property, sourceCode }),
+    )
 
   let parentNodes = computeParentNodesWithTypes({
     allowedTypes: [...objectParentTypes],
@@ -60,13 +57,14 @@ export function computeMatchedContextOptions({
     maxParent: null,
   })
 
-  return filteredContextOptions.find(options =>
+  return context.options.find(options =>
     isContextOptionMatching({
       isDestructuredObject,
       matchedAstSelectors,
       parentNodes,
       sourceCode,
       nodeObject,
+      nodeNames,
       options,
     }),
   )
@@ -78,6 +76,7 @@ function isContextOptionMatching({
   parentNodes,
   sourceCode,
   nodeObject,
+  nodeNames,
   options,
 }: {
   nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
@@ -86,12 +85,17 @@ function isContextOptionMatching({
   isDestructuredObject: boolean
   parentNodes: ObjectParent[]
   options: Options[number]
+  nodeNames: string[]
 }): boolean {
   if (!options.useConfigurationIf) {
     return true
   }
 
   return (
+    passesAllNamesMatchPatternFilter({
+      allNamesMatchPattern: options.useConfigurationIf.allNamesMatchPattern,
+      nodeNames,
+    }) &&
     passesObjectTypeFilter({
       objectType: options.useConfigurationIf.objectType,
       isDestructuredObject,
