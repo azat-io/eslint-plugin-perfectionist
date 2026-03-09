@@ -95,6 +95,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
       typeElement.type === AST_NODE_TYPES.TSCallSignatureDeclaration ||
       typeElement.type === AST_NODE_TYPES.TSConstructSignatureDeclaration
     ) {
+      formattedMembers.push([])
       continue
     }
 

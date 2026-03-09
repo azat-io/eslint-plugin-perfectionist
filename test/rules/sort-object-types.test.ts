@@ -2362,6 +2362,18 @@ describe('sort-object-types', () => {
         `,
         options: [options],
       })
+
+      await valid({
+        code: dedent`
+          type Type = {
+            b: string;
+            new (value: number): unknown;
+            new (value: number | string): number;
+            a: string;
+          }
+        `,
+        options: [options],
+      })
     })
 
     it.each([
