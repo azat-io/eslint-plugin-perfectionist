@@ -44,6 +44,7 @@ let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 export function sortObjectTypeElements<MessageIds extends string>({
   availableMessageIds,
+  matchedAstSelectors,
   parentNodes,
   elements,
   context,
@@ -55,6 +56,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
     unexpectedOrder: MessageIds
   }
   context: RuleContext<MessageIds, Options>
+  matchedAstSelectors: ReadonlySet<string>
   elements: TSESTree.TypeElement[]
   parentNodes: ObjectTypeParent[]
 }): void {
@@ -66,6 +68,7 @@ export function sortObjectTypeElements<MessageIds extends string>({
   let { sourceCode, id } = context
 
   let matchedContextOptions = computeMatchedContextOptions({
+    matchedAstSelectors,
     parentNodes,
     sourceCode,
     elements,

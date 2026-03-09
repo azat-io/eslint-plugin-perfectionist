@@ -51,6 +51,12 @@ export type Options = Partial<
        * keys.
        */
       hasNumericKeysOnly?: boolean
+
+      /**
+       * An ESLint AST selector to match against the node being sorted. The rule
+       * is only applied when the node matches this selector.
+       */
+      matchesAstSelector?: string
     }
   } & AllCommonOptions<
     TypeOption,
