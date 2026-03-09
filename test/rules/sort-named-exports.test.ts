@@ -1577,7 +1577,7 @@ describe('sort-named-exports', () => {
     })
 
     describe('useConfigurationIf.matchesAstSelector', () => {
-      it('matches configuration based off matchesAstSelector', async () => {
+      it('skips config when selector does not match the sorted node type', async () => {
         await invalid({
           options: [
             {
@@ -1604,7 +1604,9 @@ describe('sort-named-exports', () => {
             export { b, a }
           `,
         })
+      })
 
+      it('applies config when selector matches the sorted node type', async () => {
         await valid({
           options: [
             {
@@ -1619,7 +1621,9 @@ describe('sort-named-exports', () => {
             export { b, a }
           `,
         })
+      })
 
+      it('falls through to next matching config when not matching', async () => {
         await invalid({
           options: [
             {

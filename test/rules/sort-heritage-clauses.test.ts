@@ -1563,7 +1563,7 @@ describe('sort-heritage-clauses', () => {
 
     describe('useConfigurationIf.matchesAstSelector', () => {
       describe('interfaces', () => {
-        it('matches configuration based off matchesAstSelector', async () => {
+        it('skips config when selector does not match the sorted node type', async () => {
           await invalid({
             options: [
               {
@@ -1590,7 +1590,9 @@ describe('sort-heritage-clauses', () => {
               interface Interface extends b, a {}
             `,
           })
+        })
 
+        it('applies config when selector matches the sorted node type', async () => {
           await valid({
             options: [
               {
@@ -1605,7 +1607,9 @@ describe('sort-heritage-clauses', () => {
               interface Interface extends b, a {}
             `,
           })
+        })
 
+        it('falls through to next matching config when not matching', async () => {
           await invalid({
             options: [
               {
@@ -1777,7 +1781,7 @@ describe('sort-heritage-clauses', () => {
       })
 
       describe('classes', () => {
-        it('matches configuration based off matchesAstSelector', async () => {
+        it('skips config when selector does not match the sorted node type', async () => {
           await invalid({
             options: [
               {
@@ -1804,7 +1808,9 @@ describe('sort-heritage-clauses', () => {
               class Class implements b, a {}
             `,
           })
+        })
 
+        it('applies config when selector matches the sorted node type', async () => {
           await valid({
             options: [
               {
@@ -1819,7 +1825,9 @@ describe('sort-heritage-clauses', () => {
               class Class implements b, a {}
             `,
           })
+        })
 
+        it('falls through to next matching config when not matching', async () => {
           await invalid({
             options: [
               {
