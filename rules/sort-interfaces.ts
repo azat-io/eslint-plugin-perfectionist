@@ -6,11 +6,8 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import {
-  sortObjectTypeElements,
-  defaultOptions,
-  jsonSchema,
-} from './sort-object-types'
+import { sortObjectTypeElements } from './sort-object-types/sort-object-type-elements'
+import { defaultOptions, jsonSchema } from './sort-object-types'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
 type Options = SortObjectTypesOptions
