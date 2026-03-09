@@ -2717,6 +2717,300 @@ describe('sort-interfaces', () => {
       })
     })
 
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('matches configuration based off matchesAstSelector', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSTypeAliasDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedInterfacePropertiesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface {
+              a: string
+              b: string
+            }
+          `,
+          code: dedent`
+            interface Interface {
+              b: string
+              a: string
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSInterfaceDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            interface Interface {
+              b: string
+              a: string
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > TSInterfaceDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSInterfaceDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedInterfacePropertiesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface {
+              a: string
+              b: string
+            }
+          `,
+          code: dedent`
+            interface Interface {
+              b: string
+              a: string
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSInterfaceDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSInterfaceDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedInterfacePropertiesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface {
+              a: string
+              b: string
+            }
+          `,
+          code: dedent`
+            interface Interface {
+              b: string
+              a: string
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSInterfaceDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+              order: 'desc',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedInterfacePropertiesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface {
+              b: string
+              a: string
+            }
+          `,
+          code: dedent`
+            interface Interface {
+              a: string
+              b: string
+            }
+          `,
+        })
+      })
+
+      it('applies first matching option when selectors overlap', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSInterfaceDeclaration',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > TSInterfaceDeclaration',
+              },
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            interface Interface {
+              b: string
+              a: string
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSInterfaceDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > TSInterfaceDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedInterfacePropertiesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface {
+              a: string
+              b: string
+            }
+          `,
+          code: dedent`
+            interface Interface {
+              b: string
+              a: string
+            }
+          `,
+        })
+      })
+
+      it('picks the first matching option when multiple options match', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSInterfaceDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedInterfacePropertiesOrder',
+            },
+          ],
+          output: dedent`
+            interface Interface {
+              a: string
+              b: string
+            }
+          `,
+          code: dedent`
+            interface Interface {
+              b: string
+              a: string
+            }
+          `,
+        })
+      })
+    })
+
     it('allows sorting by value', async () => {
       await invalid({
         errors: [
