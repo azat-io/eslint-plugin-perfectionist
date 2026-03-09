@@ -4,7 +4,6 @@ import type { TSESTree } from '@typescript-eslint/types'
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { SortEnumsSortingNode, MessageId, Options } from './types'
-import type { Settings } from '../../utils/get-settings'
 
 import {
   DEPENDENCY_ORDER_ERROR_ID,
@@ -33,6 +32,7 @@ import { getEnumMembers } from '../../utils/get-enum-members'
 import { computeDependencies } from './compute-dependencies'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
+import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
@@ -58,14 +58,12 @@ export let defaultOptions: Required<Options[number]> = {
 
 export function sortEnum({
   matchedAstSelectors,
-  settings,
   context,
   node,
 }: {
   context: Readonly<RuleContext<MessageId, Options>>
   matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.TSEnumDeclaration
-  settings: Settings
 }): void {
   let members = getEnumMembers(node)
   if (
@@ -75,6 +73,7 @@ export function sortEnum({
     return
   }
 
+  let settings = getSettings(context.settings)
   let matchedContextOptions = computeMatchedContextOptions({
     enumMembers: members,
     matchedAstSelectors,

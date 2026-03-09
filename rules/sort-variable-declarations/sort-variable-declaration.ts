@@ -7,7 +7,6 @@ import type {
   Selector,
   Options,
 } from './types'
-import type { Settings } from '../../utils/get-settings'
 
 import {
   DEPENDENCY_ORDER_ERROR_ID,
@@ -36,6 +35,7 @@ import { shouldPartition } from '../../utils/should-partition'
 import { computeDependencies } from './compute-dependencies'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
+import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
@@ -65,20 +65,19 @@ export let defaultOptions: Required<Options[number]> = {
 
 export function sortVariableDeclaration({
   matchedAstSelectors,
-  settings,
   context,
   node,
 }: {
   context: TSESLint.RuleContext<MessageId, Options>
   matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.VariableDeclaration
-  settings: Settings
 }): void {
   if (!isSortable(node.declarations)) {
     return
   }
 
   let { sourceCode, id } = context
+  let settings = getSettings(context.settings)
 
   let matchedContextOptions = computeMatchedContextOptions({
     matchedAstSelectors,

@@ -4,7 +4,6 @@ import type { TSESTree } from '@typescript-eslint/types'
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { SortingNode } from '../../types/sorting-node'
-import type { Settings } from '../../utils/get-settings'
 import type { MessageId, Options } from './types'
 
 import {
@@ -27,6 +26,7 @@ import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
+import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
@@ -50,14 +50,12 @@ export let defaultOptions: Required<Options[number]> = {
 
 export function sortHeritageClause({
   matchedAstSelectors,
-  settings,
   context,
   node,
 }: {
   node: TSESTree.TSInterfaceDeclaration | TSESTree.ClassDeclaration
   context: TSESLint.RuleContext<MessageId, Options>
   matchedAstSelectors: ReadonlySet<string>
-  settings: Settings
 }): void {
   let heritageClauses =
     node.type === AST_NODE_TYPES.TSInterfaceDeclaration ?
@@ -68,6 +66,7 @@ export function sortHeritageClause({
     return
   }
 
+  let settings = getSettings(context.settings)
   let matchedContextOptions = computeMatchedContextOptions({
     matchedAstSelectors,
     heritageClauses,
