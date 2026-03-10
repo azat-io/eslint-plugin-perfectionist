@@ -48,11 +48,14 @@ Then add the following code to your `settings.json`:
 
 ### Formatter
 
-The ESLint VS Code extension can also be used as a formatter:
+The ESLint VS Code extension can also be used as a formatter. This example also sets it as the default formatter for TypeScript:
 
 ```json
 {
-  "eslint.format.enable": true
+  "eslint.format.enable": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  }
 }
 ```
 
@@ -61,6 +64,9 @@ To run multiple formatters like ESLint & Prettier, the [Format ATT](https://gith
 ```json
 {
   "eslint.format.enable": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "unimorphic.format-att"
+  },
   "format-att.formatters": [
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode"
