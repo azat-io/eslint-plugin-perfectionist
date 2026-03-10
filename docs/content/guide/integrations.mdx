@@ -45,3 +45,25 @@ Then add the following code to your `settings.json`:
   }
 }
 ```
+
+### Formatter
+
+The ESLint VS Code extension can also be used as a formatter:
+
+```json
+{
+  "eslint.format.enable": true
+}
+```
+
+To run multiple formatters like ESLint & Prettier, the [Format ATT](https://github.com/unimorphic/vscode-format-att) VS Code extension can be used:
+
+```json
+{
+  "eslint.format.enable": true,
+  "format-att.formatters": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
+  ]
+}
+```
