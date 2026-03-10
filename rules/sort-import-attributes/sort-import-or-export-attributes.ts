@@ -8,6 +8,7 @@ import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
+import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
@@ -22,6 +23,7 @@ import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
 
 export function sortImportOrExportAttributes<MessageIds extends string>({
+  matchedAstSelectors,
   availableMessageIds,
   defaultOptions,
   context,
@@ -36,6 +38,7 @@ export function sortImportOrExportAttributes<MessageIds extends string>({
   node: TSESTree.ExportNamedDeclaration | TSESTree.ImportDeclaration
   context: TSESLint.RuleContext<MessageIds, Options>
   defaultOptions: Required<Options[number]>
+  matchedAstSelectors: ReadonlySet<string>
 }): void {
   let attributes: TSESTree.ImportAttribute[] | undefined = node.attributes
   if (!isSortable(attributes)) {
@@ -44,7 +47,14 @@ export function sortImportOrExportAttributes<MessageIds extends string>({
 
   let { sourceCode, id } = context
   let settings = getSettings(context.settings)
-  let options = complete(context.options.at(0), settings, defaultOptions)
+
+  let matchedContextOptions = computeMatchedContextOptions({
+    matchedAstSelectors,
+    attributes,
+    context,
+  })
+
+  let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
     selectors: [],

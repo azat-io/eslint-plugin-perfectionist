@@ -1,7 +1,16 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
+import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
+import type { TSESTree } from '@typescript-eslint/types'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { Options } from './sort-import-attributes/types'
 
+import {
+  buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
@@ -14,7 +23,7 @@ import {
 } from '../utils/report-errors'
 import { sortImportOrExportAttributes } from './sort-import-attributes/sort-import-or-export-attributes'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
-import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
 const ORDER_ERROR_ID = 'unexpectedImportAttributesOrder'
@@ -35,6 +44,7 @@ let defaultOptions: Required<Options[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
+  useConfigurationIf: {},
   type: 'alphabetical',
   ignoreCase: true,
   customGroups: [],
@@ -49,6 +59,11 @@ export let jsonSchema: JSONSchema4 = {
     properties: {
       ...buildCommonJsonSchemas(),
       ...buildCommonGroupsJsonSchemas(),
+      useConfigurationIf: buildUseConfigurationIfJsonSchema({
+        additionalProperties: {
+          matchesAstSelector: matchesAstSelectorJsonSchema,
+        },
+      }),
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
     },
@@ -76,20 +91,35 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => ({
-    ImportDeclaration: node =>
-      sortImportOrExportAttributes({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-          unexpectedOrder: ORDER_ERROR_ID,
-        },
-        defaultOptions,
-        context,
-        node,
-      }),
-  }),
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [AST_NODE_TYPES.ImportDeclaration],
+      sorter: sortImportAttributes,
+      context,
+    }),
   defaultOptions: [defaultOptions],
   name: 'sort-import-attributes',
 })
+
+function sortImportAttributes({
+  matchedAstSelectors,
+  context,
+  node,
+}: {
+  context: Readonly<RuleContext<MessageId, Options>>
+  matchedAstSelectors: ReadonlySet<string>
+  node: TSESTree.ImportDeclaration
+}): void {
+  sortImportOrExportAttributes<MessageId>({
+    availableMessageIds: {
+      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+      unexpectedOrder: ORDER_ERROR_ID,
+    },
+    matchedAstSelectors,
+    defaultOptions,
+    context,
+    node,
+  })
+}
