@@ -6,8 +6,14 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { sortUnionOrIntersectionTypes, jsonSchema } from './sort-union-types'
+import { sortUnionOrIntersectionTypes } from './sort-union-types/sort-union-or-intersection-types'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { jsonSchema } from './sort-union-types'
+
+/**
+ * Cache computed groups by modifiers and selectors for performance.
+ */
+let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 const ORDER_ERROR_ID = 'unexpectedIntersectionTypesOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedIntersectionTypesGroupOrder'
@@ -39,6 +45,23 @@ let defaultOptions: Required<Options[number]> = {
 }
 
 export default createEslintRule<Options, MessageId>({
+  create: context => ({
+    TSIntersectionType: node => {
+      sortUnionOrIntersectionTypes({
+        availableMessageIds: {
+          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+          unexpectedOrder: ORDER_ERROR_ID,
+        },
+        cachedGroupsByModifiersAndSelectors,
+        tokenValueToIgnoreBefore: '&',
+        defaultOptions,
+        context,
+        node,
+      })
+    },
+  }),
   meta: {
     messages: {
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
@@ -55,21 +78,6 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => ({
-    TSIntersectionType: node => {
-      sortUnionOrIntersectionTypes({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-          unexpectedOrder: ORDER_ERROR_ID,
-        },
-        tokenValueToIgnoreBefore: '&',
-        context,
-        node,
-      })
-    },
-  }),
   defaultOptions: [defaultOptions],
   name: 'sort-intersection-types',
 })
