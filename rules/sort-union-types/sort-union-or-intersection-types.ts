@@ -11,6 +11,7 @@ import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-g
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
+import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
@@ -27,6 +28,7 @@ import { complete } from '../../utils/complete'
 export function sortUnionOrIntersectionTypes<MessageIds extends string>({
   cachedGroupsByModifiersAndSelectors,
   tokenValueToIgnoreBefore,
+  matchedAstSelectors,
   availableMessageIds,
   defaultOptions,
   context,
@@ -42,11 +44,18 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
   node: TSESTree.TSIntersectionType | TSESTree.TSUnionType
   context: Readonly<RuleContext<MessageIds, Options>>
   defaultOptions: Required<Options[number]>
+  matchedAstSelectors: ReadonlySet<string>
   tokenValueToIgnoreBefore: string
 }): void {
   let settings = getSettings(context.settings)
 
-  let options = complete(context.options.at(0), settings, defaultOptions)
+  let matchedContextOptions = computeMatchedContextOptions({
+    members: node.types,
+    matchedAstSelectors,
+    context,
+  })
+
+  let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
     selectors: allSelectors,
