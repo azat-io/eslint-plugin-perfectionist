@@ -1,7 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
+import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { AllCommonOptions } from '../../types/all-common-options'
-import type { TypeOption } from '../../types/common-options'
 
 import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/common-groups-json-schemas'
 
@@ -11,7 +11,27 @@ import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/com
  * Controls how TypeScript union type members are sorted.
  */
 export type Options = Partial<
-  AllCommonOptions<TypeOption, AdditionalSortOptions, CustomGroupMatchOptions>
+  {
+    /**
+     * Conditional configuration based on pattern matching.
+     */
+    useConfigurationIf: {
+      /**
+       * Regular expression pattern to match against all member names. The rule
+       * is only applied when all member names match this pattern.
+       */
+      allNamesMatchPattern?: RegexOption
+
+      /**
+       * AST selector to match against TSUnionType or TSIntersectionType nodes.
+       */
+      matchesAstSelector?: string
+    }
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortOptions,
+    CustomGroupMatchOptions
+  >
 >[]
 
 /**

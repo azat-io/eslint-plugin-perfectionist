@@ -1682,6 +1682,279 @@ describe('sort-intersection-types', () => {
         `,
       })
     })
+
+    describe('useConfigurationIf.allNamesMatchPattern', () => {
+      it.each([
+        '^[rgb]$',
+        ['noMatch', '^[rgb]$'],
+        { pattern: '^[RGB]$', flags: 'i' },
+        ['noMatch', { pattern: '^[RGB]$', flags: 'i' }],
+      ])(
+        'applies configuration when allNamesMatchPattern matches (pattern: %s)',
+        async rgbAllNamesMatchPattern => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  allNamesMatchPattern: 'foo',
+                },
+              },
+              {
+                ...options,
+                customGroups: [
+                  {
+                    elementNamePattern: 'r',
+                    groupName: 'r',
+                  },
+                  {
+                    elementNamePattern: 'g',
+                    groupName: 'g',
+                  },
+                  {
+                    elementNamePattern: 'b',
+                    groupName: 'b',
+                  },
+                ],
+                useConfigurationIf: {
+                  allNamesMatchPattern: rgbAllNamesMatchPattern,
+                },
+                groups: ['r', 'g', 'b'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'g',
+                  leftGroup: 'b',
+                  right: 'g',
+                  left: 'b',
+                },
+                messageId: 'unexpectedIntersectionTypesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'r',
+                  leftGroup: 'g',
+                  right: 'r',
+                  left: 'g',
+                },
+                messageId: 'unexpectedIntersectionTypesGroupOrder',
+              },
+            ],
+            output: dedent`
+              type Color = r & g & b
+            `,
+            code: dedent`
+              type Color = b & g & r
+            `,
+          })
+        },
+      )
+    })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('skips config when selector does not match the sorted node type', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSTypeAliasDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type T = a & b
+          `,
+          code: dedent`
+            type T = b & a
+          `,
+        })
+      })
+
+      it('applies config when selector matches the sorted node type', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSIntersectionType',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            type T = b & a
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector:
+                  'TSTypeAliasDeclaration > TSIntersectionType',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            type T = b & a
+          `,
+        })
+      })
+
+      it('falls through to next matching config when not matching', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSIntersectionType',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSIntersectionType',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type T = a & b
+          `,
+          code: dedent`
+            type T = b & a
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSIntersectionType',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+              order: 'desc',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type T = b & a
+          `,
+          code: dedent`
+            type T = a & b
+          `,
+        })
+      })
+
+      it('applies first matching option when selectors overlap', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSIntersectionType',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector:
+                  'TSTypeAliasDeclaration > TSIntersectionType',
+              },
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            type T = b & a
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSIntersectionType',
+              },
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector:
+                  'TSTypeAliasDeclaration > TSIntersectionType',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type T = a & b
+          `,
+          code: dedent`
+            type T = b & a
+          `,
+        })
+      })
+    })
   })
 
   describe('natural', () => {
