@@ -8,6 +8,7 @@ import type { ObjectTypeParent, Options } from './types'
 import { passesAllNamesMatchPatternFilter } from '../../utils/context-matching/passes-all-names-match-pattern-filter'
 import { passesDeclarationMatchesPatternFilter } from './passes-declaration-matches-pattern-filter'
 import { passesDeclarationCommentMatchesFilter } from './passes-declaration-comment-matches-filter'
+import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast-selector-filter'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { computeNodeName } from './compute-node-name'
 
@@ -22,12 +23,14 @@ import { computeNodeName } from './compute-node-name'
  * @returns The matched context options, or undefined if none match.
  */
 export function computeMatchedContextOptions({
+  matchedAstSelectors,
   parentNodes,
   sourceCode,
   elements,
   context,
 }: {
   context: TSESLint.RuleContext<string, Options>
+  matchedAstSelectors: ReadonlySet<string>
   elements: TSESTree.TypeElement[]
   parentNodes: ObjectTypeParent[]
   sourceCode: TSESLint.SourceCode
@@ -35,6 +38,7 @@ export function computeMatchedContextOptions({
   return context.options.find(options =>
     isContextOptionMatching({
       nodeNames: elements.map(node => computeNodeName({ sourceCode, node })),
+      matchedAstSelectors,
       parentNodes,
       sourceCode,
       elements,
@@ -44,12 +48,14 @@ export function computeMatchedContextOptions({
 }
 
 function isContextOptionMatching({
+  matchedAstSelectors,
   parentNodes,
   sourceCode,
   nodeNames,
   elements,
   options,
 }: {
+  matchedAstSelectors: ReadonlySet<string>
   elements: TSESTree.TypeElement[]
   parentNodes: ObjectTypeParent[]
   sourceCode: TSESLint.SourceCode
@@ -80,6 +86,10 @@ function isContextOptionMatching({
         options.useConfigurationIf.declarationCommentMatchesPattern,
       parentNodes,
       sourceCode,
+    }) &&
+    passesAstSelectorFilter({
+      matchesAstSelector: options.useConfigurationIf.matchesAstSelector,
+      matchedAstSelectors,
     })
   )
 }

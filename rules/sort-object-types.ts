@@ -4,20 +4,17 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type {
-  SortObjectTypesSortingNode,
-  ObjectTypeParent,
-  Modifier,
-  Selector,
-  Options,
-} from './sort-object-types/types'
+import type { ObjectTypeParent, Options } from './sort-object-types/types'
 
+import {
+  buildUseConfigurationIfJsonSchema,
+  matchesAstSelectorJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import {
   additionalCustomGroupMatchOptionsJsonSchema,
   additionalSortOptionsJsonSchema,
   objectTypeParentTypes,
-  allModifiers,
-  allSelectors,
 } from './sort-object-types/types'
 import {
   partitionByCommentJsonSchema,
@@ -29,42 +26,12 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import {
-  buildUseConfigurationIfJsonSchema,
-  buildCommonJsonSchemas,
-} from '../utils/json-schemas/common-json-schemas'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
-import { computeMatchedContextOptions } from './sort-object-types/compute-matched-context-options'
-import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
-import { comparatorByOptionsComputer } from './sort-object-types/comparator-by-options-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
-import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { computeParentNodesWithTypes } from '../utils/compute-parent-nodes-with-types'
 import { scopedRegexJsonSchema } from '../utils/json-schemas/scoped-regex-json-schema'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
-import { isNodeFunctionType } from './sort-object-types/is-node-function-type'
-import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
-import { isMemberOptional } from './sort-object-types/is-member-optional'
-import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
-import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
-import { computeNodeName } from './sort-object-types/compute-node-name'
-import { UnreachableCaseError } from '../utils/unreachable-case-error'
-import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
-import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
+import { sortObjectTypeElements } from './sort-object-types/sort-object-type-elements'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { reportAllErrors } from '../utils/report-all-errors'
-import { shouldPartition } from '../utils/should-partition'
-import { computeGroup } from '../utils/compute-group'
-import { rangeToDiff } from '../utils/range-to-diff'
-import { getSettings } from '../utils/get-settings'
-import { isSortable } from '../utils/is-sortable'
-import { complete } from '../utils/complete'
-
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 const ORDER_ERROR_ID = 'unexpectedObjectTypesOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedObjectTypesGroupOrder'
@@ -114,6 +81,7 @@ export let jsonSchema: JSONSchema4 = {
             type: 'boolean',
           },
           declarationCommentMatchesPattern: scopedRegexJsonSchema,
+          matchesAstSelector: matchesAstSelectorJsonSchema,
           declarationMatchesPattern: scopedRegexJsonSchema,
         },
       }),
@@ -128,20 +96,6 @@ export let jsonSchema: JSONSchema4 = {
 }
 
 export default createEslintRule<Options, MessageId>({
-  create: context => ({
-    TSTypeLiteral: node =>
-      sortObjectTypeElements<MessageId>({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-          unexpectedOrder: ORDER_ERROR_ID,
-        },
-        parentNodes: computeObjectTypeParentNodes(node),
-        elements: node.members,
-        context,
-      }),
-  }),
   meta: {
     messages: {
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
@@ -158,185 +112,37 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [AST_NODE_TYPES.TSTypeLiteral],
+      sorter: sortObjectType,
+      context,
+    }),
   defaultOptions: [defaultOptions],
   name: 'sort-object-types',
 })
 
-export function sortObjectTypeElements<MessageIds extends string>({
-  availableMessageIds,
-  parentNodes,
-  elements,
+function sortObjectType({
+  matchedAstSelectors,
   context,
+  node,
 }: {
-  availableMessageIds: {
-    missedSpacingBetweenMembers: MessageIds
-    extraSpacingBetweenMembers: MessageIds
-    unexpectedGroupOrder: MessageIds
-    unexpectedOrder: MessageIds
-  }
-  context: RuleContext<MessageIds, Options>
-  elements: TSESTree.TypeElement[]
-  parentNodes: ObjectTypeParent[]
+  context: Readonly<RuleContext<MessageId, Options>>
+  matchedAstSelectors: ReadonlySet<string>
+  node: TSESTree.TSTypeLiteral
 }): void {
-  if (!isSortable(elements)) {
-    return
-  }
-
-  let settings = getSettings(context.settings)
-  let { sourceCode, id } = context
-
-  let matchedContextOptions = computeMatchedContextOptions({
-    parentNodes,
-    sourceCode,
-    elements,
+  sortObjectTypeElements<MessageId>({
+    availableMessageIds: {
+      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+      unexpectedOrder: ORDER_ERROR_ID,
+    },
+    parentNodes: computeObjectTypeParentNodes(node),
+    elements: node.members,
+    matchedAstSelectors,
     context,
   })
-  let options = complete(matchedContextOptions, settings, defaultOptions)
-  validateCustomSortConfiguration(options)
-  validateGroupsConfiguration({
-    selectors: allSelectors,
-    modifiers: allModifiers,
-    options,
-  })
-  validateNewlinesAndPartitionConfiguration(options)
-
-  let eslintDisabledLines = getEslintDisabledLines({
-    ruleName: id,
-    sourceCode,
-  })
-  let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
-
-  let formattedMembers: SortObjectTypesSortingNode[][] = [[]]
-  for (let typeElement of elements) {
-    if (
-      typeElement.type === AST_NODE_TYPES.TSCallSignatureDeclaration ||
-      typeElement.type === AST_NODE_TYPES.TSConstructSignatureDeclaration
-    ) {
-      continue
-    }
-
-    let lastGroup = formattedMembers.at(-1)
-    let lastSortingNode = lastGroup?.at(-1)
-
-    let selectors: Selector[] = []
-    let modifiers: Modifier[] = []
-
-    if (typeElement.type === AST_NODE_TYPES.TSIndexSignature) {
-      selectors.push('index-signature')
-    }
-
-    if (isNodeFunctionType(typeElement)) {
-      selectors.push('method')
-    }
-
-    if (!isNodeOnSingleLine(typeElement)) {
-      modifiers.push('multiline')
-    }
-
-    if (
-      !(['index-signature', 'method'] as const).some(selector =>
-        selectors.includes(selector),
-      )
-    ) {
-      selectors.push('property')
-    }
-
-    selectors.push('member')
-
-    if (isMemberOptional(typeElement)) {
-      modifiers.push('optional')
-    } else {
-      modifiers.push('required')
-    }
-
-    let name = computeNodeName({ node: typeElement, sourceCode })
-    let value: string | null = null
-    if (
-      typeElement.type === AST_NODE_TYPES.TSPropertySignature &&
-      typeElement.typeAnnotation
-    ) {
-      value = sourceCode.getText(typeElement.typeAnnotation.typeAnnotation)
-    }
-
-    let predefinedGroups = generatePredefinedGroups({
-      cache: cachedGroupsByModifiersAndSelectors,
-      selectors,
-      modifiers,
-    })
-    let group = computeGroup({
-      customGroupMatcher: customGroup =>
-        doesCustomGroupMatch({
-          elementValue: value,
-          elementName: name,
-          customGroup,
-          selectors,
-          modifiers,
-        }),
-      predefinedGroups,
-      options,
-    })
-
-    let sortingNode: Omit<SortObjectTypesSortingNode, 'partitionId'> = {
-      isEslintDisabled: isNodeEslintDisabled(typeElement, eslintDisabledLines),
-      size: rangeToDiff(typeElement, sourceCode),
-      addSafetySemicolonWhenInline: true,
-      value: value ?? '',
-      node: typeElement,
-      group,
-      name,
-    }
-
-    if (
-      shouldPartition({
-        lastSortingNode,
-        sortingNode,
-        sourceCode,
-        options,
-      })
-    ) {
-      lastGroup = []
-      formattedMembers.push(lastGroup)
-    }
-
-    lastGroup?.push({
-      ...sortingNode,
-      partitionId: formattedMembers.length,
-    })
-  }
-
-  let nodes = formattedMembers.flat()
-  reportAllErrors<MessageIds>({
-    sortNodesExcludingEslintDisabled,
-    availableMessageIds,
-    options,
-    context,
-    nodes,
-  })
-
-  function sortNodesExcludingEslintDisabled(
-    ignoreEslintDisabledNodes: boolean,
-  ): SortObjectTypesSortingNode[] {
-    return formattedMembers.flatMap(groupedNodes =>
-      sortNodesByGroups({
-        isNodeIgnoredForGroup: ({ groupOptions, node }) => {
-          switch (groupOptions.sortBy) {
-            case 'value':
-              return !node.value
-            case 'name':
-              return false
-            /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-            default:
-              throw new UnreachableCaseError(groupOptions.sortBy)
-          }
-        },
-        optionsByGroupIndexComputer,
-        comparatorByOptionsComputer,
-        ignoreEslintDisabledNodes,
-        groups: options.groups,
-        nodes: groupedNodes,
-      }),
-    )
-  }
 }
 
 function computeObjectTypeParentNodes(

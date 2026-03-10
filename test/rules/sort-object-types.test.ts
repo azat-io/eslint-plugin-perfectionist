@@ -2362,6 +2362,18 @@ describe('sort-object-types', () => {
         `,
         options: [options],
       })
+
+      await valid({
+        code: dedent`
+          type Type = {
+            b: string;
+            new (value: number): unknown;
+            new (value: number | string): number;
+            a: string;
+          }
+        `,
+        options: [options],
+      })
     })
 
     it.each([
@@ -3409,6 +3421,322 @@ describe('sort-object-types', () => {
               data: { right: 'a', left: 'b' },
             },
           ],
+        })
+      })
+    })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('skips config when selector does not match the sorted node type', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSTypeAliasDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = {
+              a: string
+              b: string
+            }
+          `,
+          code: dedent`
+            type Type = {
+              b: string
+              a: string
+            }
+          `,
+        })
+      })
+
+      it('applies config when selector matches the sorted node type', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSTypeLiteral',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            type Type = {
+              b: string
+              a: string
+            }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSTypeLiteral',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            let x: {
+              b: string
+              a: string
+            }
+          `,
+        })
+      })
+
+      it('falls through to next matching config when not matching', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > TSTypeLiteral',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSTypeLiteral',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = {
+              a: string
+              b: string
+            }
+          `,
+          code: dedent`
+            type Type = {
+              b: string
+              a: string
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSTypeLiteral',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSTypeLiteral',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = {
+              a: string
+              b: string
+            }
+          `,
+          code: dedent`
+            type Type = {
+              b: string
+              a: string
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSTypeLiteral',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+              order: 'desc',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = {
+              b: string
+              a: string
+            }
+          `,
+          code: dedent`
+            type Type = {
+              a: string
+              b: string
+            }
+          `,
+        })
+      })
+
+      it('applies first matching option when selectors overlap', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSTypeLiteral',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > TSTypeLiteral',
+              },
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            type Type = {
+              b: string
+              a: string
+            }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSTypeLiteral',
+              },
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: '* > TSTypeLiteral',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = {
+              a: string
+              b: string
+            }
+          `,
+          code: dedent`
+            type Type = {
+              b: string
+              a: string
+            }
+          `,
+        })
+      })
+
+      it('picks the first matching option when multiple options match', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'TSTypeLiteral',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectTypesOrder',
+            },
+          ],
+          output: dedent`
+            type Type = {
+              a: string
+              b: string
+            }
+          `,
+          code: dedent`
+            type Type = {
+              b: string
+              a: string
+            }
+          `,
         })
       })
     })

@@ -10,7 +10,6 @@ import type {
   Selector,
   Options,
 } from './types'
-import type { Settings } from '../../utils/get-settings'
 
 import {
   MISSED_SPACING_ERROR_ID,
@@ -36,6 +35,7 @@ import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
+import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
@@ -65,14 +65,12 @@ export let defaultOptions: Required<Options[number]> = {
 
 export function sortNamedImport({
   matchedAstSelectors,
-  settings,
   context,
   node,
 }: {
   context: TSESLint.RuleContext<MessageId, Options>
   matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.ImportDeclaration
-  settings: Settings
 }): void {
   let specifiers = node.specifiers.filter(
     importClause => importClause.type === AST_NODE_TYPES.ImportSpecifier,
@@ -82,6 +80,7 @@ export function sortNamedImport({
     return
   }
 
+  let settings = getSettings(context.settings)
   let matchedContextOptions = computeMatchedContextOptions({
     matchedAstSelectors,
     context,

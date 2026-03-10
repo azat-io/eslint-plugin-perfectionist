@@ -3,9 +3,6 @@ import type { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { NodeOfType } from '../types/node-of-type'
-import type { Settings } from './get-settings'
-
-import { getSettings } from './get-settings'
 
 type Sorter<
   MessageId extends string,
@@ -15,7 +12,6 @@ type Sorter<
   context: Readonly<RuleContext<MessageId, Options>>
   matchedAstSelectors: ReadonlySet<string>
   node: NodeOfType<NodeTypes>
-  settings: Settings
 }) => void
 
 type AstListeners<NodeTypes extends AST_NODE_TYPES> = Record<
@@ -53,7 +49,6 @@ export function buildAstListeners<
   context: Readonly<RuleContext<MessageId, Options>>
   nodeTypes: NodeTypes[]
 }): AstListeners<NodeTypes> {
-  let settings = getSettings(context.settings)
   let emptyMatchedAstSelectors = new Set<string>()
   let matchedAstSelectorsByNode = new WeakMap<
     NodeOfType<NodeTypes>,
@@ -93,7 +88,6 @@ export function buildAstListeners<
         sorter({
           matchedAstSelectors:
             matchedAstSelectorsByNode.get(node) ?? emptyMatchedAstSelectors,
-          settings,
           context,
           node,
         }),

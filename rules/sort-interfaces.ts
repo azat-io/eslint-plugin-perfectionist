@@ -1,3 +1,8 @@
+import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
+import type { TSESTree } from '@typescript-eslint/types'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { Options as SortObjectTypesOptions } from './sort-object-types/types'
 
 import {
@@ -6,11 +11,9 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import {
-  sortObjectTypeElements,
-  defaultOptions,
-  jsonSchema,
-} from './sort-object-types'
+import { sortObjectTypeElements } from './sort-object-types/sort-object-type-elements'
+import { defaultOptions, jsonSchema } from './sort-object-types'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
 type Options = SortObjectTypesOptions
@@ -43,20 +46,35 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => ({
-    TSInterfaceDeclaration: node =>
-      sortObjectTypeElements<MessageId>({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-          unexpectedOrder: ORDER_ERROR_ID,
-        },
-        elements: node.body.body,
-        parentNodes: [node],
-        context,
-      }),
-  }),
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [AST_NODE_TYPES.TSInterfaceDeclaration],
+      sorter: sortInterface,
+      context,
+    }),
   defaultOptions: [defaultOptions],
   name: 'sort-interfaces',
 })
+
+function sortInterface({
+  matchedAstSelectors,
+  context,
+  node,
+}: {
+  context: Readonly<RuleContext<MessageId, Options>>
+  matchedAstSelectors: ReadonlySet<string>
+  node: TSESTree.TSInterfaceDeclaration
+}): void {
+  sortObjectTypeElements<MessageId>({
+    availableMessageIds: {
+      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+      unexpectedOrder: ORDER_ERROR_ID,
+    },
+    elements: node.body.body,
+    matchedAstSelectors,
+    parentNodes: [node],
+    context,
+  })
+}

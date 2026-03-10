@@ -11,7 +11,6 @@ import type {
   Selector,
   Options,
 } from './types'
-import type { Settings } from '../../utils/get-settings'
 
 import {
   DEPENDENCY_ORDER_ERROR_ID,
@@ -53,6 +52,7 @@ import { shouldPartition } from '../../utils/should-partition'
 import { getGroupIndex } from '../../utils/get-group-index'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
+import { getSettings } from '../../utils/get-settings'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
 
@@ -105,20 +105,19 @@ export let defaultOptions: Required<Options[number]> = {
 
 export function sortClass({
   matchedAstSelectors,
-  settings,
   context,
   node,
 }: {
   context: Readonly<TSESLint.RuleContext<MessageId, Options>>
   matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.ClassBody
-  settings: Settings
 }): void {
   let classElements = node.body.filter(isKnownClassElement)
   if (!isSortable(classElements)) {
     return
   }
 
+  let settings = getSettings(context.settings)
   let matchedContextOptions = computeMatchedContextOptions({
     matchedAstSelectors,
     classElements,

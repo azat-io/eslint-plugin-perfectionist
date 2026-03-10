@@ -1193,7 +1193,7 @@ describe('sort-sets', () => {
     })
 
     describe('useConfigurationIf.matchesAstSelector', () => {
-      it('matches configuration based off matchesAstSelector', async () => {
+      it('skips config when selector does not match the sorted node type', async () => {
         await invalid({
           options: [
             {
@@ -1226,7 +1226,9 @@ describe('sort-sets', () => {
             ])
           `,
         })
+      })
 
+      it('applies config when selector matches the sorted node type', async () => {
         await valid({
           options: [
             {
@@ -1262,7 +1264,9 @@ describe('sort-sets', () => {
             ].includes(value)
           `,
         })
+      })
 
+      it('falls through to next matching config when not matching', async () => {
         await invalid({
           options: [
             {

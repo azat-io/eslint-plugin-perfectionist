@@ -314,6 +314,7 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
       | { pattern: string; flags?: string; scope?: 'shallow' | 'deep' }
       | { pattern: string; flags?: string; scope?: 'shallow' | 'deep' }[]
     hasNumericKeysOnly?: boolean
+    matchesAstSelector?: string
   }
   ```
 </sub>
@@ -421,6 +422,9 @@ Example configuration:
   ],
 }
 ```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching a `TSTypeLiteral` node.
+To avoid unexpected behavior, do not use `:exit` or `:enter` pseudo-selectors.
 
 ### groups
 
