@@ -306,6 +306,351 @@ describe('sort-export-attributes', () => {
         ],
       })
     })
+
+    describe('useConfigurationIf.allNamesMatchPattern', () => {
+      it.each([
+        '^[rgb]$',
+        ['noMatch', '^[rgb]$'],
+        { pattern: '^[RGB]$', flags: 'i' },
+        ['noMatch', { pattern: '^[RGB]$', flags: 'i' }],
+      ])(
+        'applies configuration when allNamesMatchPattern matches (pattern: %s)',
+        async rgbAllNamesMatchPattern => {
+          await invalid({
+            options: [
+              {
+                ...options,
+                useConfigurationIf: {
+                  allNamesMatchPattern: 'foo',
+                },
+              },
+              {
+                ...options,
+                customGroups: [
+                  {
+                    elementNamePattern: 'r',
+                    groupName: 'r',
+                  },
+                  {
+                    elementNamePattern: 'g',
+                    groupName: 'g',
+                  },
+                  {
+                    elementNamePattern: 'b',
+                    groupName: 'b',
+                  },
+                ],
+                useConfigurationIf: {
+                  allNamesMatchPattern: rgbAllNamesMatchPattern,
+                },
+                groups: ['r', 'g', 'b'],
+              },
+            ],
+            errors: [
+              {
+                data: {
+                  rightGroup: 'g',
+                  leftGroup: 'b',
+                  right: 'g',
+                  left: 'b',
+                },
+                messageId: 'unexpectedExportAttributesGroupOrder',
+              },
+              {
+                data: {
+                  rightGroup: 'r',
+                  leftGroup: 'g',
+                  right: 'r',
+                  left: 'g',
+                },
+                messageId: 'unexpectedExportAttributesGroupOrder',
+              },
+            ],
+            output: dedent`
+              export { data } from 'module' with { r: 'r', g: 'g', b: 'b' }
+            `,
+            code: dedent`
+              export { data } from 'module' with { b: 'b', g: 'g', r: 'r' }
+            `,
+          })
+        },
+      )
+    })
+
+    describe('useConfigurationIf.matchesAstSelector', () => {
+      it('skips config when selector does not match the sorted node type', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ImportDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedExportAttributesOrder',
+            },
+          ],
+          output: dedent`
+            export { data } from 'module' with { a: 'a', b: 'b' }
+          `,
+          code: dedent`
+            export { data } from 'module' with { b: 'b', a: 'a' }
+          `,
+        })
+      })
+
+      it('applies config when selector matches the sorted node type', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            export { data } from 'module' with { b: 'b', a: 'a' }
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector:
+                  'ExportNamedDeclaration[source.value="module"]',
+              },
+              type: 'unsorted',
+            },
+          ],
+          code: dedent`
+            export { data } from 'module' with { b: 'b', a: 'a' }
+          `,
+        })
+      })
+
+      it('falls through to next matching config when not matching', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector:
+                  'ExportNamedDeclaration[source.value="other-module"]',
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedExportAttributesOrder',
+            },
+          ],
+          output: dedent`
+            export { data } from 'module' with { a: 'a', b: 'b' }
+          `,
+          code: dedent`
+            export { data } from 'module' with { b: 'b', a: 'a' }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedExportAttributesOrder',
+            },
+          ],
+          output: dedent`
+            export { data } from 'module' with { a: 'a', b: 'b' }
+          `,
+          code: dedent`
+            export { data } from 'module' with { b: 'b', a: 'a' }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+                allNamesMatchPattern: '^[ac]$',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                allNamesMatchPattern: '^[ab]$',
+              },
+              type: 'alphabetical',
+              order: 'desc',
+            },
+            {
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedExportAttributesOrder',
+            },
+          ],
+          output: dedent`
+            export { data } from 'module' with { b: 'b', a: 'a' }
+          `,
+          code: dedent`
+            export { data } from 'module' with { a: 'a', b: 'b' }
+          `,
+        })
+      })
+
+      it('applies first matching option when selectors overlap', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+              },
+              type: 'unsorted',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector:
+                  'ExportNamedDeclaration[source.value="module"]',
+              },
+              type: 'alphabetical',
+            },
+          ],
+          code: dedent`
+            export { data } from 'module' with { b: 'b', a: 'a' }
+          `,
+        })
+
+        await invalid({
+          options: [
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+              },
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector:
+                  'ExportNamedDeclaration[source.value="module"]',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedExportAttributesOrder',
+            },
+          ],
+          output: dedent`
+            export { data } from 'module' with { a: 'a', b: 'b' }
+          `,
+          code: dedent`
+            export { data } from 'module' with { b: 'b', a: 'a' }
+          `,
+        })
+      })
+
+      it('picks the first matching option when multiple options match', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              type: 'alphabetical',
+            },
+            {
+              ...options,
+              useConfigurationIf: {
+                matchesAstSelector: 'ExportNamedDeclaration',
+              },
+              type: 'unsorted',
+            },
+          ],
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedExportAttributesOrder',
+            },
+          ],
+          output: dedent`
+            export { data } from 'module' with { a: 'a', b: 'b' }
+          `,
+          code: dedent`
+            export { data } from 'module' with { b: 'b', a: 'a' }
+          `,
+        })
+      })
+    })
   })
 
   describe('natural', () => {

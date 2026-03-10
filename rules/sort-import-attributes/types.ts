@@ -1,11 +1,32 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { AllCommonOptions } from '../../types/all-common-options'
-import type { TypeOption } from '../../types/common-options'
 import type { SortingNode } from '../../types/sorting-node'
 
 export type Options = Partial<
-  AllCommonOptions<TypeOption, AdditionalSortOptions, CustomGroupMatchOptions>
+  {
+    /**
+     * Conditional configuration based on pattern matching.
+     */
+    useConfigurationIf: {
+      /**
+       * Regular expression pattern to match against all attribute key names.
+       * The rule is only applied when all names match this pattern.
+       */
+      allNamesMatchPattern?: RegexOption
+
+      /**
+       * AST selector to match against ImportDeclaration or
+       * ExportNamedDeclaration nodes.
+       */
+      matchesAstSelector?: string
+    }
+  } & AllCommonOptions<
+    TypeOption,
+    AdditionalSortOptions,
+    CustomGroupMatchOptions
+  >
 >[]
 
 export type SortImportAttributesSortingNode =

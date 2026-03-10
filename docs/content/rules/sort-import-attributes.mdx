@@ -188,6 +188,64 @@ or [`customGroups`](#customgroups) options.
 
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
+### useConfigurationIf
+
+<sub>
+  type:
+  ```ts
+  {
+    allNamesMatchPattern?:
+      | string
+      | string[]
+      | { pattern: string; flags: string }
+      | { pattern: string; flags: string }[]
+    matchesAstSelector?: string
+  }
+  ```
+</sub>
+<sub>default: `{}`</sub>
+
+Specifies filters to match a particular options configuration for a given import.
+
+The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
+
+- `allNamesMatchPattern` — A regexp pattern that all import attributes must match.
+
+Example configuration:
+```ts
+{
+  'perfectionist/sort-import-attributes': [
+    'error',
+    {
+      groups: ['r', 'g', 'b'], // Sort colors by RGB
+      customGroups: [
+        {
+          elementNamePattern: '^r$',
+          groupName: 'r',
+        },
+        {
+          elementNamePattern: '^g$',
+          groupName: 'g',
+        },
+        {
+          elementNamePattern: '^b$',
+          groupName: 'b',
+        },
+      ],
+      useConfigurationIf: {
+        allNamesMatchPattern: '^[rgb]$',
+      },
+    },
+    {
+      type: 'alphabetical' // Fallback configuration
+    }
+  ],
+}
+```
+
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching an `ImportDeclaration` node.
+To avoid unexpected behavior, do not use `:exit` or `:enter` pseudo-selectors.
+
 ### groups
 
 <sub>
@@ -309,6 +367,7 @@ An attribute matches a custom group when its name satisfies `elementNamePattern`
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   newlinesInside: 'ignore',
+                  useConfigurationIf: {},
                   groups: [],
                   customGroups: [],
                 },
@@ -340,6 +399,7 @@ An attribute matches a custom group when its name satisfies `elementNamePattern`
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 newlinesInside: 'ignore',
+                useConfigurationIf: {},
                 groups: [],
                 customGroups: [],
               },
