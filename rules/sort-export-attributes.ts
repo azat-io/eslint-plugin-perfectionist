@@ -1,3 +1,8 @@
+import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
+import type { TSESTree } from '@typescript-eslint/types'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { Options as SortImportAttributesOptions } from './sort-import-attributes/types'
 
 import {
@@ -7,6 +12,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { sortImportOrExportAttributes } from './sort-import-attributes/sort-import-or-export-attributes'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { jsonSchema } from './sort-import-attributes'
 
@@ -30,6 +36,7 @@ let defaultOptions: Required<Options[0]> = {
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
+  useConfigurationIf: {},
   type: 'alphabetical',
   ignoreCase: true,
   customGroups: [],
@@ -56,20 +63,35 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => ({
-    ExportNamedDeclaration: node =>
-      sortImportOrExportAttributes({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-          unexpectedOrder: ORDER_ERROR_ID,
-        },
-        defaultOptions,
-        context,
-        node,
-      }),
-  }),
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [AST_NODE_TYPES.ExportNamedDeclaration],
+      sorter: sortExportAttributes,
+      context,
+    }),
   defaultOptions: [defaultOptions],
   name: 'sort-export-attributes',
 })
+
+function sortExportAttributes({
+  matchedAstSelectors,
+  context,
+  node,
+}: {
+  context: Readonly<RuleContext<MessageId, Options>>
+  matchedAstSelectors: ReadonlySet<string>
+  node: TSESTree.ExportNamedDeclaration
+}): void {
+  sortImportOrExportAttributes<MessageId>({
+    availableMessageIds: {
+      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+      unexpectedOrder: ORDER_ERROR_ID,
+    },
+    matchedAstSelectors,
+    defaultOptions,
+    context,
+    node,
+  })
+}
