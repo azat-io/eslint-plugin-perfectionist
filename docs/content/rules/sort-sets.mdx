@@ -85,8 +85,6 @@ By keeping sets sorted, developers can quickly scan and verify the values, makin
       return 'Unknown'
     }
 `}
-  client:load
-  lang="tsx"
   initial={dedent`
     const getProductCategories = (product) => {
       let electronics = new Set([
@@ -118,6 +116,8 @@ By keeping sets sorted, developers can quickly scan and verify the values, makin
       return 'Unknown'
     }
 `}
+  client:load
+  lang="tsx"
 />
 
 ## Options
