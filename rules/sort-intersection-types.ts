@@ -1,3 +1,8 @@
+import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
+import type { TSESTree } from '@typescript-eslint/types'
+
+import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+
 import type { Options as SortUnionTypesOptions } from './sort-union-types/types'
 
 import {
@@ -7,6 +12,7 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { sortUnionOrIntersectionTypes } from './sort-union-types/sort-union-or-intersection-types'
+import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { jsonSchema } from './sort-union-types'
 
@@ -35,6 +41,7 @@ let defaultOptions: Required<Options[number]> = {
   newlinesBetween: 'ignore',
   partitionByComment: false,
   partitionByNewLine: false,
+  useConfigurationIf: {},
   type: 'alphabetical',
   ignoreCase: true,
   locales: 'en-US',
@@ -45,23 +52,6 @@ let defaultOptions: Required<Options[number]> = {
 }
 
 export default createEslintRule<Options, MessageId>({
-  create: context => ({
-    TSIntersectionType: node => {
-      sortUnionOrIntersectionTypes({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-          unexpectedOrder: ORDER_ERROR_ID,
-        },
-        cachedGroupsByModifiersAndSelectors,
-        tokenValueToIgnoreBefore: '&',
-        defaultOptions,
-        context,
-        node,
-      })
-    },
-  }),
   meta: {
     messages: {
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
@@ -78,6 +68,37 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
+  create: context =>
+    buildAstListeners({
+      nodeTypes: [AST_NODE_TYPES.TSIntersectionType],
+      sorter: sortIntersectionType,
+      context,
+    }),
   defaultOptions: [defaultOptions],
   name: 'sort-intersection-types',
 })
+
+function sortIntersectionType({
+  matchedAstSelectors,
+  context,
+  node,
+}: {
+  context: Readonly<RuleContext<MessageId, Options>>
+  matchedAstSelectors: ReadonlySet<string>
+  node: TSESTree.TSIntersectionType
+}): void {
+  sortUnionOrIntersectionTypes({
+    availableMessageIds: {
+      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+      unexpectedOrder: ORDER_ERROR_ID,
+    },
+    cachedGroupsByModifiersAndSelectors,
+    tokenValueToIgnoreBefore: '&',
+    matchedAstSelectors,
+    defaultOptions,
+    context,
+    node,
+  })
+}
