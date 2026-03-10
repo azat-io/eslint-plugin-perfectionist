@@ -493,7 +493,7 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 </sub>
 <sub>default: `[]`</sub>
 
-Defines custom groups to match specific object type members.
+Defines custom groups to match specific union type members.
 
 A custom group definition may follow one of the two following interfaces:
 
@@ -509,7 +509,7 @@ interface CustomGroupDefinition {
 }
 ```
 
-An type member will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+A type member will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
 
 or:
 
@@ -527,7 +527,7 @@ interface CustomGroupAnyOfDefinition {
 }
 ```
 
-An type member will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
+A type member will match a `CustomGroupAnyOfDefinition` group if it matches all the filters of at least one of the `anyOf` items.
 
 #### Attributes
 
