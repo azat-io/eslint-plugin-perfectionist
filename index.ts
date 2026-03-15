@@ -20,6 +20,7 @@ import sortImports from './rules/sort-imports'
 import sortExports from './rules/sort-exports'
 import sortObjects from './rules/sort-objects'
 import sortModules from './rules/sort-modules'
+import sortArrays from './rules/sort-arrays'
 import sortEnums from './rules/sort-enums'
 import sortMaps from './rules/sort-maps'
 import sortSets from './rules/sort-sets'
@@ -65,6 +66,7 @@ export let rules = {
   'sort-imports': sortImports,
   'sort-exports': sortExports,
   'sort-objects': sortObjects,
+  'sort-arrays': sortArrays,
   'sort-enums': sortEnums,
   'sort-sets': sortSets,
   'sort-maps': sortMaps,

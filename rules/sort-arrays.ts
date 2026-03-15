@@ -32,10 +32,10 @@ import { sortArray } from './sort-arrays/sort-array'
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-const ORDER_ERROR_ID = 'unexpectedArrayIncludesOrder'
-const GROUP_ORDER_ERROR_ID = 'unexpectedArrayIncludesGroupOrder'
-const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenArrayIncludesMembers'
-const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenArrayIncludesMembers'
+const ORDER_ERROR_ID = 'unexpectedArraysOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedArraysGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenArraysMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenArraysMembers'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID
@@ -92,8 +92,8 @@ export default createEslintRule<Options, MessageId>({
       [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
-      description: 'Enforce sorted arrays before include method.',
-      url: 'https://perfectionist.dev/rules/sort-array-includes',
+      url: 'https://perfectionist.dev/rules/sort-arrays',
+      description: 'Enforce sorted arrays.',
       recommended: true,
     },
     schema: jsonSchema,
@@ -103,14 +103,14 @@ export default createEslintRule<Options, MessageId>({
   create: context =>
     buildAstListeners({
       nodeTypes: [AST_NODE_TYPES.NewExpression, AST_NODE_TYPES.ArrayExpression],
-      sorter: sortPotentiallyValidArray,
+      sorter: sortValidArray,
       context,
     }),
   defaultOptions: [defaultOptions],
-  name: 'sort-array-includes',
+  name: 'sort-arrays',
 })
 
-function sortPotentiallyValidArray({
+function sortValidArray({
   matchedAstSelectors,
   context,
   node,
@@ -119,10 +119,6 @@ function sortPotentiallyValidArray({
   context: Readonly<RuleContext<MessageId, Options>>
   matchedAstSelectors: ReadonlySet<string>
 }): void {
-  if (!isValidArray()) {
-    return
-  }
-
   sortArray<MessageId>({
     availableMessageIds: {
       missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
@@ -136,27 +132,4 @@ function sortPotentiallyValidArray({
     context,
     node,
   })
-
-  function isValidArray(): boolean {
-    if (node.parent.type !== AST_NODE_TYPES.MemberExpression) {
-      return false
-    }
-
-    if (node.parent.property.type !== AST_NODE_TYPES.Identifier) {
-      return false
-    }
-    if (node.parent.property.name !== 'includes') {
-      return false
-    }
-
-    if (node.parent.parent.type !== AST_NODE_TYPES.CallExpression) {
-      return false
-    }
-
-    if (node.parent.parent.callee !== node.parent) {
-      return false
-    }
-
-    return true
-  }
 }
