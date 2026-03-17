@@ -1,5 +1,59 @@
 # Changelog
 
+## v5.7.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.6.0...v5.7.0)
+
+### 🚀 Features
+
+- **sort-array-includes:** Support conditional config by ast selector
+  ([bcd12a37](https://github.com/azat-io/eslint-plugin-perfectionist/commit/bcd12a37))
+- **sort-objects:** Support conditional config by ast selector
+  ([3a629862](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3a629862))
+- **sort-enums:** Support conditional config by ast selector
+  ([ad6f971d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/ad6f971d))
+- **sort-maps:** Support conditional config by ast selector
+  ([5757889c](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5757889c))
+- **sort-classes:** Support conditional config by ast selector and name pattern
+  ([c2965cc6](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c2965cc6))
+- **sort-objects:** Support computed-key partitioning
+  ([1d6005e4](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1d6005e4))
+- **sort-jsx-props:** Support conditional config by ast selector
+  ([a90a0794](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a90a0794))
+- **sort-named-exports:** Support conditional config by ast selector
+  ([d573f93f](https://github.com/azat-io/eslint-plugin-perfectionist/commit/d573f93f))
+- **sort-heritage-clauses:** Support conditional config by ast selector and name
+  pattern
+  ([745c79cf](https://github.com/azat-io/eslint-plugin-perfectionist/commit/745c79cf))
+- **sort-variable-declarations:** Support conditional config by ast selector and
+  name pattern
+  ([498bef97](https://github.com/azat-io/eslint-plugin-perfectionist/commit/498bef97))
+- **sort-named-imports:** Support conditional config by ast selector and name
+  pattern
+  ([2c28d110](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2c28d110))
+- **sort-object-types:** Support conditional config by ast selector
+  ([1d3dd304](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1d3dd304))
+- **sort-import-attributes:** Support conditional config by ast selector and
+  name pattern
+  ([8f6f21d4](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8f6f21d4))
+- **sort-union-types:** Support conditional config by ast selector and name
+  pattern
+  ([1953b4f7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/1953b4f7))
+
+### 🐞 Bug Fixes
+
+- **sort-array-includes:** Fix invalid arrays being sorted
+  ([fc671f0b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/fc671f0b))
+- Make selector match priority deterministic across overlapping options
+  ([76633eea](https://github.com/azat-io/eslint-plugin-perfectionist/commit/76633eea))
+- Apply the first matching configuration in option order
+  ([936bf505](https://github.com/azat-io/eslint-plugin-perfectionist/commit/936bf505))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+- Azat S. ([@azat-io](https://github.com/azat-io))
+
 ## v5.6.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.5.0...v5.6.0)
