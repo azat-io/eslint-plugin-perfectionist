@@ -8209,7 +8209,7 @@ describe('sort-interfaces', () => {
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
-      ).resolves.not.toThrowError()
+      ).resolves.not.toThrow()
     })
 
     it('sets alphabetical asc sorting as default', async () => {

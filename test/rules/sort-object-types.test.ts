@@ -8967,7 +8967,7 @@ describe('sort-object-types', () => {
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
-      ).resolves.not.toThrowError()
+      ).resolves.not.toThrow()
     })
 
     it('ignores semi at the end of value', async () => {

@@ -14753,7 +14753,7 @@ describe('sort-classes', () => {
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
-      ).resolves.not.toThrowError()
+      ).resolves.not.toThrow()
     })
 
     it('does not crash when class body contains unknown elements', async () => {

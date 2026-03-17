@@ -15,6 +15,28 @@ import { colorTheme } from './docs/utils/shiki-theme'
 let site = 'https://perfectionist.dev'
 
 export default defineConfig({
+  vite: {
+    css: {
+      lightningcss: {
+        targets: browserslistToTargets(
+          browserslist(
+            browserslist.loadConfig({ path: '.' }) ?? browserslist.defaults,
+          ),
+        ),
+      },
+      transformer: 'lightningcss',
+    },
+    optimizeDeps: {
+      exclude: ['shiki-magic-move'],
+    },
+    resolve: {
+      noExternal: ['shiki-magic-move'],
+    },
+    plugins: [
+      // @ts-ignore
+      svelteSvg(),
+    ],
+  },
   markdown: {
     rehypePlugins: [
       [
@@ -34,22 +56,6 @@ export default defineConfig({
       theme: colorTheme,
     },
     remarkPlugins: [remarkSectionize, remarkHeadings],
-  },
-  vite: {
-    css: {
-      lightningcss: {
-        targets: browserslistToTargets(
-          browserslist(
-            browserslist.loadConfig({ path: '.' }) ?? browserslist.defaults,
-          ),
-        ),
-      },
-      transformer: 'lightningcss',
-    },
-    plugins: [
-      // @ts-ignore
-      svelteSvg(),
-    ],
   },
   integrations: [
     svelte(),

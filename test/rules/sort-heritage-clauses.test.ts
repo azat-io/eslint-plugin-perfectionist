@@ -2813,7 +2813,7 @@ describe('sort-heritage-clauses', () => {
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
-      ).resolves.not.toThrowError()
+      ).resolves.not.toThrow()
     })
 
     it('uses default sorting configuration', async () => {

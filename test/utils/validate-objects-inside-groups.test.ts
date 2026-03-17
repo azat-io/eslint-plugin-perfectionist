@@ -14,7 +14,7 @@ describe('validate-objects-inside-groups', () => {
           { commentAbove: 'bar', group: ['e'] },
         ],
       })
-    }).not.toThrowError()
+    }).not.toThrow()
   })
 
   it('throws an error with consecutive non-groups objects-based elements', () => {
@@ -22,6 +22,6 @@ describe('validate-objects-inside-groups', () => {
       validateObjectsInsideGroups({
         groups: ['a', { newlinesBetween: 1 }, { newlinesBetween: 1 }, ['b']],
       })
-    }).toThrowError('Consecutive `newlinesBetween` objects are not allowed')
+    }).toThrow('Consecutive `newlinesBetween` objects are not allowed')
   })
 })

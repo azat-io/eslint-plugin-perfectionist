@@ -6,6 +6,6 @@ describe('unreachable-case-error', () => {
   it('should construct the error with the correct message', () => {
     expect(() => {
       throw new UnreachableCaseError('Case that could not be reached' as never)
-    }).toThrowError('Unreachable case: Case that could not be reached')
+    }).toThrow('Unreachable case: Case that could not be reached')
   })
 })

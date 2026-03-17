@@ -1439,7 +1439,7 @@ describe('sort-import-attributes', () => {
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
-      ).resolves.not.toThrowError()
+      ).resolves.not.toThrow()
     })
 
     it('uses the attribute source when a literal key lacks value', async () => {

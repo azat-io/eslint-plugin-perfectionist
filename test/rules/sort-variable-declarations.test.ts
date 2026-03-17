@@ -6027,7 +6027,7 @@ describe('sort-variable-declarations', () => {
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
-      ).resolves.not.toThrowError()
+      ).resolves.not.toThrow()
     })
 
     it('ignores variables with eslint-disable-next-line comments', async () => {

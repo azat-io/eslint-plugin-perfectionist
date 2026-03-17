@@ -86,7 +86,7 @@ describe('build-subgroup-order-comparator', () => {
         buildTestNode({ group: 'group-a' }),
         buildTestNode({ group: 'group-b' }),
       )
-    }).toThrowError()
+    }).toThrow()
   })
 
   function buildTestNode({ group }: { group: string }): SortingNode {

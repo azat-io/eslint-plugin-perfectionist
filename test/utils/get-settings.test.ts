@@ -13,7 +13,7 @@ describe('get-settings', () => {
           invalidOption2: 'value',
         },
       })
-    }).toThrowError(
+    }).toThrow(
       'Invalid Perfectionist setting(s): invalidOption1, invalidOption2',
     )
   })
@@ -36,6 +36,6 @@ describe('get-settings', () => {
       getSettings({
         perfectionist: allowedOptions,
       })
-    }).not.toThrowError()
+    }).not.toThrow()
   })
 })

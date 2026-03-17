@@ -1,5 +1,6 @@
-import { defineCollection, z } from 'astro:content'
+import { defineCollection } from 'astro:content'
 import { glob } from 'astro/loaders'
+import { z } from 'astro/zod'
 import path from 'node:path'
 
 let guide = defineCollection({
@@ -9,7 +10,7 @@ let guide = defineCollection({
     title: z.string(),
   }),
   loader: glob({
-    base: path.join(import.meta.dirname, 'guide'),
+    base: path.join(import.meta.dirname, 'content', 'guide'),
     pattern: '**/*.mdx',
   }),
 })
@@ -22,7 +23,7 @@ let configs = defineCollection({
     title: z.string(),
   }),
   loader: glob({
-    base: path.join(import.meta.dirname, 'configs'),
+    base: path.join(import.meta.dirname, 'content', 'configs'),
     pattern: '**/*.mdx',
   }),
 })
@@ -36,7 +37,7 @@ let rules = defineCollection({
     title: z.string(),
   }),
   loader: glob({
-    base: path.join(import.meta.dirname, 'rules'),
+    base: path.join(import.meta.dirname, 'content', 'rules'),
     pattern: '**/*.mdx',
   }),
 })

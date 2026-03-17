@@ -15,7 +15,7 @@ describe('validate-newlines-and-partition-configuration', () => {
             newlinesBetween,
             groups: [],
           })
-        }).toThrowError(
+        }).toThrow(
           "The 'partitionByNewLine' and 'newlinesBetween' options cannot be used together",
         )
       },
@@ -32,7 +32,7 @@ describe('validate-newlines-and-partition-configuration', () => {
             newlinesInside: 'ignore',
             customGroups: [],
           })
-        }).toThrowError(
+        }).toThrow(
           "The 'partitionByNewLine' and 'newlinesBetween' options cannot be used together",
         )
       },
@@ -49,7 +49,7 @@ describe('validate-newlines-and-partition-configuration', () => {
             newlinesBetween,
             groups: [],
           })
-        }).not.toThrowError()
+        }).not.toThrow()
       },
     )
   })
@@ -66,7 +66,7 @@ describe('validate-newlines-and-partition-configuration', () => {
             newlinesInside,
             groups: [],
           })
-        }).toThrowError(
+        }).toThrow(
           "The 'partitionByNewLine' and 'newlinesInside' options cannot be used together",
         )
       },
@@ -83,7 +83,7 @@ describe('validate-newlines-and-partition-configuration', () => {
             newlinesInside: 'ignore',
             customGroups: [],
           })
-        }).toThrowError(
+        }).toThrow(
           "The 'partitionByNewLine' and 'newlinesInside' options cannot be used together",
         )
       },
@@ -100,7 +100,7 @@ describe('validate-newlines-and-partition-configuration', () => {
             newlinesInside: 'ignore',
             groups: ['group'],
           })
-        }).toThrowError(
+        }).toThrow(
           "The 'partitionByNewLine' and 'newlinesInside' options cannot be used together",
         )
       },
@@ -117,7 +117,7 @@ describe('validate-newlines-and-partition-configuration', () => {
             newlinesInside,
             groups: [],
           })
-        }).not.toThrowError()
+        }).not.toThrow()
       },
     )
 
@@ -132,7 +132,7 @@ describe('validate-newlines-and-partition-configuration', () => {
             newlinesInside,
             groups: [],
           })
-        }).not.toThrowError()
+        }).not.toThrow()
       },
     )
   })
@@ -150,6 +150,6 @@ describe('validate-newlines-and-partition-configuration', () => {
         partitionByNewLine: true,
         newlinesInside: 'ignore',
       })
-    }).not.toThrowError()
+    }).not.toThrow()
   })
 })
