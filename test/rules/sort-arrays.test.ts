@@ -4,12 +4,12 @@ import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
-import rule from '../../rules/sort-array-includes'
 import { Alphabet } from '../../utils/alphabet'
+import rule from '../../rules/sort-arrays'
 
-describe('sort-array-includes', () => {
+describe('sort-arrays', () => {
   let { invalid, valid } = createRuleTester({
-    name: 'sort-array-includes',
+    name: 'sort-arrays',
     rule,
   })
   let oxlintRuleTester = buildOxlintRuleTester(rule)
@@ -20,70 +20,28 @@ describe('sort-array-includes', () => {
       order: 'asc',
     } as const
 
-    it('ignores invalid array includes expressions', async () => {
+    it('accepts sorted arrays', async () => {
       await valid({
         code: dedent`
-          new Array[0]([
-            b,
-            a,
-          ]).includes(value)
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          new NotAnArray(
-            b,
-            a,
-          ).includes(value)
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          [
-            b,
-            a,
-          ].includes
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          someFunction([
-            b,
-            a,
-          ].includes)
+          ['aaa', 'bb', 'c']
         `,
         options: [options],
       })
     })
 
-    it('accepts sorted arrays in includes() calls', async () => {
-      await valid({
-        code: dedent`
-          ['aaa', 'bb', 'c'].includes('aaa')
-        `,
-        options: [options],
-      })
-    })
-
-    it('reports error when array in includes() is not sorted', async () => {
+    it('reports error when array is not sorted', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'aaa', left: 'c' },
           },
         ],
         output: dedent`
-          ['aaa', 'bb', 'c'].includes('aaa')
+          ['aaa', 'bb', 'c']
         `,
         code: dedent`
-          ['bb', 'c', 'aaa'].includes('aaa')
+          ['bb', 'c', 'aaa']
         `,
         options: [options],
       })
@@ -99,7 +57,7 @@ describe('sort-array-includes', () => {
             'd',
             'e',
             ...other,
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -113,7 +71,7 @@ describe('sort-array-includes', () => {
             'd',
             'e',
             ...other,
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -123,11 +81,11 @@ describe('sort-array-includes', () => {
             'd',
             'e',
             ...other,
-          ].includes(value)
+          ]
         `,
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
@@ -142,7 +100,7 @@ describe('sort-array-includes', () => {
             ...aaa,
             ...ccc,
             ...bbbb,
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -160,7 +118,7 @@ describe('sort-array-includes', () => {
             ...spread2,
             'g',
             'h',
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -173,7 +131,7 @@ describe('sort-array-includes', () => {
             ...spread,
             'c',
             'd',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -182,11 +140,11 @@ describe('sort-array-includes', () => {
             ...spread,
             'c',
             'd',
-          ].includes(value)
+          ]
         `,
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -197,7 +155,7 @@ describe('sort-array-includes', () => {
     it('handles arrays with empty slots correctly', async () => {
       await valid({
         code: dedent`
-          ['a', 'b', 'c',, 'd'].includes(value)
+          ['a', 'b', 'c',, 'd']
         `,
         options: [options],
       })
@@ -205,15 +163,15 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
-          ['a', 'b', 'c',, 'd'].includes(value)
+          ['a', 'b', 'c',, 'd']
         `,
         code: dedent`
-          ['b', 'a', 'c',, 'd'].includes(value)
+          ['b', 'a', 'c',, 'd']
         `,
         options: [options],
       })
@@ -227,7 +185,7 @@ describe('sort-array-includes', () => {
             'b',
             'c',
             'd',
-          ).includes(value)
+          )
         `,
         options: [options],
       })
@@ -235,7 +193,7 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
@@ -245,7 +203,7 @@ describe('sort-array-includes', () => {
             'b',
             'c',
             'd',
-          ).includes(value)
+          )
         `,
         code: dedent`
           new Array(
@@ -253,7 +211,7 @@ describe('sort-array-includes', () => {
             'c',
             'b',
             'd',
-          ).includes(value)
+          )
         `,
         options: [options],
       })
@@ -270,11 +228,11 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'd' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'b', left: 'e' },
           },
         ],
@@ -287,7 +245,7 @@ describe('sort-array-includes', () => {
 
             'b',
             'e',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -298,7 +256,7 @@ describe('sort-array-includes', () => {
 
             'e',
             'b',
-          ].includes(value)
+          ]
         `,
         options: partitionOptions,
       })
@@ -328,7 +286,7 @@ describe('sort-array-includes', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
           {
             data: {
@@ -337,7 +295,7 @@ describe('sort-array-includes', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -347,7 +305,7 @@ describe('sort-array-includes', () => {
 
             'top1',
             'a',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -356,7 +314,7 @@ describe('sort-array-includes', () => {
 
             'a',
             'top1',
-          ].includes(value)
+          ]
         `,
         options: partitionWithGroupOptions,
       })
@@ -378,7 +336,7 @@ describe('sort-array-includes', () => {
 
             'c',
             'd',
-          ].includes(value)
+          ]
         `,
         options: partitionWithGroupOptions,
       })
@@ -407,7 +365,7 @@ describe('sort-array-includes', () => {
             // Not partition comment
             'fff',
             'gg',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -423,15 +381,15 @@ describe('sort-array-includes', () => {
             'gg',
             // Not partition comment
             'fff',
-          ].includes(value)
+          ]
         `,
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bbb', left: 'd' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'fff', left: 'gg' },
           },
         ],
@@ -447,7 +405,7 @@ describe('sort-array-includes', () => {
             'bb',
             // Other comment
             'a',
-          ].includes(value)
+          ]
         `,
         options: [
           {
@@ -478,7 +436,7 @@ describe('sort-array-includes', () => {
             'c',
             /* Other */
             'e',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -491,11 +449,11 @@ describe('sort-array-includes', () => {
             'bb',
             /* Other */
             'e',
-          ].includes(value)
+          ]
         `,
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bb', left: 'c' },
           },
         ],
@@ -527,7 +485,7 @@ describe('sort-array-includes', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
           {
             data: {
@@ -536,7 +494,7 @@ describe('sort-array-includes', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -546,7 +504,7 @@ describe('sort-array-includes', () => {
             // Part: 1
             'top1',
             'a',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -555,7 +513,7 @@ describe('sort-array-includes', () => {
             // Part: 1
             'a',
             'top1',
-          ].includes(value)
+          ]
         `,
         options: partitionWithGroupOptions,
       })
@@ -574,7 +532,7 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -583,14 +541,14 @@ describe('sort-array-includes', () => {
             /* Comment */
             'a',
             'b'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'b',
             /* Comment */
             'a'
-          ].includes(value)
+          ]
         `,
         options: lineCommentsOnlyOptions,
       })
@@ -611,7 +569,7 @@ describe('sort-array-includes', () => {
             'b',
             // Comment
             'a'
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -633,20 +591,13 @@ describe('sort-array-includes', () => {
             'b',
             // a
             'a'
-          ].includes(value)
+          ]
         `,
       })
     })
 
     it('supports regex patterns for line comments', async () => {
       await valid({
-        code: dedent`
-          [
-            'b',
-            // I am a partition comment because I don't have f o o
-            'a'
-          ].includes(value)
-        `,
         options: [
           {
             ...options,
@@ -655,6 +606,13 @@ describe('sort-array-includes', () => {
             },
           },
         ],
+        code: dedent`
+          [
+            'b',
+            // I am a partition comment because I don't have f o o
+            'a'
+          ]
+        `,
       })
     })
 
@@ -671,7 +629,7 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -680,14 +638,14 @@ describe('sort-array-includes', () => {
             // Comment
             'a',
             'b'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'b',
             // Comment
             'a'
-          ].includes(value)
+          ]
         `,
         options: blockCommentsOnlyOptions,
       })
@@ -708,22 +666,13 @@ describe('sort-array-includes', () => {
             'b',
             /* Comment */
             'a'
-          ].includes(value)
+          ]
         `,
       })
     })
 
     it('matches specific block comment patterns', async () => {
       await valid({
-        code: dedent`
-          [
-            'c',
-            /* b */
-            'b',
-            /* a */
-            'a'
-          ].includes(value)
-        `,
         options: [
           {
             ...options,
@@ -732,18 +681,20 @@ describe('sort-array-includes', () => {
             },
           },
         ],
+        code: dedent`
+          [
+            'c',
+            /* b */
+            'b',
+            /* a */
+            'a'
+          ]
+        `,
       })
     })
 
     it('supports regex patterns for block comments', async () => {
       await valid({
-        code: dedent`
-          [
-            'b',
-            /* I am a partition comment because I don't have f o o */
-            'a'
-          ].includes(value)
-        `,
         options: [
           {
             ...options,
@@ -752,6 +703,13 @@ describe('sort-array-includes', () => {
             },
           },
         ],
+        code: dedent`
+          [
+            'b',
+            /* I am a partition comment because I don't have f o o */
+            'a'
+          ]
+        `,
       })
     })
 
@@ -764,7 +722,7 @@ describe('sort-array-includes', () => {
             // I am a partition comment because I don't have f o o
             'a',
             'b',
-          ].includes(value)
+          ]
         `,
         options: [
           {
@@ -777,19 +735,19 @@ describe('sort-array-includes', () => {
 
     it('ignores special characters at start when trimming', async () => {
       await valid({
-        code: dedent`
-          [
-            '$a',
-            'b',
-            '$c',
-          ].includes(value)
-        `,
         options: [
           {
             ...options,
             specialCharacters: 'trim',
           },
         ],
+        code: dedent`
+          [
+            '$a',
+            'b',
+            '$c',
+          ]
+        `,
       })
     })
 
@@ -805,7 +763,7 @@ describe('sort-array-includes', () => {
           [
             'ab',
             'a$c',
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -820,7 +778,7 @@ describe('sort-array-includes', () => {
             'A',
             'b',
             'B'
-          ].includes(value)
+          ]
         `,
         options: [{ ...options, locales: 'zh-CN' }],
       })
@@ -830,19 +788,19 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
           [
             a, b
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             b, a
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -852,19 +810,19 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
           [
             a, b,
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             b, a,
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -888,11 +846,11 @@ describe('sort-array-includes', () => {
         ],
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'b', left: 'a' },
           },
           {
-            messageId: 'missedSpacingBetweenArrayIncludesMembers',
+            messageId: 'missedSpacingBetweenArraysMembers',
             data: { right: 'b', left: 'a' },
           },
         ],
@@ -901,13 +859,13 @@ describe('sort-array-includes', () => {
             'b',
 
             'a',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'a',
             'b',
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -934,7 +892,7 @@ describe('sort-array-includes', () => {
               right: 'top1',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -942,14 +900,14 @@ describe('sort-array-includes', () => {
             'top1',
             'a',
             'c'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'c',
             'top1',
             'a'
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -976,20 +934,20 @@ describe('sort-array-includes', () => {
               right: 'top1',
               left: 'b',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
           [
             'top1',
             'b',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'b',
             'top1',
-          ].includes(value)
+          ]
         `,
         options: customGroupOptions,
       })
@@ -1025,7 +983,7 @@ describe('sort-array-includes', () => {
                 leftGroup: 'unknown',
                 left: 'b',
               },
-              messageId: 'unexpectedArrayIncludesGroupOrder',
+              messageId: 'unexpectedArraysGroupOrder',
             },
           ],
           output: dedent`
@@ -1033,14 +991,14 @@ describe('sort-array-includes', () => {
               'helloLiteral',
               'a',
               'b',
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               'a',
               'b',
               'helloLiteral',
-            ].includes(value)
+            ]
           `,
           options: customGroupOptions,
         })
@@ -1067,16 +1025,16 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bb', left: 'a' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'ccc', left: 'bb' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
             data: { right: 'dddd', left: 'ccc' },
+            messageId: 'unexpectedArraysOrder',
           },
         ],
         output: dedent`
@@ -1091,7 +1049,7 @@ describe('sort-array-includes', () => {
             'g',
             ...o,
             ...p,
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -1105,7 +1063,7 @@ describe('sort-array-includes', () => {
             'g',
             ...o,
             ...p,
-          ].includes(value)
+          ]
         `,
         options: customSortOptions,
       })
@@ -1136,20 +1094,20 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: { right: 'fooBar', left: 'fooZar' },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
           },
         ],
         output: dedent`
           [
             'fooBar',
             'fooZar',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'fooZar',
             'fooBar',
-          ].includes(value)
+          ]
         `,
         options: fallbackSortOptions,
       })
@@ -1178,7 +1136,7 @@ describe('sort-array-includes', () => {
               right: 'top3',
               left: 'm',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -1189,7 +1147,7 @@ describe('sort-array-includes', () => {
             'top5',
             'top3',
             'm',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -1199,7 +1157,7 @@ describe('sort-array-includes', () => {
             'top5',
             'm',
             'top3',
-          ].includes(value)
+          ]
         `,
         options: unsortedGroupOptions,
       })
@@ -1234,7 +1192,7 @@ describe('sort-array-includes', () => {
               right: 'bFoo',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -1242,14 +1200,14 @@ describe('sort-array-includes', () => {
             'bFoo',
             'cFoo',
             'a',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'a',
             'bFoo',
             'cFoo',
-          ].includes(value)
+          ]
         `,
         options: anyOfOptions,
       })
@@ -1275,7 +1233,7 @@ describe('sort-array-includes', () => {
             'meTooIHaveFoo',
             'a',
             'b',
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -1328,7 +1286,7 @@ describe('sort-array-includes', () => {
                   right: 'g',
                   left: 'b',
                 },
-                messageId: 'unexpectedArrayIncludesGroupOrder',
+                messageId: 'unexpectedArraysGroupOrder',
               },
               {
                 data: {
@@ -1337,7 +1295,7 @@ describe('sort-array-includes', () => {
                   right: 'r',
                   left: 'g',
                 },
-                messageId: 'unexpectedArrayIncludesGroupOrder',
+                messageId: 'unexpectedArraysGroupOrder',
               },
             ],
             output: dedent`
@@ -1345,14 +1303,14 @@ describe('sort-array-includes', () => {
                 'r',
                 'g',
                 'b',
-              ].includes(value)
+              ]
             `,
             code: dedent`
               [
                 'b',
                 'g',
                 'r',
-              ].includes(value)
+              ]
             `,
             options: conditionalOptions,
           })
@@ -1378,20 +1336,20 @@ describe('sort-array-includes', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedArrayIncludesOrder',
+              messageId: 'unexpectedArraysOrder',
             },
           ],
           output: dedent`
             const array = [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           code: dedent`
             const array = [
               b,
               a,
-            ].includes(value)
+            ]
           `,
         })
       })
@@ -1429,7 +1387,7 @@ describe('sort-array-includes', () => {
             [
               b,
               a,
-            ].includes(value)
+            ]
           `,
         })
       })
@@ -1462,20 +1420,20 @@ describe('sort-array-includes', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedArrayIncludesOrder',
+              messageId: 'unexpectedArraysOrder',
             },
           ],
           output: dedent`
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               b,
               a,
-            ].includes(value)
+            ]
           `,
         })
 
@@ -1506,20 +1464,20 @@ describe('sort-array-includes', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedArrayIncludesOrder',
+              messageId: 'unexpectedArraysOrder',
             },
           ],
           output: dedent`
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               b,
               a,
-            ].includes(value)
+            ]
           `,
         })
 
@@ -1551,20 +1509,20 @@ describe('sort-array-includes', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'unexpectedArrayIncludesOrder',
+              messageId: 'unexpectedArraysOrder',
             },
           ],
           output: dedent`
             const a = [
               b,
               a,
-            ].includes(value)
+            ]
           `,
           code: dedent`
             const a = [
               a,
               b,
-            ].includes(value)
+            ]
           `,
         })
       })
@@ -1591,7 +1549,7 @@ describe('sort-array-includes', () => {
             [
               b,
               a,
-            ].includes(value)
+            ]
           `,
         })
 
@@ -1618,20 +1576,20 @@ describe('sort-array-includes', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedArrayIncludesOrder',
+              messageId: 'unexpectedArraysOrder',
             },
           ],
           output: dedent`
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               b,
               a,
-            ].includes(value)
+            ]
           `,
         })
       })
@@ -1657,20 +1615,20 @@ describe('sort-array-includes', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedArrayIncludesOrder',
+              messageId: 'unexpectedArraysOrder',
             },
           ],
           output: dedent`
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               b,
               a,
-            ].includes(value)
+            ]
           `,
         })
       })
@@ -1680,15 +1638,15 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'y', left: 'a' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'b', left: 'z' },
           },
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'b', left: 'z' },
           },
         ],
@@ -1714,7 +1672,7 @@ describe('sort-array-includes', () => {
           'z',
 
               'b'
-          ].includes(value)
+          ]
         `,
         output: dedent`
           [
@@ -1722,7 +1680,7 @@ describe('sort-array-includes', () => {
            'b',
           'y',
               'z'
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -1744,11 +1702,11 @@ describe('sort-array-includes', () => {
         ],
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'b', left: 'z' },
           },
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'b', left: 'z' },
           },
         ],
@@ -1760,7 +1718,7 @@ describe('sort-array-includes', () => {
            'b',
           'y',
               'z'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -1771,7 +1729,7 @@ describe('sort-array-includes', () => {
           'z',
 
               'b'
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -1795,11 +1753,11 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'y', left: 'a' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'b', left: 'z' },
           },
         ],
@@ -1812,7 +1770,7 @@ describe('sort-array-includes', () => {
           'z',
 
               'b'
-          ].includes(value)
+          ]
         `,
         output: dedent`
           [
@@ -1821,7 +1779,7 @@ describe('sort-array-includes', () => {
           'y',
 
               'z'
-          ].includes(value)
+          ]
         `,
         options: newlinesOptions,
       })
@@ -1849,15 +1807,15 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'z', left: 'a' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'y', left: 'z' },
           },
           {
-            messageId: 'missedSpacingBetweenArrayIncludesMembers',
+            messageId: 'missedSpacingBetweenArraysMembers',
             data: { right: 'b', left: 'y' },
           },
         ],
@@ -1869,7 +1827,7 @@ describe('sort-array-includes', () => {
           'z',
 
               'b',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -1879,7 +1837,7 @@ describe('sort-array-includes', () => {
            'z',
           'y',
               'b',
-          ].includes(value)
+          ]
         `,
         options: multiGroupOptions,
       })
@@ -1937,15 +1895,15 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'missedSpacingBetweenArrayIncludesMembers',
+            messageId: 'missedSpacingBetweenArraysMembers',
             data: { right: 'b', left: 'a' },
           },
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'c', left: 'b' },
           },
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'd', left: 'c' },
           },
         ],
@@ -1960,7 +1918,7 @@ describe('sort-array-includes', () => {
 
 
             'e'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -1974,7 +1932,7 @@ describe('sort-array-includes', () => {
 
 
             'e'
-          ].includes(value)
+          ]
         `,
         options: inlineNewlineOptions,
       })
@@ -2009,7 +1967,7 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: 'missedSpacingBetweenArrayIncludesMembers',
+              messageId: 'missedSpacingBetweenArraysMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
@@ -2019,13 +1977,13 @@ describe('sort-array-includes', () => {
 
 
               b,
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           options: mixedNewlineOptions,
         })
@@ -2060,7 +2018,7 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
+              messageId: 'extraSpacingBetweenArraysMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
@@ -2068,14 +2026,14 @@ describe('sort-array-includes', () => {
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               a,
 
               b,
-            ].includes(value)
+            ]
           `,
           options: noNewlineBetweenGroupsOptions,
         })
@@ -2112,7 +2070,7 @@ describe('sort-array-includes', () => {
               a,
 
               b,
-            ].includes(value)
+            ]
           `,
           options: ignoreNewlineOptions,
         })
@@ -2122,7 +2080,7 @@ describe('sort-array-includes', () => {
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           options: ignoreNewlineOptions,
         })
@@ -2153,7 +2111,7 @@ describe('sort-array-includes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -2162,7 +2120,7 @@ describe('sort-array-includes', () => {
 
             'b',
             'c'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -2170,7 +2128,7 @@ describe('sort-array-includes', () => {
             'a', // Comment after
 
             'c'
-          ].includes(value)
+          ]
         `,
         options: commentOptions,
       })
@@ -2193,6 +2151,12 @@ describe('sort-array-includes', () => {
       ]
 
       await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedArraysOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         output: dedent`
           [
             'a',
@@ -2201,7 +2165,7 @@ describe('sort-array-includes', () => {
 
             'b',
             'c',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -2211,14 +2175,8 @@ describe('sort-array-includes', () => {
 
             'c',
             'b',
-          ].includes(value)
+          ]
         `,
-        errors: [
-          {
-            messageId: 'unexpectedArrayIncludesOrder',
-            data: { right: 'b', left: 'c' },
-          },
-        ],
         options: partitionOptions,
       })
     })
@@ -2230,28 +2188,28 @@ describe('sort-array-includes', () => {
       order: 'asc',
     } as const
 
-    it('accepts sorted arrays in includes() calls', async () => {
+    it('accepts sorted arrays', async () => {
       await valid({
         code: dedent`
-          ['aaa', 'bb', 'c'].includes('aaa')
+          ['aaa', 'bb', 'c']
         `,
         options: [options],
       })
     })
 
-    it('reports error when array in includes() is not sorted', async () => {
+    it('reports error when array is not sorted', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'aaa', left: 'c' },
           },
         ],
         output: dedent`
-          ['aaa', 'bb', 'c'].includes('aaa')
+          ['aaa', 'bb', 'c']
         `,
         code: dedent`
-          ['bb', 'c', 'aaa'].includes('aaa')
+          ['bb', 'c', 'aaa']
         `,
         options: [options],
       })
@@ -2267,7 +2225,7 @@ describe('sort-array-includes', () => {
             'd',
             'e',
             ...other,
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -2281,7 +2239,7 @@ describe('sort-array-includes', () => {
             'd',
             'e',
             ...other,
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -2291,11 +2249,11 @@ describe('sort-array-includes', () => {
             'd',
             'e',
             ...other,
-          ].includes(value)
+          ]
         `,
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
@@ -2310,7 +2268,7 @@ describe('sort-array-includes', () => {
             ...aaa,
             ...ccc,
             ...bbbb,
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -2328,7 +2286,7 @@ describe('sort-array-includes', () => {
             ...spread2,
             'g',
             'h',
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -2341,7 +2299,7 @@ describe('sort-array-includes', () => {
             ...spread,
             'c',
             'd',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -2350,11 +2308,11 @@ describe('sort-array-includes', () => {
             ...spread,
             'c',
             'd',
-          ].includes(value)
+          ]
         `,
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -2365,7 +2323,7 @@ describe('sort-array-includes', () => {
     it('handles arrays with empty slots correctly', async () => {
       await valid({
         code: dedent`
-          ['a', 'b', 'c',, 'd'].includes(value)
+          ['a', 'b', 'c',, 'd']
         `,
         options: [options],
       })
@@ -2373,15 +2331,15 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
-          ['a', 'b', 'c',, 'd'].includes(value)
+          ['a', 'b', 'c',, 'd']
         `,
         code: dedent`
-          ['b', 'a', 'c',, 'd'].includes(value)
+          ['b', 'a', 'c',, 'd']
         `,
         options: [options],
       })
@@ -2395,7 +2353,7 @@ describe('sort-array-includes', () => {
             'b',
             'c',
             'd',
-          ).includes(value)
+          )
         `,
         options: [options],
       })
@@ -2403,7 +2361,7 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
@@ -2413,7 +2371,7 @@ describe('sort-array-includes', () => {
             'b',
             'c',
             'd',
-          ).includes(value)
+          )
         `,
         code: dedent`
           new Array(
@@ -2421,7 +2379,7 @@ describe('sort-array-includes', () => {
             'c',
             'b',
             'd',
-          ).includes(value)
+          )
         `,
         options: [options],
       })
@@ -2438,11 +2396,11 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'd' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'b', left: 'e' },
           },
         ],
@@ -2455,7 +2413,7 @@ describe('sort-array-includes', () => {
 
             'b',
             'e',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -2466,7 +2424,7 @@ describe('sort-array-includes', () => {
 
             'e',
             'b',
-          ].includes(value)
+          ]
         `,
         options: partitionOptions,
       })
@@ -2496,7 +2454,7 @@ describe('sort-array-includes', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
           {
             data: {
@@ -2505,7 +2463,7 @@ describe('sort-array-includes', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -2515,7 +2473,7 @@ describe('sort-array-includes', () => {
 
             'top1',
             'a',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -2524,7 +2482,7 @@ describe('sort-array-includes', () => {
 
             'a',
             'top1',
-          ].includes(value)
+          ]
         `,
         options: partitionWithGroupOptions,
       })
@@ -2546,7 +2504,7 @@ describe('sort-array-includes', () => {
 
             'c',
             'd',
-          ].includes(value)
+          ]
         `,
         options: partitionWithGroupOptions,
       })
@@ -2575,7 +2533,7 @@ describe('sort-array-includes', () => {
             // Not partition comment
             'fff',
             'gg',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -2591,15 +2549,15 @@ describe('sort-array-includes', () => {
             'gg',
             // Not partition comment
             'fff',
-          ].includes(value)
+          ]
         `,
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bbb', left: 'd' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'fff', left: 'gg' },
           },
         ],
@@ -2615,7 +2573,7 @@ describe('sort-array-includes', () => {
             'bb',
             // Other comment
             'a',
-          ].includes(value)
+          ]
         `,
         options: [
           {
@@ -2646,7 +2604,7 @@ describe('sort-array-includes', () => {
             'c',
             /* Other */
             'e',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -2659,11 +2617,11 @@ describe('sort-array-includes', () => {
             'bb',
             /* Other */
             'e',
-          ].includes(value)
+          ]
         `,
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bb', left: 'c' },
           },
         ],
@@ -2695,7 +2653,7 @@ describe('sort-array-includes', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
           {
             data: {
@@ -2704,7 +2662,7 @@ describe('sort-array-includes', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -2714,7 +2672,7 @@ describe('sort-array-includes', () => {
             // Part: 1
             'top1',
             'a',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -2723,7 +2681,7 @@ describe('sort-array-includes', () => {
             // Part: 1
             'a',
             'top1',
-          ].includes(value)
+          ]
         `,
         options: partitionWithGroupOptions,
       })
@@ -2742,7 +2700,7 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -2751,14 +2709,14 @@ describe('sort-array-includes', () => {
             /* Comment */
             'a',
             'b'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'b',
             /* Comment */
             'a'
-          ].includes(value)
+          ]
         `,
         options: lineCommentsOnlyOptions,
       })
@@ -2779,7 +2737,7 @@ describe('sort-array-includes', () => {
             'b',
             // Comment
             'a'
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -2801,20 +2759,13 @@ describe('sort-array-includes', () => {
             'b',
             // a
             'a'
-          ].includes(value)
+          ]
         `,
       })
     })
 
     it('supports regex patterns for line comments', async () => {
       await valid({
-        code: dedent`
-          [
-            'b',
-            // I am a partition comment because I don't have f o o
-            'a'
-          ].includes(value)
-        `,
         options: [
           {
             ...options,
@@ -2823,6 +2774,13 @@ describe('sort-array-includes', () => {
             },
           },
         ],
+        code: dedent`
+          [
+            'b',
+            // I am a partition comment because I don't have f o o
+            'a'
+          ]
+        `,
       })
     })
 
@@ -2839,7 +2797,7 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -2848,14 +2806,14 @@ describe('sort-array-includes', () => {
             // Comment
             'a',
             'b'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'b',
             // Comment
             'a'
-          ].includes(value)
+          ]
         `,
         options: blockCommentsOnlyOptions,
       })
@@ -2876,22 +2834,13 @@ describe('sort-array-includes', () => {
             'b',
             /* Comment */
             'a'
-          ].includes(value)
+          ]
         `,
       })
     })
 
     it('matches specific block comment patterns', async () => {
       await valid({
-        code: dedent`
-          [
-            'c',
-            /* b */
-            'b',
-            /* a */
-            'a'
-          ].includes(value)
-        `,
         options: [
           {
             ...options,
@@ -2900,18 +2849,20 @@ describe('sort-array-includes', () => {
             },
           },
         ],
+        code: dedent`
+          [
+            'c',
+            /* b */
+            'b',
+            /* a */
+            'a'
+          ]
+        `,
       })
     })
 
     it('supports regex patterns for block comments', async () => {
       await valid({
-        code: dedent`
-          [
-            'b',
-            /* I am a partition comment because I don't have f o o */
-            'a'
-          ].includes(value)
-        `,
         options: [
           {
             ...options,
@@ -2920,6 +2871,13 @@ describe('sort-array-includes', () => {
             },
           },
         ],
+        code: dedent`
+          [
+            'b',
+            /* I am a partition comment because I don't have f o o */
+            'a'
+          ]
+        `,
       })
     })
 
@@ -2932,7 +2890,7 @@ describe('sort-array-includes', () => {
             // I am a partition comment because I don't have f o o
             'a',
             'b',
-          ].includes(value)
+          ]
         `,
         options: [
           {
@@ -2945,19 +2903,19 @@ describe('sort-array-includes', () => {
 
     it('ignores special characters at start when trimming', async () => {
       await valid({
-        code: dedent`
-          [
-            '$a',
-            'b',
-            '$c',
-          ].includes(value)
-        `,
         options: [
           {
             ...options,
             specialCharacters: 'trim',
           },
         ],
+        code: dedent`
+          [
+            '$a',
+            'b',
+            '$c',
+          ]
+        `,
       })
     })
 
@@ -2973,7 +2931,7 @@ describe('sort-array-includes', () => {
           [
             'ab',
             'a$c',
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -2988,7 +2946,7 @@ describe('sort-array-includes', () => {
             'A',
             'b',
             'B'
-          ].includes(value)
+          ]
         `,
         options: [{ ...options, locales: 'zh-CN' }],
       })
@@ -2998,19 +2956,19 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
           [
             a, b
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             b, a
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -3020,19 +2978,19 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
           [
             a, b,
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             b, a,
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -3060,7 +3018,7 @@ describe('sort-array-includes', () => {
               right: 'top1',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -3068,14 +3026,14 @@ describe('sort-array-includes', () => {
             'top1',
             'a',
             'c'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'c',
             'top1',
             'a'
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -3102,20 +3060,20 @@ describe('sort-array-includes', () => {
               right: 'top1',
               left: 'b',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
           [
             'top1',
             'b',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'b',
             'top1',
-          ].includes(value)
+          ]
         `,
         options: customGroupOptions,
       })
@@ -3151,7 +3109,7 @@ describe('sort-array-includes', () => {
                 leftGroup: 'unknown',
                 left: 'b',
               },
-              messageId: 'unexpectedArrayIncludesGroupOrder',
+              messageId: 'unexpectedArraysGroupOrder',
             },
           ],
           output: dedent`
@@ -3159,14 +3117,14 @@ describe('sort-array-includes', () => {
               'helloLiteral',
               'a',
               'b',
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               'a',
               'b',
               'helloLiteral',
-            ].includes(value)
+            ]
           `,
           options: customGroupOptions,
         })
@@ -3193,16 +3151,16 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bb', left: 'a' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'ccc', left: 'bb' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
             data: { right: 'dddd', left: 'ccc' },
+            messageId: 'unexpectedArraysOrder',
           },
         ],
         output: dedent`
@@ -3217,7 +3175,7 @@ describe('sort-array-includes', () => {
             'g',
             ...o,
             ...p,
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -3231,7 +3189,7 @@ describe('sort-array-includes', () => {
             'g',
             ...o,
             ...p,
-          ].includes(value)
+          ]
         `,
         options: customSortOptions,
       })
@@ -3262,20 +3220,20 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: { right: 'fooBar', left: 'fooZar' },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
           },
         ],
         output: dedent`
           [
             'fooBar',
             'fooZar',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'fooZar',
             'fooBar',
-          ].includes(value)
+          ]
         `,
         options: fallbackSortOptions,
       })
@@ -3304,7 +3262,7 @@ describe('sort-array-includes', () => {
               right: 'top3',
               left: 'm',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -3315,7 +3273,7 @@ describe('sort-array-includes', () => {
             'top5',
             'top3',
             'm',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -3325,7 +3283,7 @@ describe('sort-array-includes', () => {
             'top5',
             'm',
             'top3',
-          ].includes(value)
+          ]
         `,
         options: unsortedGroupOptions,
       })
@@ -3360,7 +3318,7 @@ describe('sort-array-includes', () => {
               right: 'bFoo',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -3368,14 +3326,14 @@ describe('sort-array-includes', () => {
             'bFoo',
             'cFoo',
             'a',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'a',
             'bFoo',
             'cFoo',
-          ].includes(value)
+          ]
         `,
         options: anyOfOptions,
       })
@@ -3401,7 +3359,7 @@ describe('sort-array-includes', () => {
             'meTooIHaveFoo',
             'a',
             'b',
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -3454,7 +3412,7 @@ describe('sort-array-includes', () => {
                   right: 'g',
                   left: 'b',
                 },
-                messageId: 'unexpectedArrayIncludesGroupOrder',
+                messageId: 'unexpectedArraysGroupOrder',
               },
               {
                 data: {
@@ -3463,7 +3421,7 @@ describe('sort-array-includes', () => {
                   right: 'r',
                   left: 'g',
                 },
-                messageId: 'unexpectedArrayIncludesGroupOrder',
+                messageId: 'unexpectedArraysGroupOrder',
               },
             ],
             output: dedent`
@@ -3471,14 +3429,14 @@ describe('sort-array-includes', () => {
                 'r',
                 'g',
                 'b',
-              ].includes(value)
+              ]
             `,
             code: dedent`
               [
                 'b',
                 'g',
                 'r',
-              ].includes(value)
+              ]
             `,
             options: conditionalOptions,
           })
@@ -3505,11 +3463,11 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'y', left: 'a' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'b', left: 'z' },
           },
         ],
@@ -3522,7 +3480,7 @@ describe('sort-array-includes', () => {
           'z',
 
               'b'
-          ].includes(value)
+          ]
         `,
         output: dedent`
           [
@@ -3531,7 +3489,7 @@ describe('sort-array-includes', () => {
           'y',
 
               'z'
-          ].includes(value)
+          ]
         `,
         options: newlinesOptions,
       })
@@ -3559,15 +3517,15 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'z', left: 'a' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'y', left: 'z' },
           },
           {
-            messageId: 'missedSpacingBetweenArrayIncludesMembers',
+            messageId: 'missedSpacingBetweenArraysMembers',
             data: { right: 'b', left: 'y' },
           },
         ],
@@ -3579,7 +3537,7 @@ describe('sort-array-includes', () => {
           'z',
 
               'b',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -3589,7 +3547,7 @@ describe('sort-array-includes', () => {
            'z',
           'y',
               'b',
-          ].includes(value)
+          ]
         `,
         options: multiGroupOptions,
       })
@@ -3647,15 +3605,15 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'missedSpacingBetweenArrayIncludesMembers',
+            messageId: 'missedSpacingBetweenArraysMembers',
             data: { right: 'b', left: 'a' },
           },
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'c', left: 'b' },
           },
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'd', left: 'c' },
           },
         ],
@@ -3670,7 +3628,7 @@ describe('sort-array-includes', () => {
 
 
             'e'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -3684,7 +3642,7 @@ describe('sort-array-includes', () => {
 
 
             'e'
-          ].includes(value)
+          ]
         `,
         options: inlineNewlineOptions,
       })
@@ -3719,7 +3677,7 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: 'missedSpacingBetweenArrayIncludesMembers',
+              messageId: 'missedSpacingBetweenArraysMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
@@ -3729,13 +3687,13 @@ describe('sort-array-includes', () => {
 
 
               b,
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           options: mixedNewlineOptions,
         })
@@ -3770,7 +3728,7 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
+              messageId: 'extraSpacingBetweenArraysMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
@@ -3778,14 +3736,14 @@ describe('sort-array-includes', () => {
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               a,
 
               b,
-            ].includes(value)
+            ]
           `,
           options: noNewlineBetweenGroupsOptions,
         })
@@ -3822,7 +3780,7 @@ describe('sort-array-includes', () => {
               a,
 
               b,
-            ].includes(value)
+            ]
           `,
           options: ignoreNewlineOptions,
         })
@@ -3832,7 +3790,7 @@ describe('sort-array-includes', () => {
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           options: ignoreNewlineOptions,
         })
@@ -3863,7 +3821,7 @@ describe('sort-array-includes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -3872,7 +3830,7 @@ describe('sort-array-includes', () => {
 
             'b',
             'c'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -3880,7 +3838,7 @@ describe('sort-array-includes', () => {
             'a', // Comment after
 
             'c'
-          ].includes(value)
+          ]
         `,
         options: commentOptions,
       })
@@ -3903,6 +3861,12 @@ describe('sort-array-includes', () => {
       ]
 
       await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedArraysOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         output: dedent`
           [
             'a',
@@ -3911,7 +3875,7 @@ describe('sort-array-includes', () => {
 
             'b',
             'c',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -3921,14 +3885,8 @@ describe('sort-array-includes', () => {
 
             'c',
             'b',
-          ].includes(value)
+          ]
         `,
-        errors: [
-          {
-            messageId: 'unexpectedArrayIncludesOrder',
-            data: { right: 'b', left: 'c' },
-          },
-        ],
         options: partitionOptions,
       })
     })
@@ -3940,28 +3898,28 @@ describe('sort-array-includes', () => {
       order: 'desc',
     } as const
 
-    it('accepts sorted arrays in includes() calls', async () => {
+    it('accepts sorted arrays', async () => {
       await valid({
         code: dedent`
-          ['aaa', 'bb', 'c'].includes('aaa')
+          ['aaa', 'bb', 'c']
         `,
         options: [options],
       })
     })
 
-    it('reports error when array in includes() is not sorted', async () => {
+    it('reports error when array is not sorted', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'aaa', left: 'c' },
           },
         ],
         output: dedent`
-          ['aaa', 'bb', 'c'].includes('aaa')
+          ['aaa', 'bb', 'c']
         `,
         code: dedent`
-          ['bb', 'c', 'aaa'].includes('aaa')
+          ['bb', 'c', 'aaa']
         `,
         options: [options],
       })
@@ -3977,7 +3935,7 @@ describe('sort-array-includes', () => {
             'dd',
             'e',
             ...other,
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -3991,7 +3949,7 @@ describe('sort-array-includes', () => {
             'dd',
             'e',
             ...other,
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -4001,12 +3959,12 @@ describe('sort-array-includes', () => {
             'dd',
             'e',
             ...other,
-          ].includes(value)
+          ]
         `,
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
             data: { right: 'bbbb', left: 'ccc' },
+            messageId: 'unexpectedArraysOrder',
           },
         ],
         options: [options],
@@ -4020,7 +3978,7 @@ describe('sort-array-includes', () => {
             ...aaa,
             ...bbbb,
             ...ccc,
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -4038,7 +3996,7 @@ describe('sort-array-includes', () => {
             ...spread2,
             'gg',
             'h',
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -4051,7 +4009,7 @@ describe('sort-array-includes', () => {
             ...spread,
             'cc',
             'd',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -4060,11 +4018,11 @@ describe('sort-array-includes', () => {
             ...spread,
             'cc',
             'd',
-          ].includes(value)
+          ]
         `,
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
@@ -4075,7 +4033,7 @@ describe('sort-array-includes', () => {
     it('handles arrays with empty slots correctly', async () => {
       await valid({
         code: dedent`
-          ['a', 'b', 'c',, 'd'].includes(value)
+          ['a', 'b', 'c',, 'd']
         `,
         options: [options],
       })
@@ -4089,33 +4047,33 @@ describe('sort-array-includes', () => {
             'bbb',
             'cc',
             'd',
-          ).includes(value)
+          )
         `,
         options: [options],
       })
 
       await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedArraysOrder',
+            data: { right: 'bbb', left: 'cc' },
+          },
+        ],
         output: dedent`
           new Array(
             'aaaa',
             'bbb',
             'cc',
             'd',
-          ).includes(value)
+          )
         `,
-        errors: [
-          {
-            messageId: 'unexpectedArrayIncludesOrder',
-            data: { right: 'bbb', left: 'cc' },
-          },
-        ],
         code: dedent`
           new Array(
             'aaaa',
             'cc',
             'bbb',
             'd',
-          ).includes(value)
+          )
         `,
         options: [options],
       })
@@ -4132,11 +4090,11 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
             data: { right: 'aaaaa', left: 'dd' },
+            messageId: 'unexpectedArraysOrder',
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bbbb', left: 'e' },
           },
         ],
@@ -4149,7 +4107,7 @@ describe('sort-array-includes', () => {
 
             'bbbb',
             'e',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -4160,7 +4118,7 @@ describe('sort-array-includes', () => {
 
             'e',
             'bbbb',
-          ].includes(value)
+          ]
         `,
         options: partitionOptions,
       })
@@ -4190,7 +4148,7 @@ describe('sort-array-includes', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
           {
             data: {
@@ -4199,7 +4157,7 @@ describe('sort-array-includes', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -4209,7 +4167,7 @@ describe('sort-array-includes', () => {
 
             'top1',
             'a',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -4218,7 +4176,7 @@ describe('sort-array-includes', () => {
 
             'a',
             'top1',
-          ].includes(value)
+          ]
         `,
         options: partitionWithGroupOptions,
       })
@@ -4240,7 +4198,7 @@ describe('sort-array-includes', () => {
 
             'c',
             'd',
-          ].includes(value)
+          ]
         `,
         options: partitionWithGroupOptions,
       })
@@ -4269,7 +4227,7 @@ describe('sort-array-includes', () => {
             // Not partition comment
             'fff',
             'gg',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -4285,15 +4243,15 @@ describe('sort-array-includes', () => {
             'gg',
             // Not partition comment
             'fff',
-          ].includes(value)
+          ]
         `,
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bbb', left: 'd' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'fff', left: 'gg' },
           },
         ],
@@ -4309,7 +4267,7 @@ describe('sort-array-includes', () => {
             'bb',
             // Other comment
             'a',
-          ].includes(value)
+          ]
         `,
         options: [
           {
@@ -4340,7 +4298,7 @@ describe('sort-array-includes', () => {
             'c',
             /* Other */
             'e',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -4353,11 +4311,11 @@ describe('sort-array-includes', () => {
             'bb',
             /* Other */
             'e',
-          ].includes(value)
+          ]
         `,
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bb', left: 'c' },
           },
         ],
@@ -4389,7 +4347,7 @@ describe('sort-array-includes', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
           {
             data: {
@@ -4398,7 +4356,7 @@ describe('sort-array-includes', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -4408,7 +4366,7 @@ describe('sort-array-includes', () => {
             // Part: 1
             'top1',
             'a',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -4417,7 +4375,7 @@ describe('sort-array-includes', () => {
             // Part: 1
             'a',
             'top1',
-          ].includes(value)
+          ]
         `,
         options: partitionWithGroupOptions,
       })
@@ -4436,7 +4394,7 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
@@ -4445,14 +4403,14 @@ describe('sort-array-includes', () => {
             /* Comment */
             'aa',
             'b'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'b',
             /* Comment */
             'aa'
-          ].includes(value)
+          ]
         `,
         options: lineCommentsOnlyOptions,
       })
@@ -4473,7 +4431,7 @@ describe('sort-array-includes', () => {
             'b',
             // Comment
             'a'
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -4495,20 +4453,13 @@ describe('sort-array-includes', () => {
             'b',
             // a
             'a'
-          ].includes(value)
+          ]
         `,
       })
     })
 
     it('supports regex patterns for line comments', async () => {
       await valid({
-        code: dedent`
-          [
-            'b',
-            // I am a partition comment because I don't have f o o
-            'a'
-          ].includes(value)
-        `,
         options: [
           {
             ...options,
@@ -4517,6 +4468,13 @@ describe('sort-array-includes', () => {
             },
           },
         ],
+        code: dedent`
+          [
+            'b',
+            // I am a partition comment because I don't have f o o
+            'a'
+          ]
+        `,
       })
     })
 
@@ -4533,7 +4491,7 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
@@ -4542,14 +4500,14 @@ describe('sort-array-includes', () => {
             // Comment
             'aa',
             'b'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'b',
             // Comment
             'aa'
-          ].includes(value)
+          ]
         `,
         options: blockCommentsOnlyOptions,
       })
@@ -4570,22 +4528,13 @@ describe('sort-array-includes', () => {
             'b',
             /* Comment */
             'a'
-          ].includes(value)
+          ]
         `,
       })
     })
 
     it('matches specific block comment patterns', async () => {
       await valid({
-        code: dedent`
-          [
-            'c',
-            /* b */
-            'b',
-            /* a */
-            'a'
-          ].includes(value)
-        `,
         options: [
           {
             ...options,
@@ -4594,18 +4543,20 @@ describe('sort-array-includes', () => {
             },
           },
         ],
+        code: dedent`
+          [
+            'c',
+            /* b */
+            'b',
+            /* a */
+            'a'
+          ]
+        `,
       })
     })
 
     it('supports regex patterns for block comments', async () => {
       await valid({
-        code: dedent`
-          [
-            'b',
-            /* I am a partition comment because I don't have f o o */
-            'a'
-          ].includes(value)
-        `,
         options: [
           {
             ...options,
@@ -4614,6 +4565,13 @@ describe('sort-array-includes', () => {
             },
           },
         ],
+        code: dedent`
+          [
+            'b',
+            /* I am a partition comment because I don't have f o o */
+            'a'
+          ]
+        `,
       })
     })
 
@@ -4626,7 +4584,7 @@ describe('sort-array-includes', () => {
             // I am a partition comment because I don't have f o o
             'a',
             'b',
-          ].includes(value)
+          ]
         `,
         options: [
           {
@@ -4639,19 +4597,19 @@ describe('sort-array-includes', () => {
 
     it('ignores special characters at start when trimming', async () => {
       await valid({
-        code: dedent`
-          [
-            '$aa',
-            'bb',
-            '$c',
-          ].includes(value)
-        `,
         options: [
           {
             ...options,
             specialCharacters: 'trim',
           },
         ],
+        code: dedent`
+          [
+            '$aa',
+            'bb',
+            '$c',
+          ]
+        `,
       })
     })
 
@@ -4667,7 +4625,7 @@ describe('sort-array-includes', () => {
           [
             'abc',
             'a$c',
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -4682,7 +4640,7 @@ describe('sort-array-includes', () => {
             'A',
             'b',
             'B'
-          ].includes(value)
+          ]
         `,
         options: [{ ...options, locales: 'zh-CN' }],
       })
@@ -4692,19 +4650,19 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
           [
             aa, b
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             b, aa
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -4714,19 +4672,19 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
           [
             aa, b,
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             b, aa,
-          ].includes(value)
+          ]
         `,
         options: [options],
       })
@@ -4754,7 +4712,7 @@ describe('sort-array-includes', () => {
               right: 'top1',
               left: 'c',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -4762,14 +4720,14 @@ describe('sort-array-includes', () => {
             'top1',
             'aa',
             'c'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'c',
             'top1',
             'aa'
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -4796,20 +4754,20 @@ describe('sort-array-includes', () => {
               right: 'top1',
               left: 'b',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
           [
             'top1',
             'b',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'b',
             'top1',
-          ].includes(value)
+          ]
         `,
         options: customGroupOptions,
       })
@@ -4845,7 +4803,7 @@ describe('sort-array-includes', () => {
                 leftGroup: 'unknown',
                 left: 'b',
               },
-              messageId: 'unexpectedArrayIncludesGroupOrder',
+              messageId: 'unexpectedArraysGroupOrder',
             },
           ],
           output: dedent`
@@ -4853,14 +4811,14 @@ describe('sort-array-includes', () => {
               'helloLiteral',
               'a',
               'b',
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               'a',
               'b',
               'helloLiteral',
-            ].includes(value)
+            ]
           `,
           options: customGroupOptions,
         })
@@ -4887,16 +4845,16 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bb', left: 'a' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'ccc', left: 'bb' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
             data: { right: 'dddd', left: 'ccc' },
+            messageId: 'unexpectedArraysOrder',
           },
         ],
         output: dedent`
@@ -4911,7 +4869,7 @@ describe('sort-array-includes', () => {
             'g',
             ...o,
             ...p,
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -4925,7 +4883,7 @@ describe('sort-array-includes', () => {
             'g',
             ...o,
             ...p,
-          ].includes(value)
+          ]
         `,
         options: customSortOptions,
       })
@@ -4956,20 +4914,20 @@ describe('sort-array-includes', () => {
         errors: [
           {
             data: { right: 'fooBar', left: 'fooZar' },
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
           },
         ],
         output: dedent`
           [
             'fooBar',
             'fooZar',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'fooZar',
             'fooBar',
-          ].includes(value)
+          ]
         `,
         options: fallbackSortOptions,
       })
@@ -4998,7 +4956,7 @@ describe('sort-array-includes', () => {
               right: 'top3',
               left: 'm',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -5009,7 +4967,7 @@ describe('sort-array-includes', () => {
             'top5',
             'top3',
             'm',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -5019,7 +4977,7 @@ describe('sort-array-includes', () => {
             'top5',
             'm',
             'top3',
-          ].includes(value)
+          ]
         `,
         options: unsortedGroupOptions,
       })
@@ -5054,7 +5012,7 @@ describe('sort-array-includes', () => {
               right: 'bFoo',
               left: 'a',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -5062,14 +5020,14 @@ describe('sort-array-includes', () => {
             'bFoo',
             'cFoo',
             'a',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'a',
             'bFoo',
             'cFoo',
-          ].includes(value)
+          ]
         `,
         options: anyOfOptions,
       })
@@ -5095,7 +5053,7 @@ describe('sort-array-includes', () => {
             'meTooIHaveFoo',
             'a',
             'b',
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -5148,7 +5106,7 @@ describe('sort-array-includes', () => {
                   right: 'g',
                   left: 'b',
                 },
-                messageId: 'unexpectedArrayIncludesGroupOrder',
+                messageId: 'unexpectedArraysGroupOrder',
               },
               {
                 data: {
@@ -5157,7 +5115,7 @@ describe('sort-array-includes', () => {
                   right: 'r',
                   left: 'g',
                 },
-                messageId: 'unexpectedArrayIncludesGroupOrder',
+                messageId: 'unexpectedArraysGroupOrder',
               },
             ],
             output: dedent`
@@ -5165,14 +5123,14 @@ describe('sort-array-includes', () => {
                 'r',
                 'g',
                 'b',
-              ].includes(value)
+              ]
             `,
             code: dedent`
               [
                 'b',
                 'g',
                 'r',
-              ].includes(value)
+              ]
             `,
             options: conditionalOptions,
           })
@@ -5203,10 +5161,10 @@ describe('sort-array-includes', () => {
               left: 'aaaa',
               right: 'yy',
             },
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bbb', left: 'z' },
           },
         ],
@@ -5219,7 +5177,7 @@ describe('sort-array-includes', () => {
           'z',
 
               'bbb'
-          ].includes(value)
+          ]
         `,
         output: dedent`
           [
@@ -5228,7 +5186,7 @@ describe('sort-array-includes', () => {
           'yy',
 
               'z'
-          ].includes(value)
+          ]
         `,
         options: newlinesOptions,
       })
@@ -5260,14 +5218,14 @@ describe('sort-array-includes', () => {
               left: 'aaaa',
               right: 'z',
             },
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'yy', left: 'z' },
           },
           {
-            messageId: 'missedSpacingBetweenArrayIncludesMembers',
+            messageId: 'missedSpacingBetweenArraysMembers',
             data: { right: 'bbb', left: 'yy' },
           },
         ],
@@ -5279,7 +5237,7 @@ describe('sort-array-includes', () => {
           'z',
 
               'bbb',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -5289,7 +5247,7 @@ describe('sort-array-includes', () => {
            'z',
           'yy',
               'bbb',
-          ].includes(value)
+          ]
         `,
         options: multiGroupOptions,
       })
@@ -5347,15 +5305,15 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'missedSpacingBetweenArrayIncludesMembers',
+            messageId: 'missedSpacingBetweenArraysMembers',
             data: { right: 'b', left: 'a' },
           },
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'c', left: 'b' },
           },
           {
-            messageId: 'extraSpacingBetweenArrayIncludesMembers',
+            messageId: 'extraSpacingBetweenArraysMembers',
             data: { right: 'd', left: 'c' },
           },
         ],
@@ -5370,7 +5328,7 @@ describe('sort-array-includes', () => {
 
 
             'e'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -5384,7 +5342,7 @@ describe('sort-array-includes', () => {
 
 
             'e'
-          ].includes(value)
+          ]
         `,
         options: inlineNewlineOptions,
       })
@@ -5419,7 +5377,7 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: 'missedSpacingBetweenArrayIncludesMembers',
+              messageId: 'missedSpacingBetweenArraysMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
@@ -5429,13 +5387,13 @@ describe('sort-array-includes', () => {
 
 
               b,
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           options: mixedNewlineOptions,
         })
@@ -5470,7 +5428,7 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: 'extraSpacingBetweenArrayIncludesMembers',
+              messageId: 'extraSpacingBetweenArraysMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
@@ -5478,14 +5436,14 @@ describe('sort-array-includes', () => {
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               a,
 
               b,
-            ].includes(value)
+            ]
           `,
           options: noNewlineBetweenGroupsOptions,
         })
@@ -5522,7 +5480,7 @@ describe('sort-array-includes', () => {
               a,
 
               b,
-            ].includes(value)
+            ]
           `,
           options: ignoreNewlineOptions,
         })
@@ -5532,7 +5490,7 @@ describe('sort-array-includes', () => {
             [
               a,
               b,
-            ].includes(value)
+            ]
           `,
           options: ignoreNewlineOptions,
         })
@@ -5563,7 +5521,7 @@ describe('sort-array-includes', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -5572,7 +5530,7 @@ describe('sort-array-includes', () => {
 
             'b',
             'c'
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -5580,7 +5538,7 @@ describe('sort-array-includes', () => {
             'a', // Comment after
 
             'c'
-          ].includes(value)
+          ]
         `,
         options: commentOptions,
       })
@@ -5611,8 +5569,14 @@ describe('sort-array-includes', () => {
 
             'bb',
             'c',
-          ].includes(value)
+          ]
         `,
+        errors: [
+          {
+            messageId: 'unexpectedArraysOrder',
+            data: { right: 'bb', left: 'c' },
+          },
+        ],
         code: dedent`
           [
             'aaa',
@@ -5621,14 +5585,8 @@ describe('sort-array-includes', () => {
 
             'c',
             'bb',
-          ].includes(value)
+          ]
         `,
-        errors: [
-          {
-            messageId: 'unexpectedArrayIncludesOrder',
-            data: { right: 'bb', left: 'c' },
-          },
-        ],
         options: partitionOptions,
       })
     })
@@ -5655,7 +5613,7 @@ describe('sort-array-includes', () => {
             'b',
             'c',
             'd',
-          ].includes(value)
+          ]
         `,
         options: customAlphabetOptions,
       })
@@ -5663,7 +5621,7 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
@@ -5673,7 +5631,7 @@ describe('sort-array-includes', () => {
             'b',
             'c',
             'd',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -5681,7 +5639,7 @@ describe('sort-array-includes', () => {
             'c',
             'b',
             'd',
-          ].includes(value)
+          ]
         `,
         options: customAlphabetOptions,
       })
@@ -5718,11 +5676,11 @@ describe('sort-array-includes', () => {
         ],
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bb', left: 'b' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'aa', left: 'a' },
           },
         ],
@@ -5732,7 +5690,7 @@ describe('sort-array-includes', () => {
             'bb',
             'a',
             'b',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -5740,7 +5698,7 @@ describe('sort-array-includes', () => {
             'bb',
             'a',
             'aa',
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -5765,11 +5723,11 @@ describe('sort-array-includes', () => {
         ],
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'bb', left: 'b' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'aa', left: 'a' },
           },
         ],
@@ -5779,7 +5737,7 @@ describe('sort-array-includes', () => {
             'bb',
             'a',
             'b',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -5787,7 +5745,7 @@ describe('sort-array-includes', () => {
             'bb',
             'a',
             'aa',
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -5806,7 +5764,7 @@ describe('sort-array-includes', () => {
             'b',
             'c',
             'a'
-          ].includes(value)
+          ]
         `,
         options: [unsortedOptions],
       })
@@ -5839,7 +5797,7 @@ describe('sort-array-includes', () => {
               right: 'ba',
               left: 'aa',
             },
-            messageId: 'unexpectedArrayIncludesGroupOrder',
+            messageId: 'unexpectedArraysGroupOrder',
           },
         ],
         output: dedent`
@@ -5848,7 +5806,7 @@ describe('sort-array-includes', () => {
             'bb',
             'ab',
             'aa',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -5856,7 +5814,7 @@ describe('sort-array-includes', () => {
             'aa',
             'ba',
             'bb',
-          ].includes(value)
+          ]
         `,
         options: groupingOptions,
       })
@@ -5884,7 +5842,7 @@ describe('sort-array-includes', () => {
       await invalid({
         errors: [
           {
-            messageId: 'missedSpacingBetweenArrayIncludesMembers',
+            messageId: 'missedSpacingBetweenArraysMembers',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -5893,13 +5851,13 @@ describe('sort-array-includes', () => {
             'b',
 
             'a',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
             'b',
             'a',
-          ].includes(value)
+          ]
         `,
         options: newlinesOptions,
       })
@@ -5921,18 +5879,18 @@ describe('sort-array-includes', () => {
             'b',
             'c',
             'd',
-          ].includes(value)
+          ]
         `,
       })
 
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'a', left: 'b' },
           },
           {
-            messageId: 'unexpectedArrayIncludesOrder',
+            messageId: 'unexpectedArraysOrder',
             data: { right: 'c', left: 'd' },
           },
         ],
@@ -5942,7 +5900,7 @@ describe('sort-array-includes', () => {
             'b',
             'c',
             'd',
-          ].includes(value)
+          ]
         `,
         code: dedent`
           [
@@ -5950,7 +5908,7 @@ describe('sort-array-includes', () => {
             'a',
             'd',
             'c',
-          ].includes(value)
+          ]
         `,
       })
     })
@@ -5963,7 +5921,7 @@ describe('sort-array-includes', () => {
             'v10.png',
             'v12.png',
             'v2.png',
-          ].includes(value)
+          ]
         `,
         options: [
           {
@@ -5975,18 +5933,18 @@ describe('sort-array-includes', () => {
 
     it('handles empty arrays and single-element arrays', async () => {
       await valid({
-        code: '[].includes(value)',
+        code: '[]',
       })
 
       await valid({
-        code: "['a'].includes(value)",
+        code: "['a']",
       })
     })
 
     it('treats different quote styles as equivalent', async () => {
       await valid({
         code: dedent`
-          ['a', "b", 'c'].includes(value)
+          ['a', "b", 'c']
         `,
       })
     })
@@ -6005,7 +5963,7 @@ describe('sort-array-includes', () => {
             ccc,
             bb,
             a,
-          ].includes(value)
+          ]
         `,
         options: [{}],
         settings,
@@ -6017,7 +5975,7 @@ describe('sort-array-includes', () => {
             a,
             bb,
             ccc,
-          ].includes(value)
+          ]
         `,
         options: [{ type: 'alphabetical', order: 'asc' }],
         settings,
@@ -6033,7 +5991,7 @@ describe('sort-array-includes', () => {
               'c',
               // eslint-disable-next-line
               'a',
-            ].includes(value)
+            ]
           `,
         })
 
@@ -6044,7 +6002,7 @@ describe('sort-array-includes', () => {
               'c',
               // eslint-disable-next-line
               'a',
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
@@ -6052,11 +6010,11 @@ describe('sort-array-includes', () => {
               'b',
               // eslint-disable-next-line
               'a',
-            ].includes(value)
+            ]
           `,
           errors: [
             {
-              messageId: 'unexpectedArrayIncludesOrder',
+              messageId: 'unexpectedArraysOrder',
               data: { right: 'b', left: 'c' },
             },
           ],
@@ -6068,7 +6026,7 @@ describe('sort-array-includes', () => {
         await invalid({
           errors: [
             {
-              messageId: 'unexpectedArrayIncludesOrder',
+              messageId: 'unexpectedArraysOrder',
               data: { right: 'b', left: 'c' },
             },
           ],
@@ -6077,14 +6035,14 @@ describe('sort-array-includes', () => {
               'b',
               'c',
               'a', // eslint-disable-line
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               'c',
               'b',
               'a', // eslint-disable-line
-            ].includes(value)
+            ]
           `,
           options: [{}],
         })
@@ -6102,7 +6060,7 @@ describe('sort-array-includes', () => {
               // Shouldn't move
               /* eslint-enable */
               'e',
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
@@ -6114,11 +6072,11 @@ describe('sort-array-includes', () => {
               // Shouldn't move
               /* eslint-enable */
               'a',
-            ].includes(value)
+            ]
           `,
           errors: [
             {
-              messageId: 'unexpectedArrayIncludesOrder',
+              messageId: 'unexpectedArraysOrder',
               data: { right: 'a', left: 'b' },
             },
           ],
@@ -6132,53 +6090,25 @@ describe('sort-array-includes', () => {
             [
               'b',
               'c',
-              // eslint-disable-next-line rule-to-test/sort-array-includes
+              // eslint-disable-next-line rule-to-test/sort-arrays
               'a',
-            ].includes(value)
+            ]
           `,
           code: dedent`
             [
               'c',
               'b',
-              // eslint-disable-next-line rule-to-test/sort-array-includes
+              // eslint-disable-next-line rule-to-test/sort-arrays
               'a',
-            ].includes(value)
+            ]
           `,
           errors: [
             {
-              messageId: 'unexpectedArrayIncludesOrder',
+              messageId: 'unexpectedArraysOrder',
               data: { right: 'b', left: 'c' },
             },
           ],
           options: [{}],
-        })
-      })
-
-      it('ignores arrays with other methods', async () => {
-        await valid({
-          code: dedent`
-            ['c', 'b', 'a'].map(x => x)
-          `,
-        })
-
-        await valid({
-          code: dedent`
-            ['c', 'b', 'a'].filter(x => x)
-          `,
-        })
-
-        await valid({
-          code: dedent`
-            ['c', 'b', 'a'].forEach(x => console.log(x))
-          `,
-        })
-      })
-
-      it('ignores computed property access', async () => {
-        await valid({
-          code: dedent`
-            ['c', 'b', 'a']['includes']('a')
-          `,
         })
       })
     })
@@ -6189,7 +6119,7 @@ describe('sort-array-includes', () => {
           {
             errors: [
               {
-                messageId: 'unexpectedArrayIncludesOrder',
+                messageId: 'unexpectedArraysOrder',
                 data: { right: 'a', left: 'b' },
               },
             ],
@@ -6197,13 +6127,13 @@ describe('sort-array-includes', () => {
               [
                 'a',
                 'b',
-              ].includes(value)
+              ]
             `,
             code: dedent`
               [
                 'b',
                 'a',
-              ].includes(value)
+              ]
             `,
             options: [{ type: 'alphabetical', order: 'asc' }],
           },
@@ -6214,7 +6144,7 @@ describe('sort-array-includes', () => {
               [
                 'a',
                 'b',
-              ].includes(value)
+              ]
             `,
             options: [{ type: 'alphabetical', order: 'asc' }],
           },
