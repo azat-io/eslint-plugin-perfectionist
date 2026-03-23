@@ -1,4 +1,5 @@
 import type { TestCaseError } from 'eslint-vitest-rule-tester'
+import type { RuleTester } from 'oxlint/plugins-dev'
 
 import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
@@ -6599,7 +6600,7 @@ describe('sort-decorators', () => {
                 messageId: 'unexpectedDecoratorsOrder',
                 data: { right: 'A', left: 'B' },
               },
-            ]),
+            ]) as RuleTester.Error[],
             options: [{ type: 'alphabetical', order: 'asc' }],
           },
         ],
