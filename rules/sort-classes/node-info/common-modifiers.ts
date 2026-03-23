@@ -13,24 +13,6 @@ type Property =
 type Accessor = TSESTree.TSAbstractAccessorProperty | TSESTree.AccessorProperty
 type Method = TSESTree.TSAbstractMethodDefinition | TSESTree.MethodDefinition
 
-export function computeAbstractModifier(
-  node: Accessor | Property | Method,
-): Modifier[] {
-  switch (node.type) {
-    case AST_NODE_TYPES.TSAbstractPropertyDefinition:
-    case AST_NODE_TYPES.TSAbstractMethodDefinition:
-    case AST_NODE_TYPES.TSAbstractAccessorProperty:
-      return ['abstract']
-    case AST_NODE_TYPES.PropertyDefinition:
-    case AST_NODE_TYPES.MethodDefinition:
-    case AST_NODE_TYPES.AccessorProperty:
-      return []
-    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-    default:
-      throw new UnreachableCaseError(node)
-  }
-}
-
 export function computeAccessibilityModifier({
   hasPrivateHash,
   node,
@@ -65,6 +47,24 @@ export function computeAccessibilityModifier({
 
     /* v8 ignore next -- @preserve Unhandled case */
     throw new Error('Unhandled accessibility modifier')
+  }
+}
+
+export function computeAbstractModifier(
+  node: Accessor | Property | Method,
+): Modifier[] {
+  switch (node.type) {
+    case AST_NODE_TYPES.TSAbstractPropertyDefinition:
+    case AST_NODE_TYPES.TSAbstractMethodDefinition:
+    case AST_NODE_TYPES.TSAbstractAccessorProperty:
+      return ['abstract']
+    case AST_NODE_TYPES.PropertyDefinition:
+    case AST_NODE_TYPES.MethodDefinition:
+    case AST_NODE_TYPES.AccessorProperty:
+      return []
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(node)
   }
 }
 
