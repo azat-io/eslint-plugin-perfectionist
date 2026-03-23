@@ -5,6 +5,7 @@ import path from 'node:path'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-jsx-props'
 
@@ -24,6 +25,7 @@ describe('sort-jsx-props', () => {
     name: 'sort-jsx-props',
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule, { lang: 'jsx' })
 
   describe('alphabetical', () => {
     let options = {
@@ -4918,6 +4920,45 @@ describe('sort-jsx-props', () => {
           },
         ],
         options: [{}],
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            errors: [
+              {
+                messageId: 'unexpectedJSXPropsOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              <Element
+                a="a"
+                b="b"
+              />
+            `,
+            code: dedent`
+              <Element
+                b="b"
+                a="a"
+              />
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              <Element
+                a="a"
+                b="b"
+              />
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
       })
     })
   })
