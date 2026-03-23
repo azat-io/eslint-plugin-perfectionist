@@ -5,6 +5,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { Modifier } from '../types'
 
 import { UnreachableCaseError } from '../../../utils/unreachable-case-error'
+import { assertIsNever } from '../../../utils/assert-is-never'
 
 type Property =
   | TSESTree.TSAbstractPropertyDefinition
@@ -49,9 +50,21 @@ export function computeAccessibilityModifier({
     case undefined:
     case 'public':
       return ['public']
-    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
-      throw new UnreachableCaseError(node.accessibility)
+      assertIsNever(node.accessibility)
+      return computeUnhandledAccessibilityModifier(node.accessibility)
+  }
+
+  function computeUnhandledAccessibilityModifier(
+    modifier: unknown,
+  ): Modifier[] {
+    /* v8 ignore else --  @preserve Unhandled case */
+    if (modifier === null) {
+      return ['public']
+    }
+
+    /* v8 ignore next -- @preserve Unhandled case */
+    throw new Error('Unhandled accessibility modifier')
   }
 }
 

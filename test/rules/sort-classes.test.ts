@@ -16829,6 +16829,44 @@ describe('sort-classes', () => {
           },
         ],
       })
+
+      oxlintRuleTester.run('handles null accessibility modifiers', {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'private-property',
+                  leftGroup: 'public-property',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            options: [
+              {
+                groups: ['private-property', 'public-property'],
+                type: 'alphabetical',
+                order: 'asc',
+              },
+            ],
+            output: dedent`
+              class A {
+                private b
+                a
+              }
+            `,
+            code: dedent`
+              class A {
+                a
+                private b
+              }
+            `,
+          },
+        ],
+        valid: [],
+      })
     })
   })
 })
