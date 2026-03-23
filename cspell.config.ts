@@ -21,6 +21,7 @@ export default defineConfig({
     'minisearch',
     'nanostores',
     'nocomment',
+    'oxlint',
     'pcss',
     'playform',
     'poppanator',
