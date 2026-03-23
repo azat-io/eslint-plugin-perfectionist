@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-interfaces'
 
@@ -13,6 +14,7 @@ describe('sort-interfaces', () => {
     name: 'sort-interfaces',
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   describe('alphabetical', () => {
     let options = {
@@ -8601,6 +8603,45 @@ describe('sort-interfaces', () => {
           },
         ],
         options: [{}],
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            errors: [
+              {
+                messageId: 'unexpectedInterfacePropertiesOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              interface Interface {
+                a: string
+                b: string
+              }
+            `,
+            code: dedent`
+              interface Interface {
+                b: string
+                a: string
+              }
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              interface I {
+                a: string
+                b: string
+              }
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
       })
     })
   })

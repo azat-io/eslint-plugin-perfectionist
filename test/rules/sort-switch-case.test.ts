@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import rule from '../../rules/sort-switch-case'
 import { Alphabet } from '../../utils/alphabet'
 
@@ -13,6 +14,7 @@ describe('sort-switch-case', () => {
     parser: typescriptParser,
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   describe('alphabetical', () => {
     let options = {
@@ -3268,6 +3270,51 @@ describe('sort-switch-case', () => {
         `,
         options: [{ type: 'alphabetical', order: 'asc' }],
         settings,
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            output: dedent`
+              switch (x) {
+                case 'a':
+                  break
+                case 'b':
+                  break
+              }
+            `,
+            code: dedent`
+              switch (x) {
+                case 'b':
+                  break
+                case 'a':
+                  break
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              switch (x) {
+                case 'a':
+                  break
+                case 'b':
+                  break
+              }
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
       })
     })
   })

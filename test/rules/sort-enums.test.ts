@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-enums'
 
@@ -13,6 +14,7 @@ describe('sort-enums', () => {
     name: 'sort-enums',
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   describe('alphabetical', () => {
     let options = {
@@ -6422,6 +6424,45 @@ describe('sort-enums', () => {
           },
         ],
         options: [{}],
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: { right: 'A', left: 'B' },
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                A = 'A',
+                B = 'B',
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                B = 'B',
+                A = 'A',
+              }
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              enum Enum {
+                A = 'A',
+                B = 'B',
+              }
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
       })
     })
   })

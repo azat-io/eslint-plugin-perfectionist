@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import rule from '../../rules/sort-union-types'
 import { Alphabet } from '../../utils/alphabet'
 
@@ -13,6 +14,7 @@ describe('sort-union-types', () => {
     parser: typescriptParser,
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   describe('alphabetical', () => {
     let options = {
@@ -5699,6 +5701,42 @@ describe('sort-union-types', () => {
           },
         ],
         options: [{}],
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            errors: [
+              {
+                messageId: 'unexpectedUnionTypesOrder',
+                data: { right: 'A', left: 'B' },
+              },
+            ],
+            output: dedent`
+              type Type =
+                A
+                | B
+            `,
+            code: dedent`
+              type Type =
+                B
+                | A
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              type Type =
+                A
+                | B
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
       })
     })
   })

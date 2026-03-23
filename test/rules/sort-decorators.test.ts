@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-decorators'
 
@@ -15,6 +16,7 @@ describe('sort-decorators', () => {
     name: 'sort-decorators',
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   describe('alphabetical', () => {
     let options = {
@@ -6543,6 +6545,90 @@ describe('sort-decorators', () => {
               parameter) {}
           }
         `,
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            output: dedent`
+              @A
+              @B
+              class Foo {
+
+                @A
+                @B
+                property
+
+                @A
+                @B
+                accessor field
+
+                @A
+                @B
+                method(
+                  @A
+                  @B
+                  parameter) {}
+              }
+            `,
+            code: dedent`
+              @B
+              @A
+              class Foo {
+
+                @B
+                @A
+                property
+
+                @B
+                @A
+                accessor field
+
+                @B
+                @A
+                method(
+                  @B
+                  @A
+                  parameter) {}
+              }
+            `,
+            errors: duplicate5Times([
+              {
+                messageId: 'unexpectedDecoratorsOrder',
+                data: { right: 'A', left: 'B' },
+              },
+            ]),
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              @A
+              @B
+              class Foo {
+
+                @A
+                @B
+                property
+
+                @A
+                @B
+                accessor field
+
+                @A
+                @B
+                method(
+                  @A
+                  @B
+                  parameter) {}
+              }
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
       })
     })
   })

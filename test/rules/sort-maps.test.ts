@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-maps'
 
@@ -13,6 +14,7 @@ describe('sort-maps', () => {
     name: 'sort-maps',
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   describe('alphabetical', () => {
     let options = {
@@ -5267,6 +5269,45 @@ describe('sort-maps', () => {
         options: [
           {
             partitionByComment: true,
+          },
+        ],
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            errors: [
+              {
+                messageId: 'unexpectedMapElementsOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              new Map([
+                [a, 'a'],
+                [b, 'b']
+              ])
+            `,
+            code: dedent`
+              new Map([
+                [b, 'b'],
+                [a, 'a']
+              ])
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              new Map([
+                [a, 'a'],
+                [b, 'b']
+              ])
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
           },
         ],
       })

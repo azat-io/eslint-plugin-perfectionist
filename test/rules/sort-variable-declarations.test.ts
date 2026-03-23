@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import rule from '../../rules/sort-variable-declarations'
 import { Alphabet } from '../../utils/alphabet'
 
@@ -13,6 +14,7 @@ describe('sort-variable-declarations', () => {
     parser: typescriptParser,
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   describe('alphabetical', () => {
     let options = {
@@ -6392,6 +6394,42 @@ describe('sort-variable-declarations', () => {
           },
         ],
         options: [{}],
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              let
+                a,
+                b
+            `,
+            code: dedent`
+              let
+                b,
+                a
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              let
+                a,
+                b
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
       })
     })
   })
