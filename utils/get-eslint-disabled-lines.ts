@@ -52,7 +52,8 @@ export function getEslintDisabledLines(props: {
   let { sourceCode, ruleName } = props
   let returnValue: number[] = []
   let lineRulePermanentlyDisabled: number | null = null
-  for (let comment of sourceCode.getAllComments()) {
+  // eslint-disable-next-line typescript/no-unnecessary-condition
+  for (let comment of sourceCode.getAllComments() ?? []) {
     let eslintDisabledRules = getEslintDisabledRules(comment.value)
     if (!eslintDisabledRules) {
       continue
