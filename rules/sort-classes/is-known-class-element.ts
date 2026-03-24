@@ -2,6 +2,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import { assertIsNever } from '../../utils/assert-is-never'
+
 /**
  * Checks whether a class element is supported by the sort-classes rule.
  *
@@ -23,11 +25,7 @@ export function isKnownClassElement(member: TSESTree.ClassElement): boolean {
     case AST_NODE_TYPES.StaticBlock:
       return true
     default:
-      assertIsNotKnownClassElement(member)
+      assertIsNever(member)
       return false
   }
-}
-
-function assertIsNotKnownClassElement(_member: never): void {
-  // Compilation check only.
 }

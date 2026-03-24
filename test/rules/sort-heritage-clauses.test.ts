@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import rule from '../../rules/sort-heritage-clauses'
 import { Alphabet } from '../../utils/alphabet'
 
@@ -13,6 +14,7 @@ describe('sort-heritage-clauses', () => {
     parser: typescriptParser,
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   describe('alphabetical', () => {
     let options = {
@@ -3245,6 +3247,57 @@ describe('sort-heritage-clauses', () => {
           ],
           options: [{}],
         })
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            errors: [
+              {
+                messageId: 'unexpectedHeritageClausesOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              interface Interface extends a, b {}
+            `,
+            code: dedent`
+              interface Interface extends b, a {}
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+          {
+            errors: [
+              {
+                messageId: 'unexpectedHeritageClausesOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              class Class implements a, b {}
+            `,
+            code: dedent`
+              class Class implements b, a {}
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              interface Interface extends a, b {}
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+          {
+            code: dedent`
+              class Class implements a, b {}
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
       })
     })
   })

@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import rule from '../../rules/sort-export-attributes'
 import { Alphabet } from '../../utils/alphabet'
 
@@ -15,6 +16,7 @@ describe('sort-export-attributes', () => {
     parser: typescriptParser,
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   describe('alphabetical', () => {
     let options = {
@@ -1762,6 +1764,45 @@ describe('sort-export-attributes', () => {
           },
         ],
         options: [{}],
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            errors: [
+              {
+                messageId: 'unexpectedExportAttributesOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              export { data } from 'module' with {
+                a: 'a',
+                b: 'b'
+              }
+            `,
+            code: dedent`
+              export { data } from 'module' with {
+                b: 'b',
+                a: 'a'
+              }
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              export { data } from 'module' with {
+                a: 'a',
+                b: 'b'
+              }
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
       })
     })
   })

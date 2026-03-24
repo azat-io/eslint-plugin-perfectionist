@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-classes'
 
@@ -77,6 +78,7 @@ describe('sort-classes', () => {
     parser: unknownClassElementParser,
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   describe('alphabetical', () => {
     let options = {
@@ -16787,6 +16789,83 @@ describe('sort-classes', () => {
           }
         `,
         options: [{}],
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              class A {
+                a
+                b
+              }
+            `,
+            code: dedent`
+              class A {
+                b
+                a
+              }
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              class A {
+                a
+                b
+              }
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+      })
+
+      oxlintRuleTester.run('handles null accessibility modifiers', {
+        invalid: [
+          {
+            errors: [
+              {
+                data: {
+                  rightGroup: 'private-property',
+                  leftGroup: 'public-property',
+                  right: 'b',
+                  left: 'a',
+                },
+                messageId: 'unexpectedClassesGroupOrder',
+              },
+            ],
+            options: [
+              {
+                groups: ['private-property', 'public-property'],
+                type: 'alphabetical',
+                order: 'asc',
+              },
+            ],
+            output: dedent`
+              class A {
+                private b
+                a
+              }
+            `,
+            code: dedent`
+              class A {
+                a
+                private b
+              }
+            `,
+          },
+        ],
+        valid: [],
       })
     })
   })

@@ -16,6 +16,7 @@ import type { MessageId } from '../../rules/sort-imports'
 import * as readClosestTsConfigUtilities from '../../rules/sort-imports/read-closest-ts-config-by-path'
 import * as getTypescriptImportUtilities from '../../rules/sort-imports/get-typescript-import'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-imports'
 
@@ -25,6 +26,7 @@ describe('sort-imports', () => {
     name: 'sort-imports',
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   function mockReadClosestTsConfigByPathWith(
     compilerOptions: CompilerOptions,
@@ -11943,6 +11945,39 @@ describe('sort-imports', () => {
           import bar from 'bar'
           import foo from 'foo'
         `,
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            errors: [
+              {
+                messageId: 'unexpectedImportsOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              import { a } from 'a'
+              import { b } from 'b'
+            `,
+            code: dedent`
+              import { b } from 'b'
+              import { a } from 'a'
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              import { a } from 'a'
+              import { b } from 'b'
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
       })
     })
   })

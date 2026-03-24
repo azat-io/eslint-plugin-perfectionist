@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
+import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import rule from '../../rules/sort-array-includes'
 import { Alphabet } from '../../utils/alphabet'
 
@@ -11,6 +12,7 @@ describe('sort-array-includes', () => {
     name: 'sort-array-includes',
     rule,
   })
+  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   describe('alphabetical', () => {
     let options = {
@@ -6178,6 +6180,45 @@ describe('sort-array-includes', () => {
             ['c', 'b', 'a']['includes']('a')
           `,
         })
+      })
+    })
+
+    describe('oxlint', () => {
+      oxlintRuleTester.run('supports oxlint', {
+        invalid: [
+          {
+            errors: [
+              {
+                messageId: 'unexpectedArrayIncludesOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              [
+                'a',
+                'b',
+              ].includes(value)
+            `,
+            code: dedent`
+              [
+                'b',
+                'a',
+              ].includes(value)
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
+        valid: [
+          {
+            code: dedent`
+              [
+                'a',
+                'b',
+              ].includes(value)
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+        ],
       })
     })
   })
