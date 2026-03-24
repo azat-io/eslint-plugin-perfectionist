@@ -79,6 +79,7 @@ function sortPotentiallyValidArray({
       unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
       unexpectedOrder: ORDER_ERROR_ID,
     },
+    mustHaveMatchedContextOptions: false,
     cachedGroupsByModifiersAndSelectors,
     matchedAstSelectors,
     defaultOptions,

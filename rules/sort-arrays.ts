@@ -127,6 +127,7 @@ function sorter({
       unexpectedOrder: ORDER_ERROR_ID,
     },
     cachedGroupsByModifiersAndSelectors,
+    mustHaveMatchedContextOptions: true,
     matchedAstSelectors,
     defaultOptions,
     context,

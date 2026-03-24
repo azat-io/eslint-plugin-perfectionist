@@ -29,6 +29,22 @@ describe('sort-arrays', () => {
       })
     })
 
+    it('does not apply a fallback configuration', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            useConfigurationIf: {
+              allNamesMatchPattern: 'noMatch',
+            },
+          },
+        ],
+        code: dedent`
+          ['b', 'c', 'a']
+        `,
+      })
+    })
+
     it('reports error when array is not sorted', async () => {
       await invalid({
         errors: [

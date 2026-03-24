@@ -294,7 +294,7 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
 
 Specifies filters to match a particular options configuration for a given array.
 
-The first matching options configuration will be used. If no configuration matches, the array is left unsorted.
+The first matching options configuration will be used. If no configuration matches, the array is left unsorted. No fallback configuration is applied.
 
 - `allNamesMatchPattern` — A regexp pattern that all array keys must match.
 
@@ -323,9 +323,6 @@ Example configuration:
         allNamesMatchPattern: '^[rgb]$',
       },
     },
-    {
-      type: 'alphabetical' // Fallback configuration
-    }
   ],
 }
 ```
