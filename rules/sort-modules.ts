@@ -195,27 +195,16 @@ function analyzeModule({
   for (let node of module.body) {
     switch (node.type) {
       case AST_NODE_TYPES.TSNamespaceExportDeclaration:
-      case AST_NODE_TYPES.TSImportEqualsDeclaration:
       case AST_NODE_TYPES.ExportAllDeclaration:
-      case AST_NODE_TYPES.TSExportAssignment:
       case AST_NODE_TYPES.ImportDeclaration:
       case AST_NODE_TYPES.DebuggerStatement:
       case AST_NODE_TYPES.ContinueStatement:
-      case AST_NODE_TYPES.DoWhileStatement:
-      case AST_NODE_TYPES.LabeledStatement:
+      /* v8 ignore next 4 -- @preserve These statements cannot appear at module/namespace level in valid code. */
+      // eslint-disable-next-line no-fallthrough
       case AST_NODE_TYPES.ReturnStatement:
-      case AST_NODE_TYPES.SwitchStatement:
       case AST_NODE_TYPES.EmptyStatement:
       case AST_NODE_TYPES.BreakStatement:
-      case AST_NODE_TYPES.WhileStatement:
-      case AST_NODE_TYPES.ForInStatement:
-      case AST_NODE_TYPES.ForOfStatement:
-      case AST_NODE_TYPES.ThrowStatement:
-      case AST_NODE_TYPES.BlockStatement:
       case AST_NODE_TYPES.WithStatement:
-      case AST_NODE_TYPES.ForStatement:
-      case AST_NODE_TYPES.TryStatement:
-      case AST_NODE_TYPES.IfStatement:
         continue
       case AST_NODE_TYPES.ExportDefaultDeclaration:
       case AST_NODE_TYPES.ExportNamedDeclaration:
@@ -224,8 +213,21 @@ function analyzeModule({
       case AST_NODE_TYPES.FunctionDeclaration:
       case AST_NODE_TYPES.TSModuleDeclaration:
         break
+      case AST_NODE_TYPES.TSImportEqualsDeclaration:
       case AST_NODE_TYPES.VariableDeclaration:
       case AST_NODE_TYPES.ExpressionStatement:
+      case AST_NODE_TYPES.TSExportAssignment:
+      case AST_NODE_TYPES.DoWhileStatement:
+      case AST_NODE_TYPES.LabeledStatement:
+      case AST_NODE_TYPES.SwitchStatement:
+      case AST_NODE_TYPES.WhileStatement:
+      case AST_NODE_TYPES.ForInStatement:
+      case AST_NODE_TYPES.ForOfStatement:
+      case AST_NODE_TYPES.ThrowStatement:
+      case AST_NODE_TYPES.BlockStatement:
+      case AST_NODE_TYPES.ForStatement:
+      case AST_NODE_TYPES.TryStatement:
+      case AST_NODE_TYPES.IfStatement:
         sortingNodeGroupsWithoutOverloadSignature.push([])
         continue
       case AST_NODE_TYPES.TSDeclareFunction:
