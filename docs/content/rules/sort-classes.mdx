@@ -375,7 +375,7 @@ Without `ignoreCallbackDependenciesPatterns: ['^computed$']`, `role` and `userna
 </sub>
 <sub>default: `{}`</sub>
 
-Specifies filters to match a particular options configuration for a given object.
+Specifies filters to match a particular options configuration for a given class.
 
 The first matching options configuration will be used. If no configuration matches, the default options configuration will be used.
 
@@ -553,7 +553,7 @@ The `private` modifier will currently match any of the following:
 Elements that are not `protected` nor `private` will be matched with the `public` modifier, even if the keyword is not present.
 
 ##### The `unknown` group
-Members that don’t fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option,
+Members that don't fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option,
 the members will remain in their original order.
 
 ##### Behavior when multiple groups match an element
