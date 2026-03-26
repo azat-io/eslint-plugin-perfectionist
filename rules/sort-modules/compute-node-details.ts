@@ -138,9 +138,28 @@ export function computeNodeDetails({
         shouldPartitionAfterNode = true
         moduleBlock = nodeToParse.body ?? null
         break
-      case AST_NODE_TYPES.VariableDeclaration:
-        shouldPartitionAfterNode = true
+      case AST_NODE_TYPES.VariableDeclaration: {
+        let [declarator] = nodeToParse.declarations
+        if (
+          nodeToParse.declarations.length === 1 &&
+          nodeToParse.kind === 'const' &&
+          declarator !== undefined &&
+          declarator.id.type === AST_NODE_TYPES.Identifier &&
+          declarator.init?.type === AST_NODE_TYPES.ArrowFunctionExpression
+        ) {
+          let arrowFn = declarator.init
+          selector = 'function'
+          modifiers.push('arrow')
+          if (arrowFn.async) {
+            modifiers.push('async')
+          }
+          name = declarator.id.name
+          addSafetySemicolonWhenInline = true
+        } else {
+          shouldPartitionAfterNode = true
+        }
         break
+      }
       case AST_NODE_TYPES.TSEnumDeclaration:
         selector = 'enum'
         ;({ name } = nodeToParse.id)

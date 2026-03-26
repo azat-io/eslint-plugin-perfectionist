@@ -427,8 +427,12 @@ Predefined groups are characterized by a single selector and potentially multipl
 #### Functions
 
 - Selector: `function`.
-- Modifiers: `declare`, `default`, `async`, `export`.
-- Example: `async-function`, `export-default-function` or `function`.
+- Modifiers: `arrow`, `declare`, `default`, `async`, `export`.
+- Example: `async-function`, `export-default-function`, `arrow-function`, `export-arrow-function`, `async-arrow-function` or `function`.
+
+> The `arrow` modifier applies to module-level arrow functions declared with `const`
+> (e.g., `const foo = () => {}`). Only single-declarator `const` assignments with an
+> `ArrowFunctionExpression` initializer are recognized.
 
 #### Enums
 

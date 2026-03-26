@@ -83,8 +83,8 @@ let defaultOptions: Required<Options[number]> = {
     'class',
     'export-class',
     'declare-function',
-    'export-function',
-    'function',
+    ['export-function', 'export-arrow-function'],
+    ['function', 'arrow-function'],
   ],
   useExperimentalDependencyDetection: true,
   fallbackSort: { type: 'unsorted' },
@@ -201,6 +201,7 @@ function analyzeModule({
       case AST_NODE_TYPES.TSModuleDeclaration:
         break
       case AST_NODE_TYPES.VariableDeclaration:
+        break
       case AST_NODE_TYPES.ExpressionStatement:
         sortingNodeGroupsWithoutOverloadSignature.push([])
         continue

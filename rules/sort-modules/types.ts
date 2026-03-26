@@ -14,6 +14,7 @@ import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schem
 export type SortModulesNode =
   | TSESTree.ExportDefaultDeclaration
   | TSESTree.ExportNamedDeclaration
+  | TSESTree.VariableDeclaration
   | TSESTree.TSInterfaceDeclaration
   | TSESTree.TSTypeAliasDeclaration
   | TSESTree.FunctionDeclaration
@@ -112,6 +113,7 @@ export let allSelectors = [
  * JSON schema generation.
  */
 export let allModifiers = [
+  'arrow',
   'async',
   'declare',
   'decorated',

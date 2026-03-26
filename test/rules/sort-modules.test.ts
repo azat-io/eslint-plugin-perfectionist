@@ -274,6 +274,215 @@ describe('sort-modules', () => {
       })
     })
 
+    it('sorts arrow functions', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['arrow-function'],
+          },
+        ],
+        output: dedent`
+          const a = () => {}
+          const b = () => {}
+        `,
+        code: dedent`
+          const b = () => {}
+          const a = () => {}
+        `,
+      })
+    })
+
+    it('sorts exported arrow functions', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['export-arrow-function'],
+          },
+        ],
+        output: dedent`
+          export const a = () => {}
+          export const b = () => {}
+        `,
+        code: dedent`
+          export const b = () => {}
+          export const a = () => {}
+        `,
+      })
+    })
+
+    it('sorts async arrow functions', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'a',
+              left: 'b',
+            },
+            messageId: 'unexpectedModulesOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['async-arrow-function'],
+          },
+        ],
+        output: dedent`
+          const a = async () => {}
+          const b = async () => {}
+        `,
+        code: dedent`
+          const b = async () => {}
+          const a = async () => {}
+        `,
+      })
+    })
+
+    it('separates exported and non-exported arrow functions by group', async () => {
+      await invalid({
+        options: [
+          {
+            ...options,
+            groups: ['export-arrow-function', 'arrow-function'],
+          },
+        ],
+        errors: [
+          {
+            data: {
+              rightGroup: 'export-arrow-function',
+              leftGroup: 'arrow-function',
+              right: 'b',
+              left: 'a',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
+        output: dedent`
+          export const b = () => {}
+          const a = () => {}
+        `,
+        code: dedent`
+          const a = () => {}
+          export const b = () => {}
+        `,
+      })
+    })
+
+    it('does not sort arrow functions when arrow-function groups are not configured', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: [],
+          },
+        ],
+        code: dedent`
+          const b = () => {}
+          const a = () => {}
+        `,
+      })
+    })
+
+    it('still creates partitions at non-arrow variable declarations', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['interface'],
+          },
+        ],
+        code: dedent`
+          interface B {}
+          const x = 1
+          interface A {}
+        `,
+      })
+    })
+
+    it('still creates partitions at destructured variable declarations', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['interface'],
+          },
+        ],
+        code: dedent`
+          interface B {}
+          const { x } = foo()
+          interface A {}
+        `,
+      })
+    })
+
+    it('still creates partitions at multi-declarator variable declarations', async () => {
+      await valid({
+        code: dedent`
+          interface B {}
+          const a = () => {}, b = () => {}
+          interface A {}
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['interface'],
+          },
+        ],
+      })
+    })
+
+    it('still creates partitions at let arrow function declarations', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['interface'],
+          },
+        ],
+        code: dedent`
+          interface B {}
+          let a = () => {}
+          interface A {}
+        `,
+      })
+    })
+
+    it('still creates partitions at var arrow function declarations', async () => {
+      await valid({
+        options: [
+          {
+            ...options,
+            groups: ['interface'],
+          },
+        ],
+        code: dedent`
+          interface B {}
+          var a = () => {}
+          interface A {}
+        `,
+      })
+    })
+
     it('creates partitions at function call expressions', async () => {
       await valid({
         code: dedent`
