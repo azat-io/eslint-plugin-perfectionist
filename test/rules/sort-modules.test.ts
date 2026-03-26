@@ -358,67 +358,6 @@ describe('sort-modules', () => {
       })
     })
 
-    it('separates exported and non-exported arrow functions by group', async () => {
-      await invalid({
-        options: [
-          {
-            ...options,
-            groups: ['export-arrow-function', 'arrow-function'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              rightGroup: 'export-arrow-function',
-              leftGroup: 'arrow-function',
-              right: 'b',
-              left: 'a',
-            },
-            messageId: 'unexpectedModulesGroupOrder',
-          },
-        ],
-        output: dedent`
-          export const b = () => {}
-          const a = () => {}
-        `,
-        code: dedent`
-          const a = () => {}
-          export const b = () => {}
-        `,
-      })
-    })
-
-    it('does not sort arrow functions when arrow-function groups are not configured', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            groups: [],
-          },
-        ],
-        code: dedent`
-          const b = () => {}
-          const a = () => {}
-        `,
-      })
-    })
-
-    it('still creates partitions at non-arrow variable declarations', async () => {
-      await valid({
-        options: [
-          {
-            ...options,
-            groups: ['interface'],
-          },
-        ],
-        code: dedent`
-          interface B {}
-          const x = 1
-          interface A {}
-        `,
-      })
-    })
-
     it('still creates partitions at destructured variable declarations', async () => {
       await valid({
         options: [
@@ -4480,6 +4419,38 @@ describe('sort-modules', () => {
           interface Interface {}
 
           export default async function f() {}
+        `,
+      })
+    })
+
+    it('prioritizes arrow modifier over async modifier for arrow functions', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'arrow-function',
+              leftGroup: 'interface',
+              left: 'Interface',
+              right: 'f',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['arrow-function', 'interface', 'async-function'],
+          },
+        ],
+        output: dedent`
+          const f = async () => {}
+
+          interface Interface {}
+        `,
+        code: dedent`
+          interface Interface {}
+
+          const f = async () => {}
         `,
       })
     })

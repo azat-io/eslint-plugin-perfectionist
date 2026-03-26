@@ -143,17 +143,16 @@ export function computeNodeDetails({
         if (
           nodeToParse.declarations.length === 1 &&
           nodeToParse.kind === 'const' &&
-          declarator !== undefined &&
           declarator.id.type === AST_NODE_TYPES.Identifier &&
           declarator.init?.type === AST_NODE_TYPES.ArrowFunctionExpression
         ) {
-          let arrowFn = declarator.init
+          let arrowFunction = declarator.init
           selector = 'function'
           modifiers.push('arrow')
-          if (arrowFn.async) {
+          if (arrowFunction.async) {
             modifiers.push('async')
           }
-          name = declarator.id.name
+          ;({ name } = declarator.id)
           addSafetySemicolonWhenInline = true
         } else {
           shouldPartitionAfterNode = true
