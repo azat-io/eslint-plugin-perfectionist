@@ -85,8 +85,6 @@ By keeping sets sorted, developers can quickly scan and verify the values, makin
       return 'Unknown'
     }
 `}
-  client:load
-  lang="tsx"
   initial={dedent`
     const getProductCategories = (product) => {
       let electronics = new Set([
@@ -118,6 +116,8 @@ By keeping sets sorted, developers can quickly scan and verify the values, makin
       return 'Unknown'
     }
 `}
+  client:load
+  lang="tsx"
 />
 
 ## Options
@@ -528,6 +528,7 @@ Custom groups have a higher priority than any predefined group.
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
+                  partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   newlinesInside: 'ignore',
@@ -559,6 +560,7 @@ Custom groups have a higher priority than any predefined group.
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
+                partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 newlinesInside: 'ignore',

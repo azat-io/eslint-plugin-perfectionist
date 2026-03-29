@@ -447,7 +447,7 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 </sub>
 <sub>default: `[]`</sub>
 
-Defines custom groups to match specific object type members.
+Defines custom groups to match specific array elements.
 
 A custom group definition may follow one of the two following interfaces:
 
@@ -523,11 +523,12 @@ Custom groups have a higher priority than any predefined group.
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
+                  partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   newlinesInside: 'ignore',
                   useConfigurationIf: {},
-                  groups: ["literal"],
+                  groups: ['literal'],
                   customGroups: [],
                 },
               ],
@@ -554,11 +555,12 @@ Custom groups have a higher priority than any predefined group.
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
+                partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 newlinesInside: 'ignore',
                 useConfigurationIf: {},
-                groups: ["literal"],
+                groups: ['literal'],
                 customGroups: [],
               },
             ],
