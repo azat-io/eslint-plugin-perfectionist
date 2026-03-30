@@ -25,8 +25,8 @@ import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
+import { allSelectors, allModifiers } from './types'
 import { complete } from '../../utils/complete'
-import { allSelectors } from './types'
 
 type SortArraySortingNode = SortingNode<
   TSESTree.SpreadElement | TSESTree.Expression
@@ -80,7 +80,7 @@ export function sortArray<MessageIds extends string>({
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
     selectors: allSelectors,
-    modifiers: [],
+    modifiers: allModifiers,
     options,
   })
   validateNewlinesAndPartitionConfiguration(options)

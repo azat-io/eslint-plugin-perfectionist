@@ -90,6 +90,7 @@ type AdditionalSortOptions = object
  * Used for validation and configuration in the ESLint rule.
  */
 export let allSelectors = ['initialized', 'uninitialized'] as const
+export let allModifiers = [] as const
 
 /**
  * Additional custom group match options JSON schema. Used by ESLint to validate
