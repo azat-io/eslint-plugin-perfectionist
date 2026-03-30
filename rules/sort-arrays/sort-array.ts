@@ -10,7 +10,6 @@ import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
-import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
@@ -21,7 +20,7 @@ import { computeArrayElements } from './compute-array-elements'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { canReportErrors } from '../../utils/can-report-errors'
 import { shouldPartition } from '../../utils/should-partition'
-import { computeGroup } from '../../utils/compute-group'
+import { GroupMatcher } from '../../utils/group-matcher'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
@@ -37,8 +36,6 @@ type SortArraySortingNode = SortingNode<
  * Sorts the elements of an array-like expression.
  *
  * @param params - Parameters.
- * @param params.cachedGroupsByModifiersAndSelectors - Cache of predefined
- *   groups.
  * @param params.mustHaveMatchedContextOptions - Whether to skip nodes matching
  *   no option.
  * @param params.availableMessageIds - The message IDs to report with.
@@ -48,7 +45,6 @@ type SortArraySortingNode = SortingNode<
  * @param params.node - Array or `new` expression whose elements are sorted.
  */
 export function sortArray<MessageIds extends string>({
-  cachedGroupsByModifiersAndSelectors,
   mustHaveMatchedContextOptions,
   availableMessageIds,
   matchedAstSelectors,
@@ -62,7 +58,6 @@ export function sortArray<MessageIds extends string>({
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
-  cachedGroupsByModifiersAndSelectors: Map<string, string[]>
   node: TSESTree.ArrayExpression | TSESTree.NewExpression
   context: Readonly<RuleContext<MessageIds, Options>>
   defaultOptions: Required<Options[number]>
@@ -116,6 +111,11 @@ export function sortArray<MessageIds extends string>({
     return
   }
 
+  let groupMatcher = new GroupMatcher({
+    allModifiers,
+    allSelectors,
+    options,
+  })
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,
@@ -137,22 +137,17 @@ export function sortArray<MessageIds extends string>({
       }
 
       let name = computeNodeName({ node: element, sourceCode })
-      let selector: Selector = 'literal'
-      let predefinedGroups = generatePredefinedGroups({
-        cache: cachedGroupsByModifiersAndSelectors,
-        selectors: [selector],
-        modifiers: [],
-      })
-      let group = computeGroup({
+      let selectors: Selector[] = ['literal']
+      let group = groupMatcher.computeGroup({
         customGroupMatcher: customGroup =>
           doesCustomGroupMatch({
-            selectors: [selector],
+            selectors,
             elementName: name,
             modifiers: [],
             customGroup,
           }),
-        predefinedGroups,
-        options,
+        modifiers: [],
+        selectors,
       })
 
       let sortingNode: Omit<SortArraySortingNode, 'partitionId'> = {
