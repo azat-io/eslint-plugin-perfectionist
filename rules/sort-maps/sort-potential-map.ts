@@ -3,8 +3,8 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { MessageId, Selector, Modifier, Options } from './types'
 import type { SortingNode } from '../../types/sorting-node'
-import type { MessageId, Options } from './types'
 
 import {
   MISSED_SPACING_ERROR_ID,
@@ -25,7 +25,7 @@ import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
-import { computeGroup } from '../../utils/compute-group'
+import { GroupMatcher } from '../../utils/group-matcher'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
@@ -88,6 +88,11 @@ export function sortPotentialMap({
     options,
   })
 
+  let groupMatcher = new GroupMatcher({
+    allModifiers,
+    allSelectors,
+    options,
+  })
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,
@@ -118,16 +123,18 @@ export function sortPotentialMap({
 
       let lastSortingNode = formattedMembers.at(-1)?.at(-1)
 
-      let group = computeGroup({
+      let selectors: Selector[] = []
+      let modifiers: Modifier[] = []
+      let group = groupMatcher.computeGroup({
         customGroupMatcher: customGroup =>
           doesCustomGroupMatch({
             elementName: name,
-            selectors: [],
-            modifiers: [],
             customGroup,
+            selectors,
+            modifiers,
           }),
-        predefinedGroups: [],
-        options,
+        selectors,
+        modifiers,
       })
 
       let sortingNode: Omit<SortingNode, 'partitionId'> = {
