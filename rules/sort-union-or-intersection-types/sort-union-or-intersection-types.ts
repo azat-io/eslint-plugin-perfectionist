@@ -9,6 +9,7 @@ import {
   type SortUnionOrIntersectionSortingNode,
   type Selector,
   allSelectors,
+  allModifiers,
 } from '../sort-union-types/types'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
@@ -83,7 +84,7 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
   validateCustomSortConfig(options)
   validateGroupsConfig({
     selectors: allSelectors,
-    modifiers: [],
+    modifiers: allModifiers,
     options,
   })
   validateNewlinesAndPartitionConfig(options)

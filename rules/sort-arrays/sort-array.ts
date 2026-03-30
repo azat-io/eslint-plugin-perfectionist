@@ -27,7 +27,7 @@ import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
-import { allSelectors } from './types'
+import { allSelectors, allModifiers } from './types'
 
 /**
  * Sorts the elements of an array-like expression.
@@ -99,7 +99,7 @@ export function sortArray<MessageIds extends string>({
   validateCustomSortConfig(options)
   validateGroupsConfig({
     selectors: allSelectors,
-    modifiers: [],
+    modifiers: allModifiers,
     options,
   })
   validateNewlinesAndPartitionConfig(options)
