@@ -2,6 +2,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortImportAttributesSortingNode, Options } from './types'
+import type { Selector, Modifier } from './types'
 
 import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
@@ -15,7 +16,7 @@ import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
-import { computeGroup } from '../../utils/compute-group'
+import { GroupMatcher } from '../../utils/group-matcher'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
@@ -64,6 +65,11 @@ export function sortImportOrExportAttributes<MessageIds extends string>({
   })
   validateNewlinesAndPartitionConfiguration(options)
 
+  let groupMatcher = new GroupMatcher({
+    allModifiers,
+    allSelectors,
+    options,
+  })
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,
@@ -74,16 +80,18 @@ export function sortImportOrExportAttributes<MessageIds extends string>({
   for (let attribute of attributes) {
     let name = computeNodeName(attribute, sourceCode)
 
-    let group = computeGroup({
+    let selectors: Selector[] = []
+    let modifiers: Modifier[] = []
+    let group = groupMatcher.computeGroup({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
           elementName: name,
-          selectors: [],
-          modifiers: [],
           customGroup,
+          selectors,
+          modifiers,
         }),
-      predefinedGroups: [],
-      options,
+      selectors,
+      modifiers,
     })
 
     let sortingNode: Omit<SortImportAttributesSortingNode, 'partitionId'> = {
