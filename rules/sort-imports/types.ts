@@ -139,19 +139,19 @@ type CustomTypeOption = 'type-import-first' | TypeOption
  * JSON schema generation.
  */
 export let allSelectors = [
+  'type',
   'side-effect-style',
-  'tsconfig-path',
   'side-effect',
-  'external',
+  'style',
+  'tsconfig-path',
+  'index',
+  'sibling',
+  'parent',
+  'subpath',
   'internal',
   'builtin',
-  'sibling',
-  'subpath',
+  'external',
   'import',
-  'parent',
-  'index',
-  'style',
-  'type',
 ] as const
 
 /**
@@ -159,16 +159,16 @@ export let allSelectors = [
  * schema generation.
  */
 export let allModifiers = [
-  'default',
-  'multiline',
-  'named',
-  'require',
   'side-effect',
-  'singleline',
-  'ts-equals',
   'type',
   'value',
+  'ts-equals',
+  'require',
+  'default',
   'wildcard',
+  'named',
+  'multiline',
+  'singleline',
 ] as const
 
 /**
