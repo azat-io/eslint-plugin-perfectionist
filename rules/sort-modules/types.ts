@@ -58,19 +58,9 @@ export type SortModulesSortingNode = {
   dependencyDetection: DependencyDetection
 } & SortingNodeWithDependencies<SortModulesNode>
 
-/**
- * Union type of all available module member selectors. Used to categorize
- * different types of module-level declarations.
- */
-export type Selector = (typeof allSelectors)[number]
-
-/**
- * Union type of all available module member modifiers. Used to identify
- * specific characteristics of module declarations.
- */
-export type Modifier = (typeof allModifiers)[number]
-
 export type DependencyDetection = 'soft' | 'hard'
+
+export type AdditionalSortOptions = object
 
 /**
  * Additional configuration for a single custom group.
@@ -98,8 +88,6 @@ interface CustomGroupMatchOptions {
 
 type CustomTypeOption = typeof USAGE_TYPE_OPTION | TypeOption
 
-type AdditionalSortOptions = object
-
 /**
  * Complete list of available module member selectors. Used for validation and
  * JSON schema generation.
@@ -113,18 +101,20 @@ export let allSelectors = [
   'type',
   'class',
 ] as const
+export type Selector = (typeof allSelectors)[number]
 
 /**
  * Complete list of available module member modifiers. Used for validation and
  * JSON schema generation.
  */
 export let allModifiers = [
-  'async',
   'declare',
-  'decorated',
   'default',
+  'async',
+  'decorated',
   'export',
 ] as const
+export type Modifier = (typeof allModifiers)[number]
 
 /**
  * Ideally, we should generate as many schemas as there are selectors, and
