@@ -45,6 +45,7 @@ export type SortUnionOrIntersectionSortingNode = SortingNode<TSESTree.TypeNode>
  * union, enabling fine-grained control over sorting.
  */
 export type Selector = (typeof allSelectors)[number]
+export type Modifier = (typeof allModifiers)[number]
 
 /**
  * Match options for a custom group.

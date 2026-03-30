@@ -16,11 +16,6 @@ import { buildJsonSchema } from './sort-union-or-intersection-types/build-json-s
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
-
 const ORDER_ERROR_ID = 'unexpectedUnionTypesOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedUnionTypesGroupOrder'
 const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenUnionTypes'
@@ -96,7 +91,6 @@ function sortUnionType({
       ...defaultOptions,
       ignoreCallableTypes: false,
     },
-    cachedGroupsByModifiersAndSelectors,
     tokenValueToIgnoreBefore: '|',
     matchedAstSelectors,
     context,
