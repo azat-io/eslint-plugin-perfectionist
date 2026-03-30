@@ -77,60 +77,6 @@ let defaultOptions: Required<Options[number]> = {
 }
 
 export default createEslintRule<Options, MessageId>({
-  meta: {
-    schema: {
-      items: {
-        properties: {
-          ...buildCommonJsonSchemas(),
-          ...buildCommonGroupsJsonSchemas(),
-          sortOnParameters: {
-            description:
-              'Controls whether sorting should be enabled for method parameter decorators.',
-            type: 'boolean',
-          },
-          sortOnProperties: {
-            description:
-              'Controls whether sorting should be enabled for class property decorators.',
-            type: 'boolean',
-          },
-          sortOnAccessors: {
-            description:
-              'Controls whether sorting should be enabled for class accessor decorators.',
-            type: 'boolean',
-          },
-          sortOnMethods: {
-            description:
-              'Controls whether sorting should be enabled for class method decorators.',
-            type: 'boolean',
-          },
-          sortOnClasses: {
-            description:
-              'Controls whether sorting should be enabled for class decorators.',
-            type: 'boolean',
-          },
-          partitionByComment: partitionByCommentJsonSchema,
-          partitionByNewLine: partitionByNewLineJsonSchema,
-        },
-        additionalProperties: false,
-        type: 'object',
-      },
-      uniqueItems: true,
-      type: 'array',
-    },
-    messages: {
-      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
-      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
-      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
-      [ORDER_ERROR_ID]: ORDER_ERROR,
-    },
-    docs: {
-      url: 'https://perfectionist.dev/rules/sort-decorators',
-      description: 'Enforce sorted decorators.',
-      recommended: true,
-    },
-    type: 'suggestion',
-    fixable: 'code',
-  },
   create: context => {
     let settings = getSettings(context.settings)
 
@@ -207,6 +153,60 @@ export default createEslintRule<Options, MessageId>({
         }
       },
     }
+  },
+  meta: {
+    schema: {
+      items: {
+        properties: {
+          ...buildCommonJsonSchemas(),
+          ...buildCommonGroupsJsonSchemas(),
+          sortOnParameters: {
+            description:
+              'Controls whether sorting should be enabled for method parameter decorators.',
+            type: 'boolean',
+          },
+          sortOnProperties: {
+            description:
+              'Controls whether sorting should be enabled for class property decorators.',
+            type: 'boolean',
+          },
+          sortOnAccessors: {
+            description:
+              'Controls whether sorting should be enabled for class accessor decorators.',
+            type: 'boolean',
+          },
+          sortOnMethods: {
+            description:
+              'Controls whether sorting should be enabled for class method decorators.',
+            type: 'boolean',
+          },
+          sortOnClasses: {
+            description:
+              'Controls whether sorting should be enabled for class decorators.',
+            type: 'boolean',
+          },
+          partitionByComment: partitionByCommentJsonSchema,
+          partitionByNewLine: partitionByNewLineJsonSchema,
+        },
+        additionalProperties: false,
+        type: 'object',
+      },
+      uniqueItems: true,
+      type: 'array',
+    },
+    messages: {
+      [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
+      [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
+      [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
+      [ORDER_ERROR_ID]: ORDER_ERROR,
+    },
+    docs: {
+      url: 'https://perfectionist.dev/rules/sort-decorators',
+      description: 'Enforce sorted decorators.',
+      recommended: true,
+    },
+    type: 'suggestion',
+    fixable: 'code',
   },
   defaultOptions: [defaultOptions],
   name: 'sort-decorators',
