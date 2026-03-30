@@ -285,6 +285,234 @@ describe('sort-modules', () => {
       })
     })
 
+    it('creates partitions at if statements', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          if (B.b === 'b') {}
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at while statements', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          while (B.b === 'b') {}
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at for-in loops', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          for (const key in B) {}
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at try/catch statements', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          try { B.b } catch {}
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at for loops', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          for (let i = 0; i < Object.keys(B).length; i++) {}
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at for-of loops', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          for (const value of Object.values(B)) {}
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at do-while loops', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          do { void B.b } while (false)
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at switch statements', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          switch (B.b) { case 'b': break }
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at throw statements', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          throw new Error(B.b)
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at block statements', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          { const x = B.b }
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at labeled statements', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          label: { const x = B.b }
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at TypeScript import-equals declarations', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          import foo = B
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at export assignments', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          export = B
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts across empty statements', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        code: dedent`
+          enum B { b = 'b' }
+          ;
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts across debugger statements', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        code: dedent`
+          enum B { b = 'b' }
+          debugger
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts across import declarations', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        code: dedent`
+          enum B { b = 'b' }
+          import 'x'
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts across export-all declarations', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        code: dedent`
+          enum B { b = 'b' }
+          export * from 'x'
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts across namespace export declarations', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        code: dedent`
+          enum B { b = 'b' }
+          export as namespace Foo
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
     it('accepts complex predefined group configurations', async () => {
       await valid({
         options: [
