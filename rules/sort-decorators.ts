@@ -28,6 +28,7 @@ import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schema
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { allModifiers, allSelectors } from './sort-decorators/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { getDecoratorName } from '../utils/get-decorator-name'
@@ -133,8 +134,8 @@ export default createEslintRule<Options, MessageId>({
     let options = complete(context.options.at(0), settings, defaultOptions)
     validateCustomSortConfiguration(options)
     validateGroupsConfiguration({
-      modifiers: [],
-      selectors: [],
+      modifiers: allModifiers,
+      selectors: allSelectors,
       options,
     })
     validateNewlinesAndPartitionConfiguration(options)
