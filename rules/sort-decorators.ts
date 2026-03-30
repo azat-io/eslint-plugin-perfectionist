@@ -5,6 +5,9 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
   SortDecoratorsSortingNode,
+  AdditionalSortOptions,
+  Selector,
+  Modifier,
   Options,
 } from './sort-decorators/types'
 
@@ -35,7 +38,7 @@ import { getDecoratorName } from '../utils/get-decorator-name'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { computeGroup } from '../utils/compute-group'
+import { GroupMatcher } from '../utils/group-matcher'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -140,6 +143,12 @@ export default createEslintRule<Options, MessageId>({
     })
     validateNewlinesAndPartitionConfiguration(options)
 
+    let groupMatcher = new GroupMatcher({
+      allModifiers,
+      allSelectors,
+      options,
+    })
+
     return {
       Decorator: decorator => {
         if (!options.sortOnParameters) {
@@ -154,35 +163,47 @@ export default createEslintRule<Options, MessageId>({
           if (decorator !== decorators[0]) {
             return
           }
-          sortDecorators(context, options, decorators)
+          sortDecorators({ groupMatcher, decorators, options, context })
         }
       },
       PropertyDefinition: propertyDefinition => {
         if (options.sortOnProperties) {
-          sortDecorators(
+          sortDecorators({
+            decorators: getNodeDecorators(propertyDefinition),
+            groupMatcher,
             context,
             options,
-            getNodeDecorators(propertyDefinition),
-          )
+          })
         }
       },
       AccessorProperty: accessorDefinition => {
         if (options.sortOnAccessors) {
-          sortDecorators(
+          sortDecorators({
+            decorators: getNodeDecorators(accessorDefinition),
+            groupMatcher,
             context,
             options,
-            getNodeDecorators(accessorDefinition),
-          )
+          })
         }
       },
       MethodDefinition: methodDefinition => {
         if (options.sortOnMethods) {
-          sortDecorators(context, options, getNodeDecorators(methodDefinition))
+          sortDecorators({
+            decorators: getNodeDecorators(methodDefinition),
+            groupMatcher,
+            context,
+            options,
+          })
         }
       },
       ClassDeclaration: declaration => {
         if (options.sortOnClasses) {
-          sortDecorators(context, options, getNodeDecorators(declaration))
+          sortDecorators({
+            decorators: getNodeDecorators(declaration),
+            groupMatcher,
+            context,
+            options,
+          })
         }
       },
     }
@@ -197,15 +218,22 @@ export default createEslintRule<Options, MessageId>({
  * Processes the decorators, groups them according to options, and reports any
  * ordering errors found. Handles partitioning by comments and newlines.
  *
- * @param context - The ESLint rule context.
- * @param options - The sorting options for decorators.
- * @param decorators - Array of decorator nodes to sort.
+ * @param params - Parameters object.
+ * @param params.decorators - Array of decorator nodes to sort.
+ * @param params.options - The sorting options for decorators.
+ * @param params.context - The ESLint rule context.
  */
-function sortDecorators(
-  context: Readonly<RuleContext<MessageId, Options>>,
-  options: Required<Options[number]>,
-  decorators: TSESTree.Decorator[],
-): void {
+function sortDecorators({
+  groupMatcher,
+  decorators,
+  options,
+  context,
+}: {
+  groupMatcher: GroupMatcher<AdditionalSortOptions, Selector, Modifier>
+  context: Readonly<RuleContext<MessageId, Options>>
+  options: Required<Options[number]>
+  decorators: TSESTree.Decorator[]
+}): void {
   if (!isSortable(decorators)) {
     return
   }
@@ -223,16 +251,16 @@ function sortDecorators(
         decorator,
       })
 
-      let group = computeGroup({
+      let group = groupMatcher.computeGroup({
         customGroupMatcher: customGroup =>
           doesCustomGroupMatch({
             elementName: name,
-            selectors: [],
             modifiers: [],
+            selectors: [],
             customGroup,
           }),
-        predefinedGroups: [],
-        options,
+        selectors: [],
+        modifiers: [],
       })
 
       let sortingNode: Omit<SortDecoratorsSortingNode, 'partitionId'> = {
