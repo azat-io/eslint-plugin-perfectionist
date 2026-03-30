@@ -3,8 +3,8 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
-import type { SortingNode } from '../../types/sorting-node'
 import type { MessageId, Selector, Modifier, Options } from './types'
+import type { SortingNode } from '../../types/sorting-node'
 
 import {
   MISSED_SPACING_ERROR_ID,
@@ -138,9 +138,9 @@ export function sortHeritageClause({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
           elementName: name,
+          customGroup,
           selectors,
           modifiers,
-          customGroup,
         }),
       selectors,
       modifiers,

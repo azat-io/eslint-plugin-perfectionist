@@ -144,9 +144,9 @@ export function sortNamedImport({
     let group = groupMatcher.computeGroup({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
-          selectors,
           elementName: name,
           customGroup,
+          selectors,
           modifiers,
         }),
       selectors,

@@ -85,6 +85,8 @@ export type SortModulesSortingNode = {
 
 export type DependencyDetection = 'soft' | 'hard'
 
+export type AdditionalSortOptions = object
+
 /**
  * Additional configuration for a single custom group.
  *
@@ -110,8 +112,6 @@ interface CustomGroupMatchOptions {
 }
 
 type CustomTypeOption = typeof USAGE_TYPE_OPTION | TypeOption
-
-export type AdditionalSortOptions = object
 
 /**
  * Complete list of available module member selectors. Used for validation and

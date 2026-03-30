@@ -365,10 +365,10 @@ function analyzeModule({
     let group = groupMatcher.computeGroup({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
-          selectors,
           elementName: name,
           decoratorNames,
           customGroup,
+          selectors,
           modifiers,
         }),
       selectors,
