@@ -11,6 +11,8 @@ import {
   EXTRA_SPACING_ERROR_ID,
   GROUP_ORDER_ERROR_ID,
   ORDER_ERROR_ID,
+  allSelectors,
+  allModifiers,
 } from './types'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
@@ -84,8 +86,8 @@ export function sortEnum({
   })
   validateCustomSortConfig(options)
   validateGroupsConfig({
-    selectors: [],
-    modifiers: [],
+    selectors: allSelectors,
+    modifiers: allModifiers,
     options,
   })
   validateNewlinesAndPartitionConfig(options)

@@ -28,6 +28,7 @@ import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { validateGroupsConfig } from '../utils/validate-groups-config'
+import { allModifiers, allSelectors } from './sort-decorators/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { getDecoratorName } from '../utils/get-decorator-name'
@@ -137,8 +138,8 @@ export default createEslintRule<Options, MessageId>({
     })
     validateCustomSortConfig(options)
     validateGroupsConfig({
-      modifiers: [],
-      selectors: [],
+      modifiers: allModifiers,
+      selectors: allSelectors,
       options,
     })
     validateNewlinesAndPartitionConfig(options)

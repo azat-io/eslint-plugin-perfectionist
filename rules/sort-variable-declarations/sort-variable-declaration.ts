@@ -15,6 +15,7 @@ import {
   GROUP_ORDER_ERROR_ID,
   ORDER_ERROR_ID,
   allSelectors,
+  allModifiers,
 } from './types'
 import { computeDependenciesOutsideDeferredFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-deferred-functions-by-sorting-node'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
@@ -97,7 +98,7 @@ export function sortVariableDeclaration({
   validateNewlinesAndPartitionConfig(options)
   validateGroupsConfig({
     selectors: allSelectors,
-    modifiers: [],
+    modifiers: allModifiers,
     options,
   })
 

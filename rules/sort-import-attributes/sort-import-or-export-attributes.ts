@@ -20,6 +20,7 @@ import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
+import { allSelectors, allModifiers } from './types'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
 
@@ -72,8 +73,8 @@ export function sortImportOrExportAttributes<MessageIds extends string>({
   })
   validateCustomSortConfig(options)
   validateGroupsConfig({
-    selectors: [],
-    modifiers: [],
+    selectors: allSelectors,
+    modifiers: allModifiers,
     options,
   })
   validateNewlinesAndPartitionConfig(options)

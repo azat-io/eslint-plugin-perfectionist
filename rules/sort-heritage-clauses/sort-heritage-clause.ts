@@ -11,6 +11,8 @@ import {
   EXTRA_SPACING_ERROR_ID,
   GROUP_ORDER_ERROR_ID,
   ORDER_ERROR_ID,
+  allModifiers,
+  allSelectors,
 } from './types'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
@@ -96,8 +98,8 @@ export function sortHeritageClause({
   })
   validateCustomSortConfig(options)
   validateGroupsConfig({
-    modifiers: [],
-    selectors: [],
+    modifiers: allModifiers,
+    selectors: allSelectors,
     options,
   })
   validateNewlinesAndPartitionConfig(options)
