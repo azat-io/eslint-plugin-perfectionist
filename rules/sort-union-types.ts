@@ -27,11 +27,6 @@ import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-union-types/
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
-
 const ORDER_ERROR_ID = 'unexpectedUnionTypesOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedUnionTypesGroupOrder'
 const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenUnionTypes'
@@ -126,7 +121,6 @@ function sortUnionType({
       unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
       unexpectedOrder: ORDER_ERROR_ID,
     },
-    cachedGroupsByModifiersAndSelectors,
     tokenValueToIgnoreBefore: '|',
     matchedAstSelectors,
     defaultOptions,
