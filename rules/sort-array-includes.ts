@@ -27,11 +27,6 @@ import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { sortArray } from './sort-arrays/sort-array'
 
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
-
 const ORDER_ERROR_ID = 'unexpectedArrayIncludesOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedArrayIncludesGroupOrder'
 const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenArrayIncludesMembers'
@@ -131,7 +126,6 @@ function sortPotentiallyValidArray({
       unexpectedOrder: ORDER_ERROR_ID,
     },
     mustHaveMatchedContextOptions: false,
-    cachedGroupsByModifiersAndSelectors,
     matchedAstSelectors,
     defaultOptions,
     context,

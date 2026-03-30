@@ -11,7 +11,6 @@ import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
-import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
@@ -20,7 +19,7 @@ import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { computeArrayElements } from './compute-array-elements'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
-import { computeGroup } from '../../utils/compute-group'
+import { GroupMatcher } from '../../utils/group-matcher'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
@@ -33,7 +32,6 @@ type SortArraySortingNode = SortingNode<
 >
 
 export function sortArray<MessageIds extends string>({
-  cachedGroupsByModifiersAndSelectors,
   mustHaveMatchedContextOptions,
   availableMessageIds,
   matchedAstSelectors,
@@ -47,7 +45,6 @@ export function sortArray<MessageIds extends string>({
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
-  cachedGroupsByModifiersAndSelectors: Map<string, string[]>
   node: TSESTree.ArrayExpression | TSESTree.NewExpression
   context: Readonly<RuleContext<MessageIds, Options>>
   defaultOptions: Required<Options[number]>
@@ -85,6 +82,11 @@ export function sortArray<MessageIds extends string>({
   })
   validateNewlinesAndPartitionConfiguration(options)
 
+  let groupMatcher = new GroupMatcher({
+    allModifiers,
+    allSelectors,
+    options,
+  })
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,
@@ -106,22 +108,17 @@ export function sortArray<MessageIds extends string>({
       }
 
       let name = computeNodeName({ node: element, sourceCode })
-      let selector: Selector = 'literal'
-      let predefinedGroups = generatePredefinedGroups({
-        cache: cachedGroupsByModifiersAndSelectors,
-        selectors: [selector],
-        modifiers: [],
-      })
-      let group = computeGroup({
+      let selectors: Selector[] = ['literal']
+      let group = groupMatcher.computeGroup({
         customGroupMatcher: customGroup =>
           doesCustomGroupMatch({
-            selectors: [selector],
             elementName: name,
             modifiers: [],
             customGroup,
+            selectors,
           }),
-        predefinedGroups,
-        options,
+        modifiers: [],
+        selectors,
       })
 
       let sortingNode: Omit<SortArraySortingNode, 'partitionId'> = {
