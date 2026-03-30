@@ -11,6 +11,8 @@ import {
   EXTRA_SPACING_ERROR_ID,
   GROUP_ORDER_ERROR_ID,
   ORDER_ERROR_ID,
+  allSelectors,
+  allModifiers,
 } from './types'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
@@ -81,8 +83,8 @@ export function sortPotentialMap({
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
-    selectors: [],
-    modifiers: [],
+    selectors: allSelectors,
+    modifiers: allModifiers,
     options,
   })
 

@@ -74,6 +74,7 @@ export let allSelectors = [
   'tuple',
   'union',
 ] as const
+export let allModifiers = [] as const
 
 /**
  * Additional custom group match options JSON schema. Used by ESLint to validate
