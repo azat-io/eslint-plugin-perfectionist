@@ -139,36 +139,6 @@ export type GroupWithOverridesOption<
   Partial<AdditionalSortOptions>
 
 /**
- * Configuration for matching multiple patterns in custom groups.
- *
- * Allows a custom group to match elements based on any of several patterns,
- * providing flexibility in how elements are categorized.
- *
- * @example
- *
- * ```ts
- * const customGroup: AnyOfCustomGroup<string> = {
- *   anyOf: ['react', 'react-*', '@react/*'],
- * }
- * ```
- *
- * @template MatchOptions - Options for matching elements to the custom group.
- */
-interface AnyOfCustomGroup<MatchOptions> {
-  /**
-   * Regular expression pattern to match the element's name. Elements matching
-   * this pattern will be included in this custom group.
-   */
-  elementNamePattern?: RegexOption
-
-  /**
-   * Array of patterns where matching any single pattern includes the element in
-   * the group. Provides OR logic for group membership.
-   */
-  anyOf: Partial<MatchOptions>[]
-}
-
-/**
  * Configuration for managing newlines between sorted elements.
  *
  * Controls how blank lines are handled between elements, either preserving,
@@ -266,3 +236,33 @@ export type NewlinesInsideOption =
    * Require exactly this number of blank lines between elements of a group.
    */
   | number
+
+/**
+ * Configuration for matching multiple patterns in custom groups.
+ *
+ * Allows a custom group to match elements based on any of several patterns,
+ * providing flexibility in how elements are categorized.
+ *
+ * @example
+ *
+ * ```ts
+ * const customGroup: AnyOfCustomGroup<string> = {
+ *   anyOf: ['react', 'react-*', '@react/*'],
+ * }
+ * ```
+ *
+ * @template MatchOptions - Options for matching elements to the custom group.
+ */
+interface AnyOfCustomGroup<MatchOptions> {
+  /**
+   * Regular expression pattern to match the element's name. Elements matching
+   * this pattern will be included in this custom group.
+   */
+  elementNamePattern?: RegexOption
+
+  /**
+   * Array of patterns where matching any single pattern includes the element in
+   * the group. Provides OR logic for group membership.
+   */
+  anyOf: Partial<MatchOptions>[]
+}

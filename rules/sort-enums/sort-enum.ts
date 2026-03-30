@@ -121,9 +121,9 @@ export function sortEnum({
           doesCustomGroupMatch({
             elementValue: sourceCode.getText(member.initializer),
             elementName: name,
+            customGroup,
             selectors,
             modifiers,
-            customGroup,
           }),
         selectors,
         modifiers,

@@ -113,9 +113,9 @@ export function sortImportOrExportAttributes<MessageIds extends string>({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
           elementName: name,
+          customGroup,
           selectors,
           modifiers,
-          customGroup,
         }),
       selectors,
       modifiers,

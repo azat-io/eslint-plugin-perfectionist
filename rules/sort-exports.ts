@@ -125,9 +125,9 @@ export default createEslintRule<Options, MessageId>({
       let group = groupMatcher.computeGroup({
         customGroupMatcher: customGroup =>
           doesCustomGroupMatch({
-            selectors,
             elementName: name,
             customGroup,
+            selectors,
             modifiers,
           }),
         selectors,

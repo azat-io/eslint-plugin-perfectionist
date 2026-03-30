@@ -189,8 +189,8 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
           customGroupMatcher: customGroup =>
             doesCustomGroupMatch({
               elementName: name,
-              modifiers,
               customGroup,
+              modifiers,
               selectors,
             }),
           selectors,

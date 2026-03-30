@@ -25,8 +25,8 @@ import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
-import { complete } from '../../utils/complete'
 import { allSelectors, allModifiers } from './types'
+import { complete } from '../../utils/complete'
 
 /**
  * Sorts the elements of an array-like expression.
@@ -141,10 +141,10 @@ export function sortArray<MessageIds extends string>({
       let group = groupMatcher.computeGroup({
         customGroupMatcher: customGroup =>
           doesCustomGroupMatch({
-            selectors,
             elementName: name,
             modifiers: [],
             customGroup,
+            selectors,
           }),
         modifiers: [],
         selectors,

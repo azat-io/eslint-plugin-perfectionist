@@ -126,10 +126,10 @@ export function sortVariableDeclaration({
         group: groupMatcher.computeGroup({
           customGroupMatcher: customGroup =>
             doesCustomGroupMatch({
-              selectors,
               elementName: name,
               modifiers: [],
               customGroup,
+              selectors,
             }),
           modifiers: [],
           selectors,
