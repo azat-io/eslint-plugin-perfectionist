@@ -199,8 +199,6 @@ function analyzeModule({
       case AST_NODE_TYPES.ImportDeclaration:
       case AST_NODE_TYPES.DebuggerStatement:
       case AST_NODE_TYPES.ContinueStatement:
-      /* v8 ignore next 4 -- @preserve These statements cannot appear at module/namespace level in valid code. */
-      // eslint-disable-next-line no-fallthrough
       case AST_NODE_TYPES.ReturnStatement:
       case AST_NODE_TYPES.EmptyStatement:
       case AST_NODE_TYPES.BreakStatement:
