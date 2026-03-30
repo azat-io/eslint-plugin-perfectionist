@@ -27,7 +27,6 @@ import { computePropertyOrVariableDeclaratorName } from './compute-property-or-v
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
-import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
@@ -40,18 +39,13 @@ import { computeDependencyNames } from './compute-dependency-names'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeDependencies } from './compute-dependencies'
-import { computeGroup } from '../../utils/compute-group'
+import { GroupMatcher } from '../../utils/group-matcher'
 import { isStyleComponent } from './is-style-component'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { computeNodeValue } from './compute-node-value'
 import { getSettings } from '../../utils/get-settings'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
-
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 export let defaultOptions: Required<Options[number]> = {
   useExperimentalDependencyDetection: true,
@@ -117,6 +111,11 @@ export function sortObject({
     sourceCode,
   })
   let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
+  let groupMatcher = new GroupMatcher({
+    allModifiers,
+    allSelectors,
+    options,
+  })
 
   let sortingNodeGroups: SortObjectsSortingNode[][] = [[]]
   for (let property of node.properties) {
@@ -172,12 +171,7 @@ export function sortObject({
       property,
     })
 
-    let predefinedGroups = generatePredefinedGroups({
-      cache: cachedGroupsByModifiersAndSelectors,
-      selectors,
-      modifiers,
-    })
-    let group = computeGroup({
+    let group = groupMatcher.computeGroup({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
           elementValue: value,
@@ -186,8 +180,8 @@ export function sortObject({
           selectors,
           modifiers,
         }),
-      predefinedGroups,
-      options,
+      selectors,
+      modifiers,
     })
 
     let sortingNode: Omit<SortObjectsSortingNode, 'partitionId'> = {
