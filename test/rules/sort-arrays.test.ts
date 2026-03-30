@@ -16,6 +16,7 @@ describe('sort-arrays', () => {
 
   describe('alphabetical', () => {
     let options = {
+      useConfigurationIf: {},
       type: 'alphabetical',
       order: 'asc',
     } as const
@@ -938,6 +939,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['topElements', 'unknown'],
+          useConfigurationIf: {},
         },
       ]
 
@@ -987,6 +989,7 @@ describe('sort-arrays', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
+            useConfigurationIf: {},
           },
         ]
 
@@ -1033,6 +1036,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
+          useConfigurationIf: {},
           type: 'alphabetical',
           order: 'asc',
         },
@@ -1100,6 +1104,7 @@ describe('sort-arrays', () => {
               order: 'desc',
             },
           ],
+          useConfigurationIf: {},
           type: 'alphabetical',
           groups: ['foo'],
           order: 'asc',
@@ -1140,6 +1145,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['unsortedTop', 'unknown'],
+          useConfigurationIf: {},
         },
       ]
 
@@ -1196,6 +1202,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['elementsIncludingFoo', 'unknown'],
+          useConfigurationIf: {},
         },
       ]
 
@@ -1240,6 +1247,7 @@ describe('sort-arrays', () => {
               },
             ],
             groups: ['unknown', 'elementsWithoutFoo'],
+            useConfigurationIf: {},
             type: 'alphabetical',
           },
         ],
@@ -1345,6 +1353,9 @@ describe('sort-arrays', () => {
               },
               type: 'unsorted',
             },
+            {
+              useConfigurationIf: {},
+            },
           ],
           errors: [
             {
@@ -1426,9 +1437,6 @@ describe('sort-arrays', () => {
               },
               type: 'alphabetical',
             },
-            {
-              type: 'unsorted',
-            },
           ],
           errors: [
             {
@@ -1469,9 +1477,6 @@ describe('sort-arrays', () => {
                 matchesAstSelector: 'ArrayExpression',
               },
               type: 'alphabetical',
-            },
-            {
-              type: 'unsorted',
             },
           ],
           errors: [
@@ -1514,9 +1519,6 @@ describe('sort-arrays', () => {
               },
               type: 'alphabetical',
               order: 'desc',
-            },
-            {
-              type: 'unsorted',
             },
           ],
           errors: [
@@ -2113,6 +2115,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['unknown', 'b|c'],
+          useConfigurationIf: {},
           newlinesBetween: 1,
           newlinesInside: 0,
         },
@@ -2200,6 +2203,7 @@ describe('sort-arrays', () => {
 
   describe('natural', () => {
     let options = {
+      useConfigurationIf: {},
       type: 'natural',
       order: 'asc',
     } as const
@@ -3064,6 +3068,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['topElements', 'unknown'],
+          useConfigurationIf: {},
         },
       ]
 
@@ -3113,6 +3118,7 @@ describe('sort-arrays', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
+            useConfigurationIf: {},
           },
         ]
 
@@ -3159,6 +3165,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
+          useConfigurationIf: {},
           type: 'alphabetical',
           order: 'asc',
         },
@@ -3226,6 +3233,7 @@ describe('sort-arrays', () => {
               order: 'desc',
             },
           ],
+          useConfigurationIf: {},
           type: 'alphabetical',
           groups: ['foo'],
           order: 'asc',
@@ -3266,6 +3274,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['unsortedTop', 'unknown'],
+          useConfigurationIf: {},
         },
       ]
 
@@ -3322,6 +3331,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['elementsIncludingFoo', 'unknown'],
+          useConfigurationIf: {},
         },
       ]
 
@@ -3366,6 +3376,7 @@ describe('sort-arrays', () => {
               },
             ],
             groups: ['unknown', 'elementsWithoutFoo'],
+            useConfigurationIf: {},
             type: 'alphabetical',
           },
         ],
@@ -3823,6 +3834,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['unknown', 'b|c'],
+          useConfigurationIf: {},
           newlinesBetween: 1,
           newlinesInside: 0,
         },
@@ -3910,6 +3922,7 @@ describe('sort-arrays', () => {
 
   describe('line-length', () => {
     let options = {
+      useConfigurationIf: {},
       type: 'line-length',
       order: 'desc',
     } as const
@@ -4758,6 +4771,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['topElements', 'unknown'],
+          useConfigurationIf: {},
         },
       ]
 
@@ -4807,6 +4821,7 @@ describe('sort-arrays', () => {
               },
             ],
             groups: ['literalsStartingWithHello', 'unknown'],
+            useConfigurationIf: {},
           },
         ]
 
@@ -4853,6 +4868,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['reversedLiteralsByLineLength', 'unknown'],
+          useConfigurationIf: {},
           type: 'alphabetical',
           order: 'asc',
         },
@@ -4920,6 +4936,7 @@ describe('sort-arrays', () => {
               order: 'desc',
             },
           ],
+          useConfigurationIf: {},
           type: 'alphabetical',
           groups: ['foo'],
           order: 'asc',
@@ -4960,6 +4977,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['unsortedTop', 'unknown'],
+          useConfigurationIf: {},
         },
       ]
 
@@ -5016,6 +5034,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['elementsIncludingFoo', 'unknown'],
+          useConfigurationIf: {},
         },
       ]
 
@@ -5060,6 +5079,7 @@ describe('sort-arrays', () => {
               },
             ],
             groups: ['unknown', 'elementsWithoutFoo'],
+            useConfigurationIf: {},
             type: 'alphabetical',
           },
         ],
@@ -5523,6 +5543,7 @@ describe('sort-arrays', () => {
             },
           ],
           groups: ['unknown', 'b|c'],
+          useConfigurationIf: {},
           newlinesBetween: 1,
           newlinesInside: 0,
         },
@@ -5617,6 +5638,7 @@ describe('sort-arrays', () => {
       let customAlphabetOptions = [
         {
           type: 'custom' as const,
+          useConfigurationIf: {},
           order: 'asc' as const,
           alphabet,
         },
@@ -5668,6 +5690,7 @@ describe('sort-arrays', () => {
         type: 'subgroup-order',
         order: 'asc',
       },
+      useConfigurationIf: {},
       type: 'line-length',
       order: 'desc',
     }
@@ -5770,6 +5793,7 @@ describe('sort-arrays', () => {
   describe('unsorted', () => {
     let unsortedOptions = {
       type: 'unsorted' as const,
+      useConfigurationIf: {},
       order: 'asc' as const,
     }
 
@@ -5881,6 +5905,10 @@ describe('sort-arrays', () => {
   })
 
   describe('misc', () => {
+    let options = {
+      useConfigurationIf: {},
+    }
+
     it('validates the JSON schema', async () => {
       await expect(
         validateRuleJsonSchema(rule.meta.schema),
@@ -5897,6 +5925,7 @@ describe('sort-arrays', () => {
             'd',
           ]
         `,
+        options: [options],
       })
 
       await invalid({
@@ -5926,6 +5955,7 @@ describe('sort-arrays', () => {
             'c',
           ]
         `,
+        options: [options],
       })
     })
 
@@ -5941,6 +5971,7 @@ describe('sort-arrays', () => {
         `,
         options: [
           {
+            ...options,
             ignoreCase: false,
           },
         ],
@@ -5962,6 +5993,7 @@ describe('sort-arrays', () => {
         code: dedent`
           ['a', "b", 'c']
         `,
+        options: [options],
       })
     })
 
@@ -5981,11 +6013,18 @@ describe('sort-arrays', () => {
             a,
           ]
         `,
-        options: [{}],
+        options: [options],
         settings,
       })
 
       await valid({
+        options: [
+          {
+            ...options,
+            type: 'alphabetical',
+            order: 'asc',
+          },
+        ],
         code: dedent`
           [
             a,
@@ -5993,7 +6032,6 @@ describe('sort-arrays', () => {
             ccc,
           ]
         `,
-        options: [{ type: 'alphabetical', order: 'asc' }],
         settings,
       })
     })
@@ -6009,6 +6047,7 @@ describe('sort-arrays', () => {
               'a',
             ]
           `,
+          options: [options],
         })
 
         await invalid({
@@ -6034,7 +6073,7 @@ describe('sort-arrays', () => {
               data: { right: 'b', left: 'c' },
             },
           ],
-          options: [{}],
+          options: [options],
         })
       })
 
@@ -6060,7 +6099,7 @@ describe('sort-arrays', () => {
               'a', // eslint-disable-line
             ]
           `,
-          options: [{}],
+          options: [options],
         })
       })
 
@@ -6096,7 +6135,7 @@ describe('sort-arrays', () => {
               data: { right: 'a', left: 'b' },
             },
           ],
-          options: [{}],
+          options: [options],
         })
       })
 
@@ -6124,7 +6163,7 @@ describe('sort-arrays', () => {
               data: { right: 'b', left: 'c' },
             },
           ],
-          options: [{}],
+          options: [options],
         })
       })
     })
@@ -6139,6 +6178,13 @@ describe('sort-arrays', () => {
                 data: { right: 'a', left: 'b' },
               },
             ],
+            options: [
+              {
+                ...options,
+                type: 'alphabetical',
+                order: 'asc',
+              },
+            ],
             output: dedent`
               [
                 'a',
@@ -6151,18 +6197,23 @@ describe('sort-arrays', () => {
                 'a',
               ]
             `,
-            options: [{ type: 'alphabetical', order: 'asc' }],
           },
         ],
         valid: [
           {
+            options: [
+              {
+                ...options,
+                type: 'alphabetical',
+                order: 'asc',
+              },
+            ],
             code: dedent`
               [
                 'a',
                 'b',
               ]
             `,
-            options: [{ type: 'alphabetical', order: 'asc' }],
           },
         ],
       })

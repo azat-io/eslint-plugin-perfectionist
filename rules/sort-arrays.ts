@@ -76,6 +76,7 @@ let jsonSchema: JSONSchema4 = {
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
     },
+    required: ['useConfigurationIf'],
     additionalProperties: false,
     type: 'object',
   },

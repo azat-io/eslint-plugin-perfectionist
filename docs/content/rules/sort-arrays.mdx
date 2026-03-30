@@ -13,6 +13,7 @@ keywords:
 ---
 
 import CodeExample from '../../components/CodeExample.svelte'
+import Important from '../../components/Important.astro'
 import CodeTabs from '../../components/CodeTabs.svelte'
 import dedent from 'dedent'
 
@@ -277,6 +278,10 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
 
 ### useConfigurationIf
 
+<Important>
+This option must be explicitly set in each configuration object.
+</Important>
+
 <sub>
   type:
   ```ts
@@ -290,7 +295,6 @@ This option is only applicable when [`partitionByNewLine`](#partitionbynewline) 
   }
   ```
 </sub>
-<sub>default: `{}`</sub>
 
 Specifies filters to match a particular options configuration for a given array.
 
